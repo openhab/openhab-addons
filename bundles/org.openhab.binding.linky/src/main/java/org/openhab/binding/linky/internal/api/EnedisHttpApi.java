@@ -25,13 +25,18 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.linky.internal.dto.Alimentation;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
+import org.openhab.binding.linky.internal.dto.ContractState;
+import org.openhab.binding.linky.internal.dto.ContractSynth;
+import org.openhab.binding.linky.internal.dto.GeneralData;
 import org.openhab.binding.linky.internal.dto.Identity;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
@@ -41,6 +46,7 @@ import org.openhab.binding.linky.internal.dto.ResponseContract;
 import org.openhab.binding.linky.internal.dto.ResponseIdentity;
 import org.openhab.binding.linky.internal.dto.ResponseMeter;
 import org.openhab.binding.linky.internal.dto.ResponseTempo;
+import org.openhab.binding.linky.internal.dto.SubscribeServices;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.binding.linky.internal.handler.BridgeRemoteBaseHandler;
@@ -95,8 +101,10 @@ public class EnedisHttpApi {
         return response.getHeaders().get(HttpHeader.LOCATION);
     }
 
-    public String getContent(ThingBaseRemoteHandler handler, String url) throws LinkyException {
-        return getContent(logger, linkyBridgeHandler, url, httpClient, linkyBridgeHandler.getToken(handler));
+    public String getContent(ThingBaseRemoteHandler handler, String url, HttpMethod method, String body)
+            throws LinkyException {
+        return getContent(logger, linkyBridgeHandler, url, method, body, httpClient,
+                linkyBridgeHandler.getToken(handler));
     }
 
     public String getContent(String url) throws LinkyException {
@@ -105,14 +113,23 @@ public class EnedisHttpApi {
 
     private static String getContent(Logger logger, BridgeRemoteBaseHandler linkyBridgeHandler, String url,
             HttpClient httpClient, String token) throws LinkyException {
+        return getContent(logger, linkyBridgeHandler, url, HttpMethod.GET, "", httpClient, token);
+    }
+
+    private static String getContent(Logger logger, BridgeRemoteBaseHandler linkyBridgeHandler, String url,
+            HttpMethod method, String body, HttpClient httpClient, String token) throws LinkyException {
         try {
             Request request = httpClient.newRequest(url);
 
             request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
-            request = request.method(HttpMethod.GET);
+            request = request.method(method);
             if (!token.isEmpty()) {
                 request = request.header("Authorization", "" + token);
                 request = request.header("Accept", "application/json");
+            }
+
+            if (!("".equals(body))) {
+                request = request.content(new StringContentProvider(body));
             }
 
             ContentResponse result = request.send();
@@ -154,6 +171,11 @@ public class EnedisHttpApi {
     }
 
     private <T> T getData(ThingBaseRemoteHandler handler, String url, Class<T> clazz) throws LinkyException {
+        return getData(handler, url, HttpMethod.GET, "", clazz);
+    }
+
+    private <T> T getData(ThingBaseRemoteHandler handler, String url, HttpMethod method, String body, Class<T> clazz)
+            throws LinkyException {
         if (!linkyBridgeHandler.isConnected()) {
             linkyBridgeHandler.initialize();
         }
@@ -164,7 +186,7 @@ public class EnedisHttpApi {
 
         while (numberRetry < 3) {
             try {
-                String data = getContent(handler, url);
+                String data = getContent(handler, url, method, body);
 
                 if (!data.isEmpty()) {
                     try {
@@ -258,13 +280,60 @@ public class EnedisHttpApi {
         return contactResponse.contact;
     }
 
+    public SubscribeServices getSubscribeService(ThingLinkyRemoteHandler handler) throws LinkyException {
+        String subscribeServiceUrl = linkyBridgeHandler.getSubsribeServiceUrl();
+        String body = "{ \"comptage\": true, \"autorisationId\" : 11 }";
+
+        SubscribeServices services = getData(handler, subscribeServiceUrl, HttpMethod.POST, body,
+                SubscribeServices.class);
+        return services;
+    }
+
+    public ContractSynth getContractSynth(ThingLinkyRemoteHandler handler, String prmId) throws LinkyException {
+        String contractSynthUrl = linkyBridgeHandler.getContractSynthUrl().formatted(prmId);
+
+        ContractSynth contactSynth = getData(handler, contractSynthUrl, ContractSynth.class);
+        return contactSynth;
+    }
+
+    public ContractState getContractState(ThingLinkyRemoteHandler handler, String prmId) throws LinkyException {
+        String contactStateUrl = linkyBridgeHandler.getContractStateUrl().formatted(prmId);
+
+        ContractState[] contactState = getData(handler, contactStateUrl, ContractState[].class);
+        return contactState[0];
+    }
+
+    public Alimentation getAlimentation(ThingLinkyRemoteHandler handler, String prmId) throws LinkyException {
+        String alimentationUrl = linkyBridgeHandler.getAlimentationUrl().formatted(prmId);
+
+        Alimentation alimentation = getData(handler, alimentationUrl, Alimentation.class);
+        return alimentation;
+    }
+
+    public GeneralData getGeneralData(ThingLinkyRemoteHandler handler, String prmId) throws LinkyException {
+        String generalDataUrl = linkyBridgeHandler.getGeneralDataUrl().formatted(prmId);
+
+        GeneralData generalData = getData(handler, generalDataUrl, GeneralData.class);
+        return generalData;
+    }
+
     private MeterReading getMeasures(ThingLinkyRemoteHandler handler, String apiUrl, String mps, String prmId,
             String segment, LocalDate from, LocalDate to, boolean useIndex) throws LinkyException {
         String dtStart = from.format(linkyBridgeHandler.getApiDateFormat());
         String dtEnd = to.format(linkyBridgeHandler.getApiDateFormat());
 
         if (handler.supportNewApiFormat()) {
-            String url = String.format(apiUrl, prmId, dtStart, dtEnd);
+            boolean isV6 = true;
+            String url = "";
+            if (isV6) {
+                if (apiUrl.contains("daily_consumption_max_power")) {
+                    url = String.format(apiUrl, prmId, dtStart, dtEnd, "P1M", "PMA");
+                } else {
+                    url = String.format(apiUrl, prmId, dtStart, dtEnd, "", "");
+                }
+            } else {
+                url = String.format(apiUrl, prmId, dtStart, dtEnd);
+            }
             ResponseMeter meterResponse = getData(handler, url, ResponseMeter.class);
             return meterResponse.meterReading;
         } else {
@@ -281,12 +350,13 @@ public class EnedisHttpApi {
 
     public MeterReading getEnergyIndex(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
             LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getDailyIndexUrl(), mps, prmId, segment, from, to, true);
+        return getMeasures(handler, linkyBridgeHandler.getIndexConsumptionUrl(), mps, prmId, segment, from, to, true);
     }
 
     public MeterReading getLoadCurveData(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
             LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), mps, prmId, segment, from, to, false);
+        return getMeasures(handler, linkyBridgeHandler.getLoadCurveConsumptionUrl(), mps, prmId, segment, from, to,
+                false);
     }
 
     public MeterReading getPowerData(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
