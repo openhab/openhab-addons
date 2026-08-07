@@ -162,69 +162,79 @@
 	<channel-type id="route-long-name">
 		<item-type>String</item-type>
 		<label>@text/channel-type.transitapp.route-long-name.label</label>
+		<description>@text/channel-type.transitapp.route-long-name.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="route-short-name">
 		<item-type>String</item-type>
 		<label>@text/channel-type.transitapp.route-short-name.label</label>
+		<description>@text/channel-type.transitapp.route-short-name.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="departure-time">
 		<item-type>DateTime</item-type>
 		<label>@text/channel-type.transitapp.departure-time.label</label>
+		<description>@text/channel-type.transitapp.departure-time.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="is-cancelled">
 		<item-type>Switch</item-type>
-		<label>Is Cancelled</label>
+		<label>@text/channel-type.transitapp.is-cancelled.label</label>
+		<description>@text/channel-type.transitapp.is-cancelled.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="route-color">
 		<item-type>String</item-type>
 		<label>@text/channel-type.transitapp.route-color.label</label>
+		<description>@text/channel-type.transitapp.route-color.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="stop-name">
 		<item-type>String</item-type>
 		<label>@text/channel-type.transitapp.stop-name.label</label>
+		<description>@text/channel-type.transitapp.stop-name.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="minutes-until-departure">
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.transitapp.minutes-until-departure.label</label>
+		<description>@text/channel-type.transitapp.minutes-until-departure.description</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="delay-minutes">
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.transitapp.delay-minutes.label</label>
+		<description>@text/channel-type.transitapp.delay-minutes.description</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="platform">
 		<item-type>String</item-type>
-		<label>Platform / Track</label>
+		<label>@text/channel-type.transitapp.platform.label</label>
+		<description>@text/channel-type.transitapp.platform.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="active-alerts-count">
 		<item-type>Number</item-type>
-		<label>Active Alerts Count</label>
+		<label>@text/channel-type.transitapp.active-alerts-count.label</label>
+		<description>@text/channel-type.transitapp.active-alerts-count.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="time-to-target">
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.transitapp.time-to-target.label</label>
-		<description>Live countdown to the configured target destination stop</description>
+		<description>@text/channel-type.transitapp.time-to-target.description</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="wheelchair-accessible">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.transitapp.wheelchair-accessible.label</label>
-		<description>Indicates whether the departure is wheelchair accessible</description>
+		<description>@text/channel-type.transitapp.wheelchair-accessible.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="occupancy">
 		<item-type>String</item-type>
 		<label>@text/channel-type.transitapp.occupancy.label</label>
-		<description>Current occupancy status of the vehicle</description>
+		<description>@text/channel-type.transitapp.occupancy.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -118,8 +118,9 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
                     if (targetStopId != null && !targetStopId.isBlank() && targetStopId.equals(gStopId)
                             && depTime != null) {
-                        long diff = (depTime - now) / 60;
-                        if (diff >= 0) {
+                        // Only show countdown for future departures
+                        if (depTime >= now) {
+                            long diff = (depTime - now) / 60;
                             updateState("trip#time-to-target", new QuantityType<>(diff, Units.MINUTE));
                         }
                     }
