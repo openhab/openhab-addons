@@ -120,6 +120,7 @@
 	</thing-type>
 	<channel-group-type id="departure-group">
 		<label>@text/channel-group-type.transitapp.departure-group.label</label>
+		<description>@text/channel-group-type.transitapp.departure-group.description</description>
 		<channels>
 			<channel id="route-long-name" typeId="route-long-name"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
@@ -133,7 +134,8 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="route-group">
-		<label>Route Details</label>
+		<label>@text/channel-group-type.transitapp.route-group.label</label>
+		<description>@text/channel-group-type.transitapp.route-group.description</description>
 		<channels>
 			<channel id="route-long-name" typeId="route-long-name"/>
 			<channel id="route-short-name" typeId="route-short-name"/>
@@ -142,14 +144,16 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="trip-group">
-		<label>Trip Details</label>
+		<label>@text/channel-group-type.transitapp.trip-group.label</label>
+		<description>@text/channel-group-type.transitapp.trip-group.description</description>
 		<channels>
 			<channel id="route-short-name" typeId="route-short-name"/>
 			<channel id="time-to-target" typeId="time-to-target"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="stop-group">
-		<label>Upcoming Stop</label>
+		<label>@text/channel-group-type.transitapp.stop-group.label</label>
+		<description>@text/channel-group-type.transitapp.stop-group.description</description>
 		<channels>
 			<channel id="stop-name" typeId="stop-name"/>
 			<channel id="minutes-until-departure" typeId="minutes-until-departure"/>
