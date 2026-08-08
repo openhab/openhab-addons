@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
@@ -36,6 +37,7 @@ import org.openhab.binding.ocpp.internal.config.OcppServerConfiguration;
 import org.openhab.binding.ocpp.internal.transport.OcppTransport;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -470,5 +472,49 @@ class OcppBootConfigTest {
         assertEquals("Energy.Active.Import.Register,Power.Active.Import,Temperature", tried.get(0));
         assertEquals("Energy.Active.Import.Register,Power.Active.Import", tried.get(tried.size() - 1),
                 "the rejected measurand should have been dropped");
+    }
+
+    @Test
+    void aDefaultBootWithNoStepsHoldsTheStatusRefreshUntilReadiness() {
+        // The default server configuration produces no boot-configuration steps, so runBootConfig
+        // reaches its completion branch at once and asks for connector statuses. That refresh must go
+        // through the readiness gate (send), not the ungated fallback (sendNow): nothing may reach the
+        // wire until the charger is ready after its BootNotification is answered.
+        serverConfig.disableRemoteTxAuthorization = false; // no steps at all now
+        serverConfig.meterValuesData = "";
+        realConnector(1); // real connector, so requestStatus actually gates through the charge point
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        // While the boot is being handled and before readiness: nothing on the wire.
+        verify(transport, org.mockito.Mockito.after(600).never()).send(any(), any());
+
+        // The charger's first post-boot message flips readiness; only now does the gated refresh go out.
+        handler.onHeartbeat();
+        verify(transport, timeout(2000)).send(any(), argThat(OcppBootConfigTest::isStatusTrigger));
+    }
+
+    private static boolean isStatusTrigger(Request request) {
+        return request instanceof eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest trigger && trigger
+                .getRequestedMessage() == eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType.StatusNotification;
+    }
+
+    /** A real connector handler bridged to this test's real charge point handler. */
+    private OcppConnectorHandler realConnector(int connectorId) {
+        Bridge cpBridge = mock(Bridge.class);
+        when(cpBridge.getHandler()).thenReturn(handler);
+        Thing connThing = mock(Thing.class);
+        when(connThing.getUID()).thenReturn(new ThingUID(THING_TYPE_CONNECTOR, "server", "charger", "c" + connectorId));
+        when(connThing.getThingTypeUID()).thenReturn(THING_TYPE_CONNECTOR);
+        when(connThing.getBridgeUID()).thenReturn(CP_UID);
+        when(connThing.getConfiguration()).thenReturn(new Configuration(Map.of("connectorId", connectorId)));
+        when(connThing.getChannels()).thenReturn(List.of());
+        when(connThing.getProperties()).thenReturn(Map.of());
+        ThingHandlerCallback connCallback = mock(ThingHandlerCallback.class);
+        when(connCallback.getBridge(CP_UID)).thenReturn(cpBridge);
+        OcppConnectorHandler connector = new OcppConnectorHandler(connThing);
+        connector.setCallback(connCallback);
+        connector.initialize();
+        return connector;
     }
 }

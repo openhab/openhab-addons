@@ -175,6 +175,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pendingFlush;
     private @Nullable ScheduledFuture<?> pollTask;
     private @Nullable ScheduledFuture<?> stuckTask;
+    // The most recent MeterValues poll, so a new tick can be skipped while it is still outstanding.
+    // Touched only from the single-threaded poll task (scheduleWithFixedDelay never runs concurrently).
+    private @Nullable CompletableFuture<eu.chargetime.ocpp.model.Confirmation> pendingPoll;
 
     /**
      * The state one SetChargingProfile request stands for, captured when it is dispatched. The
@@ -537,29 +540,51 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (!isReadyToSend()) {
             return; // nothing to poll until the charger has booted
         }
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> previous = pendingPoll;
+        if (previous != null && !previous.isDone()) {
+            // The previous poll for this connector is still queued or in flight. Skip this tick rather
+            // than pile another TriggerMessage on the dispatcher: a charger that keeps its socket open
+            // but stops answering would otherwise let one-second polling grow an unbounded backlog
+            // behind the request timeout, delaying real commands.
+            logger.debug("MeterValues poll on connector {} skipped — the previous poll is still outstanding",
+                    connectorId);
+            return;
+        }
         TriggerMessageRequest request = new TriggerMessageRequest(TriggerMessageRequestType.MeterValues);
         request.setConnectorId(connectorId);
-        dispatch(request, "TriggerMessage[MeterValues]");
+        pendingPoll = dispatch(request, "TriggerMessage[MeterValues]").toCompletableFuture();
     }
 
     /**
-     * Ask the charger to (re)send this connector's StatusNotification now, so status and availability
-     * are fresh immediately after a (re)connect instead of waiting for the charger to volunteer one.
-     *
-     * <p>
-     * Uses {@link OcppChargePointHandler#sendNow}: this probe bypasses the readiness gate — it is how
-     * a charger that reopened its socket without re-booting is recovered, and such a charger would
-     * not otherwise become ready until its next heartbeat, minutes away — but it still goes through
-     * the outbound serializer, so it waits behind any request already in flight.
+     * Ask the charger to (re)send this connector's StatusNotification, so status and availability are
+     * fresh after a boot or a mid-session Thing add instead of waiting for the charger to volunteer one.
+     * Goes through the GATED path, so after a boot it is held behind the BootNotification response like
+     * any other request rather than racing it.
      */
     public void requestStatus() {
+        sendStatusRequest(false);
+    }
+
+    /**
+     * Status refresh that bypasses the readiness gate. Used only for the bare-WebSocket-reconnect
+     * fallback: a charger that reopened its socket without re-booting will not become ready until its
+     * next heartbeat (minutes away), so this recovers it. It still enters the outbound serializer and
+     * waits behind any request already in flight.
+     */
+    public void requestStatusNow() {
+        sendStatusRequest(true);
+    }
+
+    private void sendStatusRequest(boolean bypassReadiness) {
         OcppChargePointHandler cp = chargePoint;
         if (cp == null) {
             return;
         }
         TriggerMessageRequest request = new TriggerMessageRequest(TriggerMessageRequestType.StatusNotification);
         request.setConnectorId(connectorId);
-        cp.sendNow(request).whenComplete((confirmation, ex) -> {
+        CompletionStage<eu.chargetime.ocpp.model.Confirmation> result = bypassReadiness ? cp.sendNow(request)
+                : cp.send(request);
+        result.whenComplete((confirmation, ex) -> {
             if (ex != null) {
                 logger.debug("TriggerMessage[StatusNotification] on connector {} failed: {}", connectorId,
                         ex.toString());
