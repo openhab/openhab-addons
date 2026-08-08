@@ -87,6 +87,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  * Bridge handler for the UniFi Protect NVR.
@@ -124,6 +125,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     // de-duplicated; UPDATEs for an already seen event are expected to pass through.
     private final Map<String, Long> dispatchedEventKeys = new ConcurrentHashMap<>();
     private static final long EVENT_DEDUP_TTL_MS = 120_000;
+    // Last full payload per private event id, so incremental UPDATE deltas can be merged into it.
+    private final Map<String, TimestampedPayload> privateEventPayloads = new ConcurrentHashMap<>();
+    private static final long EVENT_PAYLOAD_TTL_MS = 600_000;
+
+    private record TimestampedPayload(JsonObject payload, long timestamp) {
+    }
 
     private static final class PendingUpdate {
         @Nullable
@@ -730,6 +737,48 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Keep the last full payload per event id and merge incremental UPDATE frames into it.
+     *
+     * Protect's private updates WebSocket sends an "add" with the complete event and subsequent
+     * "update" frames containing only the changed fields. Converting such a delta on its own fails,
+     * because the mapping needs the type and camera that only the "add" carried, which would drop
+     * the *_UPDATE dispatch and stop the contact latch from being refreshed.
+     *
+     * @return the full payload to work with, or {@code null} if there is nothing usable (an update
+     *         for an event whose add was never seen, e.g. one that started before openHAB did)
+     */
+    @Nullable
+    JsonObject trackPrivateEventPayload(@Nullable String action, @Nullable String id, @Nullable JsonObject data) {
+        if (id == null || data == null) {
+            return data;
+        }
+        long now = System.currentTimeMillis();
+        privateEventPayloads.values().removeIf(p -> now - p.timestamp > EVENT_PAYLOAD_TTL_MS);
+
+        if ("remove".equals(action)) {
+            privateEventPayloads.remove(id);
+            return data;
+        }
+        if ("add".equals(action)) {
+            privateEventPayloads.put(id, new TimestampedPayload(data.deepCopy(), now));
+            return data;
+        }
+        if (!"update".equals(action)) {
+            return data;
+        }
+        TimestampedPayload cached = privateEventPayloads.get(id);
+        if (cached == null) {
+            // No add seen for this id; the delta is all there is. It still reaches the
+            // thumbnail/heatmap path below when it happens to carry those fields.
+            return data;
+        }
+        JsonObject merged = cached.payload.deepCopy();
+        data.entrySet().forEach(e -> merged.add(e.getKey(), e.getValue()));
+        privateEventPayloads.put(id, new TimestampedPayload(merged.deepCopy(), now));
+        return merged;
+    }
+
+    /**
      * Convert a private-API {@link Event} into the matching public camera event so the
      * standard {@link #routePublicApiEvent} dispatch (channels + contacts) can be reused.
      * Returns {@code null} for events that are not camera motion / smart-detect zone, line or
@@ -875,7 +924,11 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     }
                     break;
                 case EVENT:
-                    Event event = gson.fromJson(update.data, Event.class);
+                    // /ws/updates sends UPDATEs as incremental deltas, so an update carrying only
+                    // e.g. "end" has no type or camera and cannot be converted on its own. Merge it
+                    // into the last full payload seen for this event id first.
+                    JsonObject eventPayload = trackPrivateEventPayload(update.action, update.id, update.data);
+                    Event event = eventPayload == null ? null : gson.fromJson(eventPayload, Event.class);
                     if (event != null) {
                         logger.debug("Private updates WS event {}, id={}, type={}", update.action, update.id,
                                 event.type);
