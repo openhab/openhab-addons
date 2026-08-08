@@ -502,7 +502,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
 
         // BRIGHTNESS:
-        if (!profile.inColor && model.isBrightnessDirty()) {
+        if (((!profile.inColor && (!profile.isGen2 || profile.isRGBW2)) || profile.isBulb)
+                && model.isBrightnessDirty()) {
             group = buildWhiteGroupName(profile, channelId);
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
         }
@@ -516,10 +517,19 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         // PRIMARY GROUP:
         if (model.isDirty()) {
             group = CHANNEL_GROUP_PRIMARY;
-            updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR, model.getColorState());
-            updated |= updateChannel(group, CHANNEL_PRIMARY_BRIGHTNESS, model.getBrightnessState());
-            updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP, model.getColorTemperaturePercentState());
-            updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
+            if (thing.getChannel(CHANNEL_PRIMARY_COLOR) != null) {
+                updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR, model.getColorState());
+            }
+            if (thing.getChannel(CHANNEL_PRIMARY_BRIGHTNESS) != null) {
+                updated |= updateChannel(group, CHANNEL_PRIMARY_BRIGHTNESS, model.getBrightnessState());
+            }
+            if (thing.getChannel(CHANNEL_PRIMARY_COLOR_TEMP) != null) {
+                updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP, model.getColorTemperaturePercentState());
+            }
+            if (thing.getChannel(CHANNEL_PRIMARY_COLOR_TEMP_ABS) != null) {
+                updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP_ABS,
+                        model.getColorTemperatureAbsoluteState());
+            }
         }
 
         return updated;
