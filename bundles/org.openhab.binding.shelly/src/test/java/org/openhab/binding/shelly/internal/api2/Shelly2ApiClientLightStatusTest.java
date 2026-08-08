@@ -14,7 +14,12 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
@@ -37,9 +43,11 @@ import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.State;
 
 /**
  * Covers {@link Shelly2ApiClient#fillDeviceStatus} for Plus RGBW PM: the light-mode ({@code light:N}) and
@@ -106,10 +114,13 @@ public class Shelly2ApiClientLightStatusTest {
         profile.inColor = false;
         ShellySettingsStatus status = profile.status;
         ArrayList<ShellySettingsLight> lights = new ArrayList<>();
+        ArrayList<ShellySettingsRgbwLight> settingsLights = new ArrayList<>();
         for (int i = 0; i < numChannels; i++) {
             lights.add(new ShellySettingsLight());
+            settingsLights.add(new ShellySettingsRgbwLight());
         }
         status.lights = lights;
+        profile.settings.lights = settingsLights;
         return profile;
     }
 
@@ -150,6 +161,54 @@ public class Shelly2ApiClientLightStatusTest {
         assertThat(lights.get(2).brightness, is(7));
         assertThat(lights.get(1).ison, is(nullValue()));
         assertThat(lights.get(3).ison, is(nullValue()));
+    }
+
+    @Test
+    void lightModeStatusPushesChannelUpdatesWhenRequested() throws ShellyApiException {
+        ShellyDeviceProfile profile = lightModeProfile(2);
+        Shelly2ApiClient client = newClient(profile);
+        when(thing.areChannelsCreated()).thenReturn(true);
+        when(thing.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.light0 = lightStatus(0, true, 55.0);
+
+        boolean updated = client.fillDeviceStatus(profile.status, result, true);
+
+        assertThat(updated, is(true));
+        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_LIGHT_POWER, OnOffType.ON);
+        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
+    }
+
+    @Test
+    void lightModeStatusSignalsWatchdogEvenWhenNoChannelChanged() throws ShellyApiException {
+        ShellyDeviceProfile profile = lightModeProfile(1);
+        Shelly2ApiClient client = newClient(profile);
+        when(thing.areChannelsCreated()).thenReturn(true);
+        when(thing.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(false);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.light0 = lightStatus(0, true, 55.0);
+
+        boolean updated = client.fillDeviceStatus(profile.status, result, true);
+
+        // updateLightModeStatus always signals "processed" for watchdog purposes, independent of
+        // whether the channel push itself (verified below) reports a changed value.
+        assertThat(updated, is(true));
+        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, OnOffType.ON);
+    }
+
+    @Test
+    void lightModeStatusDoesNotPushChannelsWhenChannelUpdateNotRequested() throws ShellyApiException {
+        ShellyDeviceProfile profile = lightModeProfile(1);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.light0 = lightStatus(0, true, 55.0);
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        verify(thing, never()).updateChannel(anyString(), anyString(), any(State.class));
     }
 
     @Test
