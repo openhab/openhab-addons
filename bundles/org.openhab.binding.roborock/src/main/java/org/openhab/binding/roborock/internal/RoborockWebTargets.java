@@ -348,8 +348,16 @@ public class RoborockWebTargets {
                     if (logger.isTraceEnabled()) {
                         logger.trace("JSON response: '{}'", jsonResponse);
                     }
-                    if (jsonResponse.contains("\"code\":2010") || jsonResponse.contains("invalid token")) {
-                        throw new RoborockException("invalid token");
+                    try {
+                        com.google.gson.JsonObject responseObj = com.google.gson.JsonParser.parseString(jsonResponse)
+                                .getAsJsonObject();
+                        if (responseObj.has("code") && responseObj.get("code").getAsInt() == 2010) {
+                            throw new RoborockException("invalid token");
+                        }
+                    } catch (RuntimeException e) {
+                        if (jsonResponse.toLowerCase(java.util.Locale.ROOT).contains("invalid token")) {
+                            throw new RoborockException("invalid token");
+                        }
                     }
                 }
                 if (status == HttpStatus.UNAUTHORIZED_401) {
