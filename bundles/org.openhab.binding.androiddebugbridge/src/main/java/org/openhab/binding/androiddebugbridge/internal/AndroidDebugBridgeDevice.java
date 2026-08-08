@@ -849,6 +849,25 @@ public class AndroidDebugBridgeDevice {
         return c;
     }
 
+    /**
+     * Reconnect for a retry, without disturbing anything else that is running.
+     *
+     * Taken under the command lock so no shell command can be in flight: a plain
+     * {@link #disconnect()} here would cancel whatever future another operation had just installed
+     * in {@code commandFuture}, making its {@code get()} throw {@link java.util.concurrent.CancellationException}
+     * in a caller that does not expect it. {@code disconnect()} keeps aborting running commands,
+     * which is what its other callers want.
+     */
+    public void reconnectForRetry() throws AndroidDebugBridgeDeviceException, InterruptedException {
+        commandLock.lock();
+        try {
+            disconnect();
+            connect();
+        } finally {
+            commandLock.unlock();
+        }
+    }
+
     public void disconnect() {
         var commandFuture = this.commandFuture;
         if (commandFuture != null && !commandFuture.isDone()) {

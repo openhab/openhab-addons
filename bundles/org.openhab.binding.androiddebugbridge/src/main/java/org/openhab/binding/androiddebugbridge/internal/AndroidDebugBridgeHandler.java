@@ -17,6 +17,7 @@ import static org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridge
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -112,8 +113,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 }
                 logger.debug("{} - shell stream rejected, reconnecting and retrying command: {}", currentConfig.ip,
                         e.getMessage());
-                adbConnection.disconnect();
-                adbConnection.connect();
+                adbConnection.reconnectForRetry();
                 handleCommandInternal(channelUID, command);
             }
         } catch (InterruptedException ignored) {
@@ -131,18 +131,27 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     /**
+     * Channels whose handling of {@link RefreshType} is a read. Elsewhere REFRESH is not special
+     * cased and ends up as a value, so {@code text} would type "REFRESH" and {@code record-input}
+     * would act -- neither may be repeated.
+     */
+    private static final Set<String> REFRESH_READS_STATE = Set.of(CURRENT_PACKAGE_CHANNEL, WAKE_LOCK_CHANNEL,
+            AWAKE_STATE_CHANNEL, SCREEN_STATE_CHANNEL, MEDIA_VOLUME_CHANNEL, MEDIA_CONTROL_CHANNEL,
+            START_INTENT_CHANNEL);
+
+    /**
      * Tells whether running {@code command} a second time cannot change what the device ends up
      * doing, which is what makes it safe to repeat after a rejected shell stream.
      *
-     * Only two cases qualify. A {@link RefreshType} merely reads state. And a wake-up key event is
-     * naturally idempotent, since waking an already awake device does nothing -- that is also the
-     * case this recovery exists for. Everything else may act twice: {@code text} would type the
-     * input again, {@code tap} would tap again, {@code media-control} would toggle back,
-     * {@code shutdown} would reboot, and so on.
+     * Two cases qualify. A {@link RefreshType} on a channel that actually treats it as a read, and
+     * the wake-up key event, which is naturally idempotent since waking an already awake device
+     * does nothing -- that is also the case this recovery exists for. Everything else may act
+     * twice: {@code text} would type the input again, {@code tap} would tap again,
+     * {@code media-control} would toggle back, {@code shutdown} would reboot, and so on.
      */
     private static boolean isSafeToRepeat(String channelId, Command command) {
         if (command instanceof RefreshType) {
-            return true;
+            return REFRESH_READS_STATE.contains(channelId);
         }
         if (!KEY_EVENT_CHANNEL.equals(channelId)) {
             return false;
