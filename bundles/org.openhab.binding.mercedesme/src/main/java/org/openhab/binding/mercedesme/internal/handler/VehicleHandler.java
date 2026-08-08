@@ -658,7 +658,8 @@ public class VehicleHandler extends BaseThingHandler {
 
     public void handleUpdate(VEPUpdate update) {
         boolean fullUpdate = update.getFullUpdate();
-        logger.trace("{} recived {} attributes - full update? {}", config.vin, update.getAttributesCount(), fullUpdate);
+        logger.trace("{} received {} attributes - full update? {}", config.vin, update.getAttributesCount(),
+                fullUpdate);
         updateStatus(ThingStatus.ONLINE);
         /**
          * Deliver proto update
