@@ -1147,6 +1147,10 @@ totalEnergy might reset on restart depending on device type and firmware version
 |          | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                      |
 | meter    | currentPower | Number  | yes       | Current power consumption in Watts (all channels)                       |
 
+`Note`:
+channel1..channel4 are deprecated, use light1..light4 instead (same channels, without the button trigger).
+Already-discovered Things get the light1..light4 channels created automatically; channel1..channel4 are kept for backward compatibility.
+
 Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
 The current firmware doesn't support the timestamp report for the meters.
 The binding emulates this by using the system time on every update.
@@ -1694,16 +1698,16 @@ In `rgbw` or `rgb` profile (color mode):
 
 In `light` profile (white mode), each of the 4 LED output channels is exposed as its own group:
 
-| Group    | Channel     | Type   | read-only | Description                                                             |
-| -------- | ----------- | ------ | --------- | ------------------------------------------------------------------------ |
-| channel1 | brightness  | Dimmer | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
-|          | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|          | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|          | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
-| channel2 |             |        |           | Same for LED channel 2                                                  |
-| channel3 |             |        |           | Same for LED channel 3                                                  |
-| channel4 |             |        |           | Same for LED channel 4                                                  |
-| meter    |             |        |           | Same as color mode, see above                                           |
+| Group  | Channel     | Type   | read-only | Description                                                             |
+| ------ | ----------- | ------ | --------- | ------------------------------------------------------------------------ |
+| light1 | brightness  | Dimmer | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
+|        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| light2 |             |        |           | Same for LED channel 2                                                  |
+| light3 |             |        |           | Same for LED channel 3                                                  |
+| light4 |             |        |           | Same for LED channel 4                                                  |
+| meter  |             |        |           | Same as color mode, see above                                           |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
