@@ -841,6 +841,11 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             return out;
         }
         for (SmartDetectObjectType type : types) {
+            if (type == null) {
+                // Gson yields null for a value this enum does not know, so a smart-detect type
+                // added by a later Protect release would otherwise take the whole event down here.
+                continue;
+            }
             try {
                 out.add(ObjectType.valueOf(type.name()));
             } catch (IllegalArgumentException ignored) {
