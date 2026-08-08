@@ -44,13 +44,37 @@ public record VehicleStatusResponse(VehicleStatus result) {
                 implements
                     CommonVehicleStatus {
 
-            public record TirePressureWarning(@Override @SerializedName("tirePressureWarningLampAll") int all,
-                    @Override @SerializedName("tirePressureWarningLampFrontLeft") int frontLeft,
-                    @Override @SerializedName("tirePressureWarningLampFrontRight") int frontRight,
-                    @Override @SerializedName("tirePressureWarningLampRearLeft") int rearLeft,
-                    @Override @SerializedName("tirePressureWarningLampRearRight") int rearRight)
+            public record TirePressureWarning(@Override @SerializedName("tirePressureWarningLampAll") int rawAll,
+                    @Override @SerializedName("tirePressureWarningLampFrontLeft") int rawFrontLeft,
+                    @Override @SerializedName("tirePressureWarningLampFrontRight") int rawFrontRight,
+                    @Override @SerializedName("tirePressureWarningLampRearLeft") int rawRearLeft,
+                    @Override @SerializedName("tirePressureWarningLampRearRight") int rawRearRight)
                     implements
                         ITirePressureWarning {
+                @Override
+                public boolean all() {
+                    return rawAll > 0;
+                }
+
+                @Override
+                public boolean frontLeft() {
+                    return rawFrontLeft > 0;
+                }
+
+                @Override
+                public boolean frontRight() {
+                    return rawFrontRight > 0;
+                }
+
+                @Override
+                public boolean rearLeft() {
+                    return rawRearLeft > 0;
+                }
+
+                @Override
+                public boolean rearRight() {
+                    return rawRearRight > 0;
+                }
             }
         }
     }
