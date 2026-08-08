@@ -144,7 +144,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     /**
      * Clears expired or invalid session tokens from persistent storage and resets internal state.
      */
-    public void clearSessionToken() {
+    private void clearSessionToken() {
         sessionStorage.remove("token");
         sessionStorage.remove("rriot");
         token = "";

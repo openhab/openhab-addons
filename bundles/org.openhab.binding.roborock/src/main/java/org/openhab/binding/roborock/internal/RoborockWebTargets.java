@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Handles performing the actual HTTP requests for communicating with the Roborock API.
@@ -349,13 +352,12 @@ public class RoborockWebTargets {
                         logger.trace("JSON response: '{}'", jsonResponse);
                     }
                     try {
-                        com.google.gson.JsonObject responseObj = com.google.gson.JsonParser.parseString(jsonResponse)
-                                .getAsJsonObject();
+                        JsonObject responseObj = JsonParser.parseString(jsonResponse).getAsJsonObject();
                         if (responseObj.has("code") && responseObj.get("code").getAsInt() == 2010) {
                             throw new RoborockException("invalid token");
                         }
                     } catch (RuntimeException e) {
-                        if (jsonResponse.toLowerCase(java.util.Locale.ROOT).contains("invalid token")) {
+                        if (jsonResponse.toLowerCase(Locale.ROOT).contains("invalid token")) {
                             throw new RoborockException("invalid token");
                         }
                     }
