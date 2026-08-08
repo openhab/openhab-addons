@@ -20,12 +20,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * this class is used to map the live data json response
+ * this class is used to map the live data json response via public API
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class LiveDataResponse {
+public class LiveDataResponsePublicApi {
     public static final String GRID = "GRID";
     public static final String LOAD = "LOAD";
     public static final String PV = "PV";
