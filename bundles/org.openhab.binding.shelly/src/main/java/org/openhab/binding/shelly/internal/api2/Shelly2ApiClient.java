@@ -1043,7 +1043,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         Integer csId = cs.id;
         if (csId == null) {
             csId = id;
-            cs.id = csId;
         }
         int rIdx = getRollerIdx(getProfile(), csId);
         if (status.rollers == null || rIdx < 0 || rIdx >= status.rollers.size()) {
