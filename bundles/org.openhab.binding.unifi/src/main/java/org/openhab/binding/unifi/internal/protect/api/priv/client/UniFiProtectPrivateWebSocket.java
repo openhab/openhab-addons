@@ -61,6 +61,7 @@ public class UniFiProtectPrivateWebSocket {
     private final String wsUrl;
     private final @Nullable String authCookie;
     private final Consumer<WebSocketUpdate> updateHandler;
+    private final Runnable onReconnected;
     private final UniFiProtectPrivateClient client;
     private final WebSocketClient wsClient;
 
@@ -86,10 +87,12 @@ public class UniFiProtectPrivateWebSocket {
      * @param httpClient HTTP client to use (shared from main client)
      */
     public UniFiProtectPrivateWebSocket(String wsUrl, @Nullable String authCookie,
-            Consumer<WebSocketUpdate> updateHandler, UniFiProtectPrivateClient client, HttpClient httpClient) {
+            Consumer<WebSocketUpdate> updateHandler, Runnable onReconnected, UniFiProtectPrivateClient client,
+            HttpClient httpClient) {
         this.wsUrl = wsUrl;
         this.authCookie = authCookie;
         this.updateHandler = updateHandler;
+        this.onReconnected = onReconnected;
         this.client = client;
 
         this.wsClient = new WebSocketClient(httpClient);
@@ -153,12 +156,15 @@ public class UniFiProtectPrivateWebSocket {
     }
 
     /**
-     * Refresh the bootstrap after an established session was re-established.
+     * Resynchronise after an established session was re-established.
      *
      * Reconnecting only restores the stream of new updates: Protect does not replay what happened
      * while the socket was down, and {@code /ws/updates} is opened without the cached
-     * {@code lastUpdateId}. Without this, anything that changed during the outage stays stale until
-     * the next periodic bootstrap refresh, which can be up to 15 minutes later.
+     * {@code lastUpdateId}. Refreshing the bootstrap alone is not enough either, because that only
+     * replaces the client's cached copy — the Thing channels are written from it by the NVR
+     * handler's device sync, which otherwise runs only when the public event socket reopens. A
+     * private-only stall leaves that socket connected, so nothing would push the recovered state
+     * out. Hence: refresh the bootstrap, then notify the handler to sync devices from it.
      */
     private void resyncIfReconnected() {
         if (!resyncAfterConnect) {
@@ -169,8 +175,13 @@ public class UniFiProtectPrivateWebSocket {
         logger.debug("Refreshing bootstrap after WebSocket reconnect to pick up missed updates");
         client.refreshBootstrap().whenComplete((bootstrap, ex) -> {
             if (ex != null) {
-                // Not fatal: the stream is live again and the periodic refresh remains a backstop.
                 logger.debug("Bootstrap refresh after reconnect failed", ex);
+                return;
+            }
+            try {
+                onReconnected.run();
+            } catch (RuntimeException e) {
+                logger.debug("Device sync after reconnect failed", e);
             }
         });
     }
