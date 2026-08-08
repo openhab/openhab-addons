@@ -130,7 +130,7 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
         stopNode();
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal")
     private void startNode() {
         try {
             Storage<String> certStorage = storageService.getStorage(EEBusCertificateStorage.class.getName(),
