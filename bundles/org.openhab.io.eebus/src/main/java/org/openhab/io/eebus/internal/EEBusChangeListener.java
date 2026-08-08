@@ -91,7 +91,7 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
 
             @Override
             public void updated(Metadata oldMetadata, Metadata newMetadata) {
-                onMetadataChanged(newMetadata);
+                onMetadataUpdated(newMetadata);
             }
         };
 
@@ -133,9 +133,11 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
 
     @Override
     public void allItemsChanged(java.util.Collection<String> oldItemNames) {
-        // A full registry reload - re-scan for tagged items still present.
-        lpcItemName = null;
-        lppItemName = null;
+        // A full registry reload - re-scan for tagged items still present. Deliberately NOT
+        // resetting lpcItemName/lppItemName first: jeebus.spine's Entity#addUseCase has no runtime
+        // counterpart for removing a use case (see class javadoc), so if the same item is still
+        // tagged after the reload, bind() below must see it as already-bound and no-op rather than
+        // registering a second LpcCs/LppCs for a use case the entity already has attached.
         for (Item item : itemRegistry.getItems()) {
             Metadata metadata = metadataRegistry.get(new MetadataKey(METADATA_NAMESPACE, item.getUID()));
             if (metadata != null) {
@@ -148,6 +150,23 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
         if (METADATA_NAMESPACE.equalsIgnoreCase(metadata.getUID().getNamespace())) {
             bind(metadata);
         }
+    }
+
+    private void onMetadataUpdated(Metadata metadata) {
+        if (!METADATA_NAMESPACE.equalsIgnoreCase(metadata.getUID().getNamespace())) {
+            return;
+        }
+        String itemName = metadata.getUID().getItemName();
+        if (itemName.equals(lpcItemName) || itemName.equals(lppItemName)) {
+            // bind() would silently no-op here (existing.equals(itemName) branch) since jeebus.spine
+            // has no API to reconfigure an already-registered use case - warn instead of pretending
+            // the new nominalMax/failsafeLimit/failsafeDuration took effect.
+            logger.warn(
+                    "EEBus: metadata configuration for item {} changed, but the use case is already bound - restart this add-on to apply the new nominalMax/failsafeLimit/failsafeDuration",
+                    itemName);
+            return;
+        }
+        bind(metadata);
     }
 
     private void onMetadataRemoved(Metadata metadata) {
