@@ -220,6 +220,18 @@ As a final step, the folders `/openhab/conf/automation/python/libs/` and `/openh
 
 ![Pythonscripting autocompletion](doc/ide_autocompletion.png)
 
+#### Autocompletion on dynamic results with custom type hints
+
+Typings are not working on methods with an dynamic result types like `Registry.getItemState`. To force a specific expected result type, you can annotate the variable like below.
+
+```python
+from org.openhab.core.library.types import DecimalType
+
+item: DecimalType = Registry.getItemState("TestNumberItem")
+```
+
+![Pythonscripting autocompletion](doc/ide_autocompletion_custom.png)
+
 ## Typical log errors
 
 ### Graal python language not initialized. ...
@@ -279,4 +291,10 @@ You should also check your logs for a message related to the helper lib deployme
 
 ## Limitations
 
-- GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. <https://github.com/oracle/graalpython/issues/367>
+### Avoid using datetime.strptime
+
+You should avoid using `datetime.strptime` because there is a bug in GraalPy associated with it. Once this function is used, the global system time within the JVM is permanently altered.
+
+### Constructors of Java objects
+
+GraalPy can't handle arguments in constructors of Java objects. Means you can't instantiate a Java object in Python with a parameter. <https://github.com/oracle/graalpython/issues/367>

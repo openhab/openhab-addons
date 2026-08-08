@@ -112,7 +112,7 @@ public class ClassConverter {
         // Class imports
         if (!imports.isEmpty()) {
             classBody.insert(0, "\n\n");
-            classBody.insert(0, buildClassImports());
+            classBody.insert(0, buildClassImports(imports.values()));
         }
 
         return classBody.toString();
@@ -260,28 +260,6 @@ public class ClassConverter {
         }
         builder.append("\n");
 
-        return builder.toString();
-    }
-
-    private Object buildClassImports() {
-        StringBuilder builder = new StringBuilder();
-        HashSet<String> hashSet = new HashSet<>(imports.values());
-        ArrayList<String> sortedImports = new ArrayList<>(hashSet);
-        Collections.sort(sortedImports, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                if (o1.length() > o2.length()) {
-                    return 1;
-                }
-                if (o1.length() < o2.length()) {
-                    return -1;
-                }
-                return o1.compareTo(o2);
-            }
-        });
-        for (String importLine : sortedImports) {
-            builder.append(importLine + "\n");
-        }
         return builder.toString();
     }
 
@@ -509,8 +487,7 @@ public class ClassConverter {
             return null;
         }
 
-        String classUrl = baseUrl
-                + container.getRelatedClass().getName().toLowerCase().replace(".", "/").replace("$", ".");
+        String classUrl = buildDocumentationLink(container.getRelatedClass().getName());
 
         StringBuilder builder = new StringBuilder();
         builder.append("    \"\"\"\n");
@@ -526,8 +503,7 @@ public class ClassConverter {
             return null;
         }
 
-        String classUrl = baseUrl
-                + container.getRelatedClass().getName().toLowerCase().replace(".", "/").replace("$", ".");
+        String classUrl = buildDocumentationLink(container.getRelatedClass().getName());
 
         StringBuilder builder = new StringBuilder();
         builder.append("        \"\"\"\n");
@@ -545,6 +521,32 @@ public class ClassConverter {
 
         builder.append("\n");
         builder.append("        \"\"\"\n");
+        return builder.toString();
+    }
+
+    public static String buildDocumentationLink(String classname) {
+        return baseUrl + classname.toLowerCase().replace(".", "/").replace("$", ".");
+    }
+
+    public static String buildClassImports(Collection<String> imports) {
+        StringBuilder builder = new StringBuilder();
+        HashSet<String> hashSet = new HashSet<>(imports);
+        ArrayList<String> sortedImports = new ArrayList<>(hashSet);
+        Collections.sort(sortedImports, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                if (o1.length() > o2.length()) {
+                    return 1;
+                }
+                if (o1.length() < o2.length()) {
+                    return -1;
+                }
+                return o1.compareTo(o2);
+            }
+        });
+        for (String importLine : sortedImports) {
+            builder.append(importLine + "\n");
+        }
         return builder.toString();
     }
 

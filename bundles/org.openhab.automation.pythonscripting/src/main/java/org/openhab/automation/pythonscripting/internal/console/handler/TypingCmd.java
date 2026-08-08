@@ -19,19 +19,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.script.ScriptEngine;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.automation.pythonscripting.internal.PythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.PythonScriptEngineConfiguration;
+import org.openhab.automation.pythonscripting.internal.PythonScriptEngineFactory;
 import org.openhab.automation.pythonscripting.internal.console.handler.typing.ClassCollector;
 import org.openhab.automation.pythonscripting.internal.console.handler.typing.ClassCollector.ClassContainer;
 import org.openhab.automation.pythonscripting.internal.console.handler.typing.ClassConverter;
+import org.openhab.core.automation.module.script.ScriptEngineContainer;
+import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.io.console.Console;
 
 /**
@@ -42,11 +51,13 @@ import org.openhab.core.io.console.Console;
 @NonNullByDefault
 public class TypingCmd {
     private final Logger logger;
+    private final ScriptEngineManager scriptEngineManager;
 
     private static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
 
-    public TypingCmd(Logger logger) {
+    public TypingCmd(Logger logger, ScriptEngineManager scriptEngineManager) {
         this.logger = logger;
+        this.scriptEngineManager = scriptEngineManager;
     }
 
     public void build() throws Exception {
@@ -71,8 +82,10 @@ public class TypingCmd {
             dumpClassContentToFile(classBody, container, outputPath, fileContainerMap);
         }
 
-        imports = imports.stream().filter(i -> !i.startsWith("org.openhab")).collect(Collectors.toSet());
+        Collection<String> _imports = dumpScope(outputPath);
+        imports.addAll(_imports);
 
+        imports = imports.stream().filter(i -> !i.startsWith("org.openhab")).collect(Collectors.toSet());
         Map<String, ClassContainer> reflectionClassMap = collector.collectReflectionClasses(imports);
         for (ClassContainer container : reflectionClassMap.values()) {
             ClassConverter converter = new ClassConverter(container);
@@ -86,6 +99,75 @@ public class TypingCmd {
         logger.info(bundleClassMap.size() + " bundle and " + reflectionClassMap.size() + " java classes processed");
         logger.info("Total of " + (bundleClassMap.size() + reflectionClassMap.size()) + " type hint files created in '"
                 + outputPath + "'");
+    }
+
+    private Collection<String> dumpScope(Path outputPath) throws IOException {
+        Map<String, String> imports = new HashMap<String, String>();
+        String identifier = "pythonscripting-cli-" + UUID.randomUUID().toString();
+        ScriptEngineContainer container = scriptEngineManager.createScriptEngine(PythonScriptEngineFactory.SCRIPT_TYPE,
+                identifier);
+        if (container != null) {
+            StringBuilder scopeBody = new StringBuilder();
+            ScriptEngine engine = container.getScriptEngine();
+
+            Map<String, Object> scope = ((PythonScriptEngine) engine).getScope();
+            for (Entry<String, Object> entry : scope.entrySet()) {
+                Object value = entry.getValue();
+                String packageName;
+                String pythonClassName;
+                String pythonModuleName;
+                String definition;
+
+                if (value instanceof Class) {
+                    packageName = ((Class) value).getName();
+                    pythonClassName = ClassContainer.parsePythonClassName(packageName);
+                    pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
+                    definition = entry.getKey() + ": Type = _" + pythonClassName;
+                } else {
+                    Class<? extends Object> cls = value.getClass();
+                    packageName = value.getClass().getName();
+
+                    if (packageName
+                            .equals("org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker")) {
+                        packageName = "org.openhab.core.automation.module.script.LifecycleScriptExtensionProvider_LifecycleTracker";
+                    } else if (packageName.endsWith("Impl") || packageName.endsWith("Delegate")) {
+                        cls = value.getClass().getInterfaces()[0];
+                        packageName = cls.getName();
+                    }
+
+                    pythonClassName = ClassContainer.parsePythonClassName(packageName);
+                    pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
+
+                    if (cls.isEnum()) {
+                        definition = entry.getKey() + ": _" + pythonClassName + " = " + "_" + pythonClassName + "."
+                                + entry.getKey();
+                    } else {
+                        definition = entry.getKey() + ": _" + pythonClassName;
+                    }
+                }
+
+                imports.put(packageName,
+                        "from " + pythonModuleName + " import " + pythonClassName + " as _" + pythonClassName);
+
+                String classUrl = ClassConverter.buildDocumentationLink(packageName);
+
+                scopeBody.append(definition);
+                scopeBody.append("\n");
+                scopeBody.append("\"\"\"\n");
+                scopeBody.append("Java class: ").append(packageName).append("\n\n");
+                scopeBody.append("Java doc: ").append(classUrl).append("\n");
+                scopeBody.append("\"\"\"\n\n");
+            }
+
+            scopeBody.insert(0, "\n\n");
+            scopeBody.insert(0, "from typing import Type");
+            scopeBody.insert(0, ClassConverter.buildClassImports(imports.values()));
+
+            dumpContentToFile(scopeBody.toString(), outputPath.resolve("scope.py"));
+        }
+        scriptEngineManager.removeEngine(identifier);
+
+        return imports.keySet();
     }
 
     public void dumpInit(String path, Map<String, ClassContainer> fileContainerMap) throws IOException {
@@ -105,7 +187,7 @@ public class TypingCmd {
                 StringBuilder initBody = new StringBuilder();
                 // List<String> modules = new ArrayList<String>();
                 for (File file : files) {
-                    if (file.toString().endsWith("__init__.py")) {
+                    if (file.toString().endsWith("__init__.py") || file.toString().endsWith("scope.py")) {
                         continue;
                     }
                     ClassContainer container = fileContainerMap.get(file.toString());
