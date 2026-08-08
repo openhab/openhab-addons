@@ -114,17 +114,36 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
+                Zone state = zoneState;
+                // vol_f only exists from AmpliPi 0.1.8 on. A device whose status does not report it
+                // cannot understand it when PATCHing either, so writes have to use the dB field too.
+                boolean supportsVolumeFraction = state != null && state.getVolF() != null;
+                int volumeDelta = getVolumeDelta(thing);
                 if (command instanceof PercentType percentCommand) {
-                    update.setVolF(AmpliPiUtils.percentTypeToVolumeFraction(percentCommand));
+                    if (supportsVolumeFraction) {
+                        update.setVolF(AmpliPiUtils.percentTypeToVolumeFraction(percentCommand));
+                    } else {
+                        update.setVol(AmpliPiUtils.percentTypeToVolume(percentCommand));
+                    }
                 } else if (command instanceof IncreaseDecreaseType) {
-                    Zone state = zoneState;
-                    if (state != null && state.getVolF() != null) {
-                        double step = getVolumeDelta(thing) / 100.0;
-                        double current = state.getVolF();
-                        double newVolF = IncreaseDecreaseType.INCREASE.equals(command) ? Math.min(current + step, 1.0)
-                                : Math.max(current - step, 0.0);
-                        state.setVolF(newVolF);
-                        update.setVolF(newVolF);
+                    if (supportsVolumeFraction) {
+                        // Send the step itself and let AmpliPi apply it to its own current volume.
+                        // The cached zone state can be stale when the volume was changed through the
+                        // AmpliPi UI or another client since the last poll, and this also leaves the
+                        // bounds and overflow handling to the device.
+                        double step = volumeDelta / 100.0;
+                        update.setVolDeltaF(IncreaseDecreaseType.INCREASE.equals(command) ? step : -step);
+                    } else if (state != null && state.getVol() != null) {
+                        // Older firmware: keep adjusting the dB value against the cached state. The
+                        // configured step is a percentage, so scale it over the dB range.
+                        int stepDb = Math.max(1, (int) Math.round(
+                                volumeDelta / 100.0 * (AmpliPiUtils.MAX_VOLUME_DB - AmpliPiUtils.MIN_VOLUME_DB)));
+                        int current = state.getVol();
+                        int newVol = IncreaseDecreaseType.INCREASE.equals(command)
+                                ? Math.min(current + stepDb, AmpliPiUtils.MAX_VOLUME_DB)
+                                : Math.max(current - stepDb, AmpliPiUtils.MIN_VOLUME_DB);
+                        state.setVol(newVol);
+                        update.setVol(newVol);
                     }
                 }
                 break;
