@@ -15,6 +15,7 @@ package org.openhab.binding.gemini.internal.hli;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.BINDING_ID;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TOOL_LOOP_LIMIT;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -210,15 +211,9 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
             systemMessage = systemMessage.trim() + "\n\n" + toolGuidance;
         }
 
-        int loopCount = 0;
-        final int maxLoops = 10;
+        int toolLoopCount = 0;
+        final int maxLoops = config.toolLoopLimit <= 0 ? DEFAULT_TOOL_LOOP_LIMIT : config.toolLoopLimit;
         while (true) {
-            if (loopCount >= maxLoops) {
-                logger.warn("Cannot interpret: Tool execution loop limit exceeded (max {} iterations)", maxLoops);
-                throw new InterpretationException(
-                        getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
-            }
-            loopCount++;
             String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
             try {
                 GeminiResponse geminiResponse = apiClient.sendPrompt(model, conversation.getMessages(), tools,
@@ -243,45 +238,55 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
                             getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                 }
 
-                boolean hasToolCall = false;
-                StringBuilder textBuilder = new StringBuilder();
+                boolean hasToolCall = parts.stream().anyMatch(p -> p.functionCall() != null);
 
-                for (GeminiPart part : parts) {
-                    GeminiFunctionCall fc = part.functionCall();
-                    if (fc != null) {
-                        hasToolCall = true;
-                        String toolName = fc.name();
-                        Map<String, Object> args = fc.args();
-
-                        GeminiLLMToolCall llmToolCall = new GeminiLLMToolCall(toolName != null ? toolName : "",
-                                args != null ? args : new HashMap<>(), fc.id(), part.thoughtSignature());
-                        try {
-                            conversation.addMessage(ConversationRole.TOOL_CALL, llmToolCall.toJson());
-                        } catch (ConversationException e) {
-                            logger.warn("Cannot interpret: Failed to add TOOL_CALL to conversation", e);
-                            var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
-                                    DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
-                            ex.initCause(e);
-                            throw ex;
-                        }
-
-                        String result = executeTool(tools, toolName, args, locale);
-
-                        try {
-                            conversation.addMessage(ConversationRole.TOOL_RETURN, result);
-                        } catch (ConversationException e) {
-                            logger.warn("Cannot interpret: Failed to add TOOL_RETURN to conversation", e);
-                            var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
-                                    DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
-                            ex.initCause(e);
-                            throw ex;
-                        }
-                    } else if (part.text() != null) {
-                        textBuilder.append(part.text());
+                if (hasToolCall) {
+                    if (toolLoopCount >= maxLoops) {
+                        logger.warn("Cannot interpret: Tool execution loop limit exceeded (max {} iterations)",
+                                maxLoops);
+                        throw new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                     }
-                }
+                    toolLoopCount++;
 
-                if (!hasToolCall) {
+                    for (GeminiPart part : parts) {
+                        GeminiFunctionCall fc = part.functionCall();
+                        if (fc != null) {
+                            String toolName = fc.name();
+                            Map<String, Object> args = fc.args();
+
+                            GeminiLLMToolCall llmToolCall = new GeminiLLMToolCall(toolName != null ? toolName : "",
+                                    args != null ? args : new HashMap<>(), fc.id(), part.thoughtSignature());
+                            try {
+                                conversation.addMessage(ConversationRole.TOOL_CALL, llmToolCall.toJson());
+                            } catch (ConversationException e) {
+                                logger.warn("Cannot interpret: Failed to add TOOL_CALL to conversation", e);
+                                var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                        DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                                ex.initCause(e);
+                                throw ex;
+                            }
+
+                            String result = executeTool(tools, toolName, args, locale);
+
+                            try {
+                                conversation.addMessage(ConversationRole.TOOL_RETURN, result);
+                            } catch (ConversationException e) {
+                                logger.warn("Cannot interpret: Failed to add TOOL_RETURN to conversation", e);
+                                var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                        DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                                ex.initCause(e);
+                                throw ex;
+                            }
+                        }
+                    }
+                } else {
+                    StringBuilder textBuilder = new StringBuilder();
+                    for (GeminiPart part : parts) {
+                        if (part.text() != null) {
+                            textBuilder.append(part.text());
+                        }
+                    }
                     String finalResponse = textBuilder.toString();
                     try {
                         conversation.addMessage(ConversationRole.OPENHAB, finalResponse);
