@@ -12,12 +12,14 @@
 			pom.xml's comment on ${bnd.importpackage}. Everything below is what actually stays an
 			external OSGi Import-Package requirement after that embedding. -->
 
-		<!-- SHIP transitive deps: Gson (message framing), jmDNS (pairing discovery), the
-			remaining BouncyCastle ASN.1 packages not covered by the embedded bcprov/bcpkix
-			classes (from the bcutil-jdk18on transitive dep), and JSR-305 annotations. -->
+		<!-- SHIP transitive deps: Gson (message framing), jmDNS (pairing discovery), and JSR-305
+			annotations. bcutil-jdk18on is declared as a direct pom.xml dependency alongside
+			bcprov/bcpkix (all three embedded, matching org.openhab.io.homekit) rather than left
+			here as an external bundle - it needs org.bouncycastle.asn1 packages that only exist
+			as embedded classes once bcprov/bcpkix stop being separate OSGi bundles, so leaving it
+			external here left that Import-Package unsatisfiable. -->
 		<bundle dependency="true">mvn:com.google.code.gson/gson/2.14.0</bundle>
 		<bundle dependency="true">mvn:org.jmdns/jmdns/3.6.3</bundle>
-		<bundle dependency="true">mvn:org.bouncycastle/bcutil-jdk18on/${bouncycastle.version}</bundle>
 		<bundle dependency="true">mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
 
 		<!-- SHIP's embedded code still needs real Netty 4.2.x classes at runtime, even though
@@ -40,7 +42,7 @@
 			analysis (JAXB loads them via SPI), so they don't show up in the generated
 			Import-Package, but are still needed at runtime - kept here defensively. -->
 		<bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
-		<bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+		<bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.annotations.version}</bundle>
 		<bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
 		<bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/${jackson.version}</bundle>
 		<bundle dependency="true">mvn:jakarta.xml.bind/jakarta.xml.bind-api/4.0.5</bundle>

@@ -76,6 +76,16 @@
       <artifactId>bcpkix-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
     </dependency>
+    <!-- bcpkix references org.bouncycastle.asn1.cmc classes that live in bcutil, not bcprov/bcpkix
+         themselves - only reachable transitively before, which left it as an external
+         Import-Package requirement with nothing to satisfy it once bcprov/bcpkix were embedded
+         (see org.openhab.io.homekit's pom.xml, which embeds all three the same way). Declaring it
+         directly here embeds it too instead of leaving it as a dangling external feature.xml entry. -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcutil-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
   </dependencies>
 
 </project>
