@@ -229,6 +229,34 @@ class OcppConnectorReadinessTest {
         verify(parent, org.mockito.Mockito.after(300).never()).send(argThat(r -> r instanceof UnlockConnectorRequest));
     }
 
+    @Test
+    void meterValuesPollingCoalescesWhileAPreviousPollIsOutstanding() throws InterruptedException {
+        // 1-second polling against a charger that keeps its socket open but stops answering: while a
+        // poll is still outstanding, subsequent ticks must be skipped so the queue cannot grow an
+        // unbounded backlog behind the request timeout.
+        ready.set(true);
+        java.util.concurrent.atomic.AtomicInteger polls = new java.util.concurrent.atomic.AtomicInteger();
+        when(parent.send(argThat(OcppConnectorReadinessTest::isMeterValuesTrigger))).thenAnswer(inv -> {
+            polls.incrementAndGet();
+            return new CompletableFuture<>(); // never completes — the charger is not answering
+        });
+        OcppConnectorHandler polling = newConnector(Map.of("connectorId", 1, "meterValuesPollSeconds", 1));
+
+        Thread.sleep(3200); // three 1-second poll ticks elapse
+
+        try {
+            org.junit.jupiter.api.Assertions.assertEquals(1, polls.get(),
+                    "only the first poll should go out while it is still outstanding");
+        } finally {
+            polling.dispose();
+        }
+    }
+
+    private static boolean isMeterValuesTrigger(Request request) {
+        return request instanceof eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest trigger && trigger
+                .getRequestedMessage() == eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType.MeterValues;
+    }
+
     private OcppConnectorHandler newConnector(Map<String, Object> config) {
         Thing connThing = mock(Thing.class);
         when(connThing.getUID()).thenReturn(CONN_UID);

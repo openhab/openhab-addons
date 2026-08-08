@@ -354,6 +354,19 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         OcppChargePointHandler handler = resolve(session);
         if (handler != null) {
             handler.onStopTransaction(request);
+            return;
+        }
+        // No charge-point handler yet (the charger is still in the discovery inbox), but the start was
+        // persisted here at accept time — so the stop must clear it here too. Otherwise a transaction
+        // that started and stopped before its Thing was added stays open in the store, and a later
+        // restart would recover it as active (routable to a RemoteStop or a TxProfile). Guard with the
+        // session's charge point identity, exactly as the handler path does, so a charger cannot clear
+        // a transaction that belongs to a different one.
+        String chargePointId = sessionChargePoints.get(session);
+        Integer transactionId = request.getTransactionId();
+        if (chargePointId != null && transactionId != null
+                && transactionConnector(transactionId, chargePointId) != null) {
+            forgetTransaction(transactionId);
         }
     }
 

@@ -45,6 +45,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 import eu.chargetime.ocpp.model.core.StartTransactionRequest;
+import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 
 /**
  * Tests session routing in {@link OcppServerBridgeHandler}, in particular that a charger reconnecting
@@ -164,6 +165,27 @@ class OcppServerBridgeHandlerTest {
 
         assertEquals(Integer.valueOf(77), handler.openTransactionFor("charx", 2),
                 "the transaction must be recoverable even though no handler existed at accept time");
+    }
+
+    @Test
+    void aTransactionStoppedBeforeItsHandlerExistsIsClearedFromTheStore() {
+        // Same passive-discovery race, but the charger STOPS the transaction while still in the inbox.
+        // Since the start was persisted at the bridge, the stop must clear it at the bridge too —
+        // otherwise the store keeps an already-finished transaction that a later restart recovers as
+        // active (routable to a RemoteStop or a TxProfile).
+        handler.initialize();
+        verify(callback, timeout(2000)).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+
+        UUID session = UUID.randomUUID();
+        handler.onSessionOpened(session, "charx", null); // mapped; no handler registered
+        handler.onStartTransaction(session, new StartTransactionRequest(2, "tag", 0, ZonedDateTime.now()), 77);
+        assertEquals(Integer.valueOf(77), handler.openTransactionFor("charx", 2));
+
+        handler.onStopTransaction(session, new StopTransactionRequest(0, ZonedDateTime.now(), 77));
+
+        org.junit.jupiter.api.Assertions.assertNull(handler.openTransactionFor("charx", 2),
+                "a stop before the handler exists must clear the persisted transaction");
     }
 
     @Test

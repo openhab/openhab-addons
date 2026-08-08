@@ -104,6 +104,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     // direction) marks it ready via touch().
     private static final long BOOT_READY_GRACE_MILLIS = 1000;
     private static final int PENDING_SEND_LIMIT = 32;
+    // Backstop bound on the operational (post-readiness) dispatcher queue, mirroring PENDING_SEND_LIMIT
+    // on the readiness queue. Generous: with per-connector poll coalescing nothing reaches it in normal
+    // use — it only caps a pathological producer.
+    private static final int OUTBOUND_LIMIT = 64;
 
     private final Logger logger = LoggerFactory.getLogger(OcppChargePointHandler.class);
     private final Map<Integer, OcppConnectorHandler> connectors = new ConcurrentHashMap<>();
@@ -356,16 +360,33 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     // --- single-CALL-at-a-time outbound dispatcher ---
 
     private void enqueue(PendingSend pending) {
-        long epoch;
+        boolean full = false;
+        boolean startDrain = false;
+        long epoch = 0;
         synchronized (dispatchLock) {
-            outbound.add(pending);
-            if (dispatching) {
-                return; // a drain is already running; it will pick this up
+            if (outbound.size() >= OUTBOUND_LIMIT) {
+                full = true;
+            } else {
+                outbound.add(pending);
+                if (!dispatching) {
+                    dispatching = true;
+                    epoch = dispatchEpoch; // this pass owns the chain until the epoch moves on
+                    startDrain = true;
+                }
             }
-            dispatching = true;
-            epoch = dispatchEpoch; // this pass owns the chain until the epoch moves on
         }
-        drainOutbound(epoch);
+        if (full) {
+            // Backstop against a runaway producer — e.g. periodic polling of a charger that keeps its
+            // socket open but stops answering, so each request only clears on its timeout. That is
+            // coalesced at the connector, but the operational queue is bounded here too: fail the newest
+            // request rather than let the queue (and the memory behind it) grow without limit.
+            pending.future().completeExceptionally(
+                    new IllegalStateException("Charger " + chargePointId + " outbound queue is full"));
+            return;
+        }
+        if (startDrain) {
+            drainOutbound(epoch);
+        }
     }
 
     private void drainOutbound(long epoch) {
@@ -539,14 +560,28 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         cancel(statusFallbackTask);
         statusFallbackTask = scheduler.schedule(() -> {
             if (!bootAccepted) {
-                requestConnectorStatuses();
+                // Bare-socket reopen with no fresh BootNotification: the charger will not become ready
+                // on its own, so this fallback bypasses the readiness gate to recover it.
+                requestConnectorStatusesNow();
             }
         }, STATUS_FALLBACK_SECONDS, TimeUnit.SECONDS);
     }
 
+    /**
+     * Gated status refresh, used after a boot (and its configuration burst): the request is held behind
+     * the BootNotification response rather than racing it. In the default configuration with no boot
+     * steps this is what keeps the post-boot refresh from going out before the boot is accepted.
+     */
     private void requestConnectorStatuses() {
         for (OcppConnectorHandler connector : connectors.values()) {
             connector.requestStatus();
+        }
+    }
+
+    /** Ungated status refresh — only the bare-reconnect fallback, where the charger will not boot. */
+    private void requestConnectorStatusesNow() {
+        for (OcppConnectorHandler connector : connectors.values()) {
+            connector.requestStatusNow();
         }
     }
 
