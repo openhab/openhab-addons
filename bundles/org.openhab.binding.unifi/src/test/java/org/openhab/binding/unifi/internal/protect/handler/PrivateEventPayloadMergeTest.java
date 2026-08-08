@@ -15,6 +15,14 @@ package org.openhab.binding.unifi.internal.protect.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -116,6 +124,42 @@ public class PrivateEventPayloadMergeTest {
         assertNotNull(out);
         assertFalse(out.has("type"));
         assertEquals(1784985699000L, out.get("end").getAsLong());
+    }
+
+    @Test
+    public void concurrentUpdatesDoNotLoseEachOthersChanges() throws Exception {
+        handler.trackPrivateEventPayload("add", EVENT_ID, json(FULL_ADD));
+
+        // Each thread contributes its own distinct field. If the read/merge/write were not atomic,
+        // threads merging from the same snapshot would overwrite one another and fields would go
+        // missing -- which is what would silently undo the incremental-update handling.
+        int threads = 16;
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+        CountDownLatch start = new CountDownLatch(1);
+        try {
+            List<Future<?>> futures = new ArrayList<>();
+            for (int i = 0; i < threads; i++) {
+                int n = i;
+                futures.add(pool.submit(() -> {
+                    start.await();
+                    handler.trackPrivateEventPayload("update", EVENT_ID, json("{\"f" + n + "\":" + n + "}"));
+                    return null;
+                }));
+            }
+            start.countDown();
+            for (Future<?> f : futures) {
+                f.get(10, TimeUnit.SECONDS);
+            }
+        } finally {
+            pool.shutdownNow();
+        }
+
+        JsonObject finalPayload = handler.trackPrivateEventPayload("update", EVENT_ID, json("{}"));
+        assertNotNull(finalPayload);
+        assertEquals("smartDetectZone", finalPayload.get("type").getAsString());
+        for (int i = 0; i < threads; i++) {
+            assertTrue(finalPayload.has("f" + i), "field f" + i + " was lost by a concurrent merge");
+        }
     }
 
     @Test

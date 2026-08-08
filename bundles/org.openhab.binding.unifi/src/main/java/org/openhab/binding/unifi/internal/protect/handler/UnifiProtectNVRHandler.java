@@ -289,6 +289,14 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             connectDeviceWebSocket(apiClient);
             logger.debug("Enabling Private API WebSocket for real-time updates");
             apiClient.getPrivateClient().enableWebSocket(update -> {
+                // Fold incremental EVENT deltas into the last full payload here, on the WebSocket
+                // thread, where frames still arrive in the order the NVR sent them. The dispatch
+                // below runs on the shared multi-threaded handler pool, which does not preserve
+                // that order: an UPDATE could otherwise overtake the ADD it depends on, and two
+                // UPDATEs could merge from the same snapshot and lose one of the two changes.
+                if (update.modelType == ModelType.EVENT) {
+                    update.data = trackPrivateEventPayload(update.action, update.id, update.data);
+                }
                 scheduler.execute(() -> {
                     logger.trace("Private API WebSocket update: action={}, model={}", update.action, update.modelType);
                     routePrivateApiUpdate(update);
@@ -766,16 +774,20 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         if (!"update".equals(action)) {
             return data;
         }
-        TimestampedPayload cached = privateEventPayloads.get(id);
-        if (cached == null) {
+        // Read, merge and store as one atomic step. Callers are expected to be ordered (the
+        // WebSocket thread), but doing this under compute() means overlapping calls still cannot
+        // merge from the same snapshot and drop one of the two changes.
+        TimestampedPayload result = privateEventPayloads.computeIfPresent(id, (key, cached) -> {
+            JsonObject merged = cached.payload().deepCopy();
+            data.entrySet().forEach(e -> merged.add(e.getKey(), e.getValue()));
+            return new TimestampedPayload(merged, now);
+        });
+        if (result == null) {
             // No add seen for this id; the delta is all there is. It still reaches the
             // thumbnail/heatmap path below when it happens to carry those fields.
             return data;
         }
-        JsonObject merged = cached.payload.deepCopy();
-        data.entrySet().forEach(e -> merged.add(e.getKey(), e.getValue()));
-        privateEventPayloads.put(id, new TimestampedPayload(merged.deepCopy(), now));
-        return merged;
+        return result.payload().deepCopy();
     }
 
     /**
@@ -924,11 +936,9 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     }
                     break;
                 case EVENT:
-                    // /ws/updates sends UPDATEs as incremental deltas, so an update carrying only
-                    // e.g. "end" has no type or camera and cannot be converted on its own. Merge it
-                    // into the last full payload seen for this event id first.
-                    JsonObject eventPayload = trackPrivateEventPayload(update.action, update.id, update.data);
-                    Event event = eventPayload == null ? null : gson.fromJson(eventPayload, Event.class);
+                    // update.data has already been merged with the last full payload for this event
+                    // id, on the WebSocket thread -- see where the update handler is registered.
+                    Event event = update.data == null ? null : gson.fromJson(update.data, Event.class);
                     if (event != null) {
                         logger.debug("Private updates WS event {}, id={}, type={}", update.action, update.id,
                                 event.type);
