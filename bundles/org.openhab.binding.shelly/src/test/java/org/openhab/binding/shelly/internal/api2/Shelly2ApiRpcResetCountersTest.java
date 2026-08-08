@@ -77,6 +77,17 @@ public class Shelly2ApiRpcResetCountersTest {
     }
 
     @Test
+    void dimmerPmUsesLightReset() {
+        // Dimmers meter power on their light:N component, not switch:N; isDimmer forces hasRelays=true,
+        // so isDimmer must win over hasRelays or Pro Dimmer PM would call the non-existent Switch.ResetCounters.
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        profile.isDimmer = true;
+        profile.hasRelays = true;
+
+        assertEquals(SHELLYRPC_METHOD_LIGHT_RESETCOUNTERS, Shelly2ApiRpc.resetCountersMethod(profile));
+    }
+
+    @Test
     void standalonePowerMeterUsesPm1Reset() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
 
