@@ -1,7 +1,8 @@
 # EEBus Add-on
 
-> **Status**: early, working prototype, not yet a PR. Builds clean (checkstyle/spotbugs/spotless/i18n all pass,
-> 13/13 unit tests pass) and has been live-tested against a real independent EEBus implementation
+> **Status**: draft PR [#21313](https://github.com/openhab/openhab-addons/pull/21313), not yet merged. Builds clean
+> (checkstyle/spotbugs/spotless/i18n all pass, 18/18 unit tests pass, no compiler warnings) and has been live-tested
+> against a real independent EEBus implementation
 > ([meisel2000/eebus-cbsim](https://github.com/meisel2000/eebus-cbsim), built on the `enbility/eebus-go` stack) -
 > SHIP pairing, mDNS discovery, and SPINE LPC use-case discovery/negotiation (including the dynamic
 > `entity.addUseCase()` registration this add-on relies on instead of registering at device-build time) all
@@ -70,13 +71,16 @@ Configuration parameters (all optional, in watts / ISO 8601 duration):
 
 | Parameter          | Default (lpc) | Default (lpp) | Description                                                                          |
 |---------------------|----------------|-----------------|-----------------------------------------------------------------------------------------|
-| `nominalMax`        | `4200`         | `4200`          | Maximum consumption/production this installation could ever draw/feed in.               |
+| `nominalMax`        | `4200`         | `0`             | Maximum consumption/production this installation could ever draw/feed in.               |
 | `failsafeLimit`      | = `nominalMax`  | = `nominalMax`   | Limit applied if the pairing partner's heartbeat is lost. Review and set this deliberately - it is not a safe default. |
 | `failsafeDuration`   | `PT2H`         | `PT2H`          | ISO 8601 duration the failsafe limit stays valid for.                                    |
 
+LPP's `nominalMax` defaults to `0` rather than a nonzero placeholder - claiming export capacity you haven't actually configured would misreport this installation's real capability to the CEM.
+Set it explicitly to whatever this installation can actually feed back.
+
 Only one item per direction is supported at a time.
 Tagging a second item for the same use case is logged as a warning and ignored.
-Re-tagging to a different item requires restarting the add-on, since jEEBus has no runtime API to detach a use case
+Changing `nominalMax`/`failsafeLimit`/`failsafeDuration` on an already-bound item, or re-tagging to a different item, both require restarting the add-on, since jEEBus has no runtime API to reconfigure or detach a use case
 once added.
 
 Every active-limit update from a paired partner is posted to the tagged item as a `QuantityType<Power>` command

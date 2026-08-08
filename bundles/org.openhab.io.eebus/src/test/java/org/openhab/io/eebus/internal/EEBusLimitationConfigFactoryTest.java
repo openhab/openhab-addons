@@ -67,4 +67,16 @@ class EEBusLimitationConfigFactoryTest {
                 limitationConfig.getFailsafeLimit().toDouble(), "failsafe defaults to nominalMax when unset");
         assertEquals(EEBusLimitationConfigFactory.DEFAULT_FAILSAFE_DURATION, limitationConfig.getFailsafeDurationMin());
     }
+
+    @Test
+    void lppFallsBackToZeroNominalMaxWhenConfigIsEmpty() {
+        // Unlike LPC, LPP's default is 0, not DEFAULT_NOMINAL_MAX_WATTS - claiming export capacity
+        // that was never configured would misreport this installation's real capability to the CEM.
+        SimpleLimitationConfig limitationConfig = EEBusLimitationConfigFactory.lpp(Map.of());
+
+        assertEquals(0, limitationConfig.getNominalMax().toDouble());
+        assertEquals(0, limitationConfig.getFailsafeLimit().toDouble(), "failsafe defaults to nominalMax when unset");
+        assertEquals(0, limitationConfig.getLoadControlLimit().toDouble());
+        assertEquals(EEBusLimitationConfigFactory.DEFAULT_FAILSAFE_DURATION, limitationConfig.getFailsafeDurationMin());
+    }
 }
