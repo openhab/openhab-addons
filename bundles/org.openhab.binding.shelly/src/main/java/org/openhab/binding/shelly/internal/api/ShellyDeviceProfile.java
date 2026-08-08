@@ -325,9 +325,7 @@ public class ShellyDeviceProfile {
             if (lights == null || lights.size() <= 1) {
                 return CHANNEL_GROUP_LIGHT_CONTROL;
             }
-            // Gen2 RGBW PM ships on light1..n natively; Gen1 RGBW2 keeps the deprecated channel1..n
-            // primary group, dual-written to light1..n by ShellyBaseHandler.updateChannel().
-            return (isGen2 ? CHANNEL_GROUP_LIGHT_INDEX : CHANNEL_GROUP_LIGHT_CHANNEL) + idx;
+            return lightChannelGroupPrefix(isGen2) + idx;
         } else if (isLight) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {

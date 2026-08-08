@@ -206,13 +206,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_LIGHT_COLOR_MODE = "mode";
     public static final String CHANNEL_LIGHT_POWER = "power";
     public static final String CHANNEL_LIGHT_DEFSTATE = "defaultState";
-    public static final String CHANNEL_GROUP_LIGHT_CHANNEL = "channel"; // deprecated, use
-                                                                        // CHANNEL_GROUP_LIGHT_INDEX
-                                                                        // ("light1..n"), see
-                                                                        // ShellyChannelMigration schema
-                                                                        // 7
-    public static final String CHANNEL_GROUP_LIGHT_INDEX = "light"; // replaces CHANNEL_GROUP_LIGHT_CHANNEL
-                                                                    // ("channel1..n")
+    public static final String CHANNEL_GROUP_LIGHT_CHANNEL = "channel";
+    public static final String CHANNEL_GROUP_LIGHT_INDEX = "light";
 
     // Bulb/RGBW2 in color mode
     public static final String CHANNEL_GROUP_COLOR_CONTROL = "color";

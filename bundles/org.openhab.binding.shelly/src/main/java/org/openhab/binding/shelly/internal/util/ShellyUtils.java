@@ -332,8 +332,6 @@ public class ShellyUtils {
     }
 
     public static Integer getLightIdFromGroup(String groupName) {
-        // Accepts both the current light1..n naming and the deprecated channel1..n naming, so a
-        // command still dispatches correctly regardless of which group the item is linked to.
         if (groupName.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
             return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_INDEX)) - 1;
         }
@@ -343,20 +341,24 @@ public class ShellyUtils {
         return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
     }
 
+    // Gen2 RGBW PM ships on light1..n natively; Gen1 RGBW2 keeps publishing on the deprecated
+    // channel1..n group, dual-written to light1..n by ShellyBaseHandler.updateChannel().
+    public static String lightChannelGroupPrefix(boolean isGen2) {
+        return isGen2 ? CHANNEL_GROUP_LIGHT_INDEX : CHANNEL_GROUP_LIGHT_CHANNEL;
+    }
+
     public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
         if (!profile.isRGBW2 || profile.inColor) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         }
-        // Gen2 RGBW PM ships on light1..n natively; Gen1 RGBW2 keeps publishing on the deprecated
-        // channel1..n primary group, dual-written to light1..n by ShellyBaseHandler.updateChannel().
-        return (profile.isGen2 ? CHANNEL_GROUP_LIGHT_INDEX : CHANNEL_GROUP_LIGHT_CHANNEL) + channelId.toString();
+        return lightChannelGroupPrefix(profile.isGen2) + channelId.toString();
     }
 
     public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
         if (profile.isBulb || profile.isDuo) {
             return CHANNEL_GROUP_WHITE_CONTROL;
         }
-        return (profile.isGen2 ? CHANNEL_GROUP_LIGHT_INDEX : CHANNEL_GROUP_LIGHT_CHANNEL) + channelId.toString();
+        return lightChannelGroupPrefix(profile.isGen2) + channelId.toString();
     }
 
     public static DecimalType mapSignalStrength(int dbm) {

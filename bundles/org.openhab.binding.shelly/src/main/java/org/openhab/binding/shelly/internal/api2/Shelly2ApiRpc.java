@@ -806,7 +806,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (profile.inColor) {
                 String method = SHELLY2_PROFILE_RGBW.equals(getString(profile.device.profile))
                         ? SHELLYRPC_METHOD_RGBW_STATUS
-                        : SHELLYRPC_METHOD_RGB_STATUS; // rgb profile uses RGB:0
+                        : SHELLYRPC_METHOD_RGB_STATUS;
                 Shelly2RGBWStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(method).withId(0),
                         Shelly2RGBWStatus.class);
                 ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();

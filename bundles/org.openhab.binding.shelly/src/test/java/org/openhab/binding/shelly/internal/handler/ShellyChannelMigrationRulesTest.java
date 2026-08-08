@@ -153,8 +153,6 @@ public class ShellyChannelMigrationRulesTest {
 
     @Test
     void schema7DoesNotApplyToGen2RgbwPm() {
-        // Gen2 RGBW PM ships on light1..4 natively; a channel1..4 group should never exist there,
-        // but the rule's condition must still exclude it explicitly (it's shared isRGBW2 with Gen1).
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
         profile.isRGBW2 = true;
         profile.isGen2 = true;
