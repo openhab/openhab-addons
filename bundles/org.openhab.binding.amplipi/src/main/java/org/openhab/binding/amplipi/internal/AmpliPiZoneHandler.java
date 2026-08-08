@@ -114,18 +114,36 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
+                Zone state = zoneState;
+                // vol_f only exists from AmpliPi 0.1.8 on. A device whose status does not report it
+                // cannot understand it when PATCHing either, so writes have to use the dB field too.
+                boolean supportsVolumeFraction = state != null && state.getVolF() != null;
+                int volumeDelta = getVolumeDelta(thing);
                 if (command instanceof PercentType percentCommand) {
-                    update.setVol(AmpliPiUtils.percentTypeToVolume(percentCommand));
+                    if (supportsVolumeFraction) {
+                        update.setVolF(AmpliPiUtils.percentTypeToVolumeFraction(percentCommand));
+                    } else {
+                        update.setVol(AmpliPiUtils.percentTypeToVolume(percentCommand));
+                    }
                 } else if (command instanceof IncreaseDecreaseType) {
-                    if (zoneState != null) {
-                        if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                            zoneState.setVol(
-                                    Math.min(zoneState.getVol() + getVolumeDelta(thing), AmpliPiUtils.MAX_VOLUME_DB));
-                        } else {
-                            zoneState.setVol(
-                                    Math.max(zoneState.getVol() - getVolumeDelta(thing), AmpliPiUtils.MIN_VOLUME_DB));
-                        }
-                        update.setVol(zoneState.getVol());
+                    if (supportsVolumeFraction) {
+                        // Send the step itself and let AmpliPi apply it to its own current volume.
+                        // The cached zone state can be stale when the volume was changed through the
+                        // AmpliPi UI or another client since the last poll, and this also leaves the
+                        // bounds and overflow handling to the device.
+                        double step = volumeDelta / 100.0;
+                        update.setVolDeltaF(IncreaseDecreaseType.INCREASE.equals(command) ? step : -step);
+                    } else if (state != null && state.getVol() != null) {
+                        // Older firmware: keep adjusting the dB value against the cached state. The
+                        // configured step is a percentage, so scale it over the dB range.
+                        int stepDb = Math.max(1, (int) Math.round(
+                                volumeDelta / 100.0 * (AmpliPiUtils.MAX_VOLUME_DB - AmpliPiUtils.MIN_VOLUME_DB)));
+                        int current = state.getVol();
+                        int newVol = IncreaseDecreaseType.INCREASE.equals(command)
+                                ? Math.min(current + stepDb, AmpliPiUtils.MAX_VOLUME_DB)
+                                : Math.max(current - stepDb, AmpliPiUtils.MIN_VOLUME_DB);
+                        state.setVol(newVol);
+                        update.setVol(newVol);
                     }
                 }
                 break;
@@ -166,12 +184,16 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
 
         Boolean power = !zoneState.getMute();
         Boolean mute = zoneState.getMute();
-        Integer vol = zoneState.getVol();
         Integer sourceId = zoneState.getSourceId();
 
         updateState(AmpliPiBindingConstants.CHANNEL_POWER, OnOffType.from(power));
         updateState(AmpliPiBindingConstants.CHANNEL_MUTE, OnOffType.from(mute));
-        updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(vol));
+        // Prefer the firmware-provided volume fraction; fall back to the dB value
+        // for older firmware that does not report vol_f.
+        Double volF = zoneState.getVolF();
+        PercentType volume = volF != null ? AmpliPiUtils.volumeFractionToPercentType(volF)
+                : AmpliPiUtils.volumeToPercentType(zoneState.getVol());
+        updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, volume);
         updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }
 }
