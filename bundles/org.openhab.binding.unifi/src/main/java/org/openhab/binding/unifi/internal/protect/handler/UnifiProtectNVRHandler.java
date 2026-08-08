@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -132,7 +133,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private record TimestampedPayload(JsonObject payload, long timestamp) {
     }
 
+    // Stamped where an event arrives, on the WebSocket thread, so a snapshot that was superseded
+    // before its dispatch task got to run can be recognised and skipped.
+    private final AtomicLong eventSequence = new AtomicLong();
+
     private static final class PendingUpdate {
+        long lastSequence = Long.MIN_VALUE;
         @Nullable
         BaseEvent lastEvent;
         @Nullable
@@ -294,12 +300,13 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                 // below runs on the shared multi-threaded handler pool, which does not preserve
                 // that order: an UPDATE could otherwise overtake the ADD it depends on, and two
                 // UPDATEs could merge from the same snapshot and lose one of the two changes.
+                long sequence = eventSequence.incrementAndGet();
                 if (update.modelType == ModelType.EVENT) {
                     update.data = trackPrivateEventPayload(update.action, update.id, update.data);
                 }
                 scheduler.execute(() -> {
                     logger.trace("Private API WebSocket update: action={}, model={}", update.action, update.modelType);
-                    routePrivateApiUpdate(update);
+                    routePrivateApiUpdate(update, sequence);
                 });
             }).whenComplete((result, ex) -> {
                 if (ex != null) {
@@ -752,8 +759,10 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
      * because the mapping needs the type and camera that only the "add" carried, which would drop
      * the *_UPDATE dispatch and stop the contact latch from being refreshed.
      *
-     * @return the full payload to work with, or {@code null} if there is nothing usable (an update
-     *         for an event whose add was never seen, e.g. one that started before openHAB did)
+     * @return the full payload to work with. An update for an event whose add was never seen -- one
+     *         that started before openHAB did, say -- yields the delta unchanged, which still feeds
+     *         the thumbnail/heatmap path when it carries those fields. Only a {@code null} input
+     *         gives {@code null} back.
      */
     @Nullable
     JsonObject trackPrivateEventPayload(@Nullable String action, @Nullable String id, @Nullable JsonObject data) {
@@ -855,7 +864,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         return out;
     }
 
-    private void routePrivateApiUpdate(WebSocketUpdate update) {
+    private void routePrivateApiUpdate(WebSocketUpdate update, long sequence) {
         if (update.data == null) {
             return;
         }
@@ -961,7 +970,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                             if ("add".equals(update.action)) {
                                 routePublicApiEvent(pubEvent, WSEventType.ADD);
                             } else if ("update".equals(update.action)) {
-                                handleUpdateEvent(pubEvent);
+                                handleUpdateEvent(pubEvent, sequence);
                             }
                         }
                         // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
@@ -1037,13 +1046,28 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         pendingEventUpdates.clear();
     }
 
-    private synchronized void handleUpdateEvent(@Nullable BaseEvent event) {
+    private void handleUpdateEvent(@Nullable BaseEvent event) {
+        handleUpdateEvent(event, eventSequence.incrementAndGet());
+    }
+
+    /**
+     * @param sequence arrival order of this snapshot, taken on the WebSocket thread. Dispatch tasks
+     *            are submitted independently to the shared multi-threaded scheduler, so without it
+     *            a task carrying an older snapshot could run last and overwrite a newer one.
+     */
+    private synchronized void handleUpdateEvent(@Nullable BaseEvent event, long sequence) {
         if (event == null || event.id == null) {
             return;
         }
         final String eventId = event.id;
         PendingUpdate state = Objects
                 .requireNonNull(pendingEventUpdates.computeIfAbsent(eventId, k -> new PendingUpdate()));
+        if (sequence < state.lastSequence) {
+            logger.trace("Skipping event {} snapshot {}, a newer one ({}) already arrived", eventId, sequence,
+                    state.lastSequence);
+            return;
+        }
+        state.lastSequence = sequence;
         // Schedule max wait once per burst (only if not already scheduled)
         if (state.maxFuture == null) {
             final PendingUpdate stateFinalForMax = state;
