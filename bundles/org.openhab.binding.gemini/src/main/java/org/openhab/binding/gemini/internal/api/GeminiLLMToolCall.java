@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.gemini.internal.api;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,9 +45,56 @@ public class GeminiLLMToolCall extends LLMToolCall {
         if (call == null) {
             throw new JsonSyntaxException("Deserialized GeminiLLMToolCall is null.");
         }
-        if (call.tool == null || call.params == null) {
+        // Gson bypasses the constructor, so fields declared non-null can still be null after
+        // deserialization; Objects.isNull avoids the "redundant null check" compiler warning
+        if (Objects.isNull(call.tool) || Objects.isNull(call.params)) {
             throw new JsonSyntaxException("Deserialized GeminiLLMToolCall has null tool or params.");
         }
         return call;
+    }
+
+    /**
+     * Serializes a batch of parallel tool calls into a single JSON array string.
+     */
+    public static String toJsonList(List<GeminiLLMToolCall> calls) {
+        return GSON.toJson(calls);
+    }
+
+    /**
+     * Deserializes either a single tool call (JSON object, the legacy format) or a batch of
+     * parallel tool calls (JSON array) into a list.
+     */
+    public static List<GeminiLLMToolCall> listFromJson(String json) throws JsonSyntaxException {
+        if (!json.trim().startsWith("[")) {
+            return List.of(fromJson(json));
+        }
+        GeminiLLMToolCall[] calls = GSON.fromJson(json, GeminiLLMToolCall[].class);
+        if (calls == null) {
+            throw new JsonSyntaxException("Deserialized GeminiLLMToolCall list is null.");
+        }
+        for (GeminiLLMToolCall call : calls) {
+            if (call == null || Objects.isNull(call.tool) || Objects.isNull(call.params)) {
+                throw new JsonSyntaxException("Deserialized GeminiLLMToolCall has null tool or params.");
+            }
+        }
+        return List.of(calls);
+    }
+
+    /**
+     * Serializes the results of a batch of parallel tool calls into a JSON array string.
+     */
+    public static String resultsToJson(List<String> results) {
+        return GSON.toJson(results);
+    }
+
+    /**
+     * Deserializes the results of a batch of parallel tool calls from a JSON array string.
+     */
+    public static List<String> resultsFromJson(String json) throws JsonSyntaxException {
+        String[] results = GSON.fromJson(json, String[].class);
+        if (results == null) {
+            throw new JsonSyntaxException("Deserialized tool call results list is null.");
+        }
+        return List.of(results);
     }
 }

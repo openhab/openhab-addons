@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link GeminiApiClient} class encapsulates all HTTP/REST API communications with the Google Gemini API.
@@ -136,7 +137,8 @@ public class GeminiApiClient {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         List<GeminiContent> contents = new ArrayList<>();
-        Queue<String> pendingToolCallNames = new LinkedList<>();
+        Queue<GeminiFunctionCall> pendingToolCalls = new LinkedList<>();
+        Queue<Integer> pendingToolCallCounts = new LinkedList<>();
 
         for (Conversation.Message msg : history) {
             switch (msg.role()) {
@@ -151,22 +153,59 @@ public class GeminiApiClient {
                     break;
                 }
                 case TOOL_CALL: {
-                    GeminiLLMToolCall toolCall = GeminiLLMToolCall.fromJson(msg.content());
-                    String name = toolCall.tool.replaceAll("[^a-zA-Z0-9_-]", "_");
-                    pendingToolCallNames.add(name);
-                    GeminiFunctionCall fc = new GeminiFunctionCall(name, toolCall.params, toolCall.id);
-                    GeminiPart part = new GeminiPart(null, fc, null, null, toolCall.thoughtSignature);
-                    contents.add(new GeminiContent(ROLE_MODEL, List.of(part)));
+                    // Content may hold a single tool call (JSON object) or a batch of parallel tool calls
+                    // (JSON array). All calls of a batch belong to one model turn and must be replayed as
+                    // parts of a single ROLE_MODEL content, otherwise Gemini rejects the request
+                    // (e.g. missing thought_signature on split-off calls).
+                    List<GeminiLLMToolCall> toolCalls = GeminiLLMToolCall.listFromJson(msg.content());
+                    List<GeminiPart> callParts = new ArrayList<>();
+                    for (GeminiLLMToolCall toolCall : toolCalls) {
+                        String name = toolCall.tool.replaceAll("[^a-zA-Z0-9_-]", "_");
+                        GeminiFunctionCall fc = new GeminiFunctionCall(name, toolCall.params, toolCall.id);
+                        pendingToolCalls.add(fc);
+                        callParts.add(new GeminiPart(null, fc, null, null, toolCall.thoughtSignature));
+                    }
+                    if (callParts.isEmpty()) {
+                        break;
+                    }
+                    pendingToolCallCounts.add(callParts.size());
+                    contents.add(new GeminiContent(ROLE_MODEL, callParts));
                     break;
                 }
                 case TOOL_RETURN: {
-                    String name = pendingToolCallNames.poll();
-                    if (name == null) {
+                    Integer batchSize = pendingToolCallCounts.poll();
+                    if (batchSize == null) {
                         logger.trace("skipping orphaned TOOL_RETURN");
                         break; // TOOL_RETURN without preceding TOOL_CALL - ignore
                     }
-                    GeminiFunctionResponse fr = new GeminiFunctionResponse(name, Map.of("result", msg.content()));
-                    GeminiPart part = new GeminiPart(null, null, fr, null, null);
+                    List<String> results;
+                    if (batchSize > 1) {
+                        try {
+                            results = GeminiLLMToolCall.resultsFromJson(msg.content());
+                        } catch (JsonSyntaxException e) {
+                            results = List.of(msg.content());
+                        }
+                    } else {
+                        results = List.of(msg.content());
+                    }
+
+                    List<GeminiPart> returnParts = new ArrayList<>();
+                    for (String result : results) {
+                        GeminiFunctionCall call = pendingToolCalls.poll();
+                        if (call == null) {
+                            break;
+                        }
+                        GeminiFunctionResponse fr = new GeminiFunctionResponse(call.name(), Map.of("result", result),
+                                call.id());
+                        returnParts.add(new GeminiPart(null, null, fr, null, null));
+                    }
+                    // keep the pending queue aligned if fewer results than calls were recorded
+                    for (int i = results.size(); i < batchSize; i++) {
+                        pendingToolCalls.poll();
+                    }
+                    if (returnParts.isEmpty()) {
+                        break;
+                    }
 
                     // Consolidate consecutive TOOL_RETURNs into the same ROLE_USER content
                     if (!contents.isEmpty() && ROLE_USER.equals(contents.getLast().role())) {
@@ -174,12 +213,12 @@ public class GeminiApiClient {
                         List<GeminiPart> lastParts = lastContent.parts();
                         if (lastParts != null && !lastParts.isEmpty()
                                 && lastParts.getFirst().functionResponse() != null) {
-                            lastParts.add(part);
+                            lastParts.addAll(returnParts);
                         } else {
-                            contents.add(new GeminiContent(ROLE_USER, new ArrayList<>(List.of(part))));
+                            contents.add(new GeminiContent(ROLE_USER, returnParts));
                         }
                     } else {
-                        contents.add(new GeminiContent(ROLE_USER, new ArrayList<>(List.of(part))));
+                        contents.add(new GeminiContent(ROLE_USER, returnParts));
                     }
                     break;
                 }
