@@ -48,7 +48,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotGenericS
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensorTypeAdapter;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -443,30 +443,36 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         Map<String, State> updates = new TreeMap<>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
-        ShellyColorUtils col = new ShellyColorUtils();
-        for (CoIotSensor s : sensorUpdates) {
-            CoIotDescrSen sen = sensorMap.get(s.id);
-            if (sen == null) {
-                logger.debug("{}: Unable to find sensor definition for id={}, payload={}", thingName, s.id, payload);
-                continue;
-            }
-            // find matching sensor definition from device description, use the Link ID as index
-            CoIotDescrBlk element = null;
-            sen = coiot.fixDescription(sen, blkMap);
-            element = blkMap.get(sen.links);
-            if (element == null) {
-                logger.debug("{}: Unable to find BLK for link {} from sen.id={}, payload={}", thingName, sen.links,
-                        sen.id, payload);
-                continue;
-            }
-            logger.trace("{}:  Sensor value: id={}, Value={} ({}, Type={}, Range={}, Link={}: {})", thingName, s.id,
-                    getString(s.valueStr).isEmpty() ? s.value : s.valueStr, sen.desc, sen.type, sen.range, sen.links,
-                    element.desc);
 
-            if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, col)) {
-                logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
-                        sen.id, sen.type, sen.desc, s.value, payload);
+        try {
+            Map<Integer, ShellyLightModel> lightModels = thingHandler.acquireLightModels();
+            for (CoIotSensor s : sensorUpdates) {
+                CoIotDescrSen sen = sensorMap.get(s.id);
+                if (sen == null) {
+                    logger.debug("{}: Unable to find sensor definition for id={}, payload={}", thingName, s.id,
+                            payload);
+                    continue;
+                }
+                // find matching sensor definition from device description, use the Link ID as index
+                CoIotDescrBlk element = null;
+                sen = coiot.fixDescription(sen, blkMap);
+                element = blkMap.get(sen.links);
+                if (element == null) {
+                    logger.debug("{}: Unable to find BLK for link {} from sen.id={}, payload={}", thingName, sen.links,
+                            sen.id, payload);
+                    continue;
+                }
+                logger.trace("{}:  Sensor value: id={}, Value={} ({}, Type={}, Range={}, Link={}: {})", thingName, s.id,
+                        getString(s.valueStr).isEmpty() ? s.value : s.valueStr, sen.desc, sen.type, sen.range,
+                        sen.links, element.desc);
+
+                if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
+                    logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
+                            sen.id, sen.type, sen.desc, s.value, payload);
+                }
             }
+        } finally {
+            thingHandler.releaseLightModels();
         }
 
         if (!updates.isEmpty()) {
@@ -490,14 +496,6 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 // Relay device with addon sensors: always refresh sensors#lastUpdate so the channel acts
                 // as a heartbeat even when temperature values are unchanged (and thus cache-deduplicated)
                 thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
-            }
-
-            if (profile.isLight && profile.inColor && col.isRgbValid()) {
-                // Update color picker from single values
-                if (col.isRgbValid()) {
-                    thingHandler.updateChannel(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER),
-                            col.toHSB(), false);
-                }
             }
 
             if ((profile.isRGBW2 && !profile.inColor) || profile.isRoller) {
