@@ -29,14 +29,14 @@ public class PortalLoginResponse extends AbstractPortalResponse {
     private final String token;
 
     @SerializedName("last")
-    private final String last;
+    private final long validityDurationMs;
 
-    public PortalLoginResponse(String result, String userId, String resource, String token, String last) {
+    public PortalLoginResponse(String result, String userId, String resource, String token, long validityDurationMs) {
         super(result);
         this.userId = userId;
         this.resource = resource;
         this.token = token;
-        this.last = last;
+        this.validityDurationMs = validityDurationMs;
     }
 
     public String getUserId() {
@@ -51,7 +51,7 @@ public class PortalLoginResponse extends AbstractPortalResponse {
         return token;
     }
 
-    public String getLast() {
-        return last;
+    public long getValidityDurationMs() {
+        return validityDurationMs;
     }
 }
