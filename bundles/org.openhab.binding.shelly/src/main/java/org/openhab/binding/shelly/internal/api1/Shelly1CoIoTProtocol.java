@@ -74,7 +74,7 @@ public class Shelly1CoIoTProtocol {
     }
 
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates) {
+            Map<String, State> updates, Map<Integer, ShellyLightModel> lightModels) {
         // Process status information and convert into channel updates
         int rIndex = getIdFromBlk(sen);
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
@@ -100,14 +100,13 @@ public class Shelly1CoIoTProtocol {
                 switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "state": // Relay status +
                     case "output":
-                        updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
+                        updatePower(profile, updates, rIndex, sen, s, sensorUpdates, lightModels);
                         break;
                     case "input":
                         handleInput(sen, s, rGroup, updates);
                         break;
                     case "brightness":
                         // already handled by state/output
-                        // TODO are we sure about this? => do we need to update the light model?
                         break;
                     case "overtemp": // ++
                         if (s.value == 1) {
@@ -147,44 +146,29 @@ public class Shelly1CoIoTProtocol {
                     case "blue":
                     case "white":
                     case "gain":
-                        try {
-                            ShellyLightModel model = getLightModelForSensor(sen);
-                            try {
-                                model.lock(this.getClass(), sensorUpdates);
-                                // TODO check logic
-                                switch (sen.desc.toLowerCase(Locale.ROOT)) {
-                                    case "red":
-                                        model.setColor(R, (int) s.value);
-                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
-                                                model.getColorState(R));
-                                        break;
-                                    case "green":
-                                        model.setColor(G, (int) s.value);
-                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
-                                                model.getColorState(G));
-                                        break;
-                                    case "blue":
-                                        model.setColor(B, (int) s.value);
-                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
-                                                model.getColorState(B));
-                                        break;
-                                    case "white":
-                                        model.setColor(CW, (int) s.value);
-                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
-                                                model.getColorState(CW));
-                                        break;
-                                    case "gain":
-                                        model.setGain((int) s.value);
-                                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
-                                                model.getGainState());
-                                        break;
-                                }
-                            } finally {
-                                model.unlock();
+                        // TODO case "effect" ??
+                        if (lightModels.get(getIdFromBlk(sen)) instanceof ShellyLightModel model) {
+                            switch (sen.desc.toLowerCase(Locale.ROOT)) {
+                                case "red":
+                                    model.setColor(R, (int) s.value);
+                                    break;
+                                case "green":
+                                    model.setColor(G, (int) s.value);
+                                    break;
+                                case "blue":
+                                    model.setColor(B, (int) s.value);
+                                    break;
+                                case "white":
+                                    model.setColor(CW, (int) s.value);
+                                    break;
+                                case "gain":
+                                    model.setGain((int) s.value);
+                                    break;
+                                // TODO case "effect" ??
                             }
-                        } catch (UnsupportedOperationException | IllegalArgumentException e) {
-                            logger.debug("{}: Unable to update color channel {} for sensor {}: {}", thingName, sen.desc,
-                                    sen.id, e.getMessage());
+                        } else {
+                            logger.debug("{}: Unable to update color channel {} for sensor {}", thingName, sen.desc,
+                                    sen.id);
                         }
                         break;
                     case "sensorerror":
@@ -256,23 +240,10 @@ public class Shelly1CoIoTProtocol {
      * @param allUpdates List of updates. This is required, because we need to update both values at the same time
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
-            CoIotSensor s, List<CoIotSensor> allUpdates) {
-        String group = "";
-        String channel = CHANNEL_BRIGHTNESS;
-        String checkL = ""; // RGBW-white uses 4 different Power, Brightness, VSwitch values
+            CoIotSensor s, List<CoIotSensor> allUpdates, Map<Integer, ShellyLightModel> lightModels) {
         if (profile.isLight || profile.isDimmer) {
-            if (profile.isBulb || profile.inColor) {
-                group = CHANNEL_GROUP_LIGHT_CONTROL;
-                channel = CHANNEL_LIGHT_POWER;
-            } else if (profile.isDuo) {
-                group = CHANNEL_GROUP_WHITE_CONTROL;
-            } else if (profile.isDimmer) {
-                group = CHANNEL_GROUP_RELAY_CONTROL;
-            } else if (profile.isRGBW2) {
-                checkL = String.valueOf(id); // String.valueOf(id - 1); // id is 1-based, L is 0-based
-                group = CHANNEL_GROUP_LIGHT_CHANNEL + id;
-                logger.trace("{}: updatePower() for L={}", thingName, checkL);
-            }
+            // RGBW-white uses 4 different Power, Brightness, VSwitch values
+            String checkL = profile.isRGBW2 && !profile.inColor ? String.valueOf(id) : "";
 
             // We need to update brightness and on/off state at the same time to avoid "flipping brightness slider" in
             // the UI
@@ -290,28 +261,29 @@ public class Shelly1CoIoTProtocol {
                     power = update.value;
                 }
             }
-            try {
-                ShellyLightModel model = thingHandler.getLightModel(id - 1);
-                try {
-                    model.lock(this.getClass(), allUpdates);
-                    // TODO check logic
+            if (profile.isDimmer) {
+                if (power != -1) {
+                    updateChannel(updates, CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_BRIGHTNESS + "$Switch",
+                            OnOffType.from(power == 1));
+                }
+                if (brightness != -1) {
+                    updateChannel(updates, CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_BRIGHTNESS + "$Value",
+                            toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
+                }
+            } else if (profile.isLight) {
+                if (lightModels.get(id) instanceof ShellyLightModel model) {
                     if (brightness != -1) {
                         model.setBrightness((int) brightness);
                     }
                     if (power != -1) {
-                        model.setOnOff(power == 1);
+                        model.setOnOff(power == 1.0);
                     }
-                    // TODO light model synchs onOff, brightness; maybe $Switch, $Value not needed
-                    updateChannel(updates, group, channel + "$Switch", model.getOnOffState());
-                    updateChannel(updates, group, channel + "$Value", model.getBrightnessState());
-                } finally {
-                    model.unlock();
+                } else {
+                    logger.warn("{}: updatePower() for id={} but no light model found!", thingName, id);
                 }
-            } catch (UnsupportedOperationException | IllegalArgumentException e) {
-                logger.warn("{}: updatePower() for id={} but no light model found!", thingName, id);
             }
         } else if (profile.hasRelays) {
-            group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + id;
+            String group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + id;
             updateChannel(updates, group, CHANNEL_OUTPUT, OnOffType.from(s.value == 1));
         } else if (profile.isSensor) {
             // Sensor state
@@ -424,11 +396,5 @@ public class Shelly1CoIoTProtocol {
 
     public String getLastWakeup() {
         return lastWakeup;
-    }
-
-    protected ShellyLightModel getLightModelForSensor(CoIotDescrSen sen)
-            throws UnsupportedOperationException, IllegalArgumentException {
-        // TODO check this logic
-        return thingHandler.getLightModel(getIdFromBlk(sen) - 1); // getIdFromBlk() is 1 based
     }
 }

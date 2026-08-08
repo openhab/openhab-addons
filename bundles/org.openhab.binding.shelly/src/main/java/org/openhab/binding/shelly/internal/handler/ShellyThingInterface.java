@@ -129,7 +129,11 @@ public interface ShellyThingInterface {
 
     void startScan();
 
-    default ShellyLightModel getLightModel(int lightId) {
-        throw new UnsupportedOperationException("LightModel is not supported for this device");
+    default Map<Integer, ShellyLightModel> acquireLightModels() {
+        return Map.of();
+    }
+
+    default boolean releaseLightModels() {
+        return false;
     }
 }

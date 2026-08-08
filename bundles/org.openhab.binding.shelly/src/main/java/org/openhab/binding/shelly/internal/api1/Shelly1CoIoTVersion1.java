@@ -68,9 +68,9 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
      */
     @Override
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
-            Map<String, State> updates) {
+            Map<String, State> updates, Map<Integer, ShellyLightModel> lightModels) {
         // first check the base implementation
-        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates)) {
+        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, lightModels)) {
             // process by the base class
             return true;
         }
@@ -202,23 +202,11 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
-                        try {
-                            ShellyLightModel model = getLightModelForSensor(sen);
-                            try {
-                                model.lock(this.getClass(), sen.desc);
-                                model.setColorTemp(getDouble(s.value));
-                                // TODO check logic
-                                // TODO does color group have a CT channel ??
-                                updateChannel(updates,
-                                        profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
-                                        CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
-                                // TODO update PRIMARY CT channels
-                            } finally {
-                                model.unlock();
-                            }
-                        } catch (UnsupportedOperationException | IllegalArgumentException e) {
-                            logger.debug("{}: Unable to update color temperature for {}: {}", thingName, sen.desc,
-                                    e.getMessage());
+                        if (lightModels.get(getIdFromBlk(sen)) instanceof ShellyLightModel model) {
+                            model.setColorTemp(s.value);
+                        } else {
+                            logger.debug("{}: Unable to update color temperature for {}: LightModel not found",
+                                    thingName, sen.desc);
                         }
                         break;
                     case "sensor state": // Shelly Gas

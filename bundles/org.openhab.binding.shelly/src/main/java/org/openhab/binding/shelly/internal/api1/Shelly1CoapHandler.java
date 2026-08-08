@@ -444,29 +444,35 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
 
-        for (CoIotSensor s : sensorUpdates) {
-            CoIotDescrSen sen = sensorMap.get(s.id);
-            if (sen == null) {
-                logger.debug("{}: Unable to find sensor definition for id={}, payload={}", thingName, s.id, payload);
-                continue;
-            }
-            // find matching sensor definition from device description, use the Link ID as index
-            CoIotDescrBlk element = null;
-            sen = coiot.fixDescription(sen, blkMap);
-            element = blkMap.get(sen.links);
-            if (element == null) {
-                logger.debug("{}: Unable to find BLK for link {} from sen.id={}, payload={}", thingName, sen.links,
-                        sen.id, payload);
-                continue;
-            }
-            logger.trace("{}:  Sensor value: id={}, Value={} ({}, Type={}, Range={}, Link={}: {})", thingName, s.id,
-                    getString(s.valueStr).isEmpty() ? s.value : s.valueStr, sen.desc, sen.type, sen.range, sen.links,
-                    element.desc);
+        try {
+            Map<Integer, ShellyLightModel> lightModels = thingHandler.acquireLightModels();
+            for (CoIotSensor s : sensorUpdates) {
+                CoIotDescrSen sen = sensorMap.get(s.id);
+                if (sen == null) {
+                    logger.debug("{}: Unable to find sensor definition for id={}, payload={}", thingName, s.id,
+                            payload);
+                    continue;
+                }
+                // find matching sensor definition from device description, use the Link ID as index
+                CoIotDescrBlk element = null;
+                sen = coiot.fixDescription(sen, blkMap);
+                element = blkMap.get(sen.links);
+                if (element == null) {
+                    logger.debug("{}: Unable to find BLK for link {} from sen.id={}, payload={}", thingName, sen.links,
+                            sen.id, payload);
+                    continue;
+                }
+                logger.trace("{}:  Sensor value: id={}, Value={} ({}, Type={}, Range={}, Link={}: {})", thingName, s.id,
+                        getString(s.valueStr).isEmpty() ? s.value : s.valueStr, sen.desc, sen.type, sen.range,
+                        sen.links, element.desc);
 
-            if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates)) {
-                logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
-                        sen.id, sen.type, sen.desc, s.value, payload);
+                if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
+                    logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
+                            sen.id, sen.type, sen.desc, s.value, payload);
+                }
             }
+        } finally {
+            thingHandler.releaseLightModels();
         }
 
         if (!updates.isEmpty()) {
@@ -490,26 +496,6 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 // Relay device with addon sensors: always refresh sensors#lastUpdate so the channel acts
                 // as a heartbeat even when temperature values are unchanged (and thus cache-deduplicated)
                 thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
-            }
-
-            if (profile.isLight && profile.inColor) {
-                try {
-                    // TODO check logic
-                    // NOTE: hard coded '0' as color picker links to rgb(w) which is always the first light
-                    ShellyLightModel model = thingHandler.getLightModel(0);
-                    try {
-                        // TODO check logic
-                        model.lock(this.getClass(), "coap post processing");
-                        // Update color picker
-                        thingHandler.updateChannel(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER),
-                                model.getColorState(), false);
-                        // TODO update PRIMARY and other linked channels
-                    } finally {
-                        model.unlock();
-                    }
-                } catch (UnsupportedOperationException | IllegalArgumentException e) {
-                    logger.debug("{}: Unable to update color picker from CoIoT status: {}", thingName, e.getMessage());
-                }
             }
 
             if ((profile.isRGBW2 && !profile.inColor) || profile.isRoller) {
