@@ -17,6 +17,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
+import org.openhab.binding.ecovacs.internal.api.model.DeviceType;
 
 /**
  * @author Danny Baumann - Initial contribution
@@ -26,22 +27,24 @@ public class DeviceDescription {
     public final String modelName;
     public final String deviceClass;
     public final @Nullable String deviceClassLink;
+    public final DeviceType deviceType;
     public final ProtocolVersion protoVersion;
     public final boolean usesMqtt;
     public final Set<DeviceCapability> capabilities;
 
     public DeviceDescription(String modelName, String deviceClass, @Nullable String deviceClassLink,
-            ProtocolVersion protoVersion, boolean usesMqtt, Set<DeviceCapability> capabilities) {
+            DeviceType deviceType, ProtocolVersion protoVersion, boolean usesMqtt, Set<DeviceCapability> capabilities) {
         this.modelName = modelName;
         this.capabilities = capabilities;
         this.deviceClass = deviceClass;
         this.deviceClassLink = deviceClassLink;
+        this.deviceType = deviceType;
         this.protoVersion = protoVersion;
         this.usesMqtt = usesMqtt;
     }
 
     public DeviceDescription resolveLinkWith(DeviceDescription other) {
-        return new DeviceDescription(modelName, deviceClass, null, other.protoVersion, other.usesMqtt,
+        return new DeviceDescription(modelName, deviceClass, null, other.deviceType, other.protoVersion, other.usesMqtt,
                 other.capabilities);
     }
 

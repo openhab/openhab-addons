@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApi;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
+import org.openhab.binding.ecovacs.internal.api.model.DeviceType;
 import org.openhab.binding.ecovacs.internal.api.util.SchedulerTask;
 import org.openhab.binding.ecovacs.internal.handler.EcovacsApiHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
@@ -30,6 +31,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -54,7 +56,7 @@ public class EcovacsDeviceDiscoveryService extends AbstractThingHandlerDiscovery
             this::scanForDevices);
 
     public EcovacsDeviceDiscoveryService() {
-        super(EcovacsApiHandler.class, Set.of(THING_TYPE_VACUUM), DISCOVER_TIMEOUT_SECONDS, true);
+        super(EcovacsApiHandler.class, Set.of(THING_TYPE_VACUUM, THING_TYPE_MOWER), DISCOVER_TIMEOUT_SECONDS, true);
     }
 
     @Override
@@ -120,7 +122,8 @@ public class EcovacsDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     }
 
     private void deviceDiscovered(EcovacsDevice device) {
-        ThingUID thingUID = new ThingUID(THING_TYPE_VACUUM, thingHandler.getThing().getUID(), device.getSerialNumber());
+        ThingTypeUID thingType = device.getDeviceType() == DeviceType.MOWER ? THING_TYPE_MOWER : THING_TYPE_VACUUM;
+        ThingUID thingUID = new ThingUID(thingType, thingHandler.getThing().getUID(), device.getSerialNumber());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withBridge(thingHandler.getThing().getUID()).withLabel(device.getModelName())
                 .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber())

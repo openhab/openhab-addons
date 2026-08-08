@@ -21,6 +21,7 @@ import org.openhab.binding.ecovacs.internal.api.commands.IotDeviceCommand;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
+import org.openhab.binding.ecovacs.internal.api.model.DeviceType;
 
 /**
  * @author Danny Baumann - Initial contribution
@@ -38,9 +39,13 @@ public interface EcovacsDevice {
 
         void onCleaningStatsUpdated(EcovacsDevice device, int cleanedArea, int cleaningTimeSeconds);
 
+        void onMowingStatsUpdated(EcovacsDevice device, int mowedAreaSqCm, int timeSeconds);
+
         void onWaterSystemPresentUpdated(EcovacsDevice device, boolean present);
 
         void onErrorReported(EcovacsDevice device, int errorCode);
+
+        void onMowingSessionFinished(EcovacsDevice device, long startTimestamp, int durationSeconds, int areaSqCm);
 
         void onEventStreamFailure(EcovacsDevice device, Throwable error);
     }
@@ -48,6 +53,8 @@ public interface EcovacsDevice {
     String getSerialNumber();
 
     String getModelName();
+
+    DeviceType getDeviceType();
 
     boolean hasCapability(DeviceCapability cap);
 

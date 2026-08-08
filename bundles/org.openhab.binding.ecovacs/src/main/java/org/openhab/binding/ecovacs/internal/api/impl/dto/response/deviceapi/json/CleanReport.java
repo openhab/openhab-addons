@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -26,7 +28,7 @@ public class CleanReport {
     @SerializedName("state")
     public String state;
     @SerializedName("cleanState")
-    public CleanStateReport cleanState;
+    public @Nullable CleanStateReport cleanState;
 
     public static class CleanStateReport {
         @SerializedName("router")
@@ -35,15 +37,22 @@ public class CleanReport {
         public String type;
         @SerializedName("motionState")
         public String motionState;
-        @SerializedName("content")
-        public String areaDefinition;
+        // content can be either a String (vacuum area definition) or a JSON object (mower content type)
+        public @Nullable JsonElement content;
+
+        public @Nullable String getAreaDefinition() {
+            if (content != null && content.isJsonPrimitive()) {
+                return content.getAsString();
+            }
+            return null;
+        }
     }
 
-    public CleanMode determineCleanMode(Gson gson) {
+    public @Nullable CleanMode determineCleanMode(Gson gson) {
         final String modeValue;
         if (cleanState != null) {
             if ("working".equals(cleanState.motionState)) {
-                modeValue = cleanState.type;
+                modeValue = cleanState.type != null ? cleanState.type : "auto";
             } else {
                 modeValue = cleanState.motionState;
             }
