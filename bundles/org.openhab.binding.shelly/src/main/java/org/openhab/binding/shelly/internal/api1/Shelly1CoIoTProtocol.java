@@ -271,7 +271,7 @@ public class Shelly1CoIoTProtocol {
                             toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
                 }
             } else if (profile.isLight) {
-                if (lightModels.get(id) instanceof ShellyLightModel model) {
+                if (lightModels.get(id - 1) instanceof ShellyLightModel model) {
                     if (brightness != -1) {
                         if (ShellyLightModel.Mode.COLOR == model.getMode()) {
                             model.setGain((int) brightness);

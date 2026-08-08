@@ -55,13 +55,13 @@ class ShellyLightModelTest {
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setMode(Mode.WHITE);
-        model.lock();
+        model.acquire();
 
         model.setMode(Mode.COLOR);
         assertTrue(model.isModeDirty());
-        model.unlock();
+        model.release();
 
-        model.lock();
+        model.acquire();
         assertFalse(model.isModeDirty());
 
         model.setMode(Mode.WHITE);
@@ -74,7 +74,7 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
-        model.lock();
+        model.acquire();
 
         model.setMode(Mode.WHITE);
         model.setColor(R, 255);
@@ -84,8 +84,8 @@ class ShellyLightModelTest {
         model.setColorTemp(4000);
         model.setOnOff(true);
 
-        model.unlock();
-        model.lock();
+        model.release();
+        model.acquire();
 
         assertFalse(model.isModeDirty());
         assertFalse(model.isColorDirty());
@@ -101,7 +101,7 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
-        model.lock();
+        model.acquire();
 
         model.setColor(R, 255);
         model.setColor(G, 128);
@@ -120,7 +120,7 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
-        model.lock();
+        model.acquire();
 
         model.setRGBX("255, 128, 0, 64");
 
@@ -145,7 +145,7 @@ class ShellyLightModelTest {
 
         model.setMode(Mode.WHITE);
 
-        model.lock();
+        model.acquire();
         model.setRGBX(255, 0, 0, 0);
 
         assertEquals(Mode.COLOR, model.getMode());
@@ -229,7 +229,7 @@ class ShellyLightModelTest {
         model.handleCommand(OnOffType.ON);
 
         // Capture initial state
-        model.lock();
+        model.acquire();
 
         // Turn OFF (this sets brightness=0)
         model.handleCommand(OnOffType.OFF);
@@ -244,7 +244,7 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
-        model.lock();
+        model.acquire();
 
         model.handleCommand(new PercentType(60));
 
@@ -258,7 +258,7 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
-        model.lock();
+        model.acquire();
 
         model.handleCommand(IncreaseDecreaseType.INCREASE);
 
@@ -272,7 +272,7 @@ class ShellyLightModelTest {
         ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
-        model.lock();
+        model.acquire();
 
         model.handleCommand(HSBType.RED);
 

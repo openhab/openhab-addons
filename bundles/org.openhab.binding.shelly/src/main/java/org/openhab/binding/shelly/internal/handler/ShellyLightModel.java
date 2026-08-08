@@ -210,6 +210,7 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void handleCommand(Command command) {
+        logger.trace("{}: light {} handleCommand({})", lightHandler.thingName, lightId, command);
         super.handleCommand(command);
         if (command instanceof HSBType) {
             setMode(Mode.COLOR);
@@ -223,6 +224,7 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void handleColorTemperatureCommand(Command command) {
+        logger.trace("{}: light {} handleColorTemperatureCommand({})", lightHandler.thingName, lightId, command);
         super.handleColorTemperatureCommand(command);
         setMode(Mode.WHITE);
     }
@@ -238,6 +240,7 @@ public class ShellyLightModel extends LightModel {
      * Set the brightness (i.e. the brightness when color temperature mode).
      */
     public void setBrightness(int brightness) {
+        logger.trace("{}: light {} setBrightness({})", lightHandler.thingName, lightId, brightness);
         setBrightness((double) brightness);
         setMode(Mode.WHITE);
     }
@@ -247,6 +250,7 @@ public class ShellyLightModel extends LightModel {
      */
     public void setBrightness(Command command) {
         if (!(command instanceof HSBType)) {
+            logger.trace("{}: light {} setBrightness({})", lightHandler.thingName, lightId, command);
             super.handleCommand(command);
             setMode(Mode.WHITE);
         }
@@ -284,6 +288,7 @@ public class ShellyLightModel extends LightModel {
      * Set the color component at the given RGBX index.
      */
     public void setColor(RGBX index, int value) {
+        logger.trace("{}: light {} setColor({},{})", lightHandler.thingName, lightId, index, value);
         cacheRGBX[index.ordinal()] = value;
         double[] rgbx = getRGBx();
         rgbx[index.ordinal()] = value;
@@ -332,6 +337,7 @@ public class ShellyLightModel extends LightModel {
      * Set the color temperature.
      */
     public void setColorTemp(double kelvin) {
+        logger.trace("{}: light {} setColorTemp({})", lightHandler.thingName, lightId, kelvin);
         setMirek(reciprocal(kelvin));
         setMode(Mode.WHITE);
     }
@@ -354,6 +360,7 @@ public class ShellyLightModel extends LightModel {
      * Set the effect.
      */
     public void setEffect(int value) {
+        logger.trace("{}: light {} setEffect({})", lightHandler.thingName, lightId, value);
         effect = value;
     }
 
@@ -375,6 +382,7 @@ public class ShellyLightModel extends LightModel {
      * Set gain (i.e. the brightness when color mode).
      */
     public void setGain(double gain) {
+        logger.trace("{}: light {} setGain({})", lightHandler.thingName, lightId, gain);
         setBrightness((double) gain);
         setMode(Mode.COLOR);
     }
@@ -384,6 +392,7 @@ public class ShellyLightModel extends LightModel {
      */
     public void setGain(Command command) {
         if (!(command instanceof HSBType)) {
+            logger.trace("{}: light {} setGain({})", lightHandler.thingName, lightId, command);
             super.handleCommand(command);
             setMode(Mode.COLOR);
         }
@@ -418,6 +427,7 @@ public class ShellyLightModel extends LightModel {
      * Set the shelly device mode.
      */
     public void setMode(Mode shellyMode) {
+        logger.trace("{}: light {} setMode({})", lightHandler.thingName, lightId, shellyMode);
         this.shellyMode = shellyMode;
     }
 
@@ -444,6 +454,7 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void setOnOff(boolean on) {
+        logger.trace("{}: light {} setOnOff({})", lightHandler.thingName, lightId, on);
         super.setOnOff(on);
     }
 
@@ -465,6 +476,7 @@ public class ShellyLightModel extends LightModel {
      * Set the RGBX values.
      */
     public void setRGBX(int[] rgbx) {
+        logger.trace("{}: light {} setRGBX({})", lightHandler.thingName, lightId, rgbx);
         setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
         refreshCache(rgbx);
         setMode(Mode.COLOR);
@@ -525,7 +537,7 @@ public class ShellyLightModel extends LightModel {
     /**
      * Acquire the lock, and save the initial model state to allow for subsequent dirty flag checks.
      */
-    public void lock() {
+    public void acquire() {
         lock.lock();
         initialSnapshot = logger.isDebugEnabled() ? toString() : null;
         initialRGBx = getRGBX();
@@ -534,7 +546,7 @@ public class ShellyLightModel extends LightModel {
         initialShellyMode = shellyMode;
         initialBrightness = getBrightness(true);
         initialColorTemperature = getColorTemperature();
-        logger.debug("{}: light {} model locked", lightHandler.thingName, lightId);
+        logger.debug("{}: light model {} acquired", lightHandler.thingName, lightId);
     }
 
     /**
@@ -542,13 +554,13 @@ public class ShellyLightModel extends LightModel {
      * 
      * @return true if the model was dirty and the channels were updated, false otherwise.
      */
-    public boolean unlock() {
+    public boolean release() {
         boolean updated = lightHandler.updateDirtyChannelsForLightModel(this);
         if (updated) {
             logger.debug("{}: light {} model updated\n => OLD: {}\n => NEW: {}", lightHandler.thingName, lightId,
                     initialSnapshot, this);
         }
-        logger.debug("{}: light {} model unlocked", lightHandler.thingName, lightId);
+        logger.debug("{}: light model {} released", lightHandler.thingName, lightId);
         lock.unlock();
         return updated;
     }

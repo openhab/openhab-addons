@@ -80,32 +80,24 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
 
         try {
-            int lightId = getLightIdFromGroup(groupName);
-            ShellyLightModel model = getOrCreateLightModel(lightId);
+            Map<Integer, ShellyLightModel> lightModels = acquireLightModels();
             try {
-                model.lock();
-                if (updateLightModelFromChannelCommand(model, channelUID, command)) {
+                int lightId = getLightIdFromGroup(groupName);
+                if (lightModels.computeIfAbsent(lightId,
+                        id -> ShellyLightModel.create(this, id, thing.getThingTypeUID(), profile,
+                                DIM_STEPSIZE)) instanceof ShellyLightModel model
+                        && updateLightModelFromChannelCommand(model, channelUID, command)) {
                     updateRemoteDeviceFromLightModel(model, lightId);
                     return true;
                 }
                 return false;
             } finally {
-                model.unlock();
+                releaseLightModels();
             }
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to handle command: {}", thingName, e.toString());
             return false;
         }
-    }
-
-    private ShellyLightModel getOrCreateLightModel(int lightId) {
-        ShellyLightModel model = lightModels.get(lightId);
-        if (model == null) {
-            // create a new entry
-            model = ShellyLightModel.create(this, lightId, thing.getThingTypeUID(), profile, DIM_STEPSIZE);
-            lightModels.put(lightId, model);
-        }
-        return model;
     }
 
     @Override
@@ -124,17 +116,19 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
         boolean updated = false;
 
-        int lightId = 0;
-        for (ShellyStatusLightChannel light : status.lights) {
-            ShellyLightModel model = getOrCreateLightModel(lightId);
-            try {
-                model.lock();
-                updateLightModelFromStatus(model, light);
-                updated |= updateChannelsFromLightStatusDTO(light, lightId);
-            } finally {
-                updated |= model.unlock();
+        Map<Integer, ShellyLightModel> lightModels = acquireLightModels();
+        try {
+            int lightId = 0;
+            for (ShellyStatusLightChannel light : status.lights) {
+                if (lightModels.computeIfAbsent(lightId, id -> ShellyLightModel.create(this, id,
+                        thing.getThingTypeUID(), profile, DIM_STEPSIZE)) instanceof ShellyLightModel model) {
+                    updateLightModelFromStatus(model, light);
+                    updated |= updateChannelsFromLightStatusDTO(light, lightId);
+                }
+                lightId++;
             }
-            lightId++;
+        } finally {
+            updated |= releaseLightModels();
         }
 
         return updated;
@@ -182,8 +176,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     @Override
     public Map<Integer, ShellyLightModel> acquireLightModels() {
         for (ShellyLightModel model : lightModels.values()) {
-            model.lock();
+            model.acquire();
         }
+        logger.debug("{}: light models acquired", thingName);
         return lightModels;
     }
 
@@ -191,8 +186,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     public boolean releaseLightModels() {
         boolean result = false;
         for (ShellyLightModel model : lightModels.values()) {
-            result |= model.unlock();
+            result |= model.release();
         }
+        logger.debug("{}: light models released", thingName);
         return result;
     }
 
