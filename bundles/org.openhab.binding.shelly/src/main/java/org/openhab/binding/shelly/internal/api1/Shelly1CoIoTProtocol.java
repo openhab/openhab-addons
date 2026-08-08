@@ -143,22 +143,22 @@ public class Shelly1CoIoTProtocol {
                     case "red":
                         col.setRed((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED,
-                                ShellyColorUtils.toPercent((int) s.value));
+                                getDecimal((int) s.value));
                         break;
                     case "green":
                         col.setGreen((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN,
-                                ShellyColorUtils.toPercent((int) s.value));
+                                getDecimal((int) s.value));
                         break;
                     case "blue":
                         col.setBlue((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE,
-                                ShellyColorUtils.toPercent((int) s.value));
+                                getDecimal((int) s.value));
                         break;
                     case "white":
                         col.setWhite((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE,
-                                ShellyColorUtils.toPercent((int) s.value));
+                                getDecimal((int) s.value));
                         break;
                     case "gain":
                         col.setGain((int) s.value);
