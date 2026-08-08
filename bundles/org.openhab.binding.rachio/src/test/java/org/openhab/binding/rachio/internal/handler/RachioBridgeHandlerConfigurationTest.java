@@ -83,6 +83,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -473,6 +474,7 @@ class RachioBridgeHandlerConfigurationTest {
         verify(api, Mockito.timeout(1000)).registerWebHookTarget(targetCaptor.capture(),
                 Mockito.eq("https://cloud.example.org/rachio/webhook"), Mockito.eq(""), Mockito.eq(""),
                 Mockito.isNull(), Mockito.eq(false), Mockito.eq(RequestPurpose.BACKGROUND_REFRESH));
+        awaitCloudWebhookReconciliation(handler);
         RachioWebhookTarget target = targetCaptor.getValue();
         assertThat(target.getResourceType(), is(RachioWebhookResourceType.VALVE));
         assertThat(target.getResourceId(), is("valve-id"));
@@ -493,6 +495,7 @@ class RachioBridgeHandlerConfigurationTest {
         verify(api, Mockito.timeout(1000)).registerWebHookTarget(targetCaptor.capture(),
                 Mockito.eq("https://cloud.example.org/rachio/webhook"), Mockito.eq(""), Mockito.eq(""),
                 Mockito.isNull(), Mockito.eq(false), Mockito.eq(RequestPurpose.BACKGROUND_REFRESH));
+        awaitCloudWebhookReconciliation(handler);
         RachioWebhookTarget target = targetCaptor.getValue();
         assertThat(target.getResourceType(), is(RachioWebhookResourceType.PROGRAM));
         assertThat(target.getResourceId(), is("program-id"));
@@ -510,6 +513,7 @@ class RachioBridgeHandlerConfigurationTest {
         webhookService.set(availableWebhookService);
 
         handler.onCloudWebhookProviderChanged();
+        awaitCloudWebhookReconciliation(handler);
 
         verify(api, never()).registerWebHookTarget(Mockito.any(RachioWebhookTarget.class), Mockito.anyString(),
                 Mockito.anyString(), Mockito.anyString(), Mockito.nullable(String.class), Mockito.anyBoolean(),
@@ -536,6 +540,7 @@ class RachioBridgeHandlerConfigurationTest {
         verify(api, Mockito.timeout(1000)).registerWebHook(Mockito.eq("controller-id"),
                 Mockito.eq("https://cloud.example.org/rachio/webhook"), Mockito.eq(""), Mockito.eq(""),
                 Mockito.isNull(), Mockito.eq(false), Mockito.eq(RequestPurpose.BACKGROUND_REFRESH));
+        awaitCloudWebhookReconciliation(handler);
         handler.dispose();
     }
 
@@ -711,8 +716,11 @@ class RachioBridgeHandlerConfigurationTest {
         verify(webhookService, Mockito.times(1)).requestWebhook("/rachio/webhook");
 
         firstHandler.onCloudWebhookProviderChanged();
-        assertThat(firstHandler.getModernWebhookUrlForRegistration(), is(cloudWebhookUrl));
         secondHandler.onCloudWebhookProviderChanged();
+        awaitCloudWebhookReconciliation(firstHandler);
+        awaitCloudWebhookReconciliation(secondHandler);
+
+        assertThat(firstHandler.getModernWebhookUrlForRegistration(), is(cloudWebhookUrl));
         assertThat(secondHandler.getModernWebhookUrlForRegistration(), is(cloudWebhookUrl));
 
         verify(webhookService, Mockito.times(2)).requestWebhook("/rachio/webhook");
@@ -736,14 +744,18 @@ class RachioBridgeHandlerConfigurationTest {
         registry.onProviderChanged(firstWebhookService, null);
         firstHandler.onCloudWebhookProviderChanged();
         secondHandler.onCloudWebhookProviderChanged();
-        assertWebhookUrlEventually(firstHandler, "");
+        awaitCloudWebhookReconciliation(firstHandler);
+        awaitCloudWebhookReconciliation(secondHandler);
+        assertThat(firstHandler.getModernWebhookUrlForRegistration(), is(""));
         assertThat(secondHandler.getModernWebhookUrlForRegistration(), is(""));
 
         webhookService.set(secondWebhookService);
         registry.onProviderChanged(null, secondWebhookService);
         firstHandler.onCloudWebhookProviderChanged();
         secondHandler.onCloudWebhookProviderChanged();
-        assertWebhookUrlEventually(firstHandler, "https://cloud.example.org/rachio/second");
+        awaitCloudWebhookReconciliation(firstHandler);
+        awaitCloudWebhookReconciliation(secondHandler);
+        assertThat(firstHandler.getModernWebhookUrlForRegistration(), is("https://cloud.example.org/rachio/second"));
         assertThat(secondHandler.getModernWebhookUrlForRegistration(), is("https://cloud.example.org/rachio/second"));
 
         verify(firstWebhookService, Mockito.times(1)).requestWebhook("/rachio/webhook");
@@ -1569,15 +1581,14 @@ class RachioBridgeHandlerConfigurationTest {
         method.invoke(handler, requestPurpose);
     }
 
-    private void assertWebhookUrlEventually(RachioBridgeHandler handler, String expectedUrl)
-            throws InterruptedException {
+    private void awaitCloudWebhookReconciliation(RachioBridgeHandler handler)
+            throws ReflectiveOperationException, InterruptedException {
+        AtomicBoolean pending = getField(handler, "cloudWebhookReconciliationPending");
         long deadline = System.nanoTime() + 1_000_000_000L;
-        String actualUrl = handler.getModernWebhookUrlForRegistration();
-        while (!expectedUrl.equals(actualUrl) && System.nanoTime() < deadline) {
+        while (pending.get() && System.nanoTime() < deadline) {
             Thread.sleep(10);
-            actualUrl = handler.getModernWebhookUrlForRegistration();
         }
-        assertThat(actualUrl, is(expectedUrl));
+        assertThat(pending.get(), is(false));
     }
 
     private RachioBridgeHandler bridgeHandlerWithMockApi(RachioApi api, Map<String, Object> initialConfiguration)
