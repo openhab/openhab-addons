@@ -141,11 +141,28 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         return homeCache.getValue();
     }
 
+    /**
+     * Clears expired or invalid session tokens from persistent storage and resets internal state.
+     */
+    public void clearSessionToken() {
+        sessionStorage.remove("token");
+        sessionStorage.remove("rriot");
+        token = "";
+        rriot = new Rriot();
+        logger.debug("Cleared invalid token and rriot session state from sessionStorage.");
+    }
+
     @Nullable
     public Home refreshHome() {
         try {
             return webTargets.getHomeDetail(baseUri, token);
         } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                clearSessionToken();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Session token expired (code 2010). Please request and enter a new 2FA code.");
+                return null;
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return null;
         }
@@ -165,6 +182,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             }
             return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
         } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                clearSessionToken();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Session token expired (code 2010). Please request and enter a new 2FA code.");
+                return new HomeData();
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return new HomeData();
         }
@@ -175,6 +198,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         try {
             return webTargets.getRoutines(deviceId, rriot);
         } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                clearSessionToken();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Session token expired (code 2010). Please request and enter a new 2FA code.");
+                return "";
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return "";
         }
@@ -185,6 +214,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         try {
             return webTargets.setRoutine(sceneID, rriot);
         } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                clearSessionToken();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Session token expired (code 2010). Please request and enter a new 2FA code.");
+                return "";
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return "";
         }
