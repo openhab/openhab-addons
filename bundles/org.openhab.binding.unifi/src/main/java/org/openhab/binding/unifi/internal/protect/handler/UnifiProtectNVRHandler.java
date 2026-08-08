@@ -275,6 +275,13 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     logger.trace("Private API WebSocket update: action={}, model={}", update.action, update.modelType);
                     routePrivateApiUpdate(update);
                 });
+            }, () -> {
+                // The private socket came back after a stall. Its bootstrap has just been refreshed,
+                // but only the device sync writes that state onto the Thing channels, and it normally
+                // runs from the public event socket's onOpen -- which does not fire when only the
+                // private socket dropped.
+                logger.debug("Private API WebSocket reconnected, syncing devices from refreshed bootstrap");
+                scheduler.execute(this::syncDevices);
             }).whenComplete((result, ex) -> {
                 if (ex != null) {
                     logger.debug("Failed to enable Private API WebSocket", ex);

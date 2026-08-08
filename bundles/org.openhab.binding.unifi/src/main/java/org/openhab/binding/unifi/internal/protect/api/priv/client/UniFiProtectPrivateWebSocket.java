@@ -27,6 +27,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Bridge;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Camera;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Chime;
@@ -60,12 +61,16 @@ public class UniFiProtectPrivateWebSocket {
     private final String wsUrl;
     private final @Nullable String authCookie;
     private final Consumer<WebSocketUpdate> updateHandler;
+    private final Runnable onReconnected;
     private final UniFiProtectPrivateClient client;
     private final WebSocketClient wsClient;
 
     private volatile @Nullable Session session;
     private volatile @Nullable CompletableFuture<Void> connectFuture;
     private volatile boolean shouldReconnect = true;
+    // Set when an established session drops, so the next successful connect knows it has to
+    // resynchronise. Updates sent while the socket was down are not replayed by Protect.
+    private volatile boolean resyncAfterConnect = false;
     private final AtomicInteger reconnectAttempts = new AtomicInteger(0);
     private static final int MAX_RECONNECT_ATTEMPTS = 10;
     private static final int INITIAL_RECONNECT_DELAY_MS = 1_000;
@@ -82,15 +87,21 @@ public class UniFiProtectPrivateWebSocket {
      * @param httpClient HTTP client to use (shared from main client)
      */
     public UniFiProtectPrivateWebSocket(String wsUrl, @Nullable String authCookie,
-            Consumer<WebSocketUpdate> updateHandler, UniFiProtectPrivateClient client, HttpClient httpClient) {
+            Consumer<WebSocketUpdate> updateHandler, Runnable onReconnected, UniFiProtectPrivateClient client,
+            HttpClient httpClient) {
         this.wsUrl = wsUrl;
         this.authCookie = authCookie;
         this.updateHandler = updateHandler;
+        this.onReconnected = onReconnected;
         this.client = client;
 
         this.wsClient = new WebSocketClient(httpClient);
         // Prevent wsClient.stop() from stopping the shared HttpClient instance
         this.wsClient.unmanage(httpClient);
+        // Detect a silently dead / half-open connection: Jetty closes the session
+        // when no frame is read within the window -> onWebSocketClose -> reconnect.
+        // Without this a dropped socket stays "ONLINE" and updates stop forever.
+        this.wsClient.setMaxIdleTimeout(UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS);
 
         try {
             wsClient.start();
@@ -128,6 +139,7 @@ public class UniFiProtectPrivateWebSocket {
                     reconnectAttempts.set(0);
                     logger.debug("WebSocket connected");
                     newFuture.complete(null);
+                    resyncIfReconnected();
                 } catch (Exception ex) {
                     logger.debug("WebSocket connection failed", ex);
                     newFuture.completeExceptionally(ex);
@@ -141,6 +153,37 @@ public class UniFiProtectPrivateWebSocket {
         }
 
         return newFuture;
+    }
+
+    /**
+     * Resynchronise after an established session was re-established.
+     *
+     * Reconnecting only restores the stream of new updates: Protect does not replay what happened
+     * while the socket was down, and {@code /ws/updates} is opened without the cached
+     * {@code lastUpdateId}. Refreshing the bootstrap alone is not enough either, because that only
+     * replaces the client's cached copy — the Thing channels are written from it by the NVR
+     * handler's device sync, which otherwise runs only when the public event socket reopens. A
+     * private-only stall leaves that socket connected, so nothing would push the recovered state
+     * out. Hence: refresh the bootstrap, then notify the handler to sync devices from it.
+     */
+    private void resyncIfReconnected() {
+        if (!resyncAfterConnect) {
+            // First connect of this socket: the caller has just bootstrapped, nothing to catch up on.
+            return;
+        }
+        resyncAfterConnect = false;
+        logger.debug("Refreshing bootstrap after WebSocket reconnect to pick up missed updates");
+        client.refreshBootstrap().whenComplete((bootstrap, ex) -> {
+            if (ex != null) {
+                logger.debug("Bootstrap refresh after reconnect failed", ex);
+                return;
+            }
+            try {
+                onReconnected.run();
+            } catch (RuntimeException e) {
+                logger.debug("Device sync after reconnect failed", e);
+            }
+        });
     }
 
     /**
@@ -273,6 +316,7 @@ public class UniFiProtectPrivateWebSocket {
         public void onWebSocketClose(int statusCode, String reason) {
             logger.debug("WebSocket closed: {} - {}", statusCode, reason);
             if (shouldReconnect) {
+                resyncAfterConnect = true;
                 scheduleReconnect();
             }
         }
