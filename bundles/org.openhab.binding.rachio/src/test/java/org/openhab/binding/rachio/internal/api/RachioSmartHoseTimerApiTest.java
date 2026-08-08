@@ -35,7 +35,7 @@ import com.google.gson.JsonParser;
 /**
  * Tests Smart Hose Timer API payload and DTO helpers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioSmartHoseTimerApiTest {

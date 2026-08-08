@@ -68,7 +68,7 @@ import com.google.gson.JsonParser;
 /**
  * Tests command compatibility for channels that now expose typed Quantity item types.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("null")

@@ -28,7 +28,9 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
 import org.openhab.core.thing.ThingUID;
@@ -36,7 +38,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * Tests for Rachio Thing UID mapping across API model rebuilds.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("null")
@@ -216,7 +218,7 @@ class RachioApiUIDLookupTest {
     }
 
     private RachioApi apiWithDevice(RachioDevice device) {
-        RachioApi api = new RachioApi("");
+        RachioApi api = new RachioApi("", Mockito.mock(HttpClient.class));
         api.replaceDevices(Map.of(device.id, device));
         return api;
     }

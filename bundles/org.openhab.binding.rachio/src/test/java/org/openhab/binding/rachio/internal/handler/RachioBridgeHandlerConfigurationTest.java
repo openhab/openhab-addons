@@ -79,16 +79,20 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -131,11 +135,13 @@ import com.google.gson.Gson;
 /**
  * Tests Cloud Connector configuration update behavior.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioBridgeHandlerConfigurationTest {
+    private static final HttpClient HTTP_CLIENT = Mockito.mock(HttpClient.class);
+
     @Test
     void webhookModeSelectionKeepsHoseTimerWebhooksOptIn() {
         assertThat(RachioBridgeHandler.selectWebhookMode(RachioWebhookResourceType.IRRIGATION_CONTROLLER, true),
@@ -179,7 +185,7 @@ class RachioBridgeHandlerConfigurationTest {
     @Test
     void manualModernWebhookUrlIsUsedOnlyWhenAutoConfigurationIsEnabled() throws Exception {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
-        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, () -> {
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, HTTP_CLIENT, () -> {
             throw new AssertionError("manual publicWebhookUrl must not request WebhookService");
         });
         handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
@@ -199,7 +205,8 @@ class RachioBridgeHandlerConfigurationTest {
 
     @Test
     void manualModernWebhookUrlRejectsHttp() throws Exception {
-        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build());
+        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
+                HTTP_CLIENT);
         RachioConfiguration config = new RachioConfiguration();
         config.autoConfigureWebhooks = true;
         config.publicWebhookUrl = "http://example.org/rachio/webhook";
@@ -210,7 +217,8 @@ class RachioBridgeHandlerConfigurationTest {
 
     @Test
     void manualModernWebhookUrlRejectsNonWebScheme() throws Exception {
-        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build());
+        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
+                HTTP_CLIENT);
         RachioConfiguration config = new RachioConfiguration();
         config.autoConfigureWebhooks = true;
         config.publicWebhookUrl = "ftp://example.org/rachio/webhook";
@@ -221,7 +229,8 @@ class RachioBridgeHandlerConfigurationTest {
 
     @Test
     void invalidManualModernWebhookUrlDoesNotRegisterWebhook() throws Exception {
-        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build());
+        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
+                HTTP_CLIENT);
         RachioApi api = Mockito.mock(RachioApi.class);
         setField(handler, "rachioApi", api);
         RachioConfiguration config = new RachioConfiguration();
@@ -238,7 +247,8 @@ class RachioBridgeHandlerConfigurationTest {
 
     @Test
     void valveWebhookRegistrationUsesModernUrlWhenHoseTimerWebhooksAreEnabled() throws Exception {
-        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build());
+        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
+                HTTP_CLIENT);
         RachioApi api = Mockito.mock(RachioApi.class);
         setField(handler, "rachioApi", api);
         RachioConfiguration config = modernHoseTimerWebhookConfig();
@@ -261,7 +271,8 @@ class RachioBridgeHandlerConfigurationTest {
 
     @Test
     void valveProgramWebhookRegistrationUsesModernUrlWhenHoseTimerWebhooksAreEnabled() throws Exception {
-        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build());
+        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
+                HTTP_CLIENT);
         RachioApi api = Mockito.mock(RachioApi.class);
         setField(handler, "rachioApi", api);
         setField(handler, "thingConfig", modernHoseTimerWebhookConfig());
@@ -281,7 +292,8 @@ class RachioBridgeHandlerConfigurationTest {
 
     @Test
     void disabledHoseTimerWebhookConfigDoesNotRegisterValveOrProgramWebhooks() throws Exception {
-        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build());
+        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
+                HTTP_CLIENT);
         RachioApi api = Mockito.mock(RachioApi.class);
         setField(handler, "rachioApi", api);
         RachioConfiguration config = new RachioConfiguration();
@@ -547,7 +559,7 @@ class RachioBridgeHandlerConfigurationTest {
     @Test
     void cloudWebhookServiceUnavailableLeavesModernWebhookUrlEmpty() throws Exception {
         RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
-                () -> null);
+                HTTP_CLIENT, () -> null);
         RachioConfiguration config = new RachioConfiguration();
         config.autoConfigureWebhooks = true;
         config.useCloudWebhook = true;
@@ -572,7 +584,7 @@ class RachioBridgeHandlerConfigurationTest {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").withConfiguration(new Configuration(
                 Map.of(PARAM_APIKEY, "api-key", PARAM_AUTO_CONFIGURE_WEBHOOKS, true, PARAM_USE_CLOUD_WEBHOOK, true)))
                 .build();
-        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, () -> null);
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, HTTP_CLIENT, () -> null);
         handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
         setField(handler, "rachioApi", api);
 
@@ -591,7 +603,7 @@ class RachioBridgeHandlerConfigurationTest {
     void cloudWebhookServiceUnavailableUsesLegacyCallbackWhenConfigured() throws Exception {
         RachioApi api = Mockito.mock(RachioApi.class);
         RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
-                () -> null);
+                HTTP_CLIENT, () -> null);
         RachioConfiguration config = new RachioConfiguration();
         config.autoConfigureWebhooks = true;
         config.useCloudWebhook = true;
@@ -620,7 +632,7 @@ class RachioBridgeHandlerConfigurationTest {
         Mockito.when(webhookService.removeWebhook("/rachio/webhook"))
                 .thenReturn(CompletableFuture.completedFuture(null));
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
-        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, () -> webhookService);
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, HTTP_CLIENT, () -> webhookService);
         handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
         RachioConfiguration config = new RachioConfiguration();
         config.autoConfigureWebhooks = true;
@@ -765,8 +777,64 @@ class RachioBridgeHandlerConfigurationTest {
     }
 
     @Test
+    void cloudWebhookProviderChangeDuringReconciliationTriggersAnotherPass() throws Exception {
+        String secondWebhookUrl = "https://cloud.example.org/rachio/second";
+        String thirdWebhookUrl = "https://cloud.example.org/rachio/third";
+        WebhookService firstWebhookService = cloudWebhookService("https://cloud.example.org/rachio/first");
+        WebhookService secondWebhookService = cloudWebhookService(secondWebhookUrl);
+        WebhookService thirdWebhookService = cloudWebhookService(thirdWebhookUrl);
+        AtomicReference<@Nullable WebhookService> webhookService = new AtomicReference<>(firstWebhookService);
+        RachioCloudWebhookRegistry registry = new RachioCloudWebhookRegistry(webhookService::get);
+        RachioApi api = Mockito.mock(RachioApi.class);
+        Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, HTTP_CLIENT, registry);
+        handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
+        RachioConfiguration config = new RachioConfiguration();
+        config.autoConfigureWebhooks = true;
+        config.useCloudWebhook = true;
+        setField(handler, "thingConfig", config);
+        setField(handler, "rachioApi", api);
+        Mockito.when(api.getDevices()).thenReturn(new HashMap<>());
+        addConfiguredControllerHandler(handler, "controller-id");
+
+        CountDownLatch secondRegistrationStarted = new CountDownLatch(1);
+        CountDownLatch allowSecondRegistrationToComplete = new CountDownLatch(1);
+        Mockito.doAnswer(invocation -> {
+            String webhookUrl = invocation.getArgument(1);
+            if (secondWebhookUrl.equals(webhookUrl)) {
+                secondRegistrationStarted.countDown();
+                assertThat(allowSecondRegistrationToComplete.await(1, TimeUnit.SECONDS), is(true));
+            }
+            return null;
+        }).when(api).registerWebHook(Mockito.eq("controller-id"), Mockito.anyString(), Mockito.eq(""), Mockito.eq(""),
+                Mockito.isNull(), Mockito.eq(false), Mockito.eq(RequestPurpose.BACKGROUND_REFRESH));
+
+        webhookService.set(secondWebhookService);
+        registry.onProviderChanged(firstWebhookService, secondWebhookService);
+        handler.onCloudWebhookProviderChanged();
+        assertThat(secondRegistrationStarted.await(1, TimeUnit.SECONDS), is(true));
+
+        webhookService.set(thirdWebhookService);
+        registry.onProviderChanged(secondWebhookService, thirdWebhookService);
+        handler.onCloudWebhookProviderChanged();
+        allowSecondRegistrationToComplete.countDown();
+        awaitCloudWebhookReconciliation(handler);
+
+        ArgumentCaptor<String> webhookUrlCaptor = ArgumentCaptor.forClass(String.class);
+        verify(api, Mockito.times(2)).registerWebHook(Mockito.eq("controller-id"), webhookUrlCaptor.capture(),
+                Mockito.eq(""), Mockito.eq(""), Mockito.isNull(), Mockito.eq(false),
+                Mockito.eq(RequestPurpose.BACKGROUND_REFRESH));
+        assertThat(webhookUrlCaptor.getAllValues(), is(List.of(secondWebhookUrl, thirdWebhookUrl)));
+        assertThat(handler.getModernWebhookUrlForRegistration(), is(thirdWebhookUrl));
+        verify(secondWebhookService, Mockito.times(1)).requestWebhook("/rachio/webhook");
+        verify(thirdWebhookService, Mockito.times(1)).requestWebhook("/rachio/webhook");
+        handler.dispose();
+    }
+
+    @Test
     void modernWebhookUrlRejectsUserInfoCredentials() throws Exception {
-        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build());
+        RachioBridgeHandler handler = new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
+                HTTP_CLIENT);
         RachioConfiguration config = new RachioConfiguration();
         config.autoConfigureWebhooks = true;
         config.publicWebhookUrl = "https://user:password@example.org/rachio/webhook";
@@ -915,7 +983,7 @@ class RachioBridgeHandlerConfigurationTest {
     @Test
     void legacyEventForUnknownControllerIsRejectedWithoutRefresh() {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
-        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge));
+        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge, HTTP_CLIENT));
         Mockito.doReturn(new HashMap<String, RachioDevice>()).when(handler).getDevices();
         RachioEventGsonDTO event = new RachioEventGsonDTO();
         event.deviceId = "unknown-controller";
@@ -1472,7 +1540,7 @@ class RachioBridgeHandlerConfigurationTest {
     @Test
     void scheduledCorePollUsesMediumPriority() {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
-        RachioBridgeHandler handler = new RachioBridgeHandler(bridge);
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, HTTP_CLIENT);
 
         assertThat(handler.getRefreshPriority(RefreshReason.SCHEDULED_POLL), is(Priority.MEDIUM));
         assertThat(handler.getRequestPurpose(RefreshReason.SCHEDULED_POLL), is(RequestPurpose.CORE_STATUS_POLL));
@@ -1482,7 +1550,7 @@ class RachioBridgeHandlerConfigurationTest {
     void handleConfigurationUpdatePersistsCloudThingConfiguration() {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge")
                 .withConfiguration(new Configuration(Map.of(PARAM_FORECAST_UNITS, "METRIC"))).build();
-        RachioBridgeHandler handler = new RachioBridgeHandler(bridge);
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, HTTP_CLIENT);
         ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
         handler.setCallback(callback);
 
@@ -1494,7 +1562,7 @@ class RachioBridgeHandlerConfigurationTest {
 
     private RachioBridgeHandler legacyHandler() {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
-        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge));
+        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge, HTTP_CLIENT));
         RachioConfiguration config = new RachioConfiguration();
         config.callbackUrl = "https://example.org/rachio/webhook";
         try {
@@ -1513,7 +1581,7 @@ class RachioBridgeHandlerConfigurationTest {
 
     private RachioBridgeHandler disabledWebhookHandler() {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
-        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge));
+        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge, HTTP_CLIENT));
         RachioCloudDevice cloudDevice = new RachioCloudDevice();
         cloudDevice.id = "controller-id";
         HashMap<String, RachioDevice> devices = new HashMap<>();
@@ -1529,7 +1597,7 @@ class RachioBridgeHandlerConfigurationTest {
                 .withConfiguration(
                         new Configuration(Map.of(PARAM_AUTO_CONFIGURE_WEBHOOKS, true, PARAM_USE_CLOUD_WEBHOOK, true)))
                 .build();
-        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge, registry));
+        RachioBridgeHandler handler = Mockito.spy(new RachioBridgeHandler(bridge, HTTP_CLIENT, registry));
         handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
         RachioConfiguration config = new RachioConfiguration();
         config.autoConfigureWebhooks = true;
@@ -1584,11 +1652,13 @@ class RachioBridgeHandlerConfigurationTest {
     private void awaitCloudWebhookReconciliation(RachioBridgeHandler handler)
             throws ReflectiveOperationException, InterruptedException {
         AtomicBoolean pending = getField(handler, "cloudWebhookReconciliationPending");
+        AtomicBoolean requested = getField(handler, "cloudWebhookReconciliationRequested");
         long deadline = System.nanoTime() + 1_000_000_000L;
-        while (pending.get() && System.nanoTime() < deadline) {
+        while ((pending.get() || requested.get()) && System.nanoTime() < deadline) {
             Thread.sleep(10);
         }
         assertThat(pending.get(), is(false));
+        assertThat(requested.get(), is(false));
     }
 
     private RachioBridgeHandler bridgeHandlerWithMockApi(RachioApi api, Map<String, Object> initialConfiguration)
@@ -1596,7 +1666,7 @@ class RachioBridgeHandlerConfigurationTest {
         Map<String, @Nullable Object> nullableInitialConfiguration = new HashMap<>(initialConfiguration);
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge")
                 .withConfiguration(new Configuration(nullableInitialConfiguration)).build();
-        RachioBridgeHandler handler = new RachioBridgeHandler(bridge);
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, HTTP_CLIENT);
         handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
         setField(handler, "rachioApi", api);
         setField(handler, "thingConfig",
@@ -1615,7 +1685,7 @@ class RachioBridgeHandlerConfigurationTest {
         Map<String, @Nullable Object> nullableInitialConfiguration = new HashMap<>(initialConfiguration);
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge")
                 .withConfiguration(new Configuration(nullableInitialConfiguration)).build();
-        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, webhookServiceSupplier);
+        RachioBridgeHandler handler = new RachioBridgeHandler(bridge, HTTP_CLIENT, webhookServiceSupplier);
         handler.setCallback(Mockito.mock(ThingHandlerCallback.class));
         setField(handler, "rachioApi", api);
         setField(handler, "thingConfig",

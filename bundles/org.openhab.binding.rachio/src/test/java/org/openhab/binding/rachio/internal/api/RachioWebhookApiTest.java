@@ -48,8 +48,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiLegacyWebHookEventType;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookEntry;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookResourceId;
@@ -65,7 +67,7 @@ import com.google.gson.JsonParser;
 /**
  * Tests generic WebhookService API helpers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })
@@ -389,7 +391,7 @@ class RachioWebhookApiTest {
     @Test
     void registerWebhookUsesInitializationPurposeAndFallsBackWhenEventCatalogLookupIsLocallyThrottled()
             throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         RecordingRateLimitManager rateLimitManager = new RecordingRateLimitManager(1);
         setField(api, "httpApi", http);
@@ -408,7 +410,7 @@ class RachioWebhookApiTest {
 
     @Test
     void createWebhookPayloadContainsExplicitBasicAuthUserInfoWithoutDiagnosticSecretLeak() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         setField(api, "httpApi", http);
         setField(api, "rateLimitManager", new RecordingRateLimitManager(0));
@@ -431,7 +433,7 @@ class RachioWebhookApiTest {
 
     @Test
     void createWebhookFailureSanitizesCredentialUrlFromExceptionDiagnostics() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         String registrationUrl = "https://rachio-test:test-secret-123@webhook.site/57b-example";
         RachioApiResult result = new RachioApiResult();
@@ -457,7 +459,7 @@ class RachioWebhookApiTest {
 
     @Test
     void createWebhookPayloadPercentEncodesSpecialCredentialCharacters() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         setField(api, "httpApi", http);
         setField(api, "rateLimitManager", new RecordingRateLimitManager(0));
@@ -474,7 +476,7 @@ class RachioWebhookApiTest {
 
     @Test
     void legacyNotificationWebhookBuildsEncodedCredentialUrlWithoutSanitizerLeak() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         setField(api, "httpApi", http);
         setField(api, "rateLimitManager", new RecordingRateLimitManager(0));
@@ -498,7 +500,7 @@ class RachioWebhookApiTest {
 
     @Test
     void clearAllLegacyNotificationWebhooksDeletesDeviceCallbacksThenRegistersAgain() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         http.legacyWebhookListJson = """
                 [
@@ -519,7 +521,7 @@ class RachioWebhookApiTest {
 
     @Test
     void legacyNotificationEventTypeEndpointUsesRequestThrottling() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         RecordingRateLimitManager rateLimitManager = new RecordingRateLimitManager(0);
         setField(api, "httpApi", http);
@@ -533,7 +535,7 @@ class RachioWebhookApiTest {
 
     @Test
     void registerWebhookListLookupLocalThrottlePropagatesForDeferredHandlerRetry() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         RecordingRateLimitManager rateLimitManager = new RecordingRateLimitManager(2);
         setField(api, "httpApi", http);
@@ -551,7 +553,7 @@ class RachioWebhookApiTest {
 
     @Test
     void serverSideWebhookRateLimitIsNotTreatedAsLocalThrottleFallback() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = createApi();
         RecordingRachioHttp http = new RecordingRachioHttp();
         http.eventTypeLookupResponseCode = HttpStatus.TOO_MANY_REQUESTS_429;
         setField(api, "httpApi", http);
@@ -603,6 +605,10 @@ class RachioWebhookApiTest {
         return object.toString();
     }
 
+    private static RachioApi createApi() {
+        return new RachioApi("person-id", Mockito.mock(HttpClient.class));
+    }
+
     private record OfficialSignatureSample(String eventType, String apiToken, String body, String signature) {
     }
 
@@ -635,6 +641,10 @@ class RachioWebhookApiTest {
         private @Nullable RachioApiException postException;
         private int eventTypeLookupResponseCode = HttpStatus.OK_200;
         private String legacyWebhookListJson = "[]";
+
+        private RecordingRachioHttp() {
+            super(Mockito.mock(HttpClient.class), "");
+        }
 
         @Override
         public RachioApiResult httpGet(String url, @Nullable String urlParameters) throws RachioApiException {

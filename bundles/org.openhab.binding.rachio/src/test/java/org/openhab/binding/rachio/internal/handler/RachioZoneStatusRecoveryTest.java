@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
@@ -55,7 +56,7 @@ import org.openhab.core.types.State;
 /**
  * Tests zone Thing status recovery after successful cloud polling.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })
@@ -236,7 +237,7 @@ class RachioZoneStatusRecoveryTest {
 
     private RachioBridgeHandler bridgeHandler() {
         Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
-        return new RachioBridgeHandler(bridge);
+        return new RachioBridgeHandler(bridge, Mockito.mock(HttpClient.class));
     }
 
     private TestZoneHandler initializedHandler(Thing thing, @Nullable RachioDevice device, @Nullable RachioZone zone,

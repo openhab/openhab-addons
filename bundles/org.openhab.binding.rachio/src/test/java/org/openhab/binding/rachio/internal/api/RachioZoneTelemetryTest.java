@@ -24,7 +24,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioClou
 /**
  * Tests zone telemetry model helpers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioZoneTelemetryTest {

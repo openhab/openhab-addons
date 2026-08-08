@@ -47,7 +47,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 /**
  * Tests servlet-level Rachio webhook duplicate handling.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })

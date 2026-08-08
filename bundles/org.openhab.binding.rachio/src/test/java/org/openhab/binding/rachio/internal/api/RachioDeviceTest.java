@@ -21,7 +21,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudNetworkSettings;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
@@ -36,6 +38,7 @@ import com.google.gson.JsonParser;
  * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class RachioDeviceTest {
 
     @Test
@@ -104,7 +107,7 @@ public class RachioDeviceTest {
     @Test
     public void publishedDiscoverySnapshotRemainsStableDuringLiveReconciliation() {
         RachioDevice device = createDevice();
-        RachioApi api = new RachioApi("person-1");
+        RachioApi api = new RachioApi("person-1", Mockito.mock(HttpClient.class));
         api.replaceDevices(Map.of(device.id, device));
         RachioDiscoverySnapshot publishedSnapshot = api.getDiscoverySnapshot();
         RachioDiscoverySnapshot.DeviceSnapshot publishedDevice = onlyDevice(publishedSnapshot);

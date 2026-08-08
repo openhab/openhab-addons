@@ -39,7 +39,7 @@ import org.openhab.core.types.Command;
 /**
  * Tests scheduled polling and listener ownership across bridge handler lifecycle changes.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })

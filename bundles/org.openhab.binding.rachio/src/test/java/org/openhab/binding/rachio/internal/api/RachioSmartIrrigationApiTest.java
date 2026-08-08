@@ -27,7 +27,9 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEvent;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEventListResponse;
@@ -44,14 +46,14 @@ import com.google.gson.JsonParser;
 /**
  * Tests Smart Irrigation Controller API payload and DTO helpers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioSmartIrrigationApiTest {
     @Test
     void currentScheduleRemainsEssentialWhenOptionalForecastIsLocallyThrottled() throws Exception {
-        RachioApi api = new RachioApi("person-id");
+        RachioApi api = new RachioApi("person-id", Mockito.mock(HttpClient.class));
         RecordingRachioHttp http = new RecordingRachioHttp();
         LowPriorityThrottlingRateLimitManager rateLimitManager = new LowPriorityThrottlingRateLimitManager();
         setField(api, "httpApi", http);
@@ -359,6 +361,10 @@ class RachioSmartIrrigationApiTest {
 
     private static class RecordingRachioHttp extends RachioHttp {
         private final List<String> getUrls = new ArrayList<>();
+
+        private RecordingRachioHttp() {
+            super(Mockito.mock(HttpClient.class), "");
+        }
 
         @Override
         public RachioApiResult httpGet(String url, @Nullable String urlParameters) {

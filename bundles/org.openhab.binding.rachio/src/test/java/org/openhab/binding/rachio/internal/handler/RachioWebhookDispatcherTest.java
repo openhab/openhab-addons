@@ -29,7 +29,7 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType
 /**
  * Tests generic webhook dispatcher routing.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioWebhookDispatcherTest {

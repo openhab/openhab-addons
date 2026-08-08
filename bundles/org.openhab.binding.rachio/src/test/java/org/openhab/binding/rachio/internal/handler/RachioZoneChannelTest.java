@@ -62,7 +62,7 @@ import org.xml.sax.SAXException;
 /**
  * Tests zone channel declarations and simple state conversions.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("null")

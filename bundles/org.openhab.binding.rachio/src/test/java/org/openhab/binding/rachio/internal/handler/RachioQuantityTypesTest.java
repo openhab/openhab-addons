@@ -30,7 +30,7 @@ import org.openhab.core.types.State;
 /**
  * Tests command and state conversions for typed Quantity channels.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioQuantityTypesTest {

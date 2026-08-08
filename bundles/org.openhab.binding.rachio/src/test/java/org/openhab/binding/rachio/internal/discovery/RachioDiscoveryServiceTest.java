@@ -49,7 +49,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * Tests Rachio schedule discovery result construction.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("null")

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for Rachio HTTP log sanitization.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioHttpSanitizerTest {

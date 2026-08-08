@@ -17,10 +17,10 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,6 +29,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
@@ -55,8 +63,18 @@ public class RachioImageServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(RachioImageServlet.class);
 
     private final Object registrationLock = new Object();
+    private final HttpClient httpClient;
     private @Nullable HttpService httpService;
     private boolean servletRegistered;
+
+    @Activate
+    public RachioImageServlet(@Reference HttpClientFactory httpClientFactory) {
+        this(httpClientFactory.getCommonHttpClient());
+    }
+
+    RachioImageServlet(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
     /**
      * OSGi HttpService bind callback.
@@ -174,20 +192,38 @@ public class RachioImageServlet extends HttpServlet {
 
         String imageUrl = SERVLET_IMAGE_URL_BASE + uri;
         logger.debug("RachioImage: {} image '{}'", request.getMethod(), uri);
-        URL url = URI.create(imageUrl).toURL();
-        URLConnection conn = url.openConnection();
-        conn.setConnectTimeout(HTTP_TIMEOUT_MS);
-        conn.setReadTimeout(HTTP_TIMEOUT_MS);
-        conn.setDoInput(true);
-        try (InputStream reader = conn.getInputStream()) {
-            OutputStream writer = resp.getOutputStream();
-            reader.transferTo(writer);
-            writer.flush();
-        } catch (IOException e) {
-            logger.debug("RachioImage: Unable to fetch image '{}': {}", uri, e.getMessage());
-            if (!resp.isCommitted()) {
-                resp.sendError(HttpServletResponse.SC_BAD_GATEWAY);
+        Request imageRequest = httpClient.newRequest(imageUrl).method(HTTP_METHOD_GET)
+                .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .header(HttpHeader.USER_AGENT, SERVLET_WEBHOOK_USER_AGENT);
+        InputStreamResponseListener listener = new InputStreamResponseListener();
+        try {
+            imageRequest.send(listener);
+            Response imageResponse = listener.get(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            int status = imageResponse.getStatus();
+            if (status < HttpStatus.OK_200 || status >= HttpStatus.MULTIPLE_CHOICES_300) {
+                throw new IOException("upstream HTTP status " + status);
             }
+
+            InputStream reader = listener.getInputStream();
+            OutputStream writer = resp.getOutputStream();
+            try (reader) {
+                reader.transferTo(writer);
+            }
+            writer.flush();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            imageRequest.abort(e);
+            sendBadGateway(resp, uri, e);
+        } catch (ExecutionException | TimeoutException | IOException e) {
+            imageRequest.abort(e);
+            sendBadGateway(resp, uri, e);
+        }
+    }
+
+    private void sendBadGateway(HttpServletResponse response, String imageId, Exception e) throws IOException {
+        logger.debug("RachioImage: Unable to fetch image '{}': {}", imageId, e.getMessage());
+        if (!response.isCommitted()) {
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY);
         }
     }
 

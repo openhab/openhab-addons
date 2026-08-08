@@ -12,24 +12,25 @@
  */
 package org.openhab.binding.rachio.internal.api;
 
-import static java.net.HttpURLConnection.*;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.getString;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,19 +59,19 @@ public class RachioHttp {
     private static final Pattern API_KEY_JSON_PATTERN = Pattern
             .compile("(?i)(\"(?:api[-_]?key|apikey)\"\\s*:\\s*\")([^\"]+)(\")");
 
-    private int apiCalls = 0;
-    private String apikey = "";
-
-    public RachioHttp() {
-    }
+    private final AtomicInteger apiCalls = new AtomicInteger();
+    private final HttpClient httpClient;
+    private final String apikey;
 
     /**
      * Constructor for the Rachio API class to create a connection to the Rachio cloud service.
      *
+     * @param httpClient shared HTTP client managed by openHAB core
      * @param key Rachio API Access token (see Web UI)
      */
-    public RachioHttp(final String key) {
-        apikey = key;
+    public RachioHttp(HttpClient httpClient, String key) {
+        this.httpClient = httpClient;
+        this.apikey = key;
     }
 
     /**
@@ -133,38 +134,34 @@ public class RachioHttp {
             @Nullable String reqDatas) throws RachioApiException {
         RachioApiResult result = new RachioApiResult();
         try {
-            apiCalls++;
+            int apiCall = apiCalls.incrementAndGet();
 
-            URL location = URI.create(urlParameters != null ? url + "?" + urlParameters : url).toURL();
+            URI location = URI.create(urlParameters != null ? url + "?" + urlParameters : url);
             result.requestMethod = method;
             result.url = location.toString();
-            result.apiCalls = apiCalls;
+            result.apiCalls = apiCall;
 
-            HttpURLConnection request = (HttpURLConnection) location.openConnection();
+            Request request = httpClient.newRequest(location).method(method)
+                    .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .header(HttpHeader.USER_AGENT, SERVLET_WEBHOOK_USER_AGENT);
             if (!apikey.isEmpty()) {
-                request.setRequestProperty("Authorization", "Bearer " + apikey);
+                request.header(HttpHeader.AUTHORIZATION, "Bearer " + apikey);
             }
-            request.setRequestMethod(method);
-            request.setConnectTimeout(HTTP_TIMEOUT_MS);
-            request.setReadTimeout(HTTP_TIMEOUT_MS);
-            request.setRequestProperty("User-Agent", SERVLET_WEBHOOK_USER_AGENT);
-            request.setRequestProperty("Content-Type", SERVLET_WEBHOOK_APPLICATION_JSON);
-            logger.trace("RachioHttp[Call #{}]: Call Rachio cloud service: {} '{}'", apiCalls,
-                    request.getRequestMethod(), sanitizeForLogging(result.url));
             if (method.equals(HTTP_METHOD_PUT) || method.equals(HTTP_METHOD_POST)) {
-                request.setDoOutput(true);
-                try (DataOutputStream wr = new DataOutputStream(request.getOutputStream())) {
-                    wr.write(reqDatas != null ? reqDatas.getBytes(StandardCharsets.UTF_8) : new byte[0]);
-                    wr.flush();
-                }
+                request.content(new StringContentProvider(reqDatas != null ? reqDatas : "", StandardCharsets.UTF_8),
+                        SERVLET_WEBHOOK_APPLICATION_JSON);
+            } else {
+                request.header(HttpHeader.CONTENT_TYPE, SERVLET_WEBHOOK_APPLICATION_JSON);
             }
-            StringBuilder response = new StringBuilder();
+            logger.trace("RachioHttp[Call #{}]: Call Rachio cloud service: {} '{}'", apiCall, request.getMethod(),
+                    sanitizeForLogging(result.url));
 
-            result.responseCode = request.getResponseCode();
-            if (request.getHeaderField(RACHIO_JSON_RATE_LIMIT) != null) {
-                result.setRateLimit(request.getHeaderField(RACHIO_JSON_RATE_LIMIT),
-                        request.getHeaderField(RACHIO_JSON_RATE_REMAINING),
-                        request.getHeaderField(RACHIO_JSON_RATE_RESET));
+            ContentResponse response = request.send();
+            result.responseCode = response.getStatus();
+            String rateLimit = response.getHeaders().get(RACHIO_JSON_RATE_LIMIT);
+            if (rateLimit != null) {
+                result.setRateLimit(rateLimit, response.getHeaders().get(RACHIO_JSON_RATE_REMAINING),
+                        response.getHeaders().get(RACHIO_JSON_RATE_RESET));
                 if (result.isRateLimitBlocked()) {
                     String message = MessageFormat.format(
                             "RachioHttp: Critical API rate limit: {0} / {1}, reset at {2}", result.rateRemaining,
@@ -173,47 +170,39 @@ public class RachioHttp {
                 }
             }
 
-            if (result.responseCode < HTTP_OK || result.responseCode >= HTTP_MULT_CHOICE) {
-                String errorResponse = readResponse(request.getErrorStream());
+            String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
+            if (result.responseCode < HttpStatus.OK_200 || result.responseCode >= HttpStatus.MULTIPLE_CHOICES_300) {
+                String errorResponse = responseBody;
                 result.resultString = "responseLength=" + errorResponse.length();
                 String message = MessageFormat.format(
                         "RachioHttp: Error sending HTTP {0} request to {1} - http response code={2}, responseLength={3}",
-                        request.getRequestMethod(), sanitizeForLogging(result.url), result.responseCode,
+                        request.getMethod(), sanitizeForLogging(result.url), result.responseCode,
                         errorResponse.length());
                 throw new RachioApiException(message, result);
             }
 
-            InputStream responseStream = request.getInputStream();
-            if (responseStream != null) {
-                response.append(readResponse(responseStream));
-            }
-
-            result.resultString = response.toString();
-            logger.trace("RachioHttp: {} {} - responseLength={}", request.getRequestMethod(), sanitizeForLogging(url),
+            result.resultString = responseBody;
+            logger.trace("RachioHttp: {} {} - responseLength={}", request.getMethod(), sanitizeForLogging(url),
                     result.resultString.length());
 
             return result;
-        } catch (RuntimeException | IOException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             result.resultString = sanitizeForLogging(getString(e.toString()));
-            if (result.resultString.contains("Server returned HTTP response code: 429")) {
-                result.responseCode = HttpStatus.TOO_MANY_REQUESTS_429;
+            throw new RachioApiException(result.resultString, result, e);
+        } catch (ExecutionException e) {
+            Throwable cause = e;
+            @Nullable
+            Throwable executionCause = e.getCause();
+            if (executionCause != null) {
+                cause = executionCause;
             }
+            result.resultString = sanitizeForLogging(getString(cause.toString()));
+            throw new RachioApiException(result.resultString, result, cause);
+        } catch (TimeoutException | RuntimeException e) {
+            result.resultString = sanitizeForLogging(getString(e.toString()));
             throw new RachioApiException(result.resultString, result, e);
         }
-    }
-
-    private String readResponse(@Nullable InputStream stream) throws IOException {
-        if (stream == null) {
-            return "";
-        }
-        StringBuilder response = new StringBuilder();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-        }
-        return response.toString();
     }
 
     static String sanitizeForLogging(@Nullable String value) {

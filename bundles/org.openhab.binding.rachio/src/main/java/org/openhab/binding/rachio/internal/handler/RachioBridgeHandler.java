@@ -44,6 +44,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.rachio.internal.RachioConfiguration;
 import org.openhab.binding.rachio.internal.api.RachioApi;
@@ -104,6 +105,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RachioBridgeHandler.class);
     private final Object lifecycleLock = new Object();
+    private final HttpClient httpClient;
     private volatile RachioApi rachioApi;
     private final RachioCloudWebhookRegistry cloudWebhookRegistry;
     private final Map<String, String> knownModernIrrigationWebhookRegistrations = new ConcurrentHashMap<>();
@@ -111,6 +113,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private final Set<RachioDiscoveryService> discoveryServices = new CopyOnWriteArraySet<>();
     private final AtomicReference<@Nullable Future<?>> initializationJob = new AtomicReference<>();
     private final AtomicBoolean cloudWebhookReconciliationPending = new AtomicBoolean();
+    private final AtomicBoolean cloudWebhookReconciliationRequested = new AtomicBoolean();
     private final AtomicReference<ResolvedWebhookState> resolvedWebhook = new AtomicReference<>(
             ResolvedWebhookState.NONE);
     private @Nullable ScheduledFuture<?> cloudWebhookRefreshJob;
@@ -133,20 +136,23 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      * Thing Handler for the Bridge thing. Handles the cloud connection and links devices+zones to a bridge.
      * Creates an instance of the RachioApi (holding all RachioDevices + RachioZones for the given API key)
      *
-     * @param bridge: Bridge class object
+     * @param bridge Bridge class object
+     * @param httpClient shared HTTP client managed by openHAB core
      */
-    public RachioBridgeHandler(final Bridge bridge) {
-        this(bridge, () -> null);
+    public RachioBridgeHandler(Bridge bridge, HttpClient httpClient) {
+        this(bridge, httpClient, () -> null);
     }
 
-    public RachioBridgeHandler(final Bridge bridge, Supplier<@Nullable WebhookService> webhookServiceSupplier) {
-        this(bridge, new RachioCloudWebhookRegistry(webhookServiceSupplier));
+    public RachioBridgeHandler(Bridge bridge, HttpClient httpClient,
+            Supplier<@Nullable WebhookService> webhookServiceSupplier) {
+        this(bridge, httpClient, new RachioCloudWebhookRegistry(webhookServiceSupplier));
     }
 
-    public RachioBridgeHandler(final Bridge bridge, RachioCloudWebhookRegistry cloudWebhookRegistry) {
+    public RachioBridgeHandler(Bridge bridge, HttpClient httpClient, RachioCloudWebhookRegistry cloudWebhookRegistry) {
         super(bridge);
+        this.httpClient = httpClient;
         this.cloudWebhookRegistry = cloudWebhookRegistry;
-        rachioApi = new RachioApi("");
+        rachioApi = new RachioApi("", httpClient);
     }
 
     /**
@@ -203,7 +209,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
         try {
             logger.debug("RachioCloud: Connecting to Rachio Cloud");
-            RachioApi initializedApi = new RachioApi("");
+            RachioApi initializedApi = new RachioApi("", httpClient);
             createCloudConnection(initializedApi, configuration, RefreshReason.INITIALIZATION);
             if (!isLifecycleCurrent(generation)) {
                 return;
@@ -339,7 +345,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             RachioApi activeApi = lifecycle.api();
             Map<String, RachioDevice> deviceList = activeApi.getDevices();
 
-            RachioApi checkApi = new RachioApi(activeApi.getPersonId());
+            RachioApi checkApi = new RachioApi(activeApi.getPersonId(), httpClient);
             createCloudConnection(checkApi, lifecycle.configuration(), refreshReason);
             if (!isLifecycleCurrent(lifecycle.generation(), activeApi)) {
                 return;
@@ -1197,30 +1203,50 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             return;
         }
         RachioConfiguration configuration = lifecycle.configuration();
-        if (!configuration.autoConfigureWebhooks || !configuration.useCloudWebhook
-                || !cloudWebhookReconciliationPending.compareAndSet(false, true)) {
+        if (!configuration.autoConfigureWebhooks || !configuration.useCloudWebhook) {
+            return;
+        }
+        cloudWebhookReconciliationRequested.set(true);
+        scheduleCloudWebhookReconciliation();
+    }
+
+    private void scheduleCloudWebhookReconciliation() {
+        if (!cloudWebhookReconciliationPending.compareAndSet(false, true)) {
             return;
         }
         try {
-            scheduler.execute(() -> {
-                try {
-                    if (!isLifecycleCurrent(lifecycle.generation(), lifecycle.api())) {
-                        return;
-                    }
-                    logger.debug(
-                            "RachioCloud: openHAB core WebhookService changed or its URL needs refresh; retrying webhook reconciliation.");
-                    ResolvedWebhookState webhookState = getResolvedWebhookState();
-                    cloudWebhookRegistry.invalidateCachedWebhook(webhookState.providerGeneration());
-                    releaseResolvedCloudWebhookForReconciliation();
-                    reconcileConfiguredWebhooks(RequestPurpose.BACKGROUND_REFRESH);
-                    reconcileSmartHoseTimerWebhooks(RequestPurpose.BACKGROUND_REFRESH);
-                } finally {
-                    cloudWebhookReconciliationPending.set(false);
-                }
-            });
+            scheduler.execute(this::drainCloudWebhookReconciliationRequests);
         } catch (RuntimeException e) {
             cloudWebhookReconciliationPending.set(false);
             logger.debug("RachioCloud: Unable to schedule cloud webhook reconciliation", e);
+        }
+    }
+
+    private void drainCloudWebhookReconciliationRequests() {
+        try {
+            do {
+                cloudWebhookReconciliationRequested.set(false);
+                LifecycleSnapshot lifecycle = currentLifecycleSnapshot();
+                if (lifecycle == null) {
+                    return;
+                }
+                RachioConfiguration configuration = lifecycle.configuration();
+                if (!configuration.autoConfigureWebhooks || !configuration.useCloudWebhook) {
+                    return;
+                }
+                logger.debug(
+                        "RachioCloud: openHAB core WebhookService changed or its URL needs refresh; retrying webhook reconciliation.");
+                ResolvedWebhookState webhookState = getResolvedWebhookState();
+                cloudWebhookRegistry.invalidateCachedWebhook(webhookState.providerGeneration());
+                releaseResolvedCloudWebhookForReconciliation();
+                reconcileConfiguredWebhooks(RequestPurpose.BACKGROUND_REFRESH);
+                reconcileSmartHoseTimerWebhooks(RequestPurpose.BACKGROUND_REFRESH);
+            } while (cloudWebhookReconciliationRequested.get());
+        } finally {
+            cloudWebhookReconciliationPending.set(false);
+            if (cloudWebhookReconciliationRequested.get()) {
+                scheduleCloudWebhookReconciliation();
+            }
         }
     }
 

@@ -27,7 +27,7 @@ import com.google.gson.JsonParser;
 /**
  * Tests event serialization used by last-event channels.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioEventStringDTOTest {

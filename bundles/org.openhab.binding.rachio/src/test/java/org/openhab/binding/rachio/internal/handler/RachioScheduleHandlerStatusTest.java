@@ -72,7 +72,7 @@ import org.openhab.core.types.UnDefType;
 /**
  * Tests schedule handler status lifecycle around initial refresh failures.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })

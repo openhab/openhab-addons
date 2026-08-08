@@ -31,7 +31,7 @@ import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.Rachio
 /**
  * Tests Property Service DTO parsing and request helpers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioPropertyApiTest {

@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,20 +40,24 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.handler.RachioBridgeHandler;
 import org.openhab.binding.rachio.internal.handler.RachioFlexScheduleHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.builder.BridgeBuilder;
 
 /**
  * Tests Rachio handler factory Thing type support.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })
@@ -60,8 +65,25 @@ class RachioHandlerFactoryTest {
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
 
     @Test
+    void cloudBridgeUsesCommonHttpClient() throws Exception {
+        HttpClient httpClient = Mockito.mock(HttpClient.class);
+        HttpClientFactory httpClientFactory = Mockito.mock(HttpClientFactory.class);
+        when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
+        RachioHandlerFactory factory = new RachioHandlerFactory(httpClientFactory);
+        Bridge bridge = BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build();
+
+        ThingHandler handler = factory.createHandler(bridge);
+
+        assertThat(handler, instanceOf(RachioBridgeHandler.class));
+        Field field = RachioBridgeHandler.class.getDeclaredField("httpClient");
+        field.setAccessible(true);
+        assertThat(field.get(handler), sameInstance(httpClient));
+        verify(httpClientFactory).getCommonHttpClient();
+    }
+
+    @Test
     void legacyWebhookRoutesOnlyToBridgeWithMatchingExternalId() throws Exception {
-        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioHandlerFactory factory = createFactory();
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
         when(bridgeHandler.getExternalId()).thenReturn("expected-external-id");
         when(bridgeHandler.legacyWebHookEvent(Mockito.any(RachioEventGsonDTO.class))).thenReturn(true);
@@ -82,7 +104,7 @@ class RachioHandlerFactoryTest {
 
     @Test
     void webhookSignatureValidationUsesBridgeMatchedByExternalId() throws Exception {
-        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioHandlerFactory factory = createFactory();
         RachioBridgeHandler firstBridgeHandler = Mockito.mock(RachioBridgeHandler.class);
         when(firstBridgeHandler.getExternalId()).thenReturn("first-external-id");
         when(firstBridgeHandler.getApiKey()).thenReturn("first-api-key");
@@ -103,7 +125,7 @@ class RachioHandlerFactoryTest {
 
     @Test
     void supportsFlexScheduleThingType() {
-        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioHandlerFactory factory = createFactory();
 
         assertThat(factory.supportsThingType(THING_TYPE_FLEX_SCHEDULE), is(true));
         assertThat(factory.supportsThingType(new ThingTypeUID("rachio", "unsupported")), is(false));
@@ -111,7 +133,7 @@ class RachioHandlerFactoryTest {
 
     @Test
     void doesNotSupportTemporaryFlexScheduleThingType() {
-        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioHandlerFactory factory = createFactory();
         ThingTypeUID temporaryFlexScheduleType = new ThingTypeUID("rachio", "flexschedule");
 
         assertThat(factory.supportsThingType(temporaryFlexScheduleType), is(false));
@@ -132,7 +154,7 @@ class RachioHandlerFactoryTest {
 
     @Test
     void createsFlexScheduleHandlerForFlexScheduleThingType() {
-        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioHandlerFactory factory = createFactory();
         ThingUID bridgeUID = new ThingUID(THING_TYPE_CLOUD, "bridge");
         ThingUID thingUID = new ThingUID(THING_TYPE_FLEX_SCHEDULE, bridgeUID, "flex-id");
         Thing thing = Mockito.mock(Thing.class);
@@ -147,7 +169,7 @@ class RachioHandlerFactoryTest {
 
     @Test
     void doesNotCreateHandlerForTemporaryFlexScheduleThingType() {
-        RachioHandlerFactory factory = new RachioHandlerFactory();
+        RachioHandlerFactory factory = createFactory();
         ThingTypeUID temporaryFlexScheduleType = new ThingTypeUID("rachio", "flexschedule");
         ThingUID thingUID = new ThingUID(temporaryFlexScheduleType, "bridge", "flex-id");
         Thing thing = Mockito.mock(Thing.class);
@@ -175,5 +197,9 @@ class RachioHandlerFactoryTest {
             signature.append(String.format("%02x", b & 0xff));
         }
         return signature.toString();
+    }
+
+    private RachioHandlerFactory createFactory() {
+        return new RachioHandlerFactory(Mockito.mock(HttpClient.class));
     }
 }

@@ -65,6 +65,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioConfiguration;
@@ -100,7 +101,7 @@ import org.openhab.core.types.UnDefType;
 /**
  * Tests polling-based Smart Hose Timer handler behavior.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("null")
@@ -417,8 +418,8 @@ class RachioSmartHoseTimerHandlerTest {
 
     @Test
     void modernValveOrProgramEventWithoutThingHandlerIsAcknowledgedSafely() throws Exception {
-        RachioBridgeHandler bridgeHandler = Mockito
-                .spy(new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build()));
+        RachioBridgeHandler bridgeHandler = Mockito.spy(new RachioBridgeHandler(
+                BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(), Mockito.mock(HttpClient.class)));
         configureHoseTimerWebhookMode(bridgeHandler, true);
         Mockito.doNothing().when(bridgeHandler).refreshDeviceStatus(any());
 
@@ -436,8 +437,8 @@ class RachioSmartHoseTimerHandlerTest {
 
     private SmartHoseValveFixture smartHoseValveFixture(boolean hoseTimerWebhooksEnabled) throws Exception {
         Thing thing = thing(THING_TYPE_VALVE, "valve", Map.of(PROPERTY_VALVE_ID, VALVE_ID));
-        RachioBridgeHandler bridgeHandler = Mockito
-                .spy(new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build()));
+        RachioBridgeHandler bridgeHandler = Mockito.spy(new RachioBridgeHandler(
+                BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(), Mockito.mock(HttpClient.class)));
         configureHoseTimerWebhookMode(bridgeHandler, hoseTimerWebhooksEnabled);
         ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
         TestValveHandler handler = new TestValveHandler(thing, bridgeHandler, ThingStatus.ONLINE);
@@ -457,8 +458,8 @@ class RachioSmartHoseTimerHandlerTest {
 
     private SmartHoseProgramFixture smartHoseProgramFixture(boolean hoseTimerWebhooksEnabled) throws Exception {
         Thing thing = thing(THING_TYPE_VALVE_PROGRAM, "program", Map.of(PROPERTY_VALVE_PROGRAM_ID, PROGRAM_ID));
-        RachioBridgeHandler bridgeHandler = Mockito
-                .spy(new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build()));
+        RachioBridgeHandler bridgeHandler = Mockito.spy(new RachioBridgeHandler(
+                BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(), Mockito.mock(HttpClient.class)));
         configureHoseTimerWebhookMode(bridgeHandler, hoseTimerWebhooksEnabled);
         ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
         TestValveProgramHandler handler = new TestValveProgramHandler(thing, bridgeHandler, ThingStatus.ONLINE);

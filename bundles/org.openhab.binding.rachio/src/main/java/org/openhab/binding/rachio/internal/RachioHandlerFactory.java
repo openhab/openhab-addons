@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.rachio.internal.api.RachioApi;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.handler.AbstractRachioBridgeHandler;
@@ -33,6 +34,7 @@ import org.openhab.binding.rachio.internal.handler.RachioScheduleHandler;
 import org.openhab.binding.rachio.internal.handler.RachioValveHandler;
 import org.openhab.binding.rachio.internal.handler.RachioValveProgramHandler;
 import org.openhab.binding.rachio.internal.handler.RachioZoneHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -61,12 +63,21 @@ import org.slf4j.LoggerFactory;
 @Component(service = { ThingHandlerFactory.class, RachioHandlerFactory.class }, immediate = true)
 public class RachioHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(RachioHandlerFactory.class);
+    private final HttpClient httpClient;
     private final Map<String, RachioBridgeHandler> bridgeList = new ConcurrentHashMap<>();
     private volatile @Nullable WebhookService webhookService;
     private final RachioCloudWebhookRegistry cloudWebhookRegistry = new RachioCloudWebhookRegistry(
             this::getCloudWebhookProvider);
 
     @Activate
+    public RachioHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this(httpClientFactory.getCommonHttpClient());
+    }
+
+    RachioHandlerFactory(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
@@ -279,7 +290,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable RachioBridgeHandler createBridge(Bridge bridgeThing) {
         try {
             ThingUID bridgeUID = bridgeThing.getUID();
-            RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing, cloudWebhookRegistry);
+            RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing, httpClient, cloudWebhookRegistry);
             bridgeList.put(bridgeUID.toString(), cloudHandler);
             return cloudHandler;
         } catch (RuntimeException e) {

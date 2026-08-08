@@ -29,7 +29,7 @@ import com.google.gson.JsonParser;
 /**
  * Tests controller-level multi-zone watering payload generation.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("null")

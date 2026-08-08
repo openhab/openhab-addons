@@ -55,7 +55,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests robust Rachio binding configuration parsing.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioConfigurationTest {

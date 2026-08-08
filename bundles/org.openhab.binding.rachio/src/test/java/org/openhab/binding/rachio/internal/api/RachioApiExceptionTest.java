@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests API exception message formatting.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 class RachioApiExceptionTest {

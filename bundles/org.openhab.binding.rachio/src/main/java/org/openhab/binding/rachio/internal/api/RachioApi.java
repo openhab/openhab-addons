@@ -41,6 +41,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.rachio.internal.RachioBindingConstants;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiLegacyWebHookEventType;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebHookEntry;
@@ -120,10 +121,13 @@ public class RachioApi {
     private ClientRateLimitManager rateLimitManager = new ClientRateLimitManager(10, Duration.ofSeconds(30));
 
     private volatile DeviceCatalog deviceCatalog = DeviceCatalog.EMPTY;
-    private RachioHttp httpApi = new RachioHttp("");
+    private final HttpClient httpClient;
+    private RachioHttp httpApi;
 
-    public RachioApi(String personId) {
+    public RachioApi(String personId, HttpClient httpClient) {
         this.personId = personId;
+        this.httpClient = httpClient;
+        this.httpApi = new RachioHttp(httpClient, "");
     }
 
     public RachioApiResult getLastApiResult() {
@@ -270,7 +274,7 @@ public class RachioApi {
         this.bridgeUID = bridgeUID;
         this.rateLimitManager = Objects.requireNonNull(RATE_LIMIT_MANAGERS.computeIfAbsent(getMD5Hash(apikey),
                 key -> new ClientRateLimitManager(10, Duration.ofSeconds(30))));
-        httpApi = new RachioHttp(this.apikey);
+        httpApi = new RachioHttp(httpClient, this.apikey);
         if (!initializePersonId(priority, requestPurpose) || !initializeDevices(priority, requestPurpose)
                 || !initializeZones()) {
             throw new RachioApiException("API initialization failed!");

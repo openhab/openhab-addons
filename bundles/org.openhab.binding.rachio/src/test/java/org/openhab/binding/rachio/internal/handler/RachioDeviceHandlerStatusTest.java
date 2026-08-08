@@ -63,6 +63,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -104,7 +105,7 @@ import com.google.gson.Gson;
 /**
  * Tests controller status and deferred webhook registration lifecycle.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings({ "null" })
@@ -1144,7 +1145,8 @@ class RachioDeviceHandlerStatusTest {
     private RachioBridgeHandler realBridgeHandler(Thing thing, RachioDevice device) {
         Bridge bridge = Mockito.mock(Bridge.class);
         when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
-        RachioBridgeHandler bridgeHandler = Mockito.spy(new RachioBridgeHandler(bridge));
+        RachioBridgeHandler bridgeHandler = Mockito
+                .spy(new RachioBridgeHandler(bridge, Mockito.mock(HttpClient.class)));
         Mockito.doReturn(device).when(bridgeHandler).getDevByConfiguredDeviceId(thing, DEVICE_ID);
         Mockito.doReturn("US").when(bridgeHandler).getForecastUnits();
         return bridgeHandler;
