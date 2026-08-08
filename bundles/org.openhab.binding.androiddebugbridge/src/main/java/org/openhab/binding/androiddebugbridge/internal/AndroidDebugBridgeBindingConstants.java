@@ -50,6 +50,9 @@ public class AndroidDebugBridgeBindingConstants {
     public static final String SHUTDOWN_CHANNEL = "shutdown";
     public static final String RECORD_INPUT_CHANNEL = "record-input";
     public static final String RECORDED_INPUT_CHANNEL = "recorded-input";
+    // Wake-up key event, accepted by "input keyevent" either by name or by numeric code
+    public static final String KEY_EVENT_WAKEUP_NAME = "KEYCODE_WAKEUP";
+    public static final String KEY_EVENT_WAKEUP_CODE = "224";
     // List of all Parameters
     public static final String PARAMETER_IP = "ip";
     public static final String PARAMETER_PORT = "port";

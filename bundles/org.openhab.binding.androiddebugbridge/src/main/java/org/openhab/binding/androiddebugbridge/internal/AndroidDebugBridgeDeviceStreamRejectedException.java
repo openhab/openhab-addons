@@ -15,9 +15,14 @@ package org.openhab.binding.androiddebugbridge.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown when the device refuses to open the adb shell stream, which a device in standby commonly
- * does. It is a distinct type because the shell command provably never ran, so the caller may
- * safely reconnect and retry it without risking a duplicate execution.
+ * Thrown when opening the adb shell stream fails, which a device in standby commonly causes.
+ *
+ * It is a distinct type so the caller can tell this apart from a failure that happened while
+ * reading an already-open stream, where the command certainly reached the device. It is however
+ * <em>not</em> proof that the command never ran: adblib writes the OPEN packet inside
+ * {@code AdbConnection.open()}, so an {@link java.io.IOException} raised while sending that packet
+ * leaves delivery ambiguous. Callers must therefore only repeat commands that stay correct when
+ * executed twice.
  *
  * @author Stamate Viorel - Initial contribution
  */

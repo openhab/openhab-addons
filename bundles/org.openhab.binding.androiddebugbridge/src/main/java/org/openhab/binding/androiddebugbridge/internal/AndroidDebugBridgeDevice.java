@@ -753,34 +753,54 @@ public class AndroidDebugBridgeDevice {
         if (adb == null) {
             throw new AndroidDebugBridgeDeviceException("Device not connected");
         }
-        AtomicReference<@Nullable Exception> streamError = new AtomicReference<>();
+        // Failures while opening the stream and failures while reading its output are tracked
+        // separately: only the former can mean the shell command never started. Folding both into
+        // one reference would let a failure that happened *after* the command already ran be
+        // reported as a stream rejection, and the caller may retry on that.
+        AtomicReference<@Nullable Exception> openError = new AtomicReference<>();
+        AtomicReference<@Nullable Exception> readError = new AtomicReference<>();
         try {
             commandLock.lock();
             var commandFuture = scheduler.submit(() -> {
                 var byteArrayOutputStream = new ByteArrayOutputStream();
                 String cmd = String.join(" ", args);
                 logger.debug("{} - shell:{}", ip, cmd);
-                try (AdbStream stream = adb.open("shell:" + cmd)) {
-                    do {
-                        byteArrayOutputStream.writeBytes(stream.read());
-                    } while (!stream.isClosed());
+                AdbStream stream;
+                try {
+                    stream = adb.open("shell:" + cmd);
                 } catch (IllegalStateException | IOException e) {
                     if (!"Stream closed".equals(e.getMessage())) {
                         // Capture rather than throw: letting it escape the scheduled task makes openHAB's
                         // WrappedScheduledExecutorService log a noisy "Scheduled runnable ended with an
                         // exception" stacktrace for an expected condition (a standby adbd rejecting the
                         // shell stream). It is re-surfaced as a typed exception on the calling thread below.
-                        streamError.set(e);
+                        openError.set(e);
+                    }
+                    return "";
+                }
+                try (stream) {
+                    do {
+                        byteArrayOutputStream.writeBytes(stream.read());
+                    } while (!stream.isClosed());
+                } catch (IllegalStateException | IOException e) {
+                    if (!"Stream closed".equals(e.getMessage())) {
+                        readError.set(e);
                     }
                 }
                 return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
             });
             this.commandFuture = commandFuture;
             String result = commandFuture.get(commandTimeout, TimeUnit.SECONDS);
-            Exception error = streamError.get();
-            if (error != null) {
+            Exception failedOpen = openError.get();
+            if (failedOpen != null) {
                 throw new AndroidDebugBridgeDeviceStreamRejectedException(
-                        "Error opening adb shell stream " + ip + ":" + port + ": " + error.getMessage());
+                        "Error opening adb shell stream " + ip + ":" + port + ": " + failedOpen.getMessage());
+            }
+            Exception failedRead = readError.get();
+            if (failedRead != null) {
+                // The stream was open, so the command reached the device: never retryable.
+                throw new AndroidDebugBridgeDeviceException(
+                        "Error reading adb shell stream " + ip + ":" + port + ": " + failedRead.getMessage());
             }
             return result;
         } finally {

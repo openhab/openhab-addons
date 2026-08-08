@@ -102,10 +102,14 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             } catch (AndroidDebugBridgeDeviceStreamRejectedException e) {
                 // Socket.isConnected() only records that a connection was once established; it stays
                 // true after the device stops serving the socket, so the check above cannot notice a
-                // device that went into standby and the shell stream open is refused instead. The
-                // command provably never ran, so reconnect and run it once more rather than dropping
-                // it -- otherwise the first command after standby (typically the KEYCODE_WAKEUP meant
-                // to end it) is always lost.
+                // device that went into standby and the shell stream open is refused instead. That
+                // drops the first command after standby, typically the very wake-up meant to end it.
+                //
+                // Opening the stream failing does not prove the device never got the request though,
+                // so only repeat commands that stay correct when they run twice.
+                if (!isSafeToRepeat(channelUID.getId(), command)) {
+                    throw e;
+                }
                 logger.debug("{} - shell stream rejected, reconnecting and retrying command: {}", currentConfig.ip,
                         e.getMessage());
                 adbConnection.disconnect();
@@ -124,6 +128,28 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             logger.warn("{} - timeout error", currentConfig.ip);
             disconnectOnMaxADBTimeouts();
         }
+    }
+
+    /**
+     * Tells whether running {@code command} a second time cannot change what the device ends up
+     * doing, which is what makes it safe to repeat after a rejected shell stream.
+     *
+     * Only two cases qualify. A {@link RefreshType} merely reads state. And a wake-up key event is
+     * naturally idempotent, since waking an already awake device does nothing -- that is also the
+     * case this recovery exists for. Everything else may act twice: {@code text} would type the
+     * input again, {@code tap} would tap again, {@code media-control} would toggle back,
+     * {@code shutdown} would reboot, and so on.
+     */
+    private static boolean isSafeToRepeat(String channelId, Command command) {
+        if (command instanceof RefreshType) {
+            return true;
+        }
+        if (!KEY_EVENT_CHANNEL.equals(channelId)) {
+            return false;
+        }
+        // "input keyevent" takes either the symbolic name or the numeric code.
+        String keyEvent = command.toFullString().trim();
+        return KEY_EVENT_WAKEUP_NAME.equalsIgnoreCase(keyEvent) || KEY_EVENT_WAKEUP_CODE.equals(keyEvent);
     }
 
     private void handleCommandInternal(ChannelUID channelUID, Command command)
