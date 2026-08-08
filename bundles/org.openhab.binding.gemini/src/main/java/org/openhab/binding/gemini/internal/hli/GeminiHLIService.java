@@ -15,7 +15,7 @@ package org.openhab.binding.gemini.internal.hli;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.BINDING_ID;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
-import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_TOOL_LOOP_LIMIT;
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MAX_MODEL_TURNS;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -213,10 +213,10 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         }
 
         int loopCount = 0;
-        final int maxLoops = config.toolLoopLimit <= 0 ? DEFAULT_TOOL_LOOP_LIMIT : config.toolLoopLimit;
+        final int maxLoops = config.maxModelTurns <= 0 ? DEFAULT_MAX_MODEL_TURNS : config.maxModelTurns;
         while (true) {
             if (loopCount >= maxLoops) {
-                logger.warn("Cannot interpret: Tool execution loop limit exceeded (max {} iterations)", maxLoops);
+                logger.warn("Cannot interpret: Model turn limit exceeded (max {} turns)", maxLoops);
                 throw new InterpretationException(
                         getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
             }
