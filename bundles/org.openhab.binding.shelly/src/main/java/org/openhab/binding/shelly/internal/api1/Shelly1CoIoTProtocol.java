@@ -147,7 +147,7 @@ public class Shelly1CoIoTProtocol {
                     case "white":
                     case "gain":
                         // TODO case "effect" ??
-                        if (lightModels.get(getIdFromBlk(sen)) instanceof ShellyLightModel model) {
+                        if (lightModels.get(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {
                                 case "red":
                                     model.setColor(R, (int) s.value);

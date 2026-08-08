@@ -513,16 +513,16 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         // PRIMARY GROUP:
         if (model.isDirty()) {
             group = CHANNEL_GROUP_PRIMARY;
-            if (thing.getChannel(CHANNEL_PRIMARY_COLOR) != null) {
+            if (thing.getChannel(group + "#" + CHANNEL_PRIMARY_COLOR) != null) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR, model.getColorState());
             }
-            if (thing.getChannel(CHANNEL_PRIMARY_BRIGHTNESS) != null) {
+            if (thing.getChannel(group + "#" + CHANNEL_PRIMARY_BRIGHTNESS) != null) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_BRIGHTNESS, model.getBrightnessState());
             }
-            if (thing.getChannel(CHANNEL_PRIMARY_COLOR_TEMP) != null) {
+            if (thing.getChannel(group + "#" + CHANNEL_PRIMARY_COLOR_TEMP) != null) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP, model.getColorTemperaturePercentState());
             }
-            if (thing.getChannel(CHANNEL_PRIMARY_COLOR_TEMP_ABS) != null) {
+            if (thing.getChannel(group + "#" + CHANNEL_PRIMARY_COLOR_TEMP_ABS) != null) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP_ABS,
                         model.getColorTemperatureAbsoluteState());
             }

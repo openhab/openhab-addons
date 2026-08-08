@@ -557,7 +557,7 @@ public class ShellyLightModel extends LightModel {
     public boolean release() {
         boolean updated = lightHandler.updateDirtyChannelsForLightModel(this);
         if (updated) {
-            logger.debug("{}: light {} model updated\n => OLD: {}\n => NEW: {}", lightHandler.thingName, lightId,
+            logger.debug("{}: light {} model updated..\n => OLD: {}\n => NEW: {}", lightHandler.thingName, lightId,
                     initialSnapshot, this);
         }
         logger.debug("{}: light model {} released", lightHandler.thingName, lightId);
