@@ -15,7 +15,7 @@ package org.openhab.binding.ring.internal.handler;
 import static org.openhab.binding.ring.RingBindingConstants.*;
 import static org.openhab.binding.ring.internal.ApiConstants.*;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpMethod;
@@ -48,6 +48,8 @@ import org.openhab.core.types.RefreshType;
 public class StickupcamHandler extends RingDeviceHandler {
     private int lastBattery = -1;
     private long lastSnapshotTimestamp = -1;
+    private long lastSnapshotCheckTime = 0;
+    private static final long SNAPSHOT_POLL_INTERVAL_MS = 10 * 60 * 1000;
     private TimeZoneProvider timeZoneProvider;
     private boolean batterySupport = false;
     private boolean lightSupport = false;
@@ -196,16 +198,28 @@ public class StickupcamHandler extends RingDeviceHandler {
             updateState(channelUID, OnOffType.from(deviceTO.deviceSettings.motionDetectionEnabled));
         }
 
-        long timestamp = getSnapshotTimestamp();
-        if (timestamp > lastSnapshotTimestamp) {
-            logger.debug("timestamp = {} != lastSnapshotTimestamp {}, update snapshot channel", timestamp,
-                    lastSnapshotTimestamp);
-            lastSnapshotTimestamp = timestamp;
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
-            updateState(channelUID, new RawType(getSnapshot(), "image/jpeg"));
-            channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
-            updateState(channelUID, new DateTimeType(ZonedDateTime.ofInstant(java.time.Instant.ofEpochMilli(timestamp),
-                    timeZoneProvider.getTimeZone())));
+        // Throttle background snapshot polling to once every 10 minutes
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastSnapshotCheckTime >= SNAPSHOT_POLL_INTERVAL_MS) {
+            lastSnapshotCheckTime = currentTime;
+
+            long timestamp = getSnapshotTimestamp();
+            if (timestamp > lastSnapshotTimestamp) {
+                logger.debug(
+                        "Background snapshot detected! timestamp = {} != lastSnapshotTimestamp {}, updating channel",
+                        timestamp, lastSnapshotTimestamp);
+                lastSnapshotTimestamp = timestamp;
+
+                ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
+                updateState(channelUID, new RawType(getSnapshot(), "image/jpeg"));
+
+                channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
+                updateState(channelUID, new DateTimeType(Instant.ofEpochMilli(timestamp)));
+            } else {
+                logger.debug(
+                        "No new background snapshot found during 10-minute check, timestamp = {} != lastSnapshotTimestamp {}",
+                        timestamp, lastSnapshotTimestamp);
+            }
         }
     }
 
