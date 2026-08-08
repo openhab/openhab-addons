@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.ocpp</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: OCPP Binding</name>
+
+  <properties>
+    <!-- The ChargeTime OCA-OCPP jars are plain (non-OSGi) jars, so they are inlined into this
+         bundle. Java-WebSocket is an OSGi bundle upstream but is inlined too to keep the feature
+         self-contained (only this bundle + openHAB core). gson is provided by core, so it stays a
+         normal import and is NOT inlined. -->
+    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, @v1_6-1.1.0.jar, @common-1.0.2.jar, @OCPP-J-1.0.2.jar, @Java-WebSocket-1.5.3.jar</bnd.includeresource>
+    <!-- The ChargeTime 'common' jar carries SOAP transport classes we never load (JSON only). Their
+         javax.xml.bind / javax.xml.soap references were removed from the JDK after Java 8 and are
+         not exported by the runtime, so make those imports optional; the bundle resolves without
+         them. -->
+    <bnd.importpackage>javax.xml.bind.*;resolution:=optional,javax.xml.soap.*;resolution:=optional,com.sun.net.httpserver.*;resolution:=optional</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>eu.chargetime.ocpp</groupId>
+      <artifactId>v1_6</artifactId>
+      <version>1.1.0</version>
+      <scope>compile</scope>
+      <exclusions>
+        <!-- SOAP transport deps: not on the JDK/runtime, not needed for JSON. Kept off the build
+             path; the inlined SOAP bytecode's imports are made optional above. -->
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.soap</groupId>
+          <artifactId>javax.xml.soap-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>eu.chargetime.ocpp</groupId>
+      <artifactId>OCPP-J</artifactId>
+      <version>1.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>eu.chargetime.ocpp</groupId>
+      <artifactId>common</artifactId>
+      <version>1.0.2</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.soap</groupId>
+          <artifactId>javax.xml.soap-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Pinned to match the version already shipped in-tree (see ojelectronics binding). -->
+    <dependency>
+      <groupId>org.java-websocket</groupId>
+      <artifactId>Java-WebSocket</artifactId>
+      <version>1.5.3</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+</project>
