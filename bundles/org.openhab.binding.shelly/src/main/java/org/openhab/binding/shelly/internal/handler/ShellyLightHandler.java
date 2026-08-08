@@ -385,7 +385,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSB());
             }
 
-            if ((!profile.inColor && (!profile.isGen2 || profile.isRGBW2)) || profile.isBulb) {
+            if (updatesWhiteChannels(profile)) {
                 String whiteGroup = buildWhiteGroupName(profile, channelId);
                 col.setBrightness(getInteger(light.brightness));
                 updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
@@ -405,6 +405,11 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             lightId++;
         }
         return updated;
+    }
+
+    // Bulbs always report white/temp alongside color; RGBW2/RGBW PM only while not in color mode.
+    private static boolean updatesWhiteChannels(ShellyDeviceProfile profile) {
+        return profile.isBulb || (!profile.inColor && (!profile.isGen2 || profile.isRGBW2));
     }
 
     private void createLightChannels(ShellyStatusLightChannel status, int idx) {
