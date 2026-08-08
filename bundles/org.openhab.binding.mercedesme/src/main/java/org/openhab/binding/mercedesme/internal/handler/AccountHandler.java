@@ -303,8 +303,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } else if (pm.hasVehicleStatusUpdates()) {
             // vehicle-events.proto: typed alternative to VEPUpdate, added in app version 165-1 (PushMessage
             // field 24 / ClientMessage field 28). Mapper.fromVehicleStatusUpdate() builds the subset of
-            // MB_KEY_* attributes that has a 1:1 counterpart in the old VehicleAttributeStatus format (see
-            // docs/ATTRIBUTES_MAPPING.md), so it can be distributed through the existing pipeline unchanged.
+            // MB_KEY_* attributes that has a 1:1 counterpart in the old VehicleAttributeStatus format, so it
+            // can be distributed through the existing pipeline unchanged.
             VehicleStatusUpdates vsu = pm.getVehicleStatusUpdates();
             logger.debug("Received VehicleStatusUpdates seq {} for {} VIN(s)", vsu.getSequenceNumber(),
                     vsu.getVehicleStatusUpdatesMap().size());

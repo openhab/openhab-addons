@@ -44,7 +44,7 @@ import com.google.protobuf.util.JsonFormat;
  * {@code VehicleStatusUpdate} fixture ({@code proto-json/VehicleStatusUpdate-EQA.json}). The fixture covers one
  * representative field per attribute-type category (bool/int64/double/enum/distance/pressure/speed/ratio/clock
  * hour/consumption) plus the three complex array-typed fields (temperature points, charge programs, auxiliary
- * warnings) - see {@code docs/ATTRIBUTES_MAPPING.md} for the full field-by-field mapping this exercises.
+ * warnings).
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -153,7 +153,7 @@ class MapperTest {
     void whenSocStatusNotReceivedThenChannelStateIsUndefNotZeroPercent() {
         // Arrange - backend sends the default int_value = 0 together with a non-VALID status
         // instead of setting nil_value; this must not surface as "0 %" on the State of Charge
-        // channel (see docs/changes/fix-soc-zero-spikes)
+        // channel
         VehicleAttributeStatus soc = VehicleAttributeStatus.newBuilder()
                 .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setIntValue(0).build();
 
@@ -181,9 +181,8 @@ class MapperTest {
     @Test
     void whenChargingPowerStatusNotReceivedThenChannelStateIsUndefNotZeroKw() {
         // Arrange - Math.max(0, -1) would otherwise mask an unavailable reading as "0 kW", which
-        // looks identical to "not charging" (see docs/changes/fix-soc-zero-spikes, added after
-        // community.openhab.org/t/mercedes-me/136866/199 reported several attributes reading zero
-        // right after a command)
+        // looks identical to "not charging" (community.openhab.org/t/mercedes-me/136866/199 reported
+        // several attributes reading zero right after a command)
         VehicleAttributeStatus chargingPower = VehicleAttributeStatus.newBuilder()
                 .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setDoubleValue(0).build();
 
@@ -243,8 +242,7 @@ class MapperTest {
     void whenParkBrakeReportedViaIntValueThenChannelStateIsOn() {
         // Arrange - parkbrakestatus is delivered as an enum (int_value oneof), not a bool - confirmed
         // against real captured data in src/test/resources/vehiclestatusupdates/vsu-eqa-1.raw and
-        // vsu-eqa-2.raw (both show "parkbrakestatus { value: PARKBRAKESTATUS_ENGAGED ... }"), see
-        // docs/changes/fix-enum-switch-mismatch
+        // vsu-eqa-2.raw (both show "parkbrakestatus { value: PARKBRAKESTATUS_ENGAGED ... }")
         VehicleAttributeStatus parkBrake = VehicleAttributeStatus.newBuilder().setIntValue(1).build();
 
         // Act
@@ -335,8 +333,7 @@ class MapperTest {
 
     @Test
     void whenAuxheatwarningsEmptyThenIntValueIsNone() {
-        // Arrange - not yet verified against a live vehicle with an actual warning, see
-        // docs/ATTRIBUTES_MAPPING.md section 4.
+        // Arrange - not yet verified against a live vehicle with an actual warning.
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
@@ -351,7 +348,7 @@ class MapperTest {
     void whenFieldAbsentFromUpdateThenNotIncludedInMap() {
         // Arrange - VehicleStatusUpdate-EQA.json sets exactly 25 of the ~95 convertible fields (5 bool + 8
         // plain int64/double + 2 enum + 2 distance + 1 pressure + 1 speed + 1 ratio + 1 clock hour +
-        // 1 consumption + 3 complex array-typed); see docs/changes/fix-vsu-delta-fake-attributes.
+        // 1 consumption + 3 complex array-typed).
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act / Assert - a field genuinely absent from the fixture must not appear in the map at all,
@@ -368,8 +365,7 @@ class MapperTest {
     void whenPartialUpdateOnlyTouchesPrecondThenOtherAttributesAreAbsent() {
         // Arrange - mirrors a real captured trace: a delta VehicleStatusUpdate (full_update = false) whose
         // raw proto text dump only shows precond_now/precond_state/vtime as populated, yet the previous,
-        // unguarded implementation still emitted map entries for all 95 known fields (see
-        // docs/changes/fix-vsu-delta-fake-attributes/proposal.md).
+        // unguarded implementation still emitted map entries for all 95 known fields.
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         PrecondNowEnumAttribute precondNow = PrecondNowEnumAttribute.newBuilder()
                 .setValue(PrecondNow.PRECOND_NOW_ACTIVE).setMetadata(metadata).build();

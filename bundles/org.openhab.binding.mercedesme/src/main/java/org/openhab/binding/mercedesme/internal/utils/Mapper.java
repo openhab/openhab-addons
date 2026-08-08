@@ -345,7 +345,7 @@ public class Mapper {
                         // Parkbrakestatus, PrecondNow, PrecondSeat and Warningwashwater are binary 0/1
                         // enums delivered via Mapper.putEnum() (int_value oneof, not bool_value) - proto
                         // declares 0 as the "off"/inactive/not-engaged member in all four, see
-                        // vehicle-events.proto and docs/changes/fix-enum-switch-mismatch
+                        // vehicle-events.proto
                         state = OnOffType.from(value.getIntValue() != 0);
                     } else {
                         state = UnDefType.UNDEF;
@@ -414,9 +414,9 @@ public class Mapper {
      * {@link #getChannelStateMap(String, VehicleAttributeStatus)}
      * without any behavior change there.
      * <p>
-     * Only the fields with a direct equivalent in the old attribute set are converted (see
-     * {@code docs/ATTRIBUTES_MAPPING.md}); the complex array-typed fields (temperature points, charge programs,
-     * auxiliary warnings) and the fields with no old channel are left out.
+     * Only the fields with a direct equivalent in the old attribute set are converted; the complex array-typed
+     * fields (temperature points, charge programs, auxiliary warnings) and the fields with no old channel are
+     * left out.
      * <p>
      * Enum-typed fields are converted via {@code getValueValue()}, the raw number declared for that value in the
      * {@code .proto} source (e.g. {@code IGNITIONSTATE_ON = 4;}) - not a positional/ordinal guess. Since these
@@ -433,8 +433,7 @@ public class Mapper {
         // handful of fields that actually changed, and every field here is a singular message type, so
         // proto3 gives each one a real hasXxx() presence check. Without this gate, an absent field's
         // getter returns its default instance (value 0, unset metadata -> status defaults to
-        // AttributeStatus.VALUE_VALID), which Utils.isNil() cannot distinguish from genuine data - see
-        // docs/changes/fix-vsu-delta-fake-attributes.
+        // AttributeStatus.VALUE_VALID), which Utils.isNil() cannot distinguish from genuine data.
 
         // bool
         if (vsu.hasWarningbrakefluid()) {
@@ -785,7 +784,7 @@ public class Mapper {
             putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONSTART, vsu.getElectricconsumptionstart());
         }
 
-        // complex array-typed fields - analyzed from live debug logs (see docs/ATTRIBUTES_MAPPING.md section 4)
+        // complex array-typed fields - analyzed from live debug logs
         if (vsu.hasTemperaturePoints()) {
             putTemperaturePoints(attributes, MB_KEY_TEMPERATURE_POINTS, vsu.getTemperaturePoints());
         }
@@ -881,8 +880,7 @@ public class Mapper {
      * {@code TemperaturePointsArrayAttribute.TemperaturePoint} entries carry the same information as the old
      * {@link com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePoint} (zone, temperature, active) but with a
      * 0-based {@code Zone} enum instead of a string and the temperature wrapped in a
-     * {@code DoubleTemperatureAttribute} instead of a raw double - both confirmed against a live debug dump (see
-     * docs/ATTRIBUTES_MAPPING.md section 4).
+     * {@code DoubleTemperatureAttribute} instead of a raw double - both confirmed against a live debug dump.
      */
     private static void putTemperaturePoints(Map<String, VehicleAttributeStatus> map, String key,
             TemperaturePointsArrayAttribute a) {
