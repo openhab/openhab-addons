@@ -84,9 +84,9 @@ public class ScriptTools {
     public McpSchema.Tool getExecuteScriptTool() {
         Map<String, Object> properties = new LinkedHashMap<>();
         properties.put("script", Map.of("type", "string", "description",
-                "JavaScript source to execute. Has access to openhab-js globals: items, actions, things, rules, cache, time."
-                        + "The value of the last expression is returned."
-                        + "Get type openhab-js type definitions with get_openhabjs_types"));
+                "JavaScript source to execute. Has access to openhab-js globals: items, actions, things, rules, cache, time. "
+                        + "The value of the last expression is returned. "
+                        + "Use get_openhabjs_types to retrieve openhab-js type definitions."));
         properties.put("timeoutMs", Map.of("type", "integer", "description",
                 "Max execution time in milliseconds (default 5000, max 30000). Script is interrupted on timeout."));
 
