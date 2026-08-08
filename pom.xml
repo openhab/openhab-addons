@@ -443,6 +443,16 @@ Import-Package: \
         </plugin>
 
         <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>2.0.2</version>
+          <configuration>
+            <nodeVersion>v24.18.1</nodeVersion>
+            <npmVersion>11.16.0</npmVersion>
+          </configuration>
+        </plugin>
+
+        <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <version>5.1.1</version>
