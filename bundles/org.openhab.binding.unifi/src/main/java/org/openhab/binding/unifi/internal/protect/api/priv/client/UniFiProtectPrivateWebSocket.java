@@ -67,6 +67,9 @@ public class UniFiProtectPrivateWebSocket {
     private volatile @Nullable Session session;
     private volatile @Nullable CompletableFuture<Void> connectFuture;
     private volatile boolean shouldReconnect = true;
+    // Set when an established session drops, so the next successful connect knows it has to
+    // resynchronise. Updates sent while the socket was down are not replayed by Protect.
+    private volatile boolean resyncAfterConnect = false;
     private final AtomicInteger reconnectAttempts = new AtomicInteger(0);
     private static final int MAX_RECONNECT_ATTEMPTS = 10;
     private static final int INITIAL_RECONNECT_DELAY_MS = 1_000;
@@ -133,6 +136,7 @@ public class UniFiProtectPrivateWebSocket {
                     reconnectAttempts.set(0);
                     logger.debug("WebSocket connected");
                     newFuture.complete(null);
+                    resyncIfReconnected();
                 } catch (Exception ex) {
                     logger.debug("WebSocket connection failed", ex);
                     newFuture.completeExceptionally(ex);
@@ -146,6 +150,29 @@ public class UniFiProtectPrivateWebSocket {
         }
 
         return newFuture;
+    }
+
+    /**
+     * Refresh the bootstrap after an established session was re-established.
+     *
+     * Reconnecting only restores the stream of new updates: Protect does not replay what happened
+     * while the socket was down, and {@code /ws/updates} is opened without the cached
+     * {@code lastUpdateId}. Without this, anything that changed during the outage stays stale until
+     * the next periodic bootstrap refresh, which can be up to 15 minutes later.
+     */
+    private void resyncIfReconnected() {
+        if (!resyncAfterConnect) {
+            // First connect of this socket: the caller has just bootstrapped, nothing to catch up on.
+            return;
+        }
+        resyncAfterConnect = false;
+        logger.debug("Refreshing bootstrap after WebSocket reconnect to pick up missed updates");
+        client.refreshBootstrap().whenComplete((bootstrap, ex) -> {
+            if (ex != null) {
+                // Not fatal: the stream is live again and the periodic refresh remains a backstop.
+                logger.debug("Bootstrap refresh after reconnect failed", ex);
+            }
+        });
     }
 
     /**
@@ -278,6 +305,7 @@ public class UniFiProtectPrivateWebSocket {
         public void onWebSocketClose(int statusCode, String reason) {
             logger.debug("WebSocket closed: {} - {}", statusCode, reason);
             if (shouldReconnect) {
+                resyncAfterConnect = true;
                 scheduleReconnect();
             }
         }
