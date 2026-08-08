@@ -55,6 +55,7 @@ import org.openhab.binding.unifi.internal.protect.api.pub.dto.ObjectType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraMotionEvent;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraSmartDetectLineEvent;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraSmartDetectLoiterEvent;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraSmartDetectZoneEvent;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.EventType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.gson.DeviceTypeAdapterFactory;
@@ -119,7 +120,8 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> childRefreshRetryTasks = new ConcurrentHashMap<>();
     // De-dup events that can arrive on BOTH the public integration WS and the private
-    // updates WS fallback path — dispatch each (eventId, ADD|UPDATE) exactly once.
+    // updates WS fallback path — dispatch each event id exactly once. Only ADDs are
+    // de-duplicated; UPDATEs for an already seen event are expected to pass through.
     private final Map<String, Long> dispatchedEventKeys = new ConcurrentHashMap<>();
     private static final long EVENT_DEDUP_TTL_MS = 120_000;
 
@@ -730,10 +732,10 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     /**
      * Convert a private-API {@link Event} into the matching public camera event so the
      * standard {@link #routePublicApiEvent} dispatch (channels + contacts) can be reused.
-     * Returns {@code null} for events that are not camera motion / smart-detect zone / line
-     * (audio and ring stay on the public integration path only).
+     * Returns {@code null} for events that are not camera motion / smart-detect zone, line or
+     * loiter zone (audio and ring stay on the public integration path only).
      */
-    private @Nullable BaseEvent toPublicCameraEvent(Event event) {
+    static @Nullable BaseEvent toPublicCameraEvent(Event event) {
         var type = event.type;
         String cameraId = event.cameraId;
         if (type == null || cameraId == null) {
@@ -757,6 +759,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                 pub = line;
                 pub.type = EventType.SMART_DETECT_LINE;
                 break;
+            case SMART_DETECT_LOITER_ZONE:
+                CameraSmartDetectLoiterEvent loiter = new CameraSmartDetectLoiterEvent();
+                loiter.smartDetectTypes = toObjectTypes(event.smartDetectTypes);
+                pub = loiter;
+                pub.type = EventType.SMART_DETECT_LOITER_ZONE;
+                break;
             default:
                 return null;
         }
@@ -766,7 +774,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         return pub;
     }
 
-    private List<ObjectType> toObjectTypes(@Nullable List<SmartDetectObjectType> types) {
+    private static List<ObjectType> toObjectTypes(@Nullable List<SmartDetectObjectType> types) {
         List<ObjectType> out = new ArrayList<>();
         if (types == null) {
             return out;
