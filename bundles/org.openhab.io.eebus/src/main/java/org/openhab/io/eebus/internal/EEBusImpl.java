@@ -103,6 +103,12 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
             logger.info("EEBus: network/identity settings changed, restarting SHIP node");
             stopNode();
             startNode();
+        } else if (started) {
+            ShipCommunication communication = shipCommunication;
+            if (communication != null) {
+                configurePairing(communication);
+                logger.info("EEBus: pairing settings updated on the running SHIP node");
+            }
         }
     }
 
@@ -120,9 +126,11 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
 
     @Deactivate
     protected synchronized void deactivate() {
+        readyService.unregisterTracker(this);
         stopNode();
     }
 
+    @SuppressWarnings("deprecation")
     private void startNode() {
         try {
             Storage<String> certStorage = storageService.getStorage(EEBusCertificateStorage.class.getName(),
@@ -132,22 +140,18 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
 
             DeviceTypeEnumType deviceType = DeviceTypeEnumType.valueOf(settings.deviceType);
             EntityTypeEnumType entityType = EntityTypeEnumType.valueOf(settings.entityType);
-            ConnectClientsTo connectPolicy = ConnectClientsTo.valueOf(settings.connectPolicy);
 
             // See org.openhab.binding.eebus's ServiceNameSanitizer javadoc: the mDNS service
             // instance name gets echoed back as the TLS SNI value by at least some SHIP clients
             // connecting in, so it must be sanitized to a safe charset.
+            // ShipNodeConfiguration itself is flagged deprecated-for-removal as of jEEBus.ship
+            // 2.3.0, but no replacement is published yet in this version - nothing to migrate to.
             ShipNodeConfiguration shipConfig = new ShipNodeConfiguration(Set.of(settings.bindAddress), settings.port,
                     settings.wssPath, true, settings.deviceId, settings.serviceDomain,
                     ServiceNameSanitizer.sanitize(settings.friendlyName), certificateStorage, "openhab-eebus",
                     CERTIFICATE_VALIDITY_DAYS);
 
-            ShipCommunication communication = new ShipCommunication(shipConfig).withConnectClientsTo(connectPolicy)
-                    .withAutoAcceptMode(settings.autoAcceptPairing);
-            Set<String> trustedSkis = parseTrustedSkis(settings.trustedSkis);
-            if (!trustedSkis.isEmpty()) {
-                communication = communication.withTrustedSkis(trustedSkis);
-            }
+            ShipCommunication communication = configurePairing(new ShipCommunication(shipConfig));
             this.shipCommunication = communication;
 
             Device newDevice = Device.getBuilder().withDeviceType(deviceType).withCommunication(communication)
@@ -183,6 +187,19 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
             this.device = null;
         }
         this.shipCommunication = null;
+    }
+
+    /**
+     * Applies the current {@code connectPolicy}/{@code autoAcceptPairing}/{@code trustedSkis}
+     * settings onto {@code communication}. Safe to call both on a freshly built
+     * {@link ShipCommunication} (from {@link #startNode()}) and on the already-running one (from
+     * {@link #modified}) - {@code with*} mutates the instance in place and, if the underlying SHIP
+     * node is already connected, pushes the change straight into it rather than only taking effect
+     * on the next connection.
+     */
+    private ShipCommunication configurePairing(ShipCommunication communication) {
+        return communication.withConnectClientsTo(ConnectClientsTo.valueOf(settings.connectPolicy))
+                .withAutoAcceptMode(settings.autoAcceptPairing).withTrustedSkis(parseTrustedSkis(settings.trustedSkis));
     }
 
     private static Set<String> parseTrustedSkis(String trustedSkis) {
