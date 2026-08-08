@@ -50,6 +50,7 @@ import org.openhab.binding.rachio.internal.api.RachioApi;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
+import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioProperty;
@@ -954,6 +955,10 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         return rachioApi.getDevices();
     }
 
+    public RachioDiscoverySnapshot getDiscoverySnapshot() {
+        return rachioApi.getDiscoverySnapshot();
+    }
+
     @Nullable
     RachioDevice findIrrigationController(String controllerId) {
         if (controllerId.isBlank()) {
@@ -1718,9 +1723,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         RachioConfiguration config = resolveEffectiveConfiguration().configuration();
 
         if (config.apikey.isEmpty()) {
-            configStatusMessages.add(ConfigStatusMessage.Builder.error(PARAM_APIKEY)
-                    .withMessageKeySuffix("ERROR: No/invalid APIKEY in Cloud Connector configuration!")
-                    .withArguments(PARAM_APIKEY).build());
+            configStatusMessages.add(
+                    ConfigStatusMessage.Builder.error(PARAM_APIKEY).withMessageKeySuffix("missing-api-key").build());
         }
 
         return configStatusMessages;

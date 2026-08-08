@@ -29,7 +29,7 @@
 				<description>Number of seconds to run a zone if no runtime is specified (=0)</description>
 				<default>120</default>
 			</parameter>
-			<parameter name="eventHistoryLookbackHours" type="integer" min="0" step="1" unit="h">
+			<parameter name="eventHistoryLookbackHours" type="integer" min="0" max="168" step="1" unit="h">
 				<label>Event History Lookback</label>
 				<description>Hours of recent controller event history to retrieve. Set to 0 to disable event history polling.</description>
 				<default>24</default>

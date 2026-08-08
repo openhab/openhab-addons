@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -174,7 +175,7 @@ public class RachioDevice extends RachioCloudDevice {
      * @param cdev device properties to compare
      * @return true: no change, false: update required
      */
-    public boolean compare(@Nullable RachioDevice cdev) {
+    public synchronized boolean compare(@Nullable RachioDevice cdev) {
         if (cdev == null || !id.equalsIgnoreCase(cdev.id) || !status.equalsIgnoreCase(cdev.status) || on != cdev.on
                 || rainSensorTripped != cdev.rainSensorTripped
                 || rainDelayExpirationDate != cdev.rainDelayExpirationDate) {
@@ -294,7 +295,7 @@ public class RachioDevice extends RachioCloudDevice {
         return ThingStatus.OFFLINE;
     }
 
-    public void setStatus(String new_status) {
+    public synchronized void setStatus(String new_status) {
         if ("ONLINE".equals(new_status) || "OFFLINE".equals(new_status)) {
             status = new_status;
             return;
@@ -333,7 +334,7 @@ public class RachioDevice extends RachioCloudDevice {
         return sleepMode ? OnOffType.ON : OnOffType.OFF;
     }
 
-    public void setSleepMode(String subType) {
+    public synchronized void setSleepMode(String subType) {
         sleepMode = subType.contains("ON") ? true : false;
     }
 
@@ -429,7 +430,7 @@ public class RachioDevice extends RachioCloudDevice {
         return lastEventTime;
     }
 
-    public void setNetwork(@Nullable RachioCloudNetworkSettings network) {
+    public synchronized void setNetwork(@Nullable RachioCloudNetworkSettings network) {
         this.network = network;
     }
 
@@ -727,6 +728,26 @@ public class RachioDevice extends RachioCloudDevice {
         return zoneList;
     }
 
+    synchronized RachioDiscoverySnapshot.DeviceSnapshot discoverySnapshot() {
+        List<RachioDiscoverySnapshot.ZoneSnapshot> zoneSnapshots = new ArrayList<>(zoneList.size());
+        for (RachioZone zone : zoneList.values()) {
+            zoneSnapshots.add(zone.discoverySnapshot());
+        }
+        return new RachioDiscoverySnapshot.DeviceSnapshot(id, name, getThingID(), status, on, sleepMode,
+                fillProperties(), zoneSnapshots, discoveryScheduleSnapshots(scheduleRules),
+                discoveryScheduleSnapshots(flexScheduleRules));
+    }
+
+    private static List<RachioDiscoverySnapshot.ScheduleSnapshot> discoveryScheduleSnapshots(
+            @Nullable List<RachioCloudScheduleRule> scheduleRules) {
+        List<RachioDiscoverySnapshot.ScheduleSnapshot> snapshots = new ArrayList<>();
+        for (RachioCloudScheduleRule scheduleRule : copyList(scheduleRules)) {
+            snapshots.add(new RachioDiscoverySnapshot.ScheduleSnapshot(scheduleRule.id, scheduleRule.name,
+                    scheduleRule.type));
+        }
+        return snapshots;
+    }
+
     public List<RachioCloudScheduleRule> getScheduleRulesSnapshot() {
         return copyList(scheduleRules);
     }
@@ -735,7 +756,7 @@ public class RachioDevice extends RachioCloudDevice {
         return copyList(flexScheduleRules);
     }
 
-    public void replaceZones(Map<String, RachioZone> zones) {
+    public synchronized void replaceZones(Map<String, RachioZone> zones) {
         zoneList = Map.copyOf(zones);
     }
 

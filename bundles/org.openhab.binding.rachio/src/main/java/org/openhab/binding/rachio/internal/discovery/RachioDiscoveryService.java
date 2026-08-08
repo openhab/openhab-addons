@@ -16,6 +16,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -26,9 +27,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
-import org.openhab.binding.rachio.internal.api.RachioDevice;
-import org.openhab.binding.rachio.internal.api.RachioZone;
-import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudScheduleRule;
+import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot;
+import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot.DeviceSnapshot;
+import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot.ScheduleSnapshot;
+import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot.ZoneSnapshot;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStation;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
@@ -37,7 +39,6 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -180,51 +181,46 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
                 return;
             }
 
-            Map<String, RachioDevice> deviceList = Map.copyOf(handler.getDevices());
+            RachioDiscoverySnapshot snapshot = handler.getDiscoverySnapshot();
+            List<DeviceSnapshot> deviceList = snapshot.devices();
             ThingUID bridgeUID = handler.getThing().getUID();
             DiscoveryCounts counts = new DiscoveryCounts();
             logger.debug("RachioDiscovery: {} discovered {} irrigation controller device(s).", source,
                     deviceList.size());
-            for (Map.Entry<String, RachioDevice> de : deviceList.entrySet()) {
-                RachioDevice dev = de.getValue();
-                logger.debug("Check Rachio device with ID '{}'", dev.id);
+            for (DeviceSnapshot dev : deviceList) {
+                logger.debug("Check Rachio device with ID '{}'", dev.id());
 
                 // register thing if it not already exists
-                ThingUID devThingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
-                dev.setUID(bridgeUID, devThingUID);
-                logger.debug(" Rachio device discovered: '{}' (id {}), S/N={}, MAC={}", dev.name, dev.id,
-                        dev.serialNumber, dev.macAddress);
-                logger.debug("   device status={}, sleepMode={}, on={}", dev.status, dev.getSleepMode(),
-                        dev.getEnabled());
-                Map<String, Object> properties = new HashMap<>(dev.fillProperties());
+                ThingUID devThingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, dev.thingId());
+                logger.debug(" Rachio device discovered: '{}' (id {})", dev.name(), dev.id());
+                logger.debug("   device status={}, sleepMode={}, on={}", dev.status(), dev.sleepMode(), dev.enabled());
+                Map<String, Object> properties = new HashMap<>(dev.properties());
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(devThingUID).withProperties(properties)
-                        .withRepresentationProperty(PROPERTY_DEV_ID).withBridge(bridgeUID).withLabel(dev.getThingName())
+                        .withRepresentationProperty(PROPERTY_DEV_ID).withBridge(bridgeUID).withLabel(dev.name())
                         .build();
                 thingDiscovered(discoveryResult);
                 counts.controllers++;
 
-                Map<String, RachioZone> zoneList = Map.copyOf(dev.getZones());
+                List<ZoneSnapshot> zoneList = dev.zones();
                 logger.debug("Found {} zones for this device.", zoneList.size());
-                for (Map.Entry<String, RachioZone> ze : zoneList.entrySet()) {
-                    RachioZone zone = ze.getValue();
-                    logger.debug("Checking zone with ID '{}'", zone.id);
+                for (ZoneSnapshot zone : zoneList) {
+                    logger.debug("Checking zone with ID '{}'", zone.id());
 
                     // register thing if it not already exists
-                    ThingUID zoneThingUID = new ThingUID(THING_TYPE_ZONE, bridgeUID, zone.getThingID());
-                    zone.setUID(devThingUID, zoneThingUID);
-                    logger.debug("Zone#{} '{}' (id={}) added, enabled={}", zone.zoneNumber, zone.name, zone.id,
-                            zone.getEnabled());
+                    ThingUID zoneThingUID = new ThingUID(THING_TYPE_ZONE, bridgeUID, zone.thingId());
+                    logger.debug("Zone#{} '{}' (id={}) added, enabled={}", zone.zoneNumber(), zone.name(), zone.id(),
+                            zone.enabled());
 
-                    if (zone.getEnabled() == OnOffType.ON) {
-                        Map<String, Object> zproperties = new HashMap<>(zone.fillProperties());
+                    if (zone.enabled()) {
+                        Map<String, Object> zproperties = new HashMap<>(zone.properties());
                         DiscoveryResult zoneDiscoveryResult = DiscoveryResultBuilder.create(zoneThingUID)
                                 .withProperties(zproperties).withRepresentationProperty(PROPERTY_ZONE_ID)
-                                .withBridge(bridgeUID).withLabel(dev.name + "[" + zone.zoneNumber + "]: " + zone.name)
-                                .build();
+                                .withBridge(bridgeUID)
+                                .withLabel(dev.name() + "[" + zone.zoneNumber() + "]: " + zone.name()).build();
                         thingDiscovered(zoneDiscoveryResult);
                         counts.zones++;
                     } else {
-                        logger.debug("Zone#{} '{}' is disabled, skip thing creation", zone.zoneNumber, zone.name);
+                        logger.debug("Zone#{} '{}' is disabled, skip thing creation", zone.zoneNumber(), zone.name());
                     }
                 }
                 counts.schedules += discoverScheduleRules(bridgeUID, dev);
@@ -270,9 +266,9 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
         }
     }
 
-    private int discoverScheduleRules(ThingUID bridgeUID, RachioDevice dev) {
+    private int discoverScheduleRules(ThingUID bridgeUID, DeviceSnapshot dev) {
         int count = 0;
-        for (RachioCloudScheduleRule scheduleRule : dev.getScheduleRulesSnapshot()) {
+        for (ScheduleSnapshot scheduleRule : dev.schedules()) {
             DiscoveryResult discoveryResult = buildScheduleDiscoveryResult(bridgeUID, dev, scheduleRule);
             if (discoveryResult != null) {
                 thingDiscovered(discoveryResult);
@@ -282,14 +278,14 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
         return count;
     }
 
-    private int discoverFlexScheduleRules(ThingUID bridgeUID, RachioDevice dev) {
+    private int discoverFlexScheduleRules(ThingUID bridgeUID, DeviceSnapshot dev) {
         int count = 0;
-        for (RachioCloudScheduleRule scheduleRule : dev.getFlexScheduleRulesSnapshot()) {
+        for (ScheduleSnapshot scheduleRule : dev.flexSchedules()) {
             DiscoveryResult discoveryResult = buildFlexScheduleDiscoveryResult(bridgeUID, dev, scheduleRule);
             if (discoveryResult != null) {
                 logger.debug(
                         "RachioDiscovery: Flex schedule discovery result emitted: thingUid={}, bridgeUid={}, flexScheduleRuleId={}",
-                        discoveryResult.getThingUID(), bridgeUID, scheduleRule.id);
+                        discoveryResult.getThingUID(), bridgeUID, scheduleRule.id());
                 thingDiscovered(discoveryResult);
                 count++;
             }
@@ -297,36 +293,36 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
         return count;
     }
 
-    static @Nullable DiscoveryResult buildScheduleDiscoveryResult(ThingUID bridgeUID, RachioDevice dev,
-            RachioCloudScheduleRule scheduleRule) {
-        if (scheduleRule.id.isBlank()) {
+    static @Nullable DiscoveryResult buildScheduleDiscoveryResult(ThingUID bridgeUID, DeviceSnapshot dev,
+            ScheduleSnapshot scheduleRule) {
+        if (scheduleRule.id().isBlank()) {
             return null;
         }
-        ThingUID scheduleThingUID = new ThingUID(THING_TYPE_SCHEDULE, bridgeUID, scheduleRule.id);
+        ThingUID scheduleThingUID = new ThingUID(THING_TYPE_SCHEDULE, bridgeUID, scheduleRule.id());
         Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_SCHEDULE_RULE_ID, scheduleRule.id);
-        properties.put(PROPERTY_DEV_ID, dev.id);
-        properties.put(PROPERTY_NAME, scheduleRule.name);
-        properties.put("type", scheduleRule.type);
+        properties.put(PROPERTY_SCHEDULE_RULE_ID, scheduleRule.id());
+        properties.put(PROPERTY_DEV_ID, dev.id());
+        properties.put(PROPERTY_NAME, scheduleRule.name());
+        properties.put("type", scheduleRule.type());
         return DiscoveryResultBuilder.create(scheduleThingUID).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_SCHEDULE_RULE_ID).withBridge(bridgeUID)
-                .withLabel(dev.name + ": " + scheduleRule.name).build();
+                .withLabel(dev.name() + ": " + scheduleRule.name()).build();
     }
 
-    static @Nullable DiscoveryResult buildFlexScheduleDiscoveryResult(ThingUID bridgeUID, RachioDevice dev,
-            RachioCloudScheduleRule scheduleRule) {
-        if (scheduleRule.id.isBlank()) {
+    static @Nullable DiscoveryResult buildFlexScheduleDiscoveryResult(ThingUID bridgeUID, DeviceSnapshot dev,
+            ScheduleSnapshot scheduleRule) {
+        if (scheduleRule.id().isBlank()) {
             return null;
         }
-        ThingUID scheduleThingUID = new ThingUID(THING_TYPE_FLEX_SCHEDULE, bridgeUID, scheduleRule.id);
+        ThingUID scheduleThingUID = new ThingUID(THING_TYPE_FLEX_SCHEDULE, bridgeUID, scheduleRule.id());
         Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_FLEX_SCHEDULE_RULE_ID, scheduleRule.id);
-        properties.put(PROPERTY_DEV_ID, dev.id);
-        properties.put(PROPERTY_NAME, scheduleRule.name);
-        properties.put("type", scheduleRule.type);
+        properties.put(PROPERTY_FLEX_SCHEDULE_RULE_ID, scheduleRule.id());
+        properties.put(PROPERTY_DEV_ID, dev.id());
+        properties.put(PROPERTY_NAME, scheduleRule.name());
+        properties.put("type", scheduleRule.type());
         return DiscoveryResultBuilder.create(scheduleThingUID).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_FLEX_SCHEDULE_RULE_ID).withBridge(bridgeUID)
-                .withLabel(dev.name + ": " + scheduleRule.name).build();
+                .withLabel(dev.name() + ": " + scheduleRule.name()).build();
     }
 
     private DiscoveryCounts discoverSmartHoseTimers(RachioBridgeHandler handler, ThingUID bridgeUID) {

@@ -172,6 +172,10 @@ public class RachioZone extends RachioCloudZone {
         return properties;
     }
 
+    synchronized RachioDiscoverySnapshot.ZoneSnapshot discoverySnapshot() {
+        return new RachioDiscoverySnapshot.ZoneSnapshot(id, name, getThingID(), zoneNumber, enabled, fillProperties());
+    }
+
     public String getImageDownloadUrl() {
         return imageDownloadUrl.isBlank() ? imageUrl : imageDownloadUrl;
     }
@@ -180,7 +184,7 @@ public class RachioZone extends RachioCloudZone {
         return enabled ? OnOffType.ON : OnOffType.OFF;
     }
 
-    public void setEnabled(boolean enabled) {
+    public synchronized void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

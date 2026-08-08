@@ -119,7 +119,7 @@ public class RachioApi {
     private static final Map<String, ClientRateLimitManager> RATE_LIMIT_MANAGERS = new ConcurrentHashMap<>();
     private ClientRateLimitManager rateLimitManager = new ClientRateLimitManager(10, Duration.ofSeconds(30));
 
-    private volatile Map<String, RachioDevice> deviceList = Map.of();
+    private volatile DeviceCatalog deviceCatalog = DeviceCatalog.EMPTY;
     private RachioHttp httpApi = new RachioHttp("");
 
     public RachioApi(String personId) {
@@ -264,7 +264,7 @@ public class RachioApi {
             userName = "";
             fullName = "";
             email = "";
-            deviceList = Map.of();
+            deviceCatalog = DeviceCatalog.EMPTY;
         }
         this.apikey = apikey;
         this.bridgeUID = bridgeUID;
@@ -278,11 +278,15 @@ public class RachioApi {
     }
 
     public Map<String, RachioDevice> getDevices() {
-        return deviceList;
+        return deviceCatalog.devices();
+    }
+
+    public RachioDiscoverySnapshot getDiscoverySnapshot() {
+        return deviceCatalog.discoverySnapshot();
     }
 
     public void replaceDevices(Map<String, RachioDevice> devices) {
-        deviceList = Map.copyOf(devices);
+        deviceCatalog = DeviceCatalog.from(devices);
     }
 
     public @Nullable RachioDevice bindDeviceByRachioId(ThingUID bridgeUID, ThingUID thingUID, String deviceId) {
@@ -302,12 +306,13 @@ public class RachioApi {
             return null;
         }
 
-        RachioDevice device = deviceList.get(deviceId);
+        Map<String, RachioDevice> devices = getDevices();
+        RachioDevice device = devices.get(deviceId);
         if (device != null) {
             return device;
         }
 
-        for (RachioDevice dev : deviceList.values()) {
+        for (RachioDevice dev : devices.values()) {
             if (matchesIdentifierValue(deviceId, dev.id)) {
                 return dev;
             }
@@ -320,7 +325,7 @@ public class RachioApi {
             return null;
         }
 
-        for (RachioDevice dev : deviceList.values()) {
+        for (RachioDevice dev : getDevices().values()) {
             for (RachioZone zone : dev.getZones().values()) {
                 if (matchesIdentifierValue(zoneId, zone.id)) {
                     return zone;
@@ -335,7 +340,7 @@ public class RachioApi {
             return null;
         }
 
-        for (RachioDevice dev : deviceList.values()) {
+        for (RachioDevice dev : getDevices().values()) {
             for (RachioZone zone : dev.getZones().values()) {
                 if (matchesIdentifierValue(zoneId, zone.id)) {
                     return dev;
@@ -377,7 +382,7 @@ public class RachioApi {
             return null;
         }
 
-        for (Map.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
+        for (Map.Entry<String, RachioDevice> entry : getDevices().entrySet()) {
             RachioDevice dev = entry.getValue();
             String matchedProperty = getMatchingDeviceProperty(dev, properties);
             if (matchedProperty != null) {
@@ -389,7 +394,7 @@ public class RachioApi {
             }
         }
 
-        for (Map.Entry<String, RachioDevice> entry : deviceList.entrySet()) {
+        for (Map.Entry<String, RachioDevice> entry : getDevices().entrySet()) {
             RachioDevice dev = entry.getValue();
             ThingUID expectedUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             logger.trace("getDevByUID: requested bridge={}, requested device={}, cached bridge={}, cached device={}, "
@@ -438,7 +443,7 @@ public class RachioApi {
             return null;
         }
 
-        for (Map.Entry<String, RachioDevice> de : deviceList.entrySet()) {
+        for (Map.Entry<String, RachioDevice> de : getDevices().entrySet()) {
             RachioDevice dev = de.getValue();
             ThingUID expectedDevUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             if (expectedDevUID == null) {
@@ -460,7 +465,7 @@ public class RachioApi {
             }
         }
 
-        for (Map.Entry<String, RachioDevice> de : deviceList.entrySet()) {
+        for (Map.Entry<String, RachioDevice> de : getDevices().entrySet()) {
             RachioDevice dev = de.getValue();
             ThingUID expectedDevUID = buildExpectedThingUID(THING_TYPE_DEVICE, bridgeUID, dev.getThingID());
             if (expectedDevUID == null) {
@@ -1760,8 +1765,17 @@ public class RachioApi {
                 throw new RachioApiException("Invalid Rachio device data returned by the cloud API", e);
             }
         }
-        deviceList = Map.copyOf(initializedDevices);
+        replaceDevices(initializedDevices);
         return true;
+    }
+
+    private record DeviceCatalog(Map<String, RachioDevice> devices, RachioDiscoverySnapshot discoverySnapshot) {
+        private static final DeviceCatalog EMPTY = new DeviceCatalog(Map.of(), RachioDiscoverySnapshot.EMPTY);
+
+        private static DeviceCatalog from(Map<String, RachioDevice> devices) {
+            Map<String, RachioDevice> deviceSnapshot = Map.copyOf(devices);
+            return new DeviceCatalog(deviceSnapshot, RachioDiscoverySnapshot.fromDevices(deviceSnapshot));
+        }
     }
 
     public boolean initializeZones() {

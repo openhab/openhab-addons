@@ -75,7 +75,7 @@ public class RachioDeviceTest {
     }
 
     @Test
-    public void zoneSnapshotsRemainStableWhileExistingZonesKeepTheirIdentity() {
+    public void zoneMapReplacementKeepsExistingZoneIdentityAndWebhookState() {
         RachioDevice device = createDevice();
         Map<String, RachioZone> originalSnapshot = device.getZones();
         RachioZone originalZone = Objects.requireNonNull(originalSnapshot.get("zone-1"));
@@ -99,6 +99,56 @@ public class RachioDeviceTest {
         assertEquals(42, originalZone.getStartRunTime());
         assertEquals(200, originalZone.lastWateredDate);
         assertThrows(UnsupportedOperationException.class, () -> originalSnapshot.clear());
+    }
+
+    @Test
+    public void publishedDiscoverySnapshotRemainsStableDuringLiveReconciliation() {
+        RachioDevice device = createDevice();
+        RachioApi api = new RachioApi("person-1");
+        api.replaceDevices(Map.of(device.id, device));
+        RachioDiscoverySnapshot publishedSnapshot = api.getDiscoverySnapshot();
+        RachioDiscoverySnapshot.DeviceSnapshot publishedDevice = onlyDevice(publishedSnapshot);
+        RachioDiscoverySnapshot.ZoneSnapshot publishedZone = zoneSnapshot(publishedDevice, "zone-1");
+
+        RachioDevice cloudDevice = createDevice();
+        cloudDevice.name = "Updated controller";
+        cloudDevice.status = "OFFLINE";
+        cloudDevice.on = false;
+        RachioZone cloudZone = Objects.requireNonNull(cloudDevice.getZones().get("zone-1"));
+        cloudZone.name = "Updated zone";
+        cloudZone.setEnabled(false);
+
+        device.update(cloudDevice);
+        device.setSleepMode("SLEEP_MODE_ON");
+        RachioZone liveZone = Objects.requireNonNull(device.getZones().get("zone-1"));
+        liveZone.update(cloudZone);
+        device.replaceZones(device.getZones());
+
+        assertSame(publishedSnapshot, api.getDiscoverySnapshot());
+        assertEquals("Controller", publishedDevice.name());
+        assertEquals("ONLINE", publishedDevice.status());
+        assertTrue(publishedDevice.enabled());
+        assertFalse(publishedDevice.sleepMode());
+        assertEquals("zone-1", publishedZone.name());
+        assertTrue(publishedZone.enabled());
+        assertThrows(UnsupportedOperationException.class, () -> publishedSnapshot.devices().clear());
+        assertThrows(UnsupportedOperationException.class, () -> publishedDevice.properties().clear());
+        assertThrows(UnsupportedOperationException.class, () -> publishedDevice.zones().clear());
+
+        api.replaceDevices(Map.of(device.id, device));
+
+        RachioDiscoverySnapshot refreshedSnapshot = api.getDiscoverySnapshot();
+        RachioDiscoverySnapshot.DeviceSnapshot refreshedDevice = onlyDevice(refreshedSnapshot);
+        RachioDiscoverySnapshot.ZoneSnapshot refreshedZone = zoneSnapshot(refreshedDevice, "zone-1");
+        assertNotSame(publishedSnapshot, refreshedSnapshot);
+        assertEquals("Updated controller", refreshedDevice.name());
+        assertEquals("OFFLINE", refreshedDevice.status());
+        assertFalse(refreshedDevice.enabled());
+        assertTrue(refreshedDevice.sleepMode());
+        assertEquals("Updated zone", refreshedZone.name());
+        assertFalse(refreshedZone.enabled());
+        assertSame(device, api.getDevices().get(device.id));
+        assertSame(liveZone, device.getZones().get(liveZone.id));
     }
 
     @Test
@@ -137,8 +187,19 @@ public class RachioDeviceTest {
         RachioCloudDevice cloudDevice = new RachioCloudDevice();
         cloudDevice.id = "device-1";
         cloudDevice.name = "Controller";
+        cloudDevice.status = "ONLINE";
         cloudDevice.zones = List.of(zone("zone-11", 11, true), zone("zone-2", 2, false), zone("zone-1", 1, true));
         return new RachioDevice(cloudDevice);
+    }
+
+    private RachioDiscoverySnapshot.DeviceSnapshot onlyDevice(RachioDiscoverySnapshot snapshot) {
+        assertEquals(1, snapshot.devices().size());
+        return snapshot.devices().get(0);
+    }
+
+    private RachioDiscoverySnapshot.ZoneSnapshot zoneSnapshot(RachioDiscoverySnapshot.DeviceSnapshot device,
+            String zoneId) {
+        return device.zones().stream().filter(zone -> zoneId.equals(zone.id())).findFirst().orElseThrow();
     }
 
     private RachioCloudZone zone(String id, int number, boolean enabled) {
