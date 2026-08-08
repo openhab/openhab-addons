@@ -273,7 +273,11 @@ public class Shelly1CoIoTProtocol {
             } else if (profile.isLight) {
                 if (lightModels.get(id) instanceof ShellyLightModel model) {
                     if (brightness != -1) {
-                        model.setBrightness((int) brightness);
+                        if (ShellyLightModel.Mode.COLOR == model.getMode()) {
+                            model.setGain((int) brightness);
+                        } else {
+                            model.setBrightness((int) brightness);
+                        }
                     }
                     if (power != -1) {
                         model.setOnOff(power == 1.0);

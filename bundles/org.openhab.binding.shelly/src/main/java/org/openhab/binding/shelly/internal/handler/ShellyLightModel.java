@@ -211,8 +211,8 @@ public class ShellyLightModel extends LightModel {
     @Override
     public void handleCommand(Command command) {
         super.handleCommand(command);
-        setMode(Mode.COLOR);
         if (command instanceof HSBType) {
+            setMode(Mode.COLOR);
             refreshCache(Arrays.stream(getRGBx()).mapToInt(d -> (int) Math.round(d)).toArray());
         }
     }

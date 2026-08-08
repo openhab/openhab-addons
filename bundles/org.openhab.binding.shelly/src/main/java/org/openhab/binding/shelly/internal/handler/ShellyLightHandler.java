@@ -412,8 +412,13 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
         // MODE: setters change model's mode, so do this last to ensure the mode ends up correct
         if (profile.device.mode != null) {
-            Mode mode = SHELLY_MODE_COLOR.equals(profile.device.mode) ? Mode.COLOR : Mode.WHITE;
-            model.setMode(mode);
+            Mode remoteMode = SHELLY_MODE_COLOR.equals(profile.device.mode) ? Mode.COLOR : Mode.WHITE;
+            Mode localMode = model.getMode();
+            if (remoteMode != localMode) {
+                logger.debug("{}: lightId {} local mode {} and remote mode {} not same", thingName, model.getLightId(),
+                        localMode, remoteMode);
+            }
+            model.setMode(remoteMode);
         }
     }
 
@@ -456,13 +461,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
      */
     public boolean updateDirtyChannelsForLightModel(ShellyLightModel model) {
         boolean updated = false;
-        Integer channelId = model.getLightId();
+        Integer channelId = model.getLightId() + 1;
         String group = null;
 
         // POWER:
         if (model.isOnOffDirty()) {
-            group = profile.inColor ? buildControlGroupName(profile, channelId)
-                    : buildWhiteGroupName(profile, channelId);
+            group = buildControlGroupName(profile, channelId);
             updated |= updateChannel(group, CHANNEL_LIGHT_POWER, model.getOnOffState());
         }
 
