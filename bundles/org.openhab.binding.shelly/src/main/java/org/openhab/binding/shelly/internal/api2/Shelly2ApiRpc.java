@@ -454,6 +454,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void onConnect(InetSocketAddress deviceSocketAddr, boolean connected) {
         thing = thingTable.getThing(deviceSocketAddr);
         logger.debug("{}: Get thing from thingTable for {}", thingName, deviceSocketAddr);
+
+        if (profile.initialized && alwaysOn) {
+            // The periodic-status-push request is only sent once, during the initial getDeviceProfile() call, and
+            // is tied to that WebSocket session. A reconnect gets a new session, so the device stops pushing
+            // NotifyStatus updates until this is re-armed here; also nudge an immediate poll to close the gap.
+            try {
+                asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS);
+                getThing().requestUpdates(1, false);
+            } catch (ShellyApiException e) {
+                logger.debug("{}: Unable to re-arm status updates after reconnect", thingName, e);
+            }
+        }
     }
 
     @Override
