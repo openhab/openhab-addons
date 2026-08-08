@@ -1099,14 +1099,17 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             Set<String> activeChannelIds, @Nullable String label) {
         ChannelUID uid = new ChannelUID(thing.getUID(), channelId);
         activeChannelIds.add(channelId);
-        if (thing.getChannel(uid) == null) {
-            ChannelBuilder cb = ChannelBuilder.create(uid, null)
-                    .withType(new ChannelTypeUID(channelTypeNamespace, channelTypeId)).withKind(ChannelKind.TRIGGER);
-            if (label != null) {
-                cb.withLabel(translationService.getTranslation(label));
-            }
-            channelAdd.add(cb.build());
+        // Unconditional, exactly like addChannel: addRemoveChannels REPLACES the thing's whole
+        // channel list with channelAdd, so skipping a channel because it already exists REMOVES
+        // it from the thing. With an existence check here every full rebuild flipped the trigger
+        // channels between present and stripped, and any event that arrived while stripped was
+        // silently dropped (hasChannel gates both the trigger and the contact update).
+        ChannelBuilder cb = ChannelBuilder.create(uid, null)
+                .withType(new ChannelTypeUID(channelTypeNamespace, channelTypeId)).withKind(ChannelKind.TRIGGER);
+        if (label != null) {
+            cb.withLabel(translationService.getTranslation(label));
         }
+        channelAdd.add(cb.build());
     }
 
     private Sequence getSnapshotSequence(String channelId) {
