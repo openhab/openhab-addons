@@ -14,7 +14,8 @@ package org.openhab.io.mcp.internal.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -143,7 +144,7 @@ public class OAuthMetadataServlet extends HttpServlet {
     static UrlContext resolveUrlContext(HttpServletRequest request, @Nullable McpCloudWebhookService hook) {
         if (hook != null) {
             String mcpHookUrl = hook.getPublicUrl();
-            if (mcpHookUrl != null && isWebhook(request, mcpHookUrl)) {
+            if (mcpHookUrl != null && isWebhook(request)) {
                 String browserBase = hook.deriveBrowserBaseUrl();
                 // The webhook prepends /mcp when forwarding, so advertise sub-paths
                 // without that prefix.
@@ -160,16 +161,28 @@ public class OAuthMetadataServlet extends HttpServlet {
 
     /**
      * Whether this request was forwarded by the webhook rather than sent to us directly.
-     * Checks both markers the connector leaves — its bundle id and the caller's original
-     * host — so this still works if one of them goes away.
+     * The connector stamps its bundle id on requests it forwards, but a client could send
+     * that header too, so we only trust it from loopback — the connector always forwards
+     * to localhost. Host can't be used to tell the two apart because a self-hosted cloud
+     * may share a hostname with the direct route.
      */
-    static boolean isWebhook(HttpServletRequest request, String hookUrl) {
-        String source = headerOrNull(request, "x-openhab-source");
-        if (source != null && source.contains(WEBHOOK_SOURCE)) {
-            return true;
+    static boolean isWebhook(HttpServletRequest request) {
+        if (!isLoopback(request.getRemoteAddr())) {
+            return false;
         }
-        String hookHost = URI.create(hookUrl).getHost();
-        return hookHost != null && hookHost.equalsIgnoreCase(request.getServerName());
+        String source = headerOrNull(request, "x-openhab-source");
+        return source != null && source.contains(WEBHOOK_SOURCE);
+    }
+
+    private static boolean isLoopback(@Nullable String remoteAddr) {
+        if (remoteAddr == null || remoteAddr.isBlank()) {
+            return false;
+        }
+        try {
+            return InetAddress.getByName(remoteAddr).isLoopbackAddress();
+        } catch (UnknownHostException e) {
+            return false;
+        }
     }
 
     /**
@@ -181,7 +194,7 @@ public class OAuthMetadataServlet extends HttpServlet {
             @Nullable McpCloudWebhookService hook) {
         if (hook != null) {
             String mcpHookUrl = hook.getPublicUrl();
-            if (mcpHookUrl != null && isWebhook(request, mcpHookUrl)) {
+            if (mcpHookUrl != null && isWebhook(request)) {
                 return mcpHookUrl + stripMcpPrefix(PATH_PROTECTED_RESOURCE);
             }
         }

@@ -33,11 +33,22 @@ class OAuthMetadataServletTest {
 
     private static final String HOOK_URL = "https://myopenhab.org/api/hooks/abc-123";
 
-    private static HttpServletRequest request(String host, @Nullable String openhabSource) {
+    /** A request forwarded by the webhook connector: from loopback, carrying its bundle id. */
+    private static HttpServletRequest webhookRequest() {
+        return request("myopenhab.org", "127.0.0.1", "org.openhab.io.openhabcloud");
+    }
+
+    /** A request straight from a client or reverse proxy. */
+    private static HttpServletRequest directRequest(String host) {
+        return request(host, "192.168.1.20", null);
+    }
+
+    private static HttpServletRequest request(String host, String remoteAddr, @Nullable String openhabSource) {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getServerName()).thenReturn(host);
+        lenient().when(request.getServerName()).thenReturn(host);
         lenient().when(request.getServerPort()).thenReturn(443);
         lenient().when(request.getScheme()).thenReturn("https");
+        lenient().when(request.getRemoteAddr()).thenReturn(remoteAddr);
         lenient().when(request.getHeader("Host")).thenReturn(host);
         lenient().when(request.getHeader("X-Forwarded-Proto")).thenReturn("https");
         lenient().when(request.getHeader("x-openhab-source")).thenReturn(openhabSource);
@@ -53,8 +64,7 @@ class OAuthMetadataServletTest {
 
     @Test
     void webhookRequestGetsHookUrls() {
-        var ctx = OAuthMetadataServlet.resolveUrlContext(request("myopenhab.org", "org.openhab.io.openhabcloud"),
-                hook());
+        var ctx = OAuthMetadataServlet.resolveUrlContext(webhookRequest(), hook());
 
         assertEquals(HOOK_URL, ctx.resource());
         assertEquals(HOOK_URL, ctx.issuer());
@@ -64,16 +74,42 @@ class OAuthMetadataServletTest {
     }
 
     @Test
-    void webhookRequestIsDetectedByHostAlone() {
-        var ctx = OAuthMetadataServlet.resolveUrlContext(request("myopenhab.org", null), hook());
+    void webhookRequestFromIpv6LoopbackGetsHookUrls() {
+        var ctx = OAuthMetadataServlet
+                .resolveUrlContext(request("myopenhab.org", "0:0:0:0:0:0:0:1", "org.openhab.io.openhabcloud"), hook());
 
         assertEquals(HOOK_URL, ctx.resource());
+    }
+
+    /** A remote client can send the marker header, so it's only trusted from loopback. */
+    @Test
+    void spoofedSourceHeaderFromRemoteAddressIsIgnored() {
+        var ctx = OAuthMetadataServlet
+                .resolveUrlContext(request("oh.example.com", "192.168.1.20", "org.openhab.io.openhabcloud"), hook());
+
+        assertEquals("https://oh.example.com/mcp", ctx.resource());
+    }
+
+    /** Loopback alone isn't enough — a client on the openHAB host is still direct. */
+    @Test
+    void loopbackRequestWithoutSourceHeaderIsDirect() {
+        var ctx = OAuthMetadataServlet.resolveUrlContext(request("oh.example.com", "127.0.0.1", null), hook());
+
+        assertEquals("https://oh.example.com/mcp", ctx.resource());
+    }
+
+    /** A self-hosted cloud may share a hostname with the direct route, so host proves nothing. */
+    @Test
+    void directRequestSharingTheHookHostIsStillDirect() {
+        var ctx = OAuthMetadataServlet.resolveUrlContext(directRequest("myopenhab.org"), hook());
+
+        assertEquals("https://myopenhab.org/mcp", ctx.resource());
     }
 
     /** Guards the regression: direct requests used to be handed the webhook URL. */
     @Test
     void directRequestGetsRequestDerivedUrlsEvenWhenHookRegistered() {
-        var ctx = OAuthMetadataServlet.resolveUrlContext(request("oh.example.com", null), hook());
+        var ctx = OAuthMetadataServlet.resolveUrlContext(directRequest("oh.example.com"), hook());
 
         assertEquals("https://oh.example.com/mcp", ctx.resource());
         assertEquals("https://oh.example.com/mcp", ctx.issuer());
@@ -84,7 +120,7 @@ class OAuthMetadataServletTest {
 
     @Test
     void directRequestWithNoHookGetsRequestDerivedUrls() {
-        var ctx = OAuthMetadataServlet.resolveUrlContext(request("oh.example.com", null), null);
+        var ctx = OAuthMetadataServlet.resolveUrlContext(directRequest("oh.example.com"), null);
 
         assertEquals("https://oh.example.com/mcp", ctx.resource());
         assertEquals("https://oh.example.com/mcp/oauth/register", ctx.registrationEndpoint());
@@ -93,13 +129,13 @@ class OAuthMetadataServletTest {
     @Test
     void protectedResourceMetadataUrlIsAbsoluteForDirectRequests() {
         assertEquals("https://oh.example.com/mcp/.well-known/oauth-protected-resource",
-                OAuthMetadataServlet.protectedResourceMetadataUrl(request("oh.example.com", null), null));
+                OAuthMetadataServlet.protectedResourceMetadataUrl(directRequest("oh.example.com"), null));
     }
 
     @Test
-    void protectedResourceMetadataUrlUsesHookForCloudRequests() {
-        assertEquals(HOOK_URL + "/.well-known/oauth-protected-resource", OAuthMetadataServlet
-                .protectedResourceMetadataUrl(request("myopenhab.org", "org.openhab.io.openhabcloud"), hook()));
+    void protectedResourceMetadataUrlUsesHookForWebhookRequests() {
+        assertEquals(HOOK_URL + "/.well-known/oauth-protected-resource",
+                OAuthMetadataServlet.protectedResourceMetadataUrl(webhookRequest(), hook()));
     }
 
     @Test
@@ -107,14 +143,14 @@ class OAuthMetadataServletTest {
         McpCloudWebhookService hook = mock(McpCloudWebhookService.class);
         when(hook.getPublicUrl()).thenReturn(null);
 
-        var ctx = OAuthMetadataServlet.resolveUrlContext(request("oh.example.com", null), hook);
+        var ctx = OAuthMetadataServlet.resolveUrlContext(directRequest("oh.example.com"), hook);
 
         assertEquals("https://oh.example.com/mcp", ctx.resource());
     }
 
     @Test
     void forwardedHostNotMatchingServerNameIsIgnored() {
-        HttpServletRequest request = request("oh.example.com", null);
+        HttpServletRequest request = directRequest("oh.example.com");
         when(request.getHeader("X-Forwarded-Host")).thenReturn("attacker.example.net");
 
         var ctx = OAuthMetadataServlet.resolveUrlContext(request, null);
