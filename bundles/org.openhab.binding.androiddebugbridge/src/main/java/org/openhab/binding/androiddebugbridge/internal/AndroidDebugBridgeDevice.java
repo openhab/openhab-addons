@@ -749,18 +749,21 @@ public class AndroidDebugBridgeDevice {
 
     private String runAdbShell(int commandTimeout, String... args)
             throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
-        var adb = connection;
-        if (adb == null) {
-            throw new AndroidDebugBridgeDeviceException("Device not connected");
-        }
         // Failures while opening the stream and failures while reading its output are tracked
         // separately: only the former can mean the shell command never started. Folding both into
         // one reference would let a failure that happened *after* the command already ran be
         // reported as a stream rejection, and the caller may retry on that.
         AtomicReference<@Nullable Exception> openError = new AtomicReference<>();
         AtomicReference<@Nullable Exception> readError = new AtomicReference<>();
+        commandLock.lock();
         try {
-            commandLock.lock();
+            // Read the connection only once the lock is held. Capturing it earlier would let a
+            // reconnect replace and close it while this call was still waiting for the lock, so the
+            // command would then run against a connection that is already closed.
+            var adb = connection;
+            if (adb == null) {
+                throw new AndroidDebugBridgeDeviceException("Device not connected");
+            }
             var commandFuture = scheduler.submit(() -> {
                 var byteArrayOutputStream = new ByteArrayOutputStream();
                 String cmd = String.join(" ", args);
