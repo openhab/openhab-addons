@@ -23,7 +23,6 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Base64.Encoder;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * Handles performing the actual HTTP requests for communicating with the Roborock API.
@@ -322,51 +319,51 @@ public class RoborockWebTargets {
      * @throws RoborockException If there is a comms or authentication error.
      */
 
-private String invoke(String uri, HttpMethod method, String contentType, @Nullable String headerKey,
-        @Nullable String headerValue, @Nullable String headerKey2, @Nullable String headerValue2)
-        throws RoborockException {
-    logger.debug("Calling url: {}", uri);
-    String jsonResponse = "";
-    synchronized (this) {
-        try {
-            Request request = httpClient.newRequest(uri).method(method).header("content-type", contentType)
-                    .header("header_clientid", safeToken).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            if (headerKey != null && headerValue != null) {
-                request.header(headerKey, headerValue);
-            }
-            if (headerKey2 != null && headerValue2 != null) {
-                request.header(headerKey2, headerValue2);
-                request.header("header_clientlang", "en");
-                request.header("header_appversion", "4.54.02");
-                request.header("header_phonesystem", "iOS");
-                request.header("header_phonemodel", "iPhone16,1");
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace("{} request for {}", method, uri);
-            }
-            ContentResponse response = request.send();
-            int status = response.getStatus();
-            jsonResponse = response.getContentAsString();
-            if (!jsonResponse.isEmpty()) {
+    private String invoke(String uri, HttpMethod method, String contentType, @Nullable String headerKey,
+            @Nullable String headerValue, @Nullable String headerKey2, @Nullable String headerValue2)
+            throws RoborockException {
+        logger.debug("Calling url: {}", uri);
+        String jsonResponse = "";
+        synchronized (this) {
+            try {
+                Request request = httpClient.newRequest(uri).method(method).header("content-type", contentType)
+                        .header("header_clientid", safeToken).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                if (headerKey != null && headerValue != null) {
+                    request.header(headerKey, headerValue);
+                }
+                if (headerKey2 != null && headerValue2 != null) {
+                    request.header(headerKey2, headerValue2);
+                    request.header("header_clientlang", "en");
+                    request.header("header_appversion", "4.54.02");
+                    request.header("header_phonesystem", "iOS");
+                    request.header("header_phonemodel", "iPhone16,1");
+                }
                 if (logger.isTraceEnabled()) {
-                    logger.trace("JSON response: '{}'", jsonResponse);
+                    logger.trace("{} request for {}", method, uri);
                 }
-                // Detect code 2010 (invalid/expired token) from Roborock cloud API
-                if (jsonResponse.contains("\"code\":2010") || jsonResponse.contains("invalid token")) {
-                    throw new RoborockException("invalid token");
+                ContentResponse response = request.send();
+                int status = response.getStatus();
+                jsonResponse = response.getContentAsString();
+                if (!jsonResponse.isEmpty()) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("JSON response: '{}'", jsonResponse);
+                    }
+                    // Detect code 2010 (invalid/expired token) from Roborock cloud API
+                    if (jsonResponse.contains("\"code\":2010") || jsonResponse.contains("invalid token")) {
+                        throw new RoborockException("invalid token");
+                    }
                 }
+                if (status == HttpStatus.UNAUTHORIZED_401) {
+                    throw new RoborockException("Unauthorized");
+                }
+                if (!HttpStatus.isSuccess(status)) {
+                    throw new RoborockException(
+                            String.format("Roborock returned error <%d> while invoking %s", status, uri));
+                }
+            } catch (TimeoutException | ExecutionException | InterruptedException ex) {
+                throw new RoborockException(String.format("%s", ex.getLocalizedMessage(), ex));
             }
-            if (status == HttpStatus.UNAUTHORIZED_401) {
-                throw new RoborockException("Unauthorized");
-            }
-            if (!HttpStatus.isSuccess(status)) {
-                throw new RoborockException(
-                        String.format("Roborock returned error <%d> while invoking %s", status, uri));
-            }
-        } catch (TimeoutException | ExecutionException | InterruptedException ex) {
-            throw new RoborockException(String.format("%s", ex.getLocalizedMessage(), ex));
         }
+        return jsonResponse;
     }
-    return jsonResponse;
-}
 }

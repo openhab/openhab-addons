@@ -152,82 +152,82 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         logger.debug("Cleared invalid token and rriot session state from sessionStorage.");
     }
 
-@Nullable
-public Home refreshHome() {
-    if (!isSessionValid()) {
-        return null;
-    }
-    try {
-        return webTargets.getHomeDetail(baseUri, token);
-    } catch (RoborockException e) {
-        if ("invalid token".equalsIgnoreCase(e.getMessage())) {
-            handleSessionExpired();
+    @Nullable
+    public Home refreshHome() {
+        if (!isSessionValid()) {
             return null;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
-        return null;
+        try {
+            return webTargets.getHomeDetail(baseUri, token);
+        } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return null;
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+            return null;
+        }
     }
-}
 
     @Nullable
     public HomeData getHomeData() {
         return homeDataCache.getValue();
     }
 
- @Nullable
-public HomeData refreshHomeData() {
-    if (!isSessionValid()) {
-        return new HomeData();
-    }
-    try {
-        Home home = homeCache.getValue();
-        if (home == null || home.data == null) {
+    @Nullable
+    public HomeData refreshHomeData() {
+        if (!isSessionValid()) {
             return new HomeData();
         }
-        return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
-    } catch (RoborockException e) {
-        if ("invalid token".equalsIgnoreCase(e.getMessage())) {
-            handleSessionExpired();
+        try {
+            Home home = homeCache.getValue();
+            if (home == null || home.data == null) {
+                return new HomeData();
+            }
+            return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
+        } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return new HomeData();
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return new HomeData();
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
-        return new HomeData();
     }
-}
 
-@Nullable
-public String getRoutines(String deviceId) {
-    if (!isSessionValid()) {
-        return "";
-    }
-    try {
-        return webTargets.getRoutines(deviceId, rriot);
-    } catch (RoborockException e) {
-        if ("invalid token".equalsIgnoreCase(e.getMessage())) {
-            handleSessionExpired();
+    @Nullable
+    public String getRoutines(String deviceId) {
+        if (!isSessionValid()) {
             return "";
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
-        return "";
-    }
-}
-
-@Nullable
-public String setRoutine(String sceneID) {
-    if (!isSessionValid()) {
-        return "";
-    }
-    try {
-        return webTargets.setRoutine(sceneID, rriot);
-    } catch (RoborockException e) {
-        if ("invalid token".equalsIgnoreCase(e.getMessage())) {
-            handleSessionExpired();
+        try {
+            return webTargets.getRoutines(deviceId, rriot);
+        } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return "";
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return "";
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
-        return "";
     }
-}
+
+    @Nullable
+    public String setRoutine(String sceneID) {
+        if (!isSessionValid()) {
+            return "";
+        }
+        try {
+            return webTargets.setRoutine(sceneID, rriot);
+        } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return "";
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+            return "";
+        }
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
