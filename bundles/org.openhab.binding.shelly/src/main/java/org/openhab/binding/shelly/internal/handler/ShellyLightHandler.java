@@ -373,10 +373,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 logger.trace("{}: Update channels for group {}: RGBW={}/{}/{}, in %:{}%/{}%/{}%, white={}%, gain={}%",
                         thingName, colorGroup, col.red, col.green, col.blue, col.percentRed, col.percentGreen,
                         col.percentBlue, col.percentWhite, col.percentGain);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_RED, getDecimal(col.red));
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_GREEN, getDecimal(col.green));
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_BLUE, getDecimal(col.blue));
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_WHITE, getDecimal(col.white));
+                updated |= updateChannel(colorGroup, CHANNEL_COLOR_RED, col.percentRed);
+                updated |= updateChannel(colorGroup, CHANNEL_COLOR_GREEN, col.percentGreen);
+                updated |= updateChannel(colorGroup, CHANNEL_COLOR_BLUE, col.percentBlue);
+                updated |= updateChannel(colorGroup, CHANNEL_COLOR_WHITE, col.percentWhite);
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_GAIN, col.percentGain);
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_EFFECT, getDecimal(col.effect));
                 setFullColor(colorGroup, col);

@@ -225,33 +225,33 @@
 	<channel-type id="colorRed" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Red</label>
-		<description>Red (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Red (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorGreen" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Green</label>
-		<description>Green (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Green (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorBlue" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Blue</label>
-		<description>Blue (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Blue (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorWhite">
 		<item-type>Dimmer</item-type>
 		<label>White</label>
-		<description>White (0-255), applies only in Color Mode</description>
+		<description>White (0-100%), applies only in Color Mode</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorGain">
