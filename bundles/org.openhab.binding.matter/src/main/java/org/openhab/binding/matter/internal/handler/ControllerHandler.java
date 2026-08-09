@@ -252,7 +252,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
                         && !nodeHandler.shouldRefreshOnReconnect();
                 if (skip) {
                     logger.debug("Skipping requestAllNodeData for {} (already enumerated, sleepy)", message.nodeId);
-                    updateEndpointStatuses(message.nodeId, ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+                    updateEndpointStatuses(message.nodeId, ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                 } else {
                     updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                             translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
@@ -574,7 +574,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     }
 
     private void updateEndpointStatuses(BigInteger nodeId, ThingStatus status, ThingStatusDetail detail,
-            String details) {
+            @Nullable String details) {
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
             if (handler instanceof NodeHandler endpointHandler) {
