@@ -243,7 +243,13 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     @Override
     public void onSessionOpened(UUID session, @Nullable String chargePointId, @Nullable InetSocketAddress remote) {
         if (chargePointId == null || chargePointId.isBlank()) {
-            logger.warn("Charger session {} opened without an identity path; ignoring", session);
+            // remote can be null (the session may carry no peer address); fall back to the session id so
+            // the message still names the offending connection. "connection {}" rather than "at {}" so it
+            // reads correctly whether that resolves to a socket address or a session id.
+            Object peer = remote != null ? remote : session;
+            logger.warn(
+                    "Charger connected without a charge point id in its URL path and was ignored (connection {}); it must dial ws://<host>:{}/<chargePointId>, not the bare root",
+                    peer, config.port);
             return;
         }
         // Connection allow-list: if configured, only listed charge points may connect.

@@ -204,4 +204,25 @@ class OcppServerBridgeHandlerTest {
         verify(transport).closeSession(first);
         verify(transport, never()).closeSession(second);
     }
+
+    @Test
+    void aSessionWithoutAChargePointIdIsIgnored() {
+        // A charger that dials the bare root (ws://host:port/ with no path — a trailing-slash URL that
+        // leaves nothing after the slash) presents no charge point id. The library still opens a
+        // WebSocket session, but with no identity there is nothing to onboard it as, so the bridge
+        // ignores it: it maps nothing, discovers nothing, and does not persist a transaction under an
+        // empty id. If the guard regressed, onSessionOpened would map session -> "" and the start below
+        // would persist a transaction retrievable under "". (Seen with a V2C Trydan whose backend URL
+        // was ws://host:8887/ with the id in a separate field the charger never puts in the path.)
+        handler.initialize();
+        verify(callback, timeout(2000)).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+
+        UUID session = UUID.randomUUID();
+        handler.onSessionOpened(session, "", null);
+        handler.onStartTransaction(session, new StartTransactionRequest(1, "tag", 0, ZonedDateTime.now()), 55);
+
+        org.junit.jupiter.api.Assertions.assertNull(handler.openTransactionFor("", 1),
+                "a session with no charge point id must be ignored, mapping nothing");
+    }
 }
