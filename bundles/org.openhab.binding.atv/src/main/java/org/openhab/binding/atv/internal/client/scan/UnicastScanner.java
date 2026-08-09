@@ -42,14 +42,25 @@ public class UnicastScanner extends ScanOrchestrator {
 
     private final List<InetAddress> hosts;
     private final int port;
+    private final boolean knock;
+
+    /**
+     * Creates a new scanner querying the standard mDNS port and knocking to wake sleeping devices.
+     *
+     * @param hosts hosts to scan
+     */
+    public UnicastScanner(List<InetAddress> hosts) {
+        this(hosts, MDNS_PORT, true);
+    }
 
     /**
      * Creates a new scanner querying the standard mDNS port.
      *
      * @param hosts hosts to scan
+     * @param knock whether to knock the well-known service ports while scanning
      */
-    public UnicastScanner(List<InetAddress> hosts) {
-        this(hosts, MDNS_PORT);
+    public UnicastScanner(List<InetAddress> hosts, boolean knock) {
+        this(hosts, MDNS_PORT, knock);
     }
 
     /**
@@ -57,10 +68,12 @@ public class UnicastScanner extends ScanOrchestrator {
      *
      * @param hosts hosts to scan
      * @param port UDP port to send queries to
+     * @param knock whether to knock the well-known service ports while scanning
      */
-    public UnicastScanner(List<InetAddress> hosts, int port) {
+    public UnicastScanner(List<InetAddress> hosts, int port, boolean knock) {
         this.hosts = List.copyOf(hosts);
         this.port = port;
+        this.knock = knock;
     }
 
     @Override
@@ -77,7 +90,10 @@ public class UnicastScanner extends ScanOrchestrator {
     }
 
     private CompletableFuture<MdnsResponse> getServices(InetAddress host, Duration timeout) {
-        CompletableFuture<@Nullable Void> knocker = startKnocker(host, Knock.KNOCK_PORTS, timeout);
+        // Knocking wakes a sleeping device, so it only runs when waking it is the point. A plain reachability
+        // scan must not drag a device out of sleep (and would otherwise knock every retry, around the clock).
+        CompletableFuture<@Nullable Void> knocker = knock ? startKnocker(host, Knock.KNOCK_PORTS, timeout)
+                : CompletableFuture.completedFuture(null);
         return Mdns.unicast(host, port, services(), timeout).exceptionally(e -> {
             LOGGER.debug("Unicast scan of {} failed: {}", host, e.toString());
             return MdnsResponse.EMPTY;

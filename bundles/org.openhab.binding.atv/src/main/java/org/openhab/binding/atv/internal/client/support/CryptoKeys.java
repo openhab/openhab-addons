@@ -66,24 +66,18 @@ public final class CryptoKeys {
     public record X25519KeyPair(byte[] privateKey, byte[] publicKey) {
     }
 
-    /**
-     * Generates a new random Ed25519 key pair.
-     */
+    /** Generates a new random Ed25519 key pair. */
     public static Ed25519KeyPair ed25519Generate() {
         Ed25519PrivateKeyParameters priv = new Ed25519PrivateKeyParameters(RANDOM);
         return new Ed25519KeyPair(priv.getEncoded(), priv.generatePublicKey().getEncoded());
     }
 
-    /**
-     * Recreates an Ed25519 key pair from a 32-byte private seed.
-     */
+    /** Recreates an Ed25519 key pair from a 32-byte private seed. */
     public static Ed25519KeyPair ed25519FromSeed(byte[] seed) {
         return new Ed25519KeyPair(seed.clone(), ed25519PublicKey(seed));
     }
 
-    /**
-     * Derives the 32-byte raw Ed25519 public key from a 32-byte private seed.
-     */
+    /** Derives the 32-byte raw Ed25519 public key from a 32-byte private seed. */
     public static byte[] ed25519PublicKey(byte[] seed) {
         return new Ed25519PrivateKeyParameters(seed, 0).generatePublicKey().getEncoded();
     }
@@ -117,24 +111,18 @@ public final class CryptoKeys {
         return signer.verifySignature(signature);
     }
 
-    /**
-     * Generates a new random X25519 key pair.
-     */
+    /** Generates a new random X25519 key pair. */
     public static X25519KeyPair x25519Generate() {
         X25519PrivateKeyParameters priv = new X25519PrivateKeyParameters(RANDOM);
         return new X25519KeyPair(priv.getEncoded(), priv.generatePublicKey().getEncoded());
     }
 
-    /**
-     * Recreates an X25519 key pair from a 32-byte private scalar.
-     */
+    /** Recreates an X25519 key pair from a 32-byte private scalar. */
     public static X25519KeyPair x25519FromPrivate(byte[] privateKey) {
         return new X25519KeyPair(privateKey.clone(), x25519PublicKey(privateKey));
     }
 
-    /**
-     * Derives the 32-byte raw X25519 public key from a 32-byte private scalar.
-     */
+    /** Derives the 32-byte raw X25519 public key from a 32-byte private scalar. */
     public static byte[] x25519PublicKey(byte[] privateKey) {
         return new X25519PrivateKeyParameters(privateKey, 0).generatePublicKey().getEncoded();
     }

@@ -45,9 +45,7 @@ public enum FrameType {
         this.value = value;
     }
 
-    /**
-     * Returns the numeric on-wire value.
-     */
+    /** Returns the numeric on-wire value. */
     public int value() {
         return value;
     }
@@ -68,16 +66,12 @@ public enum FrameType {
         throw new IllegalArgumentException("Unknown FrameType value: " + value);
     }
 
-    /**
-     * Whether this is a pairing ({@code PS_*} or {@code PV_*}) frame.
-     */
+    /** Whether this is a pairing ({@code PS_*} or {@code PV_*}) frame. */
     public boolean isAuthFrame() {
         return this == PS_Start || this == PS_Next || this == PV_Start || this == PV_Next;
     }
 
-    /**
-     * Whether this is an OPACK-carrying data frame.
-     */
+    /** Whether this is an OPACK-carrying data frame. */
     public boolean isOpackFrame() {
         return this == U_OPACK || this == E_OPACK || this == P_OPACK;
     }

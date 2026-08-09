@@ -176,9 +176,7 @@ public final class AirPlay {
             this.core = core;
         }
 
-        /**
-         * Closes and frees resources.
-         */
+        /** Closes and frees resources. */
         @Override
         public void close() {
             HttpConnection current = connection;
@@ -194,9 +192,7 @@ public final class AirPlay {
             }
         }
 
-        /**
-         * Stops current playback by closing the play connection.
-         */
+        /** Stops current playback by closing the play connection. */
         public void stop() {
             HttpConnection current = connection;
             if (current != null) {

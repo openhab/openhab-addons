@@ -159,7 +159,7 @@ public final class MrpConnection implements AbstractMrpConnection {
     public void send(ProtocolMessage message) {
         byte[] serialized = message.toByteArray();
         sendRaw(serialized);
-        LOGGER.debug(">> Send: Protobuf type={}", message.getType());
+        LOGGER.trace(">> Send: Protobuf type={}", message.getType());
     }
 
     /**
@@ -248,7 +248,7 @@ public final class MrpConnection implements AbstractMrpConnection {
             int payloadLength = (int) rawLength;
             if (buffer.remaining() < payloadLength) {
                 buffer.reset();
-                LOGGER.debug("Require {} bytes but only {} in buffer", payloadLength, buffer.remaining());
+                LOGGER.trace("Require {} bytes but only {} in buffer", payloadLength, buffer.remaining());
                 break;
             }
             byte[] data = new byte[payloadLength];
@@ -282,7 +282,7 @@ public final class MrpConnection implements AbstractMrpConnection {
         Chacha20Cipher cipher = chacha;
         byte[] plain = cipher != null ? cipher.decrypt(data) : data;
         ProtocolMessage parsed = ProtocolMessage.parseFrom(plain, MrpExtensions.EXTENSION_REGISTRY);
-        LOGGER.debug("<< Receive: Protobuf type={}", parsed.getType());
+        LOGGER.trace("<< Receive: Protobuf type={}", parsed.getType());
         @Nullable
         Listener current = listener;
         if (current != null) {

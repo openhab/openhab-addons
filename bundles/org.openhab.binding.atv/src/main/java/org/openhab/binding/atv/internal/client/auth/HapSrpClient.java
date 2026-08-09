@@ -32,9 +32,7 @@ public final class HapSrpClient extends AbstractSrpClient {
 
     private static final String USERNAME = "Pair-Setup";
 
-    /**
-     * Creates a client with a secure-random private ephemeral.
-     */
+    /** Creates a client with a secure-random private ephemeral. */
     public HapSrpClient() {
         this(secureRandomSupplier());
     }

@@ -16,9 +16,10 @@
 
   <properties>
     <protobuf.version>4.35.0</protobuf.version>
-    <!-- sun.misc is referenced defensively by protobuf-java; it is a JDK package not exported as an OSGi
-         bundle, so import it optionally. The openHAB runtime provides it through the JVM. -->
-    <bnd.importpackage>sun.misc;resolution:=optional</bnd.importpackage>
+    <!-- sun.misc is referenced defensively by protobuf-java and javax.sound.midi by tritonus-share; neither
+         is used by the binding. sun.misc is a JDK package not exported as an OSGi bundle, so both are
+         imported optionally. The openHAB runtime provides them through the JVM. -->
+    <bnd.importpackage>sun.misc;resolution:=optional,javax.sound.midi;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>

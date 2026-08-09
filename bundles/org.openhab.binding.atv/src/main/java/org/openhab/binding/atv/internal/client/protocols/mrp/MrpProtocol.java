@@ -61,9 +61,7 @@ import org.slf4j.LoggerFactory;
 public class MrpProtocol extends MessageDispatcher<ProtocolMessage.Type, ProtocolMessage>
         implements AbstractMrpConnection.Listener {
 
-    /**
-     * Time between periodic heartbeats.
-     */
+    /** Time between periodic heartbeats. */
     public static final Duration HEARTBEAT_INTERVAL = Duration.ofSeconds(30);
 
     /** Immediate re-attempts after a failed heartbeat. */
@@ -303,9 +301,7 @@ public class MrpProtocol extends MessageDispatcher<ProtocolMessage.Type, Protoco
         state = ProtocolState.STOPPED;
     }
 
-    /**
-     * Enables sending periodic heartbeat messages with the default interval and retry count.
-     */
+    /** Enables sending periodic heartbeat messages with the default interval and retry count. */
     public void enableHeartbeat() {
         enableHeartbeat(HEARTBEAT_INTERVAL, HEARTBEAT_RETRIES);
     }

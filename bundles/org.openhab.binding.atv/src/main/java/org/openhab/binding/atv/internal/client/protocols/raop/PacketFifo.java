@@ -46,30 +46,22 @@ public final class PacketFifo<T> implements Iterable<Integer> {
     private final LinkedHashMap<Integer, T> items = new LinkedHashMap<>();
     private final int upperLimit;
 
-    /**
-     * Creates a new FIFO holding at most {@code upperLimit} items.
-     */
+    /** Creates a new FIFO holding at most {@code upperLimit} items. */
     public PacketFifo(int upperLimit) {
         this.upperLimit = upperLimit;
     }
 
-    /**
-     * Removes all items in the FIFO.
-     */
+    /** Removes all items in the FIFO. */
     public void clear() {
         items.clear();
     }
 
-    /**
-     * Returns the number of items in the FIFO.
-     */
+    /** Returns the number of items in the FIFO. */
     public int size() {
         return items.size();
     }
 
-    /**
-     * Returns {@code true} if the FIFO holds no items.
-     */
+    /** Returns {@code true} if the FIFO holds no items. */
     public boolean isEmpty() {
         return items.isEmpty();
     }
@@ -104,40 +96,30 @@ public final class PacketFifo<T> implements Iterable<Integer> {
         return value;
     }
 
-    /**
-     * Returns whether an element exists in the FIFO.
-     */
+    /** Returns whether an element exists in the FIFO. */
     public boolean contains(int index) {
         return items.containsKey(index);
     }
 
-    /**
-     * Iterates over indices in the FIFO in insertion order.
-     */
+    /** Iterates over indices in the FIFO in insertion order. */
     @Override
     public Iterator<Integer> iterator() {
         return java.util.Collections.unmodifiableSet(items.keySet()).iterator();
     }
 
-    /**
-     * Returns a string representation with only index numbers, e.g. {@code [1, 2]}.
-     */
+    /** Returns a string representation with only index numbers, e.g. {@code [1, 2]}. */
     @Override
     public String toString() {
         return items.keySet().stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]"));
     }
 
-    /**
-     * Returns the internal representation, e.g. {@code {1: 2, 2: 3}}.
-     */
+    /** Returns the internal representation, e.g. {@code {1: 2, 2: 3}}. */
     public String repr() {
         return items.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue())
                 .collect(Collectors.joining(", ", "{", "}"));
     }
 
-    /**
-     * Returns an unmodifiable view of the underlying map (test/debug helper).
-     */
+    /** Returns an unmodifiable view of the underlying map (test/debug helper). */
     public Map<Integer, T> asMap() {
         return java.util.Collections.unmodifiableMap(items);
     }

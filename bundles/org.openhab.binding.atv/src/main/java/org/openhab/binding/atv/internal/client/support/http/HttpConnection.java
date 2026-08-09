@@ -166,16 +166,12 @@ public final class HttpConnection implements AutoCloseable {
         Thread.startVirtualThread(this::readerLoop);
     }
 
-    /**
-     * Returns the IP address of the local interface.
-     */
+    /** Returns the IP address of the local interface. */
     public String localIp() {
         return localIp;
     }
 
-    /**
-     * Returns the IP address of the remote instance.
-     */
+    /** Returns the IP address of the remote instance. */
     public String remoteIp() {
         return remoteIp;
     }
@@ -221,9 +217,7 @@ public final class HttpConnection implements AutoCloseable {
         this.connectionLostListener = listener;
     }
 
-    /**
-     * Returns true while the connection is open.
-     */
+    /** Returns true while the connection is open. */
     public boolean isConnected() {
         return !closed && !socket.isClosed();
     }
@@ -407,7 +401,7 @@ public final class HttpConnection implements AutoCloseable {
                 LOGGER.debug("Connection error", e);
             }
         } catch (RuntimeException e) {
-            LOGGER.debug("Failed to process incoming data, closing connection", e);
+            LOGGER.warn("Failed to process incoming data, closing connection", e);
             lostByRemote = !closed;
         }
 
@@ -437,7 +431,7 @@ public final class HttpConnection implements AutoCloseable {
                 HttpParser.ParseResult<HttpResponse> parsed = HttpParser.parseResponse(buffer);
                 HttpResponse message = parsed.message();
                 if (message == null) {
-                    LOGGER.debug("Not enough data to decode message");
+                    LOGGER.trace("Not enough data to decode message");
                     break;
                 }
                 buffer = parsed.remainder();
@@ -446,7 +440,7 @@ public final class HttpConnection implements AutoCloseable {
                 HttpParser.ParseResult<HttpRequest> parsed = HttpParser.parseRequest(buffer);
                 HttpRequest message = parsed.message();
                 if (message == null) {
-                    LOGGER.debug("Not enough data to decode message");
+                    LOGGER.trace("Not enough data to decode message");
                     break;
                 }
                 buffer = parsed.remainder();
@@ -464,21 +458,21 @@ public final class HttpConnection implements AutoCloseable {
         if (pending != null) {
             pending.future.complete(response);
         } else {
-            LOGGER.debug("Got response without having a request: {}", response);
+            LOGGER.warn("Got response without having a request: {}", response);
         }
     }
 
     private void dispatchRequest(HttpRequest request) {
         Function<HttpRequest, HttpResponse> handler = requestHandler;
         if (handler == null) {
-            LOGGER.debug("Got request without a request handler: {}", request);
+            LOGGER.warn("Got request without a request handler: {}", request);
             return;
         }
         HttpResponse response;
         try {
             response = handler.apply(request);
         } catch (RuntimeException e) {
-            LOGGER.debug("Request handler failed for {}", request, e);
+            LOGGER.warn("Request handler failed for {}", request, e);
             return;
         }
         if (response != null) {

@@ -47,23 +47,17 @@ public final class Cache<K, V> {
         this.data = new LinkedHashMap<>(16, 0.75f, true);
     }
 
-    /**
-     * Returns whether the cache is empty.
-     */
+    /** Returns whether the cache is empty. */
     public synchronized boolean isEmpty() {
         return data.isEmpty();
     }
 
-    /**
-     * Returns the number of cached entries.
-     */
+    /** Returns the number of cached entries. */
     public synchronized int size() {
         return data.size();
     }
 
-    /**
-     * Returns whether an identifier is cached.
-     */
+    /** Returns whether an identifier is cached. */
     public synchronized boolean contains(K identifier) {
         return data.containsKey(identifier);
     }

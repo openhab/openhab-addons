@@ -40,51 +40,39 @@ public final class RaopPackets {
         return ByteBuffer.wrap(data, 0, length).order(ByteOrder.BIG_ENDIAN);
     }
 
-    /**
-     * RTP header common to all RAOP packets.
-     */
+    /** RTP header common to all RAOP packets. */
     public record RtpHeader(int proto, int type, int seqno) {
 
         /** Encoded size in bytes. */
         public static final int LENGTH = 4;
 
-        /**
-         * Encodes this header to its 4-byte wire format.
-         */
+        /** Encodes this header to its 4-byte wire format. */
         public byte[] encode() {
             ByteBuffer buf = ByteBuffer.allocate(LENGTH).order(ByteOrder.BIG_ENDIAN);
             putHeader(buf, proto, type, seqno);
             return buf.array();
         }
 
-        /**
-         * Decodes a header, requiring an exact-length input.
-         */
+        /** Decodes a header, requiring an exact-length input. */
         public static RtpHeader decode(byte[] data) {
             return decode(data, false);
         }
 
-        /**
-         * Decodes a header, optionally allowing trailing bytes.
-         */
+        /** Decodes a header, optionally allowing trailing bytes. */
         public static RtpHeader decode(byte[] data, boolean allowExcessive) {
             ByteBuffer buf = buffer(data, LENGTH, allowExcessive);
             return new RtpHeader(u8(buf), u8(buf), u16(buf));
         }
     }
 
-    /**
-     * Timing request/response packet.
-     */
+    /** Timing request/response packet. */
     public record TimingPacket(int proto, int type, int seqno, long padding, long reftimeSec, long reftimeFrac,
             long recvtimeSec, long recvtimeFrac, long sendtimeSec, long sendtimeFrac) {
 
         /** Encoded size in bytes. */
         public static final int LENGTH = 32;
 
-        /**
-         * Encodes this packet to its 32-byte wire format.
-         */
+        /** Encodes this packet to its 32-byte wire format. */
         public byte[] encode() {
             ByteBuffer buf = ByteBuffer.allocate(LENGTH).order(ByteOrder.BIG_ENDIAN);
             putHeader(buf, proto, type, seqno);
@@ -98,16 +86,12 @@ public final class RaopPackets {
             return buf.array();
         }
 
-        /**
-         * Decodes a packet, requiring an exact-length input.
-         */
+        /** Decodes a packet, requiring an exact-length input. */
         public static TimingPacket decode(byte[] data) {
             return decode(data, false);
         }
 
-        /**
-         * Decodes a packet, optionally allowing trailing bytes.
-         */
+        /** Decodes a packet, optionally allowing trailing bytes. */
         public static TimingPacket decode(byte[] data, boolean allowExcessive) {
             ByteBuffer buf = buffer(data, LENGTH, allowExcessive);
             return new TimingPacket(u8(buf), u8(buf), u16(buf), u32(buf), u32(buf), u32(buf), u32(buf), u32(buf),
@@ -115,18 +99,14 @@ public final class RaopPackets {
         }
     }
 
-    /**
-     * Sync packet sent on the control channel.
-     */
+    /** Sync packet sent on the control channel. */
     public record SyncPacket(int proto, int type, int seqno, long nowWithoutLatency, long lastSyncSec,
             long lastSyncFrac, long now) {
 
         /** Encoded size in bytes. */
         public static final int LENGTH = 20;
 
-        /**
-         * Encodes this packet to its 20-byte wire format.
-         */
+        /** Encodes this packet to its 20-byte wire format. */
         public byte[] encode() {
             ByteBuffer buf = ByteBuffer.allocate(LENGTH).order(ByteOrder.BIG_ENDIAN);
             putHeader(buf, proto, type, seqno);
@@ -137,16 +117,12 @@ public final class RaopPackets {
             return buf.array();
         }
 
-        /**
-         * Decodes a packet, requiring an exact-length input.
-         */
+        /** Decodes a packet, requiring an exact-length input. */
         public static SyncPacket decode(byte[] data) {
             return decode(data, false);
         }
 
-        /**
-         * Decodes a packet, optionally allowing trailing bytes.
-         */
+        /** Decodes a packet, optionally allowing trailing bytes. */
         public static SyncPacket decode(byte[] data, boolean allowExcessive) {
             ByteBuffer buf = buffer(data, LENGTH, allowExcessive);
             return new SyncPacket(u8(buf), u8(buf), u16(buf), u32(buf), u32(buf), u32(buf), u32(buf));
@@ -164,9 +140,7 @@ public final class RaopPackets {
         /** Encoded size in bytes (payload excluded). */
         public static final int LENGTH = 12;
 
-        /**
-         * Encodes this header to its 12-byte wire format.
-         */
+        /** Encodes this header to its 12-byte wire format. */
         public byte[] encode() {
             ByteBuffer buf = ByteBuffer.allocate(LENGTH).order(ByteOrder.BIG_ENDIAN);
             putHeader(buf, proto, type, seqno);
@@ -175,33 +149,25 @@ public final class RaopPackets {
             return buf.array();
         }
 
-        /**
-         * Decodes a header, requiring an exact-length input.
-         */
+        /** Decodes a header, requiring an exact-length input. */
         public static AudioPacketHeader decode(byte[] data) {
             return decode(data, false);
         }
 
-        /**
-         * Decodes a header, optionally allowing trailing bytes (the audio payload).
-         */
+        /** Decodes a header, optionally allowing trailing bytes (the audio payload). */
         public static AudioPacketHeader decode(byte[] data, boolean allowExcessive) {
             ByteBuffer buf = buffer(data, LENGTH, allowExcessive);
             return new AudioPacketHeader(u8(buf), u8(buf), u16(buf), u32(buf), u32(buf));
         }
     }
 
-    /**
-     * Retransmit request received on the control channel.
-     */
+    /** Retransmit request received on the control channel. */
     public record RetransmitRequest(int proto, int type, int seqno, int lostSeqno, int lostPackets) {
 
         /** Encoded size in bytes. */
         public static final int LENGTH = 8;
 
-        /**
-         * Encodes this packet to its 8-byte wire format.
-         */
+        /** Encodes this packet to its 8-byte wire format. */
         public byte[] encode() {
             ByteBuffer buf = ByteBuffer.allocate(LENGTH).order(ByteOrder.BIG_ENDIAN);
             putHeader(buf, proto, type, seqno);
@@ -210,16 +176,12 @@ public final class RaopPackets {
             return buf.array();
         }
 
-        /**
-         * Decodes a packet, requiring an exact-length input.
-         */
+        /** Decodes a packet, requiring an exact-length input. */
         public static RetransmitRequest decode(byte[] data) {
             return decode(data, false);
         }
 
-        /**
-         * Decodes a packet, optionally allowing trailing bytes.
-         */
+        /** Decodes a packet, optionally allowing trailing bytes. */
         public static RetransmitRequest decode(byte[] data, boolean allowExcessive) {
             ByteBuffer buf = buffer(data, LENGTH, allowExcessive);
             return new RetransmitRequest(u8(buf), u8(buf), u16(buf), u16(buf), u16(buf));

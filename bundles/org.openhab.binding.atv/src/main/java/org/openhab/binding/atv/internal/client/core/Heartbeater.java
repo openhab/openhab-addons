@@ -38,9 +38,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class Heartbeater {
 
-    /**
-     * Default time between heartbeats.
-     */
+    /** Default time between heartbeats. */
     public static final Duration DEFAULT_INTERVAL = Duration.ofSeconds(30);
 
     /** Default number of immediate re-attempts after a failed beat. */
@@ -202,7 +200,7 @@ public final class Heartbeater {
             try {
                 failureAction.run();
             } catch (RuntimeException e) {
-                LOGGER.debug("Heartbeat failure action threw ({})", name, e);
+                LOGGER.warn("Heartbeat failure action threw ({})", name, e);
             }
         }
     }

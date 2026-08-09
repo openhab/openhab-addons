@@ -87,9 +87,7 @@ public final class AirPlayHapTransientPairVerifyProcedure implements AirPlayPair
                 .thenApply(response -> true);
     }
 
-    /**
-     * Returns derived encryption keys, computed directly from the SRP shared secret.
-     */
+    /** Returns derived encryption keys, computed directly from the SRP shared secret. */
     @Override
     public EncryptionKeys encryptionKeys(String salt, String outputInfo, String inputInfo) {
         HapPairSetup currentSrp = srp;

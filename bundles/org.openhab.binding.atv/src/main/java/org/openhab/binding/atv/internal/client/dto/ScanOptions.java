@@ -40,15 +40,15 @@ import org.openhab.binding.atv.internal.client.settings.Storage;
  *            {@code null} for a fresh in-memory storage
  * @param scanner explicit scanner implementation, or {@code null} to let {@link Atv}
  *            select one (unicast when {@code hosts} is given, multicast otherwise)
+ * @param knock whether a unicast scan knocks the well-known service ports to wake a device
+ *            sleeping behind a Bonjour sleep proxy
  *
  * @author Dan Cunningham - Initial contribution
  */
 public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protocol> protocols, List<String> hosts,
-        AtvRuntime runtime, Storage storage, Scanner scanner) {
+        AtvRuntime runtime, Storage storage, Scanner scanner, boolean knock) {
 
-    /**
-     * Default scan timeout.
-     */
+    /** Default scan timeout. */
     public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
 
     /**
@@ -67,7 +67,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return default options
      */
     public static ScanOptions defaults() {
-        return new ScanOptions(null, null, null, null, null, null, null);
+        return new ScanOptions(null, null, null, null, null, null, null, true);
     }
 
     /**
@@ -77,7 +77,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withTimeout(Duration timeout) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
     }
 
     /**
@@ -88,7 +88,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      */
     public ScanOptions withIdentifiers(String... identifiers) {
         return new ScanOptions(timeout, new LinkedHashSet<>(Arrays.asList(identifiers)), protocols, hosts, runtime,
-                storage, scanner);
+                storage, scanner, knock);
     }
 
     /**
@@ -99,7 +99,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      */
     public ScanOptions withProtocols(Protocol... protocols) {
         return new ScanOptions(timeout, identifiers, new LinkedHashSet<>(Arrays.asList(protocols)), hosts, runtime,
-                storage, scanner);
+                storage, scanner, knock);
     }
 
     /**
@@ -109,7 +109,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withHosts(List<String> hosts) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
     }
 
     /**
@@ -119,7 +119,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withRuntime(AtvRuntime runtime) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
     }
 
     /**
@@ -129,7 +129,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withStorage(Storage storage) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
     }
 
     /**
@@ -139,6 +139,18 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withScanner(Scanner scanner) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
+    }
+
+    /**
+     * Returns a copy that does or does not knock the well-known service ports during a unicast scan.
+     * Knocking wakes a device sleeping behind a Bonjour sleep proxy, so it should only be enabled when
+     * waking the device is actually wanted.
+     *
+     * @param knock whether to knock
+     * @return updated copy
+     */
+    public ScanOptions withKnock(boolean knock) {
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
     }
 }

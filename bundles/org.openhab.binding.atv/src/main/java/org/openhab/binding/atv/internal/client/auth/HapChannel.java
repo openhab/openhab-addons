@@ -157,9 +157,7 @@ public abstract class HapChannel implements AutoCloseable {
         }, writer);
     }
 
-    /**
-     * Closes the channel; the connection-lost callback is not invoked.
-     */
+    /** Closes the channel; the connection-lost callback is not invoked. */
     @Override
     public void close() {
         if (!closed.compareAndSet(false, true)) {

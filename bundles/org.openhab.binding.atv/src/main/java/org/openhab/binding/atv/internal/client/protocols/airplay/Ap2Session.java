@@ -57,9 +57,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class Ap2Session {
 
-    /**
-     * Time between feedback (keep-alive) messages; this is what iOS uses.
-     */
+    /** Time between feedback (keep-alive) messages; this is what iOS uses. */
     public static final Duration FEEDBACK_INTERVAL = Duration.ofSeconds(2);
 
     /** HKDF salt for the event channel keys ({@code EVENTS_SALT}). */
@@ -138,23 +136,17 @@ public final class Ap2Session {
         this.seedSupplier = seedSupplier;
     }
 
-    /**
-     * The control connection, or {@code null} when not connected.
-     */
+    /** The control connection, or {@code null} when not connected. */
     public @Nullable HttpConnection connection() {
         return connection;
     }
 
-    /**
-     * The RTSP session on the control connection, or {@code null} when not connected.
-     */
+    /** The RTSP session on the control connection, or {@code null} when not connected. */
     public @Nullable RtspSession rtsp() {
         return rtsp;
     }
 
-    /**
-     * The data stream channel, or {@code null} until {@link #setupRemoteControl()} ran.
-     */
+    /** The data stream channel, or {@code null} until {@link #setupRemoteControl()} ran. */
     public @Nullable DataStreamChannel dataChannel() {
         return dataChannel;
     }
@@ -217,9 +209,7 @@ public final class Ap2Session {
         beater.start();
     }
 
-    /**
-     * Closes all open connections.
-     */
+    /** Closes all open connections. */
     public void stop() {
         Heartbeater beater = feedback;
         if (beater != null) {

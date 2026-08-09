@@ -62,6 +62,7 @@ public class AtvFileHostService implements FileHostService {
     private final NetworkAddressService networkAddressService;
     private final BundleContext bundleContext;
     private final Map<String, Path> hostedFiles = new ConcurrentHashMap<>();
+    private boolean servletRegistered;
 
     @Activate
     public AtvFileHostService(@Reference HttpService httpService,
@@ -72,14 +73,19 @@ public class AtvFileHostService implements FileHostService {
         try {
             httpService.registerServlet(ALIAS, new MediaServlet(hostedFiles), null,
                     httpService.createDefaultHttpContext());
+            servletRegistered = true;
         } catch (ServletException | NamespaceException e) {
-            logger.debug("Registering media servlet failed", e);
+            // Without the servlet the play-url channel hands out URLs that answer 404, so this is worth
+            // surfacing rather than leaving the feature quietly broken.
+            logger.warn("Registering media servlet failed; playing local files will not work", e);
         }
     }
 
     @Deactivate
     public void deactivate() {
-        httpService.unregister(ALIAS);
+        if (servletRegistered) {
+            httpService.unregister(ALIAS);
+        }
     }
 
     @Override

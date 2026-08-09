@@ -34,9 +34,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public record SrpGroup(BigInteger prime, BigInteger generator) {
 
-    /**
-     * RFC 5054 2048-bit group (generator 2), used by AirPlay legacy authentication.
-     */
+    /** RFC 5054 2048-bit group (generator 2), used by AirPlay legacy authentication. */
     public static final SrpGroup RFC5054_2048 = new SrpGroup(
             new BigInteger("AC6BDB41324A9A9BF166DE5E1389582FAF72B6651987EE07FC3192943DB56050"
                     + "A37329CBB4A099ED8193E0757767A13DD52312AB4B03310DCD7F48A9DA04FD50"
@@ -48,9 +46,7 @@ public record SrpGroup(BigInteger prime, BigInteger generator) {
                     + "94B5C803D89F7AE435DE236D525F54759B65E372FCD68EF20FA7111F9E4AFF73", 16),
             BigInteger.TWO);
 
-    /**
-     * RFC 5054 3072-bit group (generator 5), used by HAP Pair-Setup.
-     */
+    /** RFC 5054 3072-bit group (generator 5), used by HAP Pair-Setup. */
     public static final SrpGroup RFC5054_3072 = new SrpGroup(
             new BigInteger("FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74"
                     + "020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437"

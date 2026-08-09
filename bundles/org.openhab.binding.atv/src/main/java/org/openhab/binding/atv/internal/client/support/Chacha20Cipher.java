@@ -99,9 +99,7 @@ public class Chacha20Cipher {
         return counterNonce(inCounter);
     }
 
-    /**
-     * Encrypts data using the current out counter as nonce, then increments the counter.
-     */
+    /** Encrypts data using the current out counter as nonce, then increments the counter. */
     public byte[] encrypt(byte[] data) {
         return encrypt(data, null, null);
     }
@@ -126,9 +124,7 @@ public class Chacha20Cipher {
         return process(true, outKey, nonce, aad, data);
     }
 
-    /**
-     * Decrypts data using the current in counter as nonce, then increments the counter.
-     */
+    /** Decrypts data using the current in counter as nonce, then increments the counter. */
     public byte[] decrypt(byte[] data) {
         return decrypt(data, null, null);
     }

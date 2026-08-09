@@ -44,3 +44,12 @@ definitions) was initially ported from pyatv 0.18.0 and is used under the MIT li
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
+
+mp3spi, jlayer, tritonus-share
+
+* License: GNU Library General Public License v2 or later (LGPL-2.0-or-later)
+* Project: https://github.com/pdudits/soundlibs
+* Copyright: (c) JavaZOOM, (c) Tritonus project
+
+The MP3 decoder used by the audio sink is provided by the Java Sound SPI implementations
+mp3spi, jlayer and tritonus-share, used under the LGPL.

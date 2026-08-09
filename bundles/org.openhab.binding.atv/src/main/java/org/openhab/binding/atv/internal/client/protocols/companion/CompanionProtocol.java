@@ -68,9 +68,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
             this.value = value;
         }
 
-        /**
-         * Numeric value used on the wire.
-         */
+        /** Numeric value used on the wire. */
         public int value() {
             return value;
         }
@@ -88,9 +86,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
         void eventReceived(String eventName, Map<String, Object> data);
     }
 
-    /**
-     * Default exchange timeout.
-     */
+    /** Default exchange timeout. */
     public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
 
     static final String SRP_SALT = "";
@@ -145,9 +141,8 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
         started = true;
         connection.connect();
 
-        LOGGER.debug("Companion credentials: {}", service.credentials().orElse(null));
-
         String credentialsString = service.credentials().orElse(null);
+        LOGGER.debug("Companion credentials are {}", credentialsString == null ? "missing" : "present");
         if (credentialsString != null) {
             try {
                 setupEncryption(HapCredentials.parse(credentialsString));
@@ -159,9 +154,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
         }
     }
 
-    /**
-     * Disconnects from the device.
-     */
+    /** Disconnects from the device. */
     public void stop() {
         queues.clear();
         connection.close();
@@ -230,7 +223,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
 
     private CompletableFuture<Map<String, Object>> exchangeGenericOpack(FrameType frameType, Map<String, Object> data,
             Object identifier, Duration timeout) {
-        LOGGER.debug("Exchange OPACK: {}", data);
+        LOGGER.trace("Exchange OPACK: {}", data);
 
         CompletableFuture<Map<String, Object>> shared = new CompletableFuture<>();
         queues.put(identifier, shared);
@@ -274,13 +267,13 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
                 xid++;
             }
         }
-        LOGGER.debug("Send OPACK: {}", data);
+        LOGGER.trace("Send OPACK: {}", data);
         connection.send(frameType, Opack.pack(data));
     }
 
     @Override
     public void frameReceived(FrameType frameType, byte[] data) {
-        LOGGER.debug("Received frame {} ({} bytes)", frameType, data.length);
+        LOGGER.trace("Received frame {} ({} bytes)", frameType, data.length);
 
         if (!frameType.isOpackFrame() && !frameType.isAuthFrame()) {
             LOGGER.debug("Received unsupported frame type: {}", frameType);
@@ -305,7 +298,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
     }
 
     private void handleAuth(FrameType frameType, Map<String, Object> opackData) {
-        LOGGER.debug("Process incoming auth frame ({}): {}", frameType, opackData);
+        LOGGER.trace("Process incoming auth frame ({}): {}", frameType, opackData);
         CompletableFuture<Map<String, Object>> shared = queues.remove(frameType);
         if (shared != null) {
             shared.complete(opackData);
@@ -315,11 +308,11 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
     }
 
     private void handleOpack(FrameType frameType, Map<String, Object> opackData) {
-        LOGGER.debug("Process incoming OPACK frame ({}): {}", frameType, opackData);
+        LOGGER.trace("Process incoming OPACK frame ({}): {}", frameType, opackData);
 
         Long messageType = toLong(opackData.get("_t"));
         if (messageType != null && messageType == MessageType.Event.value()) {
-            LOGGER.debug("Received event: {}", opackData);
+            LOGGER.trace("Received event: {}", opackData);
             Listener currentListener = listener;
             if (currentListener != null) {
                 String eventName = (String) opackData.get("_i");

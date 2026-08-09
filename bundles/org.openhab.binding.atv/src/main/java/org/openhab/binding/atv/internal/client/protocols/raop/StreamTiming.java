@@ -39,9 +39,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public record StreamTiming(LongSupplier nanoClock, LongConsumer sleeper, Duration syncInterval,
         Duration keepAliveInterval, Duration feedbackInterval) {
 
-    /**
-     * Returns real-time defaults.
-     */
+    /** Returns real-time defaults. */
     public static StreamTiming realTime() {
         return new StreamTiming(System::nanoTime, LockSupport::parkNanos, Duration.ofSeconds(1), Duration.ofSeconds(25),
                 Duration.ofSeconds(2));

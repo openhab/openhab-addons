@@ -63,9 +63,7 @@ public final class CompanionPower implements Power, CapabilitySource {
         this.listeners = new ListenerRegistry<>(core.loop());
     }
 
-    /**
-     * Whether power updates are supported (an initial state could be determined).
-     */
+    /** Whether power updates are supported (an initial state could be determined). */
     public boolean supportsPowerUpdates() {
         return powerState != PowerState.Unknown;
     }

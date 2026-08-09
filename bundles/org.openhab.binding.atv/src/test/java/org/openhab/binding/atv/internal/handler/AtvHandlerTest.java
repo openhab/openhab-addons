@@ -22,11 +22,13 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.atv.internal.AtvStateDescriptionProvider;
+import org.openhab.binding.atv.internal.AtvDynamicCommandDescriptionProvider;
+import org.openhab.binding.atv.internal.AtvDynamicStateDescriptionProvider;
 import org.openhab.binding.atv.internal.client.AppleTV;
 import org.openhab.binding.atv.internal.client.capability.Audio;
 import org.openhab.binding.atv.internal.client.capability.Power;
@@ -72,7 +74,8 @@ public class AtvHandlerTest {
         when(thing.getUID()).thenReturn(thingUID);
         when(thing.getThingTypeUID()).thenReturn(THING_TYPE_APPLETV);
 
-        handler = new AtvHandler(thing, null, mock(AtvStateDescriptionProvider.class));
+        handler = new AtvHandler(thing, null, mock(AtvDynamicStateDescriptionProvider.class),
+                mock(AtvDynamicCommandDescriptionProvider.class));
 
         appleTV = mock(AppleTV.class);
         remoteControl = mock(RemoteControl.class);
@@ -85,10 +88,11 @@ public class AtvHandlerTest {
         injectAppleTV(appleTV);
     }
 
+    @SuppressWarnings("unchecked")
     private void injectAppleTV(@org.eclipse.jdt.annotation.Nullable AppleTV atv) throws Exception {
         Field field = AtvHandler.class.getDeclaredField("appleTV");
         field.setAccessible(true);
-        field.set(handler, atv);
+        ((AtomicReference<@org.eclipse.jdt.annotation.Nullable AppleTV>) field.get(handler)).set(atv);
     }
 
     private ChannelUID channel(String id) {
@@ -231,8 +235,30 @@ public class AtvHandlerTest {
         when(appleTV.connectedProtocols()).thenReturn(Set.of(Protocol.Companion, Protocol.MRP));
         assertThat(isDegradedConnection(), is(false));
 
+        // AirPlay and RAOP register without connecting anything, so on an Apple TV their presence alone
+        // still leaves the connection without metadata, push updates or remote control.
         when(appleTV.connectedProtocols()).thenReturn(Set.of(Protocol.AirPlay, Protocol.RAOP));
-        assertThat(isDegradedConnection(), is(false));
+        assertThat(isDegradedConnection(), is(true));
+    }
+
+    @Test
+    public void testSpeakerConnectionIsNeverDegraded() throws Exception {
+        Thing speaker = mock(Thing.class);
+        when(speaker.getUID()).thenReturn(new ThingUID(THING_TYPE_SPEAKER, "speaker"));
+        when(speaker.getThingTypeUID()).thenReturn(THING_TYPE_SPEAKER);
+        AtvHandler speakerHandler = new AtvHandler(speaker, null, mock(AtvDynamicStateDescriptionProvider.class),
+                mock(AtvDynamicCommandDescriptionProvider.class));
+        Field field = AtvHandler.class.getDeclaredField("appleTV");
+        field.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        AtomicReference<@org.eclipse.jdt.annotation.Nullable AppleTV> reference = (AtomicReference<@org.eclipse.jdt.annotation.Nullable AppleTV>) field
+                .get(speakerHandler);
+        reference.set(appleTV);
+        when(appleTV.connectedProtocols()).thenReturn(Set.of(Protocol.AirPlay, Protocol.RAOP));
+
+        Method method = AtvHandler.class.getDeclaredMethod("isDegradedConnection");
+        method.setAccessible(true);
+        assertThat(method.invoke(speakerHandler), is(false));
     }
 
     @Test

@@ -50,16 +50,12 @@ public final class TimingServer implements AutoCloseable {
     private final DatagramSocket socket;
     private final Thread receiverThread;
 
-    /**
-     * Creates a timing server on an ephemeral port bound to the wildcard address.
-     */
+    /** Creates a timing server on an ephemeral port bound to the wildcard address. */
     public TimingServer(Clock clock) throws IOException {
         this(clock, 0, null);
     }
 
-    /**
-     * Creates a timing server on an ephemeral port bound to the given local address.
-     */
+    /** Creates a timing server on an ephemeral port bound to the given local address. */
     public TimingServer(Clock clock, InetAddress bindAddress) throws IOException {
         this(clock, 0, bindAddress);
     }
@@ -74,16 +70,12 @@ public final class TimingServer implements AutoCloseable {
         this.receiverThread = Thread.ofVirtual().name("raop-timing-server").start(this::receiveLoop);
     }
 
-    /**
-     * Returns the local port this server listens on.
-     */
+    /** Returns the local port this server listens on. */
     public int port() {
         return socket.getLocalPort();
     }
 
-    /**
-     * Closes the timing server and stops the receive loop.
-     */
+    /** Closes the timing server and stops the receive loop. */
     @Override
     public void close() {
         socket.close();
