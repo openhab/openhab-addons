@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.hyperion.internal.protocol.ng;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openhab.binding.hyperion.internal.protocol.HyperionCommand;
 
 import com.google.gson.annotations.SerializedName;
@@ -28,6 +31,8 @@ public class ComponentStateCommand extends HyperionCommand {
 
     @SerializedName("componentstate")
     private ComponentState componentState;
+    @SerializedName("instance")
+    private List<Integer> instance;
 
     public ComponentStateCommand(ComponentState componentState) {
         super(NAME);
@@ -40,5 +45,21 @@ public class ComponentStateCommand extends HyperionCommand {
 
     public void setComponentState(ComponentState componentState) {
         this.componentState = componentState;
+    }
+
+    public void setInstance(List<Integer> instanceList) {
+        if (instanceList == null || instanceList.isEmpty()) {
+            this.instance = null;
+            return;
+        }
+        List<Integer> copy = new ArrayList<>(instanceList.size());
+        for (Integer v : instanceList) {
+            if (v == null || v < 0) {
+                this.instance = null;
+                return;
+            }
+            copy.add(v);
+        }
+        this.instance = copy;
     }
 }
