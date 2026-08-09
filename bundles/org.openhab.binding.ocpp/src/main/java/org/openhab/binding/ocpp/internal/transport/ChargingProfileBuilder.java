@@ -21,6 +21,7 @@ import eu.chargetime.ocpp.model.core.ChargingProfilePurposeType;
 import eu.chargetime.ocpp.model.core.ChargingRateUnitType;
 import eu.chargetime.ocpp.model.core.ChargingSchedule;
 import eu.chargetime.ocpp.model.core.ChargingSchedulePeriod;
+import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest;
 import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
 
 /**
@@ -75,6 +76,23 @@ public final class ChargingProfileBuilder {
             profile.setTransactionId(transactionId);
         }
         return new SetChargingProfileRequest(connectorId, profile);
+    }
+
+    /**
+     * Builds a ClearChargingProfile that removes this binding's cap from a connector, returning it to
+     * the charge point's own configured maximum. This is how a pause is lifted, or a limit cleared,
+     * without leaving a 0 A profile behind — a charger reads 0 A as "suspend" (it reports
+     * SuspendedEVSE), not "charge at full". Clearing is done by connector and stack level rather than a
+     * single profile id, so it removes the cap whichever purpose — {@code TxProfile} or
+     * {@code TxDefaultProfile} — installed it.
+     *
+     * @param connectorId the connector to lift the cap from
+     */
+    public static ClearChargingProfileRequest clearLimit(int connectorId) {
+        ClearChargingProfileRequest request = new ClearChargingProfileRequest();
+        request.setConnectorId(connectorId);
+        request.setStackLevel(STACK_LEVEL);
+        return request;
     }
 
     /**

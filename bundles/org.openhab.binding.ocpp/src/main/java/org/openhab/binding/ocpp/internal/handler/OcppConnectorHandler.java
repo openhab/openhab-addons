@@ -73,6 +73,8 @@ import eu.chargetime.ocpp.model.core.UnlockConnectorRequest;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
 import eu.chargetime.ocpp.model.smartcharging.ChargingProfileStatus;
+import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileConfirmation;
+import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileStatus;
 import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileConfirmation;
 
 /**
@@ -450,6 +452,20 @@ public class OcppConnectorHandler extends BaseThingHandler {
      * what turns two independently-correct locks into a deadlock.
      */
     private void sendProfile(ProfileClaim claim) {
+        // A not-paused claim with no positive cap means "resume to full". That is NOT a 0 A limit —
+        // 0 A is how a pause suspends a connector (the charger then reports SuspendedEVSE). Lifting a
+        // cap therefore has to REMOVE our profile (ClearChargingProfile) so the charger returns to its
+        // own maximum; re-sending 0 A here would leave a just-un-paused connector suspended — which is
+        // exactly what happens when a user only ever toggles pause and never sets a limit. Only a pause,
+        // or an explicit positive limit, goes out as a SetChargingProfile.
+        if (!claim.paused() && claim.amps() <= 0.0) {
+            clearProfile(claim);
+        } else {
+            setProfile(claim);
+        }
+    }
+
+    private void setProfile(ProfileClaim claim) {
         dispatch(ChargingProfileBuilder.currentLimit(connectorId, claim.amps(), forceTxDefaultProfile, transactionId),
                 "SetChargingProfile").whenComplete((confirmation, ex) -> {
                     // A non-exceptional completion only means the charger answered; the answer can
@@ -471,6 +487,32 @@ public class OcppConnectorHandler extends BaseThingHandler {
                         // to be re-applied when the charge point next becomes ready. This is what covers
                         // a coalesced flush that FIRED into a dropping session — the OFFLINE re-arm only
                         // catches a flush still pending (pendingFlush != null), not one already sent.
+                        limitDeferred = true;
+                    }
+                });
+    }
+
+    private void clearProfile(ProfileClaim claim) {
+        dispatch(ChargingProfileBuilder.clearLimit(connectorId), "ClearChargingProfile")
+                .whenComplete((confirmation, ex) -> {
+                    // Accepted means the cap was removed; Unknown means there was none to remove — both
+                    // leave the connector uncapped, so publish "no limit" for either. Anything else (a
+                    // failed or unexpected answer) leaves the old profile in place, so re-arm to retry
+                    // when the charge point is next ready, exactly as the set path does.
+                    if (ex == null && confirmation instanceof ClearChargingProfileConfirmation cleared
+                            && (cleared.getStatus() == ClearChargingProfileStatus.Accepted
+                                    || cleared.getStatus() == ClearChargingProfileStatus.Unknown)) {
+                        if (claimPublication(claim)) {
+                            updateState(CHANNEL_CHARGE_LIMIT, UnDefType.UNDEF);
+                            updateState(CHANNEL_PAUSE, OnOffType.OFF);
+                        } else {
+                            logger.debug("Stale ClearChargingProfile confirmation on connector {} ignored",
+                                    connectorId);
+                        }
+                    } else if (ex == null) {
+                        logger.debug("ClearChargingProfile on connector {} not accepted: {}", connectorId,
+                                confirmation);
+                    } else {
                         limitDeferred = true;
                     }
                 });
