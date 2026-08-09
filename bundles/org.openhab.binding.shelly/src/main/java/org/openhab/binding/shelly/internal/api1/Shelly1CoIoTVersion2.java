@@ -169,6 +169,12 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_STATE, getStringType(s.valueStr));
                 break;
             case "1103": // roller_0: S, rollerPos, 0-100, unknown -1
+                if (isRollerMoving(sensorUpdates)) {
+                    // The device can't report the live position while moving and instead keeps
+                    // sending the pre-move position, which would otherwise flip the channel back
+                    // and forth between the old and new position on every CoIoT update.
+                    break;
+                }
                 int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min((int) value, SHELLY_MAX_ROLLER_POS));
                 logger.debug("{}: CoAP update roller position: control={}, position={}", thingName,
                         SHELLY_MAX_ROLLER_POS - pos, pos);
@@ -410,6 +416,19 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 processed = false;
         }
         return processed;
+    }
+
+    /**
+     * Roller position ("1103") is only accurate once the roller has stopped; look up the roller state
+     * ("1102") from the same CoIoT update batch to tell whether it's currently moving.
+     */
+    private boolean isRollerMoving(List<CoIotSensor> sensorUpdates) {
+        for (CoIotSensor update : sensorUpdates) {
+            if ("1102".equals(update.id)) {
+                return !SHELLY_ALWD_ROLLER_TURN_STOP.equalsIgnoreCase(update.valueStr);
+            }
+        }
+        return false;
     }
 
     @Override
