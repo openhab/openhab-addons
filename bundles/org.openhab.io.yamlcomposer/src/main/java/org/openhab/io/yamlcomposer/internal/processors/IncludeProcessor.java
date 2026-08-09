@@ -54,20 +54,19 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
      * @param basePath the base path to resolve relative includes against
      * @param includeStack the stack of currently included files
      * @param includeCallback the callback to invoke when a file is included
-     * @param envVarCallback the callback to invoke for environment variable resolution
      * @param includeCache the cache for storing included file contents
+     * @param envVarCallback the callback to invoke for environment variable resolution
      * @param logger the logger to use for logging messages
      */
     public IncludeProcessor(Path basePath, Set<Path> includeStack, Consumer<Path> includeCallback,
-            ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache,
-
-            Consumer<String> envVarCallback, BufferedLogger logger) {
+            ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache, Consumer<String> envVarCallback,
+            BufferedLogger logger) {
         this.logger = logger;
         this.basePath = basePath.toAbsolutePath().normalize();
         this.includeStack = includeStack;
         this.includeCallback = includeCallback;
-        this.envVarCallback = envVarCallback;
         this.includeCache = includeCache;
+        this.envVarCallback = envVarCallback;
     }
 
     @Override
