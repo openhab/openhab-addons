@@ -24,8 +24,8 @@ import org.openhab.core.library.types.PercentType;
 @NonNullByDefault
 public class AmpliPiUtils {
     /**
-     * The supported volume range in decibels for the AmpliPi (used for the
-     * legacy dB-based group volume delta).
+     * The supported volume range in decibels for the AmpliPi, used for group volumes
+     * and for zones on firmware that predates vol_f.
      */
     public static final int MIN_VOLUME_DB = -79;
     public static final int MAX_VOLUME_DB = 0;
@@ -55,9 +55,9 @@ public class AmpliPiUtils {
     }
 
     /**
-     * Converts a dB volume from AmpliPi to an openHAB PercentType. Only used for
-     * the group volume delta; the result is clamped so an out-of-range value can
-     * never throw.
+     * Converts a dB volume from AmpliPi to an openHAB PercentType. Used for group
+     * volumes and as the zone fallback on firmware that predates vol_f; the result
+     * is clamped so an out-of-range value can never throw.
      *
      * @param volume volume from AmpliPi in dB
      * @return according PercentType for openHAB
