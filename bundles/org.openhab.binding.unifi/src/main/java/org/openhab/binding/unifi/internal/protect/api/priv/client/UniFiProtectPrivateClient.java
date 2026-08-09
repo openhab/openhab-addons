@@ -186,6 +186,14 @@ public class UniFiProtectPrivateClient {
     }
 
     /**
+     * Drop the cached bootstrap so the next fetch is fresh — used when a WebSocket remove
+     * reports a topology change the cached copy cannot reflect.
+     */
+    public void invalidateBootstrap() {
+        lastBootstrapRefresh = null;
+    }
+
+    /**
      * Force refresh of bootstrap
      */
     public CompletableFuture<Bootstrap> refreshBootstrap() {

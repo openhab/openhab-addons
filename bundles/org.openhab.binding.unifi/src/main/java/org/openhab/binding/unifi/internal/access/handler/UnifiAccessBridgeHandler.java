@@ -13,8 +13,11 @@
 package org.openhab.binding.unifi.internal.access.handler;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
@@ -363,11 +366,19 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                 discoveryService.discoverDevices(discoveryDevices);
             }
             logger.trace("Polled UniFi Access: {} doors, {} devices", doors.size(), devices.size());
+            Map<String, Device> devicesById = new HashMap<>();
+            for (Device device : devices) {
+                String id = device.id;
+                if (id != null) {
+                    devicesById.put(id, device);
+                }
+            }
             for (Door door : doors) {
                 logger.trace("Checking door: {}", door.id);
                 UnifiAccessDoorHandler dh = getDoorHandler(door.id);
                 if (dh != null) {
                     logger.trace("Updating door: {}", dh.deviceId);
+                    setDoorStatus(dh, door, devices, devicesById);
                     dh.updateFromDoor(door);
                 }
             }
@@ -405,6 +416,7 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             }
+            markMissingChildrenGone(doors, devices);
         } catch (UnifiAccessApiException e) {
             logger.debug("Polling error: {}", e.getMessage());
             if (e.getAuthState() == AuthState.REJECTED) {
@@ -413,6 +425,73 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
             } else if (e.getAuthState() == AuthState.THROTTLED) {
                 setOfflineAndReconnect("@text/offline.login-throttled", true);
             }
+        }
+    }
+
+    /**
+     * A door is only readable and commandable through its hub, so its status follows the hub:
+     * hub offline -> door offline, no hub bound at all -> the door can neither report state nor
+     * take commands, and a hub we cannot resolve -> leave the status alone.
+     */
+    private void setDoorStatus(UnifiAccessDoorHandler dh, Door door, List<Device> devices,
+            Map<String, Device> devicesById) {
+        Device hub = door.hubDeviceId != null ? devicesById.get(door.hubDeviceId) : null;
+        if (hub == null) {
+            hub = devices.stream().filter(d -> d.isHub() && door.id != null && door.id.equals(d.locationId)).findFirst()
+                    .orElse(null);
+        }
+        var info = dh.getThing().getStatusInfo();
+        if (hub != null) {
+            if (Boolean.FALSE.equals(hub.isOnline)) {
+                // Compare detail too, so a stale GONE or no hub message is corrected
+                if (info.getStatus() != ThingStatus.OFFLINE
+                        || info.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+                    dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.hub-offline");
+                }
+            } else if (info.getStatus() != ThingStatus.ONLINE) {
+                dh.setOnline();
+            }
+        } else if (Boolean.TRUE.equals(door.isBindHub)) {
+            logger.debug("Door {} has devices but no resolvable hub; leaving status unchanged", door.id);
+        } else if (door.doorLockRelayStatus != null || door.doorPositionStatus != null) {
+            // No hub in the door's own device group, but lock/position state is populated so it's
+            // served by a building level hub extension we can't link to a device
+            if (info.getStatus() != ThingStatus.ONLINE) {
+                dh.setOnline();
+            }
+        } else if (info.getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+            // No devices and no state at all so the door can't report anything or take commands
+            dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.no-hub");
+        }
+    }
+
+    private void markMissingChildrenGone(List<Door> doors, List<Device> devices) {
+        Set<String> doorIds = new HashSet<>();
+        doors.forEach(d -> {
+            String id = d.id;
+            if (id != null) {
+                doorIds.add(id);
+            }
+        });
+        Set<String> deviceIds = new HashSet<>();
+        devices.forEach(d -> {
+            String id = d.id;
+            if (id != null) {
+                deviceIds.add(id);
+            }
+        });
+        for (Thing child : getThing().getThings()) {
+            if (!(child.getHandler() instanceof UnifiAccessBaseHandler handler) || handler.deviceId.isEmpty()) {
+                continue;
+            }
+            Set<String> knownIds = handler instanceof UnifiAccessDoorHandler ? doorIds : deviceIds;
+            if (knownIds.isEmpty() || knownIds.contains(handler.deviceId)
+                    || child.getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+                continue;
+            }
+            logger.debug("Device {} not present on controller, marking {} gone", handler.deviceId, child.getUID());
+            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.access-gone");
         }
     }
 

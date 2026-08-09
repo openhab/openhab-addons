@@ -97,17 +97,28 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
     protected void handleDeviceUpdate(DeviceUpdateData updateData) {
         updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
                 updateData.isConnected ? OnOffType.ON : OnOffType.OFF);
-        if (!updateData.isConnected) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "@text/offline.device-offline");
-        }
+        applyOnlineState(updateData.isConnected);
     }
 
     protected void handleDeviceUpdateV2(Notification.DeviceUpdateV2Data updateData) {
+        // A partial update without the online field says nothing about connectivity
         Boolean online = updateData.online;
-        updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
-                Boolean.TRUE.equals(online) ? OnOffType.ON : OnOffType.OFF);
-        if (!Boolean.TRUE.equals(online)) {
+        if (online == null) {
+            return;
+        }
+        updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE, online ? OnOffType.ON : OnOffType.OFF);
+        applyOnlineState(online);
+    }
+
+    private void applyOnlineState(boolean online) {
+        if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+            return;
+        }
+        if (online) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.device-offline");
         }

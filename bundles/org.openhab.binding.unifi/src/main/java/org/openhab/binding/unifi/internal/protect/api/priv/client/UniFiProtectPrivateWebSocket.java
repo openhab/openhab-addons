@@ -430,80 +430,84 @@ public class UniFiProtectPrivateWebSocket {
         }
 
         /**
-         * Update or add an object in bootstrap
+         * Update or add an object in bootstrap. Update payloads are partial deltas, so they are
+         * merged field by field over the cached object.
          */
         private void updateBootstrapObject(Bootstrap bootstrap, ModelType modelType, String id, JsonObject data) {
             switch (modelType) {
                 case CAMERA:
                     if (bootstrap.cameras != null) {
-                        var camera = JsonUtil.getGson().fromJson(data, Camera.class);
-                        bootstrap.cameras.put(id, camera);
+                        bootstrap.cameras.put(id, mergeIntoCached(bootstrap.cameras.get(id), data, Camera.class));
                         logger.debug("Updated camera: {}", id);
                     }
                     break;
                 case LIGHT:
                     if (bootstrap.lights != null) {
-                        var light = JsonUtil.getGson().fromJson(data, Light.class);
-                        bootstrap.lights.put(id, light);
+                        bootstrap.lights.put(id, mergeIntoCached(bootstrap.lights.get(id), data, Light.class));
                         logger.debug("Updated light: {}", id);
                     }
                     break;
                 case SENSOR:
                     if (bootstrap.sensors != null) {
-                        var sensor = JsonUtil.getGson().fromJson(data, Sensor.class);
-                        bootstrap.sensors.put(id, sensor);
+                        bootstrap.sensors.put(id, mergeIntoCached(bootstrap.sensors.get(id), data, Sensor.class));
                         logger.debug("Updated sensor: {}", id);
                     }
                     break;
                 case DOORLOCK:
                     if (bootstrap.doorlocks != null) {
-                        var doorlock = JsonUtil.getGson().fromJson(data, Doorlock.class);
-                        bootstrap.doorlocks.put(id, doorlock);
+                        bootstrap.doorlocks.put(id, mergeIntoCached(bootstrap.doorlocks.get(id), data, Doorlock.class));
                         logger.debug("Updated doorlock: {}", id);
                     }
                     break;
                 case CHIME:
                     if (bootstrap.chimes != null) {
-                        var chime = JsonUtil.getGson().fromJson(data, Chime.class);
-                        bootstrap.chimes.put(id, chime);
+                        bootstrap.chimes.put(id, mergeIntoCached(bootstrap.chimes.get(id), data, Chime.class));
                         logger.debug("Updated chime: {}", id);
                     }
                     break;
                 case VIEWER:
                     if (bootstrap.viewers != null) {
-                        var viewer = JsonUtil.getGson().fromJson(data, Viewer.class);
-                        bootstrap.viewers.put(id, viewer);
+                        bootstrap.viewers.put(id, mergeIntoCached(bootstrap.viewers.get(id), data, Viewer.class));
                         logger.debug("Updated viewer: {}", id);
                     }
                     break;
                 case BRIDGE:
                     if (bootstrap.bridges != null) {
-                        var bridge = JsonUtil.getGson().fromJson(data, Bridge.class);
-                        bootstrap.bridges.put(id, bridge);
+                        bootstrap.bridges.put(id, mergeIntoCached(bootstrap.bridges.get(id), data, Bridge.class));
                         logger.debug("Updated bridge: {}", id);
                     }
                     break;
                 case NVR:
-                    bootstrap.nvr = JsonUtil.getGson().fromJson(data, Nvr.class);
+                    bootstrap.nvr = mergeIntoCached(bootstrap.nvr, data, Nvr.class);
                     logger.debug("Updated NVR");
                     break;
                 case USER:
                     if (bootstrap.users != null) {
-                        var user = JsonUtil.getGson().fromJson(data, User.class);
-                        bootstrap.users.put(id, user);
+                        bootstrap.users.put(id, mergeIntoCached(bootstrap.users.get(id), data, User.class));
                         logger.debug("Updated user: {}", id);
                     }
                     break;
                 case EVENT:
                     if (bootstrap.events != null) {
-                        var event = JsonUtil.getGson().fromJson(data, Event.class);
-                        bootstrap.events.put(id, event);
+                        bootstrap.events.put(id, mergeIntoCached(bootstrap.events.get(id), data, Event.class));
                         logger.debug("Updated event: {}", id);
                     }
                     break;
                 default:
                     logger.debug("Unhandled model type for update: {}", modelType);
             }
+        }
+
+        private <T> T mergeIntoCached(@Nullable T cached, JsonObject delta, Class<T> type) {
+            var gson = JsonUtil.getGson();
+            if (cached == null) {
+                return gson.fromJson(delta, type);
+            }
+            JsonObject merged = gson.toJsonTree(cached).getAsJsonObject();
+            for (var entry : delta.entrySet()) {
+                merged.add(entry.getKey(), entry.getValue());
+            }
+            return gson.fromJson(merged, type);
         }
 
         /**
