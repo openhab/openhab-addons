@@ -85,6 +85,7 @@
 /bundles/org.openhab.binding.deconz/ @J-N-K
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.deutschebahn/ @soenkekueper
+/bundles/org.openhab.binding.dreame/ @rogrun
 /bundles/org.openhab.binding.digiplex/ @rmichalak
 /bundles/org.openhab.binding.digitalstrom/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.dirigera/ @weymann
