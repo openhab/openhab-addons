@@ -3214,6 +3214,24 @@ public class YamlComposerTest {
             }
 
             @Test
+            @DisplayName("Returns false for isEnvironmentChanged when no environment variables are tracked")
+            void returnsFalseWhenNoEnvironmentVariablesTracked() throws IOException {
+                Path main = writeFixture("no_envs_main.yaml", "setting: static_value");
+                Path output = Objects.requireNonNull(sharedTempDir).resolve("no_envs_output.yaml");
+
+                Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
+                ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
+                Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
+                }, trackedEnv::add, logSession, includeCache));
+
+                try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                    ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);
+                }
+
+                assertThat(ComposerUtils.isEnvironmentChanged(output), is(false));
+            }
+
+            @Test
             @DisplayName("Returns false initially and true when a tracked environment variable value changes")
             void returnsFalseInitiallyAndTrueWhenEnvironmentValueChanged() throws Exception {
                 String envName = "DYNAMIC_TEST_VAR";

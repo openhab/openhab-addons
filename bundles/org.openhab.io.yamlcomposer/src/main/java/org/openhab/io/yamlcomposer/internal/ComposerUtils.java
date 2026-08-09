@@ -162,7 +162,7 @@ final class ComposerUtils {
         try (BufferedReader reader = Files.newBufferedReader(outputPath, StandardCharsets.UTF_8)) {
             String line;
             List<String> envVars = new ArrayList<>();
-            String envHashLine = "";
+            String envHashLine = null;
             boolean collectingEnvDeps = false;
             boolean headerStarted = false;
 
@@ -197,13 +197,13 @@ final class ComposerUtils {
                 }
 
                 // Stop early if we have the hash and aren't collecting dependencies anymore
-                if (!envHashLine.isEmpty() && !collectingEnvDeps) {
+                if (envHashLine != null && !collectingEnvDeps) {
                     break;
                 }
             }
 
             // If header markers are missing (legacy file), trigger regeneration
-            if (envHashLine.isEmpty()) {
+            if (envHashLine == null) {
                 return true;
             }
 
