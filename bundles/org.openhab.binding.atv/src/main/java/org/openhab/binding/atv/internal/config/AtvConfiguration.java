@@ -28,12 +28,12 @@ public class AtvConfiguration {
     public String host = "";
     /** Friendly name presented to the device while pairing. */
     public String name = "";
-    /** PIN shown on the device for the AirPlay pairing step. */
-    public String airplayPin = "";
-    /** PIN shown on the device for the Companion pairing step. */
-    public String companionPin = "";
-    /** PIN shown on the device for the RAOP pairing step. */
-    public String raopPin = "";
+    /**
+     * PIN entered during pairing. A single field reused for each pairing step in turn (an Apple TV pairs
+     * AirPlay then Companion, each with its own PIN); the binding routes it to the step it is waiting on.
+     * Temporary - cleared after each step and once fully paired.
+     */
+    public String pin = "";
     public String airplayCredentials = "";
     public String companionCredentials = "";
     public String raopCredentials = "";

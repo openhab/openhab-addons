@@ -69,17 +69,10 @@
 				<description>Friendly name presented to the device while pairing.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="airplayPin" type="text">
-				<label>AirPlay Pairing PIN</label>
-				<description>PIN shown on the Apple TV for the AirPlay pairing step. Enter it to pair AirPlay (now-playing
-					metadata
-					and streaming).</description>
-			</parameter>
-			<parameter name="companionPin" type="text">
-				<label>Companion Pairing PIN</label>
-				<description>PIN shown on the Apple TV for the Companion pairing step. After AirPlay is paired the device
-					shows a
-					new, different PIN; enter it to pair Companion (remote, power and apps).</description>
+			<parameter name="pin" type="text">
+				<label>Pairing PIN</label>
+				<description>PIN shown on the device during pairing. An Apple TV pairs in two steps (AirPlay then Companion) and
+					shows a new PIN for each; enter each one here and click Save after each, as prompted by the Thing status.</description>
 			</parameter>
 			<parameter name="airplayCredentials" type="text">
 				<context>password</context>
@@ -165,13 +158,10 @@
 				<description>Password for password-protected AirPlay speakers.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="airplayPin" type="text">
-				<label>AirPlay Pairing PIN</label>
-				<description>PIN shown on the speaker for the AirPlay pairing step (for devices that require pairing).</description>
-			</parameter>
-			<parameter name="raopPin" type="text">
-				<label>RAOP Pairing PIN</label>
-				<description>PIN shown on the speaker for the RAOP audio pairing step (for devices that require pairing).</description>
+			<parameter name="pin" type="text">
+				<label>Pairing PIN</label>
+				<description>PIN shown on the speaker during pairing (for devices that require it); enter each PIN here and click
+					Save after each, as prompted by the Thing status.</description>
 			</parameter>
 			<parameter name="airplayCredentials" type="text">
 				<context>password</context>

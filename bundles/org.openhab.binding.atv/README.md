@@ -29,8 +29,7 @@ Apple computers also advertise AirPlay but are not controllable media devices, s
 | macAddress           | text    | Unique device identifier (MAC). Set automatically by discovery.                           | N/A     | yes      | no       |
 | host                 | text    | IP address of the Apple TV. Populated and kept current by discovery.                      | N/A     | no       | no       |
 | name                 | text    | Friendly name presented to the device while pairing.                                      | N/A     | no       | yes      |
-| airplayPin           | text    | PIN shown on the Apple TV for the AirPlay pairing step.                                   | N/A     | no       | no       |
-| companionPin         | text    | PIN shown on the Apple TV for the Companion pairing step (a new PIN after AirPlay pairs). | N/A     | no       | no       |
+| pin                  | text    | Pairing PIN. One field reused for each pairing step in turn, as prompted by the Thing status.  | N/A     | no       | no       |
 | airplayCredentials   | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.           | N/A     | no       | yes      |
 | companionCredentials | text    | Credentials obtained by pairing Companion. Populated automatically after pairing.         | N/A     | no       | yes      |
 | notificationVolume   | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.          | 50      | no       | yes      |
@@ -45,8 +44,7 @@ Apple computers also advertise AirPlay but are not controllable media devices, s
 | host               | text    | IP address of the speaker. Populated and kept current by discovery.                          | N/A     | no       | no       |
 | name               | text    | Friendly name presented to the device while pairing.                                         | N/A     | no       | yes      |
 | password           | text    | Password for password-protected AirPlay speakers.                                            | N/A     | no       | yes      |
-| airplayPin         | text    | PIN shown on the speaker for the AirPlay pairing step (for devices that require pairing).    | N/A     | no       | no       |
-| raopPin            | text    | PIN shown on the speaker for the RAOP audio pairing step (for devices that require pairing). | N/A     | no       | no       |
+| pin                | text    | Pairing PIN. One field reused for each pairing step in turn, as prompted by the Thing status. | N/A     | no       | no       |
 | airplayCredentials | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.              | N/A     | no       | yes      |
 | raopCredentials    | text    | Credentials obtained by pairing RAOP audio. Populated automatically after pairing.           | N/A     | no       | yes      |
 | notificationVolume | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.             | 50      | no       | yes      |
@@ -61,27 +59,28 @@ Pairing an Apple TV is therefore a two-step process with two different PINs, one
 - **AirPlay** carries now-playing metadata (title, artist, album, artwork, position/duration) via the MediaRemote tunnel, plus media streaming (`play-url`/`stream-url`) and basic transport (play/pause/stop).
 - **Companion** carries power on/off, remote-key navigation (up/down/left/right/select/menu/home), app launch, keyboard input, touch gestures and user accounts.
 
-To support this, the `appletv` Thing has two separate PIN configuration fields: **AirPlay Pairing PIN** and **Companion Pairing PIN**.
+There is a single **Pairing PIN** field. The binding knows which protocol it is waiting on, so you enter each PIN into that one field in turn, as the Thing status prompts you.
+
+> **Important:** you must click **Save** on the Thing configuration after typing each PIN. The PIN is only submitted to the device when you save the Thing - just typing it into the field does nothing. This is easy to miss, since most openHAB config does not require an explicit save to take effect.
 
 ### `appletv`
 
 1. Add the Thing, either from the Inbox after discovery or manually. It comes up OFFLINE with status "pending", asking for the AirPlay PIN, and the Apple TV displays a 4-digit PIN on screen.
-1. Enter that PIN into the **AirPlay Pairing PIN** field and save. AirPlay pairs, and the value you entered stays in the field.
+1. Type that PIN into the **Pairing PIN** field and click **Save**. AirPlay pairs and the field clears.
 1. The Thing remains pending and now asks for the Companion PIN. The Apple TV shows a **new, different** PIN at this point; do not reuse the first one.
-1. Enter the new PIN into the **Companion Pairing PIN** field and save. Companion pairs and the Thing goes ONLINE.
+1. Type the new PIN into the same **Pairing PIN** field and click **Save** again. Companion pairs and the Thing goes ONLINE.
 
-If a PIN is wrong or has expired, only that field is cleared, the Apple TV shows a fresh PIN, and you re-enter it in the same field.
+If a PIN is wrong or has expired, the field is cleared, the Apple TV shows a fresh PIN, and you re-enter it in the same field.
 Credentials from a successful pairing are stored in the Thing's advanced credential fields and reused across restarts, so pairing is normally a one-time step.
-Once both protocols are paired and the Thing comes online, the PIN fields are cleared automatically.
+Once fully paired and online, the PIN field is cleared automatically.
 
 > **If a PIN Code Does Not Show:** An Apple TV will often suppress or ignore repeated pairing requests.
 > If this happens, pause the Apple TV Thing and restart the Apple TV, either from it's system menu or by manually power cycling.
-> Once the device is powered on, unpause the Thing and follow the instructions for which PIN is now being displayed.
-> Its possible for one PIN to be active before needing to reboot, so it important to enter the displayed PIN in the correct config field on the Thing.  
+> Once the device is powered on, unpause the Thing and enter whichever PIN is now displayed; the status line tells you which step it is waiting on.
 
 ### `speaker`
 
-An AirPlay/RAOP speaker, such as a HomePod or a third-party AirPlay speaker, follows the same two-step pattern: it pairs AirPlay and, if the device requires it, RAOP, using the **AirPlay Pairing PIN** and **RAOP Pairing PIN** fields.
+An AirPlay/RAOP speaker, such as a HomePod or a third-party AirPlay speaker, follows the same pattern: it pairs AirPlay and, if the device requires it, RAOP, entering each PIN into the single **Pairing PIN** field in turn.
 Password-protected speakers use the separate **Password** field instead of a PIN.
 
 ## Channels
