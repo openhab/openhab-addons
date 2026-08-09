@@ -19,6 +19,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_CLOSE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_OPEN;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
 
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
@@ -152,6 +155,35 @@ public class ShellyComponentsTest {
         ShellyBaseHandler handler = relayUpdateHandler();
         ShellyComponents.updateRelay(handler, statusWithRelayIson(true), 0);
         verify(handler).updateChannel(anyString(), eq(CHANNEL_OUTPUT), eq(OnOffType.ON));
+    }
+
+    @Test
+    void updateRollerSkipsPositionWhileOpening() throws Exception {
+        // Regression (#14189, Copilot review on PR #21316): the shared Gen1/Gen2 poll path
+        // hardcoded pos=100 for "open" regardless of the actual target, flapping the position
+        // channel to 100 mid-move before the real value arrived once the roller stopped.
+        ShellyBaseHandler handler = relayUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_ALWD_ROLLER_TURN_OPEN, 40), 0);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+    }
+
+    @Test
+    void updateRollerSkipsPositionWhileClosing() throws Exception {
+        ShellyBaseHandler handler = relayUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_ALWD_ROLLER_TURN_CLOSE, 60), 0);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+    }
+
+    private static ShellyRollerStatus rollerStatus(String state, int currentPos) {
+        ShellyRollerStatus control = new ShellyRollerStatus();
+        control.isValid = true;
+        control.state = state;
+        control.currentPos = currentPos;
+        return control;
     }
 
     private static ShellyBaseHandler relayUpdateHandler() {

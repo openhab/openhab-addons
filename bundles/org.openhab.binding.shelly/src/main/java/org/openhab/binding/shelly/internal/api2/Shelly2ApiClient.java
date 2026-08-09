@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -74,7 +74,6 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
@@ -88,13 +87,15 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverObstructionDetection;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverSafetySwitch;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.types.State;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -974,20 +975,22 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         settings.id = id;
         settings.isValid = true;
         settings.defaultState = coverConfig.initialState;
-        settings.inputMode = mapValue(MAP_INPUT_MODE, coverConfig.inMode);
+        settings.inputMode = mapValue(MAP_INPUT_MODE, getString(coverConfig.inMode));
         settings.btnReverse = getBool(coverConfig.invertDirections) ? 1 : 0;
         settings.swapInputs = coverConfig.swapInputs;
         settings.maxtime = 0.0; // n/a
         settings.maxtimeOpen = coverConfig.maxtimeOpen;
         settings.maxtimeClose = coverConfig.maxtimeClose;
-        if (coverConfig.safetySwitch != null) {
-            settings.safetySwitch = coverConfig.safetySwitch.enable;
-            settings.safetyAction = coverConfig.safetySwitch.action;
+        Shelly2DeviceConfigCoverSafetySwitch safetySwitch = coverConfig.safetySwitch;
+        if (safetySwitch != null) {
+            settings.safetySwitch = safetySwitch.enable;
+            settings.safetyAction = safetySwitch.action;
         }
-        if (coverConfig.obstructionDetection != null) {
-            settings.obstacleAction = coverConfig.obstructionDetection.action;
-            settings.obstacleDelay = coverConfig.obstructionDetection.holdoff.intValue();
-            settings.obstaclePower = coverConfig.obstructionDetection.powerThr;
+        Shelly2DeviceConfigCoverObstructionDetection obstructionDetection = coverConfig.obstructionDetection;
+        if (obstructionDetection != null) {
+            settings.obstacleAction = obstructionDetection.action;
+            settings.obstacleDelay = getDouble(obstructionDetection.holdoff).intValue();
+            settings.obstaclePower = obstructionDetection.powerThr;
         }
         rollers.add(settings);
     }
@@ -1014,10 +1017,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return false;
         }
 
-        if (cs.id == null) {
-            cs.id = id;
+        Integer csId = cs.id;
+        if (csId == null) {
+            csId = id;
         }
-        int rIdx = getRollerIdx(getProfile(), cs.id);
+        int rIdx = getRollerIdx(getProfile(), csId);
         if (status.rollers == null || rIdx < 0 || rIdx >= status.rollers.size()) {
             return false;
         }
@@ -1025,32 +1029,36 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         boolean haveEmeter = status.emeters != null && rIdx >= 0 && rIdx < status.emeters.size();
         ShellySettingsEMeter emeter = haveEmeter ? status.emeters.get(rIdx) : new ShellySettingsEMeter();
         rs.isValid = emeter.isValid = haveEmeter;
-        if (cs.state != null) {
-            if (!getString(rs.state).equals(cs.state)) {
+        String csState = cs.state;
+        if (csState != null) {
+            if (!getString(rs.state).equals(csState)) {
                 logger.debug("{}: Roller status changed from {} to {}, updateChannels={}", thingName, rs.state,
-                        mapValue(MAP_ROLLER_STATE, cs.state), updateChannels);
+                        mapValue(MAP_ROLLER_STATE, csState), updateChannels);
             }
-            rs.state = mapValue(MAP_ROLLER_STATE, cs.state);
-            rs.calibrating = SHELLY2_RSTATE_CALIB.equals(cs.state);
+            rs.state = mapValue(MAP_ROLLER_STATE, csState);
+            rs.calibrating = SHELLY2_RSTATE_CALIB.equals(csState);
         }
         if (cs.currentPos != null) {
             rs.currentPos = cs.currentPos;
         }
-        if (cs.moveStartedAt != null) {
-            rs.duration = (int) (now() - cs.moveStartedAt.longValue());
+        Double csMoveStartedAt = cs.moveStartedAt;
+        if (csMoveStartedAt != null) {
+            rs.duration = (int) (now() - csMoveStartedAt.longValue());
         }
-        if (cs.temperature != null && getDouble(cs.temperature.tC) > getDouble(status.temperature)) {
+        Shelly2DeviceStatusTemp csTemperature = cs.temperature;
+        if (csTemperature != null && getDouble(csTemperature.tC) > getDouble(status.temperature)) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
             }
-            status.temperature = status.tmp.tC = getDouble(cs.temperature.tC);
+            status.temperature = status.tmp.tC = getDouble(csTemperature.tC);
         }
         if (cs.apower != null) {
             rs.power = emeter.power = cs.apower;
         }
-        if (cs.aenergy != null) {
-            emeter.total = getDouble(cs.aenergy.total);
-            emeter.energyByMinute = byMinuteToWh(cs.aenergy.byMinute);
+        Shelly2Energy csAenergy = cs.aenergy;
+        if (csAenergy != null) {
+            emeter.total = getDouble(csAenergy.total);
+            emeter.energyByMinute = byMinuteToWh(csAenergy.byMinute);
         }
         if (cs.voltage != null) {
             emeter.voltage = cs.voltage;

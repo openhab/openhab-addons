@@ -31,6 +31,7 @@ import org.mockito.Mockito;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
@@ -156,6 +157,14 @@ public class Shelly2GetDeviceProfileTest {
         // in_mode must be present so mapValue in addRollerSettings doesn't receive null
         return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{},\"ui_data\":{}}," + "\"wifi\":{},"
                 + "\"cover:0\":{\"in_mode\":\"single\",\"invert_directions\":false}}");
+    }
+
+    /** GetConfig with cover:0 including safety_switch and obstruction_detection */
+    private static Shelly2GetConfigResult withCover0SafetyAndObstruction(Gson gson) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{},\"ui_data\":{}},\"wifi\":{},"
+                + "\"cover:0\":{\"in_mode\":\"single\",\"invert_directions\":false,"
+                + "\"safety_switch\":{\"enable\":true,\"action\":\"stop\"},"
+                + "\"obstruction_detection\":{\"enable\":true,\"action\":\"stop\",\"power_thr\":150,\"holdoff\":2.5}}}");
     }
 
     /** GetConfig with cb:0 present (Pro CB) */
@@ -304,6 +313,29 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.numRollers, is(1));
         // No pm10/em0/em10 → else branch: roller count
         assertThat(profile.numMeters, is(1));
+    }
+
+    @Test
+    void discoveryRollerSafetySwitchAndObstructionMapped() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withCover0SafetyAndObstruction(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        ShellySettingsRoller roller = Objects.requireNonNull(profile.settings.rollers).get(0);
+        assertThat(roller.safetySwitch, is(true));
+        assertThat(roller.safetyAction, is("stop"));
+        assertThat(roller.obstacleAction, is("stop"));
+        assertThat(roller.obstaclePower, is(150));
+        assertThat(roller.obstacleDelay, is(2));
+    }
+
+    @Test
+    void discoveryRollerWithoutSafetySwitchOrObstructionLeavesFieldsNull() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withCover0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        ShellySettingsRoller roller = Objects.requireNonNull(profile.settings.rollers).get(0);
+        assertThat(roller.safetySwitch, is(nullValue()));
+        assertThat(roller.obstacleAction, is(nullValue()));
     }
 
     @Test

@@ -20,6 +20,8 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConf
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -368,56 +370,6 @@ public class Shelly2ApiJsonDTO {
             public String name;
         }
 
-        public class Shelly2DevConfigCover {
-            public class Shelly2DeviceConfigCoverMotor {
-                @SerializedName("idle_power_thr")
-                public Double idlePowerThr;
-            }
-
-            public class Shelly2DeviceConfigCoverSafetySwitch {
-                public Boolean enable;
-                public String direction;
-                public String action;
-                @SerializedName("allowed_move")
-                public String allowedMove;
-            }
-
-            public class Shelly2DeviceConfigCoverObstructionDetection {
-                public Boolean enable;
-                public String direction;
-                public String action;
-                @SerializedName("power_thr")
-                public Integer powerThr;
-                public Double holdoff;
-            }
-
-            public String id;
-            public String name;
-            public Shelly2DeviceConfigCoverMotor motor;
-            @SerializedName("maxtime_open")
-            public Double maxtimeOpen;
-            @SerializedName("maxtime_close")
-            public Double maxtimeClose;
-            @SerializedName("initial_state")
-            public String initialState;
-            @SerializedName("invert_directions")
-            public Boolean invertDirections;
-            @SerializedName("in_mode")
-            public String inMode;
-            @SerializedName("swap_inputs")
-            public Boolean swapInputs;
-            @SerializedName("safety_switch")
-            public Shelly2DeviceConfigCoverSafetySwitch safetySwitch;
-            @SerializedName("power_limit")
-            public Integer powerLimit;
-            @SerializedName("voltage_limit")
-            public Integer voltageLimit;
-            @SerializedName("current_limit")
-            public Double currentLimit;
-            @SerializedName("obstruction_detection")
-            public Shelly2DeviceConfigCoverObstructionDetection obstructionDetection;
-        }
-
         public static class Shelly2ConfigSmoke {
             public Integer id;
             public Boolean alarm;
@@ -638,29 +590,6 @@ public class Shelly2ApiJsonDTO {
 
             public class Shelly2DeviceStatusMqqt {
                 public Boolean connected;
-            }
-
-            public class Shelly2CoverStatus {
-                public Integer id;
-                public String source;
-                public String state;
-                public Double apower;
-                public Double voltage;
-                public Double current;
-                public Double pf;
-                public Shelly2Energy aenergy;
-                @SerializedName("current_pos")
-                public Integer currentPos;
-                @SerializedName("target_pos")
-                public Integer targetPos;
-                @SerializedName("move_timeout")
-                public Double moveTimeout;
-                @SerializedName("move_started_at")
-                public Double moveStartedAt;
-                @SerializedName("pos_control")
-                public Boolean posControl;
-                public Shelly2DeviceStatusTemp temperature;
-                public ArrayList<String> errors;
             }
 
             public class Shelly2DeviceStatusHumidity {
