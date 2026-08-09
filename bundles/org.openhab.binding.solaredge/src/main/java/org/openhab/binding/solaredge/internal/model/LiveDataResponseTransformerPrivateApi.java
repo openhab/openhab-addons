@@ -91,14 +91,14 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
         DcStorage dcStorage = response.dcStorage;
         if (dcStorage != null) {
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_STATUS),
-                    dcStorage.status);
+                    Boolean.TRUE.equals(dcStorage.isActive) ? "Active" : "Idle");
             Double chargeLevel = dcStorage.chargeLevel;
             putPercentType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_LEVEL),
                     chargeLevel);
 
             // battery_critical does not exist in the private API, so derive it from the configured threshold
             putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL),
-                    chargeLevel != null && chargeLevel < config.getBatteryCriticalLevel() ? "true" : "false");
+                    chargeLevel == null ? null : chargeLevel < config.getBatteryCriticalLevel() ? "true" : "false");
 
             Double currentPower = dcStorage.currentPower;
             currentPower = currentPower != null ? currentPower : 0;
@@ -119,7 +119,8 @@ public class LiveDataResponseTransformerPrivateApi extends AbstractDataResponseT
 
         Grid grid = response.grid;
         if (grid != null) {
-            putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_GRID_STATUS), grid.status);
+            putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_GRID_STATUS),
+                    Boolean.TRUE.equals(grid.isActive) ? "Active" : "Idle");
             if ("import".equalsIgnoreCase(grid.status)) {
                 putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_IMPORT),
                         grid.currentPower, "kW");
