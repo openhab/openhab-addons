@@ -13,7 +13,6 @@
 package org.openhab.binding.matter.internal.bridge.devices;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,8 +40,10 @@ import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Test class for DimmableLightDevice
@@ -134,6 +135,13 @@ class DimmableLightDeviceTest {
     }
 
     @Test
+    void testHandleMatterEventLevelWhileOff() {
+        // MoveToLevelWithOnOff on an off light: matter.js couples onOff itself, so only the level reaches us
+        dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(128));
+        verify(dimmerItem).send(new PercentType(50), MATTER_SOURCE);
+    }
+
+    @Test
     void testHandleMatterEventLevelGroup() {
         groupDevice.handleMatterEvent("onOff", "onOff", true);
         groupDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(254));
@@ -141,6 +149,38 @@ class DimmableLightDeviceTest {
 
         groupDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(127));
         verify(groupItem).send(new PercentType(50), MATTER_SOURCE);
+    }
+
+    @Test
+    void testRepeatedLevelIsNotResent() {
+        dimmerDevice.updateState(dimmerItem, new PercentType(50));
+        Mockito.clearInvocations(client);
+
+        dimmerDevice.updateState(dimmerItem, new PercentType(50));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("onOff", "onOff", true))));
+    }
+
+    @Test
+    void testActivateSeedsTheLevelSoAnEqualUpdateIsNotResent() {
+        dimmerItem.setState(new PercentType(50));
+        dimmerDevice.activate();
+
+        dimmerDevice.updateState(dimmerItem, new PercentType(50));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("onOff", "onOff", true))));
+    }
+
+    @Test
+    void testUpdateStateWithHSB() {
+        dimmerDevice.updateState(dimmerItem, new HSBType("120,100,50"));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("onOff", "onOff", true),
+                new AttributeState("levelControl", "currentLevel", 127))));
+    }
+
+    @Test
+    void testUndefStateIsIgnored() {
+        dimmerDevice.updateState(dimmerItem, UnDefType.UNDEF);
+        dimmerDevice.updateState(dimmerItem, UnDefType.NULL);
+        verify(client, Mockito.never()).setEndpointStates(any(), any());
     }
 
     @Test
@@ -160,24 +200,21 @@ class DimmableLightDeviceTest {
 
     @Test
     void testRampBetweenNonZeroLevelsReportsLevelOnly() {
-        // Both levels are "on", so nothing about on/off changed. Reporting onOff here contradicts the off command
-        // that started the ramp and flips the client's switch back on.
+        // Both levels are "on", so nothing about on/off changed
         dimmerDevice.updateState(dimmerItem, new PercentType(100));
         Mockito.clearInvocations(client);
 
         dimmerDevice.updateState(dimmerItem, new PercentType(56));
-        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("levelControl", "currentLevel", 142))));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("onOff", "onOff", true),
+                new AttributeState("levelControl", "currentLevel", 142))));
     }
 
     @Test
     void testRampDownToOffReportsOnOffOnceWithMinimumLevel() {
-        // Replays a dimmer ramping down after an off command: 100 -> 56 -> 11 -> 0. Only the last step crosses
-        // zero, and the level a client keeps for the off light is the minimum, not the last step of the ramp.
+        // Only the last step crosses zero
         dimmerDevice.updateState(dimmerItem, new PercentType(100));
         dimmerDevice.updateState(dimmerItem, new PercentType(56));
         dimmerDevice.updateState(dimmerItem, new PercentType(11));
-        verify(client, Mockito.never()).setEndpointStates(any(),
-                eq(List.of(new AttributeState("onOff", "onOff", false))));
         Mockito.clearInvocations(client);
 
         dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
@@ -186,7 +223,7 @@ class DimmableLightDeviceTest {
     }
 
     @Test
-    void testRampUpFromOffReportsOnOffOnce() {
+    void testRampUpFromOff() {
         dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
         Mockito.clearInvocations(client);
 
@@ -196,11 +233,12 @@ class DimmableLightDeviceTest {
 
         Mockito.clearInvocations(client);
         dimmerDevice.updateState(dimmerItem, new PercentType(100));
-        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("levelControl", "currentLevel", 254))));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("onOff", "onOff", true),
+                new AttributeState("levelControl", "currentLevel", 254))));
     }
 
     @Test
-    void testOffDoesNotOverwriteRememberedLevel() {
+    void testOnAfterOffReportsFullBrightness() {
         // Going off must not clobber the remembered level, so a later ON returns to the previous brightness.
         dimmerDevice.updateState(dimmerItem, new PercentType(50));
         dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
@@ -208,7 +246,7 @@ class DimmableLightDeviceTest {
         dimmerDevice.updateState(dimmerItem, OnOffType.ON);
 
         List<AttributeState> expectedStates = List.of(new AttributeState("onOff", "onOff", true),
-                new AttributeState("levelControl", "currentLevel", 127));
+                new AttributeState("levelControl", "currentLevel", 254));
         verify(client).setEndpointStates(any(), eq(expectedStates));
     }
 
@@ -238,7 +276,7 @@ class DimmableLightDeviceTest {
         assertNotNull(levelMap);
         assertNotNull(onOffMap);
 
-        assertNotEquals(0, levelMap.get("currentLevel"));
+        assertEquals(1, levelMap.get("currentLevel"));
         assertEquals(false, onOffMap.get("onOff"));
     }
 }

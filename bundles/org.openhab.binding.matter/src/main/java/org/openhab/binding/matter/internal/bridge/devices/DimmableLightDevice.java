@@ -42,16 +42,12 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class DimmableLightDevice extends BaseDevice {
 
-    // Level Control couples the minimum level with "off": a move to MinLevel is what turns the light off, so an off
-    // light reports MinLevel rather than whatever level it last passed through on the way down. The level to return
-    // to on the next on is held by the global scene, not by CurrentLevel.
+    // Level Control treats a move to MinLevel as turning off, so that is what an off light reports
     private static final int MIN_LEVEL = 1;
-
-    private State lastOnOffState = OnOffType.OFF;
     private int lastLevel = MIN_LEVEL;
-    // The on/off value the endpoint was last told about. A brightness only says something about on/off when it
-    // crosses zero, so this is what decides whether a state change carries the attribute at all.
-    private boolean reportedOn;
+    // The level last sent, so a ramp does not resend the same value. onOff is always sent: matter.js couples it
+    // to the level itself and never tells us, so a cached value here would go stale with no way to notice.
+    private int reportedLevel;
 
     public DimmableLightDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);
@@ -69,12 +65,11 @@ public class DimmableLightDevice extends BaseDevice {
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
         PercentType level = Optional.ofNullable(primaryItem.getStateAs(PercentType.class))
                 .orElseGet(() -> new PercentType(0));
-        reportedOn = level.intValue() > 0;
-        lastOnOffState = reportedOn ? OnOffType.ON : OnOffType.OFF;
         lastLevel = Math.max(MIN_LEVEL, ValueUtils.percentToLevel(level));
+        reportedLevel = lastLevel;
         attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
                 lastLevel);
-        attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, reportedOn);
+        attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, level.intValue() > 0);
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
     }
 
@@ -90,9 +85,7 @@ public class DimmableLightDevice extends BaseDevice {
                 updateOnOff(OnOffType.from(Boolean.valueOf(data.toString())));
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
-                if (lastOnOffState == OnOffType.ON) {
-                    updateLevel(ValueUtils.levelToPercent(((Double) data).intValue()));
-                }
+                updateLevel(ValueUtils.levelToPercent(((Double) data).intValue()));
                 break;
             default:
                 break;
@@ -101,54 +94,37 @@ public class DimmableLightDevice extends BaseDevice {
 
     @Override
     public void updateState(Item item, State state) {
-        List<AttributeState> states = new ArrayList<>();
-        if (state instanceof HSBType hsb) {
-            states.addAll(lightStates(hsb.getBrightness()));
-        } else if (state instanceof PercentType percentType) {
-            states.addAll(lightStates(percentType));
-        } else if (state instanceof OnOffType onOffType) {
-            // An explicit on/off state is unambiguous, so it always carries the attribute
-            boolean on = onOffType == OnOffType.ON;
-            reportedOn = on;
-            lastOnOffState = onOffType;
-            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
-            states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, on ? lastLevel : MIN_LEVEL));
+        PercentType brightness = state instanceof HSBType hsb ? hsb.getBrightness() : state.as(PercentType.class);
+        if (brightness == null) {
+            return;
         }
+        List<AttributeState> states = lightStates(brightness);
         if (!states.isEmpty()) {
             setEndpointStates(states);
         }
     }
 
     /**
-     * Builds the states for a brightness.
-     * <p>
-     * A dimmer that ramps reports every level it passes through, and a brightness on its way to off still reads as
-     * "on". Only a brightness that crosses zero says anything about on/off, so the levels in between carry the level
-     * alone -- reporting them as on/off contradicts the command that started the ramp and flips the client back on.
-     * <p>
-     * An off light reports {@link #MIN_LEVEL} rather than the last level of the ramp, so the level a client keeps
-     * for it is deterministic instead of wherever the dimmer happened to be sampled.
+     * An off light reports {@link #MIN_LEVEL}, since Level Control treats that as off and the level a client keeps
+     * for it should not be wherever the dimmer happened to be sampled on the way down.
      */
     private List<AttributeState> lightStates(PercentType brightness) {
         boolean on = brightness.intValue() > 0;
         if (on) {
-            // Only remember levels the light was actually on at, so turning it back on restores that brightness
             lastLevel = Math.max(MIN_LEVEL, ValueUtils.percentToLevel(brightness));
         }
-        lastOnOffState = on ? OnOffType.ON : OnOffType.OFF;
+        int level = on ? lastLevel : MIN_LEVEL;
         List<AttributeState> states = new ArrayList<>();
-        if (on != reportedOn) {
-            reportedOn = on;
-            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
+        states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
+        if (level != reportedLevel) {
+            reportedLevel = level;
+            states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
+                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, level));
         }
-        states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX, LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
-                on ? lastLevel : MIN_LEVEL));
         return states;
     }
 
     private void updateOnOff(OnOffType onOffType) {
-        lastOnOffState = onOffType;
         if (primaryItem instanceof GroupItem groupItem) {
             groupItem.send(onOffType, MATTER_SOURCE);
         } else {
