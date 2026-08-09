@@ -15,6 +15,7 @@ package org.openhab.io.yamlcomposer.internal;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -266,13 +267,21 @@ final class ComposerUtils {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             for (String varName : envVars) {
+                byte[] nameBytes = varName.getBytes(StandardCharsets.UTF_8);
+                digest.update(ByteBuffer.allocate(Integer.BYTES).putInt(nameBytes.length).array());
+                digest.update(nameBytes);
+
                 String val = envMap.get(varName);
-                digest.update(varName.getBytes(StandardCharsets.UTF_8));
-                digest.update((byte) '=');
-                if (val != null) {
-                    digest.update(val.getBytes(StandardCharsets.UTF_8));
+                if (val == null) {
+                    // Explicit presence marker for unset/absent variable
+                    digest.update((byte) 0x00);
+                } else {
+                    // Explicit presence marker for present variable, followed by length and value bytes
+                    digest.update((byte) 0x01);
+                    byte[] valBytes = val.getBytes(StandardCharsets.UTF_8);
+                    digest.update(ByteBuffer.allocate(Integer.BYTES).putInt(valBytes.length).array());
+                    digest.update(valBytes);
                 }
-                digest.update((byte) ';');
             }
             byte[] hashBytes = digest.digest();
             StringBuilder sb = new StringBuilder();
