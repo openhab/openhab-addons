@@ -133,6 +133,13 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private record TimestampedPayload(JsonObject payload, long timestamp) {
     }
 
+    // Thumbnail/heatmap ids already fetched per event id, so a merged payload that keeps carrying
+    // them does not re-fetch the same image on every later frame.
+    private final Map<String, TimestampedMedia> fetchedEventMedia = new ConcurrentHashMap<>();
+
+    private record TimestampedMedia(String ids, long timestamp) {
+    }
+
     // Stamped where an event arrives, on the WebSocket thread, so a snapshot that was superseded
     // before its dispatch task got to run can be recognised and skipped.
     private final AtomicLong eventSequence = new AtomicLong();
@@ -752,6 +759,25 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Whether this frame carries a thumbnail or heatmap id not already fetched for this event.
+     *
+     * The NVR generates those asynchronously and announces each once, but the merged payload keeps
+     * them from then on, so the id has to be compared against what was last seen rather than merely
+     * being present. Returns false when neither id is set.
+     */
+    private boolean isNewEventMedia(@Nullable String eventId, @Nullable String thumbnailId,
+            @Nullable String heatmapId) {
+        if (eventId == null || (thumbnailId == null && heatmapId == null)) {
+            return false;
+        }
+        String seen = thumbnailId + "|" + heatmapId;
+        long now = System.currentTimeMillis();
+        fetchedEventMedia.values().removeIf(p -> now - p.timestamp() > EVENT_PAYLOAD_TTL_MS);
+        TimestampedMedia previous = fetchedEventMedia.put(eventId, new TimestampedMedia(seen, now));
+        return previous == null || !seen.equals(previous.ids());
+    }
+
+    /**
      * Keep the last full payload per event id and merge incremental UPDATE frames into it.
      *
      * Protect's private updates WebSocket sends an "add" with the complete event and subsequent
@@ -760,9 +786,9 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
      * the *_UPDATE dispatch and stop the contact latch from being refreshed.
      *
      * @return the full payload to work with. An update for an event whose add was never seen -- one
-     *         that started before openHAB did, say -- yields the delta unchanged, which still feeds
-     *         the thumbnail/heatmap path when it carries those fields. Only a {@code null} input
-     *         gives {@code null} back.
+     *         that started before openHAB did, say -- yields the delta unchanged; it cannot be
+     *         converted into a camera event without the type and camera the add carried, so it is
+     *         effectively dropped. Only a {@code null} input gives {@code null} back.
      */
     @Nullable
     JsonObject trackPrivateEventPayload(@Nullable String action, @Nullable String id, @Nullable JsonObject data) {
@@ -975,8 +1001,11 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         }
                         // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
                         // generates them asynchronously after the event starts.
+                        // Merging keeps thumbnailId/heatmapId in the payload once they appear, so
+                        // every later frame of the same event would otherwise re-fetch the identical
+                        // image. Only act when this frame actually brought a new id.
                         if ("update".equals(update.action) && event.cameraId != null
-                                && (event.thumbnailId != null || event.heatmapId != null)) {
+                                && isNewEventMedia(update.id, event.thumbnailId, event.heatmapId)) {
                             UnifiProtectCameraHandler camHandler = findChildHandler(event.cameraId,
                                     UnifiProtectCameraHandler.class);
                             if (camHandler != null) {
