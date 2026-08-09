@@ -12,6 +12,8 @@
  */
 package org.openhab.io.yamlcomposer.internal.processors;
 
+import java.util.function.Consumer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
@@ -27,8 +29,8 @@ import org.openhab.io.yamlcomposer.internal.placeholders.ElseIfPlaceholder;
 @NonNullByDefault
 public class ElseIfProcessor extends AbstractConditionalProcessor implements PlaceholderProcessor<ElseIfPlaceholder> {
 
-    public ElseIfProcessor(BufferedLogger logger) {
-        super(logger);
+    public ElseIfProcessor(Consumer<String> envVarCallback, BufferedLogger logger) {
+        super(logger, envVarCallback);
     }
 
     @Override

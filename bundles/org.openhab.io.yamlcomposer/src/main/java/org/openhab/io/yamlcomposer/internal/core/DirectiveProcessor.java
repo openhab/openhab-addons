@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,6 +45,7 @@ import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
 public class DirectiveProcessor {
 
     private final BufferedLogger logger;
+    private final Consumer<String> envVarCallback;
 
     public static class IfChainState {
         boolean matched = false;
@@ -60,8 +62,9 @@ public class DirectiveProcessor {
         }
     }
 
-    public DirectiveProcessor(BufferedLogger logger) {
+    public DirectiveProcessor(BufferedLogger logger, Consumer<String> envVarCallback) {
         this.logger = logger;
+        this.envVarCallback = envVarCallback;
     }
 
     /**
@@ -270,7 +273,7 @@ public class DirectiveProcessor {
             if (vars.containsKey(expr)) {
                 target = vars.get(expr);
             } else {
-                target = StringInterpolator.evaluateExpression(expr, vars, logger.getLogSession(),
+                target = StringInterpolator.evaluateExpression(expr, vars, envVarCallback, logger.getLogSession(),
                         forDirective.sourceLocation());
             }
         }
@@ -329,7 +332,8 @@ public class DirectiveProcessor {
         RecursiveTransformer filterTransformer = parentTransformer.withOverrideVariables(loopVars);
 
         Object evaluated = StringInterpolator.evaluateExpression(filterCondition.trim(),
-                filterTransformer.getVariables(), logger.getLogSession(), forDirective.sourceLocation());
+                filterTransformer.getVariables(), envVarCallback, logger.getLogSession(),
+                forDirective.sourceLocation());
         return ExpressionEvaluator.isTruthy(evaluated);
     }
 }
