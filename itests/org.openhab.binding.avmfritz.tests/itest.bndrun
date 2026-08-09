@@ -98,5 +98,5 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	org.openhab.core.semantics;version='[5.3.0,5.3.1)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
-	org.jupnp;version='[3.0.5,3.0.6)',\
-	org.jupnp.transport.jetty12;version='[3.0.5,3.0.6)'
+	org.jupnp;version='[4.0.0,4.0.1)',\
+	org.jupnp.transport.jetty12;version='[4.0.0,4.0.1)'
