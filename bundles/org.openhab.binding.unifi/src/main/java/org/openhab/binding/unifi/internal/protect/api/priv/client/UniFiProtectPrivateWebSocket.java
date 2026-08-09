@@ -98,9 +98,11 @@ public class UniFiProtectPrivateWebSocket {
         this.wsClient = new WebSocketClient(httpClient);
         // Prevent wsClient.stop() from stopping the shared HttpClient instance
         this.wsClient.unmanage(httpClient);
-        // Detect a silently dead / half-open connection: Jetty closes the session
-        // when no frame is read within the window -> onWebSocketClose -> reconnect.
-        // Without this a dropped socket stays "ONLINE" and updates stop forever.
+        // Detect a silently dead / half-open connection: Jetty closes the session when no frame is
+        // read within the window -> onWebSocketClose -> reconnect. Jetty's own default already
+        // expired the session, but only after 300 s; this halves that so updates resume sooner.
+        // Note setMaxIdleTimeout also applies the value to the injected HttpClient, which is shared
+        // per bridge, so keep it comfortably above any request timeout used on that client.
         this.wsClient.setMaxIdleTimeout(UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS);
 
         try {
@@ -171,13 +173,15 @@ public class UniFiProtectPrivateWebSocket {
             // First connect of this socket: the caller has just bootstrapped, nothing to catch up on.
             return;
         }
-        resyncAfterConnect = false;
         logger.debug("Refreshing bootstrap after WebSocket reconnect to pick up missed updates");
         client.refreshBootstrap().whenComplete((bootstrap, ex) -> {
             if (ex != null) {
-                logger.debug("Bootstrap refresh after reconnect failed", ex);
+                // Leave the flag set so the next successful connect tries again. Clearing it on the
+                // attempt would let a single failed refresh drop the recovery entirely.
+                logger.debug("Bootstrap refresh after reconnect failed, will retry on next connect", ex);
                 return;
             }
+            resyncAfterConnect = false;
             try {
                 onReconnected.run();
             } catch (RuntimeException e) {
