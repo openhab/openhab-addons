@@ -24,6 +24,7 @@ import eu.chargetime.ocpp.model.core.ChargingProfileKindType;
 import eu.chargetime.ocpp.model.core.ChargingProfilePurposeType;
 import eu.chargetime.ocpp.model.core.ChargingRateUnitType;
 import eu.chargetime.ocpp.model.core.ChargingSchedulePeriod;
+import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest;
 import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
 
 /**
@@ -92,5 +93,17 @@ class ChargingProfileBuilderTest {
         ChargingSchedulePeriod period = request.getCsChargingProfiles().getChargingSchedule()
                 .getChargingSchedulePeriod()[0];
         assertEquals(0.0, period.getLimit().doubleValue());
+    }
+
+    @Test
+    void clearLimitRemovesOurCapByConnectorAndStackLevel() {
+        // Resuming to full removes the profile rather than sending 0 A (which a charger reads as
+        // suspend). Clearing by connector and stack level — not a single profile id or purpose —
+        // removes whichever purpose (TxProfile or TxDefaultProfile) installed the cap.
+        ClearChargingProfileRequest request = ChargingProfileBuilder.clearLimit(2);
+        assertEquals(2, request.getConnectorId().intValue());
+        assertEquals(0, request.getStackLevel().intValue());
+        assertNull(request.getId());
+        assertNull(request.getChargingProfilePurpose());
     }
 }

@@ -12,25 +12,47 @@
  */
 package org.openhab.binding.ocpp.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 
+import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.model.core.ChargePointErrorCode;
 import eu.chargetime.ocpp.model.core.ChargePointStatus;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
+import eu.chargetime.ocpp.model.smartcharging.ChargingProfileStatus;
+import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileConfirmation;
+import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest;
+import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileStatus;
+import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileConfirmation;
+import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
 
 /**
  * Tests how {@link OcppConnectorHandler} turns a charger's reported status into channel state.
@@ -173,5 +195,127 @@ class OcppConnectorHandlerTest {
 
         verify(callback, org.mockito.Mockito.never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_AVAILABILITY)),
                 org.mockito.ArgumentMatchers.any());
+    }
+
+    // --- pause / limit control: a resume must clear the cap, not re-send 0 A ---
+
+    /**
+     * Wires a ready charge point as this connector's parent and lets it answer sends. The ONLINE
+     * bridge-status path is used rather than initialize(), so nothing is transmitted during set-up and
+     * every captured request comes from the command under test.
+     */
+    private OcppChargePointHandler attachReadyChargePoint() {
+        return attachReadyChargePoint(ClearChargingProfileStatus.Accepted);
+    }
+
+    private OcppChargePointHandler attachReadyChargePoint(ClearChargingProfileStatus clearStatus) {
+        ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
+        when(thing.getBridgeUID()).thenReturn(chargePointUID);
+        OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
+        when(chargePoint.isReady()).thenReturn(true);
+        when(chargePoint.send(any())).thenAnswer(invocation -> {
+            Request request = invocation.getArgument(0);
+            if (request instanceof ClearChargingProfileRequest) {
+                return CompletableFuture.completedFuture(new ClearChargingProfileConfirmation(clearStatus));
+            }
+            return CompletableFuture
+                    .completedFuture(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
+        });
+        Bridge chargePointBridge = mock(Bridge.class);
+        when(chargePointBridge.getHandler()).thenReturn(chargePoint);
+        when(callback.getBridge(chargePointUID)).thenReturn(chargePointBridge);
+        handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+        return chargePoint;
+    }
+
+    private void command(String channelId, Command value) {
+        handler.handleCommand(new ChannelUID(THING_UID, channelId), value);
+    }
+
+    private static double sentLimit(Request request) {
+        return ((SetChargingProfileRequest) request).getCsChargingProfiles().getChargingSchedule()
+                .getChargingSchedulePeriod()[0].getLimit();
+    }
+
+    @Test
+    void unpausingWithoutALimitClearsTheProfileInsteadOfSuspending() {
+        // A user who only ever toggles the pause switch never sets a current limit, so the stored limit
+        // is 0. A pause is a 0 A profile (the charger reports SuspendedEVSE); un-pausing must NOT
+        // re-send 0 A — that leaves the connector suspended — but must REMOVE the cap so the charger
+        // returns to its own maximum. Reproduces a real report: an Alfen + BMW i4 stuck SuspendedEVSE
+        // after pause/un-pause because the resume put another 0 A on the wire.
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        command(CHANNEL_PAUSE, OnOffType.ON);
+        command(CHANNEL_PAUSE, OnOffType.OFF);
+
+        ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
+        verify(chargePoint, times(2)).send(captor.capture());
+        List<Request> requests = captor.getAllValues();
+
+        assertTrue(requests.get(0) instanceof SetChargingProfileRequest, "pause must send a SetChargingProfile");
+        assertEquals(0.0, sentLimit(requests.get(0)), "pause must cap the connector at 0 A");
+
+        Request unpause = requests.get(1);
+        assertTrue(unpause instanceof ClearChargingProfileRequest,
+                "un-pausing without a limit must clear the profile, not re-send 0 A");
+        ClearChargingProfileRequest clear = (ClearChargingProfileRequest) unpause;
+        assertEquals(Integer.valueOf(1), clear.getConnectorId(), "clear must target this connector");
+        assertEquals(Integer.valueOf(0), clear.getStackLevel(), "clear must target our stack level");
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)), eq(UnDefType.UNDEF));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_PAUSE)), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void aZeroChargeLimitClearsTheCapRatherThanSuspending() {
+        // A 0 A charge limit is meaningless as a charge target — pause is how a connector is suspended.
+        // Setting the limit to 0 must therefore lift the cap (ClearChargingProfile), not install a 0 A
+        // profile that suspends the connector.
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));
+
+        ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
+        verify(chargePoint, times(1)).send(captor.capture());
+        assertTrue(captor.getValue() instanceof ClearChargingProfileRequest,
+                "a 0 A charge limit must clear the cap, not suspend the connector");
+    }
+
+    @Test
+    void aResumeIsPublishedEvenWhenTheChargerReportsNoProfileToClear() {
+        // A charger with no cap installed answers ClearChargingProfile with Unknown, not Accepted (per
+        // OCPP 1.6, "no matching profile"). That still means the connector is uncapped, so the resume
+        // must publish the same "no limit" state — charge-limit UNDEF, pause OFF — as an Accepted clear.
+        OcppChargePointHandler chargePoint = attachReadyChargePoint(ClearChargingProfileStatus.Unknown);
+
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));
+
+        ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
+        verify(chargePoint, times(1)).send(captor.capture());
+        assertTrue(captor.getValue() instanceof ClearChargingProfileRequest, "a 0 A limit must clear the cap");
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)), eq(UnDefType.UNDEF));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_PAUSE)), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void unpausingRestoresAPreviouslySetLimit() {
+        // Regression guard for the fix above: when a real limit WAS set, un-pausing must restore that
+        // limit with a SetChargingProfile, not clear the cap.
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(16));
+        command(CHANNEL_PAUSE, OnOffType.ON);
+        command(CHANNEL_PAUSE, OnOffType.OFF);
+
+        ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
+        verify(chargePoint, times(3)).send(captor.capture());
+        List<Request> requests = captor.getAllValues();
+
+        assertEquals(16.0, sentLimit(requests.get(0)), "the explicit limit must be sent");
+        assertEquals(0.0, sentLimit(requests.get(1)), "pause must cap at 0 A");
+        Request unpause = requests.get(2);
+        assertTrue(unpause instanceof SetChargingProfileRequest,
+                "un-pausing with a set limit must restore it, not clear the cap");
+        assertEquals(16.0, sentLimit(unpause), "un-pausing must restore the previous 16 A limit");
     }
 }
