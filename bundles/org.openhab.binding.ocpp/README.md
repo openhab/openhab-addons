@@ -125,7 +125,8 @@ Most chargers also only start once a vehicle is plugged in, so a `RemoteStart` o
 Because `charging` follows the charger's reported status, it also reads `ON` on its own whenever a transaction is running, however it was started.
 
 `charge-limit` caps the charging current: the value is sent as a `SetChargingProfile` and the channel reflects the applied limit once accepted.
-`pause` suspends charging with a 0 A profile without ending the transaction, and resumes at the previous limit when switched off — distinct from `charging`, which ends the session.
+`pause` suspends charging with a 0 A profile without ending the transaction; switching it off resumes — at your `charge-limit` if one is set, otherwise by removing the cap so the charger returns to its own maximum — distinct from `charging`, which ends the session.
+A pause is a 0 A limit, so a resume must lift the cap rather than send another 0 A, which a charger reads as "stay suspended".
 `availability` takes the connector Operative or Inoperative, `unlock` releases the cable lock, and the `chargepoint`-level `reset` performs a soft reset of the whole charger.
 
 ## Full Example
@@ -148,6 +149,20 @@ Switch  Wallbox_Cable   "Cable connected"         { channel="ocpp:connector:main
 Number:Power  Wallbox_Power "Power [%.0f W]"      { channel="ocpp:connector:main:wallbox:c1:power-active-import" }
 Number:Energy Wallbox_Energy "Energy [%.2f kWh]"  { channel="ocpp:connector:main:wallbox:c1:energy-active-import" }
 ```
+
+## Troubleshooting
+
+### A charge point stays UNKNOWN, or nothing appears in the inbox
+
+The charge point id is the path of the WebSocket URL the charger dials, so the charger must connect to `ws://<host>:<port>/<chargePointId>`.
+A charger pointed at the bare root (`ws://<host>:<port>/`, nothing after the slash) sends no id and is ignored, logging `connected without a charge point id in its URL path`.
+Put the id in the charger's backend URL — many chargers keep the URL and the id in separate fields, but it still has to end up as the URL path after the leading slash — and make the `chargepoint` thing's `chargePointId` match it exactly.
+If you are unsure what the charger actually sends, enable `log:set DEBUG org.openhab.binding.ocpp` and read it off the `Charger connected: id=...` line.
+
+### A connector sits at SuspendedEVSE and will not charge
+
+`SuspendedEVSE` means the charge point itself is withholding energy — a charging-profile limit or an authorization result — unlike `SuspendedEV`, which is the vehicle not drawing (battery full, or charging scheduled in the car).
+Check the connector is not left paused and that `charge-limit` is not 0: sending `pause` OFF resumes charging — at your `charge-limit` if one is set, otherwise by clearing the cap so the charger returns to its own maximum.
 
 ## Security
 
