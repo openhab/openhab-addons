@@ -119,7 +119,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
 
     private int reconnectAttempt = 0;
     private int throttledReconnectAttempt = 0;
-    private final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
+    final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> childRefreshRetryTasks = new ConcurrentHashMap<>();
     // De-dup events that can arrive on BOTH the public integration WS and the private
     // updates WS fallback path — dispatch each event id exactly once. Only ADDs are
@@ -143,8 +143,16 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     // Stamped where an event arrives, on the WebSocket thread, so a snapshot that was superseded
     // before its dispatch task got to run can be recognised and skipped.
     private final AtomicLong eventSequence = new AtomicLong();
+    // Highest sequence already delivered per event id. PendingUpdate is discarded on delivery, so
+    // without this a task delayed past the delivery of a newer one would find no pending state,
+    // start a fresh one, and be taken for the newest snapshot.
+    private final Map<String, TimestampedSequence> deliveredEventSequences = new ConcurrentHashMap<>();
+    private static final long EVENT_SEQUENCE_TTL_MS = 600_000;
 
-    private static final class PendingUpdate {
+    private record TimestampedSequence(long sequence, long timestamp) {
+    }
+
+    static final class PendingUpdate {
         long lastSequence = Long.MIN_VALUE;
         @Nullable
         BaseEvent lastEvent;
@@ -1084,11 +1092,20 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
      *            are submitted independently to the shared multi-threaded scheduler, so without it
      *            a task carrying an older snapshot could run last and overwrite a newer one.
      */
-    private synchronized void handleUpdateEvent(@Nullable BaseEvent event, long sequence) {
+    synchronized void handleUpdateEvent(@Nullable BaseEvent event, long sequence) {
         if (event == null || event.id == null) {
             return;
         }
         final String eventId = event.id;
+        // Compare against what was already delivered as well: PendingUpdate is discarded on
+        // delivery, so a task delayed past it would otherwise start a fresh state and be taken for
+        // the newest snapshot even though a later one has already gone out.
+        TimestampedSequence delivered = deliveredEventSequences.get(eventId);
+        if (delivered != null && sequence <= delivered.sequence()) {
+            logger.trace("Skipping event {} snapshot {}, {} was already delivered", eventId, sequence,
+                    delivered.sequence());
+            return;
+        }
         PendingUpdate state = Objects
                 .requireNonNull(pendingEventUpdates.computeIfAbsent(eventId, k -> new PendingUpdate()));
         if (sequence < state.lastSequence) {
@@ -1117,11 +1134,18 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                 WS_UPDATE_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
     }
 
-    private synchronized void deliverDebouncedUpdate(String eventId, PendingUpdate state) {
+    synchronized void deliverDebouncedUpdate(String eventId, PendingUpdate state) {
         // Guard against races if another task already delivered and cleared state
         PendingUpdate current = pendingEventUpdates.get(eventId);
         if (!state.equals(current)) {
             return;
+        }
+        // Remember how far this event got before the pending state is dropped, so a straggler
+        // carrying an older snapshot cannot be mistaken for a new burst.
+        long now = System.currentTimeMillis();
+        deliveredEventSequences.values().removeIf(s -> now - s.timestamp() > EVENT_SEQUENCE_TTL_MS);
+        if (state.lastSequence != Long.MIN_VALUE) {
+            deliveredEventSequences.put(eventId, new TimestampedSequence(state.lastSequence, now));
         }
         // Cancel all update timers
         ScheduledFuture<?> f1 = state.debounceFuture;
