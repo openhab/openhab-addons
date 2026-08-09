@@ -3261,6 +3261,35 @@ public class YamlComposerTest {
             }
 
             @Test
+            @DisplayName("Detects change when a tracked environment variable goes from unset to empty string")
+            void detectsChangeFromUnsetToEmptyString() throws Exception {
+                String envName = "UNSET_EMPTY_VAR";
+                Map<String, String> envMap = new HashMap<>();
+                // Initially unset (absent from map)
+
+                Path main = writeFixture("env_unset_main.yaml", "setting: ${ENV.UNSET_EMPTY_VAR}");
+                Path output = Objects.requireNonNull(sharedTempDir).resolve("unset_output.yaml");
+
+                Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
+                ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
+                Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
+                }, trackedEnv::add, logSession, includeCache));
+
+                try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                    ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv, envMap);
+                }
+
+                // Verify it returns false when the environment value remains unset
+                assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(false));
+
+                // Mutate the environment map to set it to an empty string
+                envMap.put(envName, "");
+
+                // Verify it returns true because unset is distinct from an empty string
+                assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(true));
+            }
+
+            @Test
             @DisplayName("Handles line wrapping correctly when there are many environment variables")
             void handlesWrappingWithManyEnvs() throws IOException {
                 StringBuilder sb = new StringBuilder();
