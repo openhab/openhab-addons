@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dreame"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Dreamehome Account</label>
+		<description>Connects to a Dreamehome cloud account</description>
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Email address or phone number used by the Dreamehome app</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Dreamehome account password</description>
+			</parameter>
+			<parameter name="country" type="text" required="true">
+				<label>Country</label>
+				<description>Two-letter country code used by the Dreamehome account; European countries are automatically routed to
+					the EU cloud</description>
+				<default>de</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="mower">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Dreame Robotic Mower</label>
+		<description>A Dreame A1, A1 Pro, A2, A2 1200 or A3 robotic lawn mower</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
+		<channels>
+			<channel id="command" typeId="command"/>
+			<channel id="state" typeId="state"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="charging-status" typeId="charging-status"/>
+			<channel id="error-code" typeId="error-code"/>
+			<channel id="firmware" typeId="firmware"/>
+			<channel id="do-not-disturb" typeId="do-not-disturb"/>
+			<channel id="current-zone" typeId="current-zone"/>
+			<channel id="mowing-sessions" typeId="mowing-sessions"/>
+			<channel id="total-mowing-time" typeId="total-mowing-time"/>
+			<channel id="total-mowed-area" typeId="total-mowed-area"/>
+			<channel id="position-x" typeId="position-x"/>
+			<channel id="position-y" typeId="position-y"/>
+			<channel id="heading" typeId="heading"/>
+			<channel id="mowing-progress" typeId="mowing-progress"/>
+			<channel id="planned-mowing-area" typeId="planned-mowing-area"/>
+			<channel id="current-mowed-area" typeId="current-mowed-area"/>
+			<channel id="docking-state" typeId="docking-state"/>
+			<channel id="location-state" typeId="location-state"/>
+			<channel id="wifi-rssi" typeId="wifi-rssi"/>
+			<channel id="ble-rssi" typeId="ble-rssi"/>
+			<channel id="lte-rssi" typeId="lte-rssi"/>
+			<channel id="task-executable" typeId="task-executable"/>
+			<channel id="task-active" typeId="task-active"/>
+			<channel id="task-operation" typeId="task-operation"/>
+			<channel id="task-state" typeId="task-state"/>
+			<channel id="task-time" typeId="task-time"/>
+			<channel id="current-map-id" typeId="current-map-id"/>
+			<channel id="maps" typeId="maps"/>
+			<channel id="zones" typeId="zones"/>
+			<channel id="map-svg" typeId="map-svg"/>
+			<channel id="zone-mowing" typeId="zone-mowing"/>
+			<channel id="cutting-height" typeId="cutting-height"/>
+		</channels>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Cloud device identifier reported by Dreamehome</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="15">
+				<label>Refresh Interval</label>
+				<description>Interval between cloud status refreshes</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Command sent to the mower</description>
+		<state>
+			<options>
+				<option value="start">Start</option>
+				<option value="pause">Pause</option>
+				<option value="stop">Stop</option>
+				<option value="dock">Return to Dock</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>Current mower state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging-status">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<description>Current charging state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="error-code">
+		<item-type>String</item-type>
+		<label>Device Status Code</label>
+		<description>Current proprietary Dreame device status or error code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="firmware">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Installed firmware version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="do-not-disturb">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb</label>
+		<description>Enables or disables do not disturb mode</description>
+	</channel-type>
+
+	<channel-type id="current-zone">
+		<item-type>String</item-type>
+		<label>Current Zone</label>
+		<description>Identifier of the active mowing zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mowing-sessions">
+		<item-type>Number</item-type>
+		<label>Mowing Sessions</label>
+		<description>Total number of mowing sessions</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="total-mowing-time">
+		<item-type>Number:Time</item-type>
+		<label>Total Mowing Time</label>
+		<description>Total time spent mowing</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="total-mowed-area">
+		<item-type>Number:Area</item-type>
+		<label>Total Mowed Area</label>
+		<description>Total area mowed</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="position-x">
+		<item-type>Number</item-type>
+		<label>Position X</label>
+		<description>Current mower X coordinate in the Dreame map coordinate system</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="position-y">
+		<item-type>Number</item-type>
+		<label>Position Y</label>
+		<description>Current mower Y coordinate in the Dreame map coordinate system</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heading">
+		<item-type>Number</item-type>
+		<label>Heading</label>
+		<description>Current mower heading in degrees</description>
+		<state pattern="%.2f °" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mowing-progress">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Mowing Progress</label>
+		<description>Progress of the current mowing task</description>
+		<state pattern="%.2f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="planned-mowing-area">
+		<item-type>Number:Area</item-type>
+		<label>Planned Mowing Area</label>
+		<description>Total planned area of the current mowing task</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-mowed-area">
+		<item-type>Number:Area</item-type>
+		<label>Current Mowed Area</label>
+		<description>Area completed during the current mowing task</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="docking-state">
+		<item-type>String</item-type>
+		<label>Docking State</label>
+		<description>Current relationship between mower and charging station</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="location-state">
+		<item-type>Number</item-type>
+		<label>Location State</label>
+		<description>Current proprietary Dreame location state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wifi-rssi">
+		<item-type>Number</item-type>
+		<label>Wi-Fi Signal Strength</label>
+		<description>Current Wi-Fi received signal strength</description>
+		<state pattern="%.0f dBm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ble-rssi">
+		<item-type>Number</item-type>
+		<label>Bluetooth Signal Strength</label>
+		<description>Current Bluetooth received signal strength</description>
+		<state pattern="%.0f dBm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lte-rssi">
+		<item-type>Number</item-type>
+		<label>LTE Signal Strength</label>
+		<description>Current LTE received signal strength</description>
+		<state pattern="%.0f dBm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-executable">
+		<item-type>Switch</item-type>
+		<label>Task Executable</label>
+		<description>Whether Dreame marks the reported task as executable</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-active">
+		<item-type>Switch</item-type>
+		<label>Task Active</label>
+		<description>Whether the mower reports its current work sequence as active</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-operation">
+		<item-type>Number</item-type>
+		<label>Task Operation Code</label>
+		<description>Current proprietary Dreame task operation code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-state">
+		<item-type>String</item-type>
+		<label>Task State</label>
+		<description>Task state derived from observed Dreame operation codes</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-time">
+		<item-type>Number</item-type>
+		<label>Task Time Value</label>
+		<description>Raw time field reported for the current Dreame task; its unit is not documented</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-map-id">
+		<item-type>Number</item-type>
+		<label>Current Map ID</label>
+		<description>Identifier of the currently active map</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="maps">
+		<item-type>String</item-type>
+		<label>Maps</label>
+		<description>Available maps as a JSON array containing ID, index, name and area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zones">
+		<item-type>String</item-type>
+		<label>Mowing Zones</label>
+		<description>Mowing zones as a JSON array containing ID, name and area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="map-svg">
+		<item-type>Image</item-type>
+		<label>Map</label>
+		<description>Rendered vector map of the active mowing area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zone-mowing">
+		<item-type>String</item-type>
+		<label>Start Zone Mowing</label>
+		<description>Starts selective mowing. Send one or more existing positive zone IDs separated by commas, for example 1
+			or 1,2. IDs are validated against the active map.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="cutting-height">
+		<item-type>Number</item-type>
+		<label>Cutting Height</label>
+		<description>Map-wide cutting height in centimetres</description>
+		<state min="3" max="7" step="0.5" pattern="%.1f cm"/>
+	</channel-type>
+</thing:thing-descriptions>
