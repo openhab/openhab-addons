@@ -15,6 +15,7 @@ package org.openhab.io.yamlcomposer.internal.processors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,8 +34,10 @@ import org.openhab.io.yamlcomposer.internal.placeholders.IfPlaceholder;
 @NonNullByDefault
 public class IfProcessor implements PlaceholderProcessor<IfPlaceholder> {
     private final BufferedLogger logger;
+    private final Consumer<String> envVarCallback;
 
-    public IfProcessor(BufferedLogger logger) {
+    public IfProcessor(Consumer<String> envVarCallback, BufferedLogger logger) {
+        this.envVarCallback = envVarCallback;
         this.logger = logger;
     }
 
@@ -66,7 +69,7 @@ public class IfProcessor implements PlaceholderProcessor<IfPlaceholder> {
             Object evaluated = switch (branch.condition()) {
                 case null -> "false"; // Treat null condition as false
                 case String s -> StringInterpolator.evaluateExpression(s, recursiveTransformer.getVariables(),
-                        logger.getLogSession(), ifPlaceholder.sourceLocation());
+                        envVarCallback, logger.getLogSession(), ifPlaceholder.sourceLocation());
                 default -> branch.condition();
             };
 

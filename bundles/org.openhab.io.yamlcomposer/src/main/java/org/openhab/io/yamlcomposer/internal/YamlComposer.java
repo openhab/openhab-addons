@@ -96,7 +96,7 @@ public class YamlComposer {
      * @throws YamlEngineException if a circular include is detected or if the maximum include depth is exceeded
      */
     public YamlComposer(Path path, Map<String, @Nullable Object> variables, Set<Path> includeStack,
-            Consumer<Path> includeCallback, LogSession logSession,
+            Consumer<Path> includeCallback, Consumer<String> envVarCallback, LogSession logSession,
             ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache) {
         this.absolutePath = Objects.requireNonNull(path.toAbsolutePath().normalize());
         this.relativePath = ComposerConfig.configRoot().relativize(absolutePath);
@@ -122,10 +122,10 @@ public class YamlComposer {
 
         this.recursiveTransformer = new RecursiveTransformer(this.variables);
 
-        this.recursiveTransformer.register(new SubstitutionProcessor(logger));
-        this.recursiveTransformer.register(new IfProcessor(logger));
-        this.recursiveTransformer.register(
-                new IncludeProcessor(absolutePath.getParent(), newIncludeStack, includeCallback, includeCache, logger));
+        this.recursiveTransformer.register(new SubstitutionProcessor(envVarCallback, logger));
+        this.recursiveTransformer.register(new IfProcessor(envVarCallback, logger));
+        this.recursiveTransformer.register(new IncludeProcessor(absolutePath.getParent(), newIncludeStack,
+                includeCallback, includeCache, envVarCallback, logger));
         this.recursiveTransformer.register(new InsertProcessor(templates, logger));
         this.recursiveTransformer.register(new RemoveProcessor());
         this.recursiveTransformer.register(new ReplaceProcessor());
@@ -151,12 +151,13 @@ public class YamlComposer {
      * @return the processed Java object representation of the YAML file
      * @throws IOException if the file cannot be read or if processing fails
      */
-    public static @Nullable Object load(Path path, Consumer<Path> includeCallback) throws IOException {
+    public static @Nullable Object load(Path path, Consumer<Path> includeCallback, Consumer<String> envVarCallback)
+            throws IOException {
         // Create a LogSession autocloseable object. It consolidates warnings and duplicates.
         // Upon exit, any warnings will be logged.
         try (LogSession session = new LogSession()) {
             ConcurrentHashMap<Path, @Nullable CacheEntry> cache = new ConcurrentHashMap<>();
-            return load(path, includeCallback, session, cache);
+            return load(path, includeCallback, envVarCallback, session, cache);
         }
     }
 
@@ -170,13 +171,13 @@ public class YamlComposer {
      * @return the processed Java object representation of the YAML file
      * @throws IOException if there is an error reading or processing the YAML
      */
-    static @Nullable Object load(Path path, Consumer<Path> includeCallback, LogSession logSession,
-            ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache) throws IOException {
+    static @Nullable Object load(Path path, Consumer<Path> includeCallback, Consumer<String> envVarCallback,
+            LogSession logSession, ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache) throws IOException {
         Path absolutePath = path.toAbsolutePath().normalize();
         Path relativePath = ComposerConfig.configRoot().relativize(absolutePath);
         try {
-            YamlComposer composer = new YamlComposer(absolutePath, Map.of(), Set.of(), includeCallback, logSession,
-                    includeCache);
+            YamlComposer composer = new YamlComposer(absolutePath, Map.of(), Set.of(), includeCallback, envVarCallback,
+                    logSession, includeCache);
             Object result = composer.load();
 
             // Print a summary of warnings before the LogSession outputs all the warnings.

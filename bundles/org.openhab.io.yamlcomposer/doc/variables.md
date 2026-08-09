@@ -239,6 +239,10 @@ This is especially useful for configurations running within Docker containers.
 mode: ${ENV.OPENHAB_MODE}   # Resolves to the environment value
 ```
 
+::: tip Note
+Changes in environment variables referenced in the source file will trigger an automatic regeneration of the composed file during openhab start up.
+:::
+
 ### Calling Java Methods
 
 Variables retain their Java types, allowing you to call standard methods directly.
