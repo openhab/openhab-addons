@@ -476,26 +476,7 @@ public class HyperionNgHandler extends BaseThingHandler {
 
             boolean state = command == OnOffType.ON;
             componentState.setState(state);
-
-            // determine which instances to target: user-configured `instanceIndices` take
-            // precedence; otherwise fall back to available instances reported by server
-            List<Integer> targetInstances = !instanceIndices.isEmpty() ? new ArrayList<>(instanceIndices)
-                    : new ArrayList<>(availableInstanceIndices);
-
-            logger.debug("handleComponentEnabled: instanceIndices={} availableInstanceIndices={} targetInstances={}",
-                    instanceIndices, availableInstanceIndices, targetInstances);
-
-            if (!targetInstances.isEmpty()) {
-                // prefer sending a single batched command with the top-level `instance` array
-                ComponentStateCommand batched = new ComponentStateCommand(componentState);
-                batched.setInstance(targetInstances);
-                logger.debug("handleComponentEnabled: sending batched command for instances={}", targetInstances);
-                sendCommand(batched);
-            } else {
-                ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
-                logger.debug("handleComponentEnabled: sending global command (no instances)");
-                sendCommand(stateCommand);
-            }
+            sendToInstances(new ComponentStateCommand(componentState));
         } else {
             logger.debug("Channel {} unable to process command {}", channel, command);
         }
@@ -507,23 +488,29 @@ public class HyperionNgHandler extends BaseThingHandler {
             componentState.setComponent(COMPONENTS_ALL);
             boolean state = command == OnOffType.ON;
             componentState.setState(state);
-            // determine which instances to target: user-configured `instanceIndices` take
-            // precedence; otherwise fall back to available instances reported by server
-            List<Integer> targetInstances = !instanceIndices.isEmpty() ? new ArrayList<>(instanceIndices)
-                    : new ArrayList<>(availableInstanceIndices);
-
-            if (!targetInstances.isEmpty()) {
-                ComponentStateCommand batched = new ComponentStateCommand(componentState);
-                // set top-level instance as an array (server expects arrays for `instance`)
-                batched.setInstance(targetInstances);
-                logger.debug("handleHyperionEnabled: sending batched command for instances={}", targetInstances);
-                sendCommand(batched);
-            } else {
-                ComponentStateCommand stateCommand = new ComponentStateCommand(componentState);
-                sendCommand(stateCommand);
-            }
+            sendToInstances(new ComponentStateCommand(componentState));
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_HYPERION_ENABLED, command);
+        }
+    }
+
+    /**
+     * Sends the given command to every targeted instance. Configured instances take precedence over the instances
+     * reported by the server. Hyperion.ng's {@code componentstate} command rejects multiple instances, so one command
+     * is sent per instance with a single-element array. When no instances are known the command is sent as-is for
+     * backwards compatibility.
+     */
+    private void sendToInstances(HyperionCommand command) throws IOException, CommandUnsuccessfulException {
+        List<Integer> targetInstances = !instanceIndices.isEmpty() ? new ArrayList<>(instanceIndices)
+                : new ArrayList<>(availableInstanceIndices);
+        if (targetInstances.isEmpty()) {
+            sendCommand(command);
+            return;
+        }
+        for (int instance : targetInstances) {
+            command.setInstance(List.of(instance));
+            logger.debug("Sending {} command to instance {}", command.getCommand(), instance);
+            sendCommand(command);
         }
     }
 
@@ -535,7 +522,7 @@ public class HyperionNgHandler extends BaseThingHandler {
             adjustment.setBrightness(brightnessValue);
 
             AdjustmentCommand brightnessCommand = new AdjustmentCommand(adjustment);
-            sendCommand(brightnessCommand);
+            sendToInstances(brightnessCommand);
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_BRIGHTNESS, command);
         }
@@ -550,7 +537,7 @@ public class HyperionNgHandler extends BaseThingHandler {
 
             ColorCommand colorCommand = new ColorCommand(r, g, b, priority);
             colorCommand.setOrigin(origin);
-            sendCommand(colorCommand);
+            sendToInstances(colorCommand);
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_COLOR, command);
         }
@@ -565,7 +552,7 @@ public class HyperionNgHandler extends BaseThingHandler {
 
             effectCommand.setOrigin(origin);
 
-            sendCommand(effectCommand);
+            sendToInstances(effectCommand);
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_EFFECT, command);
         }
@@ -576,11 +563,11 @@ public class HyperionNgHandler extends BaseThingHandler {
             String cmd = command.toString();
             if ("ALL".equals(cmd)) {
                 ClearAllCommand clearCommand = new ClearAllCommand();
-                sendCommand(clearCommand);
+                sendToInstances(clearCommand);
             } else {
                 int priority = Integer.parseInt(cmd);
                 ClearCommand clearCommand = new ClearCommand(priority);
-                sendCommand(clearCommand);
+                sendToInstances(clearCommand);
             }
         }
     }
