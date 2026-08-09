@@ -20,6 +20,11 @@ When a charger connects with a charge point id that has no `chargepoint` thing, 
 When a known charge point reports a connector for the first time, that `connector` appears in the inbox under its `chargepoint` bridge.
 There is no active scan; point your charger at `ws://<openhab-host>:<port>/<chargePointId>` and it will show up.
 
+If you are unsure what id your charger uses, you do not have to guess it.
+Connect the charger and it appears in the inbox under its real id, ready to accept.
+Or enable `log:set DEBUG org.openhab.binding.ocpp` and look for the `Charger connected: id=...` line, which prints the exact id the charger dialed.
+The id is whatever path the charger appends to its backend URL — often its serial number — so it is easiest to read it back here rather than hunt for it in the charger's own settings.
+
 ## Thing Configuration
 
 ### `server`
@@ -66,6 +71,14 @@ The binding also runs a heartbeat-derived liveness watchdog and self-heals when 
 | meterValuesPollSeconds | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling | 0 | no | yes |
 | stuckStateRecovery | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long. Off by default; enable only for a charger known to wedge there | false | no | yes |
 
+Most connectors need no configuration beyond `connectorId`.
+The rest cover specific charger behaviors.
+`forceTxDefaultProfile` is for chargers that reject a `TxProfile` when no transaction is active — a Phoenix CHARX does: the charge limit is then sent as a `TxDefaultProfile`, which such chargers accept and apply through their own load management.
+`profileMinIntervalMs` coalesces rapid limit changes into at most one `SetChargingProfile` per interval, which keeps a solar-tracking rule that adjusts the limit every few seconds from flooding the charger.
+`meterValuesPollSeconds` actively polls a connector for `MeterValues` for chargers that do not push them on their own; a poll is skipped while the previous one is still outstanding, so a charger that stops answering cannot build a backlog.
+`hardwareMaxCurrentKey` binds the `hardware-max-current` channel to a vendor `ChangeConfiguration` key, since the hardware ceiling is not a standard OCPP setting.
+`stuckStateRecovery` is left off because auto-unlocking a connector is a physical side effect, and `Preparing` and `Finishing` are normal states a charger can dwell in.
+
 ## Channels
 
 ### `chargepoint`
@@ -100,6 +113,20 @@ Vendor, model, firmware version and serial number are published as thing propert
 Beyond the channels above, the connector also exposes the full OCPP 1.6 SampledValue set — aggregate and per-phase current/voltage, active and reactive power, power factor, frequency, active/reactive energy (register and interval, import and export), plus vehicle telemetry (`soc`, `rpm`, `temperature`) — and per-transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`) and the metering timestamps (`timestamp`, `timestamp-start`, `timestamp-stop`).
 
 For chargers that reject a TxProfile outside a transaction (e.g. Phoenix CHARX), set `forceTxDefaultProfile` on the connector so the charge limit is sent as a TxDefaultProfile.
+
+## Controlling a charge
+
+The connector's writable channels map to OCPP commands, and each updates only once the charger confirms the command — a rejected request leaves the channel showing the real state rather than the requested one.
+
+`charging` starts and stops a transaction: sending it `ON` issues a `RemoteStartTransaction`, `OFF` a `RemoteStopTransaction`.
+The transaction is started with the idTag from the connector's `remoteStartTag` (default `openhab`), which has to be authorized: by this binding through the `server` thing's `tags` list (empty accepts any tag), and by the charger itself if it enforces its own whitelist.
+So if `ON` does nothing, set `remoteStartTag` to a tag your charger accepts, or allow that tag on the charger.
+Most chargers also only start once a vehicle is plugged in, so a `RemoteStart` on an idle connector is often ignored.
+Because `charging` follows the charger's reported status, it also reads `ON` on its own whenever a transaction is running, however it was started.
+
+`charge-limit` caps the charging current: the value is sent as a `SetChargingProfile` and the channel reflects the applied limit once accepted.
+`pause` suspends charging with a 0 A profile without ending the transaction, and resumes at the previous limit when switched off — distinct from `charging`, which ends the session.
+`availability` takes the connector Operative or Inoperative, `unlock` releases the cable lock, and the `chargepoint`-level `reset` performs a soft reset of the whole charger.
 
 ## Full Example
 
