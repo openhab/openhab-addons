@@ -37,9 +37,7 @@ public class AtvBindingConstants {
     public static final String CONFIG_MAC = "macAddress";
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_NAME = "name";
-    public static final String CONFIG_AIRPLAY_PIN = "airplayPin";
-    public static final String CONFIG_COMPANION_PIN = "companionPin";
-    public static final String CONFIG_RAOP_PIN = "raopPin";
+    public static final String CONFIG_PIN = "pin";
     public static final String CONFIG_AIRPLAY_CREDENTIALS = "airplayCredentials";
     public static final String CONFIG_COMPANION_CREDENTIALS = "companionCredentials";
     public static final String CONFIG_RAOP_CREDENTIALS = "raopCredentials";
