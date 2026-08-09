@@ -89,13 +89,19 @@ public class ChargeTimeTransport implements OcppTransport {
         this.ocppListener = ocppListener;
         this.authPassword = authPassword;
         FeatureRepository featureRepository = new FeatureRepository();
+        InboundCoreHandler coreHandler = new InboundCoreHandler(ocppListener);
         // Feature profiles the server sends beyond Core: SmartCharging carries SetChargingProfile
         // (the charge-limit and pause path), RemoteTrigger carries TriggerMessage (status refresh on
         // connect and optional MeterValues polling). Without a profile registered, sending its
         // requests fails with UnsupportedFeatureException.
-        featureRepository.addFeatureProfile(new ServerCoreProfile(new InboundCoreHandler(ocppListener)));
+        featureRepository.addFeatureProfile(new ServerCoreProfile(coreHandler));
         featureRepository.addFeatureProfile(new ServerSmartChargingProfile());
         featureRepository.addFeatureProfile(new ServerRemoteTriggerProfile());
+        // Override the core BootNotification feature (a later addFeature wins on the action) so a
+        // charger whose model or vendor exceeds the OCPP CiString20 limit — or omits one — is accepted
+        // rather than rejected with a CALLERROR, which would leave it unable to come online. Handled by
+        // the same core handler once accepted.
+        featureRepository.addFeature(new TolerantBootNotificationFeature(coreHandler));
 
         JSONConfiguration configuration = JSONConfiguration.get();
         // SO_REUSEADDR so the server can rebind the port immediately (e.g. when replacing another
