@@ -97,7 +97,7 @@ public class RachioBindingConstants {
     public static final String PROPERTY_PERSON_ID = "personId";
     public static final String PROPERTY_PERSON_USER = "accountUserName";
     public static final String PROPERTY_PERSON_NAME = "accountFullName";
-    public static final String PROPERTY_PERSON_EMAIL = "accountEMail";
+    public static final String PROPERTY_PERSON_EMAIL = "accountEmail";
     public static final String PROPERTY_WEBHOOK_MODE = "webhookMode";
     public static final String PROPERTY_WEBHOOK_REGISTRATION_STATE = "webhookRegistrationState";
     public static final String PROPERTY_LAST_WEBHOOK_REGISTRATION_ATTEMPT = "lastWebhookRegistrationAttempt";

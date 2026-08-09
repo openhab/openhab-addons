@@ -265,12 +265,14 @@ public class RachioWebhookServlet extends HttpServlet {
                     releaseEventClaim(failedClaim, failedEvent);
                 }
                 logger.debug(
-                        "RachioWebhook: Exception processing validated webhook event; event remains retryable ({}): {}",
+                        "RachioWebhook: Exception processing validated webhook event; acknowledging to prevent upstream retries ({}): {}",
                         describeEvent(failedEvent), e.getMessage(), e);
             } else {
-                logger.debug("RachioWebhook: Exception processing validated webhook callback: {}", e.getMessage(), e);
+                logger.debug(
+                        "RachioWebhook: Exception processing validated webhook callback; acknowledging to prevent upstream retries: {}",
+                        e.getMessage(), e);
             }
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.setStatus(HttpServletResponse.SC_OK);
         }
     }
 
