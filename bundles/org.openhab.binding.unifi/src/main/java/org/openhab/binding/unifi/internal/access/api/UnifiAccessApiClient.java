@@ -158,7 +158,6 @@ public final class UnifiAccessApiClient implements Closeable {
     private volatile long bootstrapCacheTimeMs;
     private static final long BOOTSTRAP_CACHE_TTL_MS = 30_000; // 30 seconds
 
-
     /**
      * Drop the cached bootstrap so the next sync fetches fresh topology — used when a
      * WebSocket event reports a topology change (e.g. a device was deleted).

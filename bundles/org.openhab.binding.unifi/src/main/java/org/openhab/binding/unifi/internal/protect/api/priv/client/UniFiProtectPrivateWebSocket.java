@@ -504,10 +504,23 @@ public class UniFiProtectPrivateWebSocket {
                 return gson.fromJson(delta, type);
             }
             JsonObject merged = gson.toJsonTree(cached).getAsJsonObject();
-            for (var entry : delta.entrySet()) {
-                merged.add(entry.getKey(), entry.getValue());
-            }
+            mergeJson(merged, delta);
             return gson.fromJson(merged, type);
+        }
+
+        /**
+         * Recursive merge: deltas can patch a single member of a nested settings object, so
+         * nested objects merge member-wise while scalars, arrays and nulls replace.
+         */
+        private void mergeJson(JsonObject target, JsonObject delta) {
+            for (var entry : delta.entrySet()) {
+                var existing = target.get(entry.getKey());
+                if (entry.getValue() instanceof JsonObject deltaObj && existing instanceof JsonObject existingObj) {
+                    mergeJson(existingObj, deltaObj);
+                } else {
+                    target.add(entry.getKey(), entry.getValue());
+                }
+            }
         }
 
         /**

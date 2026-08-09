@@ -449,17 +449,22 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                     dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.hub-offline");
                 }
-            } else if (info.getStatus() != ThingStatus.ONLINE) {
-                dh.setOnline();
+            } else if (Boolean.TRUE.equals(hub.isOnline)) {
+                if (info.getStatus() != ThingStatus.ONLINE) {
+                    dh.setOnline();
+                }
             }
-        } else if (Boolean.TRUE.equals(door.isBindHub)) {
-            logger.debug("Door {} has devices but no resolvable hub; leaving status unchanged", door.id);
+            // isOnline == null: the topology omitted the hub's connectivity, say nothing
         } else if (door.doorLockRelayStatus != null || door.doorPositionStatus != null) {
-            // No hub in the door's own device group, but lock/position state is populated so it's
-            // served by a building level hub extension we can't link to a device
+            // No resolvable hub, but lock/position state is populated so something serves the
+            // door (e.g. a building level hub extension we can't link to a device)
             if (info.getStatus() != ThingStatus.ONLINE) {
                 dh.setOnline();
             }
+        } else if (Boolean.TRUE.equals(door.isBindHub)) {
+            // Devices exist (isBindHub is derived from a non-empty device group) but none
+            // resolve as the hub and no state is reported; don't guess either way
+            logger.debug("Door {} has devices but no resolvable hub; leaving status unchanged", door.id);
         } else if (info.getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
             // No devices and no state at all so the door can't report anything or take commands
             dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.no-hub");
