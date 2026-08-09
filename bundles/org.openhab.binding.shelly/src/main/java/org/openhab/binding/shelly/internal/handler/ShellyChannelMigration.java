@@ -49,41 +49,64 @@ public class ShellyChannelMigration {
         }
     }
 
-    private static final List<ChannelMigrationRule> CHANNEL_MIGRATION_RULES = List.of(
-            new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTWATTS),
-                    CHANNEL_METER_CURRENTPOWER, true),
-            new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALKWH),
-                    CHANNEL_METER_TOTALENERGY, true),
-            new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_TOTALRET),
-                    CHANNEL_EMETER_RETURNEDENERGY, true),
-            new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_REACTWATTS),
-                    CHANNEL_EMETER_REACTPOWER, false),
-            new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS),
-                    CHANNEL_DEVST_ACCUMULATEDPOWER, true),
-            new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL),
-                    CHANNEL_DEVST_TOTALENERGY, false),
-            new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED),
-                    CHANNEL_DEVST_ACCURETURNEDENERGY, false),
-            new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH),
-                    CHANNEL_DEVST_TOTALENERGY, false),
-            new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_NMETER, CHANNEL_NMETER_MTRESHHOLD),
-                    CHANNEL_NMETER_THRESHOLD, false),
-            new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_OUTPUT), null, true),
-            // Schema 6: energyHistMin1/2/3, energyAvgLast3Min and resetTotals are created as siblings
-            // of an existing anchor channel, so already-discovered Things pick them up automatically.
-            new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
-                    CHANNEL_METER_ENERGYHISTMIN1, false, ShellyChannelMigration::hasMinuteEnergyHistory),
-            new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
-                    CHANNEL_METER_ENERGYHISTMIN2, false, ShellyChannelMigration::hasMinuteEnergyHistory),
-            new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
-                    CHANNEL_METER_ENERGYHISTMIN3, false, ShellyChannelMigration::hasMinuteEnergyHistory),
-            new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
-                    CHANNEL_METER_ENERGYAVGLAST3MIN, false, ShellyChannelMigration::hasMinuteEnergyHistory),
-            // Per-meter reset only applies to non-3EM devices; 3EM resets once at the device level (below).
-            new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
-                    CHANNEL_EMETER_RESETTOTAL, false, ShellyChannelMigration::supportsPerMeterReset),
-            new ChannelMigrationRule(6, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER),
-                    CHANNEL_DEVST_RESETTOTAL, false, profile -> profile.is3EM));
+    private static final List<ChannelMigrationRule> CHANNEL_MIGRATION_RULES = buildChannelMigrationRules();
+
+    private static List<ChannelMigrationRule> buildChannelMigrationRules() {
+        List<ChannelMigrationRule> rules = new ArrayList<>(List.of(
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTWATTS),
+                        CHANNEL_METER_CURRENTPOWER, true),
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALKWH),
+                        CHANNEL_METER_TOTALENERGY, true),
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_TOTALRET),
+                        CHANNEL_EMETER_RETURNEDENERGY, true),
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_REACTWATTS),
+                        CHANNEL_EMETER_REACTPOWER, false),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS),
+                        CHANNEL_DEVST_ACCUMULATEDPOWER, true),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL),
+                        CHANNEL_DEVST_TOTALENERGY, false),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED),
+                        CHANNEL_DEVST_ACCURETURNEDENERGY, false),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH),
+                        CHANNEL_DEVST_TOTALENERGY, false),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_NMETER, CHANNEL_NMETER_MTRESHHOLD),
+                        CHANNEL_NMETER_THRESHOLD, false),
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_OUTPUT), null,
+                        true),
+                // Schema 6: energyHistMin1/2/3, energyAvgLast3Min and resetTotals are created as siblings
+                // of an existing anchor channel, so already-discovered Things pick them up automatically.
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_METER_ENERGYHISTMIN1, false, ShellyChannelMigration::hasMinuteEnergyHistory),
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_METER_ENERGYHISTMIN2, false, ShellyChannelMigration::hasMinuteEnergyHistory),
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_METER_ENERGYHISTMIN3, false, ShellyChannelMigration::hasMinuteEnergyHistory),
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_METER_ENERGYAVGLAST3MIN, false, ShellyChannelMigration::hasMinuteEnergyHistory),
+                // Per-meter reset only applies to non-3EM devices; 3EM resets once at the device level (below).
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_EMETER_RESETTOTAL, false, ShellyChannelMigration::supportsPerMeterReset),
+                new ChannelMigrationRule(6, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER),
+                        CHANNEL_DEVST_RESETTOTAL, false, profile -> profile.is3EM)));
+        for (int i = 1; i <= 4; i++) {
+            rules.addAll(lightGroupMigrationRules(i));
+        }
+        return List.copyOf(rules);
+    }
+
+    private static List<ChannelMigrationRule> lightGroupMigrationRules(int index) {
+        String oldGroup = CHANNEL_GROUP_LIGHT_CHANNEL + index;
+        String newGroup = CHANNEL_GROUP_LIGHT_INDEX + index;
+        return List.of(
+                new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_BRIGHTNESS),
+                        mkChannelId(newGroup, CHANNEL_BRIGHTNESS), false, ShellyChannelMigration::isGen1Rgbw2),
+                new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_AUTOON),
+                        mkChannelId(newGroup, CHANNEL_TIMER_AUTOON), false, ShellyChannelMigration::isGen1Rgbw2),
+                new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_AUTOOFF),
+                        mkChannelId(newGroup, CHANNEL_TIMER_AUTOOFF), false, ShellyChannelMigration::isGen1Rgbw2),
+                new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_ACTIVE),
+                        mkChannelId(newGroup, CHANNEL_TIMER_ACTIVE), false, ShellyChannelMigration::isGen1Rgbw2));
+    }
 
     // Gen2 switch/cover/pm1 report aenergy.by_minute; Gen1 /meter devices report counters[].
     // EM/EM1/3EM (Gen2) and /emeter EM/3EM (Gen1) report neither.
@@ -94,6 +117,10 @@ public class ShellyChannelMigration {
     // Gen1: only /emeter devices (EM) expose a reset API. 3EM resets at the device level, not per meter.
     private static boolean supportsPerMeterReset(ShellyDeviceProfile profile) {
         return !profile.is3EM && (profile.isGen2 || profile.isEMeter);
+    }
+
+    private static boolean isGen1Rgbw2(ShellyDeviceProfile profile) {
+        return profile.isRGBW2 && !profile.isGen2;
     }
 
     public static final int CHANNEL_SCHEMA_VERSION = CHANNEL_MIGRATION_RULES.stream()
@@ -165,9 +192,15 @@ public class ShellyChannelMigration {
             }
 
             if (!groupPrefix.isEmpty()) {
-                String newChannelId = (replacementChannelName != null && !replacementChannelName.isEmpty())
-                        ? groupPrefix + replacementChannelName
-                        : fullExistingId;
+                String newChannelId;
+                if (replacementChannelName == null || replacementChannelName.isEmpty()) {
+                    newChannelId = fullExistingId;
+                } else if (replacementChannelName.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR) >= 0) {
+                    // Replacement id is already a full "group#name" id (e.g. a group-level rename); use as-is.
+                    newChannelId = replacementChannelName;
+                } else {
+                    newChannelId = groupPrefix + replacementChannelName;
+                }
                 if (findChannel(existingChannels, newChannelId) == null) {
                     try {
                         Channel newChannel = ShellyChannelDefinitions.createChannel(thing.getThing(), newChannelId);

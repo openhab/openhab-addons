@@ -325,8 +325,10 @@ public class ShellyDeviceProfile {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
             List<ShellySettingsRgbwLight> lights = settings.lights;
-            return lights == null || lights.size() <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
-                    : CHANNEL_GROUP_LIGHT_CHANNEL + idx;
+            if (lights == null || lights.size() <= 1) {
+                return CHANNEL_GROUP_LIGHT_CONTROL;
+            }
+            return lightChannelGroupPrefix(isGen2) + idx;
         } else if (isLight) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {
