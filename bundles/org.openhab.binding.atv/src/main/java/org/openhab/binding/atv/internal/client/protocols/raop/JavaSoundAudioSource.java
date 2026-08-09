@@ -104,9 +104,7 @@ public final class JavaSoundAudioSource implements AudioSource {
         }
     }
 
-    /**
-     * Converts an already-open {@link AudioInputStream} to the requested format.
-     */
+    /** Converts an already-open {@link AudioInputStream} to the requested format. */
     public static JavaSoundAudioSource open(AudioInputStream input, int sampleRate, int channels, int sampleSize) {
         // Big-endian target so no byte swapping is needed in readFrames
         AudioFormat target = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, sampleSize * 8, channels,

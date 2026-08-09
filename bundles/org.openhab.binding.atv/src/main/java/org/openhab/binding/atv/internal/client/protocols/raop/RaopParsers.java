@@ -54,15 +54,11 @@ public final class RaopParsers {
         PROGRESS
     }
 
-    /**
-     * Encryption types supported by the RAOP sender.
-     */
+    /** Encryption types supported by the RAOP sender. */
     public static final Set<EncryptionType> SUPPORTED_ENCRYPTIONS = Set.of(EncryptionType.UNENCRYPTED,
             EncryptionType.MFISAP);
 
-    /**
-     * Audio properties advertised by a receiver via Zeroconf.
-     */
+    /** Audio properties advertised by a receiver via Zeroconf. */
     public record AudioProperties(int sampleRate, int channels, int sampleSize) {
     }
 

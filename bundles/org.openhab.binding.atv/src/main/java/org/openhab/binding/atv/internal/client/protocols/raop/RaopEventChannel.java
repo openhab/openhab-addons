@@ -70,9 +70,7 @@ final class RaopEventChannel implements AutoCloseable {
         LOGGER.debug("Event channel connected to {}:{}", address, port);
     }
 
-    /**
-     * Closes the channel.
-     */
+    /** Closes the channel. */
     @Override
     public void close() {
         closed = true;
@@ -117,10 +115,10 @@ final class RaopEventChannel implements AutoCloseable {
             HttpParser.ParseResult<HttpRequest> parsed = HttpParser.parseRequest(buffer);
             HttpRequest request = parsed.message();
             if (request == null) {
-                LOGGER.debug("Not enough data to parse request on event channel");
+                LOGGER.trace("Not enough data to parse request on event channel");
                 break;
             }
-            LOGGER.debug("Got message on event channel: {} {}", request.method(), request.path());
+            LOGGER.trace("Got message on event channel: {} {}", request.method(), request.path());
             buffer = parsed.remainder();
 
             Map<String, String> headers = new LinkedHashMap<>();

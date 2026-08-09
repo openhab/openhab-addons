@@ -143,7 +143,7 @@ public final class Atv {
                 for (String host : options.hosts()) {
                     hosts.add(InetAddress.getByName(host));
                 }
-                orchestrator = new UnicastScanner(hosts);
+                orchestrator = new UnicastScanner(hosts, options.knock());
             } else {
                 List<JmDNS> instances = createJmdnsInstances();
                 orchestrator = new JmdnsScanner(instances, false);
@@ -235,7 +235,7 @@ public final class Atv {
         AtvRuntime runtime = options.runtime() != null ? options.runtime() : AtvRuntime.defaultRuntime();
         Storage storage = options.storage() != null ? options.storage() : new MemoryStorage();
 
-        LOGGER.debug("Loading settings from {}", storage);
+        LOGGER.trace("Loading settings from {}", storage);
         return storage.getSettings(config).thenCompose(settings -> {
             AtvConfig configCopy = deepCopy(config);
             configCopy.apply(settings);

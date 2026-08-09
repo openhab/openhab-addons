@@ -30,9 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class LegacySrpClient extends AbstractSrpClient {
 
-    /**
-     * Creates a client with a secure-random private ephemeral.
-     */
+    /** Creates a client with a secure-random private ephemeral. */
     public LegacySrpClient() {
         this(secureRandomSupplier());
     }

@@ -160,3 +160,5 @@ Playback is synchronous - a `say` or `playSound` call blocks until the device fi
 ## Third-party Content
 
 The Apple TV client embedded in this binding (`org.openhab.binding.atv.internal.client`, including the MediaRemote protobuf definitions) was ported from [pyatv](https://github.com/postlund/pyatv) and is used under the MIT license; see the `NOTICE` file for the full license text.
+
+MP3 decoding for the audio sink is provided by the `mp3spi`, `jlayer` and `tritonus-share` Java Sound SPI implementations, used under the LGPL.

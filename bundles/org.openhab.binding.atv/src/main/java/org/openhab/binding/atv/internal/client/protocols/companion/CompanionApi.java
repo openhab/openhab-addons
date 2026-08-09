@@ -95,9 +95,7 @@ public final class CompanionApi implements CompanionProtocol.Listener {
         this.core = core;
     }
 
-    /**
-     * The current session identifier (0 before {@code _sessionStart}).
-     */
+    /** The current session identifier (0 before {@code _sessionStart}). */
     public long sid() {
         return sid;
     }
@@ -141,7 +139,7 @@ public final class CompanionApi implements CompanionProtocol.Listener {
 
     @Override
     public void eventReceived(String eventName, Map<String, Object> data) {
-        LOGGER.debug("Got event {} from device: {}", eventName, data);
+        LOGGER.trace("Got event {} from device: {}", eventName, data);
         dispatch(eventName, data);
     }
 
@@ -238,7 +236,7 @@ public final class CompanionApi implements CompanionProtocol.Listener {
                 touchStop();
                 textInputStop();
             } catch (Exception ex) {
-                LOGGER.debug("Ignoring error during disconnect: {}", ex.toString());
+                LOGGER.trace("Ignoring error during disconnect: {}", ex.toString());
             } finally {
                 synchronized (connectionLock) {
                     currentProtocol.stop();

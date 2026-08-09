@@ -51,9 +51,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class AirPlayV2StreamProtocol implements AirPlayStreamProtocol {
 
-    /**
-     * Time between feedback messages ({@code FEEDBACK_INTERVAL}).
-     */
+    /** Time between feedback messages ({@code FEEDBACK_INTERVAL}). */
     public static final Duration FEEDBACK_INTERVAL = Duration.ofSeconds(2);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AirPlayV2StreamProtocol.class);

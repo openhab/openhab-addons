@@ -115,7 +115,7 @@ public final class ListenerRegistry<L> {
                 try {
                     invocation.accept(listener);
                 } catch (RuntimeException e) {
-                    LOGGER.debug("Error notifying listener {}", listener, e);
+                    LOGGER.warn("Error notifying listener {}", listener, e);
                 }
             }));
         }

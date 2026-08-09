@@ -183,6 +183,14 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
                     Throwable cause = error.getCause();
                     LOGGER.debug("Protocol {} failed to connect: {}", setupData.protocol(),
                             cause != null ? cause.getMessage() : error.getMessage());
+                    // A protocol that failed part way through may have left a socket, reader thread or
+                    // heartbeat behind. Unregistered protocols are invisible to close(), so tear this one
+                    // down here or every reconnect leaks another.
+                    synchronized (this) {
+                        if (!protocolHandlers.containsKey(setupData.protocol())) {
+                            closeQuietly(setupData);
+                        }
+                    }
                 }
                 return done;
             }));
@@ -237,6 +245,15 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
         Collections.dictMerge(devinfo, setupData.deviceInfo().get());
     }
 
+    /** Runs a protocol's teardown, reporting but not propagating a failure. */
+    private void closeQuietly(SetupData setupData) {
+        try {
+            setupData.close().run();
+        } catch (RuntimeException e) {
+            LOGGER.warn("Error closing protocol {}", setupData.protocol(), e);
+        }
+    }
+
     private void wirePowerListener() {
         // Forward power events in case an interface exists for it
         try {
@@ -259,11 +276,7 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
         pushUpdates.stop();
 
         for (SetupData setupData : protocolHandlers.values()) {
-            try {
-                setupData.close().run();
-            } catch (RuntimeException e) {
-                LOGGER.debug("Error closing protocol {}", setupData.protocol(), e);
-            }
+            closeQuietly(setupData);
         }
 
         // Block access to everything in the public interface

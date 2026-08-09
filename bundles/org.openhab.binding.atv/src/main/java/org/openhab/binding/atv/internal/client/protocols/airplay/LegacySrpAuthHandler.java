@@ -102,9 +102,7 @@ public final class LegacySrpAuthHandler {
         return new HapCredentials(new byte[0], seed, new byte[0], identifier);
     }
 
-    /**
-     * The credentials this handler operates on.
-     */
+    /** The credentials this handler operates on. */
     public HapCredentials credentials() {
         return credentials;
     }

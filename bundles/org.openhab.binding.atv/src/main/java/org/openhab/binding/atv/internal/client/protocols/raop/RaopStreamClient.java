@@ -65,14 +65,10 @@ public final class RaopStreamClient {
     /** Number of packets stored in case retransmission is requested. */
     public static final int PACKET_BACKLOG_SIZE = 1000;
 
-    /**
-     * Metadata instance used when there is no metadata.
-     */
+    /** Metadata instance used when there is no metadata. */
     public static final MediaMetadata EMPTY_METADATA = new MediaMetadata(null, null, null, null, null);
 
-    /**
-     * Metadata shown to the receiver when nothing else is available.
-     */
+    /** Metadata shown to the receiver when nothing else is available. */
     public static final MediaMetadata MISSING_METADATA = new MediaMetadata("Streaming with openHAB", "openHAB",
             "AirPlay", null, null);
 
@@ -122,38 +118,28 @@ public final class RaopStreamClient {
         this.rng = rng;
     }
 
-    /**
-     * Sets the listener notified about playback state changes (may be {@code null}).
-     */
+    /** Sets the listener notified about playback state changes (may be {@code null}). */
     public void setListener(@Nullable RaopListener listener) {
         this.listener = listener;
     }
 
-    /**
-     * Returns the current playback information.
-     */
+    /** Returns the current playback information. */
     public PlaybackInfo playbackInfo() {
         MediaMetadata current = EMPTY_METADATA.equals(metadata) ? MISSING_METADATA : metadata;
         return new PlaybackInfo(current, context.position());
     }
 
-    /**
-     * Returns value mappings for the receiver's {@code /info} values.
-     */
+    /** Returns value mappings for the receiver's {@code /info} values. */
     public Map<String, Object> info() {
         return info;
     }
 
-    /**
-     * Returns the shared stream context.
-     */
+    /** Returns the shared stream context. */
     public StreamContext context() {
         return context;
     }
 
-    /**
-     * Closes the session and frees up resources.
-     */
+    /** Closes the session and frees up resources. */
     public void close() {
         protocol.teardown();
         stopSync();
@@ -229,9 +215,7 @@ public final class RaopStreamClient {
         return encryptionTypes.contains(EncryptionType.MFISAP) && modelName.startsWith("AirPort");
     }
 
-    /**
-     * Stops what is currently playing.
-     */
+    /** Stops what is currently playing. */
     public void stop() {
         LOGGER.debug("Stopping audio playback");
         isPlaying = false;
@@ -426,7 +410,7 @@ public final class RaopStreamClient {
             // If we are late, send some additional frames with hopes of catching up
             if (framesBehind >= AudioSource.FRAMES_PER_PACKET) {
                 int maxPackets = (int) Math.min(framesBehind / AudioSource.FRAMES_PER_PACKET, MAX_PACKETS_COMPENSATE);
-                LOGGER.debug("Compensating with {} packets ({} frames behind)", maxPackets, framesBehind);
+                LOGGER.trace("Compensating with {} packets ({} frames behind)", maxPackets, framesBehind);
                 long[] result = sendNumberOfPackets(source, socket, maxPackets);
                 stats.tick((int) result[0]);
                 if (result[1] == 0) {
@@ -437,7 +421,7 @@ public final class RaopStreamClient {
             // Log how long it took to send sample_rate amount of frames (should be 1s)
             if (stats.intervalCompleted()) {
                 long[] interval = stats.newInterval();
-                LOGGER.debug("Sent {} frames in {}s (current frames: {}, expected: {})", interval[1], interval[0] / 1e9,
+                LOGGER.trace("Sent {} frames in {}s (current frames: {}, expected: {})", interval[1], interval[0] / 1e9,
                         stats.totalFrames(), stats.expectedFrameCount());
             }
 
@@ -457,10 +441,10 @@ public final class RaopStreamClient {
                 }
 
                 if (numberSlowSeqno >= SLOW_WARNING_THRESHOLD) {
-                    LOGGER.debug("Too slow to keep up for seqno {} ({} vs {} => {})", currentSeqno, absTimeStream,
+                    LOGGER.trace("Too slow to keep up for seqno {} ({} vs {} => {})", currentSeqno, absTimeStream,
                             relToStart, diff);
                 } else {
-                    LOGGER.debug("Too slow to keep up for seqno {} ({} vs {} => {})", currentSeqno, absTimeStream,
+                    LOGGER.trace("Too slow to keep up for seqno {} ({} vs {} => {})", currentSeqno, absTimeStream,
                             relToStart, diff);
                 }
                 prevSlowSeqno = currentSeqno;
@@ -499,7 +483,7 @@ public final class RaopStreamClient {
                 rtsp.sessionId()).encode();
 
         if (socket.isClosed()) {
-            LOGGER.debug("Connection closed while streaming audio");
+            LOGGER.warn("Connection closed while streaming audio");
             return 0;
         }
 

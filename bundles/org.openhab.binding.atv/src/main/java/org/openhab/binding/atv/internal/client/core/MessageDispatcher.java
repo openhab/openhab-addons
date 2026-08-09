@@ -119,18 +119,18 @@ public class MessageDispatcher<T extends Enum<T>, M> {
             try {
                 matches = entry.filter().test(message);
             } catch (RuntimeException e) {
-                LOGGER.debug("Error in dispatch filter for type {}", type, e);
+                LOGGER.warn("Error in dispatch filter for type {}", type, e);
                 continue;
             }
             if (!matches) {
                 continue;
             }
-            LOGGER.debug("Dispatching message with type {} to {}", type, entry.listener());
+            LOGGER.trace("Dispatching message with type {} to {}", type, entry.listener());
             invocations.add(loop.submitVoid(() -> {
                 try {
                     entry.listener().accept(message);
                 } catch (RuntimeException e) {
-                    LOGGER.debug("Error during dispatch of type {}", type, e);
+                    LOGGER.warn("Error during dispatch of type {}", type, e);
                 }
             }));
         }

@@ -85,16 +85,12 @@ public enum AirPlayFlags {
         this.bit = bit;
     }
 
-    /**
-     * Returns the bit position of this flag in the 64-bit feature value.
-     */
+    /** Returns the bit position of this flag in the 64-bit feature value. */
     public int bit() {
         return bit;
     }
 
-    /**
-     * Returns the numeric value ({@code 1 << bit}) of this flag.
-     */
+    /** Returns the numeric value ({@code 1 << bit}) of this flag. */
     public long value() {
         return 1L << bit;
     }

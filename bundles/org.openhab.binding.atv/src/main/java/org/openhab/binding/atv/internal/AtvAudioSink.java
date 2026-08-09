@@ -32,8 +32,9 @@ import org.openhab.core.library.types.PercentType;
  *
  * <p>
  * Audio is streamed to the device over RAOP (AirPlay audio); both Apple TVs and speakers are RAOP
- * receivers. The stream is decoded locally, so uncompressed WAV/PCM is required. Playback is
- * synchronous: {@link #processSynchronously} blocks until the device has finished playing.
+ * receivers. The stream is decoded locally, so the accepted formats are those the JVM's Java Sound SPIs
+ * can read: WAV/PCM plus MP3 via the bundled decoder. Playback is synchronous:
+ * {@link #processSynchronously} blocks until the device has finished playing.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -86,7 +87,10 @@ public class AtvAudioSink extends AudioSinkSync {
 
     @Override
     public void setVolume(PercentType volume) {
-        this.volumeOverride = volume;
+        // openHAB brackets a volume-carrying playback with setVolume(new) ... setVolume(previous), where
+        // "previous" is whatever getVolume() reported - the Thing's configured default. Treating that
+        // restore as "no override" keeps a later change to the configured volume effective.
+        this.volumeOverride = volume.intValue() == handler.getNotificationVolume() ? null : volume;
     }
 
     @Override

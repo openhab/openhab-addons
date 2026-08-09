@@ -80,12 +80,14 @@ public final class Knock {
             CompletableFuture<@Nullable Void> task = new CompletableFuture<>();
             tasks.add(task);
             Thread.ofVirtual().name("atv-knock-" + address.getHostAddress() + ":" + port).start(() -> {
-                LOGGER.debug("Knocking at port {} on {}", port, address);
+                // Per-port knocks are best-effort and repeat every two seconds for the life of every
+                // scan, so they are traced rather than logged: a failure here means nothing on its own.
+                LOGGER.trace("Knocking at port {} on {}", port, address);
                 try (Socket socket = new Socket()) {
                     socket.connect(new InetSocketAddress(address, port), (int) connectTimeoutMs);
                     Thread.sleep(SLEEP_AFTER_CONNECT.toMillis());
                 } catch (IOException e) {
-                    LOGGER.debug("Knock at port {} on {} failed: {}", port, address, e.toString());
+                    LOGGER.trace("Knock at port {} on {} failed: {}", port, address, e.toString());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } finally {

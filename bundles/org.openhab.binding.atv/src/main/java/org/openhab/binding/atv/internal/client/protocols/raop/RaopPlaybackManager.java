@@ -76,30 +76,22 @@ public final class RaopPlaybackManager {
         this.rng = rng;
     }
 
-    /**
-     * Returns the RTSP context of the (potentially inactive) session.
-     */
+    /** Returns the RTSP context of the (potentially inactive) session. */
     public StreamContext context() {
         return context;
     }
 
-    /**
-     * Returns the stream client if a session is active, otherwise {@code null}.
-     */
+    /** Returns the stream client if a session is active, otherwise {@code null}. */
     public @Nullable RaopStreamClient streamClient() {
         return streamClient;
     }
 
-    /**
-     * Returns what is currently playing, or {@code null} when idle.
-     */
+    /** Returns what is currently playing, or {@code null} when idle. */
     public @Nullable PlaybackInfo playbackInfo() {
         return playbackInfo;
     }
 
-    /**
-     * Sets what is currently playing ({@code null} when idle).
-     */
+    /** Sets what is currently playing ({@code null} when idle). */
     public void setPlaybackInfo(@Nullable PlaybackInfo playbackInfo) {
         this.playbackInfo = playbackInfo;
     }
@@ -146,9 +138,7 @@ public final class RaopPlaybackManager {
         return client;
     }
 
-    /**
-     * Tears down and disconnects the current session.
-     */
+    /** Tears down and disconnects the current session. */
     public synchronized void teardown() {
         RaopStreamClient client = streamClient;
         if (client != null) {

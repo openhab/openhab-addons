@@ -15,6 +15,7 @@ package org.openhab.binding.atv.internal;
 import static org.openhab.binding.atv.internal.AtvBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,7 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,13 +46,16 @@ public class AtvHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
     private final FileHostService fileHostService;
-    private final AtvStateDescriptionProvider stateDescriptionProvider;
+    private final AtvDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final AtvDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @Activate
     public AtvHandlerFactory(@Reference FileHostService fileHostService,
-            @Reference AtvStateDescriptionProvider stateDescriptionProvider) {
+            @Reference AtvDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Reference AtvDynamicCommandDescriptionProvider commandDescriptionProvider) {
         this.fileHostService = fileHostService;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
     @Override
@@ -63,7 +68,8 @@ public class AtvHandlerFactory extends BaseThingHandlerFactory {
         if (!SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return null;
         }
-        AtvHandler handler = new AtvHandler(thing, fileHostService, stateDescriptionProvider);
+        AtvHandler handler = new AtvHandler(thing, fileHostService, stateDescriptionProvider,
+                commandDescriptionProvider);
         AtvAudioSink sink = new AtvAudioSink(handler);
         ServiceRegistration<AudioSink> registration = bundleContext.registerService(AudioSink.class, sink, null);
         audioSinkRegistrations.put(thing.getUID().toString(), registration);
@@ -72,11 +78,22 @@ public class AtvHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        ServiceRegistration<AudioSink> registration = audioSinkRegistrations
-                .remove(thingHandler.getThing().getUID().toString());
+        unregisterAudioSink(thingHandler.getThing().getUID().toString());
+        super.removeHandler(thingHandler);
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        // The base class does not run removeHandler on deactivation, so the sinks have to be dropped here
+        // or they stay registered against a dead bundle context.
+        Set.copyOf(audioSinkRegistrations.keySet()).forEach(this::unregisterAudioSink);
+        super.deactivate(componentContext);
+    }
+
+    private void unregisterAudioSink(String thingUID) {
+        ServiceRegistration<AudioSink> registration = audioSinkRegistrations.remove(thingUID);
         if (registration != null) {
             registration.unregister();
         }
-        super.removeHandler(thingHandler);
     }
 }

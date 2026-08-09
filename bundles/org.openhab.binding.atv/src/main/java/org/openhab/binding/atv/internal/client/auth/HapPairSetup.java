@@ -77,9 +77,7 @@ public final class HapPairSetup implements PairVerifyProcedure {
     private Stage stage = Stage.INITIAL;
     private byte @Nullable [] sessionKey;
 
-    /**
-     * Creates a regular (non-transient) pair-setup with fresh random keys.
-     */
+    /** Creates a regular (non-transient) pair-setup with fresh random keys. */
     public HapPairSetup() {
         this(false);
     }
@@ -119,9 +117,7 @@ public final class HapPairSetup implements PairVerifyProcedure {
         return bytes::clone;
     }
 
-    /**
-     * Our pairing identifier bytes.
-     */
+    /** Our pairing identifier bytes. */
     public byte[] pairingId() {
         return pairingId.clone();
     }
@@ -264,9 +260,7 @@ public final class HapPairSetup implements PairVerifyProcedure {
         return srp.verifyServerProof(proof);
     }
 
-    /**
-     * Derives session keys directly from the SRP shared secret, used by transient pairing after M4.
-     */
+    /** Derives session keys directly from the SRP shared secret, used by transient pairing after M4. */
     @Override
     public EncryptionKeys encryptionKeys(String salt, String outputInfo, String inputInfo) {
         if (stage == Stage.INITIAL || stage == Stage.M1_SENT) {
