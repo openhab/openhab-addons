@@ -301,7 +301,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         } else if (command instanceof PercentType percentTypeCommand) {
             zwaveCommand.value = handlePercentTypeCommand(channel, colorCap, channelConfig, percentTypeCommand);
         } else if (command instanceof DecimalType decimalCommand) {
-            zwaveCommand.value = decimalCommand.doubleValue();
+            zwaveCommand.value = decimalCommand.doubleValue() / channelConfig.factor;
         } else if (command instanceof DateTimeType dateTimeCommand) {
             throw new UnsupportedOperationException(dateTimeCommand.toString() + " is currently not supported");
         } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
