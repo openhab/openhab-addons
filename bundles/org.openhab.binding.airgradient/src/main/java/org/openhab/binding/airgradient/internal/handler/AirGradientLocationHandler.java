@@ -17,6 +17,7 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.config.AirGradientLocationConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
@@ -27,6 +28,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -45,6 +47,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AirGradientLocationHandler.class);
 
     private @NonNullByDefault({}) AirGradientLocationConfiguration locationConfig = null;
+    private @Nullable String cachedCapabilitySignature;
 
     public AirGradientLocationHandler(Thing thing) {
         super(thing);
@@ -135,6 +138,17 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     }
 
     public void setMeasurment(Measure measure) {
+        String capabilitySignature = DynamicChannelHelper
+                .getDynamicChannelCapabilitySignature(measure.getFirmwareVersion(), measure.getModel());
+        if (capabilitySignature == null || !capabilitySignature.equals(cachedCapabilitySignature)) {
+            ThingBuilder builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null, this::editThing,
+                    measure);
+            if (builder != null) {
+                updateThing(builder.build());
+            }
+            cachedCapabilitySignature = capabilitySignature;
+        }
+
         updateProperties(MeasureHelper.createProperties(measure));
         Map<String, State> states = MeasureHelper.createStates(measure);
         for (Map.Entry<String, State> entry : states.entrySet()) {

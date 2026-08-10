@@ -62,6 +62,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) RemoteAPIController apiController = null;
     private @NonNullByDefault({}) AirGradientAPIConfiguration apiConfig = null;
+    private @Nullable String cachedCapabilitySignature;
 
     public AirGradientLocalHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -175,6 +176,23 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             }
 
             Measure measure = measures.get(0);
+            LocalConfiguration localConfig = apiController.getConfig();
+            ThingBuilder builder = null;
+            String capabilitySignature = DynamicChannelHelper
+                    .getDynamicChannelCapabilitySignature(measure.getFirmwareVersion(), measure.getModel());
+            if (capabilitySignature == null || !capabilitySignature.equals(cachedCapabilitySignature)) {
+                builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null, this::editThing,
+                        measure);
+                if (localConfig != null) {
+                    builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, builder, this::editThing,
+                            localConfig);
+                }
+                cachedCapabilitySignature = capabilitySignature;
+            }
+            if (builder != null) {
+                updateThing(builder.build());
+            }
+
             updateProperties(MeasureHelper.createProperties(measure));
             Map<String, State> states = MeasureHelper.createStates(measure);
             for (Map.Entry<String, State> entry : states.entrySet()) {
@@ -183,12 +201,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                 }
             }
 
-            LocalConfiguration localConfig = apiController.getConfig();
             if (localConfig != null) {
-                // If we are able to read config, we add config channels
-                ThingBuilder builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, editThing());
-                updateThing(builder.build());
-
                 updateProperties(ConfigurationHelper.createProperties(localConfig));
                 Map<String, State> configStates = ConfigurationHelper.createStates(localConfig);
                 for (Map.Entry<String, State> entry : configStates.entrySet()) {
@@ -225,5 +238,9 @@ public class AirGradientLocalHandler extends BaseThingHandler {
 
     protected void setConfiguration(AirGradientAPIConfiguration config) {
         this.apiConfig = config;
+    }
+
+    protected void setApiController(RemoteAPIController apiController) {
+        this.apiController = apiController;
     }
 }
