@@ -16,8 +16,10 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -76,6 +78,7 @@ public class UniFiProtectPrivateWebSocket {
     private static final int INITIAL_RECONNECT_DELAY_MS = 1_000;
     private static final int MAX_RECONNECT_DELAY_MS = 60_000;
     private static final int CIRCUIT_BREAKER_DELAY_MS = 60_000;
+    private static final int BOOTSTRAP_REFRESH_TIMEOUT_SECONDS = 30;
 
     /**
      * Create UniFi Protect WebSocket client
@@ -133,15 +136,20 @@ public class UniFiProtectPrivateWebSocket {
                 request.setHeader("Cookie", authCookie);
             }
 
-            Future<Session> future = wsClient.connect(adapter, uri, request);
-
             CompletableFuture.runAsync(() -> {
                 try {
+                    // Catch up on what was missed BEFORE the socket is opened. Doing it afterwards
+                    // let a live update arrive first and then be overwritten by the older bootstrap
+                    // snapshot, and a failed refresh had no way to be retried while the new socket
+                    // stayed healthy. As part of the connect, a failure fails the attempt and
+                    // scheduleReconnect tries the whole sequence again.
+                    resyncBeforeConnect();
+
+                    Future<Session> future = wsClient.connect(adapter, uri, request);
                     session = future.get(10, TimeUnit.SECONDS);
                     reconnectAttempts.set(0);
                     logger.debug("WebSocket connected");
                     newFuture.complete(null);
-                    resyncIfReconnected();
                 } catch (Exception ex) {
                     logger.debug("WebSocket connection failed", ex);
                     newFuture.completeExceptionally(ex);
@@ -168,26 +176,17 @@ public class UniFiProtectPrivateWebSocket {
      * private-only stall leaves that socket connected, so nothing would push the recovered state
      * out. Hence: refresh the bootstrap, then notify the handler to sync devices from it.
      */
-    private void resyncIfReconnected() {
+    private void resyncBeforeConnect() throws ExecutionException, InterruptedException, TimeoutException {
         if (!resyncAfterConnect) {
             // First connect of this socket: the caller has just bootstrapped, nothing to catch up on.
             return;
         }
-        logger.debug("Refreshing bootstrap after WebSocket reconnect to pick up missed updates");
-        client.refreshBootstrap().whenComplete((bootstrap, ex) -> {
-            if (ex != null) {
-                // Leave the flag set so the next successful connect tries again. Clearing it on the
-                // attempt would let a single failed refresh drop the recovery entirely.
-                logger.debug("Bootstrap refresh after reconnect failed, will retry on next connect", ex);
-                return;
-            }
-            resyncAfterConnect = false;
-            try {
-                onReconnected.run();
-            } catch (RuntimeException e) {
-                logger.debug("Device sync after reconnect failed", e);
-            }
-        });
+        logger.debug("Refreshing bootstrap before reopening the WebSocket to pick up missed updates");
+        client.refreshBootstrap().get(BOOTSTRAP_REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        onReconnected.run();
+        // Only now: if either step threw, the connect attempt fails and is retried with the flag
+        // still set, rather than the recovery being quietly abandoned.
+        resyncAfterConnect = false;
     }
 
     /**
