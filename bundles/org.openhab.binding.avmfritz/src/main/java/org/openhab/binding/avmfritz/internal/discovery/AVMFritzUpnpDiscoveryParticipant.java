@@ -24,8 +24,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
@@ -51,7 +53,7 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzUpnpDiscoveryParticipant.class);
 
-    private boolean isAutoDiscoveryEnabled = true;
+    private volatile boolean isAutoDiscoveryEnabled = true;
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -65,10 +67,9 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
 
     private void activateOrModifyService(ComponentContext componentContext) {
         Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String autoDiscoveryPropertyValue = (String) properties.get("background");
-        if (autoDiscoveryPropertyValue != null && autoDiscoveryPropertyValue.length() != 0) {
-            isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
-        }
+        isAutoDiscoveryEnabled = ConfigParser.valueAsOrElse(
+                properties.get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY), Boolean.class,
+                isAutoDiscoveryEnabled);
     }
 
     @Override
