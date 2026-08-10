@@ -225,7 +225,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
 
         if (authenticator.authenticate(request) == null) {
             logger.debug("Streamable GET rejected: {} from {}", request.getRequestURI(), request.getRemoteAddr());
-            sendUnauthorized(response);
+            sendUnauthorized(request, response);
             return;
         }
 
@@ -313,7 +313,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
         String authenticatedUsername = authenticator.authenticate(request);
         if (authenticatedUsername == null) {
             logger.debug("Streamable POST rejected: {} from {}", request.getRequestURI(), request.getRemoteAddr());
-            sendUnauthorized(response);
+            sendUnauthorized(request, response);
             return;
         }
 
@@ -456,7 +456,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
         }
         traceRequest(request);
         if (authenticator.authenticate(request) == null) {
-            sendUnauthorized(response);
+            sendUnauthorized(request, response);
             return;
         }
         String sessionId = request.getHeader(HttpHeaders.MCP_SESSION_ID);
@@ -505,11 +505,8 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
      * response buffer — which can strip the {@code WWW-Authenticate} header and
      * break OAuth discovery in the MCP client.
      */
-    private void sendUnauthorized(HttpServletResponse response) throws IOException {
-        McpCloudWebhookService hook = cloudWebhook;
-        String hookUrl = hook != null ? hook.getPublicUrl() : null;
-        String metadataUrl = hookUrl != null ? hookUrl + "/.well-known/oauth-protected-resource"
-                : OAuthMetadataServlet.PATH_PROTECTED_RESOURCE;
+    private void sendUnauthorized(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String metadataUrl = OAuthMetadataServlet.protectedResourceMetadataUrl(request, cloudWebhook);
         String challenge = "Bearer realm=\"openhab-mcp\", resource_metadata=\"" + metadataUrl + "\"";
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setHeader("WWW-Authenticate", challenge);
