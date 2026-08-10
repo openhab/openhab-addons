@@ -14,6 +14,7 @@ package org.openhab.binding.hue.internal.handler;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -164,9 +165,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     // smart chime devices use write-only volume and duration channels, so these are their default values
     private static final PercentType DEFAULT_SOUND_VOLUME = new PercentType(50);
     private static final QuantityType<?> DEFAULT_ALARM_DURATION = QuantityType.valueOf(3, Units.SECOND);
-
-    private static final double DIMMING_DELTA = 20.0; // dimming change for IncreaseDecreaseType commands
-    private static final int MIREK_DELTA = 70; // mirek change for IncreaseDecreaseType commands
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -449,13 +447,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-                    putResource = new Resource(lightResourceType).setMirekDelta(increaseDecreaseCommand, MIREK_DELTA);
-                    break;
-                }
-                if (command instanceof OnOffType) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
+                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand,
+                            cache.getColorTemperaturePercentState());
+                } else if (command instanceof OnOffType) {
                     command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
-                    // fall through
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
                 break;
@@ -474,11 +470,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-                    putResource.setDimmingDelta(increaseDecreaseCommand, DIMMING_DELTA);
-                    double sign = IncreaseDecreaseType.INCREASE == increaseDecreaseCommand ? 1.0 : -1.0;
-                    command = Setters.getHardOnOff(putResource, sign * DIMMING_DELTA, false, cache); // avoid "soft off"
-                } else if (command instanceof PercentType brightnessCommand) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
+                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, cache.getBrightnessState());
+                }
+                if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
                     double brightnessAbsolute = brightnessCommand.doubleValue();
                     command = Setters.getHardOnOff(putResource, brightnessAbsolute, true, cache); // avoid "soft off"
@@ -719,6 +714,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private ResourceType getExtendedResourceType(ResourceType baseType) {
         return extendedResourceTypes.get(baseType) instanceof ResourceType extendedType ? extendedType : baseType;
+    }
+
+    private Command translateIncreaseDecreaseCommand(IncreaseDecreaseType command, State currentValue) {
+        if (currentValue instanceof PercentType currentPercent) {
+            int delta = command == IncreaseDecreaseType.INCREASE ? 10 : -10;
+            double newPercent = Math.min(100.0, Math.max(0.0, currentPercent.doubleValue() + delta));
+            return new PercentType(new BigDecimal(newPercent, Resource.PERCENT_MATH_CONTEXT));
+        }
+
+        return command;
     }
 
     private void refreshAllChannels() {
