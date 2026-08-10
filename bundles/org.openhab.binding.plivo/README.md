@@ -208,7 +208,8 @@ If using a reverse proxy, you must forward this entire path prefix.
 
 | Path                                  | Method | Purpose                                                |
 | ------------------------------------- | ------ | ------------------------------------------------------ |
-| `/plivo/callback/{thingUID}/sms`      | POST   | Incoming SMS/MMS/WhatsApp messages                     |
+| `/plivo/callback/{thingUID}/sms`      | POST   | Incoming SMS/MMS messages                              |
+| `/plivo/callback/{thingUID}/whatsapp` | POST   | Incoming WhatsApp messages                             |
 | `/plivo/callback/{thingUID}/voice`    | POST   | Incoming voice calls                                   |
 | `/plivo/callback/{thingUID}/gather`   | POST   | DTMF input callbacks                                   |
 | `/plivo/callback/{thingUID}/status`   | POST   | Message/call status updates                            |
@@ -218,7 +219,7 @@ If using a reverse proxy, you must forward this entire path prefix.
 The `{thingUID}` is the full thing UID (e.g. `plivo:phone:myaccount:myphone`).
 The `{uuid}` is a randomly generated identifier for temporary media entries.
 
-Incoming POST callbacks are authenticated using Plivo's `X-Plivo-Signature-V3` header; requests that fail signature validation are rejected with HTTP 403.
+Incoming callbacks are authenticated with Plivo's request signature. The binding validates every signature family Plivo may send, both the V3 family (`X-Plivo-Signature-V3` and `X-Plivo-Signature-Ma-V3`, used for voice and messaging) and the V2 family (`X-Plivo-Signature-V2` and `X-Plivo-Signature-Ma-V2`, which Plivo documents for messaging), and rejects requests that fail validation with HTTP 403.
 
 **Example full URLs** (assuming `publicUrl` is `https://my.domain.com`):
 

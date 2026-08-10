@@ -63,7 +63,7 @@ public class PlivoPhoneHandler extends BaseThingHandler {
 
     private PlivoPhoneConfiguration config = new PlivoPhoneConfiguration();
     private String phoneNumber = "";
-    private @Nullable Future<?> initializeTask;
+    private volatile @Nullable Future<?> initializeTask;
 
     public PlivoPhoneHandler(Thing thing, PlivoCallbackServlet callbackServlet, ItemRegistry itemRegistry) {
         super(thing);
@@ -93,22 +93,27 @@ public class PlivoPhoneHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        Future<?> initTask = initializeTask;
-        if (initTask != null) {
-            initTask.cancel(true);
-            initializeTask = null;
-        }
+        cancelInitializeTask();
         callbackServlet.unregisterHandler(thing.getUID().getAsString());
         super.dispose();
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        cancelInitializeTask();
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             initializeTask = scheduler.submit(this::asyncInitialize);
         } else {
             callbackServlet.unregisterHandler(thing.getUID().getAsString());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    private void cancelInitializeTask() {
+        Future<?> initTask = initializeTask;
+        if (initTask != null) {
+            initTask.cancel(true);
+            initializeTask = null;
         }
     }
 
@@ -370,6 +375,13 @@ public class PlivoPhoneHandler extends BaseThingHandler {
         try {
             configureWebhooksOnPlivo();
         } catch (PlivoApiException e) {
+            if (Thread.currentThread().isInterrupted() || e.getCause() instanceof InterruptedException) {
+                // A newer initialization (bridge status change or webhook availability) cancelled this
+                // one, so leave the status for the superseding run rather than reporting the
+                // interruption as a communication error.
+                logger.debug("Auto-configuration for {} was superseded by a newer initialization", phoneNumber);
+                return;
+            }
             ThingStatusDetail detail = e.isConfigurationError() ? ThingStatusDetail.CONFIGURATION_ERROR
                     : ThingStatusDetail.COMMUNICATION_ERROR;
             updateStatus(ThingStatus.OFFLINE, detail, e.getMessage());
@@ -386,10 +398,7 @@ public class PlivoPhoneHandler extends BaseThingHandler {
      * automatic application configuration is retried against the now-available URL.
      */
     public void onWebhookUrlAvailable() {
-        Future<?> initTask = initializeTask;
-        if (initTask != null) {
-            initTask.cancel(true);
-        }
+        cancelInitializeTask();
         initializeTask = scheduler.submit(this::asyncInitialize);
     }
 
@@ -410,7 +419,11 @@ public class PlivoPhoneHandler extends BaseThingHandler {
         String messageUrl = getWebhookUrl(WEBHOOK_SMS);
         String statusUrl = getWebhookUrl(WEBHOOK_STATUS);
         if (answerUrl == null || messageUrl == null || statusUrl == null) {
-            throw new PlivoApiException("@text/offline.configuration-error.webhook-url-unavailable", true);
+            // No inbound webhook URL is available yet. Outbound SMS, WhatsApp, and calls do not need
+            // one, so this is not an error and the Thing stays ONLINE. If a cloud webhook URL becomes
+            // available later, onWebhookUrlAvailable() retries this configuration.
+            logger.debug("No webhook URL available for {} yet; skipping inbound auto-configuration", phoneNumber);
+            return;
         }
         // Plivo application names accept only alphanumerics, hyphens, and underscores, so the Thing
         // UID (which contains colons) must be sanitized before it can be used as a stable app name.

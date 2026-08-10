@@ -19,6 +19,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -81,13 +83,12 @@ public class PlivoCallbackServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static final String CONTENT_TYPE_XML = "application/xml";
-    // Voice callbacks are signed with the (sub)account signature (V3); messaging callbacks
-    // (SMS/MMS/WhatsApp/status) are signed with the main-account signature (Ma-V3). Both share
-    // the same nonce header and canonical string, so the validator is asked to match against
-    // whichever signatures Plivo supplied for the endpoint.
     private static final String PLIVO_SIGNATURE_V3_HEADER = "X-Plivo-Signature-V3";
     private static final String PLIVO_SIGNATURE_MA_V3_HEADER = "X-Plivo-Signature-Ma-V3";
-    private static final String PLIVO_NONCE_HEADER = "X-Plivo-Signature-V3-Nonce";
+    private static final String PLIVO_V3_NONCE_HEADER = "X-Plivo-Signature-V3-Nonce";
+    private static final String PLIVO_SIGNATURE_V2_HEADER = "X-Plivo-Signature-V2";
+    private static final String PLIVO_SIGNATURE_MA_V2_HEADER = "X-Plivo-Signature-Ma-V2";
+    private static final String PLIVO_V2_NONCE_HEADER = "X-Plivo-Signature-V2-Nonce";
     private static final int PROXY_TIMEOUT_SECONDS = 15;
     private static final int CLEANUP_INTERVAL_SECONDS = 60;
 
@@ -127,7 +128,8 @@ public class PlivoCallbackServlet extends HttpServlet {
         callXmlCache.clear();
         try {
             httpClient.stop();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logger.debug("Error stopping media HttpClient during deactivation: {}", e.getMessage());
         }
     }
 
@@ -267,21 +269,19 @@ public class PlivoCallbackServlet extends HttpServlet {
         PlivoApiClient client = accountHandler != null ? accountHandler.getApiClient() : null;
 
         if (WEBHOOK_ANSWER.equals(endpoint)) {
-            // Plivo fetches the answer XML from a signed URL that carries the one-shot answer token
-            // in its query string. Validate the V3 signature (over that full URL) when Plivo sends
-            // the signature headers.
-            if (hasSignatureHeaders(req)) {
-                if (client == null) {
-                    logger.debug("Rejecting answer callback for {}: account not ready to validate signature", thingUID);
-                    resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Account not ready");
-                    return;
-                }
-                String answerUrl = getExternalRequestUrl(req, handler, WEBHOOK_ANSWER, true);
-                if (!validateSignature(req, params, answerUrl, client.getAuthToken(), false)) {
-                    logger.debug("Invalid Plivo signature for answer request to {}", answerUrl);
-                    resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid signature");
-                    return;
-                }
+            // Plivo signs voice answer callbacks with the V3 signature, so require a valid one
+            // before serving (and before consuming the one-shot token), like the other endpoints.
+            // The token rides in the URL query, so only the POST body params go to the validator.
+            if (client == null) {
+                logger.debug("Rejecting answer callback for {}: account not ready to validate signature", thingUID);
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Account not ready");
+                return;
+            }
+            String answerUrl = getExternalRequestUrl(req, handler, WEBHOOK_ANSWER, true);
+            if (!validateSignature(req, extractBodyParameters(req), answerUrl, client.getAuthToken(), false)) {
+                logger.debug("Invalid or missing Plivo signature for answer request to {}", answerUrl);
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid signature");
+                return;
             }
             serveCallXml(req, resp, handler);
             return;
@@ -295,7 +295,7 @@ public class PlivoCallbackServlet extends HttpServlet {
         boolean messaging = WEBHOOK_SMS.equals(endpoint) || WEBHOOK_WHATSAPP.equals(endpoint)
                 || WEBHOOK_STATUS.equals(endpoint);
         String requestUrl = getExternalRequestUrl(req, handler, endpoint, false);
-        if (!validateSignature(req, params, requestUrl, client.getAuthToken(), messaging)) {
+        if (!validateSignature(req, extractBodyParameters(req), requestUrl, client.getAuthToken(), messaging)) {
             logger.debug("Invalid Plivo signature for request to {}", requestUrl);
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid signature");
             return;
@@ -524,6 +524,31 @@ public class PlivoCallbackServlet extends HttpServlet {
     }
 
     /**
+     * Returns only the POST body parameters, excluding any that also appear in the query string. The
+     * servlet merges query-string and body parameters, but the signed string counts query parameters
+     * in the URL portion and body parameters separately, so a parameter present in the query (such as
+     * the {@code /answer} token) must not be counted again as a body parameter.
+     */
+    private Map<String, String> extractBodyParameters(HttpServletRequest req) {
+        Map<String, String> params = extractParameters(req);
+        String query = req.getQueryString();
+        if (query != null && !query.isEmpty()) {
+            for (String pair : query.split("&")) {
+                int eq = pair.indexOf('=');
+                String rawKey = eq >= 0 ? pair.substring(0, eq) : pair;
+                String key;
+                try {
+                    key = URLDecoder.decode(rawKey, StandardCharsets.UTF_8);
+                } catch (IllegalArgumentException e) {
+                    key = rawKey;
+                }
+                params.remove(key);
+            }
+        }
+        return params;
+    }
+
+    /**
      * Returns the externally-visible request URL for signature validation, which must
      * byte-match the URL Plivo signed. That is the webhook URL the binding registered
      * (cloud or publicUrl based), falling back to the raw request URL. When
@@ -550,15 +575,6 @@ public class PlivoCallbackServlet extends HttpServlet {
     }
 
     /**
-     * Returns true if the request carries a V3-family signature header and the nonce header.
-     */
-    private boolean hasSignatureHeaders(HttpServletRequest req) {
-        boolean hasSignature = req.getHeader(PLIVO_SIGNATURE_V3_HEADER) != null
-                || req.getHeader(PLIVO_SIGNATURE_MA_V3_HEADER) != null;
-        return hasSignature && req.getHeader(PLIVO_NONCE_HEADER) != null;
-    }
-
-    /**
      * Validates the request signature against the signatures Plivo supplied. Messaging callbacks are
      * signed with the main-account signature ({@code X-Plivo-Signature-Ma-V3}) and voice callbacks
      * with the (sub)account signature ({@code X-Plivo-Signature-V3}); the expected header for the
@@ -566,11 +582,17 @@ public class PlivoCallbackServlet extends HttpServlet {
      */
     private boolean validateSignature(HttpServletRequest req, Map<String, String> params, String url, String authToken,
             boolean messaging) {
-        String nonce = req.getHeader(PLIVO_NONCE_HEADER);
+        String v3Nonce = req.getHeader(PLIVO_V3_NONCE_HEADER);
         String v3 = req.getHeader(PLIVO_SIGNATURE_V3_HEADER);
         String maV3 = req.getHeader(PLIVO_SIGNATURE_MA_V3_HEADER);
-        String combined = messaging ? joinSignatures(maV3, v3) : joinSignatures(v3, maV3);
-        return PlivoSignatureValidator.validate(url, params, combined, nonce, authToken);
+        String v3Combined = messaging ? joinSignatures(maV3, v3) : joinSignatures(v3, maV3);
+        if (PlivoSignatureValidator.validateV3(url, params, v3Combined, v3Nonce, authToken)) {
+            return true;
+        }
+        String v2Nonce = req.getHeader(PLIVO_V2_NONCE_HEADER);
+        String v2Combined = joinSignatures(req.getHeader(PLIVO_SIGNATURE_MA_V2_HEADER),
+                req.getHeader(PLIVO_SIGNATURE_V2_HEADER));
+        return PlivoSignatureValidator.validateV2(url, v2Combined, v2Nonce, authToken);
     }
 
     private @Nullable String joinSignatures(@Nullable String primary, @Nullable String secondary) {
