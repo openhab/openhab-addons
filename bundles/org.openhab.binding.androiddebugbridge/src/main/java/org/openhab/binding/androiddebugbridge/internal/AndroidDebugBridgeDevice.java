@@ -712,7 +712,24 @@ public class AndroidDebugBridgeDevice {
         return currentSocket != null && currentSocket.isConnected();
     }
 
+    /**
+     * Establish a connection, replacing any current one.
+     *
+     * Serialized with the shell commands and with {@link #reconnectForRetry()}: this starts by
+     * disconnecting, so two concurrent calls would otherwise tear down the connection the other one
+     * is still establishing. {@link #disconnect()} deliberately stays outside the lock, since
+     * aborting a running command is exactly what some of its callers need.
+     */
     public void connect() throws AndroidDebugBridgeDeviceException, InterruptedException {
+        commandLock.lock();
+        try {
+            connectInternal();
+        } finally {
+            commandLock.unlock();
+        }
+    }
+
+    private void connectInternal() throws AndroidDebugBridgeDeviceException, InterruptedException {
         this.disconnect();
         AdbConnection adbConnection;
         Socket sock;
@@ -855,20 +872,16 @@ public class AndroidDebugBridgeDevice {
     /**
      * Reconnect for a retry, without disturbing anything else that is running.
      *
-     * Taken under the command lock so no shell command can be in flight: a plain
-     * {@link #disconnect()} here would cancel whatever future another operation had just installed
-     * in {@code commandFuture}, making its {@code get()} throw {@link java.util.concurrent.CancellationException}
-     * in a caller that does not expect it. {@code disconnect()} keeps aborting running commands,
-     * which is what its other callers want.
+     * Kept as its own name because the reason differs from an ordinary reconnect: calling
+     * {@link #disconnect()} directly here would cancel whatever future another operation had just
+     * installed in {@code commandFuture}, making its {@code get()} throw
+     * {@link java.util.concurrent.CancellationException} in a caller that does not expect it.
+     * {@code disconnect()} keeps aborting running commands, which is what its other callers want.
      */
     public void reconnectForRetry() throws AndroidDebugBridgeDeviceException, InterruptedException {
-        commandLock.lock();
-        try {
-            disconnect();
-            connect();
-        } finally {
-            commandLock.unlock();
-        }
+        // connect() already disconnects first and takes the same lock, so this is simply a
+        // connect that cannot interleave with a shell command or with another connect.
+        connect();
     }
 
     public void disconnect() {
