@@ -73,7 +73,8 @@ public class TypingCmd {
 
         Map<String, ClassContainer> fileContainerMap = new HashMap<String, ClassContainer>();
         Set<String> imports = new HashSet<String>();
-        // Collect Bundle Classes
+
+        // 1. The bundle collector is converting/dumping the handled class and is collecting all used/imported class
         Map<String, ClassContainer> bundleClassMap = collector.collectBundleClasses("org.openhab");
         for (ClassContainer container : bundleClassMap.values()) {
             ClassConverter converter = new ClassConverter(container);
@@ -82,9 +83,12 @@ public class TypingCmd {
             dumpClassContentToFile(classBody, container, outputPath, fileContainerMap);
         }
 
+        // 2. The scope converter is converting/dumping all classes directly used in scope and is collecting all
+        // used/imported class
         Collection<String> _imports = dumpScope(outputPath);
         imports.addAll(_imports);
 
+        // 3. Finally, all collected imports are dumped (org.openhab is filtered out, because it was already handled.)
         imports = imports.stream().filter(i -> !i.startsWith("org.openhab")).collect(Collectors.toSet());
         Map<String, ClassContainer> reflectionClassMap = collector.collectReflectionClasses(imports);
         for (ClassContainer container : reflectionClassMap.values()) {
@@ -104,68 +108,71 @@ public class TypingCmd {
     private Collection<String> dumpScope(Path outputPath) throws IOException {
         Map<String, String> imports = new HashMap<String, String>();
         String identifier = "pythonscripting-cli-" + UUID.randomUUID().toString();
-        ScriptEngineContainer container = scriptEngineManager.createScriptEngine(PythonScriptEngineFactory.SCRIPT_TYPE,
-                identifier);
-        if (container != null) {
-            StringBuilder scopeBody = new StringBuilder();
-            ScriptEngine engine = container.getScriptEngine();
+        try {
+            ScriptEngineContainer container = scriptEngineManager
+                    .createScriptEngine(PythonScriptEngineFactory.SCRIPT_TYPE, identifier);
+            if (container != null) {
+                StringBuilder scopeBody = new StringBuilder();
+                ScriptEngine engine = container.getScriptEngine();
 
-            Map<String, Object> scope = ((PythonScriptEngine) engine).getScope();
-            for (Entry<String, Object> entry : scope.entrySet()) {
-                Object value = entry.getValue();
-                String packageName;
-                String pythonClassName;
-                String pythonModuleName;
-                String definition;
+                Map<String, Object> scope = ((PythonScriptEngine) engine).getScope();
+                for (Entry<String, Object> entry : scope.entrySet()) {
+                    Object value = entry.getValue();
+                    String packageName;
+                    String pythonClassName;
+                    String pythonModuleName;
+                    String definition;
 
-                if (value instanceof Class) {
-                    packageName = ((Class) value).getName();
-                    pythonClassName = ClassContainer.parsePythonClassName(packageName);
-                    pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
-                    definition = entry.getKey() + ": Type = _" + pythonClassName;
-                } else {
-                    Class<? extends Object> cls = value.getClass();
-                    packageName = value.getClass().getName();
-
-                    if (packageName
-                            .equals("org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker")) {
-                        packageName = "org.openhab.core.automation.module.script.LifecycleScriptExtensionProvider_LifecycleTracker";
-                    } else if (packageName.endsWith("Impl") || packageName.endsWith("Delegate")) {
-                        cls = value.getClass().getInterfaces()[0];
-                        packageName = cls.getName();
-                    }
-
-                    pythonClassName = ClassContainer.parsePythonClassName(packageName);
-                    pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
-
-                    if (cls.isEnum()) {
-                        definition = entry.getKey() + ": _" + pythonClassName + " = " + "_" + pythonClassName + "."
-                                + entry.getKey();
+                    if (value instanceof Class) {
+                        packageName = ((Class) value).getName();
+                        pythonClassName = ClassContainer.parsePythonClassName(packageName);
+                        pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
+                        definition = entry.getKey() + ": Type = _" + pythonClassName;
                     } else {
-                        definition = entry.getKey() + ": _" + pythonClassName;
+                        Class<? extends Object> cls = value.getClass();
+                        packageName = value.getClass().getName();
+
+                        if (packageName
+                                .equals("org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker")) {
+                            packageName = "org.openhab.core.automation.module.script.LifecycleScriptExtensionProvider_LifecycleTracker";
+                        } else if (packageName.endsWith("Impl") || packageName.endsWith("Delegate")) {
+                            cls = value.getClass().getInterfaces()[0];
+                            packageName = cls.getName();
+                        }
+
+                        pythonClassName = ClassContainer.parsePythonClassName(packageName);
+                        pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
+
+                        if (cls.isEnum()) {
+                            definition = entry.getKey() + ": _" + pythonClassName + " = " + "_" + pythonClassName + "."
+                                    + entry.getKey();
+                        } else {
+                            definition = entry.getKey() + ": _" + pythonClassName;
+                        }
                     }
+
+                    imports.put(packageName,
+                            "from " + pythonModuleName + " import " + pythonClassName + " as _" + pythonClassName);
+
+                    String classUrl = ClassConverter.buildDocumentationLink(packageName);
+
+                    scopeBody.append(definition);
+                    scopeBody.append("\n");
+                    scopeBody.append("\"\"\"\n");
+                    scopeBody.append("Java class: ").append(packageName).append("\n\n");
+                    scopeBody.append("Java doc: ").append(classUrl).append("\n");
+                    scopeBody.append("\"\"\"\n\n");
                 }
 
-                imports.put(packageName,
-                        "from " + pythonModuleName + " import " + pythonClassName + " as _" + pythonClassName);
+                scopeBody.insert(0, "\n\n");
+                scopeBody.insert(0, "from typing import Type");
+                scopeBody.insert(0, ClassConverter.buildClassImports(imports.values()));
 
-                String classUrl = ClassConverter.buildDocumentationLink(packageName);
-
-                scopeBody.append(definition);
-                scopeBody.append("\n");
-                scopeBody.append("\"\"\"\n");
-                scopeBody.append("Java class: ").append(packageName).append("\n\n");
-                scopeBody.append("Java doc: ").append(classUrl).append("\n");
-                scopeBody.append("\"\"\"\n\n");
+                dumpContentToFile(scopeBody.toString(), outputPath.resolve("scope.py"));
             }
-
-            scopeBody.insert(0, "\n\n");
-            scopeBody.insert(0, "from typing import Type");
-            scopeBody.insert(0, ClassConverter.buildClassImports(imports.values()));
-
-            dumpContentToFile(scopeBody.toString(), outputPath.resolve("scope.py"));
+        } finally {
+            scriptEngineManager.removeEngine(identifier);
         }
-        scriptEngineManager.removeEngine(identifier);
 
         return imports.keySet();
     }
