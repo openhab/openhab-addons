@@ -1160,6 +1160,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                 break;
             case SMART_DETECT:
             case SMART_DETECT_LINE:
+            case SMART_DETECT_LOITER_ZONE:
             case SMART_AUDIO_DETECT:
                 thumbnailChannel = CHANNEL_SMART_DETECT_THUMBNAIL;
                 break;
