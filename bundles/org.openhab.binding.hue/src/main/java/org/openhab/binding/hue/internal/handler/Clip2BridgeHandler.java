@@ -1216,44 +1216,44 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Check if the given device requires the off transition work-around. If it does, add the parent
-     * room/zone id to the set of ids requiring the off transition work-around.
+     * Check if the given device requires the off transition work-around. If it does, add its resource id
+     * to the set of ids requiring the off transition work-around.
      *
-     * @param parentId the id of the parent room/zone.
      * @param device the device resource to check.
      */
-    private void checkDevice(String parentId, Resource device) {
+    private void checkDevice(Resource device) {
         ProductData productData = device.getProductData();
         if (productData != null) {
             String modelId = productData.getModelId();
             if (Clip2ThingHandler.OFF_TRANSITION_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
-                idsRequiringOffTransitionWorkaround.add(parentId);
-                logger.debug("{} -> enabled off transition work-around for {}", parentId, modelId);
+                idsRequiringOffTransitionWorkaround.add(device.getId());
+                logger.debug("Enabled off transition work-around for {} ({})", device.getId(), modelId);
             }
         }
     }
 
     /**
-     * Recursively check all children of the given room/zone for any device that requires the off transition
-     * work-around. If any child device requires the work-around, add the parent room/zone id to the set of
-     * ids requiring the off transition work-around.
-     *
+     * Recursively check all children of the given room/zone for any device requiring the off transition
+     * work- around. If so, add the parent room/zone id to the set of ids requiring it.
+     * 
+     * @param roomZone the room/zone resource to check.
      * @param parentId the id of the parent room/zone.
      * @param mapRoomsZones a map of all rooms/zones by their id.
-     * @param roomZone the room/zone resource to check.
      */
-    private void checkChildren(String parentId, Map<String, Resource> mapRoomsZones, Resource roomZone) {
+    private void checkChildren(Resource roomZone, String parentId, Map<String, Resource> mapRoomsZones) {
         for (ResourceReference childRef : roomZone.getChildren()) {
             switch (childRef.getType()) {
                 case ROOM, ZONE:
-                    Resource child = mapRoomsZones.get(childRef.getId());
-                    if (child != null) {
+                    if (mapRoomsZones.get(childRef.getId()) instanceof Resource childRoomZone) {
                         // recurse into nested room/zone
-                        checkChildren(parentId, mapRoomsZones, child);
+                        checkChildren(childRoomZone, parentId, mapRoomsZones);
                     }
                     break;
                 case DEVICE:
-                    checkDevice(parentId, roomZone);
+                    if (idsRequiringOffTransitionWorkaround.contains(childRef.getId())) {
+                        idsRequiringOffTransitionWorkaround.add(parentId);
+                        logger.debug("Enabled off transition work-around for {}", parentId);
+                    }
                     break;
                 default:
                     break;
@@ -1274,8 +1274,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         try {
             idsRequiringOffTransitionWorkaround.clear();
 
-            // Load all devices and check direct matches
-            getClip2Bridge().getResources(DEVICE).getResources().stream().forEach(d -> checkDevice(d.getId(), d));
+            // Load all devices and check for direct matches
+            getClip2Bridge().getResources(DEVICE).getResources().stream().forEach(d -> checkDevice(d));
 
             // Load all rooms and zones
             Map<String, Resource> mapRoomsZones = new HashMap<>();
@@ -1284,12 +1284,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             mapRoomsZones.putAll(rooms.collect(Collectors.toMap(r -> r.getId(), r -> r)));
             mapRoomsZones.putAll(zones.collect(Collectors.toMap(r -> r.getId(), r -> r)));
 
-            // Recursively check rooms and zones children
-            mapRoomsZones.forEach((parentId, rz) -> checkChildren(parentId, mapRoomsZones, rz));
+            // Recursively check if rooms and zones have child devices requiring the work-around
+            mapRoomsZones.forEach((parentId, rz) -> checkChildren(rz, parentId, mapRoomsZones));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ApiException | AssetNotLoadedException e) {
-            logger.warn("updateOffTransitionWorkaroundIds() unexpected exception {}", e.getMessage(),
+            logger.warn("loadOffTransitionWorkaroundIds() unexpected exception {}", e.getMessage(),
                     logger.isDebugEnabled() ? e : null);
         }
     }
