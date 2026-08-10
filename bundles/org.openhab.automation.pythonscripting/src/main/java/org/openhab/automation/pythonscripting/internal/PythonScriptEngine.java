@@ -542,9 +542,9 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     }
 
     /**
-     * Tests if the script is a transformation script, i.e. created from the script transformation service.
+     * Tests if the script is used in the karaf console, i.e. created from the ConsoleCommandExtension service.
      *
-     * @return true if it is a transformation script, false otherwise
+     * @return true if it is a cli script, false otherwise
      */
     private boolean isCLI() {
         ScriptContext ctx = getContext();
