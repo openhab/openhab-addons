@@ -502,11 +502,7 @@ class Clip2DtoTest {
         light.setOnOff(OnOffType.ON);
         state = light.getOnOffState();
         assertEquals(OnOffType.ON, state);
-        try {
-            state = light.getSwitchState();
-        } catch (CriticalFieldMissingException e) {
-            fail(e.getMessage());
-        }
+        state = light.getSwitchState();
         assertEquals(OnOffType.ON, state);
 
         // add an empty dimming field to the light
@@ -516,11 +512,7 @@ class Clip2DtoTest {
         light.setOnOff(OnOffType.OFF);
         state = light.getOnOffState();
         assertEquals(OnOffType.OFF, state);
-        try {
-            state = light.getSwitchState();
-        } catch (CriticalFieldMissingException e) {
-            fail(e.getMessage());
-        }
+        state = light.getSwitchState();
         assertEquals(OnOffType.OFF, state);
 
         // add a 100% brightness value
@@ -528,11 +520,7 @@ class Clip2DtoTest {
         light.setOnOff(OnOffType.OFF);
         state = light.getOnOffState();
         assertEquals(OnOffType.OFF, state);
-        try {
-            state = light.getSwitchState();
-        } catch (CriticalFieldMissingException e) {
-            fail(e.getMessage());
-        }
+        state = light.getSwitchState();
         assertEquals(OnOffType.OFF, state);
     }
 
