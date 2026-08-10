@@ -66,7 +66,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
-import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -97,7 +97,6 @@ class Clip2DtoTest {
 
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .create();
-    private static final Double MINIMUM_DIMMING_LEVEL = Double.valueOf(12.34f);
 
     /**
      * Load the test JSON payload string from a file
@@ -208,7 +207,7 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testGroupedLight() throws CriticalFieldMissing {
+    void testGroupedLight() throws CriticalFieldMissingException {
         String json = load(ResourceType.GROUPED_LIGHT.name().toLowerCase());
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
@@ -247,7 +246,7 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testLight() throws CriticalFieldMissing {
+    void testLight() throws CriticalFieldMissingException {
         String json = load(ResourceType.LIGHT.name().toLowerCase());
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
@@ -424,7 +423,7 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testResourceMerging() throws CriticalFieldMissing {
+    void testResourceMerging() throws CriticalFieldMissingException {
         // create resource one
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
@@ -462,7 +461,7 @@ class Clip2DtoTest {
 
         // confirm that brightness is no longer valid, and therefore that color is also no longer valid
         assertEquals(UnDefType.NULL, one.getBrightnessState());
-        assertThrows(CriticalFieldMissing.class, () -> one.getColorState());
+        assertThrows(CriticalFieldMissingException.class, () -> one.getColorState());
 
         PercentType testBrightness = new PercentType(42);
 
@@ -485,7 +484,7 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testOnOff() throws CriticalFieldMissing {
+    void testOnOff() throws CriticalFieldMissingException {
         Resource light = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(light);
 
@@ -496,11 +495,7 @@ class Clip2DtoTest {
         light.setOnOff(OnOffType.OFF);
         state = light.getOnOffState();
         assertEquals(OnOffType.OFF, state);
-        try {
-            state = light.getSwitchState();
-        } catch (CriticalFieldMissing e) {
-            fail(e.getMessage());
-        }
+        state = light.getSwitchState();
         assertEquals(OnOffType.OFF, state);
 
         // pure on/off device OFF
@@ -509,7 +504,7 @@ class Clip2DtoTest {
         assertEquals(OnOffType.ON, state);
         try {
             state = light.getSwitchState();
-        } catch (CriticalFieldMissing e) {
+        } catch (CriticalFieldMissingException e) {
             fail(e.getMessage());
         }
         assertEquals(OnOffType.ON, state);
@@ -523,7 +518,7 @@ class Clip2DtoTest {
         assertEquals(OnOffType.OFF, state);
         try {
             state = light.getSwitchState();
-        } catch (CriticalFieldMissing e) {
+        } catch (CriticalFieldMissingException e) {
             fail(e.getMessage());
         }
         assertEquals(OnOffType.OFF, state);
@@ -535,7 +530,7 @@ class Clip2DtoTest {
         assertEquals(OnOffType.OFF, state);
         try {
             state = light.getSwitchState();
-        } catch (CriticalFieldMissing e) {
+        } catch (CriticalFieldMissingException e) {
             fail(e.getMessage());
         }
         assertEquals(OnOffType.OFF, state);
@@ -566,7 +561,7 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testScene() throws CriticalFieldMissing {
+    void testScene() throws CriticalFieldMissingException {
         String json = load(ResourceType.SCENE.name().toLowerCase());
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
@@ -643,7 +638,7 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testSetGetPureColors() throws CriticalFieldMissing {
+    void testSetGetPureColors() throws CriticalFieldMissingException {
         Resource resource = new Resource(ResourceType.LIGHT);
         assertNotNull(resource);
         resource.setDimming(new Dimming().setBrightness(100.0));

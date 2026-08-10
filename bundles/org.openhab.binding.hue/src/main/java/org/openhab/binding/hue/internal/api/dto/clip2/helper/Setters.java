@@ -36,7 +36,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
-import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -364,17 +364,17 @@ public class Setters {
      * @param valueIsAbsolute true if the brightnessValue is an absolute value, false if it is a delta.
      * @param source the cached resource to get the minimum dimming level from (may be null).
      * @return the OnOffType command to be sent.
-     * @throws CriticalFieldMissing if there is not enough data to create the command.
+     * @throws CriticalFieldMissingException if there is not enough data to create the command.
      */
     public static OnOffType getHardOnOff(Resource target, Double brightnessValue, boolean valueIsAbsolute,
-            @Nullable Resource source) throws CriticalFieldMissing {
+            @Nullable Resource source) throws CriticalFieldMissingException {
         Double bri;
         if (valueIsAbsolute) {
             bri = brightnessValue;
         } else if (source != null && source.getDimmingValue() instanceof Double dim) {
             bri = dim + brightnessValue;
         } else {
-            throw new CriticalFieldMissing("Not enough data to create hard on/off command");
+            throw new CriticalFieldMissingException("Not enough data to create hard on/off command");
         }
         return OnOffType.from(bri > 0.0);
     }

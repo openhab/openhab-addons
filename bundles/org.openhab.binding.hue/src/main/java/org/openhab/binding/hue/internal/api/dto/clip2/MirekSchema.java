@@ -62,6 +62,6 @@ public class MirekSchema {
     }
 
     public boolean invalid() {
-        return mirekMinimum < MIN_ALLOWED || mirekMaximum > MAX_ALLOWED || mirekMinimum >= mirekMaximum;
+        return mirekMinimum < MIN_ALLOWED || mirekMaximum > MAX_ALLOWED || mirekMinimum > mirekMaximum;
     }
 }

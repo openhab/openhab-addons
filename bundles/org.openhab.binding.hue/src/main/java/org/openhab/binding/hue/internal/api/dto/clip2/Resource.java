@@ -39,7 +39,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.TamperStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
-import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -239,14 +239,14 @@ public class Resource {
      * Get the brightness as a PercentType. If off the brightness is 0, otherwise use dimming value.
      *
      * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
-     * @throws CriticalFieldMissing if a critical element is missing
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getBrightnessState() throws CriticalFieldMissing {
+    public State getBrightnessState() throws CriticalFieldMissingException {
         Dimming dimming = this.dimming;
         if (Objects.nonNull(dimming)) {
             Double brightness = dimming.getBrightness();
             if (brightness == null) {
-                throw new CriticalFieldMissing("'brightness' is missing");
+                throw new CriticalFieldMissingException("'brightness' is missing");
             }
             OnState on = this.on;
             if (on != null && on.getOn() instanceof Boolean on2 && !on2) {
@@ -316,20 +316,20 @@ public class Resource {
      * method is only to be used on cached state DTOs which already have a defined color gamut.
      *
      * @return UnDefType.NULL if the channel is not supported, or an HSBType if the value is good
-     * @throws CriticalFieldMissing if a critical element is missing
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getColorState() throws CriticalFieldMissing {
+    public State getColorState() throws CriticalFieldMissingException {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             Dimming dimming = this.dimming;
             if (dimming == null) {
-                throw new CriticalFieldMissing("'dimming' is missing");
+                throw new CriticalFieldMissingException("'dimming' is missing");
             }
             PairXy xy = color.getXY();
             Gamut gamut = (ResourceType.LIGHT == getType()) ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
             Double brightness = dimming.getBrightness();
             if (xy == null || gamut == null || brightness == null) {
-                throw new CriticalFieldMissing("'xy', 'gamut', or 'brightness' missing");
+                throw new CriticalFieldMissingException("'xy', 'gamut', or 'brightness' missing");
             }
             brightness = Math.max(0.0, Math.min(100.0, brightness));
             HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
@@ -368,9 +368,9 @@ public class Resource {
      * have a defined mirek schema.
      *
      * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
-     * @throws CriticalFieldMissing if a critical element is missing
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getColorTemperaturePercentState() throws CriticalFieldMissing {
+    public State getColorTemperaturePercentState() throws CriticalFieldMissingException {
         ColorTemperature colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
             Long mirek = colorTemperature.getMirek();
@@ -379,7 +379,7 @@ public class Resource {
             }
             MirekSchema mirekSchema = colorTemperature.getMirekSchema();
             if (mirekSchema == null || mirekSchema.invalid()) {
-                throw new CriticalFieldMissing("'mirek_schema' is missing or invalid");
+                throw new CriticalFieldMissingException("'mirek_schema' is missing or invalid");
             }
             double min = mirekSchema.getMirekMinimum();
             double max = mirekSchema.getMirekMaximum();
@@ -406,15 +406,15 @@ public class Resource {
      * Return an HSB where the HS part is derived from the color xy JSON element (only), so the B part is 100%
      * 
      * @return UnDefType.NULL if the channel is not supported, or an HSBType if the value is good
-     * @throws CriticalFieldMissing if a critical element is missing
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getColorXyState() throws CriticalFieldMissing {
+    public State getColorXyState() throws CriticalFieldMissingException {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             PairXy xy = color.getXY();
             Gamut gamut = (ResourceType.LIGHT == getType()) ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
             if (xy == null || gamut == null) {
-                throw new CriticalFieldMissing("'xy' or 'gamut' is missing");
+                throw new CriticalFieldMissingException("'xy' or 'gamut' is missing");
             }
             HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
             return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
@@ -451,14 +451,14 @@ public class Resource {
      * Return a PercentType which is derived from the dimming JSON element (only).
      *
      * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
-     * @throws CriticalFieldMissing if a critical element is missing
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getDimmingState() throws CriticalFieldMissing {
+    public State getDimmingState() throws CriticalFieldMissingException {
         Dimming dimming = this.dimming;
         if (Objects.nonNull(dimming)) {
             Double brightness = dimming.getBrightness();
             if (brightness == null) {
-                throw new CriticalFieldMissing("'brightness' is missing");
+                throw new CriticalFieldMissingException("'brightness' is missing");
             }
             brightness = Math.max(0.0, Math.min(100.0, brightness));
             return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
@@ -628,16 +628,16 @@ public class Resource {
      * Return the state of the On/Off element treating "soft off" as off.
      * 
      * @return UnDefType.NULL if the channel is not supported, or an OnOffType if the value is good
-     * @throws CriticalFieldMissing if a critical element is missing
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getSwitchState() throws CriticalFieldMissing {
+    public State getSwitchState() throws CriticalFieldMissingException {
         OnState on = this.on;
         if (on == null) {
             return UnDefType.NULL;
         }
         Boolean onValue = on.getOn();
         if (onValue == null) {
-            throw new CriticalFieldMissing("'on' is missing");
+            throw new CriticalFieldMissingException("'on' is missing");
         }
         if (onValue == Boolean.FALSE) {
             return OnOffType.OFF;
@@ -650,7 +650,7 @@ public class Resource {
         // we have dimming so handle "soft off" by comparing brightness to minimum dimming level
         Double brightness = dimming.getBrightness();
         if (brightness == null) {
-            throw new CriticalFieldMissing("'brightness' missing");
+            throw new CriticalFieldMissingException("'brightness' missing");
         }
         return OnOffType.from(brightness > 0.0);
     }
@@ -659,16 +659,16 @@ public class Resource {
      * Return the state of the On/Off element (only).
      * 
      * @return UnDefType.NULL if the channel is not supported, or an OnOffType if the value is good
-     * @throws CriticalFieldMissing if a critical element is missing
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getOnOffState() throws CriticalFieldMissing {
+    public State getOnOffState() throws CriticalFieldMissingException {
         OnState onState = this.on;
         if (onState == null) {
             return UnDefType.NULL;
         }
         Boolean on = onState.getOn();
         if (on == null) {
-            throw new CriticalFieldMissing("'on' is missing");
+            throw new CriticalFieldMissingException("'on' is missing");
         }
         return OnOffType.from(on);
     }

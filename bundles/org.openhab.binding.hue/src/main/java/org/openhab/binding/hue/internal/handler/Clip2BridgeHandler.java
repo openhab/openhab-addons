@@ -17,6 +17,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -171,6 +172,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * features are supported. For example, the motion aware feature is only supported on v3+ models.
      */
     private int bridgeGeneration;
+
+    // set of resource ids that require the OFF transition work around
+    private final Set<String> idsRequiringOffTransitionWorkaround = new HashSet<>();
 
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
             LocaleProvider localeProvider, TranslationProvider i18nProvider) {
@@ -499,8 +503,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     Resources resources = getClip2Bridge().putResource(new Resource(ResourceType.BEHAVIOR_INSTANCE)
                             .setId(channelUID.getIdWithoutGroup()).setEnabled(command));
                     if (resources.hasErrors()) {
-                        logger.warn("handleCommand({}, {}) succeeded with errors: {}", channelUID, command,
-                                String.join("; ", resources.getErrors()));
+                        logger.warn("handleCommand({}, {}) succeeded with errors: {}", channelUID, command, resources
+                                .getErrors().stream().map(e -> e.getDescription()).collect(Collectors.joining("; ")));
                     }
                 }
             } catch (ApiException | AssetNotLoadedException e) {
@@ -701,6 +705,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             connectRetriesRemaining = RECONNECT_MAX_TRIES;
             updateStatus(ThingStatus.ONLINE);
             loadAutomationScriptIds();
+            loadOffTransitionWorkaroundIds();
             updateAutomationChannelsNow();
             updateThingsScheduled(500);
             Clip2ThingDiscoveryService discoveryService = this.discoveryService;
@@ -1208,5 +1213,94 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public boolean isUpdatingOwnFirmware() {
         return thing.getStatus() == ThingStatus.OFFLINE
                 && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING;
+    }
+
+    /**
+     * Check if the given device requires the off transition work-around. If it does, add the parent
+     * room/zone id to the set of ids requiring the off transition work-around.
+     *
+     * @param parentId the id of the parent room/zone.
+     * @param device the device resource to check.
+     */
+    private void checkDevice(String parentId, Resource device) {
+        ProductData productData = device.getProductData();
+        if (productData != null) {
+            String modelId = productData.getModelId();
+            if (Clip2ThingHandler.OFF_TRANSITION_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
+                idsRequiringOffTransitionWorkaround.add(parentId);
+                logger.debug("{} -> enabled off transition work-around for {}", parentId, modelId);
+            }
+        }
+    }
+
+    /**
+     * Recursively check all children of the given room/zone for any device that requires the off transition
+     * work-around. If any child device requires the work-around, add the parent room/zone id to the set of
+     * ids requiring the off transition work-around.
+     *
+     * @param parentId the id of the parent room/zone.
+     * @param mapRoomsZones a map of all rooms/zones by their id.
+     * @param roomZone the room/zone resource to check.
+     */
+    private void checkChildren(String parentId, Map<String, Resource> mapRoomsZones, Resource roomZone) {
+        for (ResourceReference childRef : roomZone.getChildren()) {
+            switch (childRef.getType()) {
+                case ROOM, ZONE:
+                    Resource child = mapRoomsZones.get(childRef.getId());
+                    if (child != null) {
+                        // recurse into nested room/zone
+                        checkChildren(parentId, mapRoomsZones, child);
+                    }
+                    break;
+                case DEVICE:
+                    checkDevice(parentId, roomZone);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Load the set of resource ids that require the off transition work-around. This is determined by
+     * checking all devices and all rooms/zones and their children for any device that matches the off
+     * transition work- around pattern.
+     *
+     * @throws ApiException if a communication error occurred.
+     * @throws InterruptedException if the thread was interrupted while waiting for a response.
+     * @throws AssetNotLoadedException if one of the assets is not loaded.
+     */
+    private void loadOffTransitionWorkaroundIds() {
+        try {
+            idsRequiringOffTransitionWorkaround.clear();
+
+            // Load all devices and check direct matches
+            getClip2Bridge().getResources(DEVICE).getResources().stream().forEach(d -> checkDevice(d.getId(), d));
+
+            // Load all rooms and zones
+            Map<String, Resource> mapRoomsZones = new HashMap<>();
+            Stream<Resource> rooms = getClip2Bridge().getResources(ROOM).getResources().stream();
+            Stream<Resource> zones = getClip2Bridge().getResources(ZONE).getResources().stream();
+            mapRoomsZones.putAll(rooms.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+            mapRoomsZones.putAll(zones.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+
+            // Recursively check rooms and zones children
+            mapRoomsZones.forEach((parentId, rz) -> checkChildren(parentId, mapRoomsZones, rz));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ApiException | AssetNotLoadedException e) {
+            logger.warn("updateOffTransitionWorkaroundIds() unexpected exception {}", e.getMessage(),
+                    logger.isDebugEnabled() ? e : null);
+        }
+    }
+
+    /**
+     * Returns true if the given resource id requires the off transition work-around.
+     *
+     * @param resourceId the resource id to check.
+     * @return true if the given resource id requires the off transition work-around, false otherwise.
+     */
+    public boolean requiresOffTransitionWorkAround(String resourceId) {
+        return idsRequiringOffTransitionWorkaround.contains(resourceId);
     }
 }

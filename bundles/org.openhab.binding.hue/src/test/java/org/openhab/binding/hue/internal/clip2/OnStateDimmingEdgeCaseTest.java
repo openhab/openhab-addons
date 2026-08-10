@@ -22,7 +22,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
-import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.UnDefType;
@@ -36,57 +36,57 @@ import org.openhab.core.types.UnDefType;
 class OnStateDimmingEdgeCaseTest {
 
     @Test
-    void getBrightnessStateWhenDimmingMissingReturnNull() throws CriticalFieldMissing {
+    void getBrightnessStateWhenDimmingMissingReturnNull() throws CriticalFieldMissingException {
         assertThat(createLightResource(true, null).getBrightnessState(), is(equalTo(UnDefType.NULL)));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimming75ReturnBrightness75() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOnAndDimming75ReturnBrightness75() throws CriticalFieldMissingException {
         assertThat(createLightResource(true, 75.0).getBrightnessState(), is(equalTo(new PercentType(75))));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimming125ReturnBrightness100() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOnAndDimming125ReturnBrightness100() throws CriticalFieldMissingException {
         assertThat(createLightResource(true, 125.0).getBrightnessState(), is(equalTo(new PercentType(100))));
     }
 
     @Test
-    void getBrightnessStateWhenOffAndDimming100ReturnBrightness0() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOffAndDimming100ReturnBrightness0() throws CriticalFieldMissingException {
         assertThat(createLightResource(false, 100.0).getBrightnessState(), is(equalTo(new PercentType(0))));
     }
 
     @Test
-    void getBrightnessStateWhenOnStateMissingAndDimming0Return0() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOnStateMissingAndDimming0Return0() throws CriticalFieldMissingException {
         assertThat(createLightResource(null, 0.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getBrightnessStateWhenOnStateMissingAndDimming100ReturnBrightness100() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOnStateMissingAndDimming100ReturnBrightness100() throws CriticalFieldMissingException {
         assertThat(createLightResource(null, 100.0).getBrightnessState(), is(equalTo(new PercentType(100))));
     }
 
     @Test
-    void getBrightnessStateWhenOnStateMissingAndDimmingMinus1Return0() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOnStateMissingAndDimmingMinus1Return0() throws CriticalFieldMissingException {
         assertThat(createLightResource(null, -1.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimmingMinus1Return0() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOnAndDimmingMinus1Return0() throws CriticalFieldMissingException {
         assertThat(createLightResource(true, -1.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimming0Return0() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOnAndDimming0Return0() throws CriticalFieldMissingException {
         assertThat(createLightResource(true, 0.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getBrightnessStateWhenOnAndDimming0AndCustomMinimumBrightnessReturn0() throws CriticalFieldMissing {
+    void getBrightnessStateWhenOnAndDimming0AndCustomMinimumBrightnessReturn0() throws CriticalFieldMissingException {
         assertThat(createLightResource(true, 0.0).getBrightnessState(), is(equalTo(PercentType.ZERO)));
     }
 
     @Test
-    void getTwoStatesWhenOnAndDimming3AndMinimumBrightness2ReturnOn() throws CriticalFieldMissing {
+    void getTwoStatesWhenOnAndDimming3AndMinimumBrightness2ReturnOn() throws CriticalFieldMissingException {
         // test "soft off": evaluation yields OnOffType.ON state and brightness verbatim
         Resource res = createLightResource(true, 3.0);
         assertThat(res.getBrightnessState(), is(equalTo(new PercentType(3))));
@@ -94,7 +94,7 @@ class OnStateDimmingEdgeCaseTest {
     }
 
     @Test
-    void getTwoStatesWhenOnAndDimming1ReturnOn() throws CriticalFieldMissing {
+    void getTwoStatesWhenOnAndDimming1ReturnOn() throws CriticalFieldMissingException {
         // test "soft off": evaluation yields OnOffType.ON state and brightness verbatim
         Resource res = createLightResource(true, 1.0);
         assertThat(res.getBrightnessState(), is(equalTo(new PercentType(1))));
@@ -102,7 +102,7 @@ class OnStateDimmingEdgeCaseTest {
     }
 
     @Test
-    void getTwoStatesWhenOnAndDimming0ReturnOff() throws CriticalFieldMissing {
+    void getTwoStatesWhenOnAndDimming0ReturnOff() throws CriticalFieldMissingException {
         // test "soft off": evaluation yields OnOffType.OFF state and brightness verbatim
         Resource res = createLightResource(true, 0.0);
         assertThat(res.getBrightnessState(), is(equalTo(PercentType.ZERO)));

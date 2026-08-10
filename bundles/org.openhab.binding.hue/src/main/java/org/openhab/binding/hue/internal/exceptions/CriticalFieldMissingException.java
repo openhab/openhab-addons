@@ -20,13 +20,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class CriticalFieldMissing extends Exception {
+public class CriticalFieldMissingException extends Exception {
     private static final long serialVersionUID = -1;
 
-    public CriticalFieldMissing() {
+    public CriticalFieldMissingException() {
     }
 
-    public CriticalFieldMissing(String message) {
+    public CriticalFieldMissingException(String message) {
         super(message);
     }
 }

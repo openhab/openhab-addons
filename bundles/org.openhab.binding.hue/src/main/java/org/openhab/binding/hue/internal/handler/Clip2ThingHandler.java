@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,6 +58,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ChimeType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ErrorType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
@@ -71,7 +71,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
-import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissing;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -138,7 +138,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             "LK Dimmer", // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
             "^TRADFRI.*1055l$" // IKEA Tradfri 1055l bulb
     );
-    private static final Pattern OFF_TRANSITION_WORK_AROUND_PATTERN = Pattern.compile(
+    public static final Pattern OFF_TRANSITION_WORK_AROUND_PATTERN = Pattern.compile(
             OFF_TRANSITION_WORK_AROUND_MODELS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
 
     /*
@@ -242,7 +242,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateLightCacheRequiredFieldsDone;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
-    private boolean applyOffTransitionWorkaround;
 
     private @Nullable LegacyLightState legacyLightState;
 
@@ -414,13 +413,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         try {
             handleCommandInner(channelUID, commandParam);
-        } catch (CriticalFieldMissing e) {
+        } catch (CriticalFieldMissingException e) {
             logger.warn("{} -> handleCommand() channelUID:{} command:{} error: {}", resourceId, channelUID,
                     commandParam, e.getMessage(), e);
         }
     }
 
-    public void handleCommandInner(ChannelUID channelUID, Command commandParam) throws CriticalFieldMissing {
+    public void handleCommandInner(ChannelUID channelUID, Command commandParam) throws CriticalFieldMissingException {
         ResourceType lightResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
                 : ResourceType.GROUPED_LIGHT;
 
@@ -650,8 +649,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
                 logger.debug("{} command '{}' for channel '{}' succeeded with error(s): {}", resourceId, command,
-                        channelUID, String.join("; ", resources.getErrors()));
-                loopBackNotify(putResource);
+                        channelUID,
+                        resources.getErrors().stream().map(e -> e.getDescription()).collect(Collectors.joining("; ")));
+                if (resources.getErrors().stream()
+                        .anyMatch(e -> ErrorType.ATTRIBUTE_MAY_HAVE_NO_EFFECT == e.getErrorType())) {
+                    loopBackNotify(putResource);
+                }
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
@@ -749,8 +752,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param putResource the resource that will be adjusted if needed.
      */
     private void applyOffTransitionWorkAround(Command command, Resource putResource) {
-        if (command == OnOffType.OFF && applyOffTransitionWorkaround) {
-            putResource.setDynamicsDuration(dynamicsDuration);
+        try {
+            if (command == OnOffType.OFF && getBridgeHandler().requiresOffTransitionWorkAround(resourceId)) {
+                putResource.setDynamicsDuration(dynamicsDuration);
+            }
+        } catch (AssetNotLoadedException e) {
+            logger.debug("{} -> applyOffTransitionWorkAround() error {}", resourceId, e.getMessage(), e);
         }
     }
 
@@ -804,7 +811,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateLightPropertiesDone = false;
         updateLightCacheRequiredFieldsDone = false;
         updateSceneContributorsDone = false;
-        applyOffTransitionWorkaround = false;
         legacyLightState = null;
 
         Bridge bridge = getBridge();
@@ -1097,14 +1103,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean updateChannels(Resource resource) {
         try {
             return updateChannelsInner(resource);
-        } catch (CriticalFieldMissing e) {
+        } catch (CriticalFieldMissingException e) {
             // this should never happen but log it just in case
             logger.warn("{} -> updateChannels() error {}", resourceId, e.getMessage(), e);
             return false;
         }
     }
 
-    private boolean updateChannelsInner(Resource resource) throws CriticalFieldMissing {
+    private boolean updateChannelsInner(Resource resource) throws CriticalFieldMissingException {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
@@ -1356,7 +1362,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
                 updateEquipmentTag();
-                checkOffTransitionWorkaroundForChildren();
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1500,12 +1505,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 Setters.putIfExists(props, PROPERTY_PRODUCT_NAME, prodData.getProductName());
                 Setters.putIfExists(props, PROPERTY_PRODUCT_ARCHETYPE, prodData.getProductArchetypeAsString());
                 Setters.putIfExists(props, PROPERTY_PRODUCT_CERTIFIED, prodData.getCertifiedAsString());
-
-                // Check device for needed work-arounds.
-                if (OFF_TRANSITION_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
-                    applyOffTransitionWorkaround = true;
-                    logger.debug("{} -> enabled off transition work-around for {}", resourceId, modelId);
-                }
 
                 if (OPERATING_MODE_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
                     legacyLightState = new LegacyLightState();
@@ -1822,10 +1821,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Ensure that the light service resource in the serviceContributorsCache has a complete DTO for it to
-     * yield valid channel state values. Check if the given (cached) light service has a {@link Dimming} field,
-     * a {@link MirekSchema} field, and a {@link Gamut} field. If any is missing, use the binding default values.
-     * This ensures that the light's channels always have a valid minimum dimming level, color temperature range,
-     * and gamut, to use.
+     * yield valid channel state values. Check if the given (cached) light service has a {@link MirekSchema}
+     * field, and a {@link Gamut} field. If any is missing, use the binding default values. This ensures that
+     * the light's channels always have a valid color temperature range, and gamut, to use.
      */
     private synchronized void updateLightCacheRequiredFields(Resource resource) {
         ResourceType type = resource.getType();
@@ -1858,67 +1856,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.warn("{} -> updateLightCacheRequiredFields() -> missing cache light resource", resourceId);
             }
             updateLightCacheRequiredFieldsDone = true;
-        }
-    }
-
-    /**
-     * Recursively checks this resource and all room or zone children for (grand-) child devices whose modelId
-     * requires the off-transition work-around and, if so, sets the `applyOffTransitionWorkaround` flag.
-     */
-    private void checkOffTransitionWorkaroundForChildren() {
-        if (!disposing) {
-            switch (thisResource.getType()) {
-                case ROOM, ZONE, BRIDGE_HOME:
-                    checkOffTransitionWorkaround(thisResource);
-                default:
-                    // ignore other types
-            }
-        }
-    }
-
-    /**
-     * Checks the given resource to see if any of its children or grand-children require the off-transition work-
-     * around and, if so, sets the `applyOffTransitionWorkaround` flag to true. Recursively checks all child
-     * resources of type room or zone. If a child resource is of type device, its productData is inspected to see
-     * if its modelId matches any of the known modelIds that require the workaround. Returns early if a match is
-     * found.
-     * <ul>
-     * <li>For any device children => inspects their productData.</li>
-     * <li>For any room or zone children => calls itself recursively on their children.</li>
-     * </ul>
-     */
-    private void checkOffTransitionWorkaround(Resource resource) {
-        try {
-            for (ResourceReference child : resource.getChildren()) {
-                Optional<Resource> optChild = getBridgeHandler().getResources(child).getResources().stream().findAny();
-                if (optChild.isEmpty()) {
-                    continue;
-                }
-                switch (child.getType()) {
-                    case DEVICE:
-                        ProductData productData = optChild.get().getProductData();
-                        if (productData != null) {
-                            String modelId = productData.getModelId();
-                            if (OFF_TRANSITION_WORK_AROUND_PATTERN.matcher(Objects.requireNonNull(modelId)).matches()) {
-                                applyOffTransitionWorkaround = true;
-                                logger.debug("{} -> enabled off transition work-around for {}", resourceId, modelId);
-                                return; // no need to check further once we find a matching device
-                            }
-                        }
-                        break;
-                    case ROOM, ZONE:
-                        checkOffTransitionWorkaround(optChild.get()); // recurse into nested room/zone
-                        if (applyOffTransitionWorkaround) {
-                            return; // no need to check further once we find a matching device
-                        }
-                    default:
-                        // ignore other types
-                }
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (ApiException | AssetNotLoadedException e) {
-            logger.warn("{} -> checkOffTransitionWorkaround() {}", resourceId, e.getMessage(), e);
         }
     }
 }
