@@ -542,12 +542,31 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Helper to check whether the parent bridge handler exists and is currently ONLINE.
+     */
+    private boolean isBridgeSessionValid() {
+        RoborockAccountHandler localBridgeHandler = bridgeHandler;
+        return localBridgeHandler != null && localBridgeHandler.getThing().getStatus() == ThingStatus.ONLINE;
+    }
+
     private void pollData() {
         RoborockAccountHandler localBridgeHandler = bridgeHandler;
         if (localBridgeHandler != null) {
             applyCloudOnlyCapabilityPolicies();
             boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
             HomeData homeData = localBridgeHandler.getHomeData();
+
+            // --- GUARD AGAINST CODE 2010 RACE CONDITION ---
+            // If getHomeData() triggered handleSessionExpired(), the bridge is now OFFLINE.
+            // Abort immediately so we do not overwrite the status or schedule the next poll.
+            if (!isBridgeSessionValid()) {
+                logger.debug("Aborting pollData() execution for {} because bridge session is no longer valid.",
+                        config.duid);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
+
             if (homeData != null && homeData.result != null) {
                 homeRooms = homeData.result.rooms;
                 Devices devices[] = homeData.result.devices;
@@ -558,6 +577,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
             if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
                 String routinesResponse = localBridgeHandler.getRoutines(config.duid);
+
+                // Check again after routines query in case it triggered session expiration
+                if (!isBridgeSessionValid()) {
+                    logger.debug("Aborting pollData() routine update for {} because bridge session is no longer valid.",
+                            config.duid);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    return;
+                }
+
                 List<StateOption> options = new ArrayList<>();
                 JsonObject parsedRoutines = routinesResponse != null && !routinesResponse.isEmpty()
                         ? JsonParser.parseString(routinesResponse).getAsJsonObject()

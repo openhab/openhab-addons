@@ -348,7 +348,6 @@ public class RoborockWebTargets {
                     if (logger.isTraceEnabled()) {
                         logger.trace("JSON response: '{}'", jsonResponse);
                     }
-                    // Detect code 2010 (invalid/expired token) from Roborock cloud API
                     if (jsonResponse.contains("\"code\":2010") || jsonResponse.contains("invalid token")) {
                         throw new RoborockException("invalid token");
                     }

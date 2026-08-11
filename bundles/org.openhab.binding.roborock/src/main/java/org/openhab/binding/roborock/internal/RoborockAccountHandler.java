@@ -177,21 +177,21 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Nullable
     public HomeData refreshHomeData() {
         if (!isSessionValid()) {
-            return new HomeData();
+            return null;
         }
         try {
             Home home = homeCache.getValue();
             if (home == null || home.data == null) {
-                return new HomeData();
+                return null;
             }
             return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
         } catch (RoborockException e) {
             if ("invalid token".equalsIgnoreCase(e.getMessage())) {
                 handleSessionExpired();
-                return new HomeData();
+                return null;
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
-            return new HomeData();
+            return null;
         }
     }
 
