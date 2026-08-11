@@ -227,7 +227,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             }
             updateProperties();
 
-            logger.info("RachioCloud: Connector initialized");
+            logger.debug("RachioCloud: Connector initialized");
             if (!isLifecycleCurrent(generation)) {
                 return;
             }
@@ -375,7 +375,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 RachioDevice checkDev = de.getValue();
                 RachioDevice dev = deviceList.get(checkDev.id);
                 if (dev == null) {
-                    logger.info("RachioCloud: New device detected: {} - {}", checkDev.id, checkDev.name);
+                    logger.debug("RachioCloud: New device detected: {} - {}", checkDev.id, checkDev.name);
                     assignThingUID(checkDev);
                     reconciledDevices.put(checkDev.id, checkDev);
                 } else {
@@ -490,7 +490,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
     @Override
     public void shutdown() {
-        logger.info("RachioCloud: Shutting down");
+        logger.debug("RachioCloud: Shutting down");
         invalidateLifecycle();
         cancelInitializationJob();
         releaseCloudWebhookUrl("bridge shutdown");
@@ -1292,7 +1292,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 registerWebHook(deviceId, requestPurpose);
             } catch (RachioApiThrottledException e) {
                 updateWebhookRegistrationState("deferred by local API budget guard");
-                logger.info(
+                logger.debug(
                         "Modern webhook registration for controller '{}' deferred because the local Rachio API budget guard is active; polling remains active.",
                         deviceId);
                 return;
@@ -1573,7 +1573,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             return false;
         }
         updateWebhookRegistrationState(MODERN_WEBHOOK_VERIFICATION_DEFERRED_STATE);
-        logger.info(
+        logger.debug(
                 "Modern webhook verification for controller '{}' failed after a previous successful registration; existing registration may still be active and polling remains fallback, cause={}",
                 deviceId, e.getClass().getSimpleName());
         return true;

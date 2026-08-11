@@ -166,7 +166,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             if (channel.equals(RachioBindingConstants.CHANNEL_ZONE_ENABLED)) {
                 if (command instanceof OnOffType) {
                     boolean enabled = command == OnOffType.ON;
-                    logger.info("{} zone '{} [{}]'", enabled ? "Enabling" : "Disabling", currentZone.name,
+                    logger.debug("{} zone '{} [{}]'", enabled ? "Enabling" : "Disabling", currentZone.name,
                             currentZone.zoneNumber);
                     handler.setZoneEnabled(currentZone.id, enabled);
                     currentZone.setEnabled(enabled);
@@ -361,11 +361,11 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             if ("ZONE_STATUS".equals(event.type)) {
                 String state = event.getZoneRunStateForWebhookHandling();
                 if ("ZONE_STARTED".equals(state)) {
-                    logger.info("{}: {} STARTED watering ({}).", thingId, zoneLogSubject, event.timestamp);
+                    logger.debug("{}: {} STARTED watering ({}).", thingId, zoneLogSubject, event.timestamp);
                     zoneRunState = OnOffType.ON;
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
                 } else if ("ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
-                    logger.info(
+                    logger.debug(
                             "{}: {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
                             thingId, zoneLogSubject, event.timestamp, event.zoneCurrent, event.duration,
                             event.durationInMinutes, event.flowVolume);
@@ -376,12 +376,12 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                     }
                     updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
                 } else {
-                    logger.info("{}: Event for zone {}: {} (status={}, duration = {}sec)", thingId, zoneName,
+                    logger.debug("{}: Event for zone {}: {} (status={}, duration = {}sec)", thingId, zoneName,
                             event.summary, state, event.duration);
                 }
                 update = true;
             } else if ("ZONE_DELTA".equals(event.subType)) {
-                logger.info("{}: DELTA Event for zone {}: {}.{}", thingId, z.name, event.category, event.action);
+                logger.debug("{}: DELTA Event for zone {}: {}.{}", thingId, z.name, event.category, event.action);
                 update = true;
             } else {
                 logger.debug("{}: Unhandled event type {}.{} for zone {}", thingId, event.type, event.subType,

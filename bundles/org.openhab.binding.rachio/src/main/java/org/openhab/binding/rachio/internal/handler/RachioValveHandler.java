@@ -132,13 +132,13 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             } else if (CHANNEL_VALVE_RUN.equals(channel)) {
                 if (command == OnOffType.ON) {
                     int duration = getEffectiveRunTime(currentValve, handler);
-                    logger.info("{}: Start Smart Hose Timer valve '{}' for {} sec", thingId,
+                    logger.debug("{}: Start Smart Hose Timer valve '{}' for {} sec", thingId,
                             currentValve.getThingName(), duration);
                     handler.startValveWatering(currentValve.id, duration);
                     runState = OnOffType.ON;
                     updateChannel(CHANNEL_VALVE_RUN, runState);
                 } else if (command == OnOffType.OFF) {
-                    logger.info("{}: Stop Smart Hose Timer valve '{}'", thingId, currentValve.getThingName());
+                    logger.debug("{}: Stop Smart Hose Timer valve '{}'", thingId, currentValve.getThingName());
                     handler.stopValveWatering(currentValve.id);
                     runState = OnOffType.OFF;
                     updateChannel(CHANNEL_VALVE_RUN, runState);
@@ -152,7 +152,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
                                 thingId, defaultRuntime);
                         return;
                     }
-                    logger.info("{}: Set Smart Hose Timer valve '{}' default runtime to {} sec", thingId,
+                    logger.debug("{}: Set Smart Hose Timer valve '{}' default runtime to {} sec", thingId,
                             currentValve.getThingName(), defaultRuntime);
                     handler.setValveDefaultRuntime(currentValve.id, defaultRuntime);
                     currentValve.defaultRuntimeSeconds = defaultRuntime;
@@ -426,11 +426,11 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         }
 
         if (EVENT_VALVE_RUN_START.equals(event.eventType)) {
-            logger.info("{}: Smart Hose Timer valve '{}' STARTED watering (duration={} sec, runType={})", thingId,
+            logger.debug("{}: Smart Hose Timer valve '{}' STARTED watering (duration={} sec, runType={})", thingId,
                     currentValve.getThingName(), durationSeconds, payload.runType);
             runState = OnOffType.ON;
         } else if (EVENT_VALVE_RUN_END.equals(event.eventType)) {
-            logger.info("{}: Smart Hose Timer valve '{}' STOPPED watering (duration={} sec, endReason={}, runType={})",
+            logger.debug("{}: Smart Hose Timer valve '{}' STOPPED watering (duration={} sec, endReason={}, runType={})",
                     thingId, currentValve.getThingName(), durationSeconds, payload.endReason, payload.runType);
             runState = OnOffType.OFF;
         } else {
