@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Dreame Binding</name>
-	<description>Integrates Dreame robotic lawn mowers through the Dreamehome cloud.</description>
+	<description>Integrates Dreame and MOVA robotic lawn mowers through their cloud services.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

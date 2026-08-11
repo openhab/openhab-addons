@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dreame.internal.api.DreameCloudException;
+import org.openhab.binding.dreame.internal.api.DreameCloudService;
 import org.openhab.binding.dreame.internal.api.DreameMowerApi;
 import org.openhab.binding.dreame.internal.config.DreameAccountConfiguration;
 import org.openhab.binding.dreame.internal.discovery.DreameMowerDiscoveryService;
@@ -34,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Owns the Dreamehome session shared by mower things.
+ * Owns the selected cloud session shared by mower things.
  *
  * @author Ronny Grun - Initial contribution
  */
@@ -61,9 +62,10 @@ public class DreameAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         int generation = lifecycleGeneration.incrementAndGet();
         DreameAccountConfiguration config = getConfigAs(DreameAccountConfiguration.class);
-        if (config.username.isBlank() || config.password.isBlank() || config.country.isBlank()) {
+        if (config.cloudService.isBlank() || config.username.isBlank() || config.password.isBlank()
+                || config.country.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Username, password and country must be configured");
+                    "Cloud service, username, password and country must be configured");
             return;
         }
 
@@ -72,15 +74,18 @@ public class DreameAccountHandler extends BaseBridgeHandler {
     }
 
     private void connect(DreameAccountConfiguration config, int generation) {
+        DreameCloudService cloudService;
         try {
-            apiClient.login(config.username, config.password, config.country);
+            cloudService = DreameCloudService.fromConfiguration(config.cloudService);
+            apiClient.login(config.username, config.password, config.country, cloudService);
             List<DreameDevice> discoveredDevices = apiClient.getDevices();
             if (generation != lifecycleGeneration.get()) {
                 return;
             }
             devices = discoveredDevices;
             updateStatus(ThingStatus.ONLINE);
-            logger.debug("Connected to Dreamehome; account contains {} supported device records", devices.size());
+            logger.debug("Connected to {}; account contains {} supported device records", cloudService.label(),
+                    devices.size());
             DreameMowerDiscoveryService discovery = discoveryService;
             if (discovery != null) {
                 discovery.discoverDevices();
@@ -89,7 +94,7 @@ public class DreameAccountHandler extends BaseBridgeHandler {
             if (generation != lifecycleGeneration.get()) {
                 return;
             }
-            logger.debug("Dreamehome connection failed: {}", e.getMessage(), e);
+            logger.debug("Cloud connection failed: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

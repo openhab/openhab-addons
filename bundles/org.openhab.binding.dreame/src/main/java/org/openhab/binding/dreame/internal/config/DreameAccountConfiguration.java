@@ -15,12 +15,13 @@ package org.openhab.binding.dreame.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration of a Dreamehome cloud account.
+ * Configuration of a Dreamehome or MOVAhome cloud account.
  *
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
 public class DreameAccountConfiguration {
+    public String cloudService = "dreamehome";
     public String username = "";
     public String password = "";
     public String country = "de";

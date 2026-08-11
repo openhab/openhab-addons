@@ -55,7 +55,7 @@ final class DreameApiResponseParser {
             if (element instanceof JsonObject device) {
                 String id = stringValue(device, "did");
                 String model = stringValue(device, "model");
-                if (!id.isBlank() && model.startsWith("dreame.mower.")) {
+                if (!id.isBlank() && isMowerModel(model)) {
                     String displayName = defaultIfBlank(stringValue(device, "name"), stringValue(device, "customName"));
                     if (displayName.isBlank() && device.get("deviceInfo") instanceof JsonObject deviceInfo) {
                         displayName = stringValue(deviceInfo, "displayName");
@@ -67,6 +67,10 @@ final class DreameApiResponseParser {
             }
         }
         return List.copyOf(devices);
+    }
+
+    private static boolean isMowerModel(String model) {
+        return model.startsWith("dreame.mower.") || model.startsWith("mova.mower.");
     }
 
     DreameStatus parseProperties(JsonArray result, List<DreameProperty> requested) {
