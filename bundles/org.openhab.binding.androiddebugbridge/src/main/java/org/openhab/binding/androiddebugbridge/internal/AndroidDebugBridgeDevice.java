@@ -721,7 +721,10 @@ public class AndroidDebugBridgeDevice {
      * aborting a running command is exactly what some of its callers need.
      */
     public void connect() throws AndroidDebugBridgeDeviceException, InterruptedException {
-        commandLock.lock();
+        // Interruptible so cancellation actually aborts a pending attempt: dispose() interrupts the
+        // connection checker and then disconnects, and a plain lock() would let a checker that was
+        // waiting here acquire the lock afterwards and build a fresh connection post-disposal.
+        commandLock.lockInterruptibly();
         try {
             connectInternal();
         } finally {
@@ -772,7 +775,9 @@ public class AndroidDebugBridgeDevice {
         // reported as a stream rejection, and the caller may retry on that.
         AtomicReference<@Nullable Exception> openError = new AtomicReference<>();
         AtomicReference<@Nullable Exception> readError = new AtomicReference<>();
-        commandLock.lock();
+        // Interruptible for the same reason as connect(): a command waiting on the lock must not
+        // resume and run against the device after disposal interrupted it.
+        commandLock.lockInterruptibly();
         try {
             // Read the connection only once the lock is held. Capturing it earlier would let a
             // reconnect replace and close it while this call was still waiting for the lock, so the
