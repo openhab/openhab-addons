@@ -19,7 +19,7 @@
          bundle. Java-WebSocket is an OSGi bundle upstream but is inlined too to keep the feature
          self-contained (only this bundle + openHAB core). gson is provided by core, so it stays a
          normal import and is NOT inlined. -->
-    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, @v1_6-1.1.0.jar, @common-1.0.2.jar, @OCPP-J-1.0.2.jar, @Java-WebSocket-1.5.3.jar</bnd.includeresource>
+    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, @ocpp16-2.0.jar, @ocpp-common-2.0.jar, @ocpp-json-2.0.jar, @Java-WebSocket-1.6.0.jar</bnd.includeresource>
     <!-- The ChargeTime 'common' jar carries SOAP transport classes we never load (JSON only). Their
          javax.xml.bind / javax.xml.soap references were removed from the JDK after Java 8 and are
          not exported by the runtime, so make those imports optional; the bundle resolves without
@@ -28,43 +28,58 @@
   </properties>
 
   <dependencies>
+    <!-- SPIKE: ChargeTime library 2.0 generation (still OCPP 1.6-J: ocpp16 = models+profiles,
+         ocpp-json = transport, ocpp-common = base). slf4j/gson/jaxb come from the platform, so
+         they are excluded here; Java-WebSocket is bumped to 1.6.0 to match ocpp-json 2.0. -->
     <dependency>
       <groupId>eu.chargetime.ocpp</groupId>
-      <artifactId>v1_6</artifactId>
-      <version>1.1.0</version>
+      <artifactId>ocpp16</artifactId>
+      <version>2.0</version>
       <scope>compile</scope>
       <exclusions>
-        <!-- SOAP transport deps: not on the JDK/runtime, not needed for JSON. Kept off the build
-             path; the inlined SOAP bytecode's imports are made optional above. -->
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml.soap</groupId>
-          <artifactId>javax.xml.soap-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>eu.chargetime.ocpp</groupId>
-      <artifactId>OCPP-J</artifactId>
-      <version>1.0.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>eu.chargetime.ocpp</groupId>
-      <artifactId>common</artifactId>
-      <version>1.0.2</version>
+      <artifactId>ocpp-json</artifactId>
+      <version>2.0</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
+          <groupId>com.google.code.gson</groupId>
+          <artifactId>gson</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>javax.xml.soap</groupId>
-          <artifactId>javax.xml.soap-api</artifactId>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.java-websocket</groupId>
+          <artifactId>Java-WebSocket</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>eu.chargetime.ocpp</groupId>
+      <artifactId>ocpp-common</artifactId>
+      <version>2.0</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -72,7 +87,7 @@
     <dependency>
       <groupId>org.java-websocket</groupId>
       <artifactId>Java-WebSocket</artifactId>
-      <version>1.5.3</version>
+      <version>1.6.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

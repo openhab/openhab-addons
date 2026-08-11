@@ -85,6 +85,21 @@
 					LAN only.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="tlsKeystore" type="text">
+				<label>TLS Keystore</label>
+				<description>Path to a PKCS12 keystore holding the server's TLS certificate and key. When set, the OCPP
+					endpoint runs
+					over wss:// (TLS) instead of ws:// — OCPP security profile 2 with a Charger Password, or
+					an encrypted profile 0
+					without. Empty leaves the endpoint plain.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tlsKeystorePassword" type="text">
+				<context>password</context>
+				<label>TLS Keystore Password</label>
+				<description>Password for the TLS keystore (store and key password).</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="tags" type="text" multiple="true">
 				<label>Authorized Tags</label>
 				<description>idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected.</description>

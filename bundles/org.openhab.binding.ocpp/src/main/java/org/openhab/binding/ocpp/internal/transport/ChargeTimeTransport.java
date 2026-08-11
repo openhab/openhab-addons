@@ -13,15 +13,23 @@
 package org.openhab.binding.ocpp.internal.transport;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,12 +51,14 @@ import eu.chargetime.ocpp.ServerEvents;
 import eu.chargetime.ocpp.SessionFactory;
 import eu.chargetime.ocpp.UnsupportedFeatureException;
 import eu.chargetime.ocpp.WebSocketListener;
+import eu.chargetime.ocpp.WssListenerSupport;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
 import eu.chargetime.ocpp.feature.profile.ServerRemoteTriggerProfile;
 import eu.chargetime.ocpp.feature.profile.ServerSmartChargingProfile;
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.model.SessionInformation;
+import eu.chargetime.ocpp.wss.BaseWssFactoryBuilder;
 
 /**
  * {@link OcppTransport} backed by the ChargeTime OCA-OCPP 1.6-J server. This is the only class in
@@ -74,6 +84,10 @@ public class ChargeTimeTransport implements OcppTransport {
 
     private static final long STARTUP_PROBE_TIMEOUT_MILLIS = 3000;
     private static final int PROBE_CONNECT_TIMEOUT_MILLIS = 250;
+    // The library's own JSONConfiguration keys (not exposed as public constants) for the Basic-auth
+    // password-length bounds its WebSocketListener enforces during the handshake.
+    private static final String MIN_BASIC_AUTH_PASSWORD_LENGTH_KEY = "OCPPJ_CP_MIN_PASSWORD_LENGTH";
+    private static final String MAX_BASIC_AUTH_PASSWORD_LENGTH_KEY = "OCPPJ_CP_MAX_PASSWORD_LENGTH";
 
     private final Logger logger = LoggerFactory.getLogger(ChargeTimeTransport.class);
     private final Server server;
@@ -85,7 +99,7 @@ public class ChargeTimeTransport implements OcppTransport {
     private final AtomicBoolean closed = new AtomicBoolean();
 
     public ChargeTimeTransport(OcppServerListener ocppListener, int pingIntervalSeconds, int requestTimeoutSeconds,
-            String authPassword) {
+            String authPassword, String tlsKeystore, String tlsKeystorePassword) {
         this.ocppListener = ocppListener;
         this.authPassword = authPassword;
         FeatureRepository featureRepository = new FeatureRepository();
@@ -114,12 +128,52 @@ public class ChargeTimeTransport implements OcppTransport {
         // ping-based detection stays off (0) unless a positive interval is explicitly configured.
         configuration = configuration.setParameter(JSONConfiguration.PING_INTERVAL_PARAMETER,
                 pingIntervalSeconds > 0 ? pingIntervalSeconds : 0);
+        // A charger that opens its connection with an HTTP Basic-auth header must clear the library's
+        // handshake password-length check (the OCPP profile-1 rule, 16-20 characters) BEFORE this
+        // binding's authenticateSession runs. Some chargers always send that header even with no backend
+        // authentication — a V2C Trydan sends its id with an empty password on every connection — and the
+        // check would then reject a connection we would otherwise accept, before it is ever logged. When
+        // no authPassword is configured (profile 0) relax the bounds so any Basic-auth header is accepted;
+        // authenticateSession still enforces the real credentials when a password IS set (profile 1), so
+        // authentication is not weakened. These are the library's own (non-public) JSONConfiguration keys.
+        if (authPassword.isBlank()) {
+            configuration = configuration.setParameter(MIN_BASIC_AUTH_PASSWORD_LENGTH_KEY, 0);
+            configuration = configuration.setParameter(MAX_BASIC_AUTH_PASSWORD_LENGTH_KEY, Integer.MAX_VALUE);
+        }
 
         // The same subprotocols the library's own JSON server advertises.
         Draft draft = new Draft_6455(List.of(), List.<IProtocol> of(new Protocol("ocpp1.6"), new Protocol("")));
         this.listener = new WebSocketListener(new SessionFactory(featureRepository), configuration, draft);
-        this.server = new Server(listener, featureRepository,
+        if (!tlsKeystore.isBlank()) {
+            // Serve OCPP over TLS (wss://): hand the keystore's SSLContext to the library's WSS factory
+            // before the server opens. With authPassword this is OCPP security profile 2; without it, an
+            // encrypted profile 0. enableWSS has to be called before the listener opens its socket.
+            WssListenerSupport.enableWss(listener,
+                    BaseWssFactoryBuilder.builder().sslContext(sslContext(tlsKeystore, tlsKeystorePassword)));
+        }
+        this.server = new Server(listener,
                 new TimingOutPromiseRepository(ThreadPoolManager.getScheduledPool("ocpp"), requestTimeoutSeconds));
+    }
+
+    /**
+     * Builds an {@link SSLContext} from a PKCS12 keystore holding the server's certificate and key, for
+     * serving OCPP over {@code wss://}.
+     */
+    private static SSLContext sslContext(String keystorePath, String keystorePassword) {
+        try {
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            char[] password = keystorePassword.toCharArray();
+            try (InputStream in = Files.newInputStream(Path.of(keystorePath))) {
+                keyStore.load(in, password);
+            }
+            KeyManagerFactory keyManagers = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagers.init(keyStore, password);
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(keyManagers.getKeyManagers(), null, null);
+            return context;
+        } catch (GeneralSecurityException | IOException e) {
+            throw new IllegalStateException("cannot load TLS keystore '" + keystorePath + "': " + e.getMessage(), e);
+        }
     }
 
     @Override
