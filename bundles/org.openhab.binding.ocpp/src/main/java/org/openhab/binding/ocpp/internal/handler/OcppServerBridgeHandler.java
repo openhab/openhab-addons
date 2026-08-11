@@ -210,7 +210,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     /** The transport backing this server. A seam so a test can supply one without binding a socket. */
     protected OcppTransport createTransport(OcppServerConfiguration serverConfig) {
         return new ChargeTimeTransport(this, serverConfig.pingInterval, serverConfig.requestTimeoutSeconds,
-                serverConfig.authPassword);
+                serverConfig.authPassword, serverConfig.tlsKeystore, serverConfig.tlsKeystorePassword);
     }
 
     // --- charge point registration (called by OcppChargePointHandler) ---

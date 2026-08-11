@@ -42,6 +42,8 @@ The id is whatever path the charger appends to its backend URL — often its ser
 | pingInterval                | integer | WebSocket ping interval (s). A charger that does not answer a ping is disconnected, and many never do — leave at 0 unless yours is known to reply | 0 | no | yes |
 | requestTimeoutSeconds       | integer | Seconds before an unanswered request to a charger fails                     | 30      | no       | yes      |
 | authPassword                | text    | HTTP Basic password chargers must present (username = charge point id), 16–20 visible ASCII characters. Empty disables authentication | (empty) | no | yes |
+| tlsKeystore                 | text    | Path to a PKCS12 keystore with the server's TLS certificate and key. When set, the endpoint runs `wss://` (TLS) instead of `ws://` | (empty) | no | yes |
+| tlsKeystorePassword         | text    | Password for the TLS keystore (store and key)                               | (empty) | no       | yes      |
 | tags                        | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected | (empty) | no     | yes      |
 | chargers                    | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected | (empty) | no | yes |
 
@@ -124,6 +126,10 @@ So if `ON` does nothing, set `remoteStartTag` to a tag your charger accepts, or 
 Most chargers also only start once a vehicle is plugged in, so a `RemoteStart` on an idle connector is often ignored.
 Because `charging` follows the charger's reported status, it also reads `ON` on its own whenever a transaction is running, however it was started.
 
+Stopping has one limitation to be aware of: a `RemoteStop` needs the transaction id the charger assigned when the session began, and openHAB only holds that id for a session it saw start.
+A session started outside openHAB — by the vehicle or the charger's own app, or before the `connector` thing existed, or while openHAB was down — therefore cannot be ended from `charging`: there is no id to stop with, so `OFF` is logged and does nothing.
+To keep stop working, start the charge from openHAB (`charging` `ON`), which makes the transaction tracked; for a session you did not start, suspend the power with `pause` (a 0 A profile needs no transaction) or end it with the `chargepoint`-level `reset` (a reset needs no transaction either, but reboots the whole charger).
+
 `charge-limit` caps the charging current: the value is sent as a `SetChargingProfile` and the channel reflects the applied limit once accepted.
 `pause` suspends charging with a 0 A profile without ending the transaction; switching it off resumes — at your `charge-limit` if one is set, otherwise by removing the cap so the charger returns to its own maximum — distinct from `charging`, which ends the session.
 A pause is a 0 A limit, so a resume must lift the cap rather than send another 0 A, which a charger reads as "stay suspended".
@@ -144,10 +150,61 @@ Bridge ocpp:server:main [ port=8887 ] {
 ### `demo.items`
 
 ```java
-String  Wallbox_Status  "Status [%s]"             { channel="ocpp:connector:main:wallbox:c1:charge-point-status" }
-Switch  Wallbox_Cable   "Cable connected"         { channel="ocpp:connector:main:wallbox:c1:cable-connected" }
-Number:Power  Wallbox_Power "Power [%.0f W]"      { channel="ocpp:connector:main:wallbox:c1:power-active-import" }
-Number:Energy Wallbox_Energy "Energy [%.2f kWh]"  { channel="ocpp:connector:main:wallbox:c1:energy-active-import" }
+String  Wallbox_Status   "Status [%s]"              { channel="ocpp:connector:main:wallbox:c1:charge-point-status" }
+Switch  Wallbox_Cable    "Cable connected"          { channel="ocpp:connector:main:wallbox:c1:cable-connected" }
+Number:Power  Wallbox_Power  "Power [%.0f W]"       { channel="ocpp:connector:main:wallbox:c1:power-active-import" }
+Number:Energy Wallbox_Energy "Energy [%.2f kWh]"    { channel="ocpp:connector:main:wallbox:c1:energy-active-import" }
+
+Switch  Wallbox_Charging "Charging"                 { channel="ocpp:connector:main:wallbox:c1:charging" }
+Switch  Wallbox_Pause    "Pause"                    { channel="ocpp:connector:main:wallbox:c1:pause" }
+Number:ElectricCurrent Wallbox_Limit "Limit [%.0f A]" { channel="ocpp:connector:main:wallbox:c1:charge-limit" }
+Switch  Wallbox_Reset    "Reset charger"            { channel="ocpp:chargepoint:main:wallbox:reset" }
+Switch  Wallbox_Force_Stop "Force stop"
+```
+
+The `reset` channel is on the `chargepoint`, not the connector, and is momentary — the binding pops it back OFF after sending.
+`Wallbox_Force_Stop` is an unbound helper for the rule below.
+
+### `demo.rules`
+
+```java
+// Charge only overnight, using pause — which works even for a session openHAB did not start.
+rule "Resume charging at 23:00"
+when
+    Time cron "0 0 23 ? * *"
+then
+    Wallbox_Pause.sendCommand(OFF)
+end
+
+rule "Pause charging at 07:00"
+when
+    Time cron "0 0 7 ? * *"
+then
+    Wallbox_Pause.sendCommand(ON)
+end
+
+// Follow solar surplus: cap the current to the spare power (single phase, ~230 V).
+// A starting point only; real solar charging also wants hysteresis and a breaker-headroom check.
+rule "Track solar surplus"
+when
+    Item Solar_Surplus_W changed
+then
+    var Number surplus = Solar_Surplus_W.state as Number
+    var int amps = (surplus.doubleValue / 230.0).intValue
+    if (amps < 6)  amps = 6
+    if (amps > 16) amps = 16
+    Wallbox_Limit.sendCommand(amps)
+end
+
+// Stop a session openHAB did not start (no transaction id, so `charging` OFF cannot end it).
+// Cut the power with pause, or end the session with a reset (which reboots the charger).
+rule "Force stop"
+when
+    Item Wallbox_Force_Stop received command ON
+then
+    Wallbox_Pause.sendCommand(ON)
+    // Wallbox_Reset.sendCommand(ON)   // uncomment to end the session instead of only pausing
+end
 ```
 
 ## Troubleshooting
@@ -164,9 +221,28 @@ If you are unsure what the charger actually sends, enable `log:set DEBUG org.ope
 `SuspendedEVSE` means the charge point itself is withholding energy — a charging-profile limit or an authorization result — unlike `SuspendedEV`, which is the vehicle not drawing (battery full, or charging scheduled in the car).
 Check the connector is not left paused and that `charge-limit` is not 0: sending `pause` OFF resumes charging — at your `charge-limit` if one is set, otherwise by clearing the cap so the charger returns to its own maximum.
 
+### A charger never connects and the log shows nothing after start-up
+
+If the server starts (`OCPP JSON server listening`) but no `Charger connected` line ever follows, the charger is not completing the WebSocket handshake, so nothing reaches the binding.
+First rule out the network: from a device on the charger's own network segment (not just any machine), check the openHAB host and port are reachable — `nc -zv <openhab-host> 8887` — and use the host's IP rather than a `.lan` name to rule out DNS.
+A charger that always sends an HTTP Basic-auth header — some send their id with a very short or empty password on every connection, a V2C Trydan being one — is accepted when no `authPassword` is configured, so that is no longer a cause of a silent no-connect (older builds did reject such a charger during the handshake, before the binding saw it).
+
+## Charger-specific notes
+
+Every charger dials `ws://<openhab-host>:<port>/<chargePointId>`; the only real differences are how each vendor's UI presents the URL and the id, and a few per-charger quirks.
+
+| Charger | Configure on the charger | Notes |
+|---------|--------------------------|-------|
+| Phoenix Contact CHARX SEC-3xxx | `ws://<host>:8887/<id>` | No internal meter: set `meterless` on the `chargepoint` and `forceTxDefaultProfile` on the `connector`. Metered externally. |
+| Wallbox Copper SB / Pulsar Plus | `ws://<host>:8887/<id>` | Works with defaults. |
+| Alfen Eve Single Pro | `ws://<host>:8887/<id>` (CSMS URL in the ACE Service Installer) | Its BootNotification model can exceed OCPP's 20-character limit; the binding accepts it rather than refusing the charger. |
+| Mennekes Amtron (Bender controller) | Backend URL `ws://<host>:8887/` plus ChargeBoxIdentity `<id>` in a separate field | The controller joins them into `ws://<host>:8887/<id>`. Do not copy the `/OCPPJProxy/v16/` path from the Bender docs — that is only for their proxy backend. |
+| V2C Trydan | `ws://<host>:8887/<id>` | Sends a short-password HTTP Basic-auth header on every connection; accepted (the binding relaxes the library's password-length check when no `authPassword` is set). |
+
 ## Security
 
 Without `authPassword` the endpoint runs OCPP security profile 0: a plain-text WebSocket that accepts every connection, appropriate only on a trusted LAN.
 Anyone who can reach the port can connect under any charge point id, so restrict exposure by binding a specific interface (`host`) or with firewall rules.
 Setting `authPassword` enables HTTP Basic authentication (security profile 1): a charger must present the password with its charge point id as the username, and other connections are rejected before a session opens.
-The password must be 16–20 visible ASCII characters — the OCPP library rejects other lengths during the handshake, before authentication even runs.
+The `authPassword` must be 16–20 visible ASCII characters (the OCPP profile-1 rule). A charger that sends a Basic-auth header when no `authPassword` is set is accepted whatever its password length, so chargers that always send one still connect.
+Setting `tlsKeystore` (a PKCS12 keystore holding the server's certificate and key) serves the endpoint over `wss://` — OCPP security profile 2 together with `authPassword`, or an encrypted profile 0 without. Client-certificate authentication (profile 3) is not supported.

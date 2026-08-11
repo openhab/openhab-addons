@@ -53,6 +53,14 @@ public class OcppServerConfiguration {
      * username). Empty disables authentication — OCPP security profile 0, trusted-LAN operation.
      */
     public String authPassword = "";
+    /**
+     * Path to a PKCS12 keystore holding the server's TLS certificate and key. When set, the OCPP
+     * endpoint runs over {@code wss://} (TLS) instead of {@code ws://} — OCPP security profile 2 with
+     * {@code authPassword}, or an encrypted profile 0 without. Empty leaves the endpoint plain.
+     */
+    public String tlsKeystore = "";
+    /** Password for the {@link #tlsKeystore} (store and key password). */
+    public String tlsKeystorePassword = "";
     /** idTag whitelist for Authorize / StartTransaction. Empty accepts every tag. */
     public List<String> tags = List.of();
     /** Charge point id allow-list. Empty accepts any charger; otherwise unlisted chargers are closed. */
