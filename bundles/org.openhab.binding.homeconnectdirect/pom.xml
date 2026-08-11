@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>org.eclipse.jetty.ee10.websocket.server,android.util.*;resolution:="optional",sun.*;resolution:="optional"</bnd.importpackage>
-    <jetty.version>12.1.10</jetty.version>
+    <jetty.version>12.1.12</jetty.version>
   </properties>
 
   <dependencies>
