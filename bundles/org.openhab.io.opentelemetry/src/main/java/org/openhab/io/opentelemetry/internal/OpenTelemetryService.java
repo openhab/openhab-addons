@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +31,7 @@ import org.openhab.core.config.core.ConfigUtil;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.monitor.MeterRegistryProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -79,8 +81,12 @@ import io.opentelemetry.sdk.trace.samplers.Sampler;
 public class OpenTelemetryService {
     private final Logger logger = LoggerFactory.getLogger(OpenTelemetryService.class);
 
-    /** Stable within the JVM lifetime; does not change across {@code modified()} reconfigurations. */
-    static final String SERVICE_INSTANCE_ID = UUID.randomUUID().toString();
+    /**
+     * openHAB's persistent per-installation UUID, stored under {@code $OPENHAB_USERDATA}. Falls
+     * back to a fresh UUID if the core UUID file cannot be read or created.
+     */
+    static final String SERVICE_INSTANCE_ID = Objects.requireNonNullElseGet(InstanceUUID.get(),
+            () -> UUID.randomUUID().toString());
 
     private @Nullable BundleContext bundleContext;
 
@@ -89,12 +95,12 @@ public class OpenTelemetryService {
     private @Nullable OpenTelemetryLogListener logListener;
     private @Nullable ServiceRegistration<EventSubscriber> eventListenerRegistration;
 
+    // Metrics pipeline (Micrometer OTLP registry)
+    private @Nullable OtlpMeterRegistry otlpMeterRegistry;
+
     // References
     private @Nullable LogReaderService logReaderService;
     private @Nullable MeterRegistryProvider meterRegistryProvider;
-
-    // Metrics pipeline (Micrometer OTLP registry)
-    private @Nullable OtlpMeterRegistry otlpMeterRegistry;
 
     @Reference
     protected void setLogReaderService(LogReaderService logReaderService) {
@@ -145,13 +151,21 @@ public class OpenTelemetryService {
 
         boolean anyPipelineEnabled = config.logsEnabled || config.metricsEnabled || config.tracesEnabled;
         if (anyPipelineEnabled && config.otlpURL.startsWith("http://")) {
-            logger.warn(
+            logger.info(
                     "OpenTelemetry OTLP endpoint '{}' uses cleartext HTTP. Use HTTPS in production to protect credentials in transit.",
                     config.otlpURL);
         }
 
-        initializeSdk(config);
-        initializeMetrics(config);
+        Map<String, String> headers;
+        try {
+            headers = parseOtlpHeaders(config.otlpHeaders);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid OTLP headers: {}", e.getMessage());
+            return;
+        }
+
+        initializeSdk(config, headers);
+        initializeMetrics(config, headers);
     }
 
     // -------------------------------------------------------------------------
@@ -221,7 +235,8 @@ public class OpenTelemetryService {
     // Logs + traces pipeline (OTel SDK)
     // -------------------------------------------------------------------------
 
-    private @Nullable SdkLoggerProviderBuilder createOtlpLoggerProvider(OpenTelemetryConfiguration config) {
+    private @Nullable SdkLoggerProviderBuilder createOtlpLoggerProvider(OpenTelemetryConfiguration config,
+            Map<String, String> headers) {
         if (!config.logsEnabled) {
             logger.debug("OpenTelemetry logging is disabled.");
             return null;
@@ -239,17 +254,8 @@ public class OpenTelemetryService {
             return null;
         }
 
-        Map<String, String> headers;
-        try {
-            headers = parseOtlpHeaders(config.otlpHeaders);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid OTLP headers: {}", e.getMessage());
-            return null;
-        }
-        if (!headers.isEmpty()) {
-            for (Map.Entry<String, String> header : headers.entrySet()) {
-                logExporterBuilder.addHeader(header.getKey(), header.getValue());
-            }
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            logExporterBuilder.addHeader(header.getKey(), header.getValue());
         }
 
         return SdkLoggerProvider.builder() //
@@ -257,7 +263,8 @@ public class OpenTelemetryService {
     }
 
     @Nullable
-    SdkTracerProvider createSdkTracerProvider(OpenTelemetryConfiguration config, Resource resource) {
+    SdkTracerProvider createSdkTracerProvider(OpenTelemetryConfiguration config, Resource resource,
+            Map<String, String> headers) {
         if (!config.tracesEnabled) {
             return null;
         }
@@ -273,17 +280,8 @@ public class OpenTelemetryService {
             logger.warn("Invalid OTLP traces endpoint: {}", e.getMessage());
             return null;
         }
-        Map<String, String> headers;
-        try {
-            headers = parseOtlpHeaders(config.otlpHeaders);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid OTLP headers: {}", e.getMessage());
-            return null;
-        }
-        if (!headers.isEmpty()) {
-            for (Map.Entry<String, String> header : headers.entrySet()) {
-                spanExporterBuilder.addHeader(header.getKey(), header.getValue());
-            }
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            spanExporterBuilder.addHeader(header.getKey(), header.getValue());
         }
 
         double ratio = clampSamplingRatio(config.tracesSamplingRatio);
@@ -307,7 +305,7 @@ public class OpenTelemetryService {
                 .anyMatch(arg -> arg.contains("opentelemetry-javaagent"));
     }
 
-    private synchronized void initializeSdk(OpenTelemetryConfiguration config) {
+    private synchronized void initializeSdk(OpenTelemetryConfiguration config, Map<String, String> headers) {
         if (openTelemetrySdk != null) {
             logger.debug("OpenTelemetry SDK already initialized.");
             return;
@@ -316,7 +314,7 @@ public class OpenTelemetryService {
         Resource resource = getOtlpResource();
 
         // Build logger provider (nullable if logs disabled)
-        SdkLoggerProviderBuilder loggerProviderBuilder = createOtlpLoggerProvider(config);
+        SdkLoggerProviderBuilder loggerProviderBuilder = createOtlpLoggerProvider(config, headers);
         SdkLoggerProvider loggerProvider = null;
         if (loggerProviderBuilder != null) {
             loggerProviderBuilder.setResource(resource);
@@ -332,7 +330,7 @@ public class OpenTelemetryService {
                         "OTel Java agent detected — event-bus spans will join the agent's pipeline (read-only GlobalOpenTelemetry).");
                 tracer = GlobalOpenTelemetry.get().getTracer("org.openhab.io.opentelemetry");
             } else {
-                tracerProvider = createSdkTracerProvider(config, resource);
+                tracerProvider = createSdkTracerProvider(config, resource, headers);
             }
         }
 
@@ -381,6 +379,10 @@ public class OpenTelemetryService {
     }
 
     private void registerEventListener(Tracer tracer) {
+        if (this.eventListenerRegistration != null) {
+            logger.debug("OpenTelemetry EventSubscriber already registered.");
+            return;
+        }
         BundleContext bc = this.bundleContext;
         if (bc == null) {
             logger.warn("BundleContext not available — event-bus listener not registered.");
@@ -440,7 +442,7 @@ public class OpenTelemetryService {
     }
 
     @SuppressWarnings("null") // implementing unannotated Micrometer OtlpConfig interface
-    private synchronized void initializeMetrics(OpenTelemetryConfiguration config) {
+    private synchronized void initializeMetrics(OpenTelemetryConfiguration config, Map<String, String> headers) {
         if (otlpMeterRegistry != null) {
             logger.debug("OpenTelemetry metrics already initialized.");
             return;
@@ -472,13 +474,6 @@ public class OpenTelemetryService {
         }
 
         Map<String, String> attrs = buildServiceAttributes();
-        Map<String, String> headers;
-        try {
-            headers = parseOtlpHeaders(config.otlpHeaders);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid OTLP headers: {}", e.getMessage());
-            return;
-        }
         final String finalUrl = metricsUrl;
         final Duration finalStep = step;
 

@@ -62,12 +62,6 @@ public class OpenTelemetryLogListenerTest {
         when(bundleEntry.getLoggerName()).thenReturn("org.openhab.io.opentelemetry.internal.OpenTelemetryService");
         listener.logged(bundleEntry);
 
-        // OTel exporter logger — must also be suppressed
-        LogEntry exporterEntry = mock(LogEntry.class);
-        when(exporterEntry.getLogLevel()).thenReturn(LogLevel.WARN);
-        when(exporterEntry.getLoggerName()).thenReturn("io.opentelemetry.exporter.internal.otlp.OtlpHttpExporter");
-        listener.logged(exporterEntry);
-
         verify(otelLogger, never()).logRecordBuilder();
 
         // Unrelated logger — must pass through
@@ -189,7 +183,7 @@ public class OpenTelemetryLogListenerTest {
     }
 
     @Test
-    public void testOpenTelemetryInternalLoggingIgnored() {
+    public void testOpenTelemetryExporterLoggingIgnored() {
         OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
 
         LogEntry logEntry = mock(LogEntry.class);
@@ -219,5 +213,17 @@ public class OpenTelemetryLogListenerTest {
         listener.logged(logEntry);
 
         verifyNoInteractions(otelLogger);
+    }
+
+    @Test
+    public void testRuntimeExceptionDuringLoggingIsSwallowed() {
+        when(otelLogger.logRecordBuilder()).thenThrow(new RuntimeException("boom"));
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        LogEntry logEntry = mock(LogEntry.class);
+        when(logEntry.getLogLevel()).thenReturn(LogLevel.INFO);
+        when(logEntry.getLoggerName()).thenReturn("org.openhab.test");
+
+        assertDoesNotThrow(() -> listener.logged(logEntry));
     }
 }

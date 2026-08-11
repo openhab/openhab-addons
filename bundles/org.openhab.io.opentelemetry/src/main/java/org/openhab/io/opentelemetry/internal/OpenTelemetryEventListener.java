@@ -28,21 +28,9 @@ import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 
 /**
- * Subscribes to the entire openHAB event bus and emits a flat OTLP span per event.
- *
- * <p>
- * Spans are flat by design: openHAB's event bus is fire-and-forget (async dispatch on a
- * dedicated handler thread), so there is no propagated call context to attach to. {@link Context#root()}
- * is used as the parent so spans are always root spans even if a stale context is active on
- * the handler thread. Volume can be controlled via {@code tracesSamplingRatio} in the config.
- *
- * <p>
- * The handler is intentionally non-blocking: span construction and hand-off to the
- * {@code BatchSpanProcessor} are O(1) operations; all I/O happens asynchronously.
- *
- * <p>
- * Registered and unregistered dynamically by {@link OpenTelemetryService} via the OSGi service
- * registry — not a {@code @Component}.
+ * The {@link OpenTelemetryEventListener} class subscribes to the entire openHAB event bus and
+ * emits a flat root span per event, since the event bus is fire-and-forget and has no call
+ * context to attach to.
  *
  * @author Florian Lettner - Initial contribution
  */

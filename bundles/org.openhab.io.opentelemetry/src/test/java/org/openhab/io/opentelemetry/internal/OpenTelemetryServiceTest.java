@@ -14,10 +14,12 @@ package org.openhab.io.opentelemetry.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.id.InstanceUUID;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Tags;
@@ -195,12 +197,9 @@ public class OpenTelemetryServiceTest {
     }
 
     @Test
-    public void testServiceInstanceIdIsStable() {
-        // Same static ID across multiple accesses
-        String id1 = OpenTelemetryService.SERVICE_INSTANCE_ID;
-        String id2 = OpenTelemetryService.SERVICE_INSTANCE_ID;
-        assertEquals(id1, id2);
-        assertFalse(id1.isBlank());
+    public void testServiceInstanceIdUsesOpenHabInstanceUuid() {
+        // Must delegate to core's persistent InstanceUUID, not a locally generated value
+        assertEquals(InstanceUUID.get(), OpenTelemetryService.SERVICE_INSTANCE_ID);
     }
 
     @Test
@@ -231,7 +230,8 @@ public class OpenTelemetryServiceTest {
         config.tracesEnabled = true;
         config.otlpURL = "ftp://host";
         config.tracesEndpoint = "/v1/traces";
-        assertNull(new OpenTelemetryService().createSdkTracerProvider(config, Resource.empty()));
+        assertNull(
+                new OpenTelemetryService().createSdkTracerProvider(config, Resource.empty(), Collections.emptyMap()));
     }
 
     @Test

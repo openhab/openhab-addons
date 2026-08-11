@@ -11,7 +11,7 @@ Running a collector in front of your backend is optional but recommended when yo
 With a collector running, set openHAB's `otlpURL` to the collector's HTTP endpoint (e.g. `http://localhost:4318`) and leave `otlpHeaders` empty.
 The collector owns all routing, authentication, and backend-specific tuning.
 
-:::note
+:::tip Note
 The Collector is an independent process — it is not part of openHAB and is not installed by the OpenTelemetry add-on.
 You run it alongside openHAB, for example via Docker.
 :::
@@ -22,7 +22,7 @@ The Collector is configured with a YAML file that defines receivers, processors,
 
 ### Forwarding to an OTLP Backend
 
-The following configuration receives all three signals from openHAB and forwards them to any OTLP-compatible backend.
+The following configuration receives logs, metrics & traces from openHAB and forwards them to any OTLP-compatible backend.
 Backend credentials are supplied via environment variables so they stay out of the config file.
 
 Create an `otelcol-config.yaml`:
@@ -63,7 +63,7 @@ service:
       exporters: [otlphttp]
 ```
 
-:::note
+:::tip Note
 `cumulativetodelta` is provided by the [OpenTelemetry Collector Contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib) distribution.
 Use the `otel/opentelemetry-collector-contrib` Docker image (see below) rather than the base `otel/opentelemetry-collector` image.
 :::
@@ -106,7 +106,7 @@ service:
 
 ### Docker Compose
 
-Create a `docker-compose.yaml` alongside your `otelcol-config.yaml`:
+Create a `compose.yaml` alongside your `otelcol-config.yaml`:
 
 ```yaml
 services:
@@ -117,13 +117,13 @@ services:
     volumes:
       - ./otelcol-config.yaml:/etc/otelcol/config.yaml
     ports:
-      - "4318:4318"   # OTLP HTTP receiver — openHAB sends here
+      - "4318:4318" # OTLP HTTP receiver — openHAB sends here
     environment:
       - OTLP_BACKEND_ENDPOINT=${OTLP_BACKEND_ENDPOINT}
       - OTLP_AUTH_HEADER=${OTLP_AUTH_HEADER}
 ```
 
-Set the environment variables in a `.env` file next to the `docker-compose.yaml`:
+Set the environment variables in a `.env` file next to the `compose.yaml`:
 
 ```ini
 OTLP_BACKEND_ENDPOINT=https://otlp.example.com
@@ -147,7 +147,7 @@ docker compose logs -f
 Once the collector is running, configure the OpenTelemetry add-on to point at it:
 
 ```ini
-# $OPENHAB_CONF/services/org.openhab.opentelemetry.cfg
+# $OPENHAB_CONF/services/opentelemetry.cfg
 otlpURL=http://localhost:4318
 
 # otlpHeaders is not needed — the collector holds backend credentials

@@ -7,7 +7,7 @@ The [grafana/otel-lgtm](https://github.com/grafana/docker-otel-lgtm) container i
 
 Configure openHAB with the URL of your LGTM Stack, e.g., `http://localhost:4318`, to send logs, metrics, and traces.
 
-:::note
+:::tip Note
 Leave `metricsAggregationTemporality` at its default value of `CUMULATIVE` when using this stack.
 :::
 

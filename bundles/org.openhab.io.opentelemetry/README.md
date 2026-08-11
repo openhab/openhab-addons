@@ -26,7 +26,7 @@ The service attaches the following resource attributes to all exported signals:
 | `service.name` | `openHAB` |
 | `service.namespace` | `org.openhab` |
 | `service.version` | The running openHAB version |
-| `service.instance.id` | A stable UUID generated once per JVM lifetime (preserved across reconfigurations) |
+| `service.instance.id` | openHAB's persistent per-installation UUID (survives restarts) |
 | `os.name` | The host Operating System name |
 | `os.version` | The host Operating System version |
 | `host.name` | The system hostname |
@@ -45,7 +45,7 @@ Each log record carries the following attributes:
 | `exception.message` | The exception's message (when applicable) |
 | `exception.stacktrace` | The complete Java stack trace (when applicable) |
 
-:::note
+:::tip Note
 Logs emitted by the OpenTelemetry service itself and the OTLP exporter are intentionally suppressed to prevent an export-failure feedback loop (for example, a transient HTTP 403 being re-ingested and re-exported indefinitely).
 :::
 
@@ -56,7 +56,7 @@ Meters are included when they carry the `openhab_core_metric=true` tag, which op
 This covers openHAB domain meters (thing state, rule executions, item events), JVM metrics, processor and thread-pool metrics.
 Meters from unrelated add-ons or third-party libraries are excluded regardless of their name.
 
-:::note
+:::tip Note
 The metrics pipeline uses Micrometer's naming conventions (snake_case with `.` separators), not the OTel semantic conventions for metrics.
 Use `CUMULATIVE` (the default) for most backends and when routing through an OTel Collector.
 Use `DELTA` when pushing directly to a backend whose data model requires delta-encoded metrics — consult your backend's documentation.
@@ -101,8 +101,8 @@ The OpenTelemetry service can be configured via Main UI (_Settings_ → _Add-on 
 | `otlpURL` | OTLP endpoint to push telemetry to. Set to a local OTel Collector (e.g. `http://localhost:4318`) or directly to a backend ingest URL. All per-signal endpoints are resolved against this base URL. | `http://localhost:4318` |
 | `otlpHeaders` | Comma-separated authentication headers, e.g. `Authorization=Bearer token`. Only needed for direct-to-backend deployments — leave empty when using a collector. Stored as a masked secret. | |
 
-:::warning Cleartext HTTP
-If `otlpURL` uses `http://`, a warning is logged at startup. Use HTTPS in production to protect credentials in transit.
+:::tip Note
+If `otlpURL` uses `http://`, this is logged at startup. Use HTTPS in production to protect credentials in transit.
 :::
 
 The service supports environment variable substitution in all parameters using the `${ENV:MY_ENV_VAR}` syntax.
@@ -133,7 +133,7 @@ The service supports environment variable substitution in all parameters using t
 
 ### Configuration File Example
 
-To configure the service via file, create or modify `$OPENHAB_CONF/services/org.openhab.opentelemetry.cfg`:
+To configure the service via file, create or modify `$OPENHAB_CONF/services/opentelemetry.cfg`:
 
 ```ini
 # Base URL of your OTLP endpoint or collector
@@ -192,6 +192,6 @@ The agent's own JVM metrics instrumentation overlaps with this bundle's Micromet
 
 When running both, consider disabling `logsEnabled` (the agent exports logs) while keeping `metricsEnabled` and `tracesEnabled` (the agent does not see openHAB's Micrometer meters or event-bus events).
 
-:::note
+:::tip Note
 The OTel Java agent must be present at JVM launch time and cannot be attached to a running instance. A full openHAB restart is required after adding the `-javaagent` argument.
 :::
