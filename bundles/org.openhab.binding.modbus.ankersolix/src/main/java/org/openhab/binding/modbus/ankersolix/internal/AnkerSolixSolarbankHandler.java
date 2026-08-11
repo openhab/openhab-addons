@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -46,7 +47,8 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 10208, 58),
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 32768, 7),
             new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 10060, 13),
-            new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 10074, 8));
+            new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 10074, 8),
+            new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 60000, 4));
 
     private static final Map<String, Integer> OPERATING_MODE_VALUES = Map.ofEntries(Map.entry("self_consumption", 0),
             Map.entry("tou_mode", 1), Map.entry("third_party_control", 3), Map.entry("custom_mode", 4),
@@ -107,11 +109,62 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
                 logger.warn("Unsupported setpoint command type: {}", command.getClass().getSimpleName());
                 return;
             }
+            if (setpointValue < 0 || setpointValue > 10000) {
+                logger.warn("Unsupported setpoint value: {}", setpointValue);
+                return;
+            }
 
             int signedValue = toSignedSetpoint(setpointValue);
             writeInt32Holding(10071, signedValue);
             setShadowState(CHANNEL_BATTERY_POWER_SETPOINT,
                     new QuantityType<>(BigDecimal.valueOf(Math.abs(setpointValue)), Units.WATT));
+            return;
+        }
+
+        if (CHANNEL_BACKUP_SOC_ENABLE.equals(channelId)) {
+            if (command instanceof OnOffType onOffType) {
+                int value = onOffType == OnOffType.ON ? 1 : 0;
+                writeInt16Holding(60003, value);
+                setShadowState(CHANNEL_BACKUP_SOC_ENABLE, onOffType);
+            } else {
+                logger.warn("Unsupported backup SOC enable command: {}", command);
+            }
+            return;
+        }
+
+        if (CHANNEL_CHARGING_LIMIT_SOC.equals(channelId)) {
+            Integer value = parseSetpointCommand(command);
+            if (value != null && value >= 80 && value <= 100) {
+                writeInt16Holding(60000, value);
+                setShadowState(CHANNEL_CHARGING_LIMIT_SOC,
+                        new QuantityType<>(BigDecimal.valueOf(value), Units.PERCENT));
+            } else {
+                logger.warn("Unsupported charging limit SOC command: {}", command);
+            }
+            return;
+        }
+
+        if (CHANNEL_DISCHARGE_LIMIT_SOC.equals(channelId)) {
+            Integer value = parseSetpointCommand(command);
+            if (value != null && value >= 0 && value <= 20) {
+                writeInt16Holding(60001, value);
+                setShadowState(CHANNEL_DISCHARGE_LIMIT_SOC,
+                        new QuantityType<>(BigDecimal.valueOf(value), Units.PERCENT));
+            } else {
+                logger.warn("Unsupported discharge limit SOC command: {}", command);
+            }
+            return;
+        }
+
+        if (CHANNEL_BACKUP_RESERVE_SOC.equals(channelId)) {
+            Integer value = parseSetpointCommand(command);
+            if (value != null && value >= 0 && value <= 100) {
+                writeInt16Holding(60002, value);
+                setShadowState(CHANNEL_BACKUP_RESERVE_SOC,
+                        new QuantityType<>(BigDecimal.valueOf(value), Units.PERCENT));
+            } else {
+                logger.warn("Unsupported backup reserve SOC command: {}", command);
+            }
         }
     }
 
@@ -202,6 +255,20 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
                     BigDecimal.valueOf(cumulativeDischargeRaw).divide(BigDecimal.TEN), Units.KILOWATT_HOUR));
         }
 
+        State backupSocEnableShadow = getShadowState(CHANNEL_BACKUP_SOC_ENABLE);
+        if (backupSocEnableShadow instanceof OnOffType onOffType) {
+            updateChannelState(CHANNEL_BACKUP_SOC_ENABLE, onOffType);
+        } else {
+            Integer backupSocEnableRaw = readUInt16(60003);
+            if (backupSocEnableRaw != null) {
+                updateChannelState(CHANNEL_BACKUP_SOC_ENABLE, backupSocEnableRaw == 1 ? OnOffType.ON : OnOffType.OFF);
+            }
+        }
+
+        updateSocSettingChannel(CHANNEL_CHARGING_LIMIT_SOC, 60000);
+        updateSocSettingChannel(CHANNEL_DISCHARGE_LIMIT_SOC, 60001);
+        updateSocSettingChannel(CHANNEL_BACKUP_RESERVE_SOC, 60002);
+
         State modeShadow = getShadowState(CHANNEL_OPERATING_MODE);
         if (modeShadow != null) {
             updateChannelState(CHANNEL_OPERATING_MODE, modeShadow);
@@ -245,5 +312,18 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
             return decimalType.intValue();
         }
         return null;
+    }
+
+    private void updateSocSettingChannel(String channelId, int registerAddress) {
+        State shadow = getShadowState(channelId);
+        if (shadow != null) {
+            updateChannelState(channelId, shadow);
+            return;
+        }
+
+        Integer value = readUInt16(registerAddress);
+        if (value != null) {
+            updateChannelState(channelId, new QuantityType<>(BigDecimal.valueOf(value), Units.PERCENT));
+        }
     }
 }
