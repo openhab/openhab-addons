@@ -1443,7 +1443,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private synchronized void warnDeprecatedChannel(String channelId, String replacementChannelId) {
-        if (!isLinked(channelId)) {
+        String id = channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
+        if (!isLinked(id)) {
             return;
         }
         long now = System.currentTimeMillis();
