@@ -479,6 +479,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
 
     @Override
     public void thingUpdated(Thing thing) {
+        this.thing = thing;
         IPBridgeConfig newConfig = getConfigAs(IPBridgeConfig.class);
         boolean validConfig = validConfiguration(newConfig);
         boolean needsReconnect = validConfig && !this.config.sameConnectionParameters(newConfig);
@@ -487,7 +488,6 @@ public class IPBridgeHandler extends LutronBridgeHandler {
             dispose();
         }
 
-        this.thing = thing;
         this.config = newConfig;
 
         if (needsReconnect) {
