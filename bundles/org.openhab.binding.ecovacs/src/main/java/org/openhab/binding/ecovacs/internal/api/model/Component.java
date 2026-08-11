@@ -23,7 +23,8 @@ public enum Component {
     SIDE_BRUSH("SideBrush", "sideBrush"),
     DUST_CASE_HEAP("DustCaseHeap", "heap"),
     UNIT_CARE("" /* not supported in XML */, "unitCare"),
-    ROUND_MOP("" /* not supported in XML */, "roundMop");
+    ROUND_MOP("" /* not supported in XML */, "roundMop"),
+    BLADE("" /* mower only, not supported in XML */, "blade");
 
     public final String xmlValue;
     public final String jsonValue;

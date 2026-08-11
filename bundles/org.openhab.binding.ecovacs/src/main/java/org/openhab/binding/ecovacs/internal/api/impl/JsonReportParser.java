@@ -32,6 +32,7 @@ import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -54,6 +55,13 @@ class JsonReportParser implements ReportParser {
 
     @Override
     public void handleMessage(String eventName, String payload) throws DataParsingException {
+        // Handle fwburypoint events separately - they have a different body structure
+        // (fields directly in body, not nested in body.data)
+        if (eventName.equals("onfwburypoint-bd_task-mow-auto-stop")) {
+            handleMowTaskStop(payload);
+            return;
+        }
+
         JsonResponsePayloadWrapper response;
         try {
             response = gson.fromJson(payload, JsonResponsePayloadWrapper.class);
@@ -93,7 +101,7 @@ class JsonReportParser implements ReportParser {
                 if (mode == null) {
                     throw new DataParsingException("Could not get clean mode from response " + payload);
                 }
-                String area = report.cleanState != null ? report.cleanState.areaDefinition : null;
+                String area = report.cleanState != null ? report.cleanState.getAreaDefinition() : null;
                 handleCleanModeChange(mode, area);
                 break;
             }
@@ -121,7 +129,11 @@ class JsonReportParser implements ReportParser {
             }
             case "stats": {
                 StatsReport report = payloadAs(response, StatsReport.class);
-                listener.onCleaningStatsUpdated(device, report.area, report.timeInSeconds);
+                if (report.mowedArea > 0) {
+                    listener.onMowingStatsUpdated(device, report.mowedArea, report.timeInSeconds);
+                } else {
+                    listener.onCleaningStatsUpdated(device, report.area, report.timeInSeconds);
+                }
                 break;
             }
             case "waterinfo": {
@@ -138,10 +150,9 @@ class JsonReportParser implements ReportParser {
                 handleCleanModeChange(mode, null);
                 break;
             }
-            // more possible events (unused for now):
-            // - "evt" -> EventReport
-            // - "lifespan" -> ComponentLifeSpanReport
-            // - "speed" -> SpeedReport
+            default:
+                logger.trace("{}: Ignoring unhandled event '{}': {}", device.getSerialNumber(), eventName, payload);
+                break;
         }
     }
 
@@ -160,5 +171,31 @@ class JsonReportParser implements ReportParser {
             throw new DataParsingException("Null payload in response " + response);
         }
         return payload;
+    }
+
+    private void handleMowTaskStop(String payload) {
+        try {
+            JsonObject root = gson.fromJson(payload, JsonObject.class);
+            if (root == null || !root.has("body")) {
+                return;
+            }
+            JsonObject body = root.getAsJsonObject("body");
+            if (body == null || !body.has("mowedArea")) {
+                return;
+            }
+            // mowedArea is in m² (float), time is in seconds (float), ts is epoch milliseconds (string)
+            double mowedAreaSqM = body.get("mowedArea").getAsDouble();
+            double timeSeconds = body.has("time") ? body.get("time").getAsDouble() : 0;
+            long startTimestampMs = body.has("ts") ? Long.parseLong(body.get("ts").getAsString()) : 0;
+            long startTimestamp = startTimestampMs / 1000;
+
+            // Convert area to cm² (int) and time to seconds (int) to match the existing callback signature
+            int areaSqCm = (int) Math.round(mowedAreaSqM * 10000);
+            int durationSeconds = (int) Math.round(timeSeconds);
+
+            listener.onMowingSessionFinished(device, startTimestamp, durationSeconds, areaSqCm);
+        } catch (Exception e) {
+            logger.debug("{}: Could not parse mow task stop event: {}", device.getSerialNumber(), e.getMessage());
+        }
     }
 }

@@ -62,10 +62,15 @@ public class PortalIotCommandRequest {
         @SerializedName("tzm")
         public final int tzm = 480;
         @SerializedName("ver")
-        public final String version = "0.0.50";
+        public final String version;
 
         public JsonPayloadHeader() {
-            timestamp = System.currentTimeMillis();
+            this("0.0.50");
+        }
+
+        public JsonPayloadHeader(String version) {
+            this.timestamp = System.currentTimeMillis();
+            this.version = version;
         }
     }
 }

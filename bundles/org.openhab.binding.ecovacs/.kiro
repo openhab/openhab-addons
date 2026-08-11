@@ -1,0 +1,33 @@
+# Ecovacs Binding - Development Notes
+
+## Lessons Learned from PR #21129 Review (maniac103)
+
+### Code Style & Architecture
+- **No empty constructors** — Java provides default no-arg constructors. Don't add them explicitly unless they do something.
+- **No AI-typical comments** — Avoid comments that over-explain "why something isn't here" or that reference other layers of abstraction. Comments should explain non-obvious logic, not justify architecture decisions inline.
+- **Respect abstraction boundaries** — Lower-level code (parser, API layer) should not reference or be aware of handler-level concerns.
+- **Avoid repeated try-catch blocks** — Use helper methods to reduce boilerplate. If the pattern is "try command, catch and log", extract a reusable `pollCommand()` helper.
+- **Consider base classes for shared behavior** — When two handlers share significant code (init, teardown, reconnection, battery, errors), consider an abstract base class. Note this as a TODO if too risky for the current PR.
+- **Prefer separate callbacks over overloaded parameters** — Don't add device-specific parameters to shared interfaces (e.g. adding `mowedArea` to `onCleaningStatsUpdated`). Instead, create a separate callback (`onMowingStatsUpdated`) and dispatch based on the data.
+- **Name callbacks by what they represent** — `onMowingSessionFinished()` is better than `onLastCleanStatsUpdated()`. Names should convey when/why the event fires, not describe the data structure.
+
+### Data & Configuration Files
+- **NEVER let AI rewrite large JSON/data files** — Always start from the original file and make surgical additions only. AI tends to drop entries when rewriting large files.
+- **supported_device_list.json changes should be minimal** — Only add new fields to existing entries or append new entries. Never reorder, restructure, or remove existing entries.
+- **Mandatory fields should not be @Nullable** — If a field must always be present (like `deviceType` once added to all entries), make it non-nullable and remove defensive null-checks.
+
+### Build & Dependencies
+- **Don't add optional resolution to required dependencies** — If a dependency (like smack/XMPP) is needed at runtime, don't mark it as `resolution:=optional` in bnd imports.
+- **Test on the target branch** — If the PR targets `main`, make sure it builds there. Don't add workarounds for local deployment issues into the PR.
+
+### Documentation
+- **Don't add footnotes for unverified capability differences** — If you can't confirm which models lack which features, use a single generic note rather than per-feature footnotes.
+- **Remove remarks that become redundant** — If a change makes documentation self-evident (e.g. all entries now have deviceType), remove hints that were only needed before the change.
+
+### DTO & Serialization
+- **Use DTOs over manual JSON parsing when possible** — If you only need a few fields, a simple DTO with those fields works fine. Gson ignores unknown fields by default.
+- **Drop @SerializedName when field name matches JSON key** — The annotation is only needed when the Java field name differs from the JSON key.
+
+### General PR Hygiene
+- **Keep PRs focused** — Large PRs get scrutinized more. Separate refactoring from feature additions when possible.
+- **Verify data file changes with diff** — Always diff large data files against the original to ensure nothing was accidentally removed.

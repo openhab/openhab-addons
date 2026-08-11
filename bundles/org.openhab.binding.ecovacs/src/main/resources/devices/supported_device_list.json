@@ -8,7 +8,8 @@
             "mopping_system",
             "main_brush",
             "clean_speed_control"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT OZMO 601",
@@ -20,7 +21,6 @@
         "deviceClass": "16wdph",
         "deviceClassLink": "dl8fht"
     },
-
     {
         "modelName": "DEEBOT OZMO 610 Series",
         "deviceClass": "130",
@@ -30,9 +30,9 @@
             "mopping_system",
             "main_brush",
             "single_room_cleaning"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
-
     {
         "modelName": "DEEBOT 710",
         "deviceClass": "uv242z",
@@ -41,7 +41,8 @@
         "capabilities": [
             "main_brush",
             "clean_speed_control"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT 711",
@@ -58,7 +59,6 @@
         "deviceClass": "eyi9jv",
         "deviceClassLink": "uv242z"
     },
-
     {
         "modelName": "DEEBOT 900 Series",
         "deviceClass": "ls1ok3",
@@ -70,9 +70,9 @@
             "custom_area_cleaning",
             "clean_speed_control",
             "mapping"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
-
     {
         "modelName": "DEEBOT OZMO 900 Series",
         "deviceClass": "y79a7u",
@@ -85,14 +85,14 @@
             "custom_area_cleaning",
             "clean_speed_control",
             "mapping"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT OZMO 905",
         "deviceClass": "2pv572",
         "deviceClassLink": "y79a7u"
     },
-
     {
         "modelName": "DEEBOT OZMO/PRO 930 Series",
         "deviceClass": "115",
@@ -104,18 +104,17 @@
             "spot_area_cleaning",
             "custom_area_cleaning",
             "mapping"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
-
     {
         "modelName": "DEEBOT Slim2 Series",
         "deviceClass": "123",
         "protoVersion": "xml",
         "usesMqtt": false,
-        "capabilities": [
-        ]
+        "capabilities": [],
+        "deviceType": "vacuum"
     },
-
     {
         "modelName": "DEEBOT OZMO Slim10 Series",
         "deviceClass": "02uwxm",
@@ -124,9 +123,9 @@
         "capabilities": [
             "mopping_system",
             "clean_speed_control"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
-
     {
         "modelName": "DEEBOT OZMO 950 Series",
         "deviceClass": "yna5xi",
@@ -141,7 +140,8 @@
             "voice_reporting",
             "read_network_info",
             "mapping"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT OZMO 920",
@@ -153,7 +153,6 @@
         "deviceClass": "9rft3c",
         "deviceClassLink": "yna5xi"
     },
-
     {
         "modelName": "DEEBOT N8",
         "deviceClass": "n6cwdb",
@@ -169,7 +168,8 @@
             "read_network_info",
             "unit_care_lifespan",
             "mapping"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT N3 MAX",
@@ -201,7 +201,6 @@
         "deviceClass": "z0gd1j",
         "deviceClassLink": "n6cwdb"
     },
-
     {
         "modelName": "DEEBOT N8+",
         "deviceClass": "b2jqs4",
@@ -218,14 +217,14 @@
             "unit_care_lifespan",
             "auto_empty_station",
             "mapping"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT N8+",
         "deviceClass": "7bryc5",
         "deviceClassLink": "b2jqs4"
     },
-
     {
         "modelName": "DEEBOT OZMO T8",
         "deviceClass": "h18jkh",
@@ -242,7 +241,8 @@
             "unit_care_lifespan",
             "true_detect_3d",
             "mapping"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT OZMO T8",
@@ -309,7 +309,6 @@
         "deviceClass": "s1f8g7",
         "deviceClassLink": "h18jkh"
     },
-
     {
         "modelName": "DEEBOT OZMO T8+",
         "deviceClass": "fqxoiu",
@@ -327,7 +326,8 @@
             "true_detect_3d",
             "mapping",
             "auto_empty_station"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT OZMO T8+",
@@ -364,7 +364,6 @@
         "deviceClass": "ifbw08",
         "deviceClassLink": "fqxoiu"
     },
-
     {
         "modelName": "DEEBOT T9+",
         "deviceClass": "lhbd50",
@@ -383,7 +382,8 @@
             "mapping",
             "auto_empty_station",
             "uses_clean_results_log_api"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT T9+",
@@ -415,7 +415,6 @@
         "deviceClass": "c2of2s",
         "deviceClassLink": "lhbd50"
     },
-
     {
         "modelName": "DEEBOT T10",
         "deviceClass": "jtmf04",
@@ -433,14 +432,14 @@
             "true_detect_3d",
             "mapping",
             "uses_clean_results_log_api"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT N10",
         "deviceClass": "m1wkuw",
         "deviceClassLink": "jtmf04"
     },
-
     {
         "modelName": "DEEBOT T10 PLUS",
         "deviceClass": "rss8xk",
@@ -459,7 +458,8 @@
             "mapping",
             "auto_empty_station",
             "uses_clean_results_log_api"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT T10 PLUS",
@@ -476,7 +476,6 @@
         "deviceClass": "clojes",
         "deviceClassLink": "rss8xk"
     },
-
     {
         "modelName": "DEEBOT T10 TURBO",
         "deviceClass": "9s1s80",
@@ -495,7 +494,8 @@
             "true_detect_3d",
             "mapping",
             "uses_clean_results_log_api"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT T10 TURBO",
@@ -522,7 +522,6 @@
         "deviceClass": "s523z1",
         "deviceClassLink": "9s1s80"
     },
-
     {
         "modelName": "DEEBOT T10 OMNI",
         "deviceClass": "lx3j7m",
@@ -543,7 +542,8 @@
             "auto_empty_station",
             "air_drying",
             "uses_clean_results_log_api"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT X1 OMNI",
@@ -565,7 +565,6 @@
         "deviceClass": "bro5wu",
         "deviceClassLink": "lx3j7m"
     },
-
     {
         "modelName": "DEEBOT X1 PLUS",
         "deviceClass": "n4gstt",
@@ -584,9 +583,9 @@
             "mapping",
             "auto_empty_station",
             "uses_clean_results_log_api"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
-
     {
         "modelName": "DEEBOT T20 OMNI",
         "deviceClass": "p1jij8",
@@ -606,7 +605,8 @@
             "air_drying",
             "true_detect_3d",
             "mapping"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT T20 OMNI",
@@ -668,7 +668,6 @@
         "deviceClass": "py3qif",
         "deviceClassLink": "p1jij8"
     },
-
     {
         "modelName": "DEEBOT U2",
         "deviceClass": "ipzjy0",
@@ -680,7 +679,8 @@
             "clean_speed_control",
             "voice_reporting",
             "read_network_info"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT U2",
@@ -752,7 +752,6 @@
         "deviceClass": "zjna8m",
         "deviceClassLink": "ipzjy0"
     },
-
     {
         "modelName": "DEEBOT X2",
         "deviceClass": "e6ofmn",
@@ -774,7 +773,8 @@
             "auto_empty_station",
             "air_drying",
             "uses_clean_results_log_api"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT X2 OMNI",
@@ -791,7 +791,6 @@
         "deviceClass": "ip3mmy",
         "deviceClassLink": "e6ofmn"
     },
-
     {
         "modelName": "DEEBOT T30 OMNI",
         "deviceClass": "z4lvk7",
@@ -813,7 +812,8 @@
             "auto_empty_station",
             "air_drying",
             "uses_clean_results_log_api"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT T30 OMNI",
@@ -945,7 +945,6 @@
         "deviceClass": "87swps",
         "deviceClassLink": "z4lvk7"
     },
-
     {
         "modelName": "DEEBOT T50 PRO OMNI",
         "deviceClass": "czjwet",
@@ -968,9 +967,9 @@
             "air_drying",
             "uses_clean_results_log_api",
             "custom_water_amount"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
-
     {
         "modelName": "DEEBOT X8 PRO OMNI",
         "deviceClass": "n0vyif",
@@ -994,11 +993,118 @@
             "air_drying",
             "uses_clean_results_log_api",
             "custom_water_amount"
-        ]
+        ],
+        "deviceType": "vacuum"
     },
     {
         "modelName": "DEEBOT X8 OMNI",
         "deviceClass": "4bx3w9",
         "deviceClassLink": "n0vyif"
+    },
+    {
+        "modelName": "GOAT O500 Panorama",
+        "deviceClass": "300lc5",
+        "deviceType": "mower",
+        "protocolVersion": "JSON_V2",
+        "usesMqtt": true,
+        "capabilities": [
+            "edge_mowing",
+            "zone_mowing",
+            "mowing",
+            "cutting_height",
+            "voice_reporting",
+            "true_detect_3d",
+            "safe_protect",
+            "child_lock",
+            "moveup_warning",
+            "read_network_info"
+        ]
+    },
+    {
+        "modelName": "GOAT G1-800",
+        "deviceClass": "guzput",
+        "deviceType": "mower",
+        "protocolVersion": "JSON_V2",
+        "usesMqtt": true,
+        "capabilities": [
+            "edge_mowing",
+            "zone_mowing",
+            "mowing",
+            "cutting_height",
+            "voice_reporting",
+            "true_detect_3d",
+            "safe_protect",
+            "child_lock",
+            "read_network_info"
+        ]
+    },
+    {
+        "modelName": "GOAT O800 RTK",
+        "deviceClass": "2px96q",
+        "deviceType": "mower",
+        "protocolVersion": "JSON_V2",
+        "usesMqtt": true,
+        "capabilities": [
+            "edge_mowing",
+            "zone_mowing",
+            "mowing",
+            "cutting_height",
+            "voice_reporting",
+            "true_detect_3d",
+            "safe_protect",
+            "child_lock",
+            "moveup_warning",
+            "read_network_info"
+        ]
+    },
+    {
+        "modelName": "GOAT G1",
+        "deviceClass": "77atlz",
+        "deviceClassLink": "guzput"
+    },
+    {
+        "modelName": "GOAT G1",
+        "deviceClass": "5xu9h3",
+        "deviceClassLink": "guzput"
+    },
+    {
+        "modelName": "GOAT G1",
+        "deviceClass": "itk04l",
+        "deviceClassLink": "guzput"
+    },
+    {
+        "modelName": "GOAT G1",
+        "deviceClass": "s69g6z",
+        "deviceClassLink": "guzput"
+    },
+    {
+        "modelName": "GOAT G1",
+        "deviceClass": "2ap5uq",
+        "deviceClassLink": "guzput"
+    },
+    {
+        "modelName": "GOAT O600 RTK",
+        "deviceClass": "6n9pcz",
+        "deviceClassLink": "2px96q"
+    },
+    {
+        "modelName": "GOAT O1200 LiDAR Pro",
+        "deviceClass": "2i0fns",
+        "deviceClassLink": "2px96q"
+    },
+    {
+        "modelName": "GOAT A1600 RTK",
+        "deviceClass": "xmp9ds",
+        "deviceClassLink": "2px96q"
+    },
+    {
+        "modelName": "GOAT A3000 LiDAR Pro",
+        "deviceClass": "51rcxt",
+        "deviceClassLink": "2px96q"
+    },
+    {
+        "modelName": "GOAT A3000 LiDAR",
+        "deviceClass": "cr0e4u",
+        "deviceClassLink": "2px96q"
     }
 ]

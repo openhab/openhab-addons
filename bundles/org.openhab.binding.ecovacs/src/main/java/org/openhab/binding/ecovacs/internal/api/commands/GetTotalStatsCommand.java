@@ -43,9 +43,6 @@ public class GetTotalStatsCommand extends IotDeviceCommand<GetTotalStatsCommand.
         }
     }
 
-    public GetTotalStatsCommand() {
-    }
-
     @Override
     public String getName(ProtocolVersion version) {
         return version == ProtocolVersion.XML ? "GetCleanSum" : "getTotalStats";

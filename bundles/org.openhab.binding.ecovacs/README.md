@@ -1,12 +1,15 @@
 # Ecovacs Binding
 
-This binding provides integration for vacuum cleaning / mopping robots made by Ecovacs (<https://www.ecovacs.com/>).
+This binding provides integration for vacuum cleaning / mopping robots and robotic lawn mowers made by Ecovacs (<https://www.ecovacs.com/>).
 It discovers devices and communicates to them by using Ecovacs' cloud services.
 
 ## Supported Things
 
 - Ecovacs cloud API (`ecovacsapi`)
 - Vacuum cleaner (`vacuum`)
+- Robotic lawn mower (`mower`)
+
+### Vacuum Cleaners
 
 At this point, the following devices are fully supported and verified to be working:
 
@@ -37,6 +40,18 @@ The following devices will likely work because they are using similar protocols 
 - Deebot X1 series
 - Deebot X2 series
 
+### Robotic Lawn Mowers (GOAT Series)
+
+The following GOAT mowers are supported:
+
+- GOAT O500 Panorama
+- GOAT G1 / G1-800
+- GOAT O600 RTK
+- GOAT O800 RTK
+- GOAT O1200 LiDAR Pro
+- GOAT A1600 RTK
+- GOAT A3000 LiDAR / LiDAR Pro
+
 ## Discovery
 
 At first, you need to manually create the bridge thing for the cloud API.
@@ -57,6 +72,13 @@ For the vacuum things, there is no required configuration (when using discovery)
 | Config       | Description                                                                                                                   |
 |--------------|-------------------------------------------------------------------------------------------------------------------------------|
 | serialNumber | Required: The device's serial number as printed on the barcode below the dust bin. Filled automatically when using discovery. |
+| refresh      | Refresh interval for polled data (see below), in minutes. By default set to 5 minutes.                                        |
+
+For the mower things, the same configuration parameters apply:
+
+| Config       | Description                                                                                                                   |
+|--------------|-------------------------------------------------------------------------------------------------------------------------------|
+| serialNumber | Required: The device's serial number. Filled automatically when using discovery.                                              |
 | refresh      | Refresh interval for polled data (see below), in minutes. By default set to 5 minutes.                                        |
 
 ## Channels
@@ -115,6 +137,58 @@ Remarks:
 - [14] Only present if device has voice reporting
 - [15] Only present if device has a mopping system. Possible values include `low`, `medium`, `high` and `veryhigh`
 - [16] Only present on Deebot X8 or newer.
+
+## Mower Channels
+
+The following channels are available for GOAT mower devices.
+Channels not supported by a particular model are automatically removed.
+
+| Channel                                 | Type                 | Description                                               | Read Only | Updated By | Remarks  |
+|-----------------------------------------|----------------------|-----------------------------------------------------------|-----------|------------|----------|
+| actions#command                         | String               | Command to execute                                        | No        | Event      | [M1]     |
+| status#state                            | String               | Current operational state                                 | Yes       | Event      | [M2]     |
+| status#battery                          | Number               | Battery level (percentage)                                | Yes       | Event      |          |
+| status#current-mowing-time              | Number:Time          | Time spent in current mowing session                      | Yes       | Event      |          |
+| status#current-mowed-area               | Number:Area          | Area mowed in current session                             | Yes       | Event      |          |
+| status#wifi-rssi                        | Number:Power         | The current Wi-Fi signal strength of the device           | Yes       | Polling    |          |
+| status#error-code                       | Number               | The numerical value of the last error (0 = none)          | Yes       | Event      |          |
+| status#error-description                | String               | Text describing the last error                            | Yes       | Event      |          |
+| consumables#blade-lifetime              | Number:Dimensionless | The remaining life time of the cutting blades in percent  | Yes       | Polling    |          |
+| last-mow#last-mow-start                 | DateTime             | Start time of the last completed mowing run               | Yes       | Event      |          |
+| last-mow#last-mow-duration              | Number:Time          | Duration of the last completed mowing run                 | Yes       | Event      |          |
+| last-mow#last-mow-area                  | Number:Area          | Area mowed in the last completed mowing run               | Yes       | Event      |          |
+| total-stats#total-mowing-time           | Number:Time          | Total mowing time in device life time                     | Yes       | Polling    |          |
+| total-stats#total-mowed-area            | Number:Area          | Total area mowed in device life time                      | Yes       | Polling    |          |
+| total-stats#total-mow-runs              | Number               | Total number of mowing runs in device life time           | Yes       | Polling    |          |
+| settings#cutting-height                 | Number:Length        | Cutting height (30-75mm in 5mm steps)                     | [M3]      | Polling    | [M3]     |
+| settings#voice-volume                   | Dimmer               | Voice volume level in percent                             | No        | Polling    |          |
+| settings#true-detect-3d                 | Switch               | Whether TrueDetect 3D obstacle avoidance is enabled       | No        | Polling    |          |
+| settings#safe-protect                   | Switch               | Stop mower on obstacle or unsafe condition                | No        | Polling    |          |
+| settings#child-lock                     | Switch               | Lock mower to prevent unintended operation                | No        | Polling    |          |
+| settings#rain-delay                     | Switch               | Rain detected, mowing delayed                             | Yes       | Polling    |          |
+| settings#moveup-warning                 | Switch               | Alarm when mower is lifted off the ground                 | No        | Polling    |          |
+
+Note: Some channels may be automatically removed if the device does not report support for the corresponding feature.
+
+Remarks:
+
+- [M1] See [Mower Command Channel Actions](#mower-command-channel-actions)
+- [M2] Possible states: `mowing`, `paused`, `returning`, `charging`, `idle`, `docked`, `error`, `edgeCutting`
+- [M3] Only present if device supports cutting height reporting. Currently read-only.
+
+## Mower Command Channel Actions
+
+The following actions are supported by the mower `command` channel:
+
+| Name         | Action                                      | Remarks                                                                                       |
+|--------------|---------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `mow`        | Start mowing in automatic mode.             | If currently paused, sends resume instead of start.                                           |
+| `edgeCut`    | Start edge cutting.                         | Only if device supports edge mowing.                                                          |
+| `zone:<ids>` | Start mowing specific zones.                | Only if device supports zone mowing. Format: `zone:<zone IDs>` (as shown in Ecovacs' app).    |
+| `pause`      | Pause mowing if currently active.           | If the mower is idle, the command is ignored.                                                 |
+| `resume`     | Resume mowing if currently paused.          | If the mower is not paused, the command is ignored.                                           |
+| `stop`       | Stop mowing immediately.                    |                                                                                               |
+| `dock`       | Send mower back to the charging station.    |                                                                                               |
 
 ## Command Channel Actions
 
@@ -182,6 +256,41 @@ Bridge ecovacs:ecovacsapi:ecovacsapi [ email="your.email@provider.com", password
 {
     Thing vacuum myDeebot "Deebot Vacuum" [ serialNumber="serial as printed on label below dust bin" ]
 }
+```
+
+For mowers:
+
+```java
+Bridge ecovacs:ecovacsapi:ecovacsapi [ email="your.email@provider.com", password="yourpassword", continent="eu" ]
+{
+    Thing mower myGoat "GOAT O500 Panorama" [ serialNumber="your mower serial number" ]
+}
+```
+
+### Mower Items Example
+
+```java
+String       GoatState              "Mower State [%s]"                    { channel="ecovacs:mower:myapi:myGoat:status#state" }
+Number       GoatBattery            "Mower Battery [%d %%]"               { channel="ecovacs:mower:myapi:myGoat:status#battery" }
+Number:Time  GoatMowingTime         "Current Mowing Time [%d %unit%]"     { channel="ecovacs:mower:myapi:myGoat:status#current-mowing-time" }
+Number:Area  GoatMowedArea          "Current Mowed Area [%d %unit%]"      { channel="ecovacs:mower:myapi:myGoat:status#current-mowed-area" }
+Number:Length GoatCuttingHeight     "Cutting Height [%d %unit%]"          { channel="ecovacs:mower:myapi:myGoat:settings#cutting-height" }
+Dimmer       GoatVolume             "Voice Volume [%d %%]"                { channel="ecovacs:mower:myapi:myGoat:settings#voice-volume" }
+Switch       GoatSafeProtect        "SafeProtect"                         { channel="ecovacs:mower:myapi:myGoat:settings#safe-protect" }
+Switch       GoatChildLock          "Child Lock"                          { channel="ecovacs:mower:myapi:myGoat:settings#child-lock" }
+Number:Dimensionless GoatBladeLife  "Blade Lifetime [%d %%]"              { channel="ecovacs:mower:myapi:myGoat:consumables#blade-lifetime" }
+Number:Time  GoatTotalTime          "Total Mowing Time [%d %unit%]"       { channel="ecovacs:mower:myapi:myGoat:total-stats#total-mowing-time" }
+Number:Area  GoatTotalArea          "Total Mowed Area [%d %unit%]"        { channel="ecovacs:mower:myapi:myGoat:total-stats#total-mowed-area" }
+Number       GoatTotalRuns          "Total Mow Runs [%d]"                 { channel="ecovacs:mower:myapi:myGoat:total-stats#total-mow-runs" }
+Number       GoatErrorCode          "Error Code [%d]"                     { channel="ecovacs:mower:myapi:myGoat:status#error-code" }
+String       GoatErrorDesc          "Error [%s]"                          { channel="ecovacs:mower:myapi:myGoat:status#error-description" }
+Number:Power GoatWifiRssi           "WiFi RSSI [%d %unit%]"               { channel="ecovacs:mower:myapi:myGoat:status#wifi-rssi" }
+DateTime     GoatLastMowStart       "Last Mow Start [%1$tF %1$tR]"       { channel="ecovacs:mower:myapi:myGoat:last-mow#last-mow-start" }
+Number:Time  GoatLastMowDuration    "Last Mow Duration [%d %unit%]"       { channel="ecovacs:mower:myapi:myGoat:last-mow#last-mow-duration" }
+Number:Area  GoatLastMowArea        "Last Mowed Area [%d %unit%]"         { channel="ecovacs:mower:myapi:myGoat:last-mow#last-mow-area" }
+Switch       GoatTrueDetect         "TrueDetect 3D"                       { channel="ecovacs:mower:myapi:myGoat:settings#true-detect-3d" }
+Switch       GoatMoveUpWarning      "Move-Up Warning"                     { channel="ecovacs:mower:myapi:myGoat:settings#moveup-warning" }
+String       GoatCommand            "Mower Command"                       { channel="ecovacs:mower:myapi:myGoat:actions#command" }
 ```
 
 ## Adding support for unsupported models
