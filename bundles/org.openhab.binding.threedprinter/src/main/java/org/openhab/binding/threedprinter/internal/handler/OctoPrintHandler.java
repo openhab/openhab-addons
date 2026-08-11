@@ -16,6 +16,9 @@ import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingCon
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
 
@@ -42,6 +45,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Handler for printers running OctoPrint.
@@ -96,9 +100,10 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
 
         // Fetch printer state + temperatures
-        String printerJson = httpGet(baseUrl + "/api/printer", cfg.apiKey);
+        HttpGetResult printerResult = httpGet(baseUrl + "/api/printer", cfg.apiKey);
+        String printerJson = printerResult.body;
         if (printerJson == null) {
-            markOffline("@text/offline.comm-error-unreachable");
+            markHttpFailure(printerResult.status);
             return;
         }
 
@@ -134,7 +139,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         }
 
         // Fetch job info
-        String jobJson = httpGet(baseUrl + "/api/job", cfg.apiKey);
+        String jobJson = httpGet(baseUrl + "/api/job", cfg.apiKey).body;
         if (jobJson == null) {
             return;
         }
@@ -150,8 +155,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
 
         if (file == null || filename.isBlank()) {
             clearJobState();
-            lastPreviewFilename = "";
-            lastPreviewState = null;
+            clearPreview();
             return;
         }
 
@@ -166,16 +170,20 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
             updateState(CHANNEL_TIME_REMAINING, new QuantityType<>(progress.printTimeLeft, Units.SECOND));
         }
 
-        // Use the raw filename (not display name) as the key for the thumbnail URL
-        if (!filename.equals(lastPreviewFilename)) {
-            String encodedName = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
-            byte @Nullable [] bytes = httpGetBytes(baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + encodedName,
-                    cfg.apiKey);
+        // The PrusaSlicer Thumbnails plugin serves thumbnails at the job's relative path with the extension
+        // replaced by .png, not at the raw OctoPrint file name.
+        String relativePath = file.path.isBlank() ? filename : file.path;
+        if (!relativePath.equals(lastPreviewFilename)) {
+            byte @Nullable [] bytes = httpGetBytes(
+                    baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + thumbnailPathFor(relativePath), cfg.apiKey);
             if (bytes != null && bytes.length > 0) {
                 RawType state = new RawType(bytes, "image/png");
                 updateState(CHANNEL_JOB_PREVIEW, state);
-                lastPreviewFilename = filename;
+                lastPreviewFilename = relativePath;
                 lastPreviewState = state;
+            } else {
+                // The previous job's thumbnail must not linger once we know the current file's thumbnail is gone.
+                clearPreview();
             }
         } else {
             // Re-push the cached image every cycle rather than only on change, so a channel
@@ -185,6 +193,29 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 updateState(CHANNEL_JOB_PREVIEW, cached);
             }
         }
+    }
+
+    /**
+     * Builds the PrusaSlicer Thumbnails plugin's thumbnail path for a job's relative gcode file path: the file
+     * extension is replaced with {@code .png} and each path segment is URL-encoded individually so a subdirectory
+     * separator is preserved.
+     */
+    private String thumbnailPathFor(String relativeGcodePath) {
+        int lastSlash = relativeGcodePath.lastIndexOf('/');
+        String dir = lastSlash >= 0 ? relativeGcodePath.substring(0, lastSlash + 1) : "";
+        String fileName = lastSlash >= 0 ? relativeGcodePath.substring(lastSlash + 1) : relativeGcodePath;
+        int lastDot = fileName.lastIndexOf('.');
+        String pngName = (lastDot >= 0 ? fileName.substring(0, lastDot) : fileName) + ".png";
+        String fullPath = dir + pngName;
+        return Arrays.stream(fullPath.split("/"))
+                .map(segment -> URLEncoder.encode(segment, StandardCharsets.UTF_8).replace("+", "%20"))
+                .collect(Collectors.joining("/"));
+    }
+
+    private void clearPreview() {
+        updateState(CHANNEL_JOB_PREVIEW, UnDefType.UNDEF);
+        lastPreviewFilename = "";
+        lastPreviewState = null;
     }
 
     @Override
@@ -211,7 +242,8 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                     int status = httpPost(baseUrl + "/api/job", cfg.apiKey,
                             "{\"command\":\"pause\",\"action\":\"" + action + "\"}");
                     if (!HttpStatus.isSuccess(status)) {
-                        logger.warn("Failed to {} print: HTTP {}", action, status);
+                        logger.debug("Failed to {} print: HTTP {}", action, status);
+                        markHttpFailure(status);
                     }
                 }
                 break;
@@ -220,7 +252,8 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 if (OnOffType.ON.equals(command)) {
                     int status = httpPost(baseUrl + "/api/job", cfg.apiKey, "{\"command\":\"cancel\"}");
                     if (!HttpStatus.isSuccess(status)) {
-                        logger.warn("Failed to cancel print: HTTP {}", status);
+                        logger.debug("Failed to cancel print: HTTP {}", status);
+                        markHttpFailure(status);
                     }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);
                 }
@@ -235,7 +268,6 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 }
                 break;
             }
-
             case CHANNEL_BED_TEMPERATURE_SETPOINT: {
                 Integer temp = toCelsius(command);
                 if (temp != null) {
@@ -245,7 +277,6 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 }
                 break;
             }
-
             case CHANNEL_PRINT_SPEED: {
                 Integer speed = toPercent(command);
                 if (speed != null) {
@@ -255,7 +286,6 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 }
                 break;
             }
-
             case CHANNEL_FAN_SPEED: {
                 Integer speed = toPercent(command);
                 if (speed != null) {
@@ -266,7 +296,6 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 }
                 break;
             }
-
             default:
                 logger.debug("Unhandled command {} for channel {}", command, channelUID);
         }
@@ -275,7 +304,8 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
     private void sendGcode(String baseUrl, String apiKey, String gcode) {
         int status = httpPost(baseUrl + "/api/printer/command", apiKey, "{\"command\":\"" + gcode + "\"}");
         if (!HttpStatus.isSuccess(status)) {
-            logger.warn("G-code command '{}' failed: HTTP {}", gcode, status);
+            logger.debug("G-code command '{}' failed: HTTP {}", gcode, status);
+            markHttpFailure(status);
         }
     }
 
@@ -295,7 +325,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 return STATE_BUSY;
             }
         }
-        String text = state.text.toUpperCase();
+        String text = state.text.toUpperCase(Locale.ROOT);
         if (text.contains("PRINT")) {
             return STATE_PRINTING;
         }

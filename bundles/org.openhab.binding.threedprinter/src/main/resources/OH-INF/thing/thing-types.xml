@@ -17,11 +17,11 @@
 			<channel id="time-elapsed" typeId="time-elapsed"/>
 			<channel id="time-remaining" typeId="time-remaining"/>
 			<channel id="nozzle-temperature" typeId="nozzle-temperature"/>
-			<channel id="nozzle-temperature-setpoint" typeId="nozzle-temperature-setpoint"/>
+			<channel id="nozzle-temperature-setpoint" typeId="prusa-nozzle-temperature-setpoint"/>
 			<channel id="bed-temperature" typeId="bed-temperature"/>
-			<channel id="bed-temperature-setpoint" typeId="bed-temperature-setpoint"/>
-			<channel id="print-speed" typeId="print-speed"/>
-			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="bed-temperature-setpoint" typeId="prusa-bed-temperature-setpoint"/>
+			<channel id="print-speed" typeId="prusa-print-speed"/>
+			<channel id="fan-speed" typeId="prusa-fan-speed"/>
 			<channel id="pause-resume" typeId="pause-resume"/>
 			<channel id="cancel" typeId="cancel"/>
 			<channel id="job-preview" typeId="job-preview"/>

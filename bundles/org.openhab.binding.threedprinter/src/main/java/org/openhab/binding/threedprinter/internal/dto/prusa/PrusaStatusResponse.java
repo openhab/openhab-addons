@@ -65,7 +65,7 @@ public class PrusaStatusResponse {
         public double progress;
 
         @SerializedName("time_remaining")
-        public int timeRemaining;
+        public @Nullable Integer timeRemaining;
 
         @SerializedName("time_printing")
         public int timePrinting;

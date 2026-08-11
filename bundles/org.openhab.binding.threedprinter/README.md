@@ -1,12 +1,22 @@
 # 3D Printer Binding
 
-This binding integrates FDM 3D printers into openHAB, allowing you to monitor print status, temperatures, and job progress, and to control prints (pause, resume, cancel) and adjust temperatures, print speed, and fan speed.
+This binding integrates FDM 3D printers into openHAB, allowing you to monitor print status, temperatures, and job progress, and to control prints (pause, resume, cancel). Klipper and OctoPrint also allow adjusting temperatures, print speed, and fan speed; PrusaLink exposes these as read-only, since Buddy firmware does not expose an API to change them (see [Channels](#channels)).
 
 Three printer firmware/server platforms are supported:
 
 - **PrusaLink** — Prusa printers with Buddy Board running Buddy firmware (MK4(s), Core ONE, XL, Mini+, etc.)
 - **Klipper** — Klipper firmware printers accessed via the Moonraker REST API
 - **OctoPrint** — Any printer managed by an OctoPrint server
+
+## Tested Hardware
+
+This binding has been tested against:
+
+- **Prusa MK4** running PrusaLink server 2.1.2 / Buddy firmware 6.5.7+12836 (`prusa-link` thing type)
+- **Prusa Core One** running PrusaLink server 2.1.2 / Buddy firmware 6.5.7+12836 (`prusa-link` thing type)
+- **Snapmaker U1** running Klipper via Moonraker 1.4.1.6 (`klipper` thing type)
+
+Other Buddy-firmware Prusa printers (MK3.5, MINI+, XL) and other Klipper/Moonraker printers are expected to work the same way, since they expose the same PrusaLink v1 and Moonraker APIs respectively, but have not been verified by the author. The `octoprint` thing type has not been tested against a live OctoPrint server; it is expected to work against any standard OctoPrint installation (the print preview additionally requires the [PrusaSlicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) plugin).
 
 ## Supported Things
 
@@ -51,7 +61,7 @@ Auto-discovery is not supported. Things must be added manually.
 
 ## Channels
 
-All three thing types expose the same set of channels.
+All three thing types expose the same set of channel IDs, but `nozzle-temperature-setpoint`, `bed-temperature-setpoint`, `print-speed`, and `fan-speed` are read-only on `prusa-link` things: PrusaLink on Buddy firmware does not expose an API to change these, so commands sent to them are ignored. On `klipper` and `octoprint` things, these four channels accept commands.
 
 | Channel ID                    | Item Type            | R/W | Description                                                                                          |
 |-------------------------------|----------------------|-----|------------------------------------------------------------------------------------------------------|
@@ -61,11 +71,11 @@ All three thing types expose the same set of channels.
 | `time-elapsed`                | Number:Time           | R   | Seconds elapsed since the print started.                                                             |
 | `time-remaining`              | Number:Time           | R   | Estimated seconds remaining.                                                                         |
 | `nozzle-temperature`          | Number:Temperature   | R   | Current nozzle (hotend) temperature.                                                                 |
-| `nozzle-temperature-setpoint` | Number:Temperature   | RW  | Nozzle temperature target. Send a temperature to change it.                                          |
+| `nozzle-temperature-setpoint` | Number:Temperature   | RW* | Nozzle temperature target. Send a temperature to change it. Read-only on `prusa-link`.               |
 | `bed-temperature`             | Number:Temperature   | R   | Current heated bed temperature.                                                                      |
-| `bed-temperature-setpoint`    | Number:Temperature   | RW  | Bed temperature target. Send a temperature to change it.                                             |
-| `print-speed`                 | Number:Dimensionless  | RW  | Print speed as a percentage of the configured profile speed (1–200). Read support varies by firmware.|
-| `fan-speed`                   | Number:Dimensionless  | RW  | Part-cooling fan speed percentage (0–100). Read support varies by firmware.                          |
+| `bed-temperature-setpoint`    | Number:Temperature   | RW* | Bed temperature target. Send a temperature to change it. Read-only on `prusa-link`.                  |
+| `print-speed`                 | Number:Dimensionless  | RW* | Print speed as a percentage of the configured profile speed (1–200). Read-only on `prusa-link`.      |
+| `fan-speed`                   | Number:Dimensionless  | RW* | Part-cooling fan speed percentage (0–100) on `klipper`/`octoprint`. On `prusa-link` this channel is `Number:Frequency` (RPM) and read-only, since Buddy firmware reports raw fan RPM and the maximum RPM varies by printer model. |
 | `pause-resume`                | Switch               | RW  | `ON` when the print is paused. Send `ON` to pause, `OFF` to resume.                                 |
 | `cancel`                      | Switch               | W   | Send `ON` to cancel the current print. Resets to `OFF` automatically.                               |
 | `job-preview`                 | Image                | R   | Thumbnail image of the object being printed. Only populated when the sliced file contains embedded thumbnails. For OctoPrint, requires the [PrusaSlicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) plugin. |
@@ -101,20 +111,20 @@ Thing threedprinter:octoprint:ender "Ender 3 (OctoPrint)" [
 `threedprinter.items`
 
 ```java
-String   MK4_State          "Printer state [%s]"             { channel="threedprinter:prusa-link:mk4:printer-state" }
-String   MK4_JobName        "Current job [%s]"               { channel="threedprinter:prusa-link:mk4:job-name" }
-Number:Dimensionless MK4_Progress       "Progress [%.1f %%]"    { channel="threedprinter:prusa-link:mk4:job-progress" }
-Number:Time MK4_TimeElapsed    "Time elapsed [%d %unit%]"      { channel="threedprinter:prusa-link:mk4:time-elapsed" }
-Number:Time MK4_TimeRemaining  "Time remaining [%d %unit%]"    { channel="threedprinter:prusa-link:mk4:time-remaining" }
-Number:Temperature MK4_NozzleTemp    "Nozzle temp [%.1f %unit%]"  { channel="threedprinter:prusa-link:mk4:nozzle-temperature" }
-Number:Temperature MK4_NozzleTarget  "Nozzle target [%.1f %unit%]" { channel="threedprinter:prusa-link:mk4:nozzle-temperature-setpoint" }
-Number:Temperature MK4_BedTemp       "Bed temp [%.1f %unit%]"     { channel="threedprinter:prusa-link:mk4:bed-temperature" }
-Number:Temperature MK4_BedTarget     "Bed target [%.1f %unit%]"   { channel="threedprinter:prusa-link:mk4:bed-temperature-setpoint" }
-Number:Dimensionless MK4_PrintSpeed     "Print speed [%d %%]"  { channel="threedprinter:prusa-link:mk4:print-speed" }
-Number:Dimensionless MK4_FanSpeed       "Fan speed [%d %%]"    { channel="threedprinter:prusa-link:mk4:fan-speed" }
-Switch   MK4_PauseResume    "Paused"                         { channel="threedprinter:prusa-link:mk4:pause-resume" }
-Switch   MK4_Cancel         "Cancel print"                   { channel="threedprinter:prusa-link:mk4:cancel" }
-Image    MK4_Preview        "Print preview"                  { channel="threedprinter:prusa-link:mk4:job-preview" }
+String   Voron_State          "Printer state [%s]"             { channel="threedprinter:klipper:voron:printer-state" }
+String   Voron_JobName        "Current job [%s]"               { channel="threedprinter:klipper:voron:job-name" }
+Number:Dimensionless Voron_Progress       "Progress [%.1f %%]"    { channel="threedprinter:klipper:voron:job-progress" }
+Number:Time Voron_TimeElapsed    "Time elapsed [%d %unit%]"      { channel="threedprinter:klipper:voron:time-elapsed" }
+Number:Time Voron_TimeRemaining  "Time remaining [%d %unit%]"    { channel="threedprinter:klipper:voron:time-remaining" }
+Number:Temperature Voron_NozzleTemp    "Nozzle temp [%.1f %unit%]"  { channel="threedprinter:klipper:voron:nozzle-temperature" }
+Number:Temperature Voron_NozzleTarget  "Nozzle target [%.1f %unit%]" { channel="threedprinter:klipper:voron:nozzle-temperature-setpoint" }
+Number:Temperature Voron_BedTemp       "Bed temp [%.1f %unit%]"     { channel="threedprinter:klipper:voron:bed-temperature" }
+Number:Temperature Voron_BedTarget     "Bed target [%.1f %unit%]"   { channel="threedprinter:klipper:voron:bed-temperature-setpoint" }
+Number:Dimensionless Voron_PrintSpeed     "Print speed [%d %%]"  { channel="threedprinter:klipper:voron:print-speed" }
+Number:Dimensionless Voron_FanSpeed       "Fan speed [%d %%]"    { channel="threedprinter:klipper:voron:fan-speed" }
+Switch   Voron_PauseResume    "Paused"                         { channel="threedprinter:klipper:voron:pause-resume" }
+Switch   Voron_Cancel         "Cancel print"                   { channel="threedprinter:klipper:voron:cancel" }
+Image    Voron_Preview        "Print preview"                  { channel="threedprinter:klipper:voron:job-preview" }
 ```
 
 ### Sitemap
@@ -123,21 +133,21 @@ Image    MK4_Preview        "Print preview"                  { channel="threedpr
 
 ```perl
 sitemap threedprinter label="3D Printers" {
-    Frame label="Prusa MK4" {
-        Text  item=MK4_State
-        Text  item=MK4_JobName
-        Text  item=MK4_Progress
-        Text  item=MK4_TimeElapsed
-        Text  item=MK4_TimeRemaining
-        Text  item=MK4_NozzleTemp
-        Setpoint item=MK4_NozzleTarget minValue=0 maxValue=300 step=5
-        Text  item=MK4_BedTemp
-        Setpoint item=MK4_BedTarget minValue=0 maxValue=120 step=5
-        Slider item=MK4_PrintSpeed minValue=1 maxValue=200 step=10
-        Slider item=MK4_FanSpeed minValue=0 maxValue=100 step=5
-        Switch item=MK4_PauseResume label="Pause/Resume"
-        Switch item=MK4_Cancel label="Cancel Print"
-        Image  item=MK4_Preview
+    Frame label="Voron 2.4" {
+        Text  item=Voron_State
+        Text  item=Voron_JobName
+        Text  item=Voron_Progress
+        Text  item=Voron_TimeElapsed
+        Text  item=Voron_TimeRemaining
+        Text  item=Voron_NozzleTemp
+        Setpoint item=Voron_NozzleTarget minValue=0 maxValue=300 step=5
+        Text  item=Voron_BedTemp
+        Setpoint item=Voron_BedTarget minValue=0 maxValue=120 step=5
+        Slider item=Voron_PrintSpeed minValue=1 maxValue=200 step=10
+        Slider item=Voron_FanSpeed minValue=0 maxValue=100 step=5
+        Switch item=Voron_PauseResume label="Pause/Resume"
+        Switch item=Voron_Cancel label="Cancel Print"
+        Image  item=Voron_Preview
     }
 }
 ```

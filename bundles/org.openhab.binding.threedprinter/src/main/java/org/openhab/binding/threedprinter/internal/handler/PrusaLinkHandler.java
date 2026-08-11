@@ -14,6 +14,8 @@ package org.openhab.binding.threedprinter.internal.handler;
 
 import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingConstants.*;
 
+import java.util.Locale;
+
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -92,9 +94,10 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             return;
         }
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
-        String json = httpGet(baseUrl + "/api/v1/status", cfg.apiKey);
+        HttpGetResult result = httpGet(baseUrl + "/api/v1/status", cfg.apiKey);
+        String json = result.body;
         if (json == null) {
-            markOffline("@text/offline.comm-error-unreachable");
+            markHttpFailure(result.status);
             return;
         }
 
@@ -116,9 +119,7 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             updateState(CHANNEL_BED_TEMPERATURE_SETPOINT,
                     new QuantityType<Temperature>(printer.targetBed, SIUnits.CELSIUS));
             updateState(CHANNEL_PRINT_SPEED, new QuantityType<>(printer.speed, Units.PERCENT));
-            // PrusaLink reports fan_print as RPM; normalise to 0-100% (max ~8000 RPM)
-            int fanPct = printer.fanPrint > 0 ? Math.min(100, printer.fanPrint / 80) : 0;
-            updateState(CHANNEL_FAN_SPEED, new QuantityType<>(fanPct, Units.PERCENT));
+            updateState(CHANNEL_FAN_SPEED, new QuantityType<>(printer.fanPrint, Units.RPM));
             updateState(CHANNEL_PAUSE_RESUME, OnOffType.from("PAUSED".equalsIgnoreCase(printer.state)));
         }
 
@@ -127,7 +128,9 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             lastJobId = job.id;
             updateState(CHANNEL_JOB_PROGRESS, new QuantityType<>(job.progress, Units.PERCENT));
             updateState(CHANNEL_TIME_ELAPSED, new QuantityType<>(job.timePrinting, Units.SECOND));
-            updateState(CHANNEL_TIME_REMAINING, new QuantityType<>(job.timeRemaining, Units.SECOND));
+            Integer timeRemaining = job.timeRemaining;
+            updateState(CHANNEL_TIME_REMAINING,
+                    timeRemaining != null ? new QuantityType<>(timeRemaining, Units.SECOND) : UnDefType.UNDEF);
         } else {
             lastJobId = -1;
             clearJobState();
@@ -138,23 +141,24 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
     }
 
     private void updateJobFile(String baseUrl, String apiKey) {
-        String jobJson = httpGet(baseUrl + "/api/v1/job", apiKey);
+        HttpGetResult jobResult = httpGet(baseUrl + "/api/v1/job", apiKey);
+        String jobJson = jobResult.body;
         PrusaJobResponse jobResponse = jobJson != null ? fromJson(jobJson, PrusaJobResponse.class) : null;
         PrusaJobFile file = jobResponse != null ? jobResponse.file : null;
 
         if (file == null) {
             updateState(CHANNEL_JOB_NAME, new StringType(""));
-            updateState(CHANNEL_JOB_PREVIEW, UnDefType.UNDEF);
-            lastPreviewFilename = "";
-            lastPreviewState = null;
+            clearPreview();
             return;
         }
 
         String name = file.displayName.isBlank() ? file.name : file.displayName;
         updateState(CHANNEL_JOB_NAME, new StringType(name));
 
-        String thumbnailRef = file.refs != null ? file.refs.thumbnail : "";
+        var refs = file.refs;
+        String thumbnailRef = refs != null ? refs.thumbnail : "";
         if (thumbnailRef.isBlank()) {
+            clearPreview();
             return;
         }
         if (thumbnailRef.equals(lastPreviewFilename)) {
@@ -172,7 +176,16 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             updateState(CHANNEL_JOB_PREVIEW, state);
             lastPreviewFilename = thumbnailRef;
             lastPreviewState = state;
+        } else {
+            // The previous job's thumbnail must not linger once we know the current file's thumbnail is gone.
+            clearPreview();
         }
+    }
+
+    private void clearPreview() {
+        updateState(CHANNEL_JOB_PREVIEW, UnDefType.UNDEF);
+        lastPreviewFilename = "";
+        lastPreviewState = null;
     }
 
     @Override
@@ -203,7 +216,10 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
                     String action = OnOffType.ON.equals(onOff) ? "pause" : "resume";
                     int status = httpPut(baseUrl + "/api/v1/job/" + jobId + "/" + action, cfg.apiKey, "");
                     if (!HttpStatus.isSuccess(status)) {
-                        logger.warn("Failed to {} job {}: HTTP {}", action, jobId, status);
+                        // The Thing status now reflects the failure, so this stays at debug to avoid warn-level
+                        // spam for what is typically a temporary communication problem.
+                        logger.debug("Failed to {} job {}: HTTP {}", action, jobId, status);
+                        markHttpFailure(status);
                     }
                 }
                 break;
@@ -216,69 +232,21 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
                     } else {
                         int status = httpDelete(baseUrl + "/api/v1/job/" + jobId, cfg.apiKey);
                         if (!HttpStatus.isSuccess(status)) {
-                            logger.warn("Failed to cancel job {}: HTTP {}", jobId, status);
+                            logger.debug("Failed to cancel job {}: HTTP {}", jobId, status);
+                            markHttpFailure(status);
                         }
                     }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);
                 }
                 break;
 
-            case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT: {
-                Integer temp = toCelsius(command);
-                if (temp != null) {
-                    sendGcode(baseUrl, cfg.apiKey, "M104 S" + temp);
-                } else {
-                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
-                }
-                break;
-            }
-
-            case CHANNEL_BED_TEMPERATURE_SETPOINT: {
-                Integer temp = toCelsius(command);
-                if (temp != null) {
-                    sendGcode(baseUrl, cfg.apiKey, "M140 S" + temp);
-                } else {
-                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
-                }
-                break;
-            }
-
-            case CHANNEL_PRINT_SPEED: {
-                Integer speed = toPercent(command);
-                if (speed != null) {
-                    sendGcode(baseUrl, cfg.apiKey, "M220 S" + speed);
-                } else {
-                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
-                }
-                break;
-            }
-
-            case CHANNEL_FAN_SPEED: {
-                Integer speed = toPercent(command);
-                if (speed != null) {
-                    int s255 = (int) Math.round(speed * 2.55);
-                    sendGcode(baseUrl, cfg.apiKey, "M106 S" + s255);
-                } else {
-                    logger.warn("Unsupported command type {} for channel {}", command, channelUID);
-                }
-                break;
-            }
-
             default:
                 logger.debug("Unhandled command {} for channel {}", command, channelUID);
         }
     }
 
-    // PrusaLink supports the OctoPrint-compatible gcode endpoint
-    private void sendGcode(String baseUrl, String apiKey, String gcode) {
-        int status = httpPost(baseUrl + "/api/printer/command", apiKey, "{\"command\":\"" + gcode + "\"}");
-        if (!HttpStatus.isSuccess(status)) {
-            logger.warn("G-code command '{}' failed: HTTP {}", gcode, status);
-        }
-    }
-
     private String mapPrusaState(String prusaState) {
-        return switch (prusaState.toUpperCase()) {
+        return switch (prusaState.toUpperCase(Locale.ROOT)) {
             case "PRINTING" -> STATE_PRINTING;
             case "PAUSED" -> STATE_PAUSED;
             case "FINISHED" -> STATE_FINISHED;

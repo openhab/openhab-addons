@@ -79,7 +79,7 @@
 
 	<channel-type id="nozzle-temperature-setpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Nozzle Temperature Setpoint</label>
+		<label>Nozzle Setpoint</label>
 		<description>Target nozzle temperature. Send a value to change the setpoint.</description>
 		<tags>
 			<tag>Setpoint</tag>
@@ -101,7 +101,7 @@
 
 	<channel-type id="bed-temperature-setpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Bed Temperature Setpoint</label>
+		<label>Bed Setpoint</label>
 		<description>Target bed temperature. Send a value to change the setpoint.</description>
 		<tags>
 			<tag>Setpoint</tag>
@@ -128,6 +128,54 @@
 			<tag>Setpoint</tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<!--
+		The PrusaLink API on Buddy firmware (Prusa MK4, MINI, XL, etc.) does not expose a G-code command
+		endpoint, so these setpoints cannot actually be written. They are exposed read-only for PrusaLink.
+	-->
+	<channel-type id="prusa-nozzle-temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Nozzle Setpoint</label>
+		<description>Target nozzle temperature. Read-only: PrusaLink does not support changing this setpoint.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" min="0" max="350" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="prusa-bed-temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Bed Setpoint</label>
+		<description>Target bed temperature. Read-only: PrusaLink does not support changing this setpoint.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" min="0" max="120" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="prusa-print-speed">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Print Speed</label>
+		<description>Print speed as a percentage of the nominal speed (100 = normal speed). Read-only: PrusaLink does not
+			support changing the print speed.</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state readOnly="true" min="1" max="200" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="prusa-fan-speed">
+		<item-type>Number:Frequency</item-type>
+		<label>Fan Speed</label>
+		<description>Part-cooling fan speed in RPM. Read-only: PrusaLink does not support changing the fan speed, and the
+			maximum RPM varies by printer model, so a percentage cannot be derived reliably.</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state readOnly="true" min="0" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="pause-resume">

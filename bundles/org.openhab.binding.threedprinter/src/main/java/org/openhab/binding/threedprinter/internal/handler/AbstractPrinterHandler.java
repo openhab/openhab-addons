@@ -83,9 +83,25 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
     protected abstract void refresh();
 
     /**
-     * Sends an HTTP GET and returns the response body, or null on failure.
+     * Result of an {@link #httpGet(String, String)} call. A negative {@code status} means the request could not be
+     * completed at all (timeout or connection failure); a non-negative {@code status} is the HTTP response code
+     * actually received from the printer, with {@code body} populated only when it was a 2xx response.
      */
-    protected @Nullable String httpGet(String url, String apiKey) {
+    protected static final class HttpGetResult {
+        final int status;
+        final @Nullable String body;
+
+        private HttpGetResult(int status, @Nullable String body) {
+            this.status = status;
+            this.body = body;
+        }
+    }
+
+    /**
+     * Sends an HTTP GET and returns the result. Callers should check {@code result.body} for the response and, if
+     * null, pass {@code result.status} to {@link #markHttpFailure(int)} to report a distinguishable Thing status.
+     */
+    protected HttpGetResult httpGet(String url, String apiKey) {
         try {
             Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(10, TimeUnit.SECONDS);
             if (!apiKey.isBlank()) {
@@ -94,17 +110,17 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
             ContentResponse response = request.send();
             int status = response.getStatus();
             if (status == HttpStatus.OK_200) {
-                return response.getContentAsString();
+                return new HttpGetResult(status, response.getContentAsString());
             }
             logger.debug("GET {} returned HTTP {}", url, status);
-            return null;
+            return new HttpGetResult(status, null);
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("GET {} failed: {}", url, e.getMessage());
-            return null;
+            return new HttpGetResult(-1, null);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("GET {} interrupted", url);
-            return null;
+            return new HttpGetResult(-1, null);
         }
     }
 
@@ -201,6 +217,25 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
 
     protected void markOffline(String message) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+    }
+
+    /**
+     * Updates the Thing status in response to a failed HTTP call, distinguishing a transport failure (the printer
+     * could not be reached at all) from an HTTP-level error response (the printer was reached but rejected the
+     * request), so an authentication failure is not presented the same way as an unreachable printer.
+     *
+     * @param status the status from {@link HttpGetResult#status} or one of the {@code httpPost}/{@code httpPut}/
+     *            {@code httpDelete} return values; negative means a transport failure.
+     */
+    protected void markHttpFailure(int status) {
+        if (status < 0) {
+            markOffline("@text/offline.comm-error-unreachable");
+        } else if (status == HttpStatus.UNAUTHORIZED_401 || status == HttpStatus.FORBIDDEN_403) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.comm-error-auth");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-http [\"" + status + "\"]");
+        }
     }
 
     /**

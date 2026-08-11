@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
@@ -51,6 +52,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Handler for Klipper printers accessed via the Moonraker REST API.
@@ -99,9 +101,10 @@ public class KlipperHandler extends AbstractPrinterHandler {
             return;
         }
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
-        String json = httpGet(baseUrl + QUERY_URL_SUFFIX, cfg.apiKey);
+        HttpGetResult getResult = httpGet(baseUrl + QUERY_URL_SUFFIX, cfg.apiKey);
+        String json = getResult.body;
         if (json == null) {
-            markOffline("@text/offline.comm-error-unreachable");
+            markHttpFailure(getResult.status);
             return;
         }
 
@@ -171,8 +174,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
                 }
             } else {
                 clearJobState();
-                lastPreviewFilename = "";
-                lastPreviewState = null;
+                clearPreview();
             }
         }
 
@@ -188,8 +190,11 @@ public class KlipperHandler extends AbstractPrinterHandler {
     }
 
     private void fetchAndUpdatePreview(String baseUrl, String apiKey, String filename) {
+        // The previous job's thumbnail must not linger while a new job's preview is being resolved; only a
+        // successful fetch below repopulates it.
+        clearPreview();
         String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
-        String metaJson = httpGet(baseUrl + "/server/files/metadata?filename=" + encodedFilename, apiKey);
+        String metaJson = httpGet(baseUrl + "/server/files/metadata?filename=" + encodedFilename, apiKey).body;
         if (metaJson == null) {
             logger.debug("Preview for {}: metadata request failed (see prior GET log)", filename);
             return;
@@ -240,6 +245,12 @@ public class KlipperHandler extends AbstractPrinterHandler {
         lastPreviewState = state;
     }
 
+    private void clearPreview() {
+        updateState(CHANNEL_JOB_PREVIEW, UnDefType.UNDEF);
+        lastPreviewFilename = "";
+        lastPreviewState = null;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         KlipperConfiguration cfg = config;
@@ -269,7 +280,8 @@ public class KlipperHandler extends AbstractPrinterHandler {
                 if (OnOffType.ON.equals(command)) {
                     int status = httpPost(baseUrl + "/printer/print/cancel", cfg.apiKey, "");
                     if (!HttpStatus.isSuccess(status)) {
-                        logger.warn("Failed to cancel print: HTTP {}", status);
+                        logger.debug("Failed to cancel print: HTTP {}", status);
+                        markHttpFailure(status);
                     }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);
                 }
@@ -284,7 +296,6 @@ public class KlipperHandler extends AbstractPrinterHandler {
                 }
                 break;
             }
-
             case CHANNEL_BED_TEMPERATURE_SETPOINT: {
                 Integer temp = toCelsius(command);
                 if (temp != null) {
@@ -294,7 +305,6 @@ public class KlipperHandler extends AbstractPrinterHandler {
                 }
                 break;
             }
-
             case CHANNEL_PRINT_SPEED: {
                 Integer speed = toPercent(command);
                 if (speed != null) {
@@ -304,7 +314,6 @@ public class KlipperHandler extends AbstractPrinterHandler {
                 }
                 break;
             }
-
             case CHANNEL_FAN_SPEED: {
                 Integer speed = toPercent(command);
                 if (speed != null) {
@@ -315,7 +324,6 @@ public class KlipperHandler extends AbstractPrinterHandler {
                 }
                 break;
             }
-
             default:
                 logger.debug("Unhandled command {} for channel {}", command, channelUID);
         }
@@ -324,12 +332,13 @@ public class KlipperHandler extends AbstractPrinterHandler {
     private void sendGcode(String baseUrl, String apiKey, String script) {
         int status = httpPost(baseUrl + "/printer/gcode/script", apiKey, "{\"script\":\"" + script + "\"}");
         if (!HttpStatus.isSuccess(status)) {
-            logger.warn("G-code script '{}' failed: HTTP {}", script, status);
+            logger.debug("G-code script '{}' failed: HTTP {}", script, status);
+            markHttpFailure(status);
         }
     }
 
     private String mapKlipperState(String klipperState) {
-        return switch (klipperState.toLowerCase()) {
+        return switch (klipperState.toLowerCase(Locale.ROOT)) {
             case "printing" -> STATE_PRINTING;
             case "paused" -> STATE_PAUSED;
             case "complete" -> STATE_FINISHED;

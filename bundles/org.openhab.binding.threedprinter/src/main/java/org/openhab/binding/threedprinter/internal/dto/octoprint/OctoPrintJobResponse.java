@@ -47,6 +47,10 @@ public class OctoPrintJobResponse {
 
             @SerializedName("display")
             public String display = "";
+
+            /** Path relative to the file's storage root, e.g. {@code "subdir/file.gcode"}. */
+            @SerializedName("path")
+            public String path = "";
         }
     }
 
