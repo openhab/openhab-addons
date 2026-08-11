@@ -32,7 +32,8 @@ import org.openhab.binding.dreame.internal.model.DreameStatus;
 @NonNullByDefault
 public interface DreameMowerApi {
 
-    void login(String username, String password, String country) throws DreameCloudException;
+    void login(String username, String password, String country, DreameCloudService cloudService)
+            throws DreameCloudException;
 
     void logout();
 

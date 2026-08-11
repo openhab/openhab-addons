@@ -1,25 +1,27 @@
 # Dreame Binding
 
-This binding integrates Dreame robotic lawn mowers with openHAB through the Dreamehome cloud.
-It uses the Dreamehome HTTPS API for authentication, discovery, commands and periodic status polling, and the Dreame MQTT service for live updates.
+This binding integrates Dreame and MOVA robotic lawn mowers with openHAB through the Dreamehome or MOVAhome cloud.
+It uses the selected cloud service for authentication, discovery, commands, periodic status polling and MQTT live updates.
 
 > **Development status:** The Dreame A1 Pro 2000 (`dreame.mower.g2540d`) has been tested with firmware `4.3.6_0623` in the European cloud region, including the `start`, `pause`, `stop` and `dock` commands.
+> MOVA mower support is based on public protocol references and still requires validation with physical hardware.
 > Other mower models use the same protocol family but still require testing.
 
 ## Supported Things
 
 | Thing     | Type     | Description                                      |
 |-----------|----------|--------------------------------------------------|
-| `account` | Bridge   | One Dreamehome cloud account                     |
-| `mower`   | Thing    | A mower associated with the Dreamehome account   |
+| `account` | Bridge   | One Dreamehome or MOVAhome cloud account         |
+| `mower`   | Thing    | A mower associated with the cloud account        |
 
-The binding accepts devices whose model identifier starts with `dreame.mower.`.
+The binding accepts devices whose model identifier starts with `dreame.mower.` or `mova.mower.`.
 Known mower identifiers include A1 (`dreame.mower.p2255`), A1 Pro (`dreame.mower.g2422` and `dreame.mower.g2540d`), A2 (`dreame.mower.g2408`), A2 1200 (`dreame.mower.g2568a`) and A3 (`dreame.mower.g3255`).
+Known MOVA identifiers include MOVA 600 (`mova.mower.g2405a`), MOVA 600 Kit (`mova.mower.g2405b`) and MOVA 1000 (`mova.mower.g2405c`).
 Only `dreame.mower.g2540d` is currently confirmed with a physical mower.
 
 ## Discovery
 
-First add a Dreamehome account bridge with the same credentials and country used in the Dreamehome app.
+First add an account bridge with the same credentials, country and cloud service used in the Dreamehome or MOVAhome app.
 After the bridge becomes online, mower Things are added to the inbox automatically.
 A manual inbox scan can be used to repeat discovery.
 
@@ -27,13 +29,14 @@ A manual inbox scan can be used to repeat discovery.
 
 | Thing     | Parameter         | Required | Default | Description                                         |
 |-----------|-------------------|----------|---------|-----------------------------------------------------|
-| `account` | `username`        | yes      | N/A     | Dreamehome email address or phone number             |
-| `account` | `password`        | yes      | N/A     | Dreamehome password                                  |
+| `account` | `cloudService`    | yes      | `dreamehome` | `dreamehome` or `movahome`                    |
+| `account` | `username`        | yes      | N/A     | Email address or phone number used by the app        |
+| `account` | `password`        | yes      | N/A     | Password used by the app                             |
 | `account` | `country`         | yes      | `de`    | Two-letter account country code                      |
-| `mower`   | `deviceId`        | yes      | N/A     | Dreame cloud device identifier, normally discovered  |
+| `mower`   | `deviceId`        | yes      | N/A     | Cloud device identifier, normally discovered         |
 | `mower`   | `refreshInterval` | no       | `30`    | HTTPS fallback polling interval in seconds            |
 
-European country codes such as `de`, `fr` or `nl` are routed to the Dreame European cloud.
+European country codes such as `de`, `fr` or `nl` are routed to the selected service's European cloud.
 The minimum refresh interval is 15 seconds.
 
 ## Channels
@@ -97,7 +100,7 @@ preserves unknown fields in the mower's map preferences and confirms a change by
 ### Thing Configuration
 
 ```java
-Bridge dreame:account:home "Dreamehome" [ username="name@example.com", password="secret", country="de" ] {
+Bridge dreame:account:home "Dreamehome" [ cloudService="dreamehome", username="name@example.com", password="secret", country="de" ] {
     Thing mower a1pro "Dreame A1 Pro" [ deviceId="123456789", refreshInterval=30 ]
 }
 ```
@@ -133,7 +136,7 @@ Dreame_CuttingHeight.sendCommand(4.5)
 
 ## Communication
 
-The binding refreshes the Dreamehome OAuth token before expiry.
+The binding refreshes the selected cloud service's OAuth token before expiry.
 HTTPS polling remains active as a fallback while MQTT supplies low-latency changes for state, battery, charging, position and task progress.
 The MQTT connection uses TLS with hostname verification and the Dreame root certificate bundled with the binding.
 
@@ -164,11 +167,12 @@ If a newly added channel does not appear after updating a development JAR, disab
 
 ## Known Limitations
 
+- MOVAhome login, discovery, MQTT and device operations still require testing with physical MOVA hardware.
 - Commands are not yet verified on models other than `dreame.mower.g2540d`.
 - Lifetime statistics and do not disturb are not exposed by all mower firmware versions.
 - Map details depend on the geometry and metadata supplied by the mower firmware.
 - Position values use the native Dreame map coordinate system and are not geographic coordinates.
-- The integration depends on Dreamehome cloud services and may require updates if their private API changes.
+- The integration depends on private Dreamehome and MOVAhome cloud APIs and may require updates if they change.
 
 ## Protocol References
 

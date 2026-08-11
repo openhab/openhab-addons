@@ -68,7 +68,14 @@ public class DreameApiClient implements DreameMowerApi {
     }
 
     public synchronized void login(String username, String password, String country) throws DreameCloudException {
-        authentication.login(username, password, country, body -> transport.post(LOGIN_PATH, body, false));
+        login(username, password, country, DreameCloudService.DREAMEHOME);
+    }
+
+    @Override
+    public synchronized void login(String username, String password, String country, DreameCloudService cloudService)
+            throws DreameCloudException {
+        authentication.login(username, password, country, cloudService,
+                body -> transport.post(LOGIN_PATH, body, false));
     }
 
     public synchronized List<DreameDevice> getDevices() throws DreameCloudException {

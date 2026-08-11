@@ -15,7 +15,7 @@ package org.openhab.binding.dreame.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration of a mower registered in a Dreamehome account.
+ * Configuration of a mower registered in the selected cloud account.
  *
  * @author Ronny Grun - Initial contribution
  */
