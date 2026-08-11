@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -130,7 +131,7 @@ class AnkerSolixHandlerInternalsTest {
         assertEquals("Anker SOLIX Smart Meter Gen 2", smartMeterMapped);
 
         String smartPlugMapped = invoke(handler, "resolveModelName", "Generic Model", "QNA1234567890");
-        assertEquals("Anker SOLIX Smart Plug", smartPlugMapped);
+        assertEquals("Anker SOLIX Smart Plug Gen 2", smartPlugMapped);
 
         String wallboxMapped = invoke(handler, "resolveModelName", "Generic Model", "A5191GZ212345678");
         assertEquals("Anker SOLIX V1 Smart EV Charger", wallboxMapped);
@@ -188,6 +189,73 @@ class AnkerSolixHandlerInternalsTest {
         Map<String, State> shadowMap = getField(handler, "shadowStates");
         assertFalse(shadowMap.containsKey("test-channel"));
         assertFalse(expiryMap.containsKey("test-channel"));
+    }
+
+    @Test
+    void batteryPowerSetpointShouldAcceptZeroAndRejectOutOfRange() throws Exception {
+        invokeVoid(handler, "handleDeviceCommand", "battery-power-setpoint", new DecimalType("0"));
+
+        State zeroShadow = invoke(handler, "getShadowState", "battery-power-setpoint");
+        assertInstanceOf(QuantityType.class, zeroShadow);
+        QuantityType<?> zeroQuantity = (QuantityType<?>) zeroShadow;
+        assertEquals(0, zeroQuantity.toBigDecimal().intValue());
+
+        handler = newHandler();
+        invokeVoid(handler, "handleDeviceCommand", "battery-power-setpoint", new DecimalType("10001"));
+        State outOfRangeShadow = invoke(handler, "getShadowState", "battery-power-setpoint");
+        assertNull(outOfRangeShadow);
+    }
+
+    @Test
+    void backupSocEnableShouldSetSwitchShadowForOnAndOff() throws Exception {
+        invokeVoid(handler, "handleDeviceCommand", "backup-soc-enable", OnOffType.ON);
+        State onShadow = invoke(handler, "getShadowState", "backup-soc-enable");
+        assertEquals(OnOffType.ON, onShadow);
+
+        invokeVoid(handler, "handleDeviceCommand", "backup-soc-enable", OnOffType.OFF);
+        State offShadow = invoke(handler, "getShadowState", "backup-soc-enable");
+        assertEquals(OnOffType.OFF, offShadow);
+    }
+
+    @Test
+    void chargingLimitSocShouldOnlySetShadowWithinRange() throws Exception {
+        invokeVoid(handler, "handleDeviceCommand", "charging-limit-soc", new DecimalType("80"));
+        State minShadow = invoke(handler, "getShadowState", "charging-limit-soc");
+        assertInstanceOf(QuantityType.class, minShadow);
+        assertEquals(80, ((QuantityType<?>) minShadow).toBigDecimal().intValue());
+
+        handler = newHandler();
+        invokeVoid(handler, "handleDeviceCommand", "charging-limit-soc", new DecimalType("79"));
+        State belowMinShadow = invoke(handler, "getShadowState", "charging-limit-soc");
+        assertNull(belowMinShadow);
+
+        invokeVoid(handler, "handleDeviceCommand", "charging-limit-soc", new DecimalType("100"));
+        State maxShadow = invoke(handler, "getShadowState", "charging-limit-soc");
+        assertInstanceOf(QuantityType.class, maxShadow);
+        assertEquals(100, ((QuantityType<?>) maxShadow).toBigDecimal().intValue());
+    }
+
+    @Test
+    void dischargeAndReserveSocShouldRespectConfiguredRanges() throws Exception {
+        invokeVoid(handler, "handleDeviceCommand", "discharge-limit-soc", new DecimalType("20"));
+        State dischargeMaxShadow = invoke(handler, "getShadowState", "discharge-limit-soc");
+        assertInstanceOf(QuantityType.class, dischargeMaxShadow);
+        assertEquals(20, ((QuantityType<?>) dischargeMaxShadow).toBigDecimal().intValue());
+
+        handler = newHandler();
+        invokeVoid(handler, "handleDeviceCommand", "discharge-limit-soc", new DecimalType("21"));
+        State dischargeOutOfRangeShadow = invoke(handler, "getShadowState", "discharge-limit-soc");
+        assertNull(dischargeOutOfRangeShadow);
+
+        invokeVoid(handler, "handleDeviceCommand", "backup-reserve-soc", new DecimalType("100"));
+        State reserveMaxShadow = invoke(handler, "getShadowState", "backup-reserve-soc");
+        assertInstanceOf(QuantityType.class, reserveMaxShadow);
+        assertEquals(100, ((QuantityType<?>) reserveMaxShadow).toBigDecimal().intValue());
+
+        handler = newHandler();
+        invokeVoid(handler, "handleDeviceCommand", "backup-reserve-soc", new DecimalType("101"));
+        State reserveOutOfRangeShadow = invoke(handler, "getShadowState", "backup-reserve-soc");
+        assertNull(reserveOutOfRangeShadow);
     }
 
     @SuppressWarnings("unchecked")

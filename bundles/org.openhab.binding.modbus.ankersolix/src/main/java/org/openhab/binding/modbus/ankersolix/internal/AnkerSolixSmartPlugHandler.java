@@ -20,7 +20,9 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -36,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class AnkerSolixSmartPlugHandler extends AbstractAnkerSolixHandler {
 
     private static final List<PollRange> POLL_RANGES = Arrays.asList(
-            new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 30000, 37),
+            new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 30000, 38),
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 32768, 5));
 
     private final Logger logger = LoggerFactory.getLogger(AnkerSolixSmartPlugHandler.class);
@@ -75,6 +77,10 @@ public class AnkerSolixSmartPlugHandler extends AbstractAnkerSolixHandler {
         updateScaledPowerChannel(CHANNEL_REAL_TIME_POWER, readScaledUInt16(30030, 10));
         updateVoltageChannel(CHANNEL_VOLTAGE, readScaledUInt16(30031, 10));
         updateCurrentChannel(CHANNEL_CURRENT, readScaledUInt16(30032, 100));
+        var temperature = readScaledInt16(30037, 10);
+        if (temperature != null) {
+            updateChannelState(CHANNEL_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
+        }
 
         State switchShadow = getShadowState(CHANNEL_POWER_SWITCH);
         if (switchShadow instanceof OnOffType shadowSwitch) {

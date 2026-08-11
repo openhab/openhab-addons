@@ -56,11 +56,14 @@ public class AnkerSolixBindingConstants {
 
     public static final Map<String, String> PRODUCT_CODE_TO_MODEL = Map.ofEntries(
             Map.entry("DN7M", "Anker SOLIX Solarbank 4 E5000 Pro"),
-            Map.entry("DPM4", "Anker SOLIX Solarbank 4 E5000 Pro"), Map.entry("DMWH", "Anker SOLIX Solarbank Max AC"),
+            Map.entry("DPM4", "Anker SOLIX Solarbank 4 E5000 Pro"), Map.entry("DMY6", "Anker SOLIX Solarbank Max"),
+            Map.entry("DN9U", "Anker SOLIX Solarbank Max"), Map.entry("DPTK", "Anker SOLIX Solarbank Max"),
+            Map.entry("DNMT", "Anker SOLIX XE"), Map.entry("DPP5", "Anker SOLIX XE"),
+            Map.entry("DNN4", "Anker SOLIX XE"), Map.entry("DMWH", "Anker SOLIX Solarbank Max AC"),
             Map.entry("DMXU", "Anker SOLIX Solarbank Max AC"), Map.entry("E25H", "Anker SOLIX Solarbank Max AC"),
-            Map.entry("QNA", "Anker SOLIX Smart Plug"), Map.entry("DNSL", "Anker SOLIX Smart Meter Gen 2"),
-            Map.entry("DNSM", "Anker SOLIX Smart Meter Gen 2"), Map.entry("DNMS", "Anker SOLIX XE AC"),
-            Map.entry("DPP4", "Anker SOLIX XE AC"), Map.entry("DNN3", "Anker SOLIX XE AC"),
+            Map.entry("DNMS", "Anker SOLIX XE AC"), Map.entry("DPP4", "Anker SOLIX XE AC"),
+            Map.entry("DNN3", "Anker SOLIX XE AC"), Map.entry("QNA", "Anker SOLIX Smart Plug Gen 2"),
+            Map.entry("DNSL", "Anker SOLIX Smart Meter Gen 2"), Map.entry("DNSM", "Anker SOLIX Smart Meter Gen 2"),
             Map.entry("A519", "Anker SOLIX V1 Smart EV Charger"));
 
     public static final String CHANNEL_DEVICE_MODEL = "device-model";
@@ -77,6 +80,10 @@ public class AnkerSolixBindingConstants {
     public static final String CHANNEL_PV_TOTAL_GENERATION = "pv-total-generation";
     public static final String CHANNEL_CUMULATIVE_CHARGE_ENERGY = "cumulative-charge-energy";
     public static final String CHANNEL_CUMULATIVE_DISCHARGE_ENERGY = "cumulative-discharge-energy";
+    public static final String CHANNEL_BACKUP_SOC_ENABLE = "backup-soc-enable";
+    public static final String CHANNEL_CHARGING_LIMIT_SOC = "charging-limit-soc";
+    public static final String CHANNEL_DISCHARGE_LIMIT_SOC = "discharge-limit-soc";
+    public static final String CHANNEL_BACKUP_RESERVE_SOC = "backup-reserve-soc";
     public static final String CHANNEL_OPERATING_MODE = "operating-mode";
     public static final String CHANNEL_BATTERY_POWER_DIRECTION = "battery-power-direction";
     public static final String CHANNEL_BATTERY_POWER_SETPOINT = "battery-power-setpoint";
@@ -106,6 +113,7 @@ public class AnkerSolixBindingConstants {
     public static final String CHANNEL_REAL_TIME_POWER = "real-time-power";
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_CURRENT = "current";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_SWITCH_STATUS = "switch-status";
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
 
@@ -168,20 +176,39 @@ public class AnkerSolixBindingConstants {
     public static final String CHANNEL_SET_NUMBER_OF_CHARGING_PHASES = "set-number-of-charging-phases";
 
     public static @Nullable String resolveModelFromSerial(@Nullable String serialNumber) {
-        if (serialNumber == null || serialNumber.length() < 3) {
+        if (serialNumber == null) {
             return null;
         }
 
-        String upperSerial = serialNumber.toUpperCase(Locale.ROOT);
-        if (upperSerial.length() >= 4) {
-            String productCode4 = upperSerial.substring(0, 4);
-            String mapped4 = PRODUCT_CODE_TO_MODEL.get(productCode4);
+        String upperSerial = serialNumber.trim().toUpperCase(Locale.ROOT);
+        if (upperSerial.isBlank()) {
+            return null;
+        }
+
+        // Upstream serial numbers encode the product code in characters 4-6 or 4-7.
+        if (upperSerial.length() >= 7) {
+            String mapped4 = PRODUCT_CODE_TO_MODEL.get(upperSerial.substring(3, 7));
             if (mapped4 != null) {
                 return mapped4;
             }
         }
+        if (upperSerial.length() >= 6) {
+            String mapped3 = PRODUCT_CODE_TO_MODEL.get(upperSerial.substring(3, 6));
+            if (mapped3 != null) {
+                return mapped3;
+            }
+        }
 
-        String productCode3 = upperSerial.substring(0, 3);
-        return PRODUCT_CODE_TO_MODEL.get(productCode3);
+        // Backward-compatible fallback for older serial/code formats.
+        if (upperSerial.length() >= 4) {
+            String mapped4Prefix = PRODUCT_CODE_TO_MODEL.get(upperSerial.substring(0, 4));
+            if (mapped4Prefix != null) {
+                return mapped4Prefix;
+            }
+        }
+        if (upperSerial.length() >= 3) {
+            return PRODUCT_CODE_TO_MODEL.get(upperSerial.substring(0, 3));
+        }
+        return null;
     }
 }

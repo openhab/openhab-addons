@@ -30,6 +30,10 @@
 			<channel id="pv-total-generation" typeId="ankersolix-pv-total-generation"/>
 			<channel id="cumulative-charge-energy" typeId="ankersolix-cumulative-charge-energy"/>
 			<channel id="cumulative-discharge-energy" typeId="ankersolix-cumulative-discharge-energy"/>
+			<channel id="backup-soc-enable" typeId="ankersolix-backup-soc-enable"/>
+			<channel id="charging-limit-soc" typeId="ankersolix-charging-limit-soc"/>
+			<channel id="discharge-limit-soc" typeId="ankersolix-discharge-limit-soc"/>
+			<channel id="backup-reserve-soc" typeId="ankersolix-backup-reserve-soc"/>
 			<channel id="operating-mode" typeId="ankersolix-operating-mode"/>
 			<channel id="battery-power-direction" typeId="ankersolix-battery-power-direction"/>
 			<channel id="battery-power-setpoint" typeId="ankersolix-battery-power-setpoint"/>
@@ -73,6 +77,10 @@
 			<channel id="pv-total-generation" typeId="ankersolix-pv-total-generation"/>
 			<channel id="cumulative-charge-energy" typeId="ankersolix-cumulative-charge-energy"/>
 			<channel id="cumulative-discharge-energy" typeId="ankersolix-cumulative-discharge-energy"/>
+			<channel id="backup-soc-enable" typeId="ankersolix-backup-soc-enable"/>
+			<channel id="charging-limit-soc" typeId="ankersolix-charging-limit-soc"/>
+			<channel id="discharge-limit-soc" typeId="ankersolix-discharge-limit-soc"/>
+			<channel id="backup-reserve-soc" typeId="ankersolix-backup-reserve-soc"/>
 			<channel id="operating-mode" typeId="ankersolix-operating-mode"/>
 			<channel id="battery-power-direction" typeId="ankersolix-battery-power-direction"/>
 			<channel id="battery-power-setpoint" typeId="ankersolix-battery-power-setpoint"/>
@@ -203,6 +211,7 @@
 			<channel id="real-time-power" typeId="ankersolix-smartplug-power"/>
 			<channel id="voltage" typeId="ankersolix-smartplug-voltage"/>
 			<channel id="current" typeId="ankersolix-smartplug-current"/>
+			<channel id="temperature" typeId="ankersolix-smartplug-temperature"/>
 			<channel id="switch-status" typeId="ankersolix-smartplug-switch-status"/>
 			<channel id="power-switch" typeId="ankersolix-smartplug-power-switch"/>
 		</channels>
@@ -508,6 +517,29 @@
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="ankersolix-backup-soc-enable">
+		<item-type>Switch</item-type>
+		<label>Backup SOC Enable</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-charging-limit-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Charging Limit SOC</label>
+		<state min="80" max="100" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-discharge-limit-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Discharge Limit SOC</label>
+		<state min="0" max="20" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-backup-reserve-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Backup Reserve SOC</label>
+		<state min="0" max="100" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
 	<channel-type id="ankersolix-operating-mode">
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
@@ -521,7 +553,7 @@
 	<channel-type id="ankersolix-battery-power-setpoint">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power Setpoint</label>
-		<state min="100" max="10000" step="1" pattern="%.0f %unit%"/>
+		<state min="0" max="10000" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ankersolix-meter-type">
@@ -563,6 +595,12 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<state pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-smartplug-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ankersolix-smartplug-switch-status">
