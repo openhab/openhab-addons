@@ -1276,27 +1276,24 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private void loadOffTransitionWorkaroundIds() {
         try {
             Set<String> workaroundIds = ConcurrentHashMap.newKeySet();
-            try {
-                // Load all devices and check for direct matches
-                getClip2Bridge().getResources(DEVICE).getResources().stream()
-                        .forEach(d -> checkDevice(d, workaroundIds));
+            // Load all devices and check for direct matches
+            getClip2Bridge().getResources(DEVICE).getResources().stream().forEach(d -> checkDevice(d, workaroundIds));
 
-                // Load all rooms and zones
-                Map<String, Resource> roomZoneMap = new HashMap<>();
-                Stream<Resource> rooms = getClip2Bridge().getResources(ROOM).getResources().stream();
-                Stream<Resource> zones = getClip2Bridge().getResources(ZONE).getResources().stream();
-                Stream<Resource> home = getClip2Bridge().getResources(BRIDGE_HOME).getResources().stream();
+            // Load all rooms and zones
+            Map<String, Resource> roomZoneMap = new HashMap<>();
+            Stream<Resource> rooms = getClip2Bridge().getResources(ROOM).getResources().stream();
+            Stream<Resource> zones = getClip2Bridge().getResources(ZONE).getResources().stream();
+            Stream<Resource> home = getClip2Bridge().getResources(BRIDGE_HOME).getResources().stream();
 
-                roomZoneMap.putAll(rooms.collect(Collectors.toMap(r -> r.getId(), r -> r)));
-                roomZoneMap.putAll(zones.collect(Collectors.toMap(r -> r.getId(), r -> r)));
-                roomZoneMap.putAll(home.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+            roomZoneMap.putAll(rooms.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+            roomZoneMap.putAll(zones.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+            roomZoneMap.putAll(home.collect(Collectors.toMap(r -> r.getId(), r -> r)));
 
-                // Recursively check if rooms and zones have child devices requiring the work-around
-                roomZoneMap.values().forEach(rz -> checkChildren(rz, rz, roomZoneMap, workaroundIds));
-            } finally {
-                idsRequiringOffTransitionWorkaround.clear();
-                idsRequiringOffTransitionWorkaround.addAll(workaroundIds);
-            }
+            // Recursively check if rooms and zones have child devices requiring the work-around
+            roomZoneMap.values().forEach(rz -> checkChildren(rz, rz, roomZoneMap, workaroundIds));
+
+            idsRequiringOffTransitionWorkaround.clear();
+            idsRequiringOffTransitionWorkaround.addAll(workaroundIds);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ApiException | AssetNotLoadedException e) {
