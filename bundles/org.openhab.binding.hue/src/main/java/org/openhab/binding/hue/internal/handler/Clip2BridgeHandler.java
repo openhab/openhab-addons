@@ -17,7 +17,6 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -174,7 +173,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private int bridgeGeneration;
 
     // set of resource ids that require the OFF transition work around
-    private final Set<String> idsRequiringOffTransitionWorkaround = new HashSet<>();
+    private final Set<String> idsRequiringOffTransitionWorkaround = ConcurrentHashMap.newKeySet();
 
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
             LocaleProvider localeProvider, TranslationProvider i18nProvider) {
@@ -1220,13 +1219,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * to the set of ids requiring the off transition work-around.
      *
      * @param device the device resource to check.
+     * @param tempWorkaroundIds working set of ids requiring the off transition work-around
      */
-    private void checkDevice(Resource device) {
+    private void checkDevice(Resource device, Set<String> tempWorkaroundIds) {
         ProductData productData = device.getProductData();
         if (productData != null) {
             String modelId = productData.getModelId();
             if (Clip2ThingHandler.OFF_TRANSITION_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
-                idsRequiringOffTransitionWorkaround.add(device.getId());
+                tempWorkaroundIds.add(device.getId());
                 logger.debug("Enabled off transition work-around for '{}', id '{}'", modelId, device.getId());
             }
         }
@@ -1239,19 +1239,21 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @param parentRoomZone the ultimate parent room/zone resource.
      * @param roomZone the room/zone resource to check.
      * @param mapRoomsZones a map of all rooms/zones by their id.
+     * @param tempWorkaroundIds working set of ids requiring the off transition work-around
      */
-    private void checkChildren(Resource parentRoomZone, Resource roomZone, Map<String, Resource> mapRoomsZones) {
+    private void checkChildren(Resource parentRoomZone, Resource roomZone, Map<String, Resource> mapRoomsZones,
+            Set<String> tempWorkaroundIds) {
         for (ResourceReference childRef : roomZone.getChildren()) {
             switch (childRef.getType()) {
                 case ROOM, ZONE:
                     if (mapRoomsZones.get(childRef.getId()) instanceof Resource childRoomZone) {
                         // recurse into nested room/zone
-                        checkChildren(parentRoomZone, childRoomZone, mapRoomsZones);
+                        checkChildren(parentRoomZone, childRoomZone, mapRoomsZones, tempWorkaroundIds);
                     }
                     break;
                 case DEVICE:
-                    if (idsRequiringOffTransitionWorkaround.contains(childRef.getId())) {
-                        idsRequiringOffTransitionWorkaround.add(parentRoomZone.getId());
+                    if (tempWorkaroundIds.contains(childRef.getId())) {
+                        tempWorkaroundIds.add(parentRoomZone.getId());
                         logger.debug("Enabled off transition work-around for '{}', id '{}'", parentRoomZone.getName(),
                                 parentRoomZone.getId());
                     }
@@ -1273,23 +1275,28 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void loadOffTransitionWorkaroundIds() {
         try {
-            idsRequiringOffTransitionWorkaround.clear();
+            Set<String> workaroundIds = ConcurrentHashMap.newKeySet();
+            try {
+                // Load all devices and check for direct matches
+                getClip2Bridge().getResources(DEVICE).getResources().stream()
+                        .forEach(d -> checkDevice(d, workaroundIds));
 
-            // Load all devices and check for direct matches
-            getClip2Bridge().getResources(DEVICE).getResources().stream().forEach(d -> checkDevice(d));
+                // Load all rooms and zones
+                Map<String, Resource> roomZoneMap = new HashMap<>();
+                Stream<Resource> rooms = getClip2Bridge().getResources(ROOM).getResources().stream();
+                Stream<Resource> zones = getClip2Bridge().getResources(ZONE).getResources().stream();
+                Stream<Resource> home = getClip2Bridge().getResources(BRIDGE_HOME).getResources().stream();
 
-            // Load all rooms and zones
-            Map<String, Resource> roomZoneMap = new HashMap<>();
-            Stream<Resource> rooms = getClip2Bridge().getResources(ROOM).getResources().stream();
-            Stream<Resource> zones = getClip2Bridge().getResources(ZONE).getResources().stream();
-            Stream<Resource> home = getClip2Bridge().getResources(BRIDGE_HOME).getResources().stream();
+                roomZoneMap.putAll(rooms.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+                roomZoneMap.putAll(zones.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+                roomZoneMap.putAll(home.collect(Collectors.toMap(r -> r.getId(), r -> r)));
 
-            roomZoneMap.putAll(rooms.collect(Collectors.toMap(r -> r.getId(), r -> r)));
-            roomZoneMap.putAll(zones.collect(Collectors.toMap(r -> r.getId(), r -> r)));
-            roomZoneMap.putAll(home.collect(Collectors.toMap(r -> r.getId(), r -> r)));
-
-            // Recursively check if rooms and zones have child devices requiring the work-around
-            roomZoneMap.values().forEach(rz -> checkChildren(rz, rz, roomZoneMap));
+                // Recursively check if rooms and zones have child devices requiring the work-around
+                roomZoneMap.values().forEach(rz -> checkChildren(rz, rz, roomZoneMap, workaroundIds));
+            } finally {
+                idsRequiringOffTransitionWorkaround.clear();
+                idsRequiringOffTransitionWorkaround.addAll(workaroundIds);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ApiException | AssetNotLoadedException e) {

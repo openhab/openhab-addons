@@ -652,7 +652,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         channelUID,
                         resources.getErrors().stream().map(e -> e.getDescription()).collect(Collectors.joining("; ")));
                 if (resources.getErrors().stream()
-                        .anyMatch(e -> ErrorType.ATTRIBUTE_MAY_HAVE_NO_EFFECT == e.getErrorType())) {
+                        .allMatch(e -> ErrorType.ATTRIBUTE_MAY_HAVE_NO_EFFECT == e.getErrorType())) {
                     loopBackNotify(putResource);
                 }
             }
