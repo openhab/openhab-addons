@@ -38,6 +38,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Acceleration;
@@ -170,9 +171,14 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         Bridge bridge = BridgeBuilder.create(new ThingTypeUID("mqtt", "broker"), "mybroker").withLabel("MQTT Broker")
                 .withConfiguration(configuration).build();
         thingProvider.add(bridge);
+        things.add(bridge);
         waitForAssert(() -> assertNotNull(bridge.getHandler()));
         assertNotNull(bridge.getConfiguration());
-        things.add(bridge);
+        // Wait until the broker bridge is really connected before any Ruuvi things are created. A Ruuvi thing that
+        // is initialized while the bridge is not ONLINE immediately reports OFFLINE (BRIDGE_OFFLINE) or
+        // OFFLINE (COMMUNICATION_ERROR), which would show up as an extra, unexpected thing status update in the
+        // assertions of the tests.
+        waitForAssert(() -> assertEquals(ThingStatus.ONLINE, bridge.getStatus(), bridge.getStatusInfo().toString()));
         return bridge;
     }
 
@@ -201,9 +207,9 @@ public class RuuviGatewayTest extends MqttOSGiTest {
 
         Thing thing = thingBuilder.build();
         thingProvider.add(thing);
+        things.add(thing);
         waitForAssert(() -> assertNotNull(thing.getHandler()));
         assertNotNull(thing.getConfiguration());
-        things.add(thing);
         return thing;
     }
 
@@ -284,17 +290,33 @@ public class RuuviGatewayTest extends MqttOSGiTest {
     @Override
     @AfterEach
     public void afterEach() throws Exception {
+        unregisterService(statusSubscriber);
+        removeThings();
         if (mqttConnection != null) {
             mqttConnection.removeConnectionObserver(failIfChange);
             mqttConnection.stop().get(5, TimeUnit.SECONDS);
         }
-        things.stream().map(thing -> thingProvider.remove(thing.getUID()));
-        unregisterService(statusSubscriber);
 
         if (scheduler != null) {
             scheduler.shutdownNow();
         }
         super.afterEach();
+    }
+
+    /**
+     * Remove the things created by the test and wait until their handlers have been disposed.
+     *
+     * This is done while the MQTT broker is still running. Without the explicit removal the things are removed only
+     * later on, when {@link org.openhab.core.test.java.JavaOSGiTest} unregisters the volatile storage service, i.e.
+     * after the broker has already been stopped. The broker connection of such a late disposed bridge handler keeps
+     * on reconnecting in the background and leaks into the next test.
+     */
+    private void removeThings() {
+        // Remove the ruuvi things first, so that their handlers are disposed before the bridge handler
+        things.stream().filter(thing -> !(thing instanceof Bridge)).map(Thing::getUID).forEach(thingProvider::remove);
+        things.stream().filter(Bridge.class::isInstance).map(Thing::getUID).forEach(thingProvider::remove);
+        waitForAssert(() -> things.forEach(thing -> assertNull(thing.getHandler(), thing.getUID().getAsString())));
+        things.clear();
     }
 
     @Test
@@ -305,25 +327,34 @@ public class RuuviGatewayTest extends MqttOSGiTest {
                 "Connection " + mqttConnection.getClientId() + " not retrieving all topics ");
     }
 
+    /**
+     * Describe all status updates received so far. Since the tests assert the status updates by their index, the
+     * whole sequence is needed to make sense of a failed assertion. For example an unexpected
+     * OFFLINE (BRIDGE_OFFLINE) update in the sequence tells that the MQTT broker connection of the bridge was
+     * disturbed during the test.
+     */
+    private Supplier<@Nullable String> describeStatusUpdates(List<ThingStatusInfo> statusUpdates, int index) {
+        return () -> String.format("Unexpected thing status update at index %d. Status updates received: %s", index,
+                statusUpdates.stream().map(ThingStatusInfo::toString).collect(Collectors.joining(", ", "[", "]")));
+    }
+
     private void assertThingStatus(List<ThingStatusInfo> statusUpdates, int index, ThingStatus status,
             @Nullable ThingStatusDetail detail, @Nullable String description) {
-        assertTrue(statusUpdates.size() > index,
-                String.format("Not enough status updates. Expected %d, but only had %d. Status updates received: %s",
-                        index + 1, statusUpdates.size(),
-                        statusUpdates.stream().map(ThingStatusInfo::getStatus).collect(Collectors.toList())));
-        assertEquals(status, statusUpdates.get(index).getStatus(), statusUpdates.get(index).toString());
-        assertEquals(detail, statusUpdates.get(index).getStatusDetail(), statusUpdates.get(index).toString());
-        assertEquals(description, statusUpdates.get(index).getDescription(), statusUpdates.get(index).toString());
+        Supplier<@Nullable String> message = describeStatusUpdates(statusUpdates, index);
+        assertTrue(statusUpdates.size() > index, message);
+        assertEquals(status, statusUpdates.get(index).getStatus(), message);
+        assertEquals(detail, statusUpdates.get(index).getStatusDetail(), message);
+        assertEquals(description, statusUpdates.get(index).getDescription(), message);
     }
 
     @SuppressWarnings("null")
     private void assertThingStatusWithDescriptionPattern(List<ThingStatusInfo> statusUpdates, int index,
             ThingStatus status, ThingStatusDetail detail, String descriptionPattern) {
-        assertTrue(statusUpdates.size() > index, "assert " + statusUpdates.size() + " > " + index + " failed");
-        assertEquals(status, statusUpdates.get(index).getStatus(), statusUpdates.get(index).toString());
-        assertEquals(detail, statusUpdates.get(index).getStatusDetail(), statusUpdates.get(index).toString());
-        assertTrue(statusUpdates.get(index).getDescription().matches(descriptionPattern),
-                statusUpdates.get(index).toString());
+        Supplier<@Nullable String> message = describeStatusUpdates(statusUpdates, index);
+        assertTrue(statusUpdates.size() > index, message);
+        assertEquals(status, statusUpdates.get(index).getStatus(), message);
+        assertEquals(detail, statusUpdates.get(index).getStatusDetail(), message);
+        assertTrue(statusUpdates.get(index).getDescription().matches(descriptionPattern), message);
     }
 
     private void assertThingStatus(List<ThingStatusInfo> statusUpdates, int index, ThingStatus status) {
