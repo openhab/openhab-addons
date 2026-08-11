@@ -552,79 +552,74 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void pollData() {
         RoborockAccountHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler != null) {
-            applyCloudOnlyCapabilityPolicies();
-            boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
-            HomeData homeData = localBridgeHandler.getHomeData();
+        if (localBridgeHandler == null || !isBridgeSessionValid()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+            return;
+        }
 
-            // --- GUARD AGAINST CODE 2010 RACE CONDITION ---
-            // If getHomeData() triggered handleSessionExpired(), the bridge is now OFFLINE.
-            // Abort immediately so we do not overwrite the status or schedule the next poll.
+        applyCloudOnlyCapabilityPolicies();
+        boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
+
+        HomeData homeData = localBridgeHandler.getHomeData();
+
+        // Abort if session expired during getHomeData() or if homeData returned null
+        if (!isBridgeSessionValid() || homeData == null) {
+            logger.debug("Aborting pollData() for {} because homeData is null or bridge session is invalid.",
+                    config.duid);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
+        if (homeData.result != null) {
+            homeRooms = homeData.result.rooms;
+            Devices devices[] = homeData.result.devices;
+            updateDevice(devices);
+            Devices receivedDevices[] = homeData.result.receivedDevices;
+            updateDevice(receivedDevices);
+        }
+
+        if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+            String routinesResponse = localBridgeHandler.getRoutines(config.duid);
+
             if (!isBridgeSessionValid()) {
-                logger.debug("Aborting pollData() execution for {} because bridge session is no longer valid.",
-                        config.duid);
+                logger.debug("Aborting routine update for {} because bridge session is invalid.", config.duid);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
             }
 
-            if (homeData != null && homeData.result != null) {
-                homeRooms = homeData.result.rooms;
-                Devices devices[] = homeData.result.devices;
-                updateDevice(devices);
-                Devices receivedDevices[] = homeData.result.receivedDevices;
-                updateDevice(receivedDevices);
-            }
-
-            if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
-                String routinesResponse = localBridgeHandler.getRoutines(config.duid);
-
-                // Check again after routines query in case it triggered session expiration
-                if (!isBridgeSessionValid()) {
-                    logger.debug("Aborting pollData() routine update for {} because bridge session is no longer valid.",
-                            config.duid);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    return;
+            List<StateOption> options = new ArrayList<>();
+            JsonObject parsedRoutines = routinesResponse != null && !routinesResponse.isEmpty()
+                    ? JsonParser.parseString(routinesResponse).getAsJsonObject()
+                    : null;
+            if (parsedRoutines != null && parsedRoutines.get("result").isJsonArray()
+                    && parsedRoutines.get("result").getAsJsonArray().size() > 0
+                    && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
+                JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
+                Map<String, Object> routines = new HashMap<>();
+                for (int i = 0; i < routinesArray.size(); ++i) {
+                    JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
+                    routines.put(routinesJsonObject.get("id").getAsString(),
+                            routinesJsonObject.get("name").getAsString());
+                    options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
+                            routinesJsonObject.get("name").getAsString()));
                 }
-
-                List<StateOption> options = new ArrayList<>();
-                JsonObject parsedRoutines = routinesResponse != null && !routinesResponse.isEmpty()
-                        ? JsonParser.parseString(routinesResponse).getAsJsonObject()
-                        : null;
-                if (parsedRoutines != null && parsedRoutines.get("result").isJsonArray()
-                        && parsedRoutines.get("result").getAsJsonArray().size() > 0
-                        && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
-                    JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
-                    Map<String, Object> routines = new HashMap<>();
-                    for (int i = 0; i < routinesArray.size(); ++i) {
-                        JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
-                        routines.put(routinesJsonObject.get("id").getAsString(),
-                                routinesJsonObject.get("name").getAsString());
-                        options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
-                                routinesJsonObject.get("name").getAsString()));
-                    }
-                    updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
-                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE),
-                            options);
-                } else {
-                    logger.debug("Routines not supported for device {}", config.duid);
-                    supportsRoutines = false;
-                }
-            } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
-                disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
+                updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE), options);
+            } else {
+                logger.debug("Routines not supported for device {}", config.duid);
+                supportsRoutines = false;
             }
-
-            if (cloudOnlyRefreshDue) {
-                lastCloudOnlyPollTimestamp = System.currentTimeMillis();
-            }
-
-            lastSuccessfulPollTimestamp = System.currentTimeMillis();
-            scheduleNextPoll(-1);
-
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
-            return;
+        } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
+            disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
         }
+
+        if (cloudOnlyRefreshDue) {
+            lastCloudOnlyPollTimestamp = System.currentTimeMillis();
+        }
+
+        lastSuccessfulPollTimestamp = System.currentTimeMillis();
+        scheduleNextPoll(-1);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void pollStatusOnly() {
