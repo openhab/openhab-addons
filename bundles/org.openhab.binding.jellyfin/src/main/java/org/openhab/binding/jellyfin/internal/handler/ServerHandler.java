@@ -673,6 +673,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         }
     }
 
+    public Configuration getBindingConfig() {
+        return getConfigAs(Configuration.class);
+    }
+
     /**
      * Removes deprecated configuration keys that are no longer used by the
      * binding. This migration runs once on handler initialization and cleans up

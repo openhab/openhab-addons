@@ -54,6 +54,11 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
     }
 
     @Override
+    public <T> T getConfigAs(Class<T> configurationClass) {
+        return super.getConfigAs(configurationClass);
+    }
+
+    @Override
     public final void initialize() {
         logger.debug("Initializing Sbus handler for thing {}", getThing().getUID());
 

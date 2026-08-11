@@ -132,7 +132,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
 
     @Override
     public void initialize() {
-        this.config = getThing().getConfiguration().as(IPBridgeConfig.class);
+        this.config = getConfigAs(IPBridgeConfig.class);
 
         if (validConfiguration(this.config)) {
             reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
@@ -479,7 +479,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
 
     @Override
     public void thingUpdated(Thing thing) {
-        IPBridgeConfig newConfig = thing.getConfiguration().as(IPBridgeConfig.class);
+        IPBridgeConfig newConfig = getConfigAs(IPBridgeConfig.class);
         boolean validConfig = validConfiguration(newConfig);
         boolean needsReconnect = validConfig && !this.config.sameConnectionParameters(newConfig);
 

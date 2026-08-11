@@ -170,7 +170,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     private synchronized void initializeGardena() {
         try {
-            GardenaConfig gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
+            GardenaConfig gardenaConfig = getConfigAs(GardenaConfig.class);
             logger.debug("{}", gardenaConfig);
 
             gardenaSmart = new GardenaSmartImpl(getThing().getUID(), gardenaConfig, this, scheduler, httpClientFactory,

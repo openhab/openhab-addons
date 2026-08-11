@@ -30,7 +30,6 @@ import org.openhab.binding.neeo.internal.NeeoConstants;
 import org.openhab.binding.neeo.internal.NeeoDeviceConfig;
 import org.openhab.binding.neeo.internal.NeeoDeviceProtocol;
 import org.openhab.binding.neeo.internal.NeeoHandlerCallback;
-import org.openhab.binding.neeo.internal.NeeoRoomConfig;
 import org.openhab.binding.neeo.internal.NeeoUtil;
 import org.openhab.binding.neeo.internal.UidUtils;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
@@ -308,9 +307,8 @@ public class NeeoDeviceHandler extends BaseThingHandler {
     private String getRoomKey() {
         final Bridge bridge = getBridge();
         if (bridge != null) {
-            final BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof NeeoRoomHandler) {
-                return handler.getThing().getConfiguration().as(NeeoRoomConfig.class).getRoomKey();
+            if (bridge.getHandler() instanceof NeeoRoomHandler neeoRoomHandler) {
+                return neeoRoomHandler.getBindingConfig().getRoomKey();
             }
         }
         return null;
