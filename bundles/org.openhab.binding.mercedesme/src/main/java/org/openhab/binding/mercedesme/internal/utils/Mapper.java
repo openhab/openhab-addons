@@ -278,7 +278,10 @@ public class Mapper {
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else {
-                        state = getContact(value.getBoolValue());
+                        // Doorstatus / Decklidstatus / EngineHoodStatus are int_value enums
+                        // (CLOSED=0, OPEN=1) delivered via Mapper.putEnum() - not bool_value, so
+                        // getBoolValue() would always read the default false (= CLOSED)
+                        state = getContact(Utils.getInt(value) != 0);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -362,8 +365,10 @@ public class Mapper {
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else {
-                        // sad but true - false means locked
-                        state = OnOffType.from(!value.getBoolValue());
+                        // Doorlockstatus is an int_value enum (LOCKED=0, UNLOCKED=1) delivered via
+                        // Mapper.putEnum() - not bool_value, so getBoolValue() would always read the
+                        // default false.
+                        state = OnOffType.from(Utils.getInt(value) == 0);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 

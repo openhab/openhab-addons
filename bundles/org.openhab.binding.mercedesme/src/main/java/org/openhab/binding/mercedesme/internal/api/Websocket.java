@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,9 +63,15 @@ import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 @WebSocket
 @NonNullByDefault
 public class Websocket extends RestApi {
-    // WebSocket idle/read timeout - matches Mercedes-Me App (OkHttp readTimeout(6s)): the connection is
-    // considered dead if no frame (incl. pong) is received within this time
-    private static final int WS_IDLE_TIMEOUT_MS = 6 * 1000;
+    // WebSocket transport-level idle timeout. This is Jetty's bidirectional idle timer (see
+    // org.eclipse.jetty.io.IdleTimeout): unlike OkHttp's readTimeout, it counts activity in BOTH
+    // directions, so our own outgoing pings (every PING_INTERVAL_MS) keep resetting it and it would
+    // never fire while we keep pinging a server that stopped answering. It is therefore deliberately
+    // kept well above PING_INTERVAL_MS/PONG_TIMEOUT_MS and only acts as a coarse backstop (e.g. if the
+    // scheduler itself stalls) - actual dead-connection detection is done by the missed-pong watchdog
+    // below (isPongOverdue()/PONG_TIMEOUT_MS), which mirrors the Mercedes-Me App's OkHttp
+    // readTimeout(6s) that only measures inbound inactivity.
+    private static final int WS_IDLE_TIMEOUT_MS = 5 * 60 * 1000;
     // standard runtime of Websocket: randomized between 1 and 3 minutes (anti-bot pattern, avoids a fixed,
     // easily fingerprinted lifetime - same idea as AccountHandler.nextRefreshSeconds())
     private static final long WS_RUNTIME_MIN_MS = 60 * 1000L;
@@ -72,6 +80,10 @@ public class Websocket extends RestApi {
     private static final int ADDON_MESSAGE_TIME_MS = 60 * 1000;
     // ping cadence - matches Mercedes-Me App (OkHttp pingInterval(6s)); also drives the general check loop
     private static final int PING_INTERVAL_MS = 6 * 1000;
+    // missed-pong watchdog: if no pong is received within this window after a ping was sent, the
+    // connection is treated as dead - matches Mercedes-Me App (OkHttp readTimeout(6s)), which (unlike
+    // Jetty's WS_IDLE_TIMEOUT_MS above) is a pure read-side timeout not reset by our own outgoing pings
+    private static final long PONG_TIMEOUT_MS = 6 * 1000L;
     // additional 5 minutes after keep alive
     private static final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
     // max reconnect attempts before falling back to full re-authorization - matches Mercedes-Me App
@@ -319,6 +331,13 @@ public class Websocket extends RestApi {
 
     private void handleConnectedState() {
         logger.trace("Refresh: Websocket fine - state {}", state);
+        if (isPongOverdue()) {
+            // explicit missed-pong/read watchdog - see PONG_TIMEOUT_MS. WS_IDLE_TIMEOUT_MS alone
+            // cannot detect this because it is reset by our own outgoing pings.
+            logger.debug("Websocket missed pong within {} ms - connection considered dead", PONG_TIMEOUT_MS);
+            onClosedSession(new TimeoutException("No pong received within " + PONG_TIMEOUT_MS + " ms"));
+            return;
+        }
         if (sendMessage()) {
             // add additional runtime to execute and finish command
             runTill = runTill.plusMillis(ADDON_MESSAGE_TIME_MS);
@@ -403,6 +422,19 @@ public class Websocket extends RestApi {
         } else {
             pingSentAt = null;
         }
+    }
+
+    /**
+     * Explicit missed-pong/read watchdog. Jetty's {@code setMaxIdleTimeout} (WS_IDLE_TIMEOUT_MS) is
+     * bidirectional and gets reset by our own outgoing pings, so it cannot by itself detect a server
+     * that stopped answering. This checks directly whether a ping is still outstanding (no pong seen
+     * yet) for longer than PONG_TIMEOUT_MS.
+     *
+     * @return true if a ping was sent and no pong has been received within PONG_TIMEOUT_MS
+     */
+    private boolean isPongOverdue() {
+        Instant sent = pingSentAt;
+        return sent != null && Duration.between(sent, Instant.now()).toMillis() > PONG_TIMEOUT_MS;
     }
 
     private void handlePing(Frame frame) {

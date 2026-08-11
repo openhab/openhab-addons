@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
@@ -273,6 +274,59 @@ class MapperTest {
 
         // Act
         ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_CHARGINGACTIVE, chargingActive);
+
+        // Assert
+        assertEquals(OnOffType.ON, csm.getState());
+    }
+
+    @Test
+    void whenDoorOpenReportedViaIntValueThenChannelStateIsOpen() {
+        // Arrange - Doorstatus is delivered as an enum (int_value oneof), not a bool: CLOSED=0, OPEN=1
+        // (MBMobileSDK 1.68 Doorstatus). getChannelStateMap() must not read this via getBoolValue(),
+        // which would always see the oneof default false (= CLOSED) and hide an open door.
+        VehicleAttributeStatus doorOpen = VehicleAttributeStatus.newBuilder().setIntValue(1).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORSTATUSFRONTRIGHT, doorOpen);
+
+        // Assert
+        assertEquals(OpenClosedType.OPEN, csm.getState());
+    }
+
+    @Test
+    void whenDoorClosedReportedViaIntValueThenChannelStateIsClosed() {
+        // Arrange - Doorstatus CLOSED=0
+        VehicleAttributeStatus doorClosed = VehicleAttributeStatus.newBuilder().setIntValue(0).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORSTATUSFRONTRIGHT, doorClosed);
+
+        // Assert
+        assertEquals(OpenClosedType.CLOSED, csm.getState());
+    }
+
+    @Test
+    void whenLockUnlockedReportedViaIntValueThenChannelStateIsOff() {
+        // Arrange - Doorlockstatus is delivered as an enum (int_value oneof), not a bool: LOCKED=0,
+        // UNLOCKED=1 (MBMobileSDK 1.68 Doorlockstatus). getChannelStateMap() must not read this via
+        // getBoolValue(), which would always see the oneof default false and report an unlocked
+        // individual lock as still locked.
+        VehicleAttributeStatus unlocked = VehicleAttributeStatus.newBuilder().setIntValue(1).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORLOCKSTATUSFRONTRIGHT, unlocked);
+
+        // Assert - ON means locked for this channel (see Mapper.getChannelStateMap "sad but true" note)
+        assertEquals(OnOffType.OFF, csm.getState());
+    }
+
+    @Test
+    void whenLockLockedReportedViaIntValueThenChannelStateIsOn() {
+        // Arrange - Doorlockstatus LOCKED=0
+        VehicleAttributeStatus locked = VehicleAttributeStatus.newBuilder().setIntValue(0).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORLOCKSTATUSFRONTRIGHT, locked);
 
         // Assert
         assertEquals(OnOffType.ON, csm.getState());
