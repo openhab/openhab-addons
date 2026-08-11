@@ -33,12 +33,12 @@ The bridge itself is still configured manually. Discovery then adds the matching
 
 ## Thing Configuration
 
-| Name                           | Type    | Description                                  | Default | Required | Advanced |
-|--------------------------------|---------|----------------------------------------------|---------|----------|----------|
-| pollInterval                   | integer | Poll interval in milliseconds (ms)           | 5000    | yes      | no       |
-| maxTries                       | integer | Maximum tries for read/write requests        | 3       | no       | yes      |
-| writeProtectionDurationSeconds | integer | Shadow-state duration after successful write | 15      | no       | yes      |
-| autoThirdPartyControl          | boolean | Switch Solarbank into third party control on connect | true | no   | yes      |
+| Name                           | Type    | Description                                            | Default | Required | Advanced |
+|--------------------------------|---------|--------------------------------------------------------|---------|----------|----------|
+| pollInterval                   | integer | Poll interval in milliseconds (ms)                     | 5000    | yes      | no       |
+| maxTries                       | integer | Maximum tries for read/write requests                  | 3       | no       | yes      |
+| writeProtectionDurationSeconds | integer | Shadow-state duration after successful write           | 15      | no       | yes      |
+| autoThirdPartyControl          | boolean | Switch Solarbank into third party control on connect   | true    | no       | yes      |
 
 `pollInterval` is intentionally configured in milliseconds.
 For example, `5000` means 5 seconds and the minimum value is `500` (0.5 seconds).
@@ -83,25 +83,29 @@ In other words, connection parameters are bridge-level and can still be unique p
 
 The `ankersolix-solarbank4` and `ankersolix-solarbank-ac` things expose the following channels:
 
-| Channel ID                      | Item Type            | Access      | Description |
-|---------------------------------|----------------------|-------------|-------------|
-| `device-model`                  | `String`             | read-only   | Device model string. |
-| `device-serial-number`          | `String`             | read-only   | Device serial number. |
-| `device-sw-version`             | `String`             | read-only   | Device firmware version. |
-| `battery-soc`                   | `Number:Dimensionless` | read-only | Battery state of charge in percent. |
-| `pv-power`                      | `Number:Power`       | read-only   | Total PV input power. |
-| `battery-charging-power`        | `Number:Power`       | read-only   | Battery charging power (non-negative). |
-| `battery-discharging-power`     | `Number:Power`       | read-only   | Battery discharging power (non-negative). |
-| `load-power`                    | `Number:Power`       | read-only   | Current load power. |
-| `grid-import-power`             | `Number:Power`       | read-only   | Grid import power (non-negative). |
-| `grid-export-power`             | `Number:Power`       | read-only   | Grid export power (non-negative). |
-| `ac-grid-output-power`          | `Number:Power`       | read-only   | AC grid output power. |
-| `pv-total-generation`           | `Number:Energy`      | read-only   | Total PV generation (`kWh`). |
-| `cumulative-charge-energy`      | `Number:Energy`      | read-only   | Cumulative charge energy (`kWh`). |
-| `cumulative-discharge-energy`   | `Number:Energy`      | read-only   | Cumulative discharge energy (`kWh`). |
-| `operating-mode`                | `String`             | read-write  | Operating mode. Supported command values: `self_consumption`, `tou_mode`, `third_party_control`, `custom_mode`, `socket_overlay_mode`, `smart_mode`, `dynamic_pricing`. |
-| `battery-power-direction`       | `String`             | read-write  | Direction for setpoint control. Supported values: `charge`, `discharge`. |
-| `battery-power-setpoint`        | `Number:Power`       | read-write  | Battery power setpoint in `W` (absolute value, `100`-`10000`). Sign sent to device is derived from `battery-power-direction`. |
+| Channel ID | Item Type | Access | Description |
+| ------------ | ----------- | -------- | ------------- |
+| `device-model` | `String` | read-only | Device model string. |
+| `device-serial-number` | `String` | read-only | Device serial number. |
+| `device-sw-version` | `String` | read-only | Device firmware version. |
+| `battery-soc` | `Number:Dimensionless` | read-only | Battery state of charge in percent. |
+| `pv-power` | `Number:Power` | read-only | Total PV input power. |
+| `battery-charging-power` | `Number:Power` | read-only | Battery charging power (non-negative). |
+| `battery-discharging-power` | `Number:Power` | read-only | Battery discharging power (non-negative). |
+| `load-power` | `Number:Power` | read-only | Current load power. |
+| `grid-import-power` | `Number:Power` | read-only | Grid import power (non-negative). |
+| `grid-export-power` | `Number:Power` | read-only | Grid export power (non-negative). |
+| `ac-grid-output-power` | `Number:Power` | read-only | AC grid output power. |
+| `pv-total-generation` | `Number:Energy` | read-only | Total PV generation (`kWh`). |
+| `cumulative-charge-energy` | `Number:Energy` | read-only | Cumulative charge energy (`kWh`). |
+| `cumulative-discharge-energy` | `Number:Energy` | read-only | Cumulative discharge energy (`kWh`). |
+| `operating-mode` | `String` | read-write | Operating mode. Supported command values: `self_consumption`, `tou_mode`, `third_party_control`, `custom_mode`, `socket_overlay_mode`, `smart_mode`, `dynamic_pricing`. |
+| `battery-power-direction` | `String` | read-write | Direction for setpoint control. Supported values: `charge`, `discharge`. |
+| `backup-soc-enable` | `Switch` | read-write | Enables backup SOC constraints (`ON`/`OFF`). |
+| `charging-limit-soc` | `Number:Dimensionless` | read-write | Charging limit SOC in percent (`80`-`100`). |
+| `discharge-limit-soc` | `Number:Dimensionless` | read-write | Discharge limit SOC in percent (`0`-`20`). |
+| `backup-reserve-soc` | `Number:Dimensionless` | read-write | Backup reserve SOC in percent (`0`-`100`). |
+| `battery-power-setpoint` | `Number:Power` | read-write | Battery power setpoint in `W` (absolute value, `0`-`10000`). Sign sent to device is derived from `battery-power-direction`. |
 
 ### EV Charger Channels
 
@@ -207,6 +211,7 @@ This mirrors the upstream Home Assistant register map and is not a binding defec
 | `real-time-power` | `Number:Power` | read-only | Real-time power. |
 | `voltage` | `Number:ElectricPotential` | read-only | Voltage. |
 | `current` | `Number:ElectricCurrent` | read-only | Current. |
+| `temperature` | `Number:Temperature` | read-only | Device temperature (`°C`) when exposed by device firmware. |
 | `switch-status` | `String` | read-only | Switch status text (`connected` / `disconnected`). |
 | `power-switch` | `Switch` | read-write | Switch command channel for socket power. |
 
