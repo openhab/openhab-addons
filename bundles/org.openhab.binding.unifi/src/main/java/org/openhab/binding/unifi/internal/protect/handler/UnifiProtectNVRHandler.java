@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -539,10 +540,8 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Mark child things GONE when their device is absent from the bootstrap — removed from
-     * Protect while we weren't connected, so no WebSocket remove was seen for it. Only a
-     * non-empty collection of the same device type counts as proof: an empty one is
-     * indistinguishable from a parse failure, and must not mass-mark healthy things.
+     * Mark child things GONE when their device is absent from the bootstrap's source ids —
+     * removed while we weren't connected, so no WebSocket remove was seen for it.
      */
     private void markMissingChildrenGone(Bootstrap bootstrap) {
         for (Thing child : getThing().getThings()) {
@@ -550,8 +549,8 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     || handler.getDeviceId().isEmpty()) {
                 continue;
             }
-            Map<String, ?> devices = deviceCollectionFor(bootstrap, handler);
-            if (devices == null || devices.isEmpty() || devices.containsKey(handler.getDeviceId())) {
+            Set<String> sourceIds = bootstrap.sourceIdsFor(sourceCollectionFor(handler));
+            if (sourceIds == null || sourceIds.contains(handler.getDeviceId())) {
                 continue;
             }
             logger.debug("Device {} not present in bootstrap, marking {} gone", handler.getDeviceId(), child.getUID());
@@ -559,20 +558,19 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         }
     }
 
-    private @Nullable Map<String, ?> deviceCollectionFor(Bootstrap bootstrap,
-            UnifiProtectAbstractDeviceHandler<?> handler) {
+    private String sourceCollectionFor(UnifiProtectAbstractDeviceHandler<?> handler) {
         if (handler instanceof UnifiProtectCameraHandler) {
-            return bootstrap.cameras;
+            return "cameras";
         } else if (handler instanceof UnifiProtectLightHandler) {
-            return bootstrap.lights;
+            return "lights";
         } else if (handler instanceof UnifiProtectSensorHandler) {
-            return bootstrap.sensors;
+            return "sensors";
         } else if (handler instanceof UnifiProtectDoorlockHandler) {
-            return bootstrap.doorlocks;
+            return "doorlocks";
         } else if (handler instanceof UnifiProtectChimeHandler) {
-            return bootstrap.chimes;
+            return "chimes";
         }
-        return null;
+        return "";
     }
 
     private synchronized void setOfflineAndReconnect(boolean throttled, @Nullable String message) {
@@ -796,8 +794,13 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (camera != null) {
                             logger.trace("Private API camera real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            ch.applyDeviceState(camera);
-                            ch.updateFromPrivateDevice(camera);
+                            if ("add".equals(update.action)) {
+                                // An add is a full payload proving the device exists, so it may clear GONE
+                                ch.refreshFromDevice(camera);
+                            } else {
+                                ch.applyDeviceState(camera);
+                                ch.updateFromPrivateDevice(camera);
+                            }
                         }
                     }
                     break;
@@ -808,8 +811,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (doorlock != null) {
                             logger.trace("Private API doorlock real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            dlh.applyDeviceState(doorlock);
-                            dlh.updateDoorlockChannels(doorlock);
+                            if ("add".equals(update.action)) {
+                                dlh.refreshFromDevice(doorlock);
+                            } else {
+                                dlh.applyDeviceState(doorlock);
+                                dlh.updateDoorlockChannels(doorlock);
+                            }
                         }
                     }
                     break;
@@ -820,8 +827,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (chime != null) {
                             logger.trace("Private API chime real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            chimeHandler.applyDeviceState(chime);
-                            chimeHandler.updateChimeChannels(chime);
+                            if ("add".equals(update.action)) {
+                                chimeHandler.refreshFromDevice(chime);
+                            } else {
+                                chimeHandler.applyDeviceState(chime);
+                                chimeHandler.updateChimeChannels(chime);
+                            }
                         }
                     }
                     break;
@@ -832,8 +843,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (light != null) {
                             logger.trace("Private API light real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            lightHandler.applyDeviceState(light);
-                            lightHandler.updateLightChannels(light);
+                            if ("add".equals(update.action)) {
+                                lightHandler.refreshFromDevice(light);
+                            } else {
+                                lightHandler.applyDeviceState(light);
+                                lightHandler.updateLightChannels(light);
+                            }
                         }
                     }
                     break;
@@ -847,8 +862,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                                     update.action);
                             // Like the other device types: a partial delta must not replace the
                             // handler's cached full device via refreshFromDevice
-                            sensorHandler.applyDeviceState(sensor);
-                            sensorHandler.updateSensorChannels(sensor);
+                            if ("add".equals(update.action)) {
+                                sensorHandler.refreshFromDevice(sensor);
+                            } else {
+                                sensorHandler.applyDeviceState(sensor);
+                                sensorHandler.updateSensorChannels(sensor);
+                            }
                         }
                     }
                     break;

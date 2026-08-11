@@ -416,7 +416,12 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             }
-            markMissingChildrenGone(doors, devices);
+            // An incomplete topology response must not mark things GONE
+            if (client.isTopologyAuthoritative()) {
+                markMissingChildrenGone(doors, devices);
+            } else {
+                logger.debug("Topology response incomplete, skipping gone reconciliation");
+            }
         } catch (UnifiAccessApiException e) {
             logger.debug("Polling error: {}", e.getMessage());
             if (e.getAuthState() == AuthState.REJECTED) {
@@ -471,6 +476,10 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Mark child things GONE when their door/device is absent from the topology — removed from
+     * Access, so no update will ever arrive for it again.
+     */
     private void markMissingChildrenGone(List<Door> doors, List<Device> devices) {
         Set<String> doorIds = new HashSet<>();
         doors.forEach(d -> {
@@ -491,7 +500,7 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                 continue;
             }
             Set<String> knownIds = handler instanceof UnifiAccessDoorHandler ? doorIds : deviceIds;
-            if (knownIds.isEmpty() || knownIds.contains(handler.deviceId)
+            if (knownIds.contains(handler.deviceId)
                     || child.getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
                 continue;
             }
