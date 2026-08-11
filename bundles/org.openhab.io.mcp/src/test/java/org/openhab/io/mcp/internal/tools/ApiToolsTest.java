@@ -23,9 +23,9 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,8 +84,8 @@ class ApiToolsTest {
     void setUp() throws Exception {
         Request r = requireNonNull(request);
         lenient().when(r.method(any(HttpMethod.class))).thenReturn(r);
-        lenient().when(r.header(anyString(), anyString())).thenReturn(r);
-        lenient().when(r.content(any(), anyString())).thenReturn(r);
+        lenient().when(r.headers(any())).thenReturn(r);
+        lenient().when(r.body(any())).thenReturn(r);
         lenient().when(r.send()).thenReturn(requireNonNull(response));
         lenient().when(httpClient.newRequest(any(URI.class))).thenReturn(r);
         lenient().when(exchange.sessionId()).thenReturn("session-1");
@@ -108,9 +108,9 @@ class ApiToolsTest {
     }
 
     private String capturedContentType() {
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(requireNonNull(request)).content(any(), captor.capture());
-        return captor.getValue();
+        ArgumentCaptor<Request.Content> captor = ArgumentCaptor.forClass(Request.Content.class);
+        verify(requireNonNull(request)).body(captor.capture());
+        return requireNonNull(captor.getValue().getContentType());
     }
 
     private CallToolResult callApi(Map<String, Object> args) {

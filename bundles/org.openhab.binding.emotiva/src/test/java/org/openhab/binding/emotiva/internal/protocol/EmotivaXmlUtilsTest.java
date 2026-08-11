@@ -16,13 +16,13 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.emotiva.internal.AbstractDTOTestBase;
 import org.openhab.binding.emotiva.internal.dto.EmotivaNotifyWrapper;
+
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshalException;
 
 /**
  * Unit tests for Emotiva message marshalling and unmarshalling.

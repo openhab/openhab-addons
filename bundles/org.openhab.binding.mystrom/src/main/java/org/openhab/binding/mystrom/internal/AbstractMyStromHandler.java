@@ -25,10 +25,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -127,11 +127,12 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
         try {
             Request request = httpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).method(method);
             if (!config.getApiToken().isEmpty()) {
-                request.getHeaders().add("Token", config.getApiToken());
+                String token = config.getApiToken();
+                request.headers(h -> h.add("Token", token));
             }
             if (requestData != null) {
-                request = request.content(new StringContentProvider(requestData)).header(HttpHeader.CONTENT_TYPE,
-                        "application/x-www-form-urlencoded");
+                request.body(new StringRequestContent(requestData));
+                request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
             }
             ContentResponse response = request.send();
             if (response.getStatus() != HttpStatus.OK_200) {

@@ -20,8 +20,6 @@ import java.util.Hashtable;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.growatt.internal.discovery.GrowattDiscoveryService;
@@ -44,10 +42,11 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
 
 /**
  * The {@link GrowattHandlerFactory} is responsible for creating things and thing
@@ -60,10 +59,10 @@ import org.slf4j.LoggerFactory;
 public class GrowattHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_INVERTER);
+    private static final String SERVLET_PATTERN = GrowattHttpServlet.PATH;
 
     private final Logger logger = LoggerFactory.getLogger(GrowattHandlerFactory.class);
 
-    private final HttpService httpService;
     private final HttpClientFactory httpClientFactory;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
@@ -72,19 +71,23 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
 
     private @Nullable GrowattDiscoveryService discoveryService;
     private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
+    private @Nullable ServiceRegistration<Servlet> servletRegistration;
 
     @Activate
-    public GrowattHandlerFactory(@Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory,
+    public GrowattHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider) {
-        this.httpService = httpService;
         this.httpClientFactory = httpClientFactory;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
-        try {
-            httpService.registerServlet(GrowattHttpServlet.PATH, httpServlet, null, null);
-        } catch (ServletException | NamespaceException e) {
-            logger.warn("GrowattHandlerFactory() failed to register servlet", e);
-        }
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+
+        Hashtable<String, Object> servletProperties = new Hashtable<>();
+        servletProperties.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, SERVLET_PATTERN);
+        servletRegistration = bundleContext.registerService(Servlet.class, httpServlet, servletProperties);
     }
 
     @Override
@@ -109,7 +112,11 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
     protected void deactivate(ComponentContext componentContext) {
         bridges.clear();
         discoveryUnregister();
-        httpService.unregister(GrowattHttpServlet.PATH);
+        ServiceRegistration<Servlet> servletRegistration = this.servletRegistration;
+        if (servletRegistration != null) {
+            servletRegistration.unregister();
+            this.servletRegistration = null;
+        }
         super.deactivate(componentContext);
     }
 

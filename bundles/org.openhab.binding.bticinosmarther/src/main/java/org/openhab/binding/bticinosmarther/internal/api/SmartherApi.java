@@ -28,10 +28,10 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Chronothermostat;
@@ -443,9 +443,13 @@ public class SmartherApi {
     private ContentResponse request(HttpMethod method, String url, @Nullable String requestData)
             throws SmartherGatewayException {
         logger.debug("Request: ({}) {} - {}", method, url, StringUtil.defaultString(requestData));
-        Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
-                .header(HEADER_ACCEPT, CONTENT_TYPE)
-                .content(new StringContentProvider(StringUtil.defaultString(requestData)), CONTENT_TYPE);
+        Function<HttpClient, Request> call = httpClient -> {
+            final Request request = httpClient.newRequest(url).method(method)
+                    .body(new StringRequestContent(StringUtil.defaultString(requestData)));
+            request.headers(headers -> headers.put(HEADER_ACCEPT, CONTENT_TYPE));
+            request.headers(headers -> headers.put("Content-Type", CONTENT_TYPE));
+            return request;
+        };
 
         try {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();

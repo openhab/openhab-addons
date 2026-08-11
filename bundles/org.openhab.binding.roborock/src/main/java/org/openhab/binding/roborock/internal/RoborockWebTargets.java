@@ -33,9 +33,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.roborock.internal.api.GetUrlByEmail;
@@ -326,19 +326,21 @@ public class RoborockWebTargets {
 
         synchronized (this) {
             try {
-                Request request = httpClient.newRequest(uri).method(method).header("content-type", contentType)
-                        .header("header_clientid", safeToken).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                Request request = httpClient.newRequest(uri).method(method).headers(h -> {
+                    h.add("content-type", contentType);
+                    h.add("header_clientid", safeToken);
+                }).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
                 if (headerKey != null && headerValue != null) {
-                    request.header(headerKey, headerValue);
+                    request.headers(h -> h.add(headerKey, headerValue));
                 }
 
                 if (headerKey2 != null && headerValue2 != null) {
-                    request.header(headerKey2, headerValue2);
-                    request.header("header_clientlang", "en");
-                    request.header("header_appversion", "4.54.02");
-                    request.header("header_phonesystem", "iOS");
-                    request.header("header_phonemodel", "iPhone16,1");
+                    request.headers(h -> h.add(headerKey2, headerValue2));
+                    request.headers(h -> h.add("header_clientlang", "en"));
+                    request.headers(h -> h.add("header_appversion", "4.54.02"));
+                    request.headers(h -> h.add("header_phonesystem", "iOS"));
+                    request.headers(h -> h.add("header_phonemodel", "iPhone16,1"));
                 }
 
                 if (logger.isTraceEnabled()) {

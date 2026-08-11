@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: AirVisual Node Air Quality Monitor Binding</name>
 
   <properties>
-    <bnd.importpackage>!jcifs</bnd.importpackage>
+    <bnd.importpackage>!jcifs,!javax.servlet.*</bnd.importpackage>
   </properties>
 
   <dependencies>

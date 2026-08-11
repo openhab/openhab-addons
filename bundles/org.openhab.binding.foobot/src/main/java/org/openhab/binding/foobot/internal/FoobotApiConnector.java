@@ -26,9 +26,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
@@ -128,9 +128,11 @@ public class FoobotApiConnector {
         }
         final Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-        request.header(HttpHeader.ACCEPT, "application/json");
-        request.header(HttpHeader.ACCEPT_ENCODING, StandardCharsets.UTF_8.name());
-        request.header(HEADER_X_API_KEY_TOKEN, apiKey);
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json");
+            h.add(HttpHeader.ACCEPT_ENCODING, StandardCharsets.UTF_8.name());
+            h.add(HEADER_X_API_KEY_TOKEN, apiKey);
+        });
         final ContentResponse response;
 
         try {

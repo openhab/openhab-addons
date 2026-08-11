@@ -18,15 +18,15 @@ import static org.mockito.Mockito.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Unit tests for {@link DoorbirdHTTPServlet}.

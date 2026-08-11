@@ -22,13 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,8 +106,9 @@ class UiToolsTest {
     void setUp() throws Exception {
         Request r = requireNonNull(request);
         lenient().when(r.method(any(HttpMethod.class))).thenReturn(r);
-        lenient().when(r.header(anyString(), anyString())).thenReturn(r);
-        lenient().when(r.content(any(), anyString())).thenReturn(r);
+        lenient().when(r.headers(any())).thenReturn(r);
+        lenient().when(r.accept(anyString())).thenReturn(r);
+        lenient().when(r.body(any())).thenReturn(r);
         lenient().when(r.timeout(anyLong(), any(TimeUnit.class))).thenReturn(r);
         lenient().when(r.send()).thenReturn(requireNonNull(response));
         lenient().when(httpClient.newRequest(any(URI.class))).thenReturn(r);
@@ -266,7 +269,13 @@ class UiToolsTest {
         assertSuccess(result);
         verify(httpClient).newRequest(URI.create(BASE_URL + "/rest/ui/components/ui%3Apage"));
         verify(request).method(HttpMethod.GET);
-        verify(request).header("Authorization", "Bearer " + TOKEN);
+        @SuppressWarnings("unchecked")
+        org.mockito.ArgumentCaptor<Consumer<HttpFields.Mutable>> headersCaptor = org.mockito.ArgumentCaptor
+                .forClass(Consumer.class);
+        verify(request).headers(headersCaptor.capture());
+        HttpFields.Mutable headers = HttpFields.build();
+        headersCaptor.getValue().accept(headers);
+        assertEquals("Bearer " + TOKEN, headers.get("Authorization"));
     }
 
     @Test

@@ -16,15 +16,12 @@ import java.net.IDN;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpField;
 
 /**
@@ -38,19 +35,14 @@ public class Util {
     public static final Pattern FORMAT_REPLACE_PATTERN = Pattern.compile("%\\d\\$[^%]+");
 
     /**
-     * Create a log string from a {@link org.eclipse.jetty.client.api.Request}
+     * Create a log string from a {@link org.eclipse.jetty.client.Request}
      *
      * @param request the request to log
      * @return the string representing the request
      */
     public static String requestToLogString(Request request) {
-        ContentProvider contentProvider = request.getContent();
-        String contentString = contentProvider == null ? "null"
-                : StreamSupport.stream(contentProvider.spliterator(), false)
-                        .map(b -> StandardCharsets.UTF_8.decode(b).toString()).collect(Collectors.joining(", "));
         return "Method = {" + request.getMethod() + "}, Headers = {"
-                + request.getHeaders().stream().map(HttpField::toString).collect(Collectors.joining(", "))
-                + "}, Content = {" + contentString + "}";
+                + request.getHeaders().stream().map(HttpField::toString).collect(Collectors.joining(", ")) + "}";
     }
 
     /**

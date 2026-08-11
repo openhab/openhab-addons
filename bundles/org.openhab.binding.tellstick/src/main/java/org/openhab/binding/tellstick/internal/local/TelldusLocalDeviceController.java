@@ -20,9 +20,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tellstick.internal.TelldusBindingException;
 import org.openhab.binding.tellstick.internal.conf.TelldusLocalConfiguration;
@@ -278,7 +278,7 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
 
         Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);
-        request.header("Authorization", authorizationHeader);
+        request.headers(h -> h.add("Authorization", authorizationHeader));
 
         ContentResponse response = request.send();
         String content = response.getContentAsString();

@@ -23,9 +23,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tesla.internal.protocol.dto.sso.RefreshTokenRequest;
@@ -61,9 +61,9 @@ public class TeslaSSOHandler {
         RefreshTokenRequest refreshRequest = new RefreshTokenRequest(refreshToken);
         String refreshTokenPayload = gson.toJson(refreshRequest);
 
-        final org.eclipse.jetty.client.api.Request request = httpClient.newRequest(URI_SSO + "/" + PATH_TOKEN);
-        request.content(new StringContentProvider(refreshTokenPayload));
-        request.header(HttpHeader.CONTENT_TYPE, "application/json");
+        final org.eclipse.jetty.client.Request request = httpClient.newRequest(URI_SSO + "/" + PATH_TOKEN);
+        request.body(new StringRequestContent(refreshTokenPayload));
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
         request.method(HttpMethod.POST);
 
         ContentResponse refreshResponse = executeHttpRequest(request);
@@ -89,7 +89,7 @@ public class TeslaSSOHandler {
     }
 
     @Nullable
-    private ContentResponse executeHttpRequest(org.eclipse.jetty.client.api.Request request) {
+    private ContentResponse executeHttpRequest(org.eclipse.jetty.client.Request request) {
         request.timeout(10, TimeUnit.SECONDS);
 
         ContentResponse response;

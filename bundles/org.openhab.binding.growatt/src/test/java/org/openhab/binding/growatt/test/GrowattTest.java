@@ -29,12 +29,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.net.ssl.SSLSession;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.growatt.internal.GrowattChannels;
 import org.openhab.binding.growatt.internal.GrowattChannels.UoM;
@@ -307,12 +303,8 @@ public class GrowattTest {
             return;
         }
 
-        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client.Client();
-        sslContextFactory.setHostnameVerifier((@Nullable String host, @Nullable SSLSession session) -> true);
-        sslContextFactory.setValidatePeerCerts(false);
-
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
-        when(httpClientFactory.createHttpClient(anyString())).thenReturn(new HttpClient(sslContextFactory));
+        when(httpClientFactory.createHttpClient(anyString())).thenReturn(new HttpClient());
 
         try (GrowattCloud api = new GrowattCloud(configuration, httpClientFactory)) {
             Integer programMode = GrowattCloud.ProgramMode.BATTERY_FIRST.ordinal();

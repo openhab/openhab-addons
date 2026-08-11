@@ -20,10 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriInfo;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse;
@@ -33,6 +29,10 @@ import org.openhab.io.hueemulation.internal.dto.response.HueSuccessGeneric;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.UriInfo;
 
 /**
  * Network utility methods
