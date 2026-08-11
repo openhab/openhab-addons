@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Error {
-    private @NonNullByDefault({}) @SerializedName("error_code") String errorCode;
+    private @SerializedName("error_code") @NonNullByDefault({}) String errorCode;
     private @NonNullByDefault({}) String description;
 
     public String getDescription() {
