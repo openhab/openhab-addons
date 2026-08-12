@@ -49,6 +49,8 @@ public class JRubyScriptEngineConfiguration {
     public static final Path HOME_PATH = Path.of("automation", "ruby");
     public static final Path HOME_PATH_ABS = Path.of(OpenHAB.getConfigFolder()).resolve(HOME_PATH);
     private static final Path DEFAULT_GEMFILE_PATH = HOME_PATH_ABS.resolve("Gemfile");
+    private static final Path BUNDLE_USER_HOME = Path.of(OpenHAB.getUserDataFolder(), "cache", "automation", "ruby",
+            ".bundle");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JRubyScriptEngineConfiguration.class);
 
@@ -100,6 +102,7 @@ public class JRubyScriptEngineConfiguration {
         bundleGemfile = resolveGemfile();
         specificGemHome = resolveSpecificGemHome();
         ensureGemHomeExists(specificGemHome);
+        ensureDirectoryExists(BUNDLE_USER_HOME.toString(), "Ruby Bundler user path");
 
         configureSystemProperties();
 
@@ -200,15 +203,18 @@ public class JRubyScriptEngineConfiguration {
             return false;
         }
 
-        File gemHomeDirectory = new File(gemHome);
-        if (!gemHomeDirectory.exists()) {
-            LOGGER.debug("gem_home directory '{}' does not exist, creating", gemHome);
-            if (!gemHomeDirectory.mkdirs()) {
-                LOGGER.warn("Error creating gem_home directory: {}", gemHome);
-                return false;
+        return ensureDirectoryExists(gemHome, "gem_home directory");
+    }
+
+    private boolean ensureDirectoryExists(String dir, String description) {
+        File directory = new File(dir);
+        if (!directory.exists()) {
+            LOGGER.debug("{} '{}' does not exist, creating", description, dir);
+            if (!directory.mkdirs()) {
+                LOGGER.warn("Error creating {}: {}", description, dir);
             }
         }
-        return true;
+        return directory.exists();
     }
 
     private File resolveGemfile() {
@@ -416,12 +422,18 @@ public class JRubyScriptEngineConfiguration {
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
         setEnvironmentVariable(scriptEngine, "GEM_HOME", getSpecificGemHome());
         setEnvironmentVariable(scriptEngine, "RUBYLIB", configuration.rubylib);
+        setEnvironmentVariable(scriptEngine, "BUNDLE_USER_HOME", BUNDLE_USER_HOME.toString());
         if (bundleGemfile.exists()) {
+            Path bundleUserConfigDir = bundleGemfile.toPath().resolveSibling(".bundle");
+            ensureDirectoryExists(bundleUserConfigDir.toString(), "Ruby Bundler user config path");
+            setEnvironmentVariable(scriptEngine, "BUNDLE_USER_CONFIG",
+                    bundleUserConfigDir.resolve("config").toString());
             setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile.toString());
         }
 
         configureRubyLib(scriptEngine);
         disallowExec(scriptEngine);
+        patchBundlerEnvironment(scriptEngine);
         configureOpenHABGem(scriptEngine);
     }
 
@@ -460,6 +472,31 @@ public class JRubyScriptEngineConfiguration {
                     """);
         } catch (ScriptException exception) {
             LOGGER.warn("Error preventing exec", unwrap(exception));
+        }
+    }
+
+    /**
+     * Override unbundle_env to reinsert BUNDLE_USER_HOME into the environment,
+     * so that the inline bundler creates the bundle cache in BUNDLE_USER_HOME instead of in ~openhab/.bundle
+     * See https://github.com/openhab/openhab-addons/issues/19489
+     *
+     * @param engine Engine in which to configure environment
+     */
+    private void patchBundlerEnvironment(ScriptEngine engine) {
+        try {
+            engine.eval("""
+                    require 'bundler'
+
+                    module BundlerEnvironmentOverride
+                      def unbundle_env(...)
+                        bundle_user_home = ENV['BUNDLE_USER_HOME']
+                        super.tap { |env| env['BUNDLE_USER_HOME'] = bundle_user_home }
+                      end
+                    end
+                    Bundler.singleton_class.prepend(BundlerEnvironmentOverride)
+                    """);
+        } catch (ScriptException exception) {
+            LOGGER.warn("Error patching Bundler environment", unwrap(exception));
         }
     }
 
