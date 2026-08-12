@@ -20,13 +20,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solaredge.internal.handler.ChannelProvider;
-import org.openhab.binding.solaredge.internal.model.LiveDataResponse.BatteryValue;
-import org.openhab.binding.solaredge.internal.model.LiveDataResponse.Connection;
-import org.openhab.binding.solaredge.internal.model.LiveDataResponse.SiteCurrentPowerFlow;
-import org.openhab.binding.solaredge.internal.model.LiveDataResponse.Value;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless.Energy;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless.Overview;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless.Power;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponsePublicApi.BatteryValue;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponsePublicApi.Connection;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponsePublicApi.SiteCurrentPowerFlow;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponsePublicApi.Value;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.State;
 
@@ -36,12 +36,12 @@ import org.openhab.core.types.State;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class LiveDataResponseTransformer extends AbstractDataResponseTransformer {
+public class LiveDataResponseTransformerPublicApi extends AbstractDataResponseTransformer {
     private static final Double ZERO_POWER = 0.0;
 
     private final ChannelProvider channelProvider;
 
-    public LiveDataResponseTransformer(ChannelProvider channelProvider) {
+    public LiveDataResponseTransformerPublicApi(ChannelProvider channelProvider) {
         this.channelProvider = channelProvider;
     }
 
@@ -93,7 +93,7 @@ public class LiveDataResponseTransformer extends AbstractDataResponseTransformer
         return result;
     }
 
-    public Map<Channel, State> transform(LiveDataResponse response) {
+    public Map<Channel, State> transform(LiveDataResponsePublicApi response) {
         Map<Channel, State> result = new HashMap<>(20);
         SiteCurrentPowerFlow siteCurrentPowerFlow = response.getSiteCurrentPowerFlow();
 
@@ -149,10 +149,10 @@ public class LiveDataResponseTransformer extends AbstractDataResponseTransformer
                     String conFrom = con.from;
                     String conTo = con.to;
                     if (grid != null) {
-                        if (conFrom != null && conFrom.equalsIgnoreCase(LiveDataResponse.GRID)) {
+                        if (conFrom != null && conFrom.equalsIgnoreCase(LiveDataResponsePublicApi.GRID)) {
                             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_IMPORT),
                                     grid.currentPower, siteCurrentPowerFlow.unit);
-                        } else if (conTo != null && conTo.equalsIgnoreCase(LiveDataResponse.GRID)) {
+                        } else if (conTo != null && conTo.equalsIgnoreCase(LiveDataResponsePublicApi.GRID)) {
                             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_EXPORT),
                                     grid.currentPower, siteCurrentPowerFlow.unit);
                         }
@@ -161,14 +161,14 @@ public class LiveDataResponseTransformer extends AbstractDataResponseTransformer
                     if (storage != null) {
                         Double currentPower = storage.currentPower;
                         currentPower = currentPower != null ? currentPower : 0;
-                        if (conFrom != null && conFrom.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
+                        if (conFrom != null && conFrom.equalsIgnoreCase(LiveDataResponsePublicApi.STORAGE)) {
                             putPowerType(result,
                                     channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_DISCHARGE),
                                     currentPower, siteCurrentPowerFlow.unit);
                             putPowerType(result,
                                     channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
                                     -1 * currentPower, siteCurrentPowerFlow.unit);
-                        } else if (conTo != null && conTo.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
+                        } else if (conTo != null && conTo.equalsIgnoreCase(LiveDataResponsePublicApi.STORAGE)) {
                             putPowerType(result,
                                     channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE),
                                     currentPower, siteCurrentPowerFlow.unit);
