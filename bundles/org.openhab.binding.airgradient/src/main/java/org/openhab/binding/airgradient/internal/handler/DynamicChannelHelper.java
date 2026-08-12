@@ -27,6 +27,7 @@ import org.openhab.binding.airgradient.internal.model.LocalConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -47,7 +48,11 @@ public class DynamicChannelHelper {
     private static final String NUMBER_TEMPERATURE = NUMBER + ":Temperature";
     private static final String NUMBER_HUMIDITY = NUMBER + ":Humidity";
 
-    private record DynamicChannel<T> (String id, String typeId, String itemType, Predicate<T> isSupported) {
+    private record DynamicChannel<T> (String id, ChannelTypeUID channelTypeUID, String itemType,
+            Predicate<T> isSupported) {
+        private DynamicChannel(String id, String typeId, String itemType, Predicate<T> isSupported) {
+            this(id, new ChannelTypeUID(BINDING_ID, typeId), itemType, isSupported);
+        }
     }
 
     private static final List<DynamicChannel<LocalConfiguration>> CONFIGURATION_CHANNELS = List.of(
@@ -76,36 +81,35 @@ public class DynamicChannelHelper {
             new DynamicChannel<>(CHANNEL_LED_BAR_TEST, CHANNEL_LED_BAR_TEST, STRING, (config) -> true));
 
     private static final List<DynamicChannel<Measure>> MEASUREMENT_CHANNELS = List.of(
-            new DynamicChannel<>(CHANNEL_PM01_STANDARD, CHANNEL_PM01_STANDARD, NUMBER_DENSITY,
+            new DynamicChannel<>(CHANNEL_PM01_STANDARD, "pm1", NUMBER_DENSITY,
                     (measure) -> measure.pm01Standard != null),
-            new DynamicChannel<>(CHANNEL_PM02_STANDARD, CHANNEL_PM02_STANDARD, NUMBER_DENSITY,
+            new DynamicChannel<>(CHANNEL_PM02_STANDARD, "pm2", NUMBER_DENSITY,
                     (measure) -> measure.pm02Standard != null),
-            new DynamicChannel<>(CHANNEL_PM10_STANDARD, CHANNEL_PM10_STANDARD, NUMBER_DENSITY,
+            new DynamicChannel<>(CHANNEL_PM10_STANDARD, "pm10", NUMBER_DENSITY,
                     (measure) -> measure.pm10Standard != null),
-            new DynamicChannel<>(CHANNEL_PM005_COUNT, CHANNEL_PM005_COUNT, NUMBER_DIMENSIONLESS,
+            new DynamicChannel<>(CHANNEL_PM005_COUNT, "particle-count", NUMBER_DIMENSIONLESS,
                     (measure) -> measure.pm005Count != null),
-            new DynamicChannel<>(CHANNEL_PM01_COUNT, CHANNEL_PM01_COUNT, NUMBER_DIMENSIONLESS,
+            new DynamicChannel<>(CHANNEL_PM01_COUNT, "particle-count", NUMBER_DIMENSIONLESS,
                     (measure) -> measure.pm01Count != null),
-            new DynamicChannel<>(CHANNEL_PM02_COUNT, CHANNEL_PM02_COUNT, NUMBER_DIMENSIONLESS,
+            new DynamicChannel<>(CHANNEL_PM02_COUNT, "particle-count", NUMBER_DIMENSIONLESS,
                     (measure) -> measure.pm02Count != null),
-            new DynamicChannel<>(CHANNEL_PM50_COUNT, CHANNEL_PM50_COUNT, NUMBER_DIMENSIONLESS,
+            new DynamicChannel<>(CHANNEL_PM50_COUNT, "particle-count", NUMBER_DIMENSIONLESS,
                     (measure) -> measure.pm50Count != null),
-            new DynamicChannel<>(CHANNEL_PM10_COUNT, CHANNEL_PM10_COUNT, NUMBER_DIMENSIONLESS,
+            new DynamicChannel<>(CHANNEL_PM10_COUNT, "particle-count", NUMBER_DIMENSIONLESS,
                     (measure) -> measure.pm10Count != null),
-            new DynamicChannel<>(CHANNEL_PM02_COMPENSATED, CHANNEL_PM02_COMPENSATED, NUMBER_DENSITY,
+            new DynamicChannel<>(CHANNEL_PM02_COMPENSATED, "pm2", NUMBER_DENSITY,
                     (measure) -> measure.pm02Compensated != null),
-            new DynamicChannel<>(CHANNEL_ATMP_COMPENSATED, CHANNEL_ATMP_COMPENSATED, NUMBER_TEMPERATURE,
+            new DynamicChannel<>(CHANNEL_ATMP_COMPENSATED,
+                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_OUTDOOR_TEMPERATURE, NUMBER_TEMPERATURE,
                     (measure) -> measure.atmpCompensated != null),
-            new DynamicChannel<>(CHANNEL_RHUM_COMPENSATED, CHANNEL_RHUM_COMPENSATED, NUMBER_HUMIDITY,
+            new DynamicChannel<>(CHANNEL_RHUM_COMPENSATED,
+                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_ATMOSPHERIC_HUMIDITY, NUMBER_HUMIDITY,
                     (measure) -> measure.rhumCompensated != null),
-            new DynamicChannel<>(CHANNEL_TVOC_INDEX, CHANNEL_TVOC_INDEX, NUMBER_DIMENSIONLESS,
+            new DynamicChannel<>(CHANNEL_TVOC_INDEX, "tvoc", NUMBER_DIMENSIONLESS,
                     (measure) -> measure.tvocIndex != null),
-            new DynamicChannel<>(CHANNEL_TVOC_RAW, CHANNEL_TVOC_RAW, NUMBER_DIMENSIONLESS,
-                    (measure) -> measure.tvocRaw != null),
-            new DynamicChannel<>(CHANNEL_NOX_INDEX, CHANNEL_NOX_INDEX, NUMBER_DIMENSIONLESS,
-                    (measure) -> measure.noxIndex != null),
-            new DynamicChannel<>(CHANNEL_NOX_RAW, CHANNEL_NOX_RAW, NUMBER_DIMENSIONLESS,
-                    (measure) -> measure.noxRaw != null));
+            new DynamicChannel<>(CHANNEL_TVOC_RAW, "tvoc", NUMBER_DIMENSIONLESS, (measure) -> measure.tvocRaw != null),
+            new DynamicChannel<>(CHANNEL_NOX_INDEX, "nox", NUMBER_DIMENSIONLESS, (measure) -> measure.noxIndex != null),
+            new DynamicChannel<>(CHANNEL_NOX_RAW, "nox", NUMBER_DIMENSIONLESS, (measure) -> measure.noxRaw != null));
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicChannelHelper.class);
 
@@ -147,8 +151,7 @@ public class DynamicChannelHelper {
         ChannelUID channelId = new ChannelUID(originalThing.getUID(), toAdd.id);
         if (originalThing.getChannel(channelId) == null) {
             LOGGER.debug("Adding dynamic channel {} to {}", toAdd.id, originalThing.getUID());
-            ChannelTypeUID typeId = new ChannelTypeUID(BINDING_ID, toAdd.typeId);
-            Channel channel = ChannelBuilder.create(channelId, toAdd.itemType).withType(typeId).build();
+            Channel channel = ChannelBuilder.create(channelId, toAdd.itemType).withType(toAdd.channelTypeUID).build();
             ThingBuilder currentBuilder = builder;
             if (currentBuilder == null) {
                 currentBuilder = builderSupplier.get();

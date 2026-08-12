@@ -21,7 +21,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,8 +60,19 @@ public class DynamicChannelHelperTest {
     public void testAddsOnlySupportedMeasurementChannels() {
         Measure measure = new Measure();
         measure.pm01Standard = 3d;
+        measure.pm02Standard = 7d;
+        measure.pm10Standard = 13d;
+        measure.pm005Count = 17d;
+        measure.pm01Count = 19d;
+        measure.pm02Count = 23d;
+        measure.pm50Count = 29d;
+        measure.pm10Count = 31d;
         measure.pm02Compensated = 11d;
+        measure.atmpCompensated = 20d;
+        measure.rhumCompensated = 50d;
         measure.tvocIndex = 1d;
+        measure.tvocRaw = 2d;
+        measure.noxIndex = 2d;
         measure.noxRaw = 2.5d;
 
         ThingBuilder returnedBuilder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null,
@@ -67,9 +80,27 @@ public class DynamicChannelHelperTest {
 
         assertThat(Objects.requireNonNull(returnedBuilder), is(builder));
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
-        verify(builder, Mockito.times(4)).withChannel(captor.capture());
+        verify(builder, Mockito.times(15)).withChannel(captor.capture());
         List<String> channelIds = captor.getAllValues().stream().map((channel) -> channel.getUID().getId()).toList();
-        assertThat(channelIds, containsInAnyOrder("pm01-standard", "pm02-compensated", "tvoc-index", "nox-raw"));
+        assertThat(channelIds,
+                containsInAnyOrder("pm01-standard", "pm02-standard", "pm10-standard", "pm005-count", "pm01-count",
+                        "pm02-count", "pm50-count", "pm10-count", "pm02-compensated", "atmp-compensated",
+                        "rhum-compensated", "tvoc-index", "tvoc-raw", "nox-index", "nox-raw"));
+
+        Map<String, String> channelTypes = captor.getAllValues().stream()
+                .collect(Collectors.toMap((channel) -> channel.getUID().getId(),
+                        (channel) -> Objects.requireNonNull(channel.getChannelTypeUID()).toString()));
+        assertThat(channelTypes, is(Map.ofEntries(Map.entry("pm01-standard", "airgradient:pm1"),
+                Map.entry("pm02-standard", "airgradient:pm2"), Map.entry("pm10-standard", "airgradient:pm10"),
+                Map.entry("pm005-count", "airgradient:particle-count"),
+                Map.entry("pm01-count", "airgradient:particle-count"),
+                Map.entry("pm02-count", "airgradient:particle-count"),
+                Map.entry("pm50-count", "airgradient:particle-count"),
+                Map.entry("pm10-count", "airgradient:particle-count"), Map.entry("pm02-compensated", "airgradient:pm2"),
+                Map.entry("atmp-compensated", "system:outdoor-temperature"),
+                Map.entry("rhum-compensated", "system:atmospheric-humidity"),
+                Map.entry("tvoc-index", "airgradient:tvoc"), Map.entry("tvoc-raw", "airgradient:tvoc"),
+                Map.entry("nox-index", "airgradient:nox"), Map.entry("nox-raw", "airgradient:nox"))));
     }
 
     @Test
