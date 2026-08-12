@@ -16,6 +16,7 @@ import static org.eclipse.jdt.annotation.Checks.requireNonNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_LOCAL;
@@ -30,6 +31,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.communication.RemoteAPIController;
 import org.openhab.binding.airgradient.internal.model.LocalConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
@@ -88,6 +90,7 @@ public class AirGradientLocalHandlerTest {
     private @Nullable RemoteAPIController apiControllerMock;
     private @Nullable ThingBuilder thingBuilder;
     private @Nullable Thing updatedThing;
+    private @Nullable Thing secondUpdatedThing;
 
     @SuppressWarnings("null")
     @BeforeEach
@@ -96,6 +99,7 @@ public class AirGradientLocalHandlerTest {
         Mockito.when(callbackMock.isChannelLinked(any(ChannelUID.class))).thenReturn(true);
         thing = Mockito.mock(Thing.class);
         updatedThing = Mockito.mock(Thing.class);
+        secondUpdatedThing = Mockito.mock(Thing.class);
         apiControllerMock = Mockito.mock(RemoteAPIController.class);
         thingBuilder = Mockito.mock(ThingBuilder.class);
 
@@ -106,15 +110,20 @@ public class AirGradientLocalHandlerTest {
 
         Mockito.when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_LOCAL, "1234"));
         Mockito.when(updatedThing.getUID()).thenReturn(new ThingUID(THING_TYPE_LOCAL, "1234"));
+        Mockito.when(secondUpdatedThing.getUID()).thenReturn(new ThingUID(THING_TYPE_LOCAL, "1234"));
         Mockito.when(thing.getConfiguration()).thenReturn(new Configuration());
         Mockito.when(updatedThing.getConfiguration()).thenReturn(new Configuration());
+        Mockito.when(secondUpdatedThing.getConfiguration()).thenReturn(new Configuration());
         Mockito.when(thing.getProperties()).thenReturn(Map.of());
         Mockito.when(updatedThing.getProperties()).thenReturn(Map.of());
+        Mockito.when(secondUpdatedThing.getProperties()).thenReturn(Map.of());
         Mockito.when(thing.getChannel(any(ChannelUID.class))).thenReturn(null);
+        Mockito.when(updatedThing.getChannel(any(ChannelUID.class))).thenReturn(null);
         Mockito.when(apiControllerMock.getMeasures()).thenReturn(List.of(TEST_MEASURE));
         Mockito.when(apiControllerMock.getConfig()).thenReturn(TEST_CONFIGURATION);
         Mockito.when(thingBuilder.withChannel(any())).thenReturn(Objects.requireNonNull(thingBuilder));
-        Mockito.when(thingBuilder.build()).thenReturn(Objects.requireNonNull(updatedThing));
+        Mockito.when(thingBuilder.build()).thenReturn(Objects.requireNonNull(updatedThing),
+                Objects.requireNonNull(secondUpdatedThing));
     }
 
     @SuppressWarnings("null")
@@ -125,6 +134,17 @@ public class AirGradientLocalHandlerTest {
 
         verify(apiControllerMock, times(2)).getMeasures();
         verify(apiControllerMock, times(2)).getConfig();
-        assertThat(((TestAirGradientLocalHandler) requireNonNull(sut)).getEditThingCalls(), is(1));
+        assertThat(((TestAirGradientLocalHandler) requireNonNull(sut)).getEditThingCalls(), is(2));
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testPollingCodeProcessesMeasurementsWhenConfigurationRequestFails() throws Exception {
+        Mockito.when(apiControllerMock.getConfig()).thenThrow(new AirGradientCommunicationException("Config failed"));
+
+        sut.pollingCode();
+
+        verify(callbackMock).stateUpdated(eq(new ChannelUID(requireNonNull(thing).getUID(), "pm01-standard")), any());
+        verify(callbackMock, times(2)).thingUpdated(requireNonNull(updatedThing));
     }
 }

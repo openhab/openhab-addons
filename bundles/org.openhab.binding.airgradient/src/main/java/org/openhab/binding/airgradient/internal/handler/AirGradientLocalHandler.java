@@ -176,21 +176,16 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             }
 
             Measure measure = measures.get(0);
-            LocalConfiguration localConfig = apiController.getConfig();
-            ThingBuilder builder = null;
             String capabilitySignature = DynamicChannelHelper
                     .getDynamicChannelCapabilitySignature(measure.getFirmwareVersion(), measure.getModel());
-            if (capabilitySignature == null || !capabilitySignature.equals(cachedCapabilitySignature)) {
-                builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null, this::editThing,
-                        measure);
-                if (localConfig != null) {
-                    builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, builder, this::editThing,
-                            localConfig);
+            boolean capabilitiesChanged = capabilitySignature == null
+                    || !capabilitySignature.equals(cachedCapabilitySignature);
+            if (capabilitiesChanged) {
+                ThingBuilder builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null,
+                        this::editThing, measure);
+                if (builder != null) {
+                    updateThing(builder.build());
                 }
-                cachedCapabilitySignature = capabilitySignature;
-            }
-            if (builder != null) {
-                updateThing(builder.build());
             }
 
             updateProperties(MeasureHelper.createProperties(measure));
@@ -201,7 +196,15 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                 }
             }
 
+            LocalConfiguration localConfig = apiController.getConfig();
             if (localConfig != null) {
+                if (capabilitiesChanged) {
+                    ThingBuilder builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, null,
+                            this::editThing, localConfig);
+                    if (builder != null) {
+                        updateThing(builder.build());
+                    }
+                }
                 updateProperties(ConfigurationHelper.createProperties(localConfig));
                 Map<String, State> configStates = ConfigurationHelper.createStates(localConfig);
                 for (Map.Entry<String, State> entry : configStates.entrySet()) {
@@ -210,6 +213,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                     }
                 }
             }
+            cachedCapabilitySignature = capabilitySignature;
 
         } catch (AirGradientCommunicationException agce) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
