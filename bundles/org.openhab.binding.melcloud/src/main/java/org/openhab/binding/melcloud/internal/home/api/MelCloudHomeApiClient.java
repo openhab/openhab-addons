@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -143,13 +144,24 @@ public class MelCloudHomeApiClient {
      * report outdoor temperature directly in their {@code settings} instead — see
      * {@link org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit#getOutdoorTemperature()}.
      *
+     * <p>
+     * Queries with {@code period=Hourly}, not {@code Daily}: {@code Daily} labels are 30-minute bucket aggregates
+     * whose timestamps are not real reading times and can diverge from the actual latest reading, whereas
+     * {@code Hourly} datapoints carry the unit's genuine upload timestamp. This mirrors the fix already applied to
+     * the reference Home Assistant MELCloud Home integration (issues #152/#111 in {@code andrew-blake/melcloudhome});
+     * see {@code MelCloudHomeTrendSummaryReport#getLatestOutdoorTemperature()} for the synthetic-datapoint filtering
+     * that {@code Hourly} then requires.
+     *
      * @return the latest outdoor temperature in Celsius, if any data was available
      * @throws MelCloudCommException if the request fails or the response cannot be parsed
      */
     public Optional<Double> fetchLatestOutdoorTemperature(String accessToken, String unitId, Instant from, Instant to)
             throws MelCloudCommException {
-        String url = TRENDSUMMARY_URL + "?unitId=" + urlEncode(unitId) + "&period=Daily&from=" + urlEncodeTrend(from)
-                + "&to=" + urlEncodeTrend(to);
+        // "to" is truncated to a whole minute so its query-echo datapoint lands on an exact-second boundary and is
+        // therefore recognized as synthetic by the genuine-reading filter (see getLatestOutdoorTemperature()).
+        Instant queryTo = to.truncatedTo(ChronoUnit.MINUTES);
+        String url = TRENDSUMMARY_URL + "?unitId=" + urlEncode(unitId) + "&period=Hourly&from=" + urlEncodeTrend(from)
+                + "&to=" + urlEncodeTrend(queryTo);
         String body = get(url, accessToken);
         if (body.isBlank()) {
             return Optional.empty();

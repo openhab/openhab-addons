@@ -159,6 +159,15 @@ The `home-account` bridge centrally polls every registered unit's state every 60
 
 ### MELCloud Home Things
 
+For MELCloud Home Things, a channel whose value is not present in the underlying MELCloud Home API response
+(missing from the unit's `settings` array, no telemetry/trend-summary reading available for the polled window, or a
+`null` top-level field such as `rssi`) is updated to `UNDEF`, rather than being left at its previous value or at
+openHAB's uninitialized state. This applies in particular to `outdoor-temperature` on Air-to-Water (ATW) units,
+whose `settings` array frequently does not include an `OutdoorTemperature` entry at all, depending on the unit/
+firmware. It does not apply to a value that is present but not recognized by this binding (an unknown fan speed,
+vane position, or operation mode word); such cases are logged at debug level and leave the channel untouched instead,
+since that indicates a binding gap rather than genuinely missing data. See ADR-009 for the full rationale.
+
 #### Air-to-Air (ATA) heat pump
 
 | Channel             | Type                | Description                                                                          | Read Only |

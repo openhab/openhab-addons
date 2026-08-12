@@ -19,18 +19,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ERROR_CODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_FAN_SPEED;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_OPERATION_MODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_ROOM_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_SET_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_VANE_HORIZONTAL;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_VANE_VERTICAL;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_RSSI;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ACCOUNT;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ATA_UNIT;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,6 +60,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Unit tests for {@link MelCloudHomeAtaUnitHandler}.
@@ -397,5 +403,114 @@ class MelCloudHomeAtaUnitHandlerTest {
 
         // Assert
         verify(apiClient).controlAtaUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), any());
+    }
+
+    // ADR-009: a value absent from the settings array (or a null top-level field) must be pushed as UnDefType.UNDEF,
+    // not silently skipped.
+
+    @Test
+    void whenSetTemperatureIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_SET_TEMPERATURE));
+    }
+
+    @Test
+    void whenRoomTemperatureIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_ROOM_TEMPERATURE));
+    }
+
+    @Test
+    void whenFanSpeedIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_FAN_SPEED));
+    }
+
+    @Test
+    void whenFanSpeedWordIsUnrecognizedThenChannelIsNotUpdatedAtAll() {
+        // Arrange: present-but-unrecognized is a different failure mode than missing (see ADR-009) and keeps the
+        // existing "log and leave untouched" behavior rather than becoming UNDEF. onAtaUnitUpdated runs
+        // synchronously, so the state map can be asserted directly without callback.getState()'s blocking wait
+        // (which is designed for values that DO eventually arrive, not for asserting a permanent absence).
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("SetFanSpeed", "SuperTurbo");
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(null, callback.stateMap.get(CHANNEL_HOME_FAN_SPEED));
+    }
+
+    @Test
+    void whenErrorCodeIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ERROR_CODE));
+    }
+
+    @Test
+    void whenRssiIsNullThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("Power", "True");
+        unit.rssi = null;
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_RSSI));
+    }
+
+    @Test
+    void whenOutdoorTemperatureFetchReturnsEmptyThenChannelIsUpdatedWithUndef() throws Exception {
+        // Arrange: exercises the telemetry-poll path directly (fetchLatestOutdoorTemperature/fetchLatestEnergyWh),
+        // not just the settings-array path covered above. callback.getState(...) itself blocks/retries for the
+        // update to arrive from the scheduler-driven poll, so no extra wait helper is needed.
+        when(apiClient.fetchLatestOutdoorTemperature(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any()))
+                .thenReturn(Optional.empty());
+        when(apiClient.fetchLatestEnergyWh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(), any()))
+                .thenReturn(Optional.empty());
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+
+        // Act
+        handler.initialize();
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_OUTDOOR_TEMPERATURE));
     }
 }

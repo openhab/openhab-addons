@@ -22,7 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link MelCloudHomeTrendSummaryReport}.
+ * Unit tests for {@link MelCloudHomeTrendSummaryReport}, in particular the synthetic-datapoint filtering that
+ * {@code period=Hourly} requires (see the class javadoc and the referenced Home Assistant reference-implementation
+ * issues #152/#111).
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -37,11 +39,11 @@ class MelCloudHomeTrendSummaryReportTest {
     }
 
     @Test
-    void whenOutdoorTemperatureDatasetIsPresentThenGetLatestOutdoorTemperatureReturnsItsLastPoint() {
+    void whenLastPointIsGenuineReadingThenGetLatestOutdoorTemperatureReturnsIt() {
         // Arrange
         MelCloudHomeTrendDataset dataset = new MelCloudHomeTrendDataset();
         dataset.label = "OUTDOOR_TEMPERATURE";
-        dataset.data = List.of(pointOf("2026-07-22T00:00:00", 4.0), pointOf("2026-07-23T00:00:00", 6.5));
+        dataset.data = List.of(pointOf("2026-07-22T07:15:24", 4.0), pointOf("2026-07-23T08:42:11", 6.5));
         MelCloudHomeTrendSummaryReport report = new MelCloudHomeTrendSummaryReport();
         report.datasets = List.of(dataset);
 
@@ -53,11 +55,61 @@ class MelCloudHomeTrendSummaryReportTest {
     }
 
     @Test
+    void whenLastPointIsSyntheticEchoThenGetLatestOutdoorTemperatureSkipsItAndReturnsPriorGenuineReading() {
+        // Arrange: a genuine reading followed by the server's bucket-aligned filler and the query's own "to" echoed
+        // back verbatim — both land exactly on ":00" seconds and must be skipped.
+        MelCloudHomeTrendDataset dataset = new MelCloudHomeTrendDataset();
+        dataset.label = "OUTDOOR_TEMPERATURE";
+        dataset.data = List.of(pointOf("2026-07-22T07:15:24", 4.0), pointOf("2026-07-22T08:00:00", 4.0),
+                pointOf("2026-07-22T08:07:00", 4.0));
+        MelCloudHomeTrendSummaryReport report = new MelCloudHomeTrendSummaryReport();
+        report.datasets = List.of(dataset);
+
+        // Act
+        Optional<Double> latest = report.getLatestOutdoorTemperature();
+
+        // Assert
+        assertEquals(Optional.of(4.0), latest);
+    }
+
+    @Test
+    void whenAllPointsAreSyntheticThenGetLatestOutdoorTemperatureReturnsEmpty() {
+        // Arrange
+        MelCloudHomeTrendDataset dataset = new MelCloudHomeTrendDataset();
+        dataset.label = "OUTDOOR_TEMPERATURE";
+        dataset.data = List.of(pointOf("2026-07-22T07:00:00", 4.0), pointOf("2026-07-22T08:00:00", 4.0));
+        MelCloudHomeTrendSummaryReport report = new MelCloudHomeTrendSummaryReport();
+        report.datasets = List.of(dataset);
+
+        // Act
+        Optional<Double> latest = report.getLatestOutdoorTemperature();
+
+        // Assert
+        assertTrue(latest.isEmpty());
+    }
+
+    @Test
+    void whenTimestampIsUnparsableThenPointIsSkippedAsUnusable() {
+        // Arrange
+        MelCloudHomeTrendDataset dataset = new MelCloudHomeTrendDataset();
+        dataset.label = "OUTDOOR_TEMPERATURE";
+        dataset.data = List.of(pointOf("2026-07-22T07:15:24", 4.0), pointOf("not-a-timestamp", 9.9));
+        MelCloudHomeTrendSummaryReport report = new MelCloudHomeTrendSummaryReport();
+        report.datasets = List.of(dataset);
+
+        // Act
+        Optional<Double> latest = report.getLatestOutdoorTemperature();
+
+        // Assert
+        assertEquals(Optional.of(4.0), latest);
+    }
+
+    @Test
     void whenNoDatasetMatchesOutdoorTemperatureThenGetLatestOutdoorTemperatureReturnsEmpty() {
         // Arrange
         MelCloudHomeTrendDataset dataset = new MelCloudHomeTrendDataset();
         dataset.label = "ROOM_TEMPERATURE";
-        dataset.data = List.of(pointOf("2026-07-23T00:00:00", 21.0));
+        dataset.data = List.of(pointOf("2026-07-23T09:31:02", 21.0));
         MelCloudHomeTrendSummaryReport report = new MelCloudHomeTrendSummaryReport();
         report.datasets = List.of(dataset);
 

@@ -20,16 +20,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_COP;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ENERGY_CONSUMED;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ENERGY_PRODUCED;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ERROR_CODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_FORCED_HOTWATERMODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_SET_TEMPERATURE_ZONE1;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_TANK_WATER_TEMPERATURE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_RSSI;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ACCOUNT;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ATW_UNIT;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,6 +60,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Unit tests for {@link MelCloudHomeAtwUnitHandler}, in particular the zone-2 gating behavior.
@@ -228,5 +237,96 @@ class MelCloudHomeAtwUnitHandlerTest {
 
         // Assert
         verify(apiClient).controlAtwUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), any());
+    }
+
+    // ADR-009: a value absent from the settings array (or a null top-level field) must be pushed as UnDefType.UNDEF,
+    // not silently skipped. Mirrors the equivalent tests in MelCloudHomeAtaUnitHandlerTest.
+
+    @Test
+    void whenSetTemperatureZone1IsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_SET_TEMPERATURE_ZONE1));
+    }
+
+    @Test
+    void whenTankWaterTemperatureIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_TANK_WATER_TEMPERATURE));
+    }
+
+    @Test
+    void whenOutdoorTemperatureIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange: this is the common real-world case for ATW units, whose settings array often does not include
+        // OutdoorTemperature at all (confirmed against reference captures/fixtures).
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_OUTDOOR_TEMPERATURE));
+    }
+
+    @Test
+    void whenErrorCodeIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ERROR_CODE));
+    }
+
+    @Test
+    void whenRssiIsNullThenChannelIsUpdatedWithUndef() {
+        // Arrange: unitWithSettings() leaves rssi at its default (null).
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_RSSI));
+    }
+
+    @Test
+    void whenEnergyTelemetryFetchReturnsEmptyThenChannelsAreUpdatedWithUndef() throws Exception {
+        // Arrange: exercises the telemetry-poll path directly (fetchLatestEnergyWh), not just the settings-array
+        // path covered above. Also covers the derived "cop" channel, which is not computable without both values.
+        when(apiClient.fetchLatestEnergyWh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(), any()))
+                .thenReturn(Optional.empty());
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+
+        // Act
+        handler.initialize();
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ENERGY_CONSUMED));
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ENERGY_PRODUCED));
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_COP));
     }
 }

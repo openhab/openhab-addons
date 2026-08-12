@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -209,7 +210,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                 if (temperature == null) {
                     return;
                 }
-                if (lastUnit != null && lastUnit.getSetTemperature().map(temperature::equals).orElse(false)) {
+                if (lastUnit != null && lastUnit.getSetTemperature().filter(temperature::equals).isPresent()) {
                     logger.debug("Skipping set temperature command, unit already reports {}", temperature);
                     return;
                 }
@@ -222,7 +223,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     logger.debug("Unknown fan speed code '{}', ignoring command", command);
                     return;
                 }
-                if (lastUnit != null && lastUnit.getFanSpeed().map(fanSpeedWord::equals).orElse(false)) {
+                if (lastUnit != null && lastUnit.getFanSpeed().filter(fanSpeedWord::equals).isPresent()) {
                     logger.debug("Skipping fan speed command, unit already reports {}", fanSpeedWord);
                     return;
                 }
@@ -237,7 +238,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     return;
                 }
                 if (lastUnit != null
-                        && lastUnit.getVaneHorizontalDirection().map(vaneHorizontalWord::equals).orElse(false)) {
+                        && lastUnit.getVaneHorizontalDirection().filter(vaneHorizontalWord::equals).isPresent()) {
                     logger.debug("Skipping vane horizontal command, unit already reports {}", vaneHorizontalWord);
                     return;
                 }
@@ -252,7 +253,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     return;
                 }
                 if (lastUnit != null
-                        && lastUnit.getVaneVerticalDirection().map(vaneVerticalWord::equals).orElse(false)) {
+                        && lastUnit.getVaneVerticalDirection().filter(vaneVerticalWord::equals).isPresent()) {
                     logger.debug("Skipping vane vertical command, unit already reports {}", vaneVerticalWord);
                     return;
                 }
@@ -283,40 +284,45 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         } else {
             logger.debug("Unknown operation mode word '{}', skipping channel update", unit.getOperationMode());
         }
-        unit.getSetTemperature().ifPresent(
-                value -> updateState(CHANNEL_HOME_SET_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
-        unit.getRoomTemperature().ifPresent(
-                value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
-        unit.getFanSpeed().ifPresent(value -> {
+        unit.getSetTemperature().ifPresentOrElse(
+                value -> updateState(CHANNEL_HOME_SET_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
+                () -> updateState(CHANNEL_HOME_SET_TEMPERATURE, UnDefType.UNDEF));
+        unit.getRoomTemperature().ifPresentOrElse(
+                value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
+                () -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE, UnDefType.UNDEF));
+        unit.getFanSpeed().ifPresentOrElse(value -> {
             Integer code = FAN_SPEED_WORD_TO_CODE.get(value);
             if (code != null) {
                 updateState(CHANNEL_HOME_FAN_SPEED, new DecimalType(code));
             } else {
                 logger.debug("Unknown fan speed word '{}', skipping channel update", value);
             }
-        });
-        unit.getVaneHorizontalDirection().ifPresent(value -> {
+        }, () -> updateState(CHANNEL_HOME_FAN_SPEED, UnDefType.UNDEF));
+        unit.getVaneHorizontalDirection().ifPresentOrElse(value -> {
             Integer code = VANE_HORIZONTAL_WORD_TO_CODE.get(value);
             if (code != null) {
                 updateState(CHANNEL_HOME_VANE_HORIZONTAL, new DecimalType(code));
             } else {
                 logger.debug("Unknown vane horizontal word '{}', skipping channel update", value);
             }
-        });
-        unit.getVaneVerticalDirection().ifPresent(value -> {
+        }, () -> updateState(CHANNEL_HOME_VANE_HORIZONTAL, UnDefType.UNDEF));
+        unit.getVaneVerticalDirection().ifPresentOrElse(value -> {
             Integer code = VANE_VERTICAL_WORD_TO_CODE.get(value);
             if (code != null) {
                 updateState(CHANNEL_HOME_VANE_VERTICAL, new DecimalType(code));
             } else {
                 logger.debug("Unknown vane vertical word '{}', skipping channel update", value);
             }
-        });
+        }, () -> updateState(CHANNEL_HOME_VANE_VERTICAL, UnDefType.UNDEF));
         updateState(CHANNEL_IN_STANDBY_MODE, OnOffType.from(unit.isInStandbyMode()));
         updateState(CHANNEL_IS_IN_ERROR, OnOffType.from(unit.isInError()));
-        unit.getErrorCode().ifPresent(value -> updateState(CHANNEL_ERROR_CODE, new StringType(value)));
+        unit.getErrorCode().ifPresentOrElse(value -> updateState(CHANNEL_ERROR_CODE, new StringType(value)),
+                () -> updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF));
         Integer rssi = unit.rssi;
         if (rssi != null) {
             updateState(CHANNEL_RSSI, new DecimalType(mapRssiToSignalStrength(rssi)));
+        } else {
+            updateState(CHANNEL_RSSI, UnDefType.UNDEF);
         }
     }
 
@@ -357,9 +363,12 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         try {
             String accessToken = handler.getAccessToken();
             handler.getApiClient().fetchLatestEnergyWh(accessToken, config.unitId, from, to, ENERGY_CONSUMED_MEASURE)
-                    .ifPresent(wh -> updateState(CHANNEL_ENERGY_CONSUMED, new QuantityType<>(wh, Units.WATT_HOUR)));
-            handler.getApiClient().fetchLatestOutdoorTemperature(accessToken, config.unitId, from, to).ifPresent(
-                    value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
+                    .ifPresentOrElse(
+                            wh -> updateState(CHANNEL_ENERGY_CONSUMED, new QuantityType<>(wh, Units.WATT_HOUR)),
+                            () -> updateState(CHANNEL_ENERGY_CONSUMED, UnDefType.UNDEF));
+            handler.getApiClient().fetchLatestOutdoorTemperature(accessToken, config.unitId, from, to).ifPresentOrElse(
+                    value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
+                    () -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, UnDefType.UNDEF));
         } catch (MelCloudCommException e) {
             logger.debug("Telemetry poll failed for ATA unit {}, reason {}. ", config.unitId, e.getMessage());
         }

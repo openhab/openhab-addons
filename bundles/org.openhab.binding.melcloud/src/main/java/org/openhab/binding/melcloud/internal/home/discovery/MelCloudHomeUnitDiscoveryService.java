@@ -27,6 +27,7 @@ import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContex
 import org.openhab.binding.melcloud.internal.home.handler.MelCloudHomeAccountHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -38,6 +39,13 @@ import org.slf4j.LoggerFactory;
  * The {@link MelCloudHomeUnitDiscoveryService} discovers ATA/ATW units under a {@code home-account} bridge, via its
  * own one-off {@code /context} fetch.
  *
+ * <p>
+ * openHAB core calls {@code initialize()} on this service — which triggers {@link #startBackgroundDiscovery()} —
+ * synchronously while registering the bridge handler, before that handler's own asynchronous
+ * {@code initialize()}/login has necessarily run. Background discovery therefore defers itself with a short retry
+ * until the bridge actually reaches {@link ThingStatus#ONLINE}, rather than failing immediately with an
+ * "unauthenticated" error on every startup.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -46,10 +54,13 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
 
     private static final String PROPERTY_UNIT_ID = "unitId";
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
+    private static final int BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS = 5;
+    private static final int BRIDGE_NOT_ONLINE_MAX_ATTEMPTS = 12;
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudHomeUnitDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanTask;
+    private int bridgeNotOnlineAttempts;
 
     /**
      * Creates a MelCloudHomeUnitDiscoveryService with enabled autostart.
@@ -85,6 +96,19 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
     }
 
     private void discoverUnits() {
+        if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+            if (bridgeNotOnlineAttempts++ < BRIDGE_NOT_ONLINE_MAX_ATTEMPTS) {
+                logger.debug("MELCloud Home bridge is not online yet, deferring unit discovery by {}s (attempt {}/{})",
+                        BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS, bridgeNotOnlineAttempts, BRIDGE_NOT_ONLINE_MAX_ATTEMPTS);
+                scheduler.schedule(this::discoverUnits, BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
+            } else {
+                logger.debug("MELCloud Home bridge is still not online after {} attempts, giving up on automatic "
+                        + "unit discovery for now; a manual scan will retry", BRIDGE_NOT_ONLINE_MAX_ATTEMPTS);
+            }
+            return;
+        }
+        bridgeNotOnlineAttempts = 0;
+
         logger.debug("Discover MELCloud Home units");
         try {
             MelCloudHomeUserContext context = thingHandler.fetchUserContext();

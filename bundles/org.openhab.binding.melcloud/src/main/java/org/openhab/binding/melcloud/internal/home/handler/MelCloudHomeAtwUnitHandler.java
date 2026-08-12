@@ -40,6 +40,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,7 +158,8 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                 if (zone1Temperature == null) {
                     return;
                 }
-                if (lastUnit != null && lastUnit.getSetTemperatureZone1().map(zone1Temperature::equals).orElse(false)) {
+                if (lastUnit != null
+                        && lastUnit.getSetTemperatureZone1().filter(zone1Temperature::equals).isPresent()) {
                     logger.debug("Skipping zone1 set temperature command, unit already reports {}", zone1Temperature);
                     return;
                 }
@@ -168,7 +170,8 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                 if (zone2Temperature == null) {
                     return;
                 }
-                if (lastUnit != null && lastUnit.getSetTemperatureZone2().map(zone2Temperature::equals).orElse(false)) {
+                if (lastUnit != null
+                        && lastUnit.getSetTemperatureZone2().filter(zone2Temperature::equals).isPresent()) {
                     logger.debug("Skipping zone2 set temperature command, unit already reports {}", zone2Temperature);
                     return;
                 }
@@ -185,7 +188,7 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             case CHANNEL_ZONE2_OPERATION_MODE:
                 String operationModeZone2 = command.toString();
                 if (lastUnit != null
-                        && lastUnit.getOperationModeZone2().map(operationModeZone2::equals).orElse(false)) {
+                        && lastUnit.getOperationModeZone2().filter(operationModeZone2::equals).isPresent()) {
                     logger.debug("Skipping zone2 operation mode command, unit already reports {}", operationModeZone2);
                     return;
                 }
@@ -197,7 +200,7 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                     return;
                 }
                 if (lastUnit != null
-                        && lastUnit.getSetTankWaterTemperature().map(tankTemperature::equals).orElse(false)) {
+                        && lastUnit.getSetTankWaterTemperature().filter(tankTemperature::equals).isPresent()) {
                     logger.debug("Skipping tank target temperature command, unit already reports {}", tankTemperature);
                     return;
                 }
@@ -233,33 +236,47 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
         updateState(CHANNEL_OPERATION_STATUS, new StringType(unit.getOperationStatus()));
         updateState(CHANNEL_ZONE1_OPERATION_MODE, new StringType(unit.getOperationModeZone1()));
-        unit.getSetTemperatureZone1().ifPresent(
-                value -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)));
-        unit.getRoomTemperatureZone1().ifPresent(
-                value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)));
+        unit.getSetTemperatureZone1().ifPresentOrElse(
+                value -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)),
+                () -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE1, UnDefType.UNDEF));
+        unit.getRoomTemperatureZone1().ifPresentOrElse(
+                value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)),
+                () -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE1, UnDefType.UNDEF));
         if (unit.hasZone2()) {
-            unit.getOperationModeZone2()
-                    .ifPresent(value -> updateState(CHANNEL_ZONE2_OPERATION_MODE, new StringType(value)));
-            unit.getSetTemperatureZone2().ifPresent(value -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE2,
-                    new QuantityType<>(value, SIUnits.CELSIUS)));
-            unit.getRoomTemperatureZone2().ifPresent(value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2,
-                    new QuantityType<>(value, SIUnits.CELSIUS)));
+            unit.getOperationModeZone2().ifPresentOrElse(
+                    value -> updateState(CHANNEL_ZONE2_OPERATION_MODE, new StringType(value)),
+                    () -> updateState(CHANNEL_ZONE2_OPERATION_MODE, UnDefType.UNDEF));
+            unit.getSetTemperatureZone2().ifPresentOrElse(
+                    value -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE2,
+                            new QuantityType<>(value, SIUnits.CELSIUS)),
+                    () -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE2, UnDefType.UNDEF));
+            unit.getRoomTemperatureZone2().ifPresentOrElse(
+                    value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2,
+                            new QuantityType<>(value, SIUnits.CELSIUS)),
+                    () -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2, UnDefType.UNDEF));
         }
-        unit.getSetTankWaterTemperature().ifPresent(value -> updateState(CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE,
-                new QuantityType<>(value, SIUnits.CELSIUS)));
-        unit.getTankWaterTemperature().ifPresent(
-                value -> updateState(CHANNEL_HOME_TANK_WATER_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
+        unit.getSetTankWaterTemperature().ifPresentOrElse(
+                value -> updateState(CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE,
+                        new QuantityType<>(value, SIUnits.CELSIUS)),
+                () -> updateState(CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE, UnDefType.UNDEF));
+        unit.getTankWaterTemperature().ifPresentOrElse(
+                value -> updateState(CHANNEL_HOME_TANK_WATER_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
+                () -> updateState(CHANNEL_HOME_TANK_WATER_TEMPERATURE, UnDefType.UNDEF));
         updateState(CHANNEL_HOME_FORCED_HOTWATERMODE, OnOffType.from(unit.isForcedHotWaterMode()));
-        unit.getOutdoorTemperature().ifPresent(
-                value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)));
+        unit.getOutdoorTemperature().ifPresentOrElse(
+                value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
+                () -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, UnDefType.UNDEF));
         updateState(CHANNEL_IN_STANDBY_MODE, OnOffType.from(unit.isInStandbyMode()));
         updateState(CHANNEL_IS_IN_ERROR, OnOffType.from(unit.isInError()));
-        unit.getErrorCode().ifPresent(value -> updateState(CHANNEL_ERROR_CODE, new StringType(value)));
+        unit.getErrorCode().ifPresentOrElse(value -> updateState(CHANNEL_ERROR_CODE, new StringType(value)),
+                () -> updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF));
         updateState(CHANNEL_HOLIDAY_MODE, OnOffType.from(unit.isHolidayModeEnabled()));
         updateState(CHANNEL_FROST_PROTECTION, OnOffType.from(unit.isFrostProtectionEnabled()));
         Integer rssi = unit.rssi;
         if (rssi != null) {
             updateState(CHANNEL_RSSI, new DecimalType(mapRssiToSignalStrength(rssi)));
+        } else {
+            updateState(CHANNEL_RSSI, UnDefType.UNDEF);
         }
     }
 
@@ -305,12 +322,19 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                     .fetchLatestEnergyWh(accessToken, config.unitId, from, to, ENERGY_PRODUCED_MEASURE).orElse(null);
             if (consumedWh != null) {
                 updateState(CHANNEL_ENERGY_CONSUMED, new QuantityType<>(consumedWh, Units.WATT_HOUR));
+            } else {
+                updateState(CHANNEL_ENERGY_CONSUMED, UnDefType.UNDEF);
             }
             if (producedWh != null) {
                 updateState(CHANNEL_ENERGY_PRODUCED, new QuantityType<>(producedWh, Units.WATT_HOUR));
+            } else {
+                updateState(CHANNEL_ENERGY_PRODUCED, UnDefType.UNDEF);
             }
             if (consumedWh != null && producedWh != null && consumedWh > 0) {
                 updateState(CHANNEL_COP, new DecimalType(producedWh / consumedWh));
+            } else {
+                // Also covers consumedWh == 0: COP is not meaningfully computable, not just "missing".
+                updateState(CHANNEL_COP, UnDefType.UNDEF);
             }
         } catch (MelCloudCommException e) {
             logger.debug("Telemetry poll failed for ATW unit {}, reason {}. ", config.unitId, e.getMessage());
