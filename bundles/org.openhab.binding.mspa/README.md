@@ -97,10 +97,10 @@ Channels for `pool`
 - 2 for Medium
 - 3 for High
 
-`fault` reports the device's `fault` code as-is (e.g. `F1`). It does not affect Thing status - the
-device stays `ONLINE` while a fault is reported. When no fault is set, the channel reports `NONE`.
-The device's `warning` field is deliberately not reflected here, since it is also set during normal
-operation and is not a reliable fault indicator.
+`fault` reports the device's `fault` code as-is (e.g. `F1`).
+It does not affect Thing status - the device stays `ONLINE` while a fault is reported.
+When no fault is set, the channel reports `NONE`.
+The device's `warning` field is deliberately not reflected here, since it is also set during normal operation and is not a reliable fault indicator.
 
 `fault` known codes
 

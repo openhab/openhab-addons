@@ -223,7 +223,9 @@ public class MSpaPool extends BaseThingHandler {
                 int status = cr.getStatus();
                 String response = cr.getContentAsString();
                 if (status == 200) {
-                    logger.trace("Device shadow {}", response);
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Device shadow {}", response);
+                    }
                     distributeData(response);
                 } else {
                     logger.info("Failed to get data - reason {}", response);
@@ -279,14 +281,8 @@ public class MSpaPool extends BaseThingHandler {
     }
 
     /**
-     * Builds the {@code fault} channel state from the device shadow's {@code fault} code. The {@code warning} field
-     * is deliberately ignored here - it is also set during normal operation and is not a reliable fault indicator.
-     * The device keeps reporting live channel state while a fault is active, so the Thing status itself is not
-     * affected here - only the {@code fault} channel reflects the condition. {@link JSONObject#optString(String,
-     * String)} is used instead of {@code has}/{@code getString} so a missing key or a JSON {@code null} value (both
-     * of which would make {@code getString} throw) is treated the same as a blank code. When the code is blank, the
-     * special value {@link org.openhab.binding.mspa.internal.MSpaConstants#FAULT_STATE_NONE} is reported, which the
-     * channel-type definition in {@code channel-types.xml} maps to a translatable "None" label.
+     * Updates the {@code fault} channel from the device shadow's {@code fault} code. A missing or blank code is
+     * reported as {@link org.openhab.binding.mspa.internal.MSpaConstants#FAULT_STATE_NONE}.
      *
      * @param rawData the "data" object of a device shadow response
      */

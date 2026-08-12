@@ -7,8 +7,6 @@
 		<instruction-set targetVersion="1">
 			<add-channel id="fault">
 				<type>mspa:fault</type>
-				<label>Fault</label>
-				<description>Fault code reported by the device</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
