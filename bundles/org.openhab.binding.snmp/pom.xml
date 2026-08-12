@@ -14,6 +14,10 @@
 
   <name>openHAB Add-ons :: Bundles :: SNMP Binding</name>
 
+  <properties>
+    <bnd.importpackage>org.snmp4j.agent.audit;resolution:=optional</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.snmp4j</groupId>
