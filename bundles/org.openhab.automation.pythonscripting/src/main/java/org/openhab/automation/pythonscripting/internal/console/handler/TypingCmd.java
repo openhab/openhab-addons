@@ -53,6 +53,7 @@ public class TypingCmd {
     private final Logger logger;
     private final ScriptEngineManager scriptEngineManager;
 
+    private static final String OPENHAB_PACKAGE_PREFIX = "org.openhab";
     private static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
 
     public TypingCmd(Logger logger, ScriptEngineManager scriptEngineManager) {
@@ -74,8 +75,16 @@ public class TypingCmd {
         Map<String, ClassContainer> fileContainerMap = new HashMap<String, ClassContainer>();
         Set<String> imports = new HashSet<String>();
 
-        // 1. The bundle collector is converting/dumping the handled class and is collecting all used/imported class
-        Map<String, ClassContainer> bundleClassMap = collector.collectBundleClasses("org.openhab");
+        // 1. The bundle collector is collecting all public openhab classes and all used/imported classes
+        Map<String, ClassContainer> bundleClassMap = collector.collectBundleClasses(OPENHAB_PACKAGE_PREFIX);
+
+        // 2. The scope object is dumped
+        // All referenced openhab classes which are not already collected, are "registered" in the bundleClassMap
+        // And all used/imported class are added to the import list
+        Collection<String> _imports = dumpScope(outputPath, bundleClassMap);
+        imports.addAll(_imports);
+
+        // 3. All openhab classes are dumped
         for (ClassContainer container : bundleClassMap.values()) {
             ClassConverter converter = new ClassConverter(container);
             String classBody = converter.build();
@@ -83,12 +92,7 @@ public class TypingCmd {
             dumpClassContentToFile(classBody, container, outputPath, fileContainerMap);
         }
 
-        // 2. The scope converter is converting/dumping all classes directly used in scope and is collecting all
-        // used/imported class
-        Collection<String> _imports = dumpScope(outputPath);
-        imports.addAll(_imports);
-
-        // 3. Finally, all collected imports are dumped (org.openhab is filtered out, because it was already handled.)
+        // 4. All collected imports are dumped (org.openhab is filtered out, because it was already handled.)
         imports = imports.stream().filter(i -> !i.startsWith("org.openhab")).collect(Collectors.toSet());
         Map<String, ClassContainer> reflectionClassMap = collector.collectReflectionClasses(imports);
         for (ClassContainer container : reflectionClassMap.values()) {
@@ -105,7 +109,8 @@ public class TypingCmd {
                 + outputPath + "'");
     }
 
-    private Collection<String> dumpScope(Path outputPath) throws IOException {
+    private Collection<String> dumpScope(Path outputPath, Map<String, ClassContainer> bundleClassMap)
+            throws IOException {
         Map<String, String> imports = new HashMap<String, String>();
         String identifier = "pythonscripting-cli-" + UUID.randomUUID().toString();
         try {
@@ -118,18 +123,21 @@ public class TypingCmd {
                 Map<String, Object> scope = ((PythonScriptEngine) engine).getScope();
                 for (Entry<String, Object> entry : scope.entrySet()) {
                     Object value = entry.getValue();
+                    Class cls;
                     String packageName;
                     String pythonClassName;
                     String pythonModuleName;
                     String definition;
 
                     if (value instanceof Class) {
-                        packageName = ((Class) value).getName();
+                        cls = (Class) value;
+                        packageName = cls.getName();
+
                         pythonClassName = ClassContainer.parsePythonClassName(packageName);
                         pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
                         definition = entry.getKey() + ": Type = _" + pythonClassName;
                     } else {
-                        Class<? extends Object> cls = value.getClass();
+                        cls = value.getClass();
                         packageName = value.getClass().getName();
 
                         if (packageName
@@ -149,6 +157,10 @@ public class TypingCmd {
                         } else {
                             definition = entry.getKey() + ": _" + pythonClassName;
                         }
+                    }
+
+                    if (packageName.startsWith(OPENHAB_PACKAGE_PREFIX) && !bundleClassMap.containsKey(packageName)) {
+                        bundleClassMap.put(packageName, new ClassContainer(cls));
                     }
 
                     imports.put(packageName,
