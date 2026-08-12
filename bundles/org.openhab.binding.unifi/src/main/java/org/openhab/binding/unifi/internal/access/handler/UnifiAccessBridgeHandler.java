@@ -378,6 +378,8 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                 UnifiAccessDoorHandler dh = getDoorHandler(door.id);
                 if (dh != null) {
                     logger.trace("Updating door: {}", dh.deviceId);
+                    // Presence in the topology clears GONE; connectivity is judged separately
+                    dh.clearGone();
                     setDoorStatus(dh, door, devices, devicesById);
                     dh.updateFromDoor(door);
                 }
@@ -391,15 +393,20 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                 if (dh != null) {
                     logger.debug("Syncing device {} (type={}, online={}, locationId={})", device.id, device.type,
                             device.isOnline, device.locationId);
-                    // Set online/offline based on device status, independent of settings
-                    boolean online = !Boolean.FALSE.equals(device.isOnline);
-                    dh.updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
-                            online ? OnOffType.ON : OnOffType.OFF);
-                    if (!online) {
-                        dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "@text/offline.device-offline");
-                    } else if (dh.getThing().getStatus() != ThingStatus.ONLINE) {
-                        dh.setOnline();
+                    // Presence in the topology clears GONE; connectivity is judged separately
+                    dh.clearGone();
+                    // Set online/offline based on device status, independent of settings;
+                    // null means the API reported nothing, so the status is left unchanged
+                    Boolean online = device.isOnline;
+                    if (online != null) {
+                        dh.updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
+                                online ? OnOffType.ON : OnOffType.OFF);
+                        if (!online) {
+                            dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                    "@text/offline.device-offline");
+                        } else if (dh.getThing().getStatus() != ThingStatus.ONLINE) {
+                            dh.setOnline();
+                        }
                     }
                     // Update thing properties from device metadata
                     dh.updateDeviceProperties(device);

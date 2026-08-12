@@ -73,6 +73,16 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * Clears a GONE status when an authoritative topology proves the device exists again;
+     * connectivity handling then refines UNKNOWN to ONLINE/OFFLINE as information arrives.
+     */
+    void clearGone() {
+        if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
+    }
+
     protected void refreshState(String channelId) {
         State state = stateCache.get(channelId);
         if (state != null) {
