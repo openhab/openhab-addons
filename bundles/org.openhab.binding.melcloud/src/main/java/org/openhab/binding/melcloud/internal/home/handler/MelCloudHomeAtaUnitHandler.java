@@ -54,6 +54,10 @@ import org.slf4j.LoggerFactory;
  * Energy and outdoor-temperature telemetry are polled directly by this handler at a much longer interval, since
  * those endpoints are inherently per-unit.
  *
+ * <p>
+ * Outbound control commands are deduplicated against the last known unit state (skipping a call whose single target
+ * field already matches) and routed through the bridge's shared {@code MelCloudHomeRequestPacer}, per ADR-008.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -104,6 +108,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
     private MelCloudHomeUnitConfig config = new MelCloudHomeUnitConfig();
     private @Nullable MelCloudHomeAccountHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> telemetryFuture;
+    private volatile @Nullable MelCloudHomeAtaUnit lastKnownUnit;
 
     public MelCloudHomeAtaUnitHandler(Thing thing) {
         super(thing);
@@ -174,10 +179,16 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
             return;
         }
 
+        MelCloudHomeAtaUnit lastUnit = lastKnownUnit;
         MelCloudHomeAtaControlRequest request = new MelCloudHomeAtaControlRequest();
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
-                request.power = command == OnOffType.ON;
+                boolean powerValue = command == OnOffType.ON;
+                if (lastUnit != null && lastUnit.isPower() == powerValue) {
+                    logger.debug("Skipping power command, unit already reports power={}", powerValue);
+                    return;
+                }
+                request.power = powerValue;
                 break;
             case CHANNEL_HOME_OPERATION_MODE:
                 Integer operationModeCode = toInt(command);
@@ -187,11 +198,19 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     logger.debug("Unknown operation mode code '{}', ignoring command", command);
                     return;
                 }
+                if (lastUnit != null && operationModeWord.equals(lastUnit.getOperationMode())) {
+                    logger.debug("Skipping operation mode command, unit already reports mode={}", operationModeWord);
+                    return;
+                }
                 request.operationMode = operationModeWord;
                 break;
             case CHANNEL_HOME_SET_TEMPERATURE:
                 Double temperature = toCelsius(command);
                 if (temperature == null) {
+                    return;
+                }
+                if (lastUnit != null && lastUnit.getSetTemperature().map(temperature::equals).orElse(false)) {
+                    logger.debug("Skipping set temperature command, unit already reports {}", temperature);
                     return;
                 }
                 request.setTemperature = temperature;
@@ -201,6 +220,10 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                 String fanSpeedWord = fanSpeedCode == null ? null : FAN_SPEED_CODE_TO_WORD.get(fanSpeedCode);
                 if (fanSpeedWord == null) {
                     logger.debug("Unknown fan speed code '{}', ignoring command", command);
+                    return;
+                }
+                if (lastUnit != null && lastUnit.getFanSpeed().map(fanSpeedWord::equals).orElse(false)) {
+                    logger.debug("Skipping fan speed command, unit already reports {}", fanSpeedWord);
                     return;
                 }
                 request.setFanSpeed = fanSpeedWord;
@@ -213,6 +236,11 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     logger.debug("Unknown vane horizontal code '{}', ignoring command", command);
                     return;
                 }
+                if (lastUnit != null
+                        && lastUnit.getVaneHorizontalDirection().map(vaneHorizontalWord::equals).orElse(false)) {
+                    logger.debug("Skipping vane horizontal command, unit already reports {}", vaneHorizontalWord);
+                    return;
+                }
                 request.vaneHorizontalDirection = vaneHorizontalWord;
                 break;
             case CHANNEL_HOME_VANE_VERTICAL:
@@ -223,6 +251,11 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     logger.debug("Unknown vane vertical code '{}', ignoring command", command);
                     return;
                 }
+                if (lastUnit != null
+                        && lastUnit.getVaneVerticalDirection().map(vaneVerticalWord::equals).orElse(false)) {
+                    logger.debug("Skipping vane vertical command, unit already reports {}", vaneVerticalWord);
+                    return;
+                }
                 request.vaneVerticalDirection = vaneVerticalWord;
                 break;
             default:
@@ -230,15 +263,18 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                 return;
         }
 
-        try {
-            handler.getApiClient().controlAtaUnit(handler.getAccessToken(), config.unitId, request);
-        } catch (MelCloudCommException e) {
-            logger.warn("Command '{}' to channel '{}' failed, reason {}. ", command, channelUID, e.getMessage());
-        }
+        handler.getRequestPacer().schedule(() -> {
+            try {
+                handler.getApiClient().controlAtaUnit(handler.getAccessToken(), config.unitId, request);
+            } catch (MelCloudCommException e) {
+                logger.warn("Command '{}' to channel '{}' failed, reason {}. ", command, channelUID, e.getMessage());
+            }
+        });
     }
 
     @Override
     public void onAtaUnitUpdated(MelCloudHomeAtaUnit unit) {
+        lastKnownUnit = unit;
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
         Integer operationModeCode = OPERATION_MODE_WORD_TO_CODE.get(unit.getOperationMode());

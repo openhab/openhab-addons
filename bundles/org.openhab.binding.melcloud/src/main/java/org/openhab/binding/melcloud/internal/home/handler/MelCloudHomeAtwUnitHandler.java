@@ -52,6 +52,10 @@ import org.slf4j.LoggerFactory;
  * (unlike the ATA unit) the Home API reports directly in {@code settings} rather than via a separate telemetry
  * call. Only energy consumed/produced is polled directly by this handler, at a much longer interval.
  *
+ * <p>
+ * Outbound control commands are deduplicated against the last known unit state (skipping a call whose single target
+ * field already matches) and routed through the bridge's shared {@code MelCloudHomeRequestPacer}, per ADR-008.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -66,6 +70,7 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     private MelCloudHomeUnitConfig config = new MelCloudHomeUnitConfig();
     private @Nullable MelCloudHomeAccountHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> telemetryFuture;
+    private volatile @Nullable MelCloudHomeAtwUnit lastKnownUnit;
 
     public MelCloudHomeAtwUnitHandler(Thing thing) {
         super(thing);
@@ -136,14 +141,24 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             return;
         }
 
+        MelCloudHomeAtwUnit lastUnit = lastKnownUnit;
         MelCloudHomeAtwControlRequest request = new MelCloudHomeAtwControlRequest();
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
-                request.power = command == OnOffType.ON;
+                boolean powerValue = command == OnOffType.ON;
+                if (lastUnit != null && lastUnit.isPower() == powerValue) {
+                    logger.debug("Skipping power command, unit already reports power={}", powerValue);
+                    return;
+                }
+                request.power = powerValue;
                 break;
             case CHANNEL_HOME_SET_TEMPERATURE_ZONE1:
                 Double zone1Temperature = toCelsius(command);
                 if (zone1Temperature == null) {
+                    return;
+                }
+                if (lastUnit != null && lastUnit.getSetTemperatureZone1().map(zone1Temperature::equals).orElse(false)) {
+                    logger.debug("Skipping zone1 set temperature command, unit already reports {}", zone1Temperature);
                     return;
                 }
                 request.setTemperatureZone1 = zone1Temperature;
@@ -153,38 +168,67 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                 if (zone2Temperature == null) {
                     return;
                 }
+                if (lastUnit != null && lastUnit.getSetTemperatureZone2().map(zone2Temperature::equals).orElse(false)) {
+                    logger.debug("Skipping zone2 set temperature command, unit already reports {}", zone2Temperature);
+                    return;
+                }
                 request.setTemperatureZone2 = zone2Temperature;
                 break;
             case CHANNEL_ZONE1_OPERATION_MODE:
-                request.operationModeZone1 = command.toString();
+                String operationModeZone1 = command.toString();
+                if (lastUnit != null && operationModeZone1.equals(lastUnit.getOperationModeZone1())) {
+                    logger.debug("Skipping zone1 operation mode command, unit already reports {}", operationModeZone1);
+                    return;
+                }
+                request.operationModeZone1 = operationModeZone1;
                 break;
             case CHANNEL_ZONE2_OPERATION_MODE:
-                request.operationModeZone2 = command.toString();
+                String operationModeZone2 = command.toString();
+                if (lastUnit != null
+                        && lastUnit.getOperationModeZone2().map(operationModeZone2::equals).orElse(false)) {
+                    logger.debug("Skipping zone2 operation mode command, unit already reports {}", operationModeZone2);
+                    return;
+                }
+                request.operationModeZone2 = operationModeZone2;
                 break;
             case CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE:
                 Double tankTemperature = toCelsius(command);
                 if (tankTemperature == null) {
                     return;
                 }
+                if (lastUnit != null
+                        && lastUnit.getSetTankWaterTemperature().map(tankTemperature::equals).orElse(false)) {
+                    logger.debug("Skipping tank target temperature command, unit already reports {}", tankTemperature);
+                    return;
+                }
                 request.setTankWaterTemperature = tankTemperature;
                 break;
             case CHANNEL_HOME_FORCED_HOTWATERMODE:
-                request.forcedHotWaterMode = command == OnOffType.ON;
+                boolean forcedHotWaterModeValue = command == OnOffType.ON;
+                if (lastUnit != null && lastUnit.isForcedHotWaterMode() == forcedHotWaterModeValue) {
+                    logger.debug("Skipping forced hot water mode command, unit already reports {}",
+                            forcedHotWaterModeValue);
+                    return;
+                }
+                request.forcedHotWaterMode = forcedHotWaterModeValue;
                 break;
             default:
                 logger.debug("Read-only or unknown channel {}, skipping command", channelUID);
                 return;
         }
 
-        try {
-            handler.getApiClient().controlAtwUnit(handler.getAccessToken(), config.unitId, request);
-        } catch (MelCloudCommException e) {
-            logger.warn("Command '{}' to channel '{}' failed, reason {}. ", command, channelUID, e.getMessage());
-        }
+        handler.getRequestPacer().schedule(() -> {
+            try {
+                handler.getApiClient().controlAtwUnit(handler.getAccessToken(), config.unitId, request);
+            } catch (MelCloudCommException e) {
+                logger.warn("Command '{}' to channel '{}' failed, reason {}. ", command, channelUID, e.getMessage());
+            }
+        });
     }
 
     @Override
     public void onAtwUnitUpdated(MelCloudHomeAtwUnit unit) {
+        lastKnownUnit = unit;
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
         updateState(CHANNEL_OPERATION_STATUS, new StringType(unit.getOperationStatus()));

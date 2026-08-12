@@ -31,12 +31,14 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THI
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient;
+import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeRequestPacer;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaUnit;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeSetting;
@@ -83,6 +85,8 @@ class MelCloudHomeAtaUnitHandlerTest {
         apiClient = mock(MelCloudHomeApiClient.class);
         when(accountHandler.getApiClient()).thenReturn(apiClient);
         when(accountHandler.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(accountHandler.getRequestPacer())
+                .thenReturn(new MelCloudHomeRequestPacer(Executors.newSingleThreadScheduledExecutor()));
     }
 
     private MelCloudHomeAtaUnitHandler createHandler(String unitId, boolean withBridge, ThingStatus bridgeStatus) {
@@ -346,5 +350,52 @@ class MelCloudHomeAtaUnitHandlerTest {
                 .forClass(MelCloudHomeAtaControlRequest.class);
         verify(apiClient).controlAtaUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), captor.capture());
         assertEquals(Boolean.TRUE, captor.getValue().power);
+    }
+
+    @Test
+    void whenCommandMatchesLastKnownStateThenControlCallIsSkipped() throws Exception {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        handler.onAtaUnitUpdated(unitWithSettings("Power", "True"));
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.ON);
+
+        // Assert
+        verify(apiClient, never()).controlAtaUnit(any(), any(), any());
+    }
+
+    @Test
+    void whenCommandDiffersFromLastKnownStateThenControlCallIsSent() throws Exception {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        handler.onAtaUnitUpdated(unitWithSettings("Power", "True"));
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.OFF);
+
+        // Assert
+        ArgumentCaptor<MelCloudHomeAtaControlRequest> captor = ArgumentCaptor
+                .forClass(MelCloudHomeAtaControlRequest.class);
+        verify(apiClient).controlAtaUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), captor.capture());
+        assertEquals(Boolean.FALSE, captor.getValue().power);
+    }
+
+    @Test
+    void whenNoPriorKnownStateExistsThenCommandIsAlwaysSent() throws Exception {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.ON);
+
+        // Assert
+        verify(apiClient).controlAtaUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), any());
     }
 }

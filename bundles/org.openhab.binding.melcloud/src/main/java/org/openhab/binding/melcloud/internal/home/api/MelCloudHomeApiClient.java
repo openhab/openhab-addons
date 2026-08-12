@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -57,6 +58,12 @@ public class MelCloudHomeApiClient {
     private static final String ATW_CONTROL_URL_TEMPLATE = BFF_BASE_URL + "/monitor/atwunit/%s";
     private static final String TELEMETRY_ENERGY_URL_TEMPLATE = BFF_BASE_URL + "/telemetry/telemetry/energy/%s";
     private static final String TRENDSUMMARY_URL = BFF_BASE_URL + "/report/v1/trendsummary";
+
+    // The WebSocket credential ("hash") is issued by a fixed AWS Lambda Function URL, not the mobile BFF itself,
+    // authenticated with the same mobile-BFF Bearer access token. Confirmed against the working reference
+    // implementation (andrew-blake/melcloudhome); see ADR-007.
+    private static final String WEBSOCKET_HASH_URL = "https://6x2dgdulg7omjsxalnhmo4ynba0dcgwk.lambda-url.eu-west-1.on.aws/";
+    private static final String WEBSOCKET_HOST = "wss://ws.melcloudhome.com";
 
     private static final int TIMEOUT_MILLISECONDS = 10000;
 
@@ -150,6 +157,32 @@ public class MelCloudHomeApiClient {
         List<MelCloudHomeTrendSummaryReport> reports = parseJsonList(body);
         return reports.stream().flatMap(report -> report.getLatestOutdoorTemperature().stream())
                 .reduce((first, second) -> second);
+    }
+
+    /**
+     * Fetches a short-lived WebSocket credential ("hash") for this account, exchanging the mobile-BFF Bearer access
+     * token at the fixed Lambda token endpoint, mirroring what the official app does (ADR-007).
+     *
+     * @return the {@code hash} used to open {@link #buildWebSocketUri(String)}
+     * @throws MelCloudCommException if the request fails, is rejected, or the response is missing {@code hash}
+     */
+    public String fetchWebSocketHash(String accessToken) throws MelCloudCommException {
+        String body = get(WEBSOCKET_HASH_URL, accessToken);
+        MelCloudHomeWebSocketHashResponse response = parseJson(body, MelCloudHomeWebSocketHashResponse.class,
+                "WebSocket hash response");
+        String hash = response.hash;
+        if (hash == null || hash.isBlank()) {
+            throw new MelCloudCommException("WebSocket hash response did not include a hash");
+        }
+        return hash;
+    }
+
+    /**
+     * @param hash a credential obtained from {@link #fetchWebSocketHash(String)}
+     * @return the URI to open the MELCloud Home realtime push connection at
+     */
+    public URI buildWebSocketUri(String hash) {
+        return URI.create(WEBSOCKET_HOST + "/?hash=" + hash);
     }
 
     private String get(String url, String accessToken) throws MelCloudCommException {

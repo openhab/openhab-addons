@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mockStatic;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Properties;
@@ -170,6 +171,63 @@ class MelCloudHomeApiClientTest {
         String body = new String(bodyCaptor.getValue().readAllBytes());
         assertTrue(body.contains("\"power\":true"));
         assertTrue(body.contains("\"operationMode\":null"));
+    }
+
+    @Test
+    void whenWebSocketHashResponseIsValidThenFetchWebSocketHashReturnsHash() throws MelCloudCommException {
+        // Arrange
+        mockGetResponse("{\"hash\":\"abc123\",\"userId\":\"u1\"}");
+
+        // Act
+        String hash = client.fetchWebSocketHash(ACCESS_TOKEN);
+
+        // Assert
+        assertEquals("abc123", hash);
+    }
+
+    @Test
+    void whenWebSocketHashResponseIsEmptyBodyThenFetchWebSocketHashThrows() {
+        // Arrange
+        mockGetResponse("");
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchWebSocketHash(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenWebSocketHashResponseIsMalformedJsonThenFetchWebSocketHashThrows() {
+        // Arrange
+        mockGetResponse("{not-json");
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchWebSocketHash(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenWebSocketHashResponseIsMissingHashFieldThenFetchWebSocketHashThrows() {
+        // Arrange
+        mockGetResponse("{\"userId\":\"u1\"}");
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchWebSocketHash(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenServerRejectsWebSocketHashRequestThenFetchWebSocketHashThrowsCommException() {
+        // Arrange
+        mockGetError(new IOException("Server returned HTTP response code: 401 for URL"));
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchWebSocketHash(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenBuildingWebSocketUriThenHashIsAppendedAsQueryParameter() {
+        // Act
+        URI uri = client.buildWebSocketUri("abc123");
+
+        // Assert
+        assertEquals("wss://ws.melcloudhome.com/?hash=abc123", uri.toString());
     }
 
     private void mockGetResponse(String response) {

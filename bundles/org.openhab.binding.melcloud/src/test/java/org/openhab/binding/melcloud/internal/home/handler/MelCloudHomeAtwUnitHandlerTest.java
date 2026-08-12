@@ -14,8 +14,10 @@ package org.openhab.binding.melcloud.internal.home.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_FORCED_HOTWATERMODE;
@@ -28,12 +30,14 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THI
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient;
+import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeRequestPacer;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeSetting;
@@ -78,6 +82,8 @@ class MelCloudHomeAtwUnitHandlerTest {
         apiClient = mock(MelCloudHomeApiClient.class);
         when(accountHandler.getApiClient()).thenReturn(apiClient);
         when(accountHandler.getAccessToken()).thenReturn(ACCESS_TOKEN);
+        when(accountHandler.getRequestPacer())
+                .thenReturn(new MelCloudHomeRequestPacer(Executors.newSingleThreadScheduledExecutor()));
     }
 
     private MelCloudHomeAtwUnitHandler createHandler() {
@@ -175,5 +181,52 @@ class MelCloudHomeAtwUnitHandlerTest {
                 .forClass(MelCloudHomeAtwControlRequest.class);
         verify(apiClient).controlAtwUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), captor.capture());
         assertEquals(Boolean.TRUE, captor.getValue().forcedHotWaterMode);
+    }
+
+    @Test
+    void whenCommandMatchesLastKnownStateThenControlCallIsSkipped() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        handler.onAtwUnitUpdated(unitWithSettings("Power", "True"));
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.ON);
+
+        // Assert
+        verify(apiClient, never()).controlAtwUnit(any(), any(), any());
+    }
+
+    @Test
+    void whenCommandDiffersFromLastKnownStateThenControlCallIsSent() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        handler.onAtwUnitUpdated(unitWithSettings("Power", "True"));
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.OFF);
+
+        // Assert
+        ArgumentCaptor<MelCloudHomeAtwControlRequest> captor = ArgumentCaptor
+                .forClass(MelCloudHomeAtwControlRequest.class);
+        verify(apiClient).controlAtwUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), captor.capture());
+        assertEquals(Boolean.FALSE, captor.getValue().power);
+    }
+
+    @Test
+    void whenNoPriorKnownStateExistsThenCommandIsAlwaysSent() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.ON);
+
+        // Assert
+        verify(apiClient).controlAtwUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), any());
     }
 }

@@ -31,9 +31,17 @@ public class MelCloudHomeAccountConfig {
     public String username = "";
     public String password = "";
 
+    /**
+     * Whether to connect to the MELCloud Home realtime push channel (ADR-007) to narrow the state-staleness window
+     * between the fixed {@code /context} polls. Best-effort: any failure falls back to plain polling and never
+     * affects bridge status. Defaults to {@code true}; set to {@code false} to run this bridge on polling alone.
+     */
+    public boolean enableRealtimeUpdates = true;
+
     @Override
     public String toString() {
         return "[username=" + (username.isEmpty() ? "<empty>" : username) + ", password="
-                + (password.isEmpty() ? "<empty>" : "<redacted>") + "]";
+                + (password.isEmpty() ? "<empty>" : "<redacted>") + ", enableRealtimeUpdates=" + enableRealtimeUpdates
+                + "]";
     }
 }

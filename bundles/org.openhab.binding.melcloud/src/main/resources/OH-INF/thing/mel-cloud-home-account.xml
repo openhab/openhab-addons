@@ -27,6 +27,17 @@
 				<label>Password</label>
 				<description>The password used to sign in to the MELCloud Home app.</description>
 			</parameter>
+			<parameter name="enableRealtimeUpdates" type="boolean" required="false">
+				<label>Enable Realtime Updates</label>
+				<description>Connect to the MELCloud Home push channel to narrow the delay between an out-of-band
+					change (the
+					MELCloud app, a physical remote) and openHAB noticing it. Best-effort: any failure
+					falls back to plain polling and
+					never affects this bridge's status. Disable to run on polling
+					alone.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

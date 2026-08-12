@@ -28,6 +28,7 @@ import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeAuthService;
 import org.openhab.binding.melcloud.internal.home.handler.MelCloudHomeAccountHandler;
 import org.openhab.binding.melcloud.internal.home.handler.MelCloudHomeAtaUnitHandler;
 import org.openhab.binding.melcloud.internal.home.handler.MelCloudHomeAtwUnitHandler;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -48,6 +49,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Bernd Weymann - Added MELCloud Home bridge skeleton
  * @author Bernd Weymann - Wired the real MELCloud Home OAuth login flow
  * @author Bernd Weymann - Wired the MELCloud Home ATA/ATW unit Things
+ * @author Bernd Weymann - Wired the WebSocketFactory service for MELCloud Home realtime updates
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.melcloud", service = ThingHandlerFactory.class)
@@ -56,10 +58,13 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
     private static final Duration HTTP_CONNECT_TIMEOUT = Duration.ofSeconds(10);
 
     private final StorageService storageService;
+    private final WebSocketFactory webSocketFactory;
 
     @Activate
-    public MelCloudHandlerFactory(@Reference StorageService storageService) {
+    public MelCloudHandlerFactory(@Reference StorageService storageService,
+            @Reference WebSocketFactory webSocketFactory) {
         this.storageService = storageService;
+        this.webSocketFactory = webSocketFactory;
     }
 
     @Override
@@ -79,7 +84,7 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
             return new MelCloudHeatpumpDeviceHandler(thing);
         } else if (THING_TYPE_MELCLOUD_HOME_ACCOUNT.equals(thingTypeUID)) {
             return new MelCloudHomeAccountHandler((Bridge) thing, new MelCloudHomeAuthService(createOAuthHttpClient()),
-                    new MelCloudHomeApiClient(), storageService);
+                    new MelCloudHomeApiClient(), storageService, webSocketFactory);
         } else if (THING_TYPE_MELCLOUD_HOME_ATA_UNIT.equals(thingTypeUID)) {
             return new MelCloudHomeAtaUnitHandler(thing);
         } else if (THING_TYPE_MELCLOUD_HOME_ATW_UNIT.equals(thingTypeUID)) {
