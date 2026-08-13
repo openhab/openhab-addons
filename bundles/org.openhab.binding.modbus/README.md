@@ -355,6 +355,10 @@ The manufacturer of any modbus device may choose to use either notation, you may
 This section explains the detailed descriptions of different value types on read and write.
 Note that value types less than 16 bits are not supported on write to holding registers (see [poller Thing](#poller-thing) documentation for details).
 
+For reads, signed and unsigned integer value types interpret the same register contents differently.
+For writes, the corresponding signed and unsigned types use the same binary encoding: the numeric command is converted to the selected bit width, so, for example, `int16` and `uint16` produce the same register contents, as do `int32_swap` and `uint32_swap`.
+The separate signed and unsigned write options therefore do not represent different wire formats.
+
 See [Full examples](#full-examples) section for practical examples.
 
 #### `bit`
