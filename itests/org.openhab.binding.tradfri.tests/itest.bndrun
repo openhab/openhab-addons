@@ -85,10 +85,10 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.eclipse.jetty.session;version='[12.1.12,12.1.13)',\
 	org.eclipse.jetty.util;version='[12.1.12,12.1.13)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
-	org.objectweb.asm;version='[9.10.0,9.10.1)',\
-	org.objectweb.asm.commons;version='[9.10.0,9.10.1)',\
-	org.objectweb.asm.tree;version='[9.10.0,9.10.1)',\
-	org.objectweb.asm.tree.analysis;version='[9.10.0,9.10.1)',\
-	org.objectweb.asm.util;version='[9.10.0,9.10.1)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.3.5,2.3.6)',\
-	org.ops4j.pax.web.pax-web-compatibility-servlet;version='[11.1.3,11.1.4)'
+	org.ops4j.pax.web.pax-web-compatibility-servlet;version='[11.1.3,11.1.4)',\
+	org.objectweb.asm;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.commons;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.tree;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.tree.analysis;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.util;version='[9.10.1,9.10.2)'

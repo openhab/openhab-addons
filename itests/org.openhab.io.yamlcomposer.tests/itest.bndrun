@@ -18,7 +18,6 @@ Fragment-Host: org.openhab.io.yamlcomposer
 -runbundles: \
 	ch.qos.logback.classic;version='[1.5.32,1.5.33)',\
 	ch.qos.logback.core;version='[1.5.32,1.5.33)',\
-	com.fasterxml.jackson.core.jackson-annotations;version='[2.21.0,2.21.1)',\
 	com.google.gson;version='[2.13.2,2.13.3)',\
 	com.sun.jna;version='[5.19.0,5.19.1)',\
 	io.methvin.directory-watcher;version='[0.19.1,0.19.2)',\
@@ -43,11 +42,6 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	org.eclipse.jetty.session;version='[12.1.12,12.1.13)',\
 	org.eclipse.jetty.util;version='[12.1.12,12.1.13)',\
 	org.hamcrest;version='[3.0.0,3.0.1)',\
-	org.objectweb.asm;version='[9.10.0,9.10.1)',\
-	org.objectweb.asm.commons;version='[9.10.0,9.10.1)',\
-	org.objectweb.asm.tree;version='[9.10.0,9.10.1)',\
-	org.objectweb.asm.tree.analysis;version='[9.10.0,9.10.1)',\
-	org.objectweb.asm.util;version='[9.10.0,9.10.1)',\
 	org.openhab.core;version='[5.3.0,5.3.1)',\
 	org.openhab.core.test;version='[5.3.0,5.3.1)',\
 	org.openhab.io.yamlcomposer;version='[5.3.0,5.3.1)',\
@@ -64,9 +58,6 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	tech.units.indriya;version='[2.2.3,2.2.4)',\
 	uom-lib-common;version='[2.2.0,2.2.1)',\
 	biz.aQute.tester.junit-platform;version='[7.3.0,7.3.1)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.21.4,2.21.5)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.21.4,2.21.5)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.21.4,2.21.5)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	com.sun.istack.commons-runtime;version='[4.1.2,4.1.3)',\
 	jakarta.activation-api;version='[2.1.4,2.1.5)',\
@@ -77,11 +68,20 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	org.glassfish.jaxb.runtime;version='[4.0.9,4.0.10)',\
 	org.glassfish.jaxb.txw2;version='[4.0.9,4.0.10)',\
 	ch.obermuhlner.math.big;version='[2.3.2,2.3.3)',\
-	com.fasterxml.jackson.datatype.jackson-datatype-jdk8;version='[2.21.4,2.21.5)',\
 	com.google.re2j.re2j;version='[1.2.0,1.2.1)',\
 	com.hubspot.jinjava.jinjava;version='[2.8.3,2.8.4)',\
 	javassist;version='[3.32.0,3.32.1)',\
 	org.apache.commons.commons-io;version='[2.22.0,2.22.1)',\
 	org.apache.commons.commons-net;version='[3.13.0,3.13.1)',\
 	org.apache.commons.lang3;version='[3.20.0,3.20.1)',\
-	org.ops4j.pax.web.pax-web-compatibility-servlet;version='[11.1.3,11.1.4)'
+	org.ops4j.pax.web.pax-web-compatibility-servlet;version='[11.1.3,11.1.4)',\
+	com.fasterxml.jackson.core.jackson-annotations;version='[2.22.0,2.22.1)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.22.1,2.22.2)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.22.1,2.22.2)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.22.1,2.22.2)',\
+	com.fasterxml.jackson.datatype.jackson-datatype-jdk8;version='[2.22.1,2.22.2)',\
+	org.objectweb.asm;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.commons;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.tree;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.tree.analysis;version='[9.10.1,9.10.2)',\
+	org.objectweb.asm.util;version='[9.10.1,9.10.2)'
