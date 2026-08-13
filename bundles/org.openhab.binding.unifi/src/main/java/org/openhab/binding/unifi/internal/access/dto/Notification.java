@@ -427,7 +427,8 @@ public class Notification {
             public Authentication authentication;
             public BaseReference building;
             public List<CameraCaptureReference> cameraCapture;
-            public BaseReference device;
+            // The Access API sends `device` as an array (e.g. hub + reader), not a single object.
+            public List<BaseReference> device;
             public BaseReference deviceConfig;
             public BaseReference deviceUaHub;
             public BaseReference door;

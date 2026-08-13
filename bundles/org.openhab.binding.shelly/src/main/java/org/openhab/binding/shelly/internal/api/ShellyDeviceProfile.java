@@ -37,7 +37,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,8 @@ import com.google.gson.Gson;
 public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
     private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
-    private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]*)?");
+    private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]+)?");
+    private static final Pattern APP_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-z0-9]+)?");
 
     public boolean initialized; // true when initialized
 
@@ -87,7 +88,7 @@ public class ShellyDeviceProfile {
     public int numInputs = 0; // number of inputs
 
     public int numMeters = 0;
-    public boolean isEMeter; // true for ShellyEM/3EM
+    public boolean isEMeter; // true for Gen 1 ShellyEM/3EM or Gen 2+ devices (extended values are measured)
     public boolean isCB; // true for Shelly Pro CB
 
     public boolean isLight; // true if it is a Shelly Bulb/RGBW2
@@ -109,9 +110,14 @@ public class ShellyDeviceProfile {
     public boolean isIX; // true for a Shelly IX
     public boolean isTRV; // true for a Shelly TRV
     public boolean isSmoke; // true for Shelly Smoke
+    public boolean isFlood; // true for Shelly Flood (any generation)
     public boolean isWall; // true: Shelly Wall Display
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
+    public String floodAlarmMode = ""; // Flood Gen4: alarm mode from Flood.GetConfig
+    public int reportHoldoff = 0; // Flood Gen4: report holdoff in seconds
     public boolean isEM50; // true for Shelly Pro EM50
+    public boolean isEM1; // true for em1-clamp meter devices (Plus EM, Mini EM, Pro EM50); Pro EM50 also has a relay
+    public boolean isWS90; // true for Ecowitt WS90
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -161,7 +167,7 @@ public class ShellyDeviceProfile {
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
         fwDate = substringBefore(device.fw, "-");
         fwVersion = extractFwVersion(device.fw);
-        ShellyVersionDTO version = new ShellyVersionDTO();
+        ShellyVersionComparator version = new ShellyVersionComparator();
         extFeatures = version.compare(fwVersion, SHELLY_API_FW_110) >= 0;
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
@@ -178,11 +184,9 @@ public class ShellyDeviceProfile {
         numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
-        numMeters = !isEMeter ? getInteger(device.numMeters) : getInteger(device.numEMeters);
-        if ((numMeters == 0) && isLight) {
-            // RGBW2 doesn't report, but has one
-            numMeters = inColor ? 1 : getInteger(device.numOutputs);
-        }
+        int numMetersFromDevice = getInteger(isEMeter ? device.numEMeters : device.numMeters);
+        numMeters = resolveNumMeters(thingTypeUID, numMetersFromDevice, -1, isLight, inColor,
+                getInteger(device.numOutputs), hasRelays, numRelays, numRollers, isRoller);
 
         initialized = true;
         return this;
@@ -215,7 +219,7 @@ public class ShellyDeviceProfile {
             maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
         }
 
-        boolean isFlood = GROUP_FLOOD_THING_TYPES.contains(thingTypeUID);
+        isFlood = GROUP_FLOOD_THING_TYPES.contains(thingTypeUID);
         boolean isGas = GROUP_GAS_THING_TYPES.contains(thingTypeUID);
         boolean isUNI = GROUP_UNI_THING_TYPES.contains(thingTypeUID);
         isSmoke = GROUP_SMOKE_THING_TYPES.contains(thingTypeUID);
@@ -232,9 +236,11 @@ public class ShellyDeviceProfile {
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
+        isEM1 = GROUP_EM1_THING_TYPES.contains(thingTypeUID);
+        isWS90 = THING_TYPE_SHELLYBLUWS90.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
-                || isSense || isTRV || isWall;
+                || isSense || isTRV || isWall || isWS90;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)
@@ -256,6 +262,39 @@ public class ShellyDeviceProfile {
             }
             settings.inputs = inputs;
         }
+    }
+
+    /**
+     * Resolve meter count using a fixed priority chain so Gen1 and Gen2 paths produce consistent results.
+     *
+     * Priority: (1) device-reported from /shelly (Gen1, > 0 means trusted); (2) capability-map override
+     * (developer-defined, e.g. Pro2=0, 3EM=3); (3) device-config detection (Gen2 pm10/em0/em10);
+     * (4) light special case (RGBW2 reports 0 but has meters); (5) relay-count fallback.
+     *
+     * Pass fromDevice=-1 for Gen2 (device info does not carry meter count).
+     * Pass fromDeviceConfig=-1 for Gen1 (no GetConfig response available).
+     */
+    public static int resolveNumMeters(ThingTypeUID thingTypeUID, int numMetersFromDevice, int fromDeviceConfig,
+            boolean isLight, boolean inColor, int numOutputs, boolean hasRelays, int numRelays, int numRollers,
+            boolean isRoller) {
+        if (numMetersFromDevice > 0) {
+            return numMetersFromDevice;
+        }
+        Integer capNum = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
+        if (capNum != null) {
+            return capNum;
+        }
+        if (fromDeviceConfig >= 0) {
+            return fromDeviceConfig;
+        }
+        if (isLight) {
+            return inColor ? 1 : numOutputs;
+        }
+        if (hasRelays) {
+            // Gen2 relay-PM: no numMeters in device response — fall back to relay/roller count
+            return isRoller ? numRollers : numRelays;
+        }
+        return 0;
     }
 
     public void updateFromStatus(ShellySettingsStatus status) {
@@ -420,6 +459,22 @@ public class ShellyDeviceProfile {
             // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
             Matcher matcher = version.startsWith("v") ? GEN1_VERSION_PATTERN.matcher(vers)
                     : GEN2_VERSION_PATTERN.matcher(vers);
+            if (matcher.find()) {
+                return matcher.group(0);
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Extracts a semver from the human-readable "ver" field some Gen2+ devices report (e.g.
+     * "1.7.99-powerstripg4prod1"). Unlike {@link #extractFwVersion}, this doesn't exclude 'g' from the
+     * suffix - that exclusion exists to cut fw_id's trailing git-describe hash (e.g. "-gcb84623"), which
+     * would otherwise wrongly truncate a product-code suffix that happens to contain the letter 'g'.
+     */
+    public static String extractAppVersion(@Nullable String version) {
+        if (version != null) {
+            Matcher matcher = APP_VERSION_PATTERN.matcher(version);
             if (matcher.find()) {
                 return matcher.group(0);
             }

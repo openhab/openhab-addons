@@ -59,7 +59,7 @@ public class NhcAction2 extends NhcAction {
     }
 
     @Override
-    public int getState() {
+    public long getState() {
         return booleanState ? state : 0;
     }
 
@@ -97,7 +97,7 @@ public class NhcAction2 extends NhcAction {
      *            rollershutter action: between 0 and 100
      */
     @Override
-    public void setState(int state) {
+    public void setState(long state) {
         this.state = state;
         if (getType().equals(ActionType.DIMMER)) { // for dimmers, only send the update to the event
                                                    // handler if on

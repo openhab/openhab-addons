@@ -12,7 +12,14 @@
  */
 package org.openhab.binding.oppo.internal;
 
+import java.util.Set;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -28,6 +35,9 @@ public class OppoBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
 
+    public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
+    public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
+
     public static final int MODEL83 = 83;
     public static final int MODEL103 = 103;
     public static final int MODEL105 = 105;
@@ -36,7 +46,7 @@ public class OppoBindingConstants {
 
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
-    public static final Integer BDP20X_PORT = 23;
+    public static final Integer UDP20X_PORT = 23;
 
     // List of all Channels
     public static final String CHANNEL_POWER = "power";
@@ -51,6 +61,10 @@ public class OppoBindingConstants {
     public static final String CHANNEL_TOTAL_TITLE = "total_title";
     public static final String CHANNEL_CURRENT_CHAPTER = "current_chapter";
     public static final String CHANNEL_TOTAL_CHAPTER = "total_chapter";
+    public static final String CHANNEL_TITLE_ELAPSED = "title-elapsed";
+    public static final String CHANNEL_TITLE_LENGTH = "title-length";
+    public static final String CHANNEL_TITLE_END_TIME = "title-end-time";
+    public static final String CHANNEL_TITLE_PROGRESS = "title-progress";
     public static final String CHANNEL_REPEAT_MODE = "repeat_mode";
     public static final String CHANNEL_ZOOM_MODE = "zoom_mode";
     public static final String CHANNEL_DISC_TYPE = "disc_type";
@@ -82,6 +96,7 @@ public class OppoBindingConstants {
     public static final String MUT = "MUT";
     public static final String UMT = "UMT";
     public static final String CDDA = "CDDA";
+    public static final String SACD = "SACD";
 
     public static final String NOP = "NOP";
     public static final String UTC = "UTC";
@@ -113,18 +128,27 @@ public class OppoBindingConstants {
     public static final String UAR = "UAR";
     public static final String UVO = "UVO";
     public static final String U3D = "U3D";
+    public static final String Q3D = "Q3D";
     public static final String QSH = "QSH";
     public static final String QOP = "QOP";
     public static final String QHD = "QHD";
     public static final String QHR = "QHR";
+    public static final String SVM = "SVM";
 
     public static final String UNKNOW_DISC = "UNKNOW-DISC";
+    public static final String SETUP = "SETUP";
+    public static final String HOME_MENU = "HOME MENU";
+    public static final String MEDIA_CENTER = "MEDIA CENTER";
+    public static final String SCREEN_SAVER = "SCREEN SAVER";
     public static final String NO_DISC = "NO DISC";
     public static final String LOADING = "LOADING";
     public static final String OPEN = "OPEN";
     public static final String CLOSE = "CLOSE";
     public static final String STOP = "STOP";
     public static final String PLAY = "PLAY";
+
+    public static final Set<String> STOPPED_STATES = Set.of(SETUP, HOME_MENU, MEDIA_CENTER, SCREEN_SAVER, NO_DISC,
+            LOADING, OPEN, CLOSE, STOP);
 
     public static final String T = "T";
     public static final String X = "X";

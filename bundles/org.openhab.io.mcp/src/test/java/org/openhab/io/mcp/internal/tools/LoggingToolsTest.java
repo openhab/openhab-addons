@@ -45,6 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.io.mcp.internal.McpTestHelper;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogLevel;
+import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
@@ -215,6 +216,58 @@ class LoggingToolsTest {
         assertNotNull(trace);
         assertTrue(trace.contains("IllegalStateException"));
         assertTrue(trace.contains("kaboom"));
+    }
+
+    @Test
+    void getLogsExcludesItemStateTelemetry() throws Exception {
+        LogEntry error = mockEntry(12, 3_000L, LogLevel.ERROR, "org.openhab.binding.foo", "boom", null);
+        LogEntry telemetry = mockEntry(11, 2_000L, LogLevel.INFO, "openhab.event.ItemStateChangedEvent",
+                "Item 'x' changed from 1 to 2", null);
+        LogEntry command = mockEntry(10, 1_000L, LogLevel.INFO, "openhab.event.ItemCommandEvent",
+                "Item 'x' received command ON", null);
+        when(logReaderService.getLog()).thenReturn(newestFirst(error, telemetry, command));
+
+        CallToolResult result = tools().handleGetLogs(createRequest(Map.of()));
+        assertSuccess(result);
+        Map<String, Object> parsed = parseResult(result);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> entries = (List<Map<String, Object>>) parsed.get("entries");
+        // The state-changed telemetry event is filtered out of the buffer; the command event is kept.
+        assertEquals(2, entries.size());
+        assertEquals("openhab.event.ItemCommandEvent", entries.get(0).get("logger"));
+        assertEquals("org.openhab.binding.foo", entries.get(1).get("logger"));
+        assertEquals(2, parsed.get("bufferSize"));
+    }
+
+    @Test
+    void getLogsIncludesEntriesLoggedAfterConstruction() throws Exception {
+        // getLog() is not stubbed (empty seed); entries arrive only via the registered LogListener,
+        // proving the buffer accumulates beyond the LogReaderService's own history.
+        LoggingTools t = tools();
+        ArgumentCaptor<LogListener> listener = ArgumentCaptor.forClass(LogListener.class);
+        verify(logReaderService).addLogListener(listener.capture());
+
+        listener.getValue().logged(mockEntry(1, 1_000L, LogLevel.INFO, "x", "a", null));
+        listener.getValue().logged(mockEntry(2, 2_000L, LogLevel.INFO, "x", "b", null));
+
+        CallToolResult result = t.handleGetLogs(createRequest(Map.of()));
+        assertSuccess(result);
+        Map<String, Object> parsed = parseResult(result);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> entries = (List<Map<String, Object>>) parsed.get("entries");
+        assertEquals(2, entries.size());
+        assertEquals("a", entries.get(0).get("message"));
+        assertEquals("b", entries.get(1).get("message"));
+        assertEquals(2, parsed.get("lastSequence"));
+    }
+
+    @Test
+    void disposeUnregistersLogListener() {
+        LoggingTools t = tools();
+        t.dispose();
+        ArgumentCaptor<LogListener> listener = ArgumentCaptor.forClass(LogListener.class);
+        verify(logReaderService).removeLogListener(listener.capture());
+        assertNotNull(listener.getValue());
     }
 
     @Test

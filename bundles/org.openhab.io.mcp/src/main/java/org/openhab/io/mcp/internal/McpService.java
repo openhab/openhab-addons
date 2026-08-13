@@ -300,6 +300,14 @@ public class McpService {
                     .add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_AUTH_SERVER, "mcp-oauth-asmd"));
             serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_AUTH_SERVER_OIDC,
                     "mcp-oauth-asmd-oidc"));
+            // Same documents at the RFC 8414 / RFC 9728 locations, where a client that
+            // discovers metadata on its own instead of following our 401 will look.
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_PROTECTED_RESOURCE,
+                    "mcp-oauth-prm-root"));
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_AUTH_SERVER,
+                    "mcp-oauth-asmd-root"));
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_AUTH_SERVER_OIDC,
+                    "mcp-oauth-asmd-oidc-root"));
 
             OAuthTokenProxyServlet tokenProxy = new OAuthTokenProxyServlet(httpClient, localBaseUrl);
             serviceRegistrations.add(registerServlet(tokenProxy, OAuthTokenProxyServlet.PATH, "mcp-oauth-token-proxy"));
@@ -329,6 +337,7 @@ public class McpService {
                     .jsonSchemaValidator(new DefaultJsonSchemaValidator()).serverInfo(SERVER_NAME, SERVER_VERSION)
                     .capabilities(capabilities).resources(resourceProvider.resources())
                     .resourceTemplates(resourceProvider.templates()).instructions(buildInstructions())
+                    .rootsChangeHandlers(List.of((exchange, roots) -> logger.debug("Roots list changed: {}", roots)))
                     .toolCall(semanticTools.getSemanticModelTool(),
                             (exchange, req) -> semanticTools.handleGetSemanticModel(req))
                     .toolCall(itemTools.getSearchItemsTool(), (exchange, req) -> itemTools.handleSearchItems(req))
@@ -419,7 +428,7 @@ public class McpService {
 
         LoggingTools lt = loggingTools;
         if (lt != null) {
-            lt.cancelPendingReverts();
+            lt.dispose();
             loggingTools = null;
         }
 

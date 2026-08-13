@@ -11,9 +11,12 @@
 # Run all integration tests which are named xyzTest
 Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 
-# We would like to use the slf4j-api and implementation provided by pax-logging
+# We would like to use:
+# - the SLF4J API and implementation provided by Pax Logging
+# - the Configuration Admin API exported by Apache Felix Config Admin
 -runblacklist.itest-common: \
-	bnd.identity;id='slf4j.api'
+	bnd.identity;id='slf4j.api',\
+	bnd.identity;id='org.osgi.service.cm'
 
 # Used by Objenesis/Mockito and not actually optional
 -runsystempackages: sun.reflect

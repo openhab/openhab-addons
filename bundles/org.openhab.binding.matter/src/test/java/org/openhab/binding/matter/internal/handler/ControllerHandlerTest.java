@@ -13,6 +13,7 @@
 package org.openhab.binding.matter.internal.handler;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,9 @@ import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * Tests for {@link ControllerHandler} node refresh behavior.
@@ -95,7 +99,7 @@ public class ControllerHandlerTest {
      * A structure change must force a full data refresh even for a sleepy node that was already enumerated.
      * matter.js reports a structure change while the node stays connected; the binding reacts by reconnecting
      * (updateNode -> initializeNode), whose resulting Connected event drives the data request. For sleepy nodes
-     * requestAllNodeDataIfNeeded skips that request, so without clearing the "enumerated" marker on the structure
+     * reconnect handling skips that request, so without clearing the "enumerated" marker on the structure
      * change the channels are never rebuilt.
      */
     @Test
@@ -134,6 +138,31 @@ public class ControllerHandlerTest {
         handler.onEvent(nodeState(NODE_ID, NodeState.CONNECTED));
 
         verify(client, never()).requestAllNodeData(any());
+    }
+
+    /**
+     * A plain reconnect (Connected without a preceding structure change) of an already enumerated sleepy
+     * node must not set the endpoint status to UNKNOWN before restoring ONLINE.
+     */
+    @Test
+    public void reconnectDoesNotSetUnknownForSleepyNode() throws Exception {
+        NodeHandler nodeHandler = mock(NodeHandler.class);
+        when(nodeHandler.shouldRefreshOnReconnect()).thenReturn(false);
+        when(nodeHandler.getNodeId()).thenReturn(NODE_ID);
+
+        Thing childThing = mock(Thing.class);
+        when(childThing.getHandler()).thenReturn(nodeHandler);
+        when(bridge.getThings()).thenReturn(List.of(childThing));
+
+        Map<BigInteger, NodeHandler> linkedNodes = getField(handler, "linkedNodes");
+        linkedNodes.put(NODE_ID, nodeHandler);
+        Set<BigInteger> enumeratedNodes = getField(handler, "enumeratedNodes");
+        enumeratedNodes.add(NODE_ID);
+
+        handler.onEvent(nodeState(NODE_ID, NodeState.CONNECTED));
+
+        verify(nodeHandler, never()).setEndpointStatus(eq(ThingStatus.UNKNOWN), any(), any());
+        verify(nodeHandler).setEndpointStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
     }
 
     private void linkEnumeratedNode(BigInteger nodeId, boolean sleepy) throws Exception {

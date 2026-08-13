@@ -104,8 +104,6 @@ public class ShellyBindingConfiguration {
         return fromProperties(map);
     }
 
-    // ── Getters ──────────────────────────────────────────────────────────────
-
     public String getDefaultUserId() {
         return defaultUserId;
     }

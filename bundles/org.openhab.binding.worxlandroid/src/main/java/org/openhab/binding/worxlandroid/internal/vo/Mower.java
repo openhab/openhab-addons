@@ -399,8 +399,8 @@ public class Mower {
         mowerHandler.publishMessage(getMqttCommandIn(), command);
     }
 
-    public ZonedDateTime getLastUpdate() {
-        return getPayloadCfg().getDateTime().atZone(product.timeZone);
+    public @Nullable ZonedDateTime getLastUpdate() {
+        return getPayloadCfg().getDateTime(product.timeZone);
     }
 
     public Optional<Schedule> getSchedule() {

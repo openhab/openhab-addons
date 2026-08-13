@@ -33,7 +33,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -68,7 +68,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">6</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -90,6 +90,10 @@
 				<label>Content Details</label>
 				<description>Contains Metadata About a Selected Item</description>
 			</channel-group>
+			<channel-group id="parental-control" typeId="parental-control">
+				<label>Parental Control</label>
+				<description>Adjust Parental Controls</description>
+			</channel-group>
 		</channel-groups>
 
 		<properties>
@@ -99,7 +103,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">6</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -121,6 +125,10 @@
 				<label>Content Details</label>
 				<description>Contains Metadata About a Selected Item</description>
 			</channel-group>
+			<channel-group id="parental-control" typeId="parental-control">
+				<label>Parental Control</label>
+				<description>Adjust Parental Controls</description>
+			</channel-group>
 		</channel-groups>
 
 		<properties>
@@ -130,7 +138,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">6</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -140,9 +148,18 @@
 		<label>User Interface</label>
 		<description>Controls and information for the player's on screen interface</description>
 		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</channel>
+			<channel id="mute" typeId="system.mute">
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</channel>
 			<channel id="control" typeId="movie_control"/>
 			<channel id="title_name" typeId="title_name"/>
 			<channel id="play_mode" typeId="movie_play_mode"/>
@@ -151,6 +168,7 @@
 			<channel id="title_length" typeId="title_length"/>
 			<channel id="title_loc" typeId="title_loc"/>
 			<channel id="endtime" typeId="endtime"/>
+			<channel id="progress" typeId="progress"/>
 			<channel id="chapter_num" typeId="chapter_num"/>
 			<channel id="chapter_length" typeId="chapter_length"/>
 			<channel id="chapter_loc" typeId="chapter_loc"/>
@@ -182,9 +200,18 @@
 		<label>User Interface</label>
 		<description>Controls and information for the player's on screen interface</description>
 		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</channel>
+			<channel id="mute" typeId="system.mute">
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</channel>
 			<channel id="control" typeId="movie_control"/>
 			<channel id="title_name" typeId="title_name"/>
 			<channel id="play_mode" typeId="movie_play_mode"/>
@@ -193,6 +220,7 @@
 			<channel id="title_length" typeId="title_length"/>
 			<channel id="title_loc" typeId="title_loc"/>
 			<channel id="endtime" typeId="endtime"/>
+			<channel id="progress" typeId="progress"/>
 			<channel id="chapter_num" typeId="chapter_num"/>
 			<channel id="chapter_length" typeId="chapter_length"/>
 			<channel id="chapter_loc" typeId="chapter_loc"/>
@@ -218,14 +246,23 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- Strato UI channels (add *color channels for 4K/HDR info) -->
+	<!-- Strato UI channels (add *color channels and video-mode2 for 4K/HDR info) -->
 	<channel-group-type id="strato_ui">
 		<label>User Interface</label>
 		<description>Controls and information for the player's on screen interface</description>
 		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Turn the zone On or Off (system standby)</description>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<label>Volume</label>
+				<description>A virtual volume that tracks the volume control from the K app</description>
+			</channel>
+			<channel id="mute" typeId="system.mute">
+				<label>Mute</label>
+				<description>A virtual mute switch that tracks the mute status from the K app</description>
+			</channel>
 			<channel id="control" typeId="movie_control"/>
 			<channel id="title_name" typeId="title_name"/>
 			<channel id="play_mode" typeId="movie_play_mode"/>
@@ -234,6 +271,7 @@
 			<channel id="title_length" typeId="title_length"/>
 			<channel id="title_loc" typeId="title_loc"/>
 			<channel id="endtime" typeId="endtime"/>
+			<channel id="progress" typeId="progress"/>
 			<channel id="chapter_num" typeId="chapter_num"/>
 			<channel id="chapter_length" typeId="chapter_length"/>
 			<channel id="chapter_loc" typeId="chapter_loc"/>
@@ -241,6 +279,7 @@
 			<channel id="movie_location" typeId="movie_location"/>
 			<channel id="aspect_ratio" typeId="aspect_ratio"/>
 			<channel id="video_mode" typeId="video_mode"/>
+			<channel id="video-mode2" typeId="video-mode2"/>
 			<channel id="video_mode_hdmi" typeId="video_mode_hdmi"/>
 			<channel id="video_color" typeId="video_color"/>
 			<channel id="video_color_eotf" typeId="video_color_eotf"/>
@@ -334,6 +373,14 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="parental-control">
+		<label>Parental Control</label>
+		<description>Adjust Parental Controls</description>
+		<channels>
+			<channel id="level" typeId="parental-control-level"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="movie_control">
 		<item-type>Player</item-type>
 		<label>Control</label>
@@ -415,6 +462,17 @@
 		<state readOnly="true" pattern="%1$tl:%1$tM %1$tp"/>
 	</channel-type>
 
+	<channel-type id="progress">
+		<item-type>Dimmer</item-type>
+		<label>Title Progress</label>
+		<description>The percentage complete of the currently playing movie</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
+		<state pattern="%.0f%%"/>
+	</channel-type>
+
 	<channel-type id="chapter_num">
 		<item-type>Number</item-type>
 		<label>Chapter Number</label>
@@ -477,6 +535,13 @@
 		<item-type>String</item-type>
 		<label>Video Mode - Raw</label>
 		<description>Raw output of video mode data from the component, format: 00:00:00</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="video-mode2">
+		<item-type>String</item-type>
+		<label>Video Mode 2</label>
+		<description>Identifies characteristics of the HDMI video mode currently active</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -983,6 +1048,24 @@
 		<label>Search</label>
 		<description>Executes a movie title search in the UI for the given string (write-only)</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="parental-control-level">
+		<item-type>Number</item-type>
+		<label>Parental Control Level</label>
+		<description>Retrieves or sets the parental control level (1-8)</description>
+		<state>
+			<options>
+				<option value="1">Only TV-Y</option>
+				<option value="2">TV-Y7 and Below</option>
+				<option value="3">G and Below</option>
+				<option value="4">PG and Below</option>
+				<option value="5">PG-13 and Below</option>
+				<option value="6">R and Below</option>
+				<option value="7">NC-17 and Below</option>
+				<option value="8">All Movies</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -50,6 +50,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.OpCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -355,12 +356,15 @@ public class Shelly2RpcSocket implements WriteCallback {
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
                         Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
                         events.src = message.src;
-                        if (events.params == null || events.params.events == null) {
+                        Shelly2NotifyEventData eventParams = events.params;
+                        ArrayList<Shelly2NotifyEvent> notifyEvents = eventParams != null ? eventParams.events : null;
+                        if (notifyEvents == null) {
                             logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
                         } else {
-                            for (Shelly2NotifyEvent e : events.params.events) {
+                            for (Shelly2NotifyEvent e : notifyEvents) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
+                                    Shelly2NotifyBluEventData blu = e.blu;
+                                    String address = getString(blu != null ? blu.addr : "").replace(":", "");
                                     ShellyThingInterface bluThing = thingTable.findThing(address);
                                     if (bluThing != null) {
                                         // known device — route to the BLU thing's own handler
@@ -370,14 +374,17 @@ public class Shelly2RpcSocket implements WriteCallback {
                                             logger.debug("{}: BLU thing {} has unexpected API type, skipping event",
                                                     thingName, address);
                                         }
+                                    } else if (blu == null) {
+                                        logger.debug("{}: NotifyEvent {} with no BLU data, ignoring", message.src,
+                                                e.event);
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            addBluThing(getString(message.src), e.blu, thingTable);
+                                            addBluThing(getString(message.src), blu, thingTable);
                                         } else {
                                             logger.debug(
                                                     "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
-                                                    message.src, e.event, e.blu.addr);
+                                                    message.src, e.event, blu.addr);
                                         }
                                     }
                                 } else {

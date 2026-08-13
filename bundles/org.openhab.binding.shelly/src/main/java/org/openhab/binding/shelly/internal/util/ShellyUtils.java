@@ -137,6 +137,14 @@ public class ShellyUtils {
         return group + "#" + channel;
     }
 
+    /**
+     * Channel id matching any group starting with groupPrefix (e.g. meter, meter1, meter2, ...).
+     * Used for channel migration rules that must apply to every indexed meter group of a Thing.
+     */
+    public static String mkWildcardChannelId(String groupPrefix, String channel) {
+        return groupPrefix + "*#" + channel;
+    }
+
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
     }
@@ -225,6 +233,11 @@ public class ShellyUtils {
 
     public static DecimalType getDecimal(@Nullable Double value) {
         return new DecimalType((value != null ? value : 0));
+    }
+
+    public static DecimalType getDecimal(@Nullable Double value, int digits) {
+        BigDecimal bd = BigDecimal.valueOf(value != null ? value : 0);
+        return new DecimalType(bd.setScale(digits, RoundingMode.HALF_UP));
     }
 
     public static DecimalType getDecimal(@Nullable Integer value) {

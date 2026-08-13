@@ -118,6 +118,12 @@ public class ICloudService {
                 if (ex.getStatusCode() == 500) {
                     logger.debug("Authentication failed.", ex);
                     return false;
+                } else if (session.hasToken() && authenticateWithToken() && !requires2fa()) {
+                    // We already hold a trust token from a previous 2-FA approval (persisted across
+                    // restarts), and accountLogin confirms no further 2-FA challenge is pending.
+                    // Skip requesting a new SMS/iMessage code in this case.
+                    logger.debug("Trust token accepted by accountLogin, skipping SMS 2-FA request.");
+                    return true;
                 } else {
                     getMfaAuthOptions();
                     // Automatically request SMS code if trusted phone number is available
@@ -135,8 +141,22 @@ public class ICloudService {
         List<Pair<String, String>> headers = ListUtil.replaceEntries(getAuthHeaders(),
                 List.of(Pair.of("Accept", "application/json")));
         addSessionHeaders(headers);
+        String responseBody;
+        try {
+            responseBody = session.get(AUTH_ENDPOINT, headers);
+        } catch (ICloudApiAuthenticationException ex) {
+            // Apple responds with HTTP 409 (2FA_REQUIRED) here as part of the normal 2-FA
+            // challenge flow; the body already contains the phoneNumberVerification data we
+            // need. Without this, the exception propagates and canRequestSmsCode()/
+            // requestSmsCode() below is never reached, so 2-FA accounts can never authenticate.
+            if (ex.getStatusCode() == 409) {
+                responseBody = ex.body;
+            } else {
+                throw ex;
+            }
+        }
         @Nullable
-        Map<String, Object> localSessionData = JsonUtils.toMap(session.get(AUTH_ENDPOINT, headers));
+        Map<String, Object> localSessionData = JsonUtils.toMap(responseBody);
         if (localSessionData != null) {
             data = localSessionData;
         }
@@ -226,7 +246,15 @@ public class ICloudService {
                 List.of(Pair.of("Accept", "application/json")));
         addSessionHeaders(headers);
 
-        session.put(AUTH_ENDPOINT + "/verify/phone", JsonUtils.toJson(requestBody), headers);
+        try {
+            session.put(AUTH_ENDPOINT + "/verify/phone", JsonUtils.toJson(requestBody), headers);
+        } catch (ICloudApiAuthenticationException ex) {
+            // Apple responds with HTTP 409 here too even though the SMS/iMessage code is actually
+            // sent (verified empirically). Treat 409 as expected here, same as in getMfaAuthOptions().
+            if (ex.getStatusCode() != 409) {
+                throw ex;
+            }
+        }
 
         // Cache the phone payload for later validation
         cachedSmsPhoneNumber = phonePayload;

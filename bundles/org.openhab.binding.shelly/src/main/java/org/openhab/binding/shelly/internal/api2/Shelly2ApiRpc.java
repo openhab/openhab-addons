@@ -67,6 +67,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -82,7 +83,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptRe
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -168,7 +169,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         boolean firstInit = !profile.initialized;
 
         Shelly2GetConfigResult dc = initProfile(profile, thingTypeUID, devInfo);
-
         if (profile.hasBattery) {
             checkSetWsCallback();
         }
@@ -515,14 +515,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         getThing().incProtMessages();
         getThing().restartWatchdog();
 
-        for (Shelly2NotifyEvent e : message.params.events) {
-            switch (e.event) {
+        Shelly2NotifyEventData params = message.params;
+        ArrayList<Shelly2NotifyEvent> events = params != null ? params.events : null;
+        if (events == null) {
+            logger.debug("{}: Malformed event data: {}", thingName, eventJSON);
+            return;
+        }
+        for (Shelly2NotifyEvent e : events) {
+            String event = getString(e.event);
+            int id = getInteger(e.id);
+            switch (event) {
                 case SHELLY2_EVENT_BTNUP:
                 case SHELLY2_EVENT_BTNDOWN:
-                    String bgroup = getProfile().getInputGroup(e.id);
-                    updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(e.id),
-                            getOnOff(SHELLY2_EVENT_BTNDOWN.equals(getString(e.event))));
-                    getThing().triggerButton(profile.getInputGroup(e.id), e.id, mapValue(MAP_INPUT_EVENT_ID, e.event));
+                    String bgroup = getProfile().getInputGroup(id);
+                    updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(id),
+                            getOnOff(SHELLY2_EVENT_BTNDOWN.equals(event)));
+                    getThing().triggerButton(profile.getInputGroup(id), id, mapValue(MAP_INPUT_EVENT_ID, event));
                     break;
 
                 case SHELLY2_EVENT_1PUSH:
@@ -531,20 +539,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_LPUSH:
                 case SHELLY2_EVENT_SLPUSH:
                 case SHELLY2_EVENT_LSPUSH:
-                    if (e.id < profile.numInputs) {
-                        ShellyInputState input = relayStatus.inputs.get(e.id);
-                        input.event = getString(MAP_INPUT_EVENT_TYPE.get(e.event));
+                    if (id < profile.numInputs && id < relayStatus.inputs.size()) {
+                        ShellyInputState input = relayStatus.inputs.get(id);
+                        input.event = getString(MAP_INPUT_EVENT_TYPE.get(event));
                         input.eventCount = getInteger(input.eventCount) + 1;
-                        relayStatus.inputs.set(e.id, input);
-                        profile.status.inputs.set(e.id, input);
+                        relayStatus.inputs.set(id, input);
+                        List<@Nullable ShellyInputState> statusInputs = profile.status.inputs;
+                        if (statusInputs != null && id < statusInputs.size()) {
+                            statusInputs.set(id, input);
+                        }
 
-                        String group = getProfile().getInputGroup(e.id);
-                        updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(e.id),
+                        String group = getProfile().getInputGroup(id);
+                        updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(id),
                                 getStringType(input.event));
-                        updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(e.id),
+                        updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(id),
                                 getDecimal(input.eventCount));
-                        getThing().triggerButton(profile.getInputGroup(e.id), e.id,
-                                mapValue(MAP_INPUT_EVENT_ID, e.event));
+                        getThing().triggerButton(profile.getInputGroup(id), id, mapValue(MAP_INPUT_EVENT_ID, event));
                     }
                     break;
                 case SHELLY2_EVENT_CFGCHANGED:
@@ -576,11 +586,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_WIFICONNFAILED:
                     logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    getThing().postEvent(event, false);
                     break;
                 case SHELLY2_EVENT_WIFIDISCONNECTED:
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    getThing().postEvent(event, false);
+                    break;
+                case SHELLY2_EVENT_FLOOD_ALARM:
+                    logger.debug("{}: Flood alarm triggered", thingName);
+                    getThing().postEvent(ALARM_TYPE_FLOOD, true);
+                    break;
+                case SHELLY2_EVENT_FLOOD_ALARM_OFF:
+                    logger.debug("{}: Flood alarm cleared", thingName);
+                    getThing().postEvent(ALARM_TYPE_NONE, true);
+                    break;
+                case SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED:
+                    logger.debug("{}: Flood sensor cable unplugged", thingName);
+                    getThing().postEvent(ALARM_TYPE_SENSOR_ERROR, true);
                     break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
@@ -662,17 +684,26 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.sleepMode.period = ds.sys.wakeupPeriod / 60;
         }
 
-        if (ds.sys.availableUpdates != null) {
-            status.update.hasUpdate = ds.sys.availableUpdates.stable != null;
-            if (ds.sys.availableUpdates.stable != null) {
-                status.update.newVersion = ShellyDeviceProfile
-                        .extractFwVersion(getString(ds.sys.availableUpdates.stable.version));
-                status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.newVersion) < 0;
+        Shelly2DeviceStatusSysAvlUpdate avlUpdate = ds.sys.availableUpdates;
+        status.update.oldVersion = profile.fwVersion;
+        status.update.newVersion = "";
+        status.update.betaVersion = "";
+        status.update.hasUpdate = false;
+        status.hasUpdate = false;
+        if (avlUpdate != null) {
+            ShellyVersionComparator versionComparator = new ShellyVersionComparator();
+            Shelly2DeviceStatusSysAvlUpdate.Shelly2DeviceStatusSysUpdate stableUpdate = avlUpdate.stable;
+            if (stableUpdate != null) {
+                String stableVer = ShellyDeviceProfile.extractFwVersion(getString(stableUpdate.version));
+                status.update.newVersion = stableVer;
+                boolean newerStable = versionComparator.isNewer(stableVer, profile.fwVersion);
+                status.update.hasUpdate = newerStable;
+                status.hasUpdate = newerStable;
             }
-            if (ds.sys.availableUpdates.beta != null) {
-                status.update.betaVersion = ShellyDeviceProfile
-                        .extractFwVersion(getString(ds.sys.availableUpdates.beta.version));
-                status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.betaVersion) < 0;
+            Shelly2DeviceStatusSysAvlUpdate.Shelly2DeviceStatusSysUpdate betaUpdate = avlUpdate.beta;
+            if (betaUpdate != null) {
+                status.update.betaVersion = ShellyDeviceProfile.extractFwVersion(getString(betaUpdate.version));
+                // beta availability is recorded but never sets the main update channel
             }
         }
 
@@ -875,9 +906,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        apiRequest(new Shelly2RpcRequest()
-                .withMethod(getProfile().is3EM ? SHELLYRPC_METHOD_EMDATARESET : SHELLYRPC_METHOD_EM1DATARESET)
-                .withId(id));
+        apiRequest(new Shelly2RpcRequest().withMethod(resetCountersMethod(getProfile())).withId(id));
+    }
+
+    // Order matters: Pro EM-50 has isEM1 + hasRelays, and roller-mode 2PM has isRoller + hasRelays —
+    // both must be checked before the generic hasRelays fallback.
+    static String resetCountersMethod(ShellyDeviceProfile profile) {
+        return profile.is3EM ? SHELLYRPC_METHOD_EMDATARESET
+                : profile.isEM1 ? SHELLYRPC_METHOD_EM1DATARESET
+                        : profile.isRoller ? SHELLYRPC_METHOD_COVER_RESETCOUNTERS
+                                : profile.hasRelays ? SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS
+                                        : SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
     }
 
     @Override

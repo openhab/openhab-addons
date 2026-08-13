@@ -56,6 +56,7 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_COAP_DESCR = "coapDeviceDescr";
     public static final String PROPERTY_COAP_VERSION = "coapVersion";
     public static final String PROPERTY_COIOTAUTO = "coiotAutoEnable";
+    public static final String PROPERTY_CHANNEL_SCHEMA_VERSION = "channelSchemaVersion";
 
     /*
      * Channel Groups Used at Runtime
@@ -106,21 +107,32 @@ public class ShellyBindingConstants {
     // Power meter
     public static final String CHANNEL_GROUP_METER = "meter";
     public static final String CHANNEL_METER_CURRENTWATTS = "currentWatts";
+    public static final String CHANNEL_METER_CURRENTPOWER = "currentPower";
     public static final String CHANNEL_METER_LASTMIN = "lastPower";
-    public static final String CHANNEL_METER_LASTMIN1 = CHANNEL_METER_LASTMIN + "1";
+    public static final String CHANNEL_METER_LASTMIN1 = CHANNEL_METER_LASTMIN + "1"; // deprecated, use ENERGYHISTMIN1
+    public static final String CHANNEL_METER_ENERGYHISTMIN1 = "energyHistMin1"; // energy of the previous minute
+    public static final String CHANNEL_METER_ENERGYHISTMIN2 = "energyHistMin2"; // energy 2 minutes ago
+    public static final String CHANNEL_METER_ENERGYHISTMIN3 = "energyHistMin3"; // energy 3 minutes ago
+    // average of energyHistMin1/2/3 (Wh/minute), i.e. NOT a raw by_minute[] sample like the channels above
+    public static final String CHANNEL_METER_ENERGYAVGLAST3MIN = "energyAvgLast3Min";
     public static final String CHANNEL_METER_TOTALKWH = "totalKWH";
+    public static final String CHANNEL_METER_TOTALENERGY = "totalEnergy";
     public static final String CHANNEL_EMETER_TOTALRET = "returnedKWH";
-    public static final String CHANNEL_EMETER_REACTWATTS = "reactiveWatts";
+    public static final String CHANNEL_EMETER_RETURNEDENERGY = "returnedEnergy";
+    public static final String CHANNEL_EMETER_REACTWATTS = "reactiveWatts"; // deprecated, use CHANNEL_EMETER_REACTPOWER
+    public static final String CHANNEL_EMETER_REACTPOWER = "reactivePower";
+    public static final String CHANNEL_EMETER_APPARENT = "apparentPower";
     public static final String CHANNEL_EMETER_VOLTAGE = "voltage";
     public static final String CHANNEL_EMETER_CURRENT = "current";
     public static final String CHANNEL_EMETER_FREQUENCY = "frequency";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
-    public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
+    public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals"; // meterN group (switch/pm1/em1 devices)
     public static final String CHANNEL_GROUP_NMETER = "nmeter";
     public static final String CHANNEL_NMETER_CURRENT = "ncurrent";
     public static final String CHANNEL_NMETER_IXSUM = "ixsum";
     public static final String CHANNEL_NMETER_MISMATCH = "nmismatch";
-    public static final String CHANNEL_NMETER_MTRESHHOLD = "nmTreshhold";
+    public static final String CHANNEL_NMETER_MTRESHHOLD = "nmTreshhold"; // deprecated, use CHANNEL_NMETER_THRESHOLD
+    public static final String CHANNEL_NMETER_THRESHOLD = "nmThreshold";
 
     public static final String CHANNEL_GROUP_SENSOR = "sensors";
     public static final String CHANNEL_SENSOR_TEMP = "temperature";
@@ -133,7 +145,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_TILT = "tilt";
     public static final String CHANNEL_SENSOR_FLOOD = "flood";
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
-    public static final String CHANNEL_SENSOR_MUTE = "mute";
+    public static final String CHANNEL_SENSOR_MUTE = "mute"; // Smoke, Flood Gen4
     public static final String CHANNEL_SENSOR_STATE = "state";
     public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
@@ -150,15 +162,26 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
     public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote
     public static final String CHANNEL_SENSOR_DISTANCE = "distance"; // BLU DIstance
+    public static final String CHANNEL_SENSOR_RAINST = "rainStatus"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDSP = "windSpeed"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDDIR = "windDirection"; // BLU Weather
+    public static final String CHANNEL_SENSOR_GUSTSP = "gustSpeed"; // BLU Weather
+    public static final String CHANNEL_SENSOR_GUSTDIR = "gustDirection"; // BLU Weather
+    public static final String CHANNEL_SENSOR_UV = "uvIndex"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRESSURE = "pressure"; // BLU Weather
+    public static final String CHANNEL_SENSOR_DEWPOINT = "dewPoint"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRECIPITATION = "precipitation"; // BLU Weather
 
-    // TRV
-    public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp";
-    public static final String CHANNEL_CONTROL_POSITION = "position";
-    public static final String CHANNEL_CONTROL_MODE = "mode";
-    public static final String CHANNEL_CONTROL_BCONTROL = "boost";
-    public static final String CHANNEL_CONTROL_BTIMER = "boostTimer";
-    public static final String CHANNEL_CONTROL_SCHEDULE = "schedule";
-    public static final String CHANNEL_CONTROL_PROFILE = "selectedProfile";
+    // Control channels
+    public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp"; // TRV
+    public static final String CHANNEL_CONTROL_POSITION = "position"; // TRV
+    public static final String CHANNEL_CONTROL_MODE = "mode"; // TRV
+    public static final String CHANNEL_CONTROL_BCONTROL = "boost"; // TRV
+    public static final String CHANNEL_CONTROL_BTIMER = "boostTimer"; // TRV
+    public static final String CHANNEL_CONTROL_SCHEDULE = "schedule"; // TRV
+    public static final String CHANNEL_CONTROL_PROFILE = "selectedProfile"; // TRV
+    public static final String CHANNEL_CONTROL_ALARM_MODE = "alarmMode"; // Flood Gen4
+    public static final String CHANNEL_CONTROL_REPORT_HOLDOFF = "reportHoldoff"; // Flood Gen4
 
     // External sensors for Shelly1/1PM
     public static final String CHANNEL_ESENSOR_TEMP1 = CHANNEL_SENSOR_TEMP + "1";
@@ -212,10 +235,17 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_WAKEUP = "wakeupReason";
     public static final String CHANNEL_DEVST_ALARM = "alarm";
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
-    public static final String CHANNEL_DEVST_ACCUTOTAL = "accumulatedWTotal";
-    public static final String CHANNEL_DEVST_ACCURETURNED = "accumulatedReturned";
-    public static final String CHANNEL_DEVST_TOTALKWH = "totalKWH";
-    public static final String CHANNEL_DEVST_RESETTOTAL = CHANNEL_EMETER_RESETTOTAL;
+    public static final String CHANNEL_DEVST_ACCUMULATEDPOWER = "accumulatedPower";
+    public static final String CHANNEL_DEVST_ACCURETURNED = "accumulatedReturned"; // deprecated, use
+                                                                                   // CHANNEL_DEVST_ACCURETURNEDENERGY
+    public static final String CHANNEL_DEVST_ACCURETURNEDENERGY = "accumulatedReturnedEnergy";
+    public static final String CHANNEL_DEVST_ACCUAPPARENT = "accumulatedApparent";
+    public static final String CHANNEL_DEVST_ACCUTOTAL = "accumulatedWTotal"; // deprecated, use
+                                                                              // CHANNEL_DEVST_TOTALENERGY
+    public static final String CHANNEL_DEVST_TOTALKWH = "totalKWH"; // deprecated (device group), use
+                                                                    // CHANNEL_DEVST_TOTALENERGY
+    public static final String CHANNEL_DEVST_TOTALENERGY = "totalEnergy";
+    public static final String CHANNEL_DEVST_RESETTOTAL = CHANNEL_EMETER_RESETTOTAL; // device group (3EM only)
 
     public static final String CHANNEL_DEVST_CHARGER = "charger";
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
@@ -258,6 +288,10 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
     public static final String ALARM_TYPE_VALVE_ERROR = "VALVE_ERROR";
+    public static final String ALARM_TYPE_BTH_ENCRYPTED = "BTH_ENCRYPTED";
+    public static final String ALARM_TYPE_BTH_UNKNOWN_TYPE = "BTH_UNKNOWN_TYPE";
+    public static final String ALARM_TYPE_FLOOD = "FLOOD";
+    public static final String ALARM_TYPE_MUTED = "ALARM_MUTED";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types
@@ -275,15 +309,20 @@ public class ShellyBindingConstants {
     // Formatting: Number of scaling digits
     public static final int DIGITS_NONE = 0;
     public static final int DIGITS_WATT = 2;
+    public static final int DIGITS_VAR = 2;
     public static final int DIGITS_KWH = 3;
-    public static final int DIGITS_VOLT = 1;
+    public static final int DIGITS_VOLT = 2;
     public static final int DIGITS_AMPERE = 3;
-    public static final int DIGITS_FREQUENCY = 1;
+    public static final int DIGITS_FREQUENCY = 2;
     public static final int DIGITS_TEMP = 1;
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;
     public static final int DIGITS_ROTATION = 1;
     public static final int DIGITS_DISTANCE = 0;
+    public static final int DIGITS_WIND = 2; // BTHome 0x44 Speed has 0.01 m/s resolution
+    public static final int DIGITS_PRECIPITATION = 1;
+    public static final int DIGITS_PRESSURE = 2; // BTHome 0x04 Pressure has 0.01 hPa resolution
+    public static final int DIGITS_UV = 0; // UV Index is conventionally reported as a whole number (0-11+)
 
     public static final int SHELLY_API_TIMEOUT_MS = 10000;
     public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec

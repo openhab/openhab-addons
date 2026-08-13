@@ -65,6 +65,7 @@ Vehicle things support the following actions.
 
 | Action             | Parameters                                                 | Description                                                |
 |--------------------|------------------------------------------------------------|------------------------------------------------------------|
+| refresh()          | -                                                          | Fetch cached data from the servers and update channels     |
 | forceRefresh()     | -                                                          | Fetch up-to-date data from the vehicle and update channels |
 | climateStart()     | temperature, heated features, defrost, engine run duration | Start climate control                                      |
 | climateStop()      | -                                                          | Stop climate control                                       |
