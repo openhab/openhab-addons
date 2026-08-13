@@ -33,13 +33,14 @@ import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataRes
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse.KlipperMetadataResult;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse.KlipperThumbnail;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse;
-import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperDisplayStatus;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperFan;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperGcodeMove;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperHeater;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperPrintStats;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperResult;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperStatus;
+import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperVirtualSdcard;
+import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperWebhooks;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
@@ -66,7 +67,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class KlipperHandler extends AbstractPrinterHandler {
 
-    private static final String QUERY_URL_SUFFIX = "/printer/objects/query?extruder&heater_bed&print_stats&display_status&fan&gcode_move";
+    private static final String QUERY_URL_SUFFIX = "/printer/objects/query?extruder&heater_bed&print_stats&virtual_sdcard&webhooks&fan&gcode_move";
 
     private @Nullable KlipperConfiguration config;
     private String lastPreviewFilename = "";
@@ -120,12 +121,19 @@ public class KlipperHandler extends AbstractPrinterHandler {
             return;
         }
 
-        updateStatus(ThingStatus.ONLINE);
-
         KlipperStatus status = result.status;
         if (status == null) {
+            markOffline("@text/offline.comm-error-json");
             return;
         }
+
+        KlipperWebhooks webhooks = status.webhooks;
+        if (webhooks == null || !"ready".equals(webhooks.state)) {
+            markOffline("@text/offline.comm-error-klippy-not-ready");
+            return;
+        }
+
+        updateStatus(ThingStatus.ONLINE);
 
         KlipperHeater extruder = status.extruder;
         if (extruder != null) {
@@ -142,7 +150,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
         }
 
         KlipperPrintStats stats = status.printStats;
-        KlipperDisplayStatus display = status.displayStatus;
+        KlipperVirtualSdcard virtualSdcard = status.virtualSdcard;
         if (stats != null) {
             String mappedState = mapKlipperState(stats.state);
             updateState(CHANNEL_PRINTER_STATE, new StringType(mappedState));
@@ -152,11 +160,12 @@ public class KlipperHandler extends AbstractPrinterHandler {
                 updateState(CHANNEL_JOB_NAME, new StringType(stats.filename));
                 updateState(CHANNEL_TIME_ELAPSED, new QuantityType<>(stats.printDuration, Units.SECOND));
 
-                if (display != null) {
-                    updateState(CHANNEL_JOB_PROGRESS, new QuantityType<>(display.progress * 100.0, Units.PERCENT));
-                    if (display.progress > 0) {
+                if (virtualSdcard != null) {
+                    double progress = virtualSdcard.progress;
+                    updateState(CHANNEL_JOB_PROGRESS, new QuantityType<>(progress * 100.0, Units.PERCENT));
+                    if (progress > 0) {
                         double elapsed = stats.printDuration;
-                        double remaining = display.progress < 1.0 ? (elapsed / display.progress - elapsed) : 0.0;
+                        double remaining = progress < 1.0 ? (elapsed / progress - elapsed) : 0.0;
                         updateState(CHANNEL_TIME_REMAINING, new QuantityType<>(remaining, Units.SECOND));
                     }
                 }

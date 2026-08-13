@@ -43,8 +43,11 @@ public class KlipperObjectsResponse {
         @SerializedName("print_stats")
         public @Nullable KlipperPrintStats printStats;
 
-        @SerializedName("display_status")
-        public @Nullable KlipperDisplayStatus displayStatus;
+        @SerializedName("virtual_sdcard")
+        public @Nullable KlipperVirtualSdcard virtualSdcard;
+
+        @SerializedName("webhooks")
+        public @Nullable KlipperWebhooks webhooks;
 
         @SerializedName("fan")
         public @Nullable KlipperFan fan;
@@ -78,12 +81,14 @@ public class KlipperObjectsResponse {
         public double filamentUsed;
     }
 
-    public static class KlipperDisplayStatus {
+    public static class KlipperVirtualSdcard {
         @SerializedName("progress")
         public double progress;
+    }
 
-        @SerializedName("message")
-        public String message = "";
+    public static class KlipperWebhooks {
+        @SerializedName("state")
+        public String state = "";
     }
 
     public static class KlipperFan {

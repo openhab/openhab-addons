@@ -45,6 +45,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -120,14 +121,12 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
             OctoPrintTemperature.OctoPrintTempReading tool0 = temps.tool0;
             if (tool0 != null) {
                 updateState(CHANNEL_NOZZLE_TEMPERATURE, new QuantityType<Temperature>(tool0.actual, SIUnits.CELSIUS));
-                updateState(CHANNEL_NOZZLE_TEMPERATURE_SETPOINT,
-                        new QuantityType<Temperature>(tool0.target, SIUnits.CELSIUS));
+                updateState(CHANNEL_NOZZLE_TEMPERATURE_SETPOINT, toTemperatureState(tool0.target));
             }
             OctoPrintTemperature.OctoPrintTempReading bed = temps.bed;
             if (bed != null) {
                 updateState(CHANNEL_BED_TEMPERATURE, new QuantityType<Temperature>(bed.actual, SIUnits.CELSIUS));
-                updateState(CHANNEL_BED_TEMPERATURE_SETPOINT,
-                        new QuantityType<Temperature>(bed.target, SIUnits.CELSIUS));
+                updateState(CHANNEL_BED_TEMPERATURE_SETPOINT, toTemperatureState(bed.target));
             }
         }
 
@@ -210,6 +209,14 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         return Arrays.stream(fullPath.split("/"))
                 .map(segment -> URLEncoder.encode(segment, StandardCharsets.UTF_8).replace("+", "%20"))
                 .collect(Collectors.joining("/"));
+    }
+
+    /**
+     * OctoPrint reports a {@code null} temperature target when no setpoint is currently active; publish
+     * {@link UnDefType#UNDEF} in that case rather than a misleading {@code 0 °C}.
+     */
+    private State toTemperatureState(@Nullable Double target) {
+        return target != null ? new QuantityType<Temperature>(target, SIUnits.CELSIUS) : UnDefType.UNDEF;
     }
 
     private void clearPreview() {

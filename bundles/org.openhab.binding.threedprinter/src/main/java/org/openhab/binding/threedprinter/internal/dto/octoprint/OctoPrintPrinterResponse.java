@@ -43,7 +43,7 @@ public class OctoPrintPrinterResponse {
             public double actual;
 
             @SerializedName("target")
-            public double target;
+            public @Nullable Double target;
         }
     }
 
