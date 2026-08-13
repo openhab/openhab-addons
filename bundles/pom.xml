@@ -670,8 +670,6 @@
           <version>2.0.1</version>
           <configuration>
             <installDirectory>${project.build.directory}/node-markdownlint</installDirectory>
-            <nodeVersion>v24.12.0</nodeVersion>
-            <npmVersion>11.6.2</npmVersion>
           </configuration>
           <executions>
             <execution>
