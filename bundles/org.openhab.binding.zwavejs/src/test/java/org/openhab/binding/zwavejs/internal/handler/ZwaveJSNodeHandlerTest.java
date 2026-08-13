@@ -202,6 +202,29 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testNode7PowerEventUpdateAppliesConfiguredFactor() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        ChannelUID channelUID = new ChannelUID("zwavejs:test-bridge:test-thing:meter-value-66049-1");
+        Channel channel = handler.getThing().getChannel(channelUID);
+        assertNotNull(channel);
+        channel.getConfiguration().put(CONFIG_CHANNEL_FACTOR, 2.0);
+        clearInvocations(callback);
+
+        EventMessage eventMessage = DataUtil.fromJson("event_node_7_power.json", EventMessage.class);
+        handler.onNodeStateChanged(eventMessage.event);
+
+        try {
+            verify(callback).stateUpdated(eq(channelUID), eq(new QuantityType<Power>(4.32, Units.WATT)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     public void testNode25SwitchEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(25);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
