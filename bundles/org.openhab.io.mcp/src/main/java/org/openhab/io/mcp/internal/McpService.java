@@ -369,9 +369,12 @@ public class McpService {
             }
 
             if (config.enableScripting) {
-                ScriptTools scriptTools = new ScriptTools(scriptEngineManager, jsonMapper, true);
-                builder = builder.toolCall(scriptTools.getExecuteScriptTool(),
-                        (exchange, req) -> scriptTools.handleExecuteScript(req));
+                ScriptTools scriptTools = new ScriptTools(scriptEngineManager, jsonMapper, true, bundleContext);
+                builder = builder
+                        .toolCall(scriptTools.getExecuteScriptTool(),
+                                (exchange, req) -> scriptTools.handleExecuteScript(req))
+                        .toolCall(scriptTools.getGetOpenhabJsTypesTool(),
+                                (exchange, req) -> scriptTools.handleGetOpenhabJsTypes(req));
             }
 
             if (config.enableLoggingAccess) {
