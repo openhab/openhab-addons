@@ -24,6 +24,7 @@ They can be configured manually or by discovery.
 
 Note that `project` is a regular Thing and not a bridge.
 `tuyaDevice` things communicate with the device directly over the local network and do not need a bridge at runtime.
+
 ## Discovery
 
 Discovery is supported for `tuyaDevice` things.
