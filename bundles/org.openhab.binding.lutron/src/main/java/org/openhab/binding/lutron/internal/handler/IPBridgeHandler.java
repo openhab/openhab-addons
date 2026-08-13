@@ -35,6 +35,7 @@ import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.binding.lutron.internal.protocol.lip.LutronOperation;
 import org.openhab.binding.lutron.internal.protocol.lip.Monitoring;
 import org.openhab.binding.lutron.internal.protocol.lip.TargetType;
+import org.openhab.core.config.core.ConfigUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -79,6 +80,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
     private int reconnectInterval;
     private int heartbeatInterval;
     private int sendDelay;
+    private boolean preserveConnectionOnUpdate;
 
     private TelnetSession session;
     private BlockingQueue<LutronCommandNew> sendQueue = new LinkedBlockingQueue<>();
@@ -131,13 +133,17 @@ public class IPBridgeHandler extends LutronBridgeHandler {
     }
 
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
         this.config = getConfigAs(IPBridgeConfig.class);
 
         if (validConfiguration(this.config)) {
             reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
             heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_MINUTES;
             sendDelay = (config.delay < 0) ? 0 : config.delay;
+
+            if (preserveConnectionOnUpdate) {
+                return;
+            }
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
             scheduler.submit(this::connect); // start the async connect task
@@ -478,25 +484,28 @@ public class IPBridgeHandler extends LutronBridgeHandler {
     }
 
     @Override
-    public void thingUpdated(Thing thing) {
-        this.thing = thing;
-        IPBridgeConfig newConfig = getConfigAs(IPBridgeConfig.class);
-        boolean validConfig = validConfiguration(newConfig);
-        boolean needsReconnect = validConfig && !this.config.sameConnectionParameters(newConfig);
-
-        if (!validConfig || needsReconnect) {
-            dispose();
+    public synchronized void thingUpdated(Thing thing) {
+        boolean preserveConnection = false;
+        try {
+            IPBridgeConfig newConfig = ConfigUtil.resolveVariables(thing.getConfiguration()).as(IPBridgeConfig.class);
+            preserveConnection = config != null && newConfig.ipAddress != null && !newConfig.ipAddress.isEmpty()
+                    && config.sameConnectionParameters(newConfig);
+        } catch (IllegalArgumentException e) {
+            // BaseThingHandler logs the resolution failure and applies the unresolved configuration.
         }
 
-        this.config = newConfig;
-
-        if (needsReconnect) {
-            initialize();
+        preserveConnectionOnUpdate = preserveConnection;
+        try {
+            super.thingUpdated(thing);
+        } finally {
+            preserveConnectionOnUpdate = false;
         }
     }
 
     @Override
-    public void dispose() {
-        disconnect();
+    public synchronized void dispose() {
+        if (!preserveConnectionOnUpdate) {
+            disconnect();
+        }
     }
 }
