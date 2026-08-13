@@ -135,7 +135,7 @@ public class TypingCmd {
 
                         pythonClassName = ClassContainer.parsePythonClassName(packageName);
                         pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
-                        definition = entry.getKey() + ": Type = _" + pythonClassName;
+                        definition = entry.getKey() + ": Type[" + pythonClassName + "] = _" + pythonClassName;
                     } else {
                         cls = value.getClass();
                         packageName = value.getClass().getName();

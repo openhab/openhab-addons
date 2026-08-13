@@ -293,7 +293,7 @@ You should also check your logs for a message related to the helper lib deployme
 
 ### Avoid using datetime.strptime
 
-You should avoid using `datetime.strptime` because there is a bug in GraalPy associated with it. Once this function is used, the global system time within the JVM is permanently altered.
+You should avoid using `datetime.strptime` because there is a bug in GraalPy associated with it. Once this function is used, it can change the JVM-wide default time zone for the whole openHAB process until it is reset or openHAB is restarted.
 
 ### Constructors of Java objects
 
