@@ -95,7 +95,6 @@ To improve build times you can add the following options to the command:
 | `-o`                          | Work offline so Maven does not download any updates |
 | `-T 1C`                       | Build in parallel, using 1 thread per core          |
 | `-pl :<add-on artifactId>`    | Build a single add-on                               |
-| `-Pmarkdownlint`              | Run Markdown linting when building a single add-on  |
 
 For example you can skip checks and tests during development with:
 
