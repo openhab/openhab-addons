@@ -667,7 +667,6 @@
         <plugin>
           <groupId>com.github.eirslett</groupId>
           <artifactId>frontend-maven-plugin</artifactId>
-          <version>2.0.1</version>
           <configuration>
             <installDirectory>${project.build.directory}/node-markdownlint</installDirectory>
           </configuration>
