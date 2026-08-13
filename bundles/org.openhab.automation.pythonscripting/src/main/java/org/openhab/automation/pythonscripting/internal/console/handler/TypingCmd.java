@@ -74,6 +74,7 @@ public class TypingCmd {
 
         Map<String, ClassContainer> fileContainerMap = new HashMap<String, ClassContainer>();
         Set<String> imports = new HashSet<String>();
+        Set<String> dumped = new HashSet<String>();
 
         // 1. The bundle collector is collecting all public openhab classes and all used/imported classes
         Map<String, ClassContainer> bundleClassMap = collector.collectBundleClasses(OPENHAB_PACKAGE_PREFIX);
@@ -90,10 +91,11 @@ public class TypingCmd {
             String classBody = converter.build();
             imports.addAll(converter.getImports());
             dumpClassContentToFile(classBody, container, outputPath, fileContainerMap);
+            dumped.add(container.getClass().getName());
         }
 
         // 4. All collected imports are dumped (org.openhab is filtered out, because it was already handled.)
-        imports = imports.stream().filter(i -> !i.startsWith("org.openhab")).collect(Collectors.toSet());
+        imports = imports.stream().filter(i -> !dumped.contains(i)).collect(Collectors.toSet());
         Map<String, ClassContainer> reflectionClassMap = collector.collectReflectionClasses(imports);
         for (ClassContainer container : reflectionClassMap.values()) {
             ClassConverter converter = new ClassConverter(container);
@@ -135,7 +137,7 @@ public class TypingCmd {
 
                         pythonClassName = ClassContainer.parsePythonClassName(packageName);
                         pythonModuleName = ClassContainer.parsePythonModuleName(packageName);
-                        definition = entry.getKey() + ": Type[" + pythonClassName + "] = _" + pythonClassName;
+                        definition = entry.getKey() + ": Type[_" + pythonClassName + "] = _" + pythonClassName;
                     } else {
                         cls = value.getClass();
                         packageName = value.getClass().getName();
