@@ -24,10 +24,6 @@ They can be configured manually or by discovery.
 
 Note that `project` is a regular Thing and not a bridge.
 `tuyaDevice` things communicate with the device directly over the local network and do not need a bridge at runtime.
-When using textual configuration, `tuyaDevice` things therefore have to be defined standalone: they must not reference a `project` as their bridge and must not be nested inside a `Bridge { ... }` block.
-A `tuyaDevice` that is configured with a bridge stays in state `UNINITIALIZED (BRIDGE_UNINITIALIZED)` permanently, because a `project` is never instantiated as a bridge and therefore never reports itself as initialized.
-See [Full Example](#full-example) below.
-
 ## Discovery
 
 Discovery is supported for `tuyaDevice` things.
