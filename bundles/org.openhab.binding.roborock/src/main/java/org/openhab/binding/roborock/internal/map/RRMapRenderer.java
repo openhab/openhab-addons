@@ -204,13 +204,36 @@ public final class RRMapRenderer {
                     yield COLOR_MAP_GREY_WALL;
                 } else if (obstacle == 1) {
                     yield Color.BLACK;
-                } else if (obstacle == 7) {
-                    int roomId = value >>> 3;
-                    yield roomColor(roomId);
+                }
+                int segmentId = decodeSegmentId(value);
+                if (segmentId >= 0) {
+                    yield roomColor(segmentId);
                 }
                 yield COLOR_MAP_INSIDE;
             }
         };
+    }
+
+    /**
+     * Decodes the segment/room id encoded in a base-map pixel byte, using the same bit layout this
+     * renderer uses for pixel coloring: the low 3 bits classify the pixel, and a classifier of 7
+     * ("segmented floor") leaves the segment id in the high 5 bits. {@link #MAP_SCAN} (0x07) and
+     * {@link #MAP_INSIDE} (0xFF) both happen to satisfy that same low-3-bits-equal-7 test but are
+     * reserved, non-segment pixel values (see the exact-value cases in
+     * {@link #resolveMapPixelColor(int)}), so they are excluded explicitly here to keep this method
+     * a correct standalone decoder rather than relying on an enclosing switch's case order.
+     * <p>
+     * Shared by pixel coloring here and by {@code RoomAtRobotResolver}, which locates the robot's
+     * own pixel in the same retained {@code imageData} to answer "which room is the robot in".
+     *
+     * @param pixelValue the raw unsigned byte value (0-255) from {@link RRMapData#imageData()}
+     * @return the segment id (1-30) if this pixel belongs to a segmented floor area, or -1 otherwise
+     */
+    static int decodeSegmentId(int pixelValue) {
+        if (pixelValue == MAP_SCAN || pixelValue == MAP_INSIDE) {
+            return -1;
+        }
+        return (pixelValue & 0x07) == 7 ? pixelValue >>> 3 : -1;
     }
 
     private Color roomColor(int roomId) {

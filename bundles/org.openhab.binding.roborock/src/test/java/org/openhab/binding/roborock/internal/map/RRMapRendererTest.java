@@ -117,6 +117,28 @@ class RRMapRendererTest {
     }
 
     @Test
+    void decodeSegmentIdReturnsIdForSegmentedFloorPixels() {
+        // Low 3 bits == 7 (classifier for "segmented floor"), segment id in the high 5 bits.
+        assertEquals(1, RRMapRenderer.decodeSegmentId((1 << 3) | 0x07));
+        assertEquals(30, RRMapRenderer.decodeSegmentId((30 << 3) | 0x07));
+    }
+
+    @Test
+    void decodeSegmentIdExcludesReservedMapScanAndMapInsideValues() {
+        // 0x07 (MAP_SCAN) and 0xFF (MAP_INSIDE) both satisfy "low 3 bits == 7" but are reserved,
+        // non-segment pixel values handled by exact-value cases in resolveMapPixelColor.
+        assertEquals(-1, RRMapRenderer.decodeSegmentId(0x07));
+        assertEquals(-1, RRMapRenderer.decodeSegmentId(0xFF));
+    }
+
+    @Test
+    void decodeSegmentIdReturnsMinusOneForNonSegmentPixels() {
+        assertEquals(-1, RRMapRenderer.decodeSegmentId(0x00)); // MAP_OUTSIDE
+        assertEquals(-1, RRMapRenderer.decodeSegmentId(0x01)); // MAP_WALL
+        assertEquals(-1, RRMapRenderer.decodeSegmentId(0x02)); // classifier 2: not a segmented-floor pixel
+    }
+
+    @Test
     void renderAsPngUpscalesSmallImagesToMinimumTargetMaxDimension() throws Exception {
         RRMapRenderer renderer = new RRMapRenderer();
 
