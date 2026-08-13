@@ -165,8 +165,8 @@
 
 	<channel-type id="pm2">
 		<item-type>Number:Density</item-type>
-		<label>PM2</label>
-		<description>Particulate Matter 2 (0.002mm)</description>
+		<label>PM2.5</label>
+		<description>Particulate Matter 2.5 (0.0025mm)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>ParticulateMatter</tag>

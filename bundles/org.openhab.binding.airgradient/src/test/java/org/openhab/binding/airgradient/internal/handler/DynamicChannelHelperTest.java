@@ -101,6 +101,25 @@ public class DynamicChannelHelperTest {
                 Map.entry("rhum-compensated", "system:atmospheric-humidity"),
                 Map.entry("tvoc-index", "airgradient:tvoc"), Map.entry("tvoc-raw", "airgradient:tvoc"),
                 Map.entry("nox-index", "airgradient:nox"), Map.entry("nox-raw", "airgradient:nox"))));
+
+        Map<String, String> acceptedItemTypes = captor.getAllValues().stream()
+                .collect(Collectors.toMap((channel) -> channel.getUID().getId(),
+                        (channel) -> Objects.requireNonNull(channel.getAcceptedItemType())));
+        assertThat(acceptedItemTypes,
+                is(Map.ofEntries(Map.entry("pm01-standard", "Number:Density"),
+                        Map.entry("pm02-standard", "Number:Density"), Map.entry("pm10-standard", "Number:Density"),
+                        Map.entry("pm005-count", "Number:Dimensionless"),
+                        Map.entry("pm01-count", "Number:Dimensionless"),
+                        Map.entry("pm02-count", "Number:Dimensionless"),
+                        Map.entry("pm50-count", "Number:Dimensionless"),
+                        Map.entry("pm10-count", "Number:Dimensionless"),
+                        Map.entry("pm02-compensated", "Number:Density"),
+                        Map.entry("atmp-compensated", "Number:Temperature"),
+                        Map.entry("rhum-compensated", "Number:Dimensionless"),
+                        Map.entry("tvoc-index", "Number:Dimensionless"),
+                        Map.entry("tvoc-raw", "Number:Dimensionless"),
+                        Map.entry("nox-index", "Number:Dimensionless"),
+                        Map.entry("nox-raw", "Number:Dimensionless"))));
     }
 
     @Test

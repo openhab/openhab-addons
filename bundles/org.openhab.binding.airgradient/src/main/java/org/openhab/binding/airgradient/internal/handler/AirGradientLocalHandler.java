@@ -153,7 +153,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                     "Need to set hostname to a valid URL. Refresh interval needs to be a positive integer.");
             return;
         }
-
+        cachedCapabilitySignature = null;
         apiController = new RemoteAPIController(httpClient, gson, apiConfig);
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.

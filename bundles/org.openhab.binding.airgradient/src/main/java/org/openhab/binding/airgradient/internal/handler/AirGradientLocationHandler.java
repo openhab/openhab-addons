@@ -122,7 +122,8 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
         locationConfig = getConfigAs(AirGradientLocationConfiguration.class);
-
+        cachedCapabilitySignature = null;
+        
         Bridge controller = getBridge();
         if (controller == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);

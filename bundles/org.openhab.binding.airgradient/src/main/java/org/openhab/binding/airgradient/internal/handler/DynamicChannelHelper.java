@@ -46,7 +46,6 @@ public class DynamicChannelHelper {
     private static final String NUMBER_DIMENSIONLESS = NUMBER + ":Dimensionless";
     private static final String NUMBER_DENSITY = NUMBER + ":Density";
     private static final String NUMBER_TEMPERATURE = NUMBER + ":Temperature";
-    private static final String NUMBER_HUMIDITY = NUMBER + ":Humidity";
 
     private record DynamicChannel<T> (String id, ChannelTypeUID channelTypeUID, String itemType,
             Predicate<T> isSupported) {
@@ -103,7 +102,7 @@ public class DynamicChannelHelper {
                     DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_OUTDOOR_TEMPERATURE, NUMBER_TEMPERATURE,
                     (measure) -> measure.atmpCompensated != null),
             new DynamicChannel<>(CHANNEL_RHUM_COMPENSATED,
-                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_ATMOSPHERIC_HUMIDITY, NUMBER_HUMIDITY,
+                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_ATMOSPHERIC_HUMIDITY, NUMBER_DIMENSIONLESS,
                     (measure) -> measure.rhumCompensated != null),
             new DynamicChannel<>(CHANNEL_TVOC_INDEX, "tvoc", NUMBER_DIMENSIONLESS,
                     (measure) -> measure.tvocIndex != null),
