@@ -200,7 +200,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             }
             for (Shelly2NotifyEvent e : events) {
                 String event = getString(e.event);
-                Shelly2NotifyBluEventData blu = e.blu;
+                Shelly2NotifyBluEventData blu = e.getBluData(gson);
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                     if (blu != null) {
                         logger.debug("{}: BLU event {} received from address {}, pid={} (JSON={})", thingName, event,
