@@ -51,6 +51,14 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
+     * Converts the object to a string value without removing significant whitespace.
+     */
+    protected @Nullable String toStringValue(@Nullable Object object) {
+        String value = MiscUtils.toStringOrEmptyIfNull(object);
+        return value.trim().isEmpty() ? null : value;
+    }
+
+    /**
      * Converts the object to an integer.
      */
     protected @Nullable Integer toInteger(@Nullable Object object) {
@@ -163,7 +171,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             case BOOL, ACTION -> toBoolean(value);
             case INTEGER, ENUM -> toInteger(value);
             case FLOAT -> toNumber(value);
-            case STRING -> toString(value);
+            case STRING -> toStringValue(value);
             default -> value;
         };
     }

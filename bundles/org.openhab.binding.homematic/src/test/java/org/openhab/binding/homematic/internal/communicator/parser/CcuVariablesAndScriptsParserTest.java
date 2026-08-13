@@ -15,6 +15,7 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,5 +68,29 @@ class CcuVariablesAndScriptsParserTest {
         value = dp.getValue();
         assertInstanceOf(String.class, value);
         assertEquals(entry.value, value);
+    }
+
+    @Test
+    void preservesWhitespaceInStringSystemVariables() throws IOException {
+        HmChannel channel = new HmChannel(HmChannel.TYPE_GATEWAY_VARIABLE, HmChannel.CHANNEL_NUMBER_VARIABLE,
+                new HmDevice(HmDevice.ADDRESS_GATEWAY_EXTRAS, HmInterface.RF, HmDevice.TYPE_GATEWAY_EXTRAS, "ccu", "",
+                        "1"));
+
+        TclScriptDataEntry entry = new TclScriptDataEntry("WhitespaceVariable", "String with whitespace",
+                "  padded value  ", HmValueType.STRING.name(), false, "", "", "", "", "");
+        TclScriptDataList resultList = mock(TclScriptDataList.class);
+        when(resultList.getEntries()).thenReturn(new ArrayList<>(List.of(entry)));
+
+        CcuVariablesAndScriptsParser parser = new CcuVariablesAndScriptsParser(channel);
+        parser.parse(resultList);
+
+        HmDatapoint dp = channel.getDatapoint(HmParamsetType.VALUES, entry.name);
+        assertNotNull(dp);
+        assertEquals(entry.value, dp.getValue());
+
+        entry.value = "   ";
+        parser.parse(resultList);
+
+        assertNull(dp.getValue());
     }
 }

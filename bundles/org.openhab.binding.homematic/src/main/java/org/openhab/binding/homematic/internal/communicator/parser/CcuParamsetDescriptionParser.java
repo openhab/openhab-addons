@@ -21,7 +21,6 @@ import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
 import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 
@@ -47,11 +46,9 @@ public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataL
         List<TclScriptDataEntry> entries = resultList.getEntries();
         if (entries != null) {
             for (TclScriptDataEntry entry : entries) {
-                HmValueType valueType = HmValueType.parse(entry.valueType);
                 HmDatapoint dp = assembleDatapoint(entry.name, entry.unit, entry.valueType,
-                        this.toOptionList(entry.options), convertToType(valueType, entry.minValue),
-                        convertToType(valueType, entry.maxValue), toInteger(entry.operations),
-                        convertToType(valueType, entry.value), null, paramsetType, isHmIpDevice);
+                        this.toOptionList(entry.options), entry.minValue, entry.maxValue, toInteger(entry.operations),
+                        entry.value, null, paramsetType, isHmIpDevice);
                 channel.addDatapoint(dp);
             }
         }
