@@ -123,7 +123,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         locationConfig = getConfigAs(AirGradientLocationConfiguration.class);
         cachedCapabilitySignature = null;
-        
+
         Bridge controller = getBridge();
         if (controller == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
