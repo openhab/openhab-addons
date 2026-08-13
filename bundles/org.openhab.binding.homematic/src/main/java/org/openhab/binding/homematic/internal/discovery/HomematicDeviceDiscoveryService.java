@@ -103,7 +103,7 @@ public class HomematicDeviceDiscoveryService extends AbstractThingHandlerDiscove
     }
 
     private int getInstallModeDuration() {
-        return thingHandler.getBindingConfig().getInstallModeDuration();
+        return thingHandler.getHomematicConfig().getInstallModeDuration();
     }
 
     @Override
@@ -221,7 +221,7 @@ public class HomematicDeviceDiscoveryService extends AbstractThingHandlerDiscove
         ThingTypeUID typeUid = UidUtils.generateThingTypeUID(device);
         ThingUID thingUID = new ThingUID(typeUid, bridgeUID, device.getAddress());
         String label = device.getName().isEmpty() ? device.getAddress() : device.getName();
-        long timeToLive = thingHandler.getBindingConfig().getDiscoveryTimeToLive();
+        long timeToLive = thingHandler.getHomematicConfig().getDiscoveryTimeToLive();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                 .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getAddress())

@@ -77,7 +77,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
         when(homematicBridgeHandler.getThing()).thenReturn(bridge);
         when(homematicBridgeHandler.getGateway()).thenReturn(homematicGateway);
         when(homematicBridgeHandler.getTypeGenerator()).thenReturn(homematicTypeGenerator);
-        when(homematicBridgeHandler.getBindingConfig()).thenReturn(new HomematicConfig());
+        when(homematicBridgeHandler.getHomematicConfig()).thenReturn(new HomematicConfig());
 
         return homematicBridgeHandler;
     }
