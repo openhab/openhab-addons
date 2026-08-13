@@ -211,7 +211,13 @@ public class ScriptTools {
                     errorPayload("AddOnNotFound", "Install the openhab-automation-jsscripting add-on.", null, 0));
         }
 
-        URL entry = jsScriptingBundle.getEntry("node_modules/openhab.d.ts");
+        URL entry;
+        try {
+            entry = jsScriptingBundle.getEntry("node_modules/openhab.d.ts");
+        } catch (IllegalStateException e) {
+            return textResult(jsonMapper,
+                    errorPayload("AddOnNotFound", "Install the openhab-automation-jsscripting add-on.", null, 0));
+        }
         if (entry == null) {
             return textResult(jsonMapper, errorPayload("FileNotFound",
                     "openhab.d.ts not found in openhab-automation-jsscripting add-on assets.", null, 0));
