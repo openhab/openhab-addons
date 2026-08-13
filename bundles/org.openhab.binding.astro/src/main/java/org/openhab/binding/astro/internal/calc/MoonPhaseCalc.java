@@ -16,6 +16,7 @@ import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
 import java.time.InstantSource;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,9 @@ public class MoonPhaseCalc {
         final MoonPhaseSet result;
 
         if (previousMP.needsRecalc(julianDate)) {
-            double julianDateMidnight = Math.floor(julianDate + 0.5) - 0.5;
+            ZoneOffset offset = zone instanceof ZoneOffset zo ? zo : zone.getRules().getOffset(instantSource.instant());
+            double offsetDays = offset.getTotalSeconds() / 86400.0;
+            double julianDateMidnight = Math.floor(julianDate + offsetDays + 0.5) - 0.5 - offsetDays;
             double parentNewMoon = getPhase(julianDateMidnight, MoonPhase.NEW, false);
 
             Map<MoonPhase, Double> comingPhases = MoonPhase.remarkables().stream()
