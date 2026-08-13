@@ -128,12 +128,4 @@ public interface ShellyThingInterface {
     void incProtErrors();
 
     void startScan();
-
-    default Map<Integer, ShellyLightModel> acquireLightModels() {
-        return Map.of();
-    }
-
-    default boolean releaseLightModels() {
-        return false;
-    }
 }

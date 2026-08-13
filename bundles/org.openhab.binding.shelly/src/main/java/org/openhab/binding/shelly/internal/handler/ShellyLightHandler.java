@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Migrate to LightModel
  */
 @NonNullByDefault
-public class ShellyLightHandler extends ShellyBaseHandler {
+public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLightModelHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
     private final Map<Integer, ShellyLightModel> lightModels; // TODO do we need multiple LightModel instances?
 
@@ -80,7 +81,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
 
         try {
-            Map<Integer, ShellyLightModel> lightModels = acquireLightModels();
+            acquireLock();
             try {
                 int lightId = getLightIdFromGroup(groupName);
                 if (lightModels.computeIfAbsent(lightId,
@@ -92,7 +93,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 }
                 return false;
             } finally {
-                releaseLightModels();
+                releaseLock();
             }
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to handle command: {}", thingName, e.toString());
@@ -116,8 +117,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
         boolean updated = false;
 
-        Map<Integer, ShellyLightModel> lightModels = acquireLightModels();
         try {
+            acquireLock();
             int lightId = 0;
             for (ShellyStatusLightChannel light : status.lights) {
                 if (lightModels.computeIfAbsent(lightId, id -> ShellyLightModel.create(this, id,
@@ -128,7 +129,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 lightId++;
             }
         } finally {
-            updated |= releaseLightModels();
+            updated |= releaseLock();
         }
 
         return updated;
@@ -171,25 +172,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
         updateChannel(colorGroup, CHANNEL_COLOR_FULL, color != null ? new StringType(color) : UnDefType.UNDEF);
         return true;
-    }
-
-    @Override
-    public Map<Integer, ShellyLightModel> acquireLightModels() {
-        for (ShellyLightModel model : lightModels.values()) {
-            model.acquire();
-        }
-        logger.debug("{}: light models acquired", thingName);
-        return lightModels;
-    }
-
-    @Override
-    public boolean releaseLightModels() {
-        boolean result = false;
-        for (ShellyLightModel model : lightModels.values()) {
-            result |= model.release();
-        }
-        logger.debug("{}: light models released", thingName);
-        return result;
     }
 
     /**
@@ -529,5 +511,30 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
 
         return updated;
+    }
+
+    @Override
+    public @Nullable ShellyLightModel getLightModel(int modelId) {
+        ShellyLightModel model = lightModels.get(modelId);
+        logger.debug("{}: getLightModel({}) returns {}", thingName, modelId, model);
+        return model;
+    }
+
+    @Override
+    public void acquireLock() {
+        for (ShellyLightModel model : lightModels.values()) {
+            model.acquire();
+        }
+        logger.debug("{}: light models acquired", thingName);
+    }
+
+    @Override
+    public boolean releaseLock() {
+        boolean result = false;
+        for (ShellyLightModel model : lightModels.values()) {
+            result |= model.release();
+        }
+        logger.debug("{}: light models released", thingName);
+        return result;
     }
 }

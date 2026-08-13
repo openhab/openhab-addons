@@ -18,7 +18,6 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.measure.MetricPrefix;
 import javax.measure.Unit;
@@ -877,15 +876,18 @@ public class ShellyComponents {
             if (light == null) {
                 throw new ShellyApiException("Shelly RGBW2 update failed: light " + rgbwId + " not found");
             }
-            try {
-                Map<Integer, ShellyLightModel> lightModels = thingHandler.acquireLightModels();
-                if (lightModels.get(rgbwId) instanceof ShellyLightModel model) {
-                    model.setRGBX(light.red, light.green, light.blue, light.white);
-                } else {
-                    throw new ShellyApiException("Shelly RGBW2 update failed: light model " + rgbwId + " not found");
+            if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
+                try {
+                    lightModelHandler.acquireLock();
+                    if (lightModelHandler.getLightModel(rgbwId) instanceof ShellyLightModel model) {
+                        model.setRGBX(light.red, light.green, light.blue, light.white);
+                    } else {
+                        throw new ShellyApiException(
+                                "Shelly RGBW2 update failed: light model " + rgbwId + " not found");
+                    }
+                } finally {
+                    lightModelHandler.releaseLock();
                 }
-            } finally {
-                thingHandler.releaseLightModels();
             }
         }
         return updated;
@@ -904,73 +906,76 @@ public class ShellyComponents {
                     ? fromJson(gson, Shelly1ApiJsonDTO.fixDimmerJson(orgStatus.json), ShellySettingsStatus.class)
                     : orgStatus;
 
-            try {
-                Map<Integer, ShellyLightModel> lightModels = thingHandler.acquireLightModels();
-                int lightDimmerId = 0;
-                for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
-                    String groupName = profile.getControlGroup(lightDimmerId);
+            if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
+                try {
+                    lightModelHandler.acquireLock();
+                    int lightDimmerId = 0;
+                    for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
+                        String groupName = profile.getControlGroup(lightDimmerId);
 
-                    if (!thingHandler.areChannelsCreated()) {
-                        thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
-                                .createDimmerChannels(thingHandler.getThing(), profile, dstatus, lightDimmerId));
-                    }
-
-                    List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
-                    if (dimmers != null) {
-                        ShellySettingsDimmer ds = dimmers.get(lightDimmerId);
-                        if (ds.name != null) {
-                            updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT_NAME,
-                                    getStringType(ds.name));
+                        if (!thingHandler.areChannelsCreated()) {
+                            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
+                                    .createDimmerChannels(thingHandler.getThing(), profile, dstatus, lightDimmerId));
                         }
-                    }
 
-                    // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's
-                    // brightness
-                    // and send an OFF status to the same channel.
-                    // When the device's brightness is > 0 we send the new value to the channel and an ON command
-                    if (dimmer.ison != null) {
-                        if (profile.isLight) {
-                            if (lightModels.get(lightDimmerId) instanceof ShellyLightModel model) {
-                                // set brightness first to ensure model's brightness gets cached when light goes off
-                                model.setBrightness(getInteger(getInteger(dimmer.brightness)));
-                                model.setOnOff(dimmer.ison);
-                            } else {
-                                throw new ShellyApiException(
-                                        "Shelly light model update failed; missing light model " + lightDimmerId);
-                            }
-                        } else {
-                            // TODO not my beer but brightness is not UoM, so should be a PercentType not QuantityType
-                            if (dimmer.ison) {
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch",
-                                        OnOffType.ON);
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                                        toQuantityType((double) getInteger(dimmer.brightness), DIGITS_NONE,
-                                                Units.PERCENT));
-                            } else {
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch",
-                                        OnOffType.OFF);
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                                        toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
+                        List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
+                        if (dimmers != null) {
+                            ShellySettingsDimmer ds = dimmers.get(lightDimmerId);
+                            if (ds.name != null) {
+                                updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT_NAME,
+                                        getStringType(ds.name));
                             }
                         }
-                    }
-                    if (dimmer.hasTimer != null) {
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE,
-                                getOnOff(dimmer.hasTimer));
-                    }
 
-                    if (dimmers != null) {
-                        ShellySettingsDimmer dsettings = dimmers.get(lightDimmerId);
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_AUTOON,
-                                toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
-                                toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
-                    }
+                        // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's
+                        // brightness
+                        // and send an OFF status to the same channel.
+                        // When the device's brightness is > 0 we send the new value to the channel and an ON command
+                        if (dimmer.ison != null) {
+                            if (profile.isLight) {
+                                if (lightModelHandler.getLightModel(lightDimmerId) instanceof ShellyLightModel model) {
+                                    // set brightness first to ensure model's brightness gets cached when light goes off
+                                    model.setBrightness(getInteger(getInteger(dimmer.brightness)));
+                                    model.setOnOff(dimmer.ison);
+                                } else {
+                                    throw new ShellyApiException(
+                                            "Shelly light model update failed; missing light model " + lightDimmerId);
+                                }
+                            } else {
+                                // TODO not my beer but brightness is not UoM, so should be a PercentType not
+                                // QuantityType
+                                if (dimmer.ison) {
+                                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch",
+                                            OnOffType.ON);
+                                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                                            toQuantityType((double) getInteger(dimmer.brightness), DIGITS_NONE,
+                                                    Units.PERCENT));
+                                } else {
+                                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch",
+                                            OnOffType.OFF);
+                                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                                            toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
+                                }
+                            }
+                        }
+                        if (dimmer.hasTimer != null) {
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE,
+                                    getOnOff(dimmer.hasTimer));
+                        }
 
-                    lightDimmerId++;
+                        if (dimmers != null) {
+                            ShellySettingsDimmer dsettings = dimmers.get(lightDimmerId);
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_AUTOON,
+                                    toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_AUTOOFF,
+                                    toQuantityType(getDouble(dsettings.autoOff), Units.SECOND));
+                        }
+
+                        lightDimmerId++;
+                    }
+                } finally {
+                    lightModelHandler.releaseLock();
                 }
-            } finally {
-                thingHandler.releaseLightModels();
             }
 
         }
