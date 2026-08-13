@@ -91,7 +91,7 @@ public class TypingCmd {
             String classBody = converter.build();
             imports.addAll(converter.getImports());
             dumpClassContentToFile(classBody, container, outputPath, fileContainerMap);
-            dumped.add(container.getClass().getName());
+            dumped.add(container.getRelatedClass().getName());
         }
 
         // 4. All collected imports are dumped (org.openhab is filtered out, because it was already handled.)
