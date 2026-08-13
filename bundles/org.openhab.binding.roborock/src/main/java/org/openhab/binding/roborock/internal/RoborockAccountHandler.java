@@ -141,17 +141,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         return homeCache.getValue();
     }
 
-    /**
-     * Clears expired or invalid session tokens from persistent storage and resets internal state.
-     */
-    private void clearSessionToken() {
-        sessionStorage.remove("token");
-        sessionStorage.remove("rriot");
-        token = "";
-        rriot = new Rriot();
-        logger.debug("Cleared invalid token and rriot session state from sessionStorage.");
-    }
-
     @Nullable
     public Home refreshHome() {
         if (!isSessionValid()) {
@@ -308,37 +297,36 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
      * Atomically invalidates an expired cloud session (code 2010), stops background MQTT tasks,
      * purges persistent storage, clears stale 2fa config, and schedules 2FA re-authentication.
      */
+
     public synchronized void handleSessionExpired() {
-        // Avoid duplicate triggers if already cleared or offline
         if (token.isEmpty() && rriot.r == null) {
             return;
         }
 
         logger.warn("Roborock session expired (code 2010). Invalidating credentials and requesting new 2FA code.");
 
-        // 1. Cancel background MQTT connection and watchdog tasks
         mqttConnectTask.cancel();
         mqttWatchdogTask.cancel();
         disconnectMqttClient();
 
-        // 2. Mark Thing status OFFLINE first to short-circuit any concurrent callers
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "Session expired. Requesting new 2FA code...");
 
-        // 3. Clear persistent storage and reset in-memory fields
         sessionStorage.remove("token");
         sessionStorage.remove("rriot");
         token = "";
         rriot = new Rriot();
 
-        // 4. Clear 'twofa' from Thing configuration so initAPI() triggers a fresh code request
         Configuration configuration = editConfiguration();
         if (configuration.get("twofa") != null && !configuration.get("twofa").toString().isBlank()) {
             configuration.put("twofa", "");
             updateConfiguration(configuration);
         }
 
-        // 5. Submit initTask to re-enter initAPI() and request a fresh 2FA code
+        if (config != null) {
+            config.twofa = "";
+        }
+
         initTask.submit();
     }
 
@@ -386,7 +374,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     } else {
                         webTargets.requestCode(baseUri, localConfig.email);
                     }
-                    // Update status to explicitly inform the user that a new 2FA code was emailed
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "A new 2FA verification code has been sent to your email. Please enter it in the 'twofa' configuration setting.");
                     return;
@@ -564,7 +551,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         mqttWatchdog.noteInboundMessage(Instant.now());
         logger.debug("Received MQTT message for device {}", destination);
 
-        // Check list of child handlers and send message to the right one
         RoborockVacuumHandler handler = childDevices.get(destination);
         if (handler != null) {
             handler.handleMessage(payload);
@@ -622,7 +608,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         logger.trace("MQTT payload = {}", payload);
 
         byte[] messageBytes = build(localKey, protocol, timestamp, payload.getBytes(StandardCharsets.UTF_8));
-        // now send message via mqtt
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
 
         if (localMqttClient != null && localMqttClient.isConnected()) {
@@ -635,7 +620,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 mqttWatchdog.noteOutboundPublish(Instant.now());
                 return id;
             } catch (MqttException e) {
-                // Connection reset during router reboot or brief outage — transient, not a bug
                 logger.debug("MQTT publish failed (transient): {}", e.getMessage(), e);
                 return -1;
             }
@@ -656,26 +640,20 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             int totalLength = HEADER_LENGTH_WITHOUT_CRC + encryptedPayload.length + CRC_LENGTH;
             byte[] message = new byte[totalLength];
 
-            // Write fixed string '1.0'
             message[0] = '1';
             message[1] = '.';
             message[2] = '0';
 
-            // Write integer fields
             ProtocolUtils.writeInt32BE(message, seq, SEQ_OFFSET);
             ProtocolUtils.writeInt32BE(message, randomInt, RANDOM_OFFSET);
             ProtocolUtils.writeInt32BE(message, timestamp, TIMESTAMP_OFFSET);
             ProtocolUtils.writeInt16BE(message, protocol, PROTOCOL_OFFSET);
             ProtocolUtils.writeInt16BE(message, encryptedPayload.length, PAYLOAD_OFFSET);
 
-            // Copy encrypted payload
             System.arraycopy(encryptedPayload, 0, message, HEADER_LENGTH_WITHOUT_CRC, encryptedPayload.length);
 
-            // Calculate CRC32 and write to the end
             CRC32 crc32 = new CRC32();
-            crc32.update(message, 0, message.length - CRC_LENGTH); // Calculate CRC for all bytes except the last 4 (CRC
-                                                                   // field
-            // itself)
+            crc32.update(message, 0, message.length - CRC_LENGTH);
             ProtocolUtils.writeInt32BE(message, (int) crc32.getValue(), message.length - CRC_LENGTH);
             return message;
         } catch (Exception e) {

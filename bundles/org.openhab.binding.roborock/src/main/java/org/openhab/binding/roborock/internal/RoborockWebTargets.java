@@ -48,6 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Handles performing the actual HTTP requests for communicating with the Roborock API.
@@ -344,14 +346,22 @@ public class RoborockWebTargets {
                 ContentResponse response = request.send();
                 int status = response.getStatus();
                 jsonResponse = response.getContentAsString();
+
                 if (!jsonResponse.isEmpty()) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("JSON response: '{}'", jsonResponse);
                     }
-                    if (jsonResponse.contains("\"code\":2010") || jsonResponse.contains("invalid token")) {
-                        throw new RoborockException("invalid token");
+
+                    try {
+                        JsonObject responseObj = JsonParser.parseString(jsonResponse).getAsJsonObject();
+                        if (responseObj.has("code") && responseObj.get("code").getAsInt() == 2010) {
+                            throw new RoborockException("invalid token");
+                        }
+                    } catch (RuntimeException e) {
+                        logger.trace("Failed to parse JSON response for code 2010 detection: {}", e.getMessage());
                     }
                 }
+
                 if (status == HttpStatus.UNAUTHORIZED_401) {
                     throw new RoborockException("Unauthorized");
                 }
