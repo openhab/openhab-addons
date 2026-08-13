@@ -23,6 +23,8 @@ import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBl
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -169,6 +171,11 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_FLOOD_ALARM = "flood.alarm";
     public static final String SHELLY2_EVENT_FLOOD_ALARM_OFF = "flood.alarm_off";
     public static final String SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED = "flood.cable_unplugged";
+
+    // Emitted by 3rd party BLE-proxy scripts (e.g. Home Assistant's), not the binding's own oh-blu.*
+    // scanner script; "data" is an array of raw scan results instead of an object, so it carries no
+    // usable BLU payload here and is only suppressed to avoid flooding the log.
+    public static final String SHELLY2_EVENT_BLE_SCAN_RESULT = "ble.scan_result";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -1294,12 +1301,20 @@ public class Shelly2ApiJsonDTO {
         public @Nullable Double ts;
         public @Nullable String component;
         public @Nullable String event;
+        // BLU gateway scripts emit an object here, but other scripts (e.g. Home Assistant's
+        // BLE-proxy script for ble.scan_result) emit an array. Keep the raw element and let
+        // getBluData() decide, rather than letting Gson fail the whole frame on a shape mismatch.
         @SerializedName("data")
-        public @Nullable Shelly2NotifyBluEventData blu;
+        public @Nullable JsonElement data;
         public @Nullable String msg;
         public @Nullable Integer reason;
         @SerializedName("cfg_rev")
         public @Nullable Integer cfgRev;
+
+        public @Nullable Shelly2NotifyBluEventData getBluData(Gson gson) {
+            JsonElement data = this.data;
+            return data != null && data.isJsonObject() ? gson.fromJson(data, Shelly2NotifyBluEventData.class) : null;
+        }
     }
 
     public class Shelly2NotifyEventData {
