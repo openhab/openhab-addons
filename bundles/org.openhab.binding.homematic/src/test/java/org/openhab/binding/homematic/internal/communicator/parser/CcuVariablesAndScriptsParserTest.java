@@ -35,7 +35,7 @@ import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
 import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 
 /**
- * @author Leo Siepel - Regression test for string sysvars
+ * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
 class CcuVariablesAndScriptsParserTest {
