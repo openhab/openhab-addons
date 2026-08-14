@@ -560,40 +560,53 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         applyCloudOnlyCapabilityPolicies();
         boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
 
+        @Nullable
         HomeData homeData = localBridgeHandler.getHomeData();
 
-        // Abort if session expired during getHomeData() or if homeData returned null
-        if (!isBridgeSessionValid() || homeData == null) {
-            logger.debug("Aborting pollData() for {} because homeData is null or bridge session is invalid.",
-                    config.duid);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        if (homeData == null) {
+            logger.debug("pollData() received null homeData for {}. API fetch failed or token expired.", config.duid);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API fetch failed");
+
+            if (isBridgeSessionValid()) {
+                scheduleNextPoll(-1);
+            }
+            return;
+        }
+
+        if (!isBridgeSessionValid()) {
             return;
         }
 
         if (homeData.result != null) {
-            homeRooms = homeData.result.rooms;
-            Devices devices[] = homeData.result.devices;
-            updateDevice(devices);
-            Devices receivedDevices[] = homeData.result.receivedDevices;
-            updateDevice(receivedDevices);
+            homeRooms = homeData.result.rooms != null ? homeData.result.rooms : new Rooms[0];
+
+            Devices[] devices = homeData.result.devices;
+            if (devices != null) {
+                updateDevice(devices);
+            }
+
+            Devices[] receivedDevices = homeData.result.receivedDevices;
+            if (receivedDevices != null) {
+                updateDevice(receivedDevices);
+            }
         }
 
         if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
             String routinesResponse = localBridgeHandler.getRoutines(config.duid);
 
             if (!isBridgeSessionValid()) {
-                logger.debug("Aborting routine update for {} because bridge session is invalid.", config.duid);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
             }
 
             List<StateOption> options = new ArrayList<>();
-            JsonObject parsedRoutines = routinesResponse != null && !routinesResponse.isEmpty()
+            JsonObject parsedRoutines = (routinesResponse != null && !routinesResponse.isEmpty())
                     ? JsonParser.parseString(routinesResponse).getAsJsonObject()
                     : null;
-            if (parsedRoutines != null && parsedRoutines.get("result").isJsonArray()
-                    && parsedRoutines.get("result").getAsJsonArray().size() > 0
+
+            if (parsedRoutines != null && parsedRoutines.has("result") && parsedRoutines.get("result").isJsonArray()
+                    && !parsedRoutines.get("result").getAsJsonArray().isEmpty()
                     && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
+
                 JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
                 Map<String, Object> routines = new HashMap<>();
                 for (int i = 0; i < routinesArray.size(); ++i) {
