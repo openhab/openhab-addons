@@ -159,4 +159,19 @@ public class ShellyUtilsTest {
     void getLightIdFromGroupReturnsZeroForUnrelatedGroup() {
         assertEquals(0, ShellyUtils.getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CONTROL));
     }
+
+    @Test
+    void stripDeprecatedSuffixRemovesSwitchSuffixFromDeprecatedSplitChannel() {
+        assertEquals("light1#brightness", ShellyUtils.stripDeprecatedSuffix("light1#brightness$Switch"));
+    }
+
+    @Test
+    void stripDeprecatedSuffixRemovesValueSuffixFromDeprecatedSplitChannel() {
+        assertEquals("light1#brightness", ShellyUtils.stripDeprecatedSuffix("light1#brightness$Value"));
+    }
+
+    @Test
+    void stripDeprecatedSuffixLeavesRegularChannelIdUnchanged() {
+        assertEquals("light1#brightness", ShellyUtils.stripDeprecatedSuffix("light1#brightness"));
+    }
 }

@@ -204,6 +204,14 @@ public class ShellyUtils {
         return "";
     }
 
+    /**
+     * A deprecated split channel (e.g. brightness$Switch/brightness$Value) carries a $-suffix that
+     * is not part of the real ChannelUID; strip it before passing the id to core APIs like isLinked().
+     */
+    public static String stripDeprecatedSuffix(String channelId) {
+        return channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
+    }
+
     public static String getMessage(Exception e) {
         String message = e.getMessage();
         return message != null ? message : "";
