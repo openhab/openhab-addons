@@ -93,16 +93,28 @@
 		<channel-groups>
 			<channel-group id="control" typeId="rgbw2WhiteControl"/>
 			<channel-group id="channel1" typeId="rgbw2Channel">
-				<label>Channel 1</label>
+				<label>LED Channel 1</label>
 			</channel-group>
 			<channel-group id="channel2" typeId="rgbw2Channel">
-				<label>Channel 2</label>
+				<label>LED Channel 2</label>
 			</channel-group>
 			<channel-group id="channel3" typeId="rgbw2Channel">
-				<label>Channel 3</label>
+				<label>LED Channel 3</label>
 			</channel-group>
 			<channel-group id="channel4" typeId="rgbw2Channel">
-				<label>Channel 4</label>
+				<label>LED Channel 4</label>
+			</channel-group>
+			<channel-group id="light1" typeId="rgbwLight">
+				<label>LED Channel 1</label>
+			</channel-group>
+			<channel-group id="light2" typeId="rgbwLight">
+				<label>LED Channel 2</label>
+			</channel-group>
+			<channel-group id="light3" typeId="rgbwLight">
+				<label>LED Channel 3</label>
+			</channel-group>
+			<channel-group id="light4" typeId="rgbwLight">
+				<label>LED Channel 4</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
@@ -173,6 +185,11 @@
 
 	<channel-group-type id="rgbw2Channel">
 		<label>LED Channel</label>
+		<description>[deprecated] Use light1..4 instead. Control LED channel and adjust settings</description>
+	</channel-group-type>
+
+	<channel-group-type id="rgbwLight">
+		<label>LED Channel</label>
 		<description>Control LED channel and adjust settings</description>
 	</channel-group-type>
 
@@ -208,33 +225,33 @@
 	<channel-type id="colorRed" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Red</label>
-		<description>Red (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Red (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorGreen" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Green</label>
-		<description>Green (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Green (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorBlue" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Blue</label>
-		<description>Blue (0-255), applies only in Color Mode</description>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<description>Blue (0-100%), applies only in Color Mode</description>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorWhite">
 		<item-type>Dimmer</item-type>
 		<label>White</label>
-		<description>White (0-255), applies only in Color Mode</description>
+		<description>White (0-100%), applies only in Color Mode</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
-		<state min="0" max="255" step="1" readOnly="false"/>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="colorGain">

@@ -202,7 +202,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         info.mac = getString(device.mac);
         info.auth = getBool(device.auth);
         info.gen = getInteger(device.gen);
-        info.mode = mapValue(MAP_PROFILE, getString(device.profile));
+        info.profile = getString(device.profile);
+        info.mode = mapValue(MAP_PROFILE, info.profile);
         return info;
     }
 
@@ -225,6 +226,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
      */
     protected Shelly2GetConfigResult initProfile(ShellyDeviceProfile profile, ThingTypeUID thingTypeUID,
             @Nullable ShellySettingsDevice devInfo) throws ShellyApiException {
+        profile.initFromThingType(thingTypeUID);
         if (devInfo != null) {
             profile.device = devInfo;
         }
@@ -386,12 +388,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
         if (profile.isRGBW2) {
-            ArrayList<@Nullable ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
-            rgbwLights.add(new ShellySettingsRgbwLight());
-            profile.settings.lights = rgbwLights;
-            profile.status.lights = new ArrayList<>();
-            profile.status.lights.add(new ShellySettingsLight());
+            profile.settings.lights = new ArrayList<>();
             fillRgbwSettings(profile, dc);
+            @Nullable
+            List<ShellySettingsRgbwLight> sl = profile.settings.lights;
+            int numLights = sl != null && !sl.isEmpty() ? sl.size() : 1;
+            profile.status.lights = new ArrayList<>();
+            for (int i = 0; i < numLights; i++) {
+                profile.status.lights.add(new ShellySettingsLight());
+            }
         }
         profile.status.thermostats = profile.isTRV ? new ArrayList<>() : null;
 
@@ -591,6 +596,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
         updated |= updateDimmerStatus(1, status, result.light1, channelUpdate);
         updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
+        updated |= updateRGBWStatus(0, status, result.rgb0, channelUpdate);
+        updated |= updateLightModeStatus(0, status, result.light0, channelUpdate);
+        updated |= updateLightModeStatus(1, status, result.light1, channelUpdate);
+        updated |= updateLightModeStatus(2, status, result.light2, channelUpdate);
+        updated |= updateLightModeStatus(3, status, result.light3, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -1156,18 +1166,42 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     protected void fillRgbwSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (!profile.isRGBW2 || dc.rgbw0 == null) {
+        if (!profile.isRGBW2) {
             return;
         }
 
-        List<ShellySettingsRgbwLight> lights = profile.settings.lights;
-        if (lights != null) {
-            ShellySettingsRgbwLight ls = lights.get(0);
-            ls.autoOn = dc.rgbw0.autoOnDelay;
-            ls.autoOff = dc.rgbw0.autoOffDelay;
-            ls.name = dc.rgbw0.name;
-            lights.set(0, ls);
+        ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
+        Shelly2GetConfigLight rgbw0 = dc.rgbw0;
+        Shelly2GetConfigLight rgb0 = dc.rgb0;
+        if (rgbw0 != null) {
+            profile.inColor = true;
+            lights.add(createRgbwLightSetting(rgbw0));
+        } else if (rgb0 != null) {
+            profile.inColor = true;
+            lights.add(createRgbwLightSetting(rgb0));
+        } else {
+            profile.inColor = false;
+            @Nullable
+            Shelly2GetConfigLight[] lightConfigs = { dc.light0, dc.light1, dc.light2, dc.light3 };
+            for (@Nullable
+            Shelly2GetConfigLight lc : lightConfigs) {
+                if (lc != null) {
+                    lights.add(createRgbwLightSetting(lc));
+                }
+            }
+            if (lights.isEmpty()) {
+                lights.add(new ShellySettingsRgbwLight());
+            }
         }
+        profile.settings.lights = lights;
+    }
+
+    private ShellySettingsRgbwLight createRgbwLightSetting(Shelly2GetConfigLight src) {
+        ShellySettingsRgbwLight ls = new ShellySettingsRgbwLight();
+        ls.autoOn = src.autoOnDelay;
+        ls.autoOff = src.autoOffDelay;
+        ls.name = src.name;
+        return ls;
     }
 
     private boolean updateDimmerStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
@@ -1179,15 +1213,17 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (value.id == null) { // fw 1.6.1
             value.id = id;
         }
+        int dimmerId = getInteger(value.id);
 
-        ShellyShortLightStatus ds = status.dimmers.get(value.id);
-        if (value.brightness != null) {
-            ds.brightness = value.brightness.intValue();
+        ShellyShortLightStatus ds = status.dimmers.get(dimmerId);
+        Double brightness = value.brightness;
+        if (brightness != null) {
+            ds.brightness = brightness.intValue();
         }
         ds.ison = value.output;
         ds.hasTimer = value.timerStartedAt != null;
         ds.timerDuration = getDuration(value.timerStartedAt, value.timerDuration);
-        status.dimmers.set(value.id, ds);
+        status.dimmers.set(dimmerId, ds);
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
 
@@ -1200,9 +1236,13 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (value.id == null) {
             value.id = id;
         }
+        int rgbwId = getInteger(value.id);
 
-        ShellySettingsLight ds = status.lights.get(value.id);
-        ds.brightness = Objects.requireNonNullElse(value.brightness, ds.brightness).intValue();
+        ShellySettingsLight ds = status.lights.get(rgbwId);
+        Double brightness = value.brightness;
+        if (brightness != null) {
+            ds.brightness = brightness.intValue();
+        }
         if (value.rgb != null) {
             ds.red = value.rgb[0];
             ds.green = value.rgb[1];
@@ -1211,8 +1251,40 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ds.white = Objects.requireNonNullElse(value.white, ds.white);
         ds.ison = value.output;
 
-        status.lights.set(value.id, ds);
+        status.lights.set(rgbwId, ds);
         return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
+    }
+
+    private boolean updateLightModeStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
+            boolean channelUpdate) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (!profile.isRGBW2 || profile.inColor || value == null) {
+            return false;
+        }
+        if (value.id == null) {
+            value.id = id;
+        }
+        int lightId = getInteger(value.id);
+        @Nullable
+        List<ShellySettingsLight> lights = status.lights;
+        if (lights == null || lightId >= lights.size()) {
+            return false;
+        }
+        ShellySettingsLight ds = lights.get(lightId);
+        Double brightness = value.brightness;
+        if (brightness != null) {
+            ds.brightness = brightness.intValue();
+        }
+        Boolean output = value.output;
+        if (output != null) {
+            ds.ison = output;
+        }
+        lights.set(lightId, ds);
+        if (channelUpdate) {
+            ShellyComponents.updateLightMode(getThing(), status);
+        }
+        // Always true: signals the watchdog even if the channel value itself didn't change.
+        return true;
     }
 
     protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {
