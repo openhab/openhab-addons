@@ -105,9 +105,7 @@ As second step you are able to set time in percent and split in parts of 10 betw
 | next-start     | DateTime | schedule#next-start     |                      |
 | next-stop      | DateTime | schedule#next-stop      |                      |
 
-*1: Commands for **mode** Channel:
-
-Normal, Party
+*1: Commands for **mode** Channel: Normal, Party.
 
 ### Aws
 
