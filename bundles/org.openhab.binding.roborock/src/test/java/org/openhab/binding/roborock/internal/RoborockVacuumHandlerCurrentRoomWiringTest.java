@@ -36,22 +36,86 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
             .of("src/main/java/org/openhab/binding/roborock/internal/RoborockVacuumHandler.java");
 
     @Test
-    void handleGetMapResolvesCurrentRoomUnconditionallyOutsideTheDeduplicatorBranch() throws IOException {
+    void handleGetMapResolvesCurrentRoomStraightAfterParsingAndBeforeRendering() throws IOException {
         String source = Files.readString(HANDLER_PATH);
         String handleGetMapBody = extractMethodBody(source,
                 "private void handleGetMap(int requestId, byte[] mapPayload)");
 
-        int dedupIfIndex = handleGetMapBody.indexOf("if (mapUpdateDeduplicator.shouldPublish(pngBytes))");
+        int parseIndex = handleGetMapBody.indexOf("rrMapParser.parse(mapPayload);");
         int updateCurrentRoomIndex = handleGetMapBody.indexOf("updateCurrentRoomState(mapData);");
+        int renderIndex = handleGetMapBody.indexOf("rrMapRenderer.renderAsPng(mapData);");
+        int dedupIfIndex = handleGetMapBody.indexOf("if (mapUpdateDeduplicator.shouldPublish(pngBytes))");
 
+        assertTrue(parseIndex >= 0, "handleGetMap should still parse the map payload");
+        assertTrue(updateCurrentRoomIndex >= 0, "handleGetMap should call updateCurrentRoomState");
         assertTrue(dedupIfIndex >= 0, "handleGetMap should still gate the PNG update on the deduplicator");
-        assertTrue(updateCurrentRoomIndex >= 0, "handleGetMap should call updateCurrentRoomState after parsing");
 
-        // The dedup if/else block ends at its closing brace; updateCurrentRoomState must be called
-        // after that, not nested inside the "shouldPublish" branch.
-        int dedupBlockEnd = findBlockEnd(handleGetMapBody, handleGetMapBody.indexOf('{', dedupIfIndex));
-        assertTrue(updateCurrentRoomIndex > dedupBlockEnd,
-                "updateCurrentRoomState must run unconditionally, after the PNG deduplicator branch, not inside it");
+        // The room comes from the parsed map alone, so it must be published between the parse and
+        // the rendering: that way neither a duplicate PNG nor a rendering failure can hold it back.
+        assertTrue(updateCurrentRoomIndex > parseIndex && updateCurrentRoomIndex < renderIndex,
+                "updateCurrentRoomState must run after the parse and before renderAsPng, so that rendering "
+                        + "outcomes cannot leave a stale room reported");
+    }
+
+    @Test
+    void handleGetMapInvalidatesMapDerivedStateWhenParsingFails() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String handleGetMapBody = extractMethodBody(source,
+                "private void handleGetMap(int requestId, byte[] mapPayload)");
+
+        int parseFailureLogIndex = handleGetMapBody.indexOf("Failed to parse map payload");
+        int invalidateIndex = handleGetMapBody.indexOf("invalidateMapDerivedState();");
+
+        assertTrue(parseFailureLogIndex >= 0, "handleGetMap should still log a parse failure");
+        assertTrue(invalidateIndex > parseFailureLogIndex,
+                "a failed map parse must invalidate the map-derived channels instead of leaving the previous "
+                        + "map image and room in place");
+    }
+
+    @Test
+    void invalidateMapDerivedStateClearsBothMapAndCurrentRoom() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String body = extractMethodBody(source, "private void invalidateMapDerivedState()");
+
+        assertTrue(body.contains("CHANNEL_VACUUM_MAP") && body.contains("RobotCapabilities.CURRENT_ROOM.getChannel()"),
+                "invalidateMapDerivedState should clear the map image and status#current-room together, "
+                        + "since both are derived from the same map fetch");
+        assertTrue(body.contains("mapUpdateDeduplicator.reset()"),
+                "invalidateMapDerivedState should keep resetting the deduplicator");
+    }
+
+    @Test
+    void roomMetadataLossClearsTheSegmentNameTable() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+
+        String clearBody = extractMethodBody(source, "private void clearSegmentRoomNames()");
+        assertTrue(
+                clearBody.contains("segmentRoomNames = Map.of()")
+                        && clearBody.contains("RobotCapabilities.CURRENT_ROOM.getChannel()"),
+                "clearSegmentRoomNames should drop the table and clear status#current-room");
+
+        assertTrue(
+                extractMethodBody(source, "private void disableRoomMappingState(String reason)")
+                        .contains("clearSegmentRoomNames();"),
+                "disabling room mapping should drop the segment-name table, so later map responses cannot "
+                        + "republish names from a mapping that is no longer refreshed");
+        assertTrue(
+                extractMethodBody(source, "private void handleGetRoomMapping(String response)")
+                        .contains("clearSegmentRoomNames();"),
+                "an empty room-mapping response should drop the segment-name table as well");
+    }
+
+    @Test
+    void handleGetRoomMappingKeepsTheNotFoundSentinelOutOfTheSegmentNameTable() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String body = extractMethodBody(source, "private void handleGetRoomMapping(String response)");
+
+        int guardIndex = body.indexOf("if (!ROOM_NAME_NOT_FOUND.equals(name))");
+        int putIndex = body.indexOf("putResolvedSegmentName(");
+
+        assertTrue(guardIndex >= 0 && putIndex > guardIndex,
+                "only matched room names may enter segmentRoomNames: status#current-room must report UNDEF "
+                        + "rather than the literal \"Not found\" sentinel of the published room mapping");
     }
 
     @Test
@@ -73,11 +137,9 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
         String source = Files.readString(HANDLER_PATH);
         String disableMapStateBody = extractMethodBody(source, "private void disableMapState(String reason)");
 
-        assertTrue(
-                disableMapStateBody.contains("RobotCapabilities.CURRENT_ROOM.getChannel()")
-                        && disableMapStateBody.contains("UnDefType.UNDEF"),
-                "disableMapState should clear status#current-room to UNDEF alongside the map image, "
-                        + "since current-room is derived from the same map fetch");
+        assertTrue(disableMapStateBody.contains("invalidateMapDerivedState();"),
+                "disableMapState should go through the central map-derived invalidation, so status#current-room "
+                        + "is cleared alongside the map image whenever map refresh is disabled");
     }
 
     @Test

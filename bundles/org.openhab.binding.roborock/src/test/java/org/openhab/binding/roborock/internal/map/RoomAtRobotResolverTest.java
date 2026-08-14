@@ -150,6 +150,52 @@ class RoomAtRobotResolverTest {
     }
 
     @Test
+    void picksTheDominantSegmentWhenTheFallbackRingHoldsTwoRooms() {
+        int width = 10;
+        int height = 10;
+        byte[] imageData = new byte[width * height];
+        int px = 5;
+        int py = 5;
+        imageData[py * width + px] = 0x01; // MAP_WALL: the robot sits on the doorway itself
+        // Ring of radius 1 straddles two rooms: segment 4 owns a single diagonal pixel, which a
+        // scan-order-dependent search would hit first, while segment 3 owns the majority.
+        imageData[(py - 1) * width + (px - 1)] = (byte) ((4 << 3) | 0x07);
+        imageData[(py - 1) * width + px] = (byte) ((3 << 3) | 0x07);
+        imageData[py * width + (px + 1)] = (byte) ((3 << 3) | 0x07);
+        imageData[(py + 1) * width + px] = (byte) ((3 << 3) | 0x07);
+
+        RRMapData mapData = mapDataWithImage(width, height, 0, 0, imageData);
+
+        Optional<Integer> segmentId = RoomAtRobotResolver.resolveSegmentId(mapData, (px + 1) * MM, (py + 1) * MM);
+
+        assertTrue(segmentId.isPresent());
+        assertEquals(3, segmentId.get());
+    }
+
+    @Test
+    void returnsEmptyWhenTheNearestFallbackRingIsTiedBetweenTwoRooms() {
+        int width = 10;
+        int height = 10;
+        byte[] imageData = new byte[width * height];
+        int px = 5;
+        int py = 5;
+        imageData[py * width + px] = 0x01; // MAP_WALL
+        // Two pixels each: the position is genuinely ambiguous, so no room may be reported ...
+        imageData[(py - 1) * width + px] = (byte) ((3 << 3) | 0x07);
+        imageData[(py + 1) * width + px] = (byte) ((3 << 3) | 0x07);
+        imageData[py * width + (px - 1)] = (byte) ((4 << 3) | 0x07);
+        imageData[py * width + (px + 1)] = (byte) ((4 << 3) | 0x07);
+        // ... not even from the unambiguous but more distant ring behind it.
+        imageData[(py + 2) * width + (px + 2)] = (byte) ((7 << 3) | 0x07);
+
+        RRMapData mapData = mapDataWithImage(width, height, 0, 0, imageData);
+
+        Optional<Integer> segmentId = RoomAtRobotResolver.resolveSegmentId(mapData, (px + 1) * MM, (py + 1) * MM);
+
+        assertFalse(segmentId.isPresent());
+    }
+
+    @Test
     void returnsEmptyWhenImageDataIsShorterThanWidthTimesHeight() {
         RRMapData mapData = mapDataWithImage(10, 10, 0, 0, new byte[4]);
 

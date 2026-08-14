@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.roborock.internal.map;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,12 +55,21 @@ public final class RoomAtRobotResolver {
     /**
      * Resolves the segment id of the map pixel at the robot's position, falling back to a small
      * outward search if that exact pixel is not a segmented-floor pixel.
+     * <p>
+     * The fallback is decided by the nearest ring that contains any segmented-floor pixel at all:
+     * all of that ring's pixels are collected and the segment holding the strict majority wins. A
+     * ring is deliberately never resolved by "first pixel encountered", because at a doorway or
+     * room boundary one ring can hold pixels of two different rooms and the answer would then
+     * depend on the scan order. If the nearest populated ring is a tie between segments, the
+     * position is genuinely ambiguous and this resolves to empty rather than guessing; wider rings
+     * are not consulted, since they are weaker evidence than the tied one.
      *
      * @param mapData parsed map data; {@code imageData()}/{@code imageWidth()}/{@code imageHeight()}
      *            /{@code top()}/{@code left()} are used to locate and decode the pixel
      * @param robotX robot X position in raw RR map coordinate units
      * @param robotY robot Y position in raw RR map coordinate units
-     * @return the segment id (0-31) if one was found at or near the robot's position, empty otherwise
+     * @return the segment id (1-30, the range {@link RRMapRenderer#decodeSegmentId(int)} can yield)
+     *         if one was unambiguously found at or near the robot's position, empty otherwise
      */
     public static Optional<Integer> resolveSegmentId(RRMapData mapData, int robotX, int robotY) {
         int width = mapData.imageWidth();
@@ -71,33 +82,57 @@ public final class RoomAtRobotResolver {
         int centerX = Math.round(robotX / (float) MM) - mapData.left() - 1;
         int centerY = Math.round(robotY / (float) MM) - mapData.top() - 1;
 
-        for (int radius = 0; radius <= FALLBACK_SEARCH_RADIUS; radius++) {
-            Optional<Integer> found = searchRing(imageData, width, height, centerX, centerY, radius);
-            if (found.isPresent()) {
-                return found;
+        Optional<Integer> exactHit = segmentAt(imageData, width, height, centerX, centerY);
+        if (exactHit.isPresent()) {
+            return exactHit;
+        }
+        for (int radius = 1; radius <= FALLBACK_SEARCH_RADIUS; radius++) {
+            Map<Integer, Integer> ringCandidates = collectRing(imageData, width, height, centerX, centerY, radius);
+            if (!ringCandidates.isEmpty()) {
+                return dominantSegment(ringCandidates);
             }
         }
         return Optional.empty();
     }
 
-    private static Optional<Integer> searchRing(byte[] imageData, int width, int height, int centerX, int centerY,
+    /**
+     * Counts the segmented-floor pixels per segment id on the outer ring of the given radius.
+     * Pixels of smaller radii belong to rings already evaluated and are skipped.
+     */
+    private static Map<Integer, Integer> collectRing(byte[] imageData, int width, int height, int centerX, int centerY,
             int radius) {
-        if (radius == 0) {
-            return segmentAt(imageData, width, height, centerX, centerY);
-        }
+        Map<Integer, Integer> segmentCounts = new HashMap<>();
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dy = -radius; dy <= radius; dy++) {
                 if (Math.max(Math.abs(dx), Math.abs(dy)) != radius) {
-                    // Only the outer ring of this radius: smaller radii were already tried.
                     continue;
                 }
-                Optional<Integer> found = segmentAt(imageData, width, height, centerX + dx, centerY + dy);
-                if (found.isPresent()) {
-                    return found;
-                }
+                segmentAt(imageData, width, height, centerX + dx, centerY + dy)
+                        .ifPresent(segmentId -> segmentCounts.merge(segmentId, 1, Integer::sum));
             }
         }
-        return Optional.empty();
+        return segmentCounts;
+    }
+
+    /**
+     * Returns the segment id with the strictly highest pixel count, or empty when the highest count
+     * is shared by more than one segment.
+     */
+    private static Optional<Integer> dominantSegment(Map<Integer, Integer> segmentCounts) {
+        int dominantId = -1;
+        int highestCount = 0;
+        boolean tied = false;
+        for (Map.Entry<Integer, Integer> candidate : segmentCounts.entrySet()) {
+            int count = candidate.getValue();
+            if (count > highestCount) {
+                highestCount = count;
+                dominantId = candidate.getKey();
+                tied = false;
+            } else if (count == highestCount) {
+                tied = true;
+            }
+        }
+        return tied || dominantId < 0 ? Optional.empty() : Optional.of(dominantId);
     }
 
     private static Optional<Integer> segmentAt(byte[] imageData, int width, int height, int x, int y) {
