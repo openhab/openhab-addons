@@ -542,61 +542,97 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Helper to check whether the parent bridge handler exists and is currently ONLINE.
+     */
+    private boolean isBridgeSessionValid() {
+        RoborockAccountHandler localBridgeHandler = bridgeHandler;
+        return localBridgeHandler != null && localBridgeHandler.getThing().getStatus() == ThingStatus.ONLINE;
+    }
+
     private void pollData() {
         RoborockAccountHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler != null) {
-            applyCloudOnlyCapabilityPolicies();
-            boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
-            HomeData homeData = localBridgeHandler.getHomeData();
-            if (homeData != null && homeData.result != null) {
-                homeRooms = homeData.result.rooms;
-                Devices devices[] = homeData.result.devices;
-                updateDevice(devices);
-                Devices receivedDevices[] = homeData.result.receivedDevices;
-                updateDevice(receivedDevices);
-            }
-
-            if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
-                String routinesResponse = localBridgeHandler.getRoutines(config.duid);
-                List<StateOption> options = new ArrayList<>();
-                JsonObject parsedRoutines = routinesResponse != null && !routinesResponse.isEmpty()
-                        ? JsonParser.parseString(routinesResponse).getAsJsonObject()
-                        : null;
-                if (parsedRoutines != null && parsedRoutines.get("result").isJsonArray()
-                        && parsedRoutines.get("result").getAsJsonArray().size() > 0
-                        && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
-                    JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
-                    Map<String, Object> routines = new HashMap<>();
-                    for (int i = 0; i < routinesArray.size(); ++i) {
-                        JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
-                        routines.put(routinesJsonObject.get("id").getAsString(),
-                                routinesJsonObject.get("name").getAsString());
-                        options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
-                                routinesJsonObject.get("name").getAsString()));
-                    }
-                    updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
-                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE),
-                            options);
-                } else {
-                    logger.debug("Routines not supported for device {}", config.duid);
-                    supportsRoutines = false;
-                }
-            } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
-                disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
-            }
-
-            if (cloudOnlyRefreshDue) {
-                lastCloudOnlyPollTimestamp = System.currentTimeMillis();
-            }
-
-            lastSuccessfulPollTimestamp = System.currentTimeMillis();
-            scheduleNextPoll(-1);
-
-            updateStatus(ThingStatus.ONLINE);
-        } else {
+        if (localBridgeHandler == null || !isBridgeSessionValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
+
+        applyCloudOnlyCapabilityPolicies();
+        boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
+
+        @Nullable
+        HomeData homeData = localBridgeHandler.getHomeData();
+
+        if (homeData == null) {
+            logger.debug("pollData() received null homeData for {}. API fetch failed or token expired.", config.duid);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API fetch failed");
+
+            if (isBridgeSessionValid()) {
+                scheduleNextPoll(config.getRefreshIntervalSeconds());
+            }
+            return;
+        }
+
+        if (!isBridgeSessionValid()) {
+            return;
+        }
+
+        if (homeData.result != null) {
+            homeRooms = homeData.result.rooms != null ? homeData.result.rooms : new Rooms[0];
+
+            Devices[] devices = homeData.result.devices;
+            if (devices != null) {
+                updateDevice(devices);
+            }
+
+            Devices[] receivedDevices = homeData.result.receivedDevices;
+            if (receivedDevices != null) {
+                updateDevice(receivedDevices);
+            }
+        }
+
+        if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+            String routinesResponse = localBridgeHandler.getRoutines(config.duid);
+
+            if (!isBridgeSessionValid()) {
+                return;
+            }
+
+            List<StateOption> options = new ArrayList<>();
+            JsonObject parsedRoutines = (routinesResponse != null && !routinesResponse.isEmpty())
+                    ? JsonParser.parseString(routinesResponse).getAsJsonObject()
+                    : null;
+
+            if (parsedRoutines != null && parsedRoutines.has("result") && parsedRoutines.get("result").isJsonArray()
+                    && !parsedRoutines.get("result").getAsJsonArray().isEmpty()
+                    && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
+
+                JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
+                Map<String, Object> routines = new HashMap<>();
+                for (int i = 0; i < routinesArray.size(); ++i) {
+                    JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
+                    routines.put(routinesJsonObject.get("id").getAsString(),
+                            routinesJsonObject.get("name").getAsString());
+                    options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
+                            routinesJsonObject.get("name").getAsString()));
+                }
+                updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE), options);
+            } else {
+                logger.debug("Routines not supported for device {}", config.duid);
+                supportsRoutines = false;
+            }
+        } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
+            disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
+        }
+
+        if (cloudOnlyRefreshDue) {
+            lastCloudOnlyPollTimestamp = System.currentTimeMillis();
+        }
+
+        lastSuccessfulPollTimestamp = System.currentTimeMillis();
+        scheduleNextPoll(-1);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void pollStatusOnly() {
@@ -870,7 +906,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanRecord(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -953,7 +989,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanSummary(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()) {
@@ -1013,7 +1049,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetSegmentStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -1029,7 +1065,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetMapStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -1050,7 +1086,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetLedStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
