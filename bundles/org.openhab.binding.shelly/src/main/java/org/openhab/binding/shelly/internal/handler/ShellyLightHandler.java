@@ -141,7 +141,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
     }
 
-    public static int setColor(Command command, Integer min, Integer max) {
+    private static int setColor(Command command, Integer min, Integer max) {
         if (command instanceof PercentType pct) {
             return (int) Math.round(min + (pct.doubleValue() * (max - min) / 100));
         }

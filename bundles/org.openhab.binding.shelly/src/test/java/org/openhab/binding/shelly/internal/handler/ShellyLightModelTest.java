@@ -27,8 +27,14 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 
+/**
+ * Tests for {@link ShellyLightModel}
+ *
+ * @author Andrew Fiddian-Green - Initial contribution
+ */
 @NonNullByDefault
 class ShellyLightModelTest {
 
@@ -363,5 +369,78 @@ class ShellyLightModelTest {
         qty = qty.toUnit(Units.KELVIN);
         assertNotNull(qty);
         assertEquals(6500, qty.intValue());
+    }
+
+    @Test
+    void setRgbxCommandRedMapsToExpectedRgbw() {
+        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+                new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
+
+        model.setRGBX(new StringType("red"));
+
+        assertEquals(255, model.getColor(R));
+        assertEquals(0, model.getColor(G));
+        assertEquals(0, model.getColor(B));
+        assertEquals(0, model.getColor(CW));
+    }
+
+    @Test
+    void setRgbxCommandGreenMapsToExpectedRgbw() {
+        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+                new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
+
+        model.setRGBX(new StringType("green"));
+
+        assertEquals(0, model.getColor(R));
+        assertEquals(255, model.getColor(G));
+        assertEquals(0, model.getColor(B));
+        assertEquals(0, model.getColor(CW));
+    }
+
+    @Test
+    void setRgbxCommandBlueMapsToExpectedRgbw() {
+        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+                new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
+
+        model.setRGBX(new StringType("blue"));
+
+        assertEquals(0, model.getColor(R));
+        assertEquals(0, model.getColor(G));
+        assertEquals(255, model.getColor(B));
+        assertEquals(0, model.getColor(CW));
+    }
+
+    @Test
+    void setRgbxCommandYellowMapsToExpectedRgbw() {
+        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+                new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
+
+        model.setRGBX(new StringType("yellow"));
+
+        assertEquals(255, model.getColor(R));
+        assertEquals(255, model.getColor(G));
+        assertEquals(0, model.getColor(B));
+        assertEquals(0, model.getColor(CW));
+    }
+
+    @Test
+    void setRgbxCommandWhiteMapsToExpectedRgbw() {
+        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+                new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
+
+        model.setRGBX(new StringType("white"));
+
+        assertEquals(0, model.getColor(R));
+        assertEquals(0, model.getColor(G));
+        assertEquals(0, model.getColor(B));
+        assertEquals(255, model.getColor(CW));
+    }
+
+    @Test
+    void setRgbxCommandRejectsUnknownColorName() {
+        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+                new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
+
+        assertThrows(IllegalArgumentException.class, () -> model.setRGBX(new StringType("magenta-ish")));
     }
 }
