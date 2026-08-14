@@ -23,11 +23,11 @@ When a task is governed by one of these documents, inspect the relevant document
 
 - Repository organization and build commands: `README.md`.
 - Contribution guidelines: `CONTRIBUTING.md`.
-- Developer documentation: https://www.openhab.org/docs/developer/
-- Add-on development guide: https://www.openhab.org/docs/developer/addons/
-- Coding guidelines: https://www.openhab.org/docs/developer/guidelines.html
-- Review checklist: https://github.com/openhab/openhab-addons/wiki/Review-Checklist
-- Core repository: https://github.com/openhab/openhab-core
+- Developer documentation: <https://www.openhab.org/docs/developer/>
+- Add-on development guide: <https://www.openhab.org/docs/developer/addons/>
+- Coding guidelines: <https://www.openhab.org/docs/developer/guidelines.html>
+- Review checklist: <https://github.com/openhab/openhab-addons/wiki/Review-Checklist>
+- Core repository: <https://github.com/openhab/openhab-core>
 
 ## Development Standards
 
@@ -180,7 +180,7 @@ Follow openHAB null-annotation conventions:
 #### Markdown
 
 - Markdown files must comply with `.github/markdownlint.yaml`.
-- Markdown linting requires Node.js and npm; run `npx markdownlint-cli2 --fix <files>` for changed Markdown files, then address any remaining violations manually.
+- Markdown linting requires Node.js and npm; run `npx markdownlint-cli2 --config .github/markdownlint.yaml --fix <files>` for changed Markdown files, then address any remaining violations manually.
 - Do not disable lint rules unless necessary; keep suppressions as narrowly scoped as possible.
 
 ### Commits
@@ -206,7 +206,7 @@ When adding or changing Maven dependencies:
 ### *.bndrun Files
 
 - These files configure integration tests using bndtools.
-- Reference documentation: https://bnd.bndtools.org/chapters/825-instructions-ref.html
+- Reference documentation: <https://bnd.bndtools.org/chapters/825-instructions-ref.html>
 - When Maven dependencies change, check whether integration-test run bundles also need updating.
 - Use the resolver when appropriate rather than manually maintaining stale dependency lists.
 
@@ -224,7 +224,7 @@ When changing binding metadata:
 ### OH-INF/i18n/*_xx.properties
 
 - Do not add or edit locale-specific `OH-INF/i18n/*_xx.properties` files; translations are managed externally.
-- Reference documentation: https://www.openhab.org/docs/developer/utils/i18n.html#managing-translations
+- Reference documentation: <https://www.openhab.org/docs/developer/utils/i18n.html#managing-translations>
 
 ### CODEOWNERS File
 
@@ -281,19 +281,19 @@ mvn clean install -DwithResolver
 Before considering a change complete:
 
 1. Review the complete diff, including files changed indirectly by formatting or generation.
-2. Remove accidental, unrelated, or unnecessary changes.
-3. Re-read newly added comments and remove comments that merely explain obvious code.
-4. Run the applicable formatting, linting, tests, and Maven build based on the scope of the change.
-5. Review relevant compiler and static-analysis findings produced by the build.
-6. Fix static-analysis findings introduced or materially worsened by the change.
+1. Remove accidental, unrelated, or unnecessary changes.
+1. Re-read newly added comments and remove comments that merely explain obvious code.
+1. Run the applicable formatting, linting, tests, and Maven build based on the scope of the change.
+1. Review relevant compiler and static-analysis findings produced by the build.
+1. Fix static-analysis findings introduced or materially worsened by the change.
    Do not perform unrelated cleanup solely to remove pre-existing findings.
-7. Verify lifecycle, concurrency, state transitions, failure handling, recovery, and cleanup for affected code.
-8. Verify that documentation and configuration metadata still match the implemented behavior.
-9. Do not claim that a test, build, formatter, linter, or analysis passed unless it was actually run successfully.
+1. Verify lifecycle, concurrency, state transitions, failure handling, recovery, and cleanup for affected code.
+1. Verify that documentation and configuration metadata still match the implemented behavior.
+1. Do not claim that a test, build, formatter, linter, or analysis passed unless it was actually run successfully.
 
 ## Creating New Bindings
 
-- Read the binding development guide before creating a new binding: https://www.openhab.org/docs/developer/#develop-a-new-binding
+- Read the binding development guide before creating a new binding: <https://www.openhab.org/docs/developer/#develop-a-new-binding>
 - Determine the binding name and real human author name from the user's request or reliable repository information; do not invent them.
 - Ensure the target binding does not already exist.
 - Use the provided `create_openhab_binding_skeleton` script rather than creating the binding structure manually.
