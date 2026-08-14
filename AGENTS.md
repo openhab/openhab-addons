@@ -296,7 +296,7 @@ Before considering a change complete:
 - Read the binding development guide before creating a new binding: <https://www.openhab.org/docs/developer/#develop-a-new-binding>
 - Determine the binding name and real human author name from the user's request or reliable repository information; do not invent them.
 - Ensure the target binding does not already exist.
-- Use the provided `create_openhab_binding_skeleton` script rather than creating the binding structure manually.
+- Run the appropriate `create_openhab_binding_skeleton` script from the `bundles/` directory rather than creating the binding structure manually.
 - Quote the author name when passing it to the script because it can contain spaces.
 - Let the creation script update `CODEOWNERS`, inspect all generated changes, and remove anything unintended.
 - Run `mvn spotless:apply` from the generated binding directory after creation.
