@@ -35,10 +35,10 @@ public class ShellyColorUtils {
     int green = 0;
     int blue = 0;
     int white = 0;
-    public PercentType percentRed = new PercentType(0);
-    public PercentType percentGreen = new PercentType(0);
-    public PercentType percentBlue = new PercentType(0);
-    public PercentType percentWhite = new PercentType(0);
+    PercentType percentRed = new PercentType(0);
+    PercentType percentGreen = new PercentType(0);
+    PercentType percentBlue = new PercentType(0);
+    PercentType percentWhite = new PercentType(0);
 
     int gain = 0;
     int brightness = 0;
@@ -135,6 +135,22 @@ public class ShellyColorUtils {
         boolean changed = effect != value;
         effect = value;
         return changed;
+    }
+
+    public PercentType getPercentRed() {
+        return percentRed;
+    }
+
+    public PercentType getPercentGreen() {
+        return percentGreen;
+    }
+
+    public PercentType getPercentBlue() {
+        return percentBlue;
+    }
+
+    public PercentType getPercentWhite() {
+        return percentWhite;
     }
 
     public HSBType toHSB() {
