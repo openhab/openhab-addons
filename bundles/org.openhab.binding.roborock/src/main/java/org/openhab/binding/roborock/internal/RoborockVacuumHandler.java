@@ -906,7 +906,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanRecord(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -989,7 +989,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanSummary(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()) {
@@ -1049,7 +1049,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetSegmentStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -1065,7 +1065,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetMapStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -1086,7 +1086,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetLedStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()

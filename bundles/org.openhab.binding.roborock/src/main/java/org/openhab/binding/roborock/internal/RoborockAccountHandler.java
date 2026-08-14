@@ -145,10 +145,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
      * Decoupled from ThingStatus to allow recovery from transient connection drops.
      */
     private boolean hasValidCredentials(String localToken, Rriot localRriot) {
-        return localToken != null && !localToken.isBlank() && localRriot != null && localRriot.r != null
-                && localRriot.r.m != null && !localRriot.r.m.isBlank() && localRriot.r.a != null
-                && !localRriot.r.a.isBlank() && localRriot.u != null && !localRriot.u.isBlank() && localRriot.s != null
-                && !localRriot.s.isBlank() && localRriot.k != null && !localRriot.k.isBlank();
+        return !localToken.isBlank() && localRriot.r != null && localRriot.r.m != null && !localRriot.r.m.isBlank()
+                && localRriot.r.a != null && !localRriot.r.a.isBlank() && localRriot.u != null
+                && !localRriot.u.isBlank() && localRriot.s != null && !localRriot.s.isBlank() && localRriot.k != null
+                && !localRriot.k.isBlank();
     }
 
     @Nullable
@@ -304,15 +304,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             }
         }
         return fallbackThingId;
-    }
-
-    /**
-     * Checks whether current in-memory cloud session credentials are valid and populated.
-     */
-    private boolean isSessionValid() {
-        return getThing().getStatus() == ThingStatus.ONLINE && !token.isBlank() && rriot.r != null && rriot.r.m != null
-                && !rriot.r.m.isBlank() && rriot.r.a != null && !rriot.r.a.isBlank() && rriot.u != null
-                && !rriot.u.isBlank() && rriot.s != null && !rriot.s.isBlank() && rriot.k != null && !rriot.k.isBlank();
     }
 
     /**
