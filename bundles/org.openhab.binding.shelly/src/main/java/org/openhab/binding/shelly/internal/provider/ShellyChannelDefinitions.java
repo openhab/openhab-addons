@@ -543,7 +543,11 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
+            // colorTemp has no channel-type definition for the per-light indexed groups (RGBW2/RGBW PM
+            // hardware has no CCT control); only attempt it for the shared white-control group to avoid
+            // createChannel() throwing IllegalArgumentException for an undefined group/channel pair.
+            addChannel(thing, add, status.temp != null && CHANNEL_GROUP_WHITE_CONTROL.equals(whiteGroup), whiteGroup,
+                    CHANNEL_COLOR_TEMP);
         }
 
         return add;
