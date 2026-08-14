@@ -897,7 +897,6 @@ public class ShellyComponents {
                 ShellySettingsLight light = lights.get(i);
                 String groupName = profile.getControlGroup(i);
                 OnOffType power = getOnOff(light.ison);
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_LIGHT_POWER, power);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", power);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,

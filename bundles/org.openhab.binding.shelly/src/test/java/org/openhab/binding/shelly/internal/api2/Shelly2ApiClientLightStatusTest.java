@@ -176,8 +176,8 @@ public class Shelly2ApiClientLightStatusTest {
         boolean updated = client.fillDeviceStatus(profile.status, result, true);
 
         assertThat(updated, is(true));
-        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_LIGHT_POWER, OnOffType.ON);
         verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
+        verify(thing, never()).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_LIGHT_POWER, OnOffType.ON);
     }
 
     @Test
@@ -195,7 +195,7 @@ public class Shelly2ApiClientLightStatusTest {
         // updateLightModeStatus always signals "processed" for watchdog purposes, independent of
         // whether the channel push itself (verified below) reports a changed value.
         assertThat(updated, is(true));
-        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, OnOffType.ON);
+        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
     }
 
     @Test
