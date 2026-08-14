@@ -1720,7 +1720,7 @@ In `rgbw` or `rgb` profile (color mode):
 |         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% (control only the blue channel)                |
 |         | white         | Dimmer   | r/w       | White brightness: 0..100% (control only the white channel)              |
 | meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
-|         | energyAvg1Min | Number   | yes       | Energy consumed in the previous minute (Wh)                             |
+|         | energyHistMin1| Number   | yes       | Total energy consumed during the previous complete minute (Wh)          |
 |         | totalEnergy   | Number   | yes       | Total energy consumption in kWh                                         |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                       |
 
