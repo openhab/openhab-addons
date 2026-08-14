@@ -1715,10 +1715,10 @@ In `rgbw` or `rgb` profile (color mode):
 | color   | hsb           | HSB      | r/w       | Represents the color picker (HSBType); control r/g/b, not white         |
 |         | full          | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
 |         |               |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
-|         | red           | Dimmer   | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)        |
-|         | green         | Dimmer   | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)    |
-|         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
-|         | white         | Dimmer   | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)    |
+|         | red           | Dimmer   | r/w       | Red brightness: 0..100% (control only the red channel)                  |
+|         | green         | Dimmer   | r/w       | Green brightness: 0..100% (control only the green channel)              |
+|         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% (control only the blue channel)                |
+|         | white         | Dimmer   | r/w       | White brightness: 0..100% (control only the white channel)              |
 | meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
 |         | energyAvg1Min | Number   | yes       | Energy consumed in the previous minute (Wh)                             |
 |         | totalEnergy   | Number   | yes       | Total energy consumption in kWh                                         |
