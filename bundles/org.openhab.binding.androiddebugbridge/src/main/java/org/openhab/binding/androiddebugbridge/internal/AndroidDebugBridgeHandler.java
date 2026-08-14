@@ -101,13 +101,8 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             try {
                 handleCommandInternal(channelUID, command);
             } catch (AndroidDebugBridgeDeviceStreamRejectedException e) {
-                // Socket.isConnected() only records that a connection was once established; it stays
-                // true after the device stops serving the socket, so the check above cannot notice a
-                // device that went into standby and the shell stream open is refused instead. That
-                // drops the first command after standby, typically the very wake-up meant to end it.
-                //
-                // Opening the stream failing does not prove the device never got the request though,
-                // so only repeat commands that stay correct when they run twice.
+                // A failed stream open does not prove the device never got the request, so only
+                // repeat commands that stay correct when they run twice.
                 if (!isSafeToRepeat(channelUID.getId(), command)) {
                     throw e;
                 }
@@ -131,23 +126,16 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     /**
-     * Channels whose handling of {@link RefreshType} is a read. Elsewhere REFRESH is not special
-     * cased and ends up as a value, so {@code text} would type "REFRESH" and {@code record-input}
-     * would act -- neither may be repeated.
+     * Channels that treat {@link RefreshType} as a read. Elsewhere REFRESH is not special cased and
+     * ends up as a value, so {@code text} would type "REFRESH".
      */
     private static final Set<String> REFRESH_READS_STATE = Set.of(CURRENT_PACKAGE_CHANNEL, WAKE_LOCK_CHANNEL,
             AWAKE_STATE_CHANNEL, SCREEN_STATE_CHANNEL, MEDIA_VOLUME_CHANNEL, MEDIA_CONTROL_CHANNEL,
             START_INTENT_CHANNEL);
 
     /**
-     * Tells whether running {@code command} a second time cannot change what the device ends up
-     * doing, which is what makes it safe to repeat after a rejected shell stream.
-     *
-     * Two cases qualify. A {@link RefreshType} on a channel that actually treats it as a read, and
-     * the wake-up key event, which is naturally idempotent since waking an already awake device
-     * does nothing -- that is also the case this recovery exists for. Everything else may act
-     * twice: {@code text} would type the input again, {@code tap} would tap again,
-     * {@code media-control} would toggle back, {@code shutdown} would reboot, and so on.
+     * Whether running {@code command} twice cannot change what the device ends up doing: a read, or
+     * the wake-up key event, which does nothing to an already awake device.
      */
     private static boolean isSafeToRepeat(String channelId, Command command) {
         if (command instanceof RefreshType) {

@@ -713,17 +713,13 @@ public class AndroidDebugBridgeDevice {
     }
 
     /**
-     * Establish a connection, replacing any current one.
-     *
-     * Serialized with the shell commands and with {@link #reconnectForRetry()}: this starts by
-     * disconnecting, so two concurrent calls would otherwise tear down the connection the other one
-     * is still establishing. {@link #disconnect()} deliberately stays outside the lock, since
-     * aborting a running command is exactly what some of its callers need.
+     * Establish a connection, replacing any current one. Serialized with shell commands because it
+     * starts by disconnecting. {@link #disconnect()} stays outside the lock, since aborting a
+     * running command is what some of its callers need.
      */
     public void connect() throws AndroidDebugBridgeDeviceException, InterruptedException {
-        // Interruptible so cancellation actually aborts a pending attempt: dispose() interrupts the
-        // connection checker and then disconnects, and a plain lock() would let a checker that was
-        // waiting here acquire the lock afterwards and build a fresh connection post-disposal.
+        // Interruptible: dispose() interrupts the connection checker, and a plain lock() would let
+        // it acquire the lock afterwards and build a connection on a disposed handler.
         commandLock.lockInterruptibly();
         try {
             connectInternal();
@@ -769,19 +765,13 @@ public class AndroidDebugBridgeDevice {
 
     private String runAdbShell(int commandTimeout, String... args)
             throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
-        // Failures while opening the stream and failures while reading its output are tracked
-        // separately: only the former can mean the shell command never started. Folding both into
-        // one reference would let a failure that happened *after* the command already ran be
-        // reported as a stream rejection, and the caller may retry on that.
+        // Tracked separately: only a failed open can mean the command never started.
         AtomicReference<@Nullable Exception> openError = new AtomicReference<>();
         AtomicReference<@Nullable Exception> readError = new AtomicReference<>();
-        // Interruptible for the same reason as connect(): a command waiting on the lock must not
-        // resume and run against the device after disposal interrupted it.
+        // Interruptible for the same reason as connect().
         commandLock.lockInterruptibly();
         try {
-            // Read the connection only once the lock is held. Capturing it earlier would let a
-            // reconnect replace and close it while this call was still waiting for the lock, so the
-            // command would then run against a connection that is already closed.
+            // Read under the lock: a reconnect could otherwise close it while we waited.
             var adb = connection;
             if (adb == null) {
                 throw new AndroidDebugBridgeDeviceException("Device not connected");
@@ -795,10 +785,8 @@ public class AndroidDebugBridgeDevice {
                     stream = adb.open("shell:" + cmd);
                 } catch (IllegalStateException | IOException e) {
                     if (!"Stream closed".equals(e.getMessage())) {
-                        // Capture rather than throw: letting it escape the scheduled task makes openHAB's
-                        // WrappedScheduledExecutorService log a noisy "Scheduled runnable ended with an
-                        // exception" stacktrace for an expected condition (a standby adbd rejecting the
-                        // shell stream). It is re-surfaced as a typed exception on the calling thread below.
+                        // Captured rather than thrown: escaping the scheduled task would log a noisy
+                        // stacktrace for an expected condition. Re-thrown on the caller below.
                         openError.set(e);
                     }
                     return "";
@@ -875,17 +863,10 @@ public class AndroidDebugBridgeDevice {
     }
 
     /**
-     * Reconnect for a retry, without disturbing anything else that is running.
-     *
-     * Kept as its own name because the reason differs from an ordinary reconnect: calling
-     * {@link #disconnect()} directly here would cancel whatever future another operation had just
-     * installed in {@code commandFuture}, making its {@code get()} throw
-     * {@link java.util.concurrent.CancellationException} in a caller that does not expect it.
-     * {@code disconnect()} keeps aborting running commands, which is what its other callers want.
+     * Reconnect for a retry. Named separately from {@link #connect()} because calling
+     * {@link #disconnect()} here directly would cancel another operation's in-flight command.
      */
     public void reconnectForRetry() throws AndroidDebugBridgeDeviceException, InterruptedException {
-        // connect() already disconnects first and takes the same lock, so this is simply a
-        // connect that cannot interleave with a shell command or with another connect.
         connect();
     }
 
