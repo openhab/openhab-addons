@@ -13,7 +13,9 @@
 package org.openhab.binding.bluelink.internal.dto.eu.ccs2;
 
 import java.util.List;
+import java.util.function.ToIntFunction;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluelink.internal.dto.BatteryStatus;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
 import org.openhab.binding.bluelink.internal.dto.DoorStatus;
@@ -38,6 +40,18 @@ import com.google.gson.annotations.SerializedName;
 public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("ServiceNo") String serviceNo,
         @SerializedName("RetCode") String retCode, String lastUpdateTime, State state) {
 
+    private static boolean isOpen(@Nullable OpenState state) {
+        return state != null && state.open() > 0;
+    }
+
+    private static <T> int[] extract(@Nullable FrontRow<T> r1, @Nullable GenericRow<T> r2, ToIntFunction<T> mapper) {
+        int fl = r1 != null && r1.driver() != null ? mapper.applyAsInt(r1.driver()) : 0;
+        int fr = r1 != null && r1.passenger() != null ? mapper.applyAsInt(r1.passenger()) : 0;
+        int bl = r2 != null && r2.left() != null ? mapper.applyAsInt(r2.left()) : 0;
+        int br = r2 != null && r2.right() != null ? mapper.applyAsInt(r2.right()) : 0;
+        return new int[] { fl, fr, bl, br };
+    }
+
     public CommonVehicleStatus toCommonVehicleStatus(IVehicle vehicle) {
         Vehicle v = this.state != null ? this.state.vehicle() : null;
         if (v == null)
@@ -52,51 +66,46 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
 
             @Override
             public boolean doorLock() {
-                var r1 = v.cabin().door().row1();
-                var r2 = v.cabin().door().row2();
-
-                boolean frontLeftLocked = r1.driver() != null && r1.driver().lock() > 0;
-                boolean frontRightLocked = r1.passenger() != null && r1.passenger().lock() > 0;
-                boolean backLeftLocked = r2.left() != null && r2.left().lock() > 0;
-                boolean backRightLocked = r2.right() != null && r2.right().lock() > 0;
-
-                return (frontLeftLocked || frontRightLocked || backLeftLocked || backRightLocked);
+                var door = v.cabin().door();
+                if (door == null) {
+                    return false;
+                }
+                for (int val : extract(door.row1(), door.row2(), DoorState::lock)) {
+                    if (val > 0) {
+                        return true;
+                    }
+                }
+                return false;
             }
 
             @Override
             public IDoorStatus doorOpen() {
-                var r1 = v.cabin().door().row1();
-                var r2 = v.cabin().door().row2();
-
-                int fl = r1.driver() != null ? r1.driver().open() : 0;
-                int fr = r1.passenger() != null ? r1.passenger().open() : 0;
-                int bl = r2.left() != null ? r2.left().open() : 0;
-                int br = r2.right() != null ? r2.right().open() : 0;
-
-                return new DoorStatus(fl, fr, bl, br);
+                var door = v.cabin().door();
+                if (door == null) {
+                    return new DoorStatus(0, 0, 0, 0);
+                }
+                int[] states = extract(door.row1(), door.row2(), DoorState::open);
+                return new DoorStatus(states[0], states[1], states[2], states[3]);
             }
 
             @Override
             public DoorStatus windowOpen() {
-                var r1 = v.cabin().window().row1();
-                var r2 = v.cabin().window().row2();
-
-                int fl = r1.driver() != null ? r1.driver().open() : 0;
-                int fr = r1.passenger() != null ? r1.passenger().open() : 0;
-                int bl = r2.left() != null ? r2.left().open() : 0;
-                int br = r2.right() != null ? r2.right().open() : 0;
-
-                return new DoorStatus(fl, fr, bl, br);
+                var window = v.cabin().window();
+                if (window == null) {
+                    return new DoorStatus(0, 0, 0, 0);
+                }
+                int[] states = extract(window.row1(), window.row2(), WindowState::open);
+                return new DoorStatus(states[0], states[1], states[2], states[3]);
             }
 
             @Override
             public boolean trunkOpen() {
-                return v.body() != null && v.body().trunk() != null && v.body().trunk().open() > 0;
+                return v.body() != null && isOpen(v.body().trunk());
             }
 
             @Override
             public boolean hoodOpen() {
-                return v.body() != null && v.body().hood() != null && v.body().hood().open() > 0;
+                return v.body() != null && isOpen(v.body().hood());
             }
 
             @Override
@@ -134,15 +143,12 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
 
             @Override
             public SeatHeaterState seatHeaterVentState() {
-                var r1 = v.cabin().door().row1();
-                var r2 = v.cabin().door().row2();
-
-                int fl = r1.driver() != null ? r1.driver().open() : 0;
-                int fr = r1.passenger() != null ? r1.passenger().open() : 0;
-                int bl = r2.left() != null ? r2.left().open() : 0;
-                int br = r2.right() != null ? r2.right().open() : 0;
-
-                return new SeatHeaterState(fl, fr, bl, br);
+                var seat = v.cabin().seat();
+                if (seat == null) {
+                    return new SeatHeaterState(0, 0, 0, 0);
+                }
+                int[] states = extract(seat.row1(), seat.row2(), s -> s.climate() != null ? s.climate().state() : 0);
+                return new SeatHeaterState(states[0], states[1], states[2], states[3]);
             }
 
             @Override
