@@ -12,7 +12,6 @@
  */
 package org.openhab.io.yamlcomposer.internal;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -132,8 +131,13 @@ final class ComposerUtils {
      * @throws IOException if an I/O error occurs
      */
     static @Nullable Object loadYaml(byte[] fileBytes, Path sourcePath) throws IOException {
+        // Automatically normalize tag-only keys like !else: and !var: to satisfy SnakeYAML's scanner
+        // This is a workaround for the fact that SnakeYAML does not allow tag-only keys without a value
+        // Converts `!else:` to `!else ~:` and `!var:` to `!var ~:`
+        String yamlContent = new String(fileBytes, StandardCharsets.UTF_8);
+        yamlContent = yamlContent.replaceAll("(?m)^(\\s*!(?:else|var)):([ \\t]*)(.*)?$", "$1 ~:$2$3");
         Load loader = createYamlLoader(sourcePath.toString());
-        return loader.loadFromInputStream(new ByteArrayInputStream(fileBytes));
+        return loader.loadFromString(yamlContent);
     }
 
     /**
@@ -194,7 +198,7 @@ final class ComposerUtils {
             // --- Level 2 Logic (Items or List Elements) ---
             // Matches exactly 2 spaces followed by a non-whitespace character.
             // This targets siblings within a top-level section.
-            else if (line.matches("^ {2}[^ \\t].*")) {
+            else if (line.matches("^ {2}[^ \\t\\-].*")) {
                 if (hasSeenLevel2) {
                     sb.append("\n");
                 }

@@ -16,21 +16,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ReplacePlaceholder} represents an object constructed from a <code>!replace</code> node
+ * The {@link ForPlaceholder} represents an object constructed from a <code>!for</code> node
  * to be processed by the {@link org.openhab.io.yamlcomposer.internal.YamlComposer}.
  *
- * @param value The value associated with the replace placeholder
+ * @param value The constructed object of the node containing the raw argument for the for placeholder
  * @param sourceLocation Description of the source location for logging purposes
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 @SuppressWarnings("null")
 @NonNullByDefault
-public record ReplacePlaceholder(@Nullable Object value,
-        String sourceLocation) implements InterpolablePlaceholder<ReplacePlaceholder> {
+public record ForPlaceholder(@Nullable Object value,
+        String sourceLocation) implements InterpolablePlaceholder<ForPlaceholder> {
 
     @Override
-    public ReplacePlaceholder recreate(@Nullable Object newValue, String location) {
-        return new ReplacePlaceholder(newValue, location);
+    public ForPlaceholder recreate(@Nullable Object newValue, String location) {
+        return new ForPlaceholder(newValue, location);
+    }
+
+    @Override
+    public boolean eagerArgumentProcessing() {
+        // Do not process the arguments before resolving the conditions
+        // so that !include within unmet conditions are not processed
+        return false;
     }
 }

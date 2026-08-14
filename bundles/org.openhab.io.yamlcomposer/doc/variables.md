@@ -2,13 +2,17 @@
 
 Variables allow you to define reusable values and substitute them throughout your YAML configuration.
 They provide the flexibility needed for complex templates and reduce hard-coded values.
-These variables work consistently across both the current file and any included packages.
+These variables work consistently across the current file, included files, templates, and packages.
 
 [[toc]]
 
 ## Variable Definition
 
-Variables are defined within a top-level `variables:` section.
+Variables can be defined either globally using a top-level `variables:` block or inline anywhere in a document using the `!var` directive tag.
+
+### Top-Level `variables:` Block
+
+The `variables:` section defines variables at the root level.
 It is recommended to place this section at the beginning of the file for better organization.
 
 **Example:**
@@ -28,6 +32,156 @@ variables:
     - Kitchen
     - Bedroom
 ```
+
+### Inline `!var` Directives
+
+The `!var` directive allows you to declare or reassign variables **locally within a mapping node**, with visibility extending to all child nodes.
+Directives process sequentially and leave no output keys in the final composed data structure.
+
+::: tip Scope & Propagation Overview
+
+1. **Sequential Propagation:** A `!var` directive takes effect immediately for all subsequent entries—including keys, values, and nested child/descendant nodes—within the current mapping context.
+1. **Sub-Block Isolation:** Variables declared inside a nested child mapping remain confined to that specific branch. They propagate down to its descendants, but never leak upward to the parent or outward to adjacent sub-mappings.
+
+:::
+
+`!var` supports single-property declarations (key-form), chained declarations, and block (map) declarations.
+
+#### Single-Form (Key-Form) Syntax
+
+Use `!var name: value` to declare a single local variable.
+Multiple sequential key-form `!var` directives evaluate progressively, allowing subsequent directives to reference previously declared variables.
+
+```yaml
+!var host: "localhost"
+!var port: 8080
+!var base_url: "http://${host}:${port}"
+!var api_url: "${base_url}/v1"
+
+endpoint: "${api_url}/users"
+```
+
+**Resulting Output:**
+
+```yaml
+endpoint: "http://localhost:8080/v1/users"
+```
+
+#### Block/Map Form Syntax
+
+Use `!var:` followed by a mapping block to declare multiple variables in a single declaration.
+
+```yaml
+!var:
+  host: "192.168.1.50"
+  port: 8080
+  protocol: "https"
+
+endpoint: "${protocol}://${host}:${port}/api"
+```
+
+#### Merge Keys Inside `!var` Blocks
+
+Block-form `!var` declarations support YAML merge keys (`<<:`). Merge keys are expanded first, populating default variables into scope before explicit map entries are evaluated. This allows explicit variable declarations to reference or override merged defaults:
+
+```yaml
+defaults: &defaults
+  base_url: "[http://10.0.0.1](http://10.0.0.1)"
+  timeout: 3000
+
+service:
+  !var:
+    <<: *defaults
+    timeout: 5000
+    endpoint: "${base_url}:${timeout}"
+  url: "${endpoint}"
+# Service URL resolves to: "[http://10.0.0.1:5000](http://10.0.0.1:5000)"
+```
+
+::: tip List Context Restriction
+`!var` directives are supported only inside mapping contexts.
+Using `!var` inside a YAML list context (e.g., `- !var foo: bar`) logs a warning and is ignored.
+:::
+
+## Variable Scoping & Isolation
+
+Understanding how variable scope flows is critical when designing complex modular compositions.
+
+### Propagation & Isolation Rules
+
+Inline variables follow a combination of sequential evaluation and lexical block isolation:
+
+- **Sequential Propagation:** A `!var` directive applies to all subsequent entries (keys, values, and nested descendant blocks) evaluated after it within the same mapping context.
+- **Downstream Inheritance:** Nested maps, templates (`!insert`), included files (`!include`), conditional branches (`!if`), and loop iterations (`!for`) inherit all variables in scope at their point of declaration.
+- **Upward & Lateral Isolation:** Declarations made inside a child mapping block exist only within that branch and its descendants. They never leak upward to the parent mapping or laterally into adjacent sub-mappings.
+
+#### Example: Scope Propagation & Isolation
+
+```yaml
+# Parent Mapping
+!var prefix: "main"
+
+# 1. Applies to subsequent keys, values, and nested descendants:
+${prefix}_section:
+  device_name: "${prefix}_sensor"
+  config:
+    topic: "tele/${prefix}/state"  # Descendants inherit parent's !var
+
+# 2. Re-declaration updates subsequent entries below it:
+!var prefix: "sub"
+
+${prefix}_section:                # Key evaluates to: "sub_section"
+  !var local_val: "active"        # Local to this child block
+
+  device_name: "${prefix}_sensor" # Value evaluates to: "sub_sensor"
+  status: "${local_val}"          # Evaluates to: "active"
+
+# 3. Next block in parent mapping:
+another_section:
+  name: "${prefix}_node"          # Inherits parent's updated prefix ("sub")
+  state: "${local_val}"           # WARNING: local_val is undefined here
+```
+
+#### Example: Template, Package & Loop Isolation
+
+Because control structures and modular includes create their own child mapping contexts, local variables declared inside them remain isolated to that iteration or file execution:
+
+```yaml
+templates:
+  component:
+    !var internal_id: "tpl_123"
+    id: "${internal_id}"
+    name: "${component_name}"
+
+component_instance:
+  !insert
+    template: component
+    vars:
+      component_name: "sensor_main"
+
+outer_id: "${internal_id}"      # Warning: internal_id is undefined in outer scope
+```
+
+### Progressive Evaluation & Self-Referencing
+
+Within a mapping block or sequence of key-form `!var` directives, variables evaluate sequentially from top to bottom.
+
+- **Progressive Resolution:** A variable can reference previously defined variables within the same block or earlier single-form `!var` directives.
+- **Sequential Re-assignment & Self-Reference:** Re-declaring an existing variable name evaluates the expression against the **current scope value** before updating the variable for subsequent substitutions. Prior substitutions retain the value active at the time they were evaluated.
+
+```yaml
+!var mode: "dev"
+env_first: "${mode}"           # Resolves to "dev"
+
+!var mode: "prod"
+env_second: "${mode}"          # Resolves to "prod"
+
+!var count: 10
+!var count: "${count + 1}"     # Evaluates ${count + 1} using current scope (10) -> 11
+total_count: "${count}"        # Resolves to 11
+```
+
+> **Note:** Referencing an undefined variable in a self-assignment (e.g., `!var count: "${count}"` when `count` does not exist in scope) logs an unresolved variable warning and evaluates to `null`.
 
 ## Variable Substitution
 
@@ -177,6 +331,8 @@ effective_groups: ${ groups + location }
 # Result: [Group1, Group2, SemanticLocationGroup]
 ```
 
+## Filters
+
 ### Built-in Filters
 
 Filters are applied using the `variable|filter` syntax and can be chained.
@@ -221,10 +377,11 @@ label: ${room_label | default('Kitchen')}
 
 ### Custom Filters
 
-| Filter  | Description                                                                         |
-|:--------|:------------------------------------------------------------------------------------|
-| `label` | Converts identifiers (camelCase, snake_case) into human-friendly titles.            |
-| `dig`   | Safely navigates deep maps; returns `null` instead of an error if a key is missing. |
+| Filter      | Description                                                                         |
+|:------------|:------------------------------------------------------------------------------------|
+| `label`     | Converts identifiers (camelCase, snake_case) into human-friendly titles.            |
+| `dig`       | Safely navigates deep maps; returns `null` instead of an error if a key is missing. |
+| `enumerate` | Maps collections, arrays, or maps into an indexed list of `[index, item]` pairs.    |
 
 **`dig` Example:**
 
@@ -232,6 +389,112 @@ label: ${room_label | default('Kitchen')}
 # Dot notation and mixed access supported
 user: ${ infrastructure | dig('config.login.user') }
 host: ${ VARS | dig('config', 'servers', 1, 'host') | default('localhost') }
+```
+
+**`enumerate` Example:**
+
+The `enumerate` filter and function map any collection, array, or map into a list of index-item pairs, making them fully compatible with `!for` loops and tuple unpacking.
+
+```yaml
+variables:
+  items: ["alpha", "beta", "gamma"]
+  mapping:
+    alpha: "one"
+    beta: "two"
+
+# Using the filter syntax with a !for loop
+devices:
+  !for "index, item in items | enumerate":
+    "dev_${index}": "${item}"
+
+# Using the function syntax with a !for loop
+items_mapped:
+  !for "index, item in enumerate(items)":
+    "item_${index}": "${item}"
+
+# Enumerating maps yields index and Map.Entry pairs (.key and .value)
+map_results:
+  !for "idx, entry in enumerate(mapping)":
+    "item_${idx}_${entry.key}": "${entry.value}"
+```
+
+## Functions
+
+Expressions support both built-in functions and custom functions to generate sequences, handle iterations, and transform data.
+
+### Built-in Functions
+
+#### `range()`
+
+**Syntax:**
+
+**`range([start,] stop[, step])`**: Generates a sequence of integers. It supports single-argument bounds (stop), start/stop bounds, and custom positive or negative steps.
+
+**Example:**
+
+`${range(3)}` produces `[0, 1, 2]`
+
+#### Ruby-Style Range Syntax
+
+The Composer also supports Ruby-style range literals inside `${...}` expressions.
+
+Ruby defines two range operators:
+
+- `..` — **inclusive** range
+- `...` — **exclusive** range (stop value is not included)
+
+These behave the same way inside Composer expressions.
+
+```yaml
+${[0..2]}    # Inclusive: [0, 1, 2]
+${[0...2]}   # Exclusive: [0, 1]
+```
+
+Both forms produce a real Java `List` when used as a standalone expression, following the same type‑preservation rules described above.
+
+This syntax is equivalent to calling `range()`:
+
+```yaml
+${range(0, 3)}   # Same as [0..2]
+${range(0, 2)}   # Same as [0...2]
+```
+
+Use whichever form is clearer for your template.
+
+### Custom Functions
+
+#### `enumerate()`
+
+**Syntax:**
+
+**`enumerate(target)`**: Maps collections, arrays, or maps into a list of indexed `[index, item]` pairs. When used with maps, it yields entry objects supporting `.key` and `.value` accessors.
+
+**Example:**
+
+```yaml
+variables:
+  items: ["alpha", "beta", "gamma"]
+  mapping:
+    alpha: "one"
+    beta: "two"
+
+# Using the enumerate filter
+enumerated_list: ${items | enumerate}
+# Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
+
+# Using the enumerate function
+enumerated_list_func: ${enumerate(items)}
+# Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
+
+# Enumerating maps yields indexed Map.Entry objects.
+# Each entry wraps the original key-value pair and provides explicit
+# property accessors: .key (for the map key) and .value (for the map value).
+enumerated_map: ${enumerate(mapping)}
+# Result Structure: [[0, alpha=one], [1, beta=two]]
+#
+# Accessing properties from a specific index (e.g., the first item):
+#   - Key access:   ${enumerated_map[0][1].key}   -> "alpha"
+#   - Value access: ${enumerated_map[0][1].value} -> "one"
 ```
 
 ## Advanced Usage
@@ -251,6 +514,10 @@ These variables can be interpolated just like regular ones and are helpful when 
 | `__DIRECTORY__`    | Directory portion of the current file.                                  |
 | `__DIR__`          | Alias for `__DIRECTORY__`.                                              |
 | `package_id`       | Automatically resolved to the Package ID within included package files. |
+
+::: warning System Variable Protection
+System variables (`OPENHAB_CONF`, `__FILE__`, etc.) cannot be overridden or redefined by `!var` directives or `variables:` blocks. Attempting to redefine a system variable logs a warning and leaves the system value intact.
+:::
 
 ### Handling Reserved Keywords
 
@@ -305,8 +572,9 @@ foo: !sub:jinja "Hello {{ username }}!"
 
 ## Common Pitfalls
 
-1. **Unquoted Operators**: Expressions containing YAML‑significant characters such as `:` or `?` must be quoted; otherwise YAML interprets those characters as structural syntax and rejects the value
-1. **Reserved Names**: Avoid naming variables using keywords like `true`, `false`, `null`, `in`, or `if`.
+1. **Unquoted Operators**: Expressions containing YAML‑significant characters such as `:` or `?` must be quoted; otherwise YAML interprets those characters as structural syntax and rejects the value.
+1. **Sub-Block Scope Boundaries**: `!var` declarations inside child mapping blocks, templates, or `!for` loops remain confined to that branch and never leak upward or outward to adjacent sub-mappings.
+1. **Reserved Names & System Variables**: System variables (`OPENHAB_CONF`, `__FILE__`, etc.) and Jinja keywords (`true`, `false`, `null`, `in`, `if`) cannot be overwritten.
 1. **`+` vs `~`**: Use `~` for strings to avoid type mismatch errors and use `+` for numbers or lists.
 1. **Jinja Blocks**: Block‑level Jinja constructs (e.g., `{% for %}`) are not supported. Use YAMLComposer’s own control‑flow tags, such as `!if`/`!elseif`/`!else` and `!for`.
 1. **Whitespace Sensitivity**: Spaces outside of quotes inside `${ ... }` are ignored, but spaces in quoted strings are preserved.
