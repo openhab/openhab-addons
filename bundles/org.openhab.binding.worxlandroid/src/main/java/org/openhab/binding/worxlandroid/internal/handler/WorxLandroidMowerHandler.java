@@ -47,6 +47,7 @@ import org.openhab.binding.worxlandroid.internal.api.dto.Payload.Dat.Axis;
 import org.openhab.binding.worxlandroid.internal.api.dto.ProductItemStatus;
 import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidActionCodes;
 import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidDayCodes;
+import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidModeCodes;
 import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidStatusCodes;
 import org.openhab.binding.worxlandroid.internal.config.MowerConfiguration;
 import org.openhab.binding.worxlandroid.internal.vo.Mower;
@@ -241,7 +242,7 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
         } else if (GROUP_AWS.equals(groupId)) {
             handleAWSCommand(theMower, channelId);
         } else if (GROUP_SCHEDULE.equals(groupId)) {
-            handleScheduleCommand(theMower, channelId, Integer.parseInt(command.toString()));
+            handleScheduleCommand(theMower, channelId, command);
         } else if (GROUP_ONE_TIME.equals(groupId)) {
             handleOneTimeSchedule(theMower, channelId, command);
         } else if (GROUP_COMMON.equals(groupId)) {
@@ -302,11 +303,13 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
         }
     }
 
-    private void handleScheduleCommand(Mower theMower, String channel, int command) {
+    private void handleScheduleCommand(Mower theMower, String channel, Command command) {
         if (CHANNEL_MODE.equals(channel)) {
-            sendCommand(theMower, new ScheduleCommand(command));
+            WorxLandroidModeCodes modeCode = WorxLandroidModeCodes.valueOf(command.toString().toUpperCase(Locale.ROOT));
+            sendCommand(theMower, new ScheduleCommand(modeCode.code));
         } else if (CHANNEL_TIME_EXTENSION.equals(channel)) {
-            theMower.setTimeExtension(command);
+            int timeExtension = Integer.parseInt(command.toString());
+            theMower.setTimeExtension(timeExtension);
             sendCommand(theMower,
                     theMower.scheduler2Supported()
                             ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1(),
