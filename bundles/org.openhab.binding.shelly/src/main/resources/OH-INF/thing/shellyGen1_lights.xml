@@ -183,7 +183,7 @@
 		<description>Adjust colors when device is in white mode</description>
 	</channel-group-type>
 
-	<channel-group-type id="rgbw2Channel" advanced="true">
+	<channel-group-type id="rgbw2Channel">
 		<label>LED Channel</label>
 		<description>[deprecated] Use light1..4 instead. Control LED channel and adjust settings</description>
 	</channel-group-type>
