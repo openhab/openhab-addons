@@ -367,7 +367,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void thingUpdated(Thing thing) {
-        this.thing = thing;
+        setThing(thing);
         SomfyMyLinkConfiguration newConfig = getConfigAs(SomfyMyLinkConfiguration.class);
         config = newConfig;
     }
