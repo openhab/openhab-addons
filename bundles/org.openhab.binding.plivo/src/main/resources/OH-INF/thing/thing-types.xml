@@ -7,8 +7,7 @@
 	<!-- Plivo Account Bridge -->
 	<bridge-type id="account">
 		<label>Plivo Account</label>
-		<description>A Plivo account that provides API access for sending SMS, MMS, WhatsApp messages, and making voice
-			calls.</description>
+		<description>A Plivo account that provides API access for sending SMS, MMS, WhatsApp messages, and making voice calls.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
@@ -31,8 +30,7 @@
 			<parameter name="autoConfigureWebhooks" type="boolean" required="false">
 				<label>Auto-Configure Webhooks</label>
 				<description>When enabled, automatically creates a Plivo application with the webhook URLs and assigns it to the
-					phone
-					number via the API. Requires Public URL or Cloud Webhook to be configured.</description>
+					phone number via the API. Requires Public URL or Cloud Webhook to be configured.</description>
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -88,8 +86,7 @@
 			<parameter name="voiceGreeting" type="text" required="false">
 				<label>Voice Greeting XML</label>
 				<description>Plivo XML returned when an incoming voice call is received. Use {gatherUrl} as a placeholder for the
-					DTMF
-					callback URL.</description>
+					DTMF callback URL.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="gatherResponse" type="text" required="false">

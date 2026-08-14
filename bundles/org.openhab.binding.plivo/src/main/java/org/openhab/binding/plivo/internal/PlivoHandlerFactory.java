@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.plivo.internal.handler.PlivoAccountHandler;
 import org.openhab.binding.plivo.internal.handler.PlivoPhoneHandler;
 import org.openhab.binding.plivo.internal.service.PlivoCloudWebhookService;
@@ -46,7 +45,7 @@ public class PlivoHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_PHONE);
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final PlivoCallbackServlet callbackServlet;
     private final ItemRegistry itemRegistry;
     private final PlivoCloudWebhookService cloudWebhookService;
@@ -58,7 +57,7 @@ public class PlivoHandlerFactory extends BaseThingHandlerFactory {
         this.callbackServlet = callbackServlet;
         this.itemRegistry = itemRegistry;
         this.cloudWebhookService = cloudWebhookService;
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -71,7 +70,8 @@ public class PlivoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new PlivoAccountHandler((Bridge) thing, httpClient, cloudWebhookService);
+            return new PlivoAccountHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
+                    cloudWebhookService);
         } else if (THING_TYPE_PHONE.equals(thingTypeUID)) {
             return new PlivoPhoneHandler(thing, callbackServlet, itemRegistry);
         }

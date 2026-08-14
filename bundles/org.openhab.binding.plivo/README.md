@@ -219,7 +219,10 @@ If using a reverse proxy, you must forward this entire path prefix.
 The `{thingUID}` is the full thing UID (e.g. `plivo:phone:myaccount:myphone`).
 The `{uuid}` is a randomly generated identifier for temporary media entries.
 
-Incoming callbacks are authenticated with Plivo's request signature. The binding validates every signature family Plivo may send, both the V3 family (`X-Plivo-Signature-V3` and `X-Plivo-Signature-Ma-V3`, used for voice and messaging) and the V2 family (`X-Plivo-Signature-V2` and `X-Plivo-Signature-Ma-V2`, which Plivo documents for messaging), and rejects requests that fail validation with HTTP 403.
+Incoming callbacks are authenticated with Plivo's request signature.
+Voice, gather, and answer callbacks require a V3-family signature (`X-Plivo-Signature-V3` or `X-Plivo-Signature-Ma-V3`).
+Messaging callbacks accept the documented V2 family (`X-Plivo-Signature-V2` or `X-Plivo-Signature-Ma-V2`) as well as the V3 family observed in live traffic.
+Requests that fail signature validation are rejected with HTTP 403.
 
 **Example full URLs** (assuming `publicUrl` is `https://my.domain.com`):
 

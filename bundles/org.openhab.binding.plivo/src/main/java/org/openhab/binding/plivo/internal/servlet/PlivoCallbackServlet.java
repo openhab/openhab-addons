@@ -292,8 +292,11 @@ public class PlivoCallbackServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Account not ready");
             return;
         }
+        // The /status endpoint is shared: message-status callbacks carry MessageUUID and use the
+        // messaging signature families, while call-status callbacks carry CallUUID and require V3 like
+        // the other voice callbacks.
         boolean messaging = WEBHOOK_SMS.equals(endpoint) || WEBHOOK_WHATSAPP.equals(endpoint)
-                || WEBHOOK_STATUS.equals(endpoint);
+                || (WEBHOOK_STATUS.equals(endpoint) && params.containsKey("MessageUUID"));
         String requestUrl = getExternalRequestUrl(req, handler, endpoint, false);
         if (!validateSignature(req, extractBodyParameters(req), requestUrl, client.getAuthToken(), messaging)) {
             logger.debug("Invalid Plivo signature for request to {}", requestUrl);
@@ -575,36 +578,15 @@ public class PlivoCallbackServlet extends HttpServlet {
     }
 
     /**
-     * Validates the request signature against the signatures Plivo supplied. Messaging callbacks are
-     * signed with the main-account signature ({@code X-Plivo-Signature-Ma-V3}) and voice callbacks
-     * with the (sub)account signature ({@code X-Plivo-Signature-V3}); the expected header for the
-     * endpoint is preferred but the other is also accepted when Plivo sends both.
+     * Validates the request signature by extracting the Plivo signature headers and delegating to the
+     * callback-aware {@link PlivoSignatureValidator#validateCallback}.
      */
     private boolean validateSignature(HttpServletRequest req, Map<String, String> params, String url, String authToken,
             boolean messaging) {
-        String v3Nonce = req.getHeader(PLIVO_V3_NONCE_HEADER);
-        String v3 = req.getHeader(PLIVO_SIGNATURE_V3_HEADER);
-        String maV3 = req.getHeader(PLIVO_SIGNATURE_MA_V3_HEADER);
-        String v3Combined = messaging ? joinSignatures(maV3, v3) : joinSignatures(v3, maV3);
-        if (PlivoSignatureValidator.validateV3(url, params, v3Combined, v3Nonce, authToken)) {
-            return true;
-        }
-        String v2Nonce = req.getHeader(PLIVO_V2_NONCE_HEADER);
-        String v2Combined = joinSignatures(req.getHeader(PLIVO_SIGNATURE_MA_V2_HEADER),
-                req.getHeader(PLIVO_SIGNATURE_V2_HEADER));
-        return PlivoSignatureValidator.validateV2(url, v2Combined, v2Nonce, authToken);
-    }
-
-    private @Nullable String joinSignatures(@Nullable String primary, @Nullable String secondary) {
-        boolean hasPrimary = primary != null && !primary.isBlank();
-        boolean hasSecondary = secondary != null && !secondary.isBlank();
-        if (hasPrimary && hasSecondary) {
-            return primary + "," + secondary;
-        }
-        if (hasPrimary) {
-            return primary;
-        }
-        return hasSecondary ? secondary : null;
+        return PlivoSignatureValidator.validateCallback(messaging, url, params, authToken,
+                req.getHeader(PLIVO_SIGNATURE_V3_HEADER), req.getHeader(PLIVO_SIGNATURE_MA_V3_HEADER),
+                req.getHeader(PLIVO_V3_NONCE_HEADER), req.getHeader(PLIVO_SIGNATURE_V2_HEADER),
+                req.getHeader(PLIVO_SIGNATURE_MA_V2_HEADER), req.getHeader(PLIVO_V2_NONCE_HEADER));
     }
 
     // --- Media Entry ---

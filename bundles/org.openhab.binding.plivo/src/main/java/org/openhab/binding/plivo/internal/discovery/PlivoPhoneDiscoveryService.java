@@ -59,8 +59,6 @@ public class PlivoPhoneDiscoveryService extends AbstractThingHandlerDiscoverySer
 
     @Override
     protected void startBackgroundDiscovery() {
-        // The README documents that phone numbers are discovered automatically once the account
-        // bridge comes online, so scan once as soon as the handler is available.
         startScan();
     }
 

@@ -5,8 +5,7 @@
 
 	<type>binding</type>
 	<name>Plivo Binding</name>
-	<description>Integrates with Plivo for sending and receiving SMS, MMS, and WhatsApp messages, as well as making
-		and
+	<description>Integrates with Plivo for sending and receiving SMS, MMS, and WhatsApp messages, as well as making and
 		receiving voice calls with text-to-speech and DTMF input support.</description>
 	<connection>cloud</connection>
 

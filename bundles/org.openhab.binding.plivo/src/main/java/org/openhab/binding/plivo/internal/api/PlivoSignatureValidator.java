@@ -34,9 +34,10 @@ import org.eclipse.jdt.annotation.Nullable;
  * {@code X-Plivo-Signature-Ma-V3}, nonce {@code X-Plivo-Signature-V3-Nonce}) is used for voice and is
  * also seen on messaging. The V2 family ({@code X-Plivo-Signature-V2} / {@code X-Plivo-Signature-Ma-V2},
  * nonce {@code X-Plivo-Signature-V2-Nonce}) is documented for messaging. A header may itself carry
- * several comma-separated signatures. The caller validates each family it received and accepts the
- * request when any signature matches. The per-family signed-string construction is documented on
- * {@link #computeV3Signature} and {@link #computeV2Signature}.
+ * several comma-separated signatures, and {@link #validateV3} / {@link #validateV2} accept the request
+ * when any signature in that header matches. {@link #validateCallback} selects the accepted family in a
+ * callback-aware way and never downgrades a failed V3 signature to V2. The per-family signed-string
+ * construction is documented on {@link #computeV3Signature} and {@link #computeV2Signature}.
  *
  * @author Sarvesh Patil - Initial contribution
  */
@@ -142,6 +143,56 @@ public class PlivoSignatureValidator {
         int queryIndex = url.indexOf('?');
         String base = queryIndex >= 0 ? url.substring(0, queryIndex) : url;
         return hmacBase64(base + nonce, authToken);
+    }
+
+    /**
+     * Validates a callback signature in a callback-aware way. A V3-family signature
+     * ({@code X-Plivo-Signature-V3} or {@code X-Plivo-Signature-Ma-V3}) is authoritative whenever it is
+     * present, so a failed V3 signature is never downgraded to the V2 family. When no V3 signature is
+     * sent, messaging callbacks may use the documented V2 family, while other callbacks (voice, gather,
+     * answer) require V3.
+     *
+     * @param messaging whether this is a messaging callback (SMS, WhatsApp, or a message status)
+     * @param url the full URL that Plivo requested
+     * @param params the POST body parameters
+     * @param authToken the Plivo Auth Token
+     * @param v3 the {@code X-Plivo-Signature-V3} header value, or null
+     * @param maV3 the {@code X-Plivo-Signature-Ma-V3} header value, or null
+     * @param v3Nonce the {@code X-Plivo-Signature-V3-Nonce} header value, or null
+     * @param v2 the {@code X-Plivo-Signature-V2} header value, or null
+     * @param maV2 the {@code X-Plivo-Signature-Ma-V2} header value, or null
+     * @param v2Nonce the {@code X-Plivo-Signature-V2-Nonce} header value, or null
+     * @return true if the request carries a valid signature for its callback type
+     */
+    public static boolean validateCallback(boolean messaging, String url, Map<String, String> params, String authToken,
+            @Nullable String v3, @Nullable String maV3, @Nullable String v3Nonce, @Nullable String v2,
+            @Nullable String maV2, @Nullable String v2Nonce) {
+        boolean v3Present = !isBlank(v3) || !isBlank(maV3);
+        if (v3Present) {
+            String v3Combined = messaging ? join(maV3, v3) : join(v3, maV3);
+            return validateV3(url, params, v3Combined, v3Nonce, authToken);
+        }
+        // No V3 signature was sent. Only messaging callbacks may use the documented V2 family.
+        if (!messaging) {
+            return false;
+        }
+        return validateV2(url, join(maV2, v2), v2Nonce, authToken);
+    }
+
+    private static boolean isBlank(@Nullable String s) {
+        return s == null || s.isBlank();
+    }
+
+    private static @Nullable String join(@Nullable String primary, @Nullable String secondary) {
+        boolean hasPrimary = !isBlank(primary);
+        boolean hasSecondary = !isBlank(secondary);
+        if (hasPrimary && hasSecondary) {
+            return primary + "," + secondary;
+        }
+        if (hasPrimary) {
+            return primary;
+        }
+        return hasSecondary ? secondary : null;
     }
 
     private static String hmacBase64(String data, String authToken) {

@@ -117,4 +117,47 @@ public class PlivoSignatureValidatorTest {
         assertFalse(PlivoSignatureValidator.validateV2(URL_NO_QUERY, null, NONCE, AUTH_TOKEN));
         assertFalse(PlivoSignatureValidator.validateV2(URL_NO_QUERY, SIG_V2, null, AUTH_TOKEN));
     }
+
+    @Test
+    public void validateCallbackAcceptsV3ForVoice() {
+        // A voice callback (messaging=false) with a valid V3 signature is accepted.
+        assertTrue(PlivoSignatureValidator.validateCallback(false, URL_NO_QUERY, PARAMS, AUTH_TOKEN, SIG_NO_QUERY, null,
+                NONCE, null, null, null));
+    }
+
+    @Test
+    public void validateCallbackRejectsV2ForVoice() {
+        // A voice callback presenting only a V2 signature is rejected. V2 is never accepted for voice,
+        // so there is no downgrade path.
+        assertFalse(PlivoSignatureValidator.validateCallback(false, URL_NO_QUERY, PARAMS, AUTH_TOKEN, null, null, null,
+                SIG_V2, null, NONCE));
+    }
+
+    @Test
+    public void validateCallbackAcceptsV2ForMessaging() {
+        // A messaging callback may use the documented V2 family when no V3 signature is present.
+        assertTrue(PlivoSignatureValidator.validateCallback(true, URL_NO_QUERY, PARAMS, AUTH_TOKEN, null, null, null,
+                SIG_V2, null, NONCE));
+    }
+
+    @Test
+    public void validateCallbackAcceptsMaV3ForMessaging() {
+        // A messaging callback may also use the live-observed Ma-V3 signature.
+        assertTrue(PlivoSignatureValidator.validateCallback(true, URL_NO_QUERY, PARAMS, AUTH_TOKEN, null, SIG_NO_QUERY,
+                NONCE, null, null, null));
+    }
+
+    @Test
+    public void validateCallbackDoesNotDowngradeFailedV3ToV2() {
+        // When a V3-family signature is present but invalid, the request is rejected even if a valid V2
+        // signature is also supplied. A failed V3 must never fall back to V2.
+        assertFalse(PlivoSignatureValidator.validateCallback(true, URL_NO_QUERY, PARAMS, AUTH_TOKEN, "invalidV3==",
+                null, NONCE, SIG_V2, null, NONCE));
+    }
+
+    @Test
+    public void validateCallbackRejectsWhenNoSignatures() {
+        assertFalse(PlivoSignatureValidator.validateCallback(false, URL_NO_QUERY, PARAMS, AUTH_TOKEN, null, null, null,
+                null, null, null));
+    }
 }
