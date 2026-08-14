@@ -568,7 +568,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API fetch failed");
 
             if (isBridgeSessionValid()) {
-                scheduleNextPoll(-1);
+                scheduleNextPoll(config.getRefreshIntervalSeconds());
             }
             return;
         }
