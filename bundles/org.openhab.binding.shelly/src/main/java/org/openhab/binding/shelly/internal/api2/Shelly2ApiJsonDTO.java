@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
@@ -22,6 +23,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBase
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -1311,9 +1313,21 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("cfg_rev")
         public @Nullable Integer cfgRev;
 
-        public @Nullable Shelly2NotifyBluEventData getBluData(Gson gson) {
+        /**
+         * Returns the BLU payload, or null when {@code data} is absent or not an object at all.
+         * <p>
+         * A malformed object still raises {@link ShellyApiException}, the same checked exception the
+         * whole frame used to fail with while it was deserialized through
+         * {@link ShellyUtils#fromJson(Gson, String, Class)}: both call sites already handle it, and
+         * silently returning null instead would drop a BLU event that the device did send, without
+         * anything in the log to show for it.
+         */
+        public @Nullable Shelly2NotifyBluEventData getBluData(Gson gson) throws ShellyApiException {
             JsonElement data = this.data;
-            return data != null && data.isJsonObject() ? gson.fromJson(data, Shelly2NotifyBluEventData.class) : null;
+            if (data == null || !data.isJsonObject()) {
+                return null;
+            }
+            return ShellyUtils.fromJson(gson, data.toString(), Shelly2NotifyBluEventData.class);
         }
     }
 

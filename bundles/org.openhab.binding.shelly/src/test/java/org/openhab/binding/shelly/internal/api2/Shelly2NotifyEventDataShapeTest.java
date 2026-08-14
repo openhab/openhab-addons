@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 
@@ -94,6 +95,23 @@ public class Shelly2NotifyEventDataShapeTest {
         assertThat(event.event, is(equalTo("config_changed")));
         assertThat(event.data, is(nullValue()));
         assertThat(event.getBluData(gson), is(nullValue()));
+    }
+
+    @Test
+    void malformedObjectDataRaisesTheCheckedApiException() throws ShellyApiException {
+        // "pid" is numeric in the DTO; a string there makes Gson fail on an otherwise object-shaped
+        // payload. This has to surface as the checked ShellyApiException, the same error boundary the
+        // frame used to fail with, because that is what both call sites catch - a raw
+        // JsonSyntaxException would escape Shelly2RpcSocket.onMessage and ShellyBluApi.onNotifyEvent.
+        String json = """
+                {"src":"shellyplusht-test","dst":"ohshelly-test-1","method":"NotifyEvent",
+                "params":{"ts":1700000000.0,"events":[{"component":"script:1","id":1,"event":"oh-blu.data",
+                "data":{"addr":"aa:bb:cc:dd:ee:01","pid":"not-a-number"},"ts":1700000000.0}]}}
+                """;
+
+        Shelly2NotifyEvent event = firstEvent(json);
+        assertThat(event.event, is(equalTo("oh-blu.data")));
+        assertThrows(ShellyApiException.class, () -> event.getBluData(gson));
     }
 
     private Shelly2NotifyEvent firstEvent(String json) throws ShellyApiException {
