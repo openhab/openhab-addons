@@ -1707,7 +1707,7 @@ Changing the profile requires deleting and re-discovering the Thing.
 In `rgbw` or `rgb` profile (color mode):
 
 | Group   | Channel       | Type     | read-only | Description                                                             |
-| ------- | ------------- | -------- | --------- | ------------------------------------------------------------------------ |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
 | control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
 |         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
 |         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
@@ -1727,7 +1727,7 @@ In `rgbw` or `rgb` profile (color mode):
 In `light` profile (white mode), each of the 4 LED output channels is exposed as its own group:
 
 | Group  | Channel     | Type   | read-only | Description                                                             |
-| ------ | ----------- | ------ | --------- | ------------------------------------------------------------------------ |
+| ------ | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
 | light1 | brightness  | Dimmer | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
 |        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
 |        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
