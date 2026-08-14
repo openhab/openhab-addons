@@ -636,7 +636,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_DecimalTypeAppliesInverseFactor() {
+    public void testHandleCommandDecimalTypeAppliesInverseFactor() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final ZwaveJSNodeHandlerMock nodeHandler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
