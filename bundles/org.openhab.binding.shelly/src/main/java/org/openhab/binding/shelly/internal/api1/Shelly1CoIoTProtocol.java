@@ -244,7 +244,7 @@ public class Shelly1CoIoTProtocol {
                 group = CHANNEL_GROUP_RELAY_CONTROL;
             } else if (profile.isRGBW2) {
                 checkL = String.valueOf(id); // String.valueOf(id - 1); // id is 1-based, L is 0-based
-                group = CHANNEL_GROUP_LIGHT_CHANNEL + id;
+                group = lightChannelGroupPrefix(profile) + id;
                 logger.trace("{}: updatePower() for L={}", thingName, checkL);
             }
 

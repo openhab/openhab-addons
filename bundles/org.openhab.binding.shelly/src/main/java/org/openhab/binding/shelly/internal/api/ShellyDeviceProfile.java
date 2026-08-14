@@ -96,6 +96,7 @@ public class ShellyDeviceProfile {
     public boolean isDuo; // true only if it is a Duo
     public boolean isRGBW2; // true only if it a RGBW2
     public boolean inColor; // true if bulb/rgbw2 is in color mode
+    public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
 
     public boolean isSensor; // true for HT & Smoke
     public boolean hasBattery; // true if battery device
@@ -328,7 +329,7 @@ public class ShellyDeviceProfile {
             if (lights == null || lights.size() <= 1) {
                 return CHANNEL_GROUP_LIGHT_CONTROL;
             }
-            return lightChannelGroupPrefix(isGen2) + idx;
+            return lightChannelGroupPrefix(this) + idx;
         } else if (isLight) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {

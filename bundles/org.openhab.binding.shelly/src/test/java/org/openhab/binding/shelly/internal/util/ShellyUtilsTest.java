@@ -73,8 +73,17 @@ public class ShellyUtilsTest {
     void buildControlGroupNameUsesDeprecatedChannelPrefixForGen1Rgbw2() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
         profile.inColor = false;
+        profile.hasLegacyLightChannels = true;
 
         assertEquals(CHANNEL_GROUP_LIGHT_CHANNEL + "2", ShellyUtils.buildControlGroupName(profile, 2));
+    }
+
+    @Test
+    void buildControlGroupNameUsesLightPrefixForNewGen1Rgbw2() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
+        profile.inColor = false;
+
+        assertEquals(CHANNEL_GROUP_LIGHT_INDEX + "2", ShellyUtils.buildControlGroupName(profile, 2));
     }
 
     @Test
@@ -117,8 +126,16 @@ public class ShellyUtilsTest {
     @Test
     void buildWhiteGroupNameUsesDeprecatedChannelPrefixForGen1Rgbw2() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
+        profile.hasLegacyLightChannels = true;
 
         assertEquals(CHANNEL_GROUP_LIGHT_CHANNEL + "3", ShellyUtils.buildWhiteGroupName(profile, 3));
+    }
+
+    @Test
+    void buildWhiteGroupNameUsesLightPrefixForNewGen1Rgbw2() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
+
+        assertEquals(CHANNEL_GROUP_LIGHT_INDEX + "3", ShellyUtils.buildWhiteGroupName(profile, 3));
     }
 
     @Test
