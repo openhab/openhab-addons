@@ -1266,7 +1266,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (brightness != null) {
             ds.brightness = brightness.intValue();
         }
-        ds.ison = value.output;
+        Boolean output = value.output;
+        if (output != null) {
+            ds.ison = output;
+        }
         lights.set(lightId, ds);
         if (channelUpdate) {
             ShellyComponents.updateLightMode(getThing(), status);
