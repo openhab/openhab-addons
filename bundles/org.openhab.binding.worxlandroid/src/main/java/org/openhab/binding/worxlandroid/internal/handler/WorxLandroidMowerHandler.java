@@ -305,7 +305,7 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
 
     private void handleScheduleCommand(Mower theMower, String channel, Command command) {
         if (CHANNEL_MODE.equals(channel)) {
-            WorxLandroidModeCodes modeCode = WorxLandroidModeCodes.valueOf(command.toString());
+            WorxLandroidModeCodes modeCode = WorxLandroidModeCodes.valueOf(command.toString().toUpperCase(Locale.ROOT));
             sendCommand(theMower, new ScheduleCommand(modeCode.code));
         } else if (CHANNEL_TIME_EXTENSION.equals(channel)) {
             int timeExtension = Integer.parseInt(command.toString());
