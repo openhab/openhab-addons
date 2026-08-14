@@ -136,7 +136,7 @@ public class GeminiApiClient {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         List<GeminiContent> contents = new ArrayList<>();
-        Queue<String> pendingToolCallNames = new LinkedList<>();
+        Queue<GeminiFunctionCall> pendingToolCalls = new LinkedList<>();
 
         for (Conversation.Message msg : history) {
             switch (msg.role()) {
@@ -153,22 +153,38 @@ public class GeminiApiClient {
                 case TOOL_CALL: {
                     GeminiLLMToolCall toolCall = GeminiLLMToolCall.fromJson(msg.content());
                     String name = toolCall.tool.replaceAll("[^a-zA-Z0-9_-]", "_");
-                    pendingToolCallNames.add(name);
                     GeminiFunctionCall fc = new GeminiFunctionCall(name, toolCall.params, toolCall.id);
+                    pendingToolCalls.add(fc);
                     GeminiPart part = new GeminiPart(null, fc, null, null, toolCall.thoughtSignature);
-                    contents.add(new GeminiContent(ROLE_MODEL, List.of(part)));
+
+                    // Parallel function calls are stored as interleaved TOOL_CALL/TOOL_RETURN pairs whose
+                    // calls 2..N carry parallel=true. All calls of such a batch were made in one model turn
+                    // and must be replayed as parts of a single ROLE_MODEL content, otherwise Gemini rejects
+                    // the request (e.g. missing thought_signature on split-off calls). The model turn of the
+                    // preceding call sits right before the ROLE_USER content holding its function response.
+                    GeminiContent precedingCallTurn = Boolean.TRUE.equals(toolCall.parallel)
+                            ? findPrecedingFunctionCallTurn(contents)
+                            : null;
+                    List<GeminiPart> precedingCallParts = precedingCallTurn != null ? precedingCallTurn.parts() : null;
+                    if (precedingCallParts != null) {
+                        precedingCallParts.add(part);
+                    } else {
+                        contents.add(new GeminiContent(ROLE_MODEL, new ArrayList<>(List.of(part))));
+                    }
                     break;
                 }
                 case TOOL_RETURN: {
-                    String name = pendingToolCallNames.poll();
-                    if (name == null) {
+                    GeminiFunctionCall call = pendingToolCalls.poll();
+                    if (call == null) {
                         logger.trace("skipping orphaned TOOL_RETURN");
                         break; // TOOL_RETURN without preceding TOOL_CALL - ignore
                     }
-                    GeminiFunctionResponse fr = new GeminiFunctionResponse(name, Map.of("result", msg.content()));
+                    GeminiFunctionResponse fr = new GeminiFunctionResponse(call.name(), Map.of("result", msg.content()),
+                            call.id());
                     GeminiPart part = new GeminiPart(null, null, fr, null, null);
 
-                    // Consolidate consecutive TOOL_RETURNs into the same ROLE_USER content
+                    // Consolidate consecutive TOOL_RETURNs into the same ROLE_USER content; this also
+                    // gathers the responses of a parallel call batch in one user turn
                     if (!contents.isEmpty() && ROLE_USER.equals(contents.getLast().role())) {
                         GeminiContent lastContent = contents.getLast();
                         List<GeminiPart> lastParts = lastContent.parts();
@@ -236,6 +252,30 @@ public class GeminiApiClient {
         GeminiRequest request = new GeminiRequest(contents, systemInstruction, genConfig, geminiTools);
 
         return executeGenerateContentRequest(model, request, timeoutSeconds);
+    }
+
+    /**
+     * Returns the model turn holding the function call(s) of the directly preceding TOOL_CALL message,
+     * i.e. the ROLE_MODEL content right before the trailing ROLE_USER content with its function
+     * response(s), or null if the contents do not end in such a pair (e.g. after history truncation).
+     */
+    private @Nullable GeminiContent findPrecedingFunctionCallTurn(List<GeminiContent> contents) {
+        if (contents.size() < 2) {
+            return null;
+        }
+        GeminiContent last = contents.getLast();
+        List<GeminiPart> lastParts = last.parts();
+        if (!ROLE_USER.equals(last.role()) || lastParts == null || lastParts.isEmpty()
+                || lastParts.getFirst().functionResponse() == null) {
+            return null;
+        }
+        GeminiContent callTurn = contents.get(contents.size() - 2);
+        List<GeminiPart> callParts = callTurn.parts();
+        if (!ROLE_MODEL.equals(callTurn.role()) || callParts == null || callParts.isEmpty()
+                || callParts.getFirst().functionCall() == null) {
+            return null;
+        }
+        return callTurn;
     }
 
     /**

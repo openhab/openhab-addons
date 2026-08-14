@@ -16,6 +16,7 @@ import static org.openhab.binding.gemini.internal.GeminiBindingConstants.BINDING
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -246,38 +247,48 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
                 boolean hasToolCall = false;
                 StringBuilder textBuilder = new StringBuilder();
 
+                // Parallel function calls arrive as multiple functionCall parts of a single model turn.
+                // Each call is stored as its own TOOL_CALL/TOOL_RETURN message pair (a TOOL_RETURN must
+                // directly follow its TOOL_CALL), with parallel=true marking calls 2..N as belonging to
+                // the same model turn as the preceding TOOL_CALL. The API client uses that marker to
+                // replay the batch as one model turn followed by one user turn — Gemini rejects
+                // interleaved single-call replays (e.g. missing thought_signature on split-off calls).
+                List<GeminiLLMToolCall> toolCalls = new ArrayList<>();
                 for (GeminiPart part : parts) {
                     GeminiFunctionCall fc = part.functionCall();
                     if (fc != null) {
                         hasToolCall = true;
                         String toolName = fc.name();
                         Map<String, Object> args = fc.args();
-
-                        GeminiLLMToolCall llmToolCall = new GeminiLLMToolCall(toolName != null ? toolName : "",
-                                args != null ? args : new HashMap<>(), fc.id(), part.thoughtSignature());
-                        try {
-                            conversation.addMessage(ConversationRole.TOOL_CALL, llmToolCall.toJson());
-                        } catch (ConversationException e) {
-                            logger.warn("Cannot interpret: Failed to add TOOL_CALL to conversation", e);
-                            var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
-                                    DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
-                            ex.initCause(e);
-                            throw ex;
-                        }
-
-                        String result = executeTool(tools, toolName, args, locale);
-
-                        try {
-                            conversation.addMessage(ConversationRole.TOOL_RETURN, result);
-                        } catch (ConversationException e) {
-                            logger.warn("Cannot interpret: Failed to add TOOL_RETURN to conversation", e);
-                            var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
-                                    DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
-                            ex.initCause(e);
-                            throw ex;
-                        }
+                        toolCalls.add(new GeminiLLMToolCall(toolName != null ? toolName : "",
+                                args != null ? args : new HashMap<>(), fc.id(), part.thoughtSignature(),
+                                toolCalls.isEmpty() ? null : Boolean.TRUE));
                     } else if (part.text() != null) {
                         textBuilder.append(part.text());
+                    }
+                }
+
+                for (GeminiLLMToolCall toolCall : toolCalls) {
+                    try {
+                        conversation.addMessage(ConversationRole.TOOL_CALL, toolCall.toJson());
+                    } catch (ConversationException e) {
+                        logger.warn("Cannot interpret: Failed to add TOOL_CALL to conversation", e);
+                        var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                        ex.initCause(e);
+                        throw ex;
+                    }
+
+                    String result = executeTool(tools, toolCall.tool, toolCall.params, locale);
+
+                    try {
+                        conversation.addMessage(ConversationRole.TOOL_RETURN, result);
+                    } catch (ConversationException e) {
+                        logger.warn("Cannot interpret: Failed to add TOOL_RETURN to conversation", e);
+                        var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                        ex.initCause(e);
+                        throw ex;
                     }
                 }
 
