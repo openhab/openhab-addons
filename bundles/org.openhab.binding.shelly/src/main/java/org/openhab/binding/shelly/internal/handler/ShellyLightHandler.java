@@ -207,6 +207,19 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     logger.debug("{}: Set color effect to {}", thingName, effect);
                     validateRange("effect", effect, SHELLY_MIN_EFFECT, SHELLY_MAX_EFFECT);
                     col.setEffect(effect.intValue());
+                    break;
+
+                case CHANNEL_TIMER_AUTOON:
+                    logger.debug("{}: Set Auto-ON timer to {}", thingName, command);
+                    api.setAutoTimer(lightId, SHELLY_TIMER_AUTOON, getNumber(command).doubleValue());
+                    update = false;
+                    break;
+
+                case CHANNEL_TIMER_AUTOOFF:
+                    logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
+                    api.setAutoTimer(lightId, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
+                    update = false;
+                    break;
             }
 
             if (update) {

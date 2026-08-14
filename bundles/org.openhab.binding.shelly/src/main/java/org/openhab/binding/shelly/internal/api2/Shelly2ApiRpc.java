@@ -910,9 +910,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        boolean isLight = profile.isLight || profile.isDimmer;
-        String method = isLight ? SHELLYRPC_METHOD_LIGHT_SETCONFIG : SHELLYRPC_METHOD_SWITCH_SETCONFIG;
-        String component = isLight ? "Light" : "Switch";
+        String method;
+        String component;
+        if (profile.isRGBW2 && profile.inColor) {
+            boolean rgbw = SHELLY2_PROFILE_RGBW.equals(getString(profile.device.profile));
+            method = rgbw ? SHELLYRPC_METHOD_RGBW_SETCONFIG : SHELLYRPC_METHOD_RGB_SETCONFIG;
+            component = rgbw ? "RGBW" : "RGB";
+        } else if (profile.isLight || profile.isDimmer) {
+            method = SHELLYRPC_METHOD_LIGHT_SETCONFIG;
+            component = "Light";
+        } else {
+            method = SHELLYRPC_METHOD_SWITCH_SETCONFIG;
+            component = "Switch";
+        }
         Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(index);
         req.params.withConfig();
         req.params.config.name = component + index;
@@ -1071,7 +1081,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
+        setLightParms(lightIndex, Map.of(parm, value));
     }
 
     @Override

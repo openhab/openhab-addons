@@ -49,7 +49,9 @@ import org.openhab.core.thing.ThingTypeUID;
  * picking {@code RGBW.Set}/{@code RGB.Set}/{@code Light.Set} based on {@link ShellyDeviceProfile#inColor} and the
  * raw device profile, and {@code getLightStatus} picking {@code RGBW.GetStatus}/{@code RGB.GetStatus} vs. looping
  * {@code Light.GetStatus} per channel. Also covers the brightness=0 turn-off fix (Gen2 firmware clamps 0 to 1%, so
- * {@code on=false} is sent instead of {@code brightness=0}).
+ * {@code on=false} is sent instead of {@code brightness=0}), {@code setLightParm} delegating to
+ * {@code setLightParms} for the primary on/off channel, and {@code setAutoTimer} picking
+ * {@code RGBW.SetConfig}/{@code RGB.SetConfig}/{@code Light.SetConfig} the same way.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -69,7 +71,6 @@ public class Shelly2ApiRpcLightDispatchTest {
                     Mockito.mock(ScheduledExecutorService.class));
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
             calledMethods.add(method);
@@ -158,7 +159,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void setLightParms_rgbwProfile_sendsRgbwSetWithWhite() throws ShellyApiException {
+    void setLightParmsRgbwProfileSendsRgbwSetWithWhite() throws ShellyApiException {
         StubApiRpc rpc = newRpc(colorModeProfile(SHELLY2_PROFILE_RGBW));
         rpc.setLightParms(0, Map.of(SHELLY_COLOR_RED, "10", SHELLY_COLOR_GREEN, "20", SHELLY_COLOR_BLUE, "30",
                 SHELLY_COLOR_WHITE, "40", SHELLY_LIGHT_TURN, SHELLY_API_ON));
@@ -171,7 +172,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void setLightParms_rgbProfile_sendsRgbSetWithoutWhite() throws ShellyApiException {
+    void setLightParmsRgbProfileSendsRgbSetWithoutWhite() throws ShellyApiException {
         StubApiRpc rpc = newRpc(colorModeProfile(SHELLY2_PROFILE_RGB));
         rpc.setLightParms(0, Map.of(SHELLY_COLOR_RED, "10", SHELLY_COLOR_GREEN, "20", SHELLY_COLOR_BLUE, "30",
                 SHELLY_COLOR_WHITE, "40"));
@@ -183,7 +184,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void setLightParms_lightProfile_sendsLightSet() throws ShellyApiException {
+    void setLightParmsLightProfileSendsLightSet() throws ShellyApiException {
         StubApiRpc rpc = newRpc(lightModeProfile(4));
         rpc.setLightParms(2, Map.of(SHELLY_COLOR_BRIGHTNESS, "55"));
 
@@ -195,7 +196,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void setLightParms_brightnessZero_turnsOffInsteadOfSendingZero() throws ShellyApiException {
+    void setLightParmsBrightnessZeroTurnsOffInsteadOfSendingZero() throws ShellyApiException {
         StubApiRpc rpc = newRpc(lightModeProfile(1));
         rpc.setLightParms(0, Map.of(SHELLY_COLOR_BRIGHTNESS, "0", SHELLY_LIGHT_TURN, SHELLY_API_ON));
 
@@ -205,7 +206,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void setBrightness_zero_sendsOnFalseWithoutBrightnessField() throws ShellyApiException {
+    void setBrightnessZeroSendsOnFalseWithoutBrightnessField() throws ShellyApiException {
         StubApiRpc rpc = newRpc(lightModeProfile(1));
         rpc.setBrightness(0, 0, false);
 
@@ -216,7 +217,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void setBrightness_positiveWithAutoOn_sendsBrightnessAndOnTrue() throws ShellyApiException {
+    void setBrightnessPositiveWithAutoOnSendsBrightnessAndOnTrue() throws ShellyApiException {
         StubApiRpc rpc = newRpc(lightModeProfile(1));
         rpc.setBrightness(0, 42, true);
 
@@ -226,7 +227,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void setBrightness_positiveWithoutAutoOn_sendsBrightnessWithoutTouchingOnState() throws ShellyApiException {
+    void setBrightnessPositiveWithoutAutoOnSendsBrightnessWithoutTouchingOnState() throws ShellyApiException {
         StubApiRpc rpc = newRpc(lightModeProfile(1));
         rpc.setBrightness(0, 42, false);
 
@@ -236,7 +237,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void getLightStatus_rgbwProfile_callsRgbwGetStatus() throws ShellyApiException {
+    void getLightStatusRgbwProfileCallsRgbwGetStatus() throws ShellyApiException {
         StubApiRpc rpc = newRpc(colorModeProfile(SHELLY2_PROFILE_RGBW));
         rpc.getLightStatus();
 
@@ -244,7 +245,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void getLightStatus_rgbProfile_callsRgbGetStatus() throws ShellyApiException {
+    void getLightStatusRgbProfileCallsRgbGetStatus() throws ShellyApiException {
         StubApiRpc rpc = newRpc(colorModeProfile(SHELLY2_PROFILE_RGB));
         rpc.getLightStatus();
 
@@ -252,7 +253,7 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
-    void getLightStatus_lightProfile_loopsLightGetStatusPerChannel() throws ShellyApiException {
+    void getLightStatusLightProfileLoopsLightGetStatusPerChannel() throws ShellyApiException {
         StubApiRpc rpc = newRpc(lightModeProfile(4));
         rpc.getLightStatus();
 
@@ -262,5 +263,43 @@ public class Shelly2ApiRpcLightDispatchTest {
         assertThat(rpc.calledParams.get(1).id, is(1));
         assertThat(rpc.calledParams.get(2).id, is(2));
         assertThat(rpc.calledParams.get(3).id, is(3));
+    }
+
+    @Test
+    void setLightParmDelegatesToSetLightParms() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(colorModeProfile(SHELLY2_PROFILE_RGBW));
+        rpc.setLightParm(0, SHELLY_LIGHT_TURN, SHELLY_API_ON);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_RGBW_SET));
+        assertThat(rpc.lastParams().on, is(true));
+    }
+
+    @Test
+    void setAutoTimerRgbwProfileSendsRgbwSetConfig() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(colorModeProfile(SHELLY2_PROFILE_RGBW));
+        rpc.setAutoTimer(0, SHELLY_TIMER_AUTOON, 30);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_RGBW_SETCONFIG));
+        assertThat(rpc.lastParams().config.autoOn, is(true));
+        assertThat(rpc.lastParams().config.autoOnDelay, is(30.0));
+    }
+
+    @Test
+    void setAutoTimerRgbProfileSendsRgbSetConfig() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(colorModeProfile(SHELLY2_PROFILE_RGB));
+        rpc.setAutoTimer(0, SHELLY_TIMER_AUTOOFF, 15);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_RGB_SETCONFIG));
+        assertThat(rpc.lastParams().config.autoOff, is(true));
+        assertThat(rpc.lastParams().config.autoOffDelay, is(15.0));
+    }
+
+    @Test
+    void setAutoTimerLightProfileSendsLightSetConfig() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(lightModeProfile(4));
+        rpc.setAutoTimer(2, SHELLY_TIMER_AUTOON, 10);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_LIGHT_SETCONFIG));
+        assertThat(rpc.lastParams().config.autoOn, is(true));
     }
 }
