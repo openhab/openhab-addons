@@ -441,33 +441,33 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
-    void plusRgbwPm_rgbwProfile_isRGBW2TrueAndInColorTrue() throws ShellyApiException {
+    void plusRgbwPmRgbwProfileIsRGBW2TrueAndInColorTrue() throws ShellyApiException {
         Gson gson = new Gson();
         StubApiClient client = new StubApiClient(discoveryConfig(), withRgbw0(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
-        assertThat(profile.settings.lights.size(), is(1));
+        assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(1));
     }
 
     @Test
-    void plusRgbwPm_rgbProfile_isRGBW2TrueAndInColorTrue() throws ShellyApiException {
+    void plusRgbwPmRgbProfileIsRGBW2TrueAndInColorTrue() throws ShellyApiException {
         Gson gson = new Gson();
         StubApiClient client = new StubApiClient(discoveryConfig(), withRgb0(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
-        assertThat(profile.settings.lights.size(), is(1));
+        assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(1));
     }
 
     @Test
-    void plusRgbwPm_lightProfile_isRGBW2TrueAndInColorFalseAndFourChannels() throws ShellyApiException {
+    void plusRgbwPmLightProfileIsRGBW2TrueAndInColorFalseAndFourChannels() throws ShellyApiException {
         Gson gson = new Gson();
         StubApiClient client = new StubApiClient(discoveryConfig(), withLight0To3(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM, deviceInfo());
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(false));
-        assertThat(profile.settings.lights.size(), is(4));
+        assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(4));
     }
 
     @Test
