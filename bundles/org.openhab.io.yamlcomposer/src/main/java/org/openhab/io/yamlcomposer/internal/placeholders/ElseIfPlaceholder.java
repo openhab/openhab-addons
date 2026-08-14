@@ -16,21 +16,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ReplacePlaceholder} represents an object constructed from a <code>!replace</code> node
+ * The {@link ElseIfPlaceholder} represents an object constructed from a <code>!elseif</code> node and its variants
  * to be processed by the {@link org.openhab.io.yamlcomposer.internal.YamlComposer}.
  *
- * @param value The value associated with the replace placeholder
+ * @param tag The tag of the placeholder, e.g., "!elseif" or "!elif"
+ * @param value The constructed object of the node containing the raw argument for the elseif placeholder
  * @param sourceLocation Description of the source location for logging purposes
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 @SuppressWarnings("null")
 @NonNullByDefault
-public record ReplacePlaceholder(@Nullable Object value,
-        String sourceLocation) implements InterpolablePlaceholder<ReplacePlaceholder> {
+public record ElseIfPlaceholder(String tag, @Nullable Object value,
+        String sourceLocation) implements InterpolablePlaceholder<ElseIfPlaceholder> {
 
     @Override
-    public ReplacePlaceholder recreate(@Nullable Object newValue, String location) {
-        return new ReplacePlaceholder(newValue, location);
+    public ElseIfPlaceholder recreate(@Nullable Object newValue, String location) {
+        return new ElseIfPlaceholder(tag, newValue, location);
+    }
+
+    @Override
+    public boolean eagerArgumentProcessing() {
+        // Do not process the arguments before resolving the conditions
+        return false;
     }
 }

@@ -20,6 +20,9 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.placeholders.ElseIfPlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.ElsePlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.ForPlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.IfPlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.IncludePlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.InsertPlaceholder;
@@ -27,6 +30,7 @@ import org.openhab.io.yamlcomposer.internal.placeholders.MergeKeyPlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.RemovePlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.ReplacePlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.VarPlaceholder;
 import org.snakeyaml.engine.v2.api.ConstructNode;
 import org.snakeyaml.engine.v2.api.LoadSettings;
 import org.snakeyaml.engine.v2.constructor.StandardConstructor;
@@ -64,6 +68,12 @@ public class ModelConstructor extends StandardConstructor {
 
     private static final Tag LITERAL_TAG = new Tag("!literal");
     private static final Tag IF_TAG = new Tag("!if");
+    private static final Tag ELSE_IF_TAG = new Tag("!elseif");
+    private static final Tag ELSIF_TAG = new Tag("!elsif"); // Ruby-style alias for !elseif
+    private static final Tag ELIF_TAG = new Tag("!elif"); // Python-style alias for !elseif
+    private static final Tag ELSE_TAG = new Tag("!else");
+    private static final Tag FOR_TAG = new Tag("!for");
+    private static final Tag VAR_TAG = new Tag("!var");
     private static final Tag INCLUDE_TAG = new Tag("!include");
     private static final Tag REPLACE_TAG = new Tag("!replace");
     private static final Tag REMOVE_TAG = new Tag("!remove");
@@ -91,6 +101,20 @@ public class ModelConstructor extends StandardConstructor {
         this.tagConstructors.put(Tag.STR, new ConstructStr(this));
 
         this.tagConstructors.put(IF_TAG, new ConstructInterpolablePlaceholder<IfPlaceholder>(this, IfPlaceholder::new));
+
+        this.tagConstructors.put(ELSE_IF_TAG, new ConstructInterpolablePlaceholder<ElseIfPlaceholder>(this,
+                (value, location) -> new ElseIfPlaceholder(ELSE_IF_TAG.getValue(), value, location)));
+        this.tagConstructors.put(ELSIF_TAG, new ConstructInterpolablePlaceholder<ElseIfPlaceholder>(this,
+                (value, location) -> new ElseIfPlaceholder(ELSIF_TAG.getValue(), value, location)));
+        this.tagConstructors.put(ELIF_TAG, new ConstructInterpolablePlaceholder<ElseIfPlaceholder>(this,
+                (value, location) -> new ElseIfPlaceholder(ELIF_TAG.getValue(), value, location)));
+
+        this.tagConstructors.put(ELSE_TAG, new ConstructInterpolablePlaceholder<>(this, ElsePlaceholder::new));
+
+        this.tagConstructors.put(FOR_TAG,
+                new ConstructInterpolablePlaceholder<ForPlaceholder>(this, ForPlaceholder::new));
+        this.tagConstructors.put(VAR_TAG,
+                new ConstructInterpolablePlaceholder<VarPlaceholder>(this, VarPlaceholder::new));
         this.tagConstructors.put(DEFERRED_MERGE_TAG,
                 new ConstructInterpolablePlaceholder<MergeKeyPlaceholder>(this, MergeKeyPlaceholder::new));
         this.tagConstructors.put(INCLUDE_TAG,
