@@ -149,8 +149,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     // Private EVENT frames are dispatched on one thread so an event's ADD is always processed
     // before the UPDATEs that follow it. The shared pool gives no such guarantee, and an UPDATE
     // overtaking its ADD would deliver a *_UPDATE trigger before the matching *_START.
-    private final ExecutorService privateEventExecutor = Executors
-            .newSingleThreadExecutor(r -> new Thread(r, "OH-binding-unifi-protect-events"));
+    private volatile @Nullable ExecutorService privateEventExecutor;
     // Highest sequence already delivered per event id. PendingUpdate is discarded on delivery, so
     // without this a task delayed past the delivery of a newer one would find no pending state,
     // start a fresh one, and be taken for the newest snapshot.
@@ -220,6 +219,10 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing NVR");
         shuttingDown = false;
+        // Recreated per initialize: the same handler instance is reused across a dispose/initialize
+        // cycle, e.g. on a configuration update, and a once-only executor would stay shut down and
+        // silently reject every private EVENT frame from then on.
+        privateEventExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "OH-unifi-protect-events"));
         ensureStaticChannels();
 
         UniFiControllerBridgeHandler parentHandler = getParentHandler();
@@ -327,7 +330,9 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                 if (update.modelType == ModelType.EVENT) {
                     update.data = trackPrivateEventPayload(update.action, update.id, update.data);
                 }
-                Executor dispatcher = update.modelType == ModelType.EVENT ? privateEventExecutor : scheduler;
+                ExecutorService eventExecutor = privateEventExecutor;
+                Executor dispatcher = update.modelType == ModelType.EVENT && eventExecutor != null
+                        && !eventExecutor.isShutdown() ? eventExecutor : scheduler;
                 dispatcher.execute(() -> {
                     logger.trace("Private API WebSocket update: action={}, model={}", update.action, update.modelType);
                     routePrivateApiUpdate(update, sequence);
@@ -400,7 +405,11 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         shuttingDown = true;
         stopTasks();
         stopApiClient();
-        privateEventExecutor.shutdownNow();
+        ExecutorService eventExecutor = privateEventExecutor;
+        if (eventExecutor != null) {
+            eventExecutor.shutdownNow();
+            privateEventExecutor = null;
+        }
         super.dispose();
     }
 
