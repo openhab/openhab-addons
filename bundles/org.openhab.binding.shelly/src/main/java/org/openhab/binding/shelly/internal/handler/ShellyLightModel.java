@@ -152,26 +152,36 @@ public class ShellyLightModel extends LightModel {
                     return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
                 case SHELLY2_PROFILE_RGBW:
                     return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
+                case SHELLY2_PROFILE_LIGHT:
+                    return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE);
             }
         }
 
         // **************** UNCOMMENT FOLLOWING LINES WHEN READY ****************
 
-        // if (THING_TYPE_SHELLYPLUSRGBWWPM.equals(thingTypeUID)) {
-        // switch (profile) {
+        // ==== PRO RGBWPM ====
+        // if (THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
+        // switch (gen23Profile) {
+        // case SHELLY2_PROFILE_RGB:
+        // return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
+        // case SHELLY2_PROFILE_RGBW:
+        // return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
+        // case SHELLY2_PROFILE_LIGHT:
+        // return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE);
         // case SHELLY2_PROFILE_RGBCCT:
         // return new Parameters(COLOR, RGB_C_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
         // case SHELLY2_PROFILE_RGBX2LIGHT:
         // return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR);
+        // case SHELLY2_PROFILE_CCTX2:
+        // return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE);
         // }
         // }
 
         // ==== GENERATION 3 ====
-        // if (THING_TYPE_SHELLYDUOBULBG3.equals(thingTypeUID)) { check profile SHELLY2_PROFILE_CCT
-        // return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.COLOR_TEMP);
+        // if (THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID)) { check profile SHELLY2_PROFILE_CCT
+        // return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE);
         // }
-
-        // if (THING_TYPE_SHELLYCOLORBLBG3.equals(thingTypeUID)) { check profile SHELLY2_PROFILE_RGBCCT
+        // if (THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID)) { check profile SHELLY2_PROFILE_RGBCCT
         // return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, COMBINED, Mode.COLOR);
         // }
 
