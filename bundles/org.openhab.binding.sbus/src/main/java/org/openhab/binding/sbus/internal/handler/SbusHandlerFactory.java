@@ -50,17 +50,6 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    private static <T> T getThingConfig(Thing thing, Class<T> configurationClass) {
-        ThingHandler handler = thing.getHandler();
-        if (handler instanceof SbusContactHandler contactHandler) {
-            return contactHandler.getConfigAs(configurationClass);
-        }
-        if (handler instanceof Sbus9in1ContactHandler nineInOneContactHandler) {
-            return nineInOneContactHandler.getConfigAs(configurationClass);
-        }
-        return thing.getConfiguration().as(configurationClass);
-    }
-
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -81,7 +70,7 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
             return new SbusRgbwHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CONTACT_SENSOR)) {
             // Determine which contact handler to create based on sensor type configuration
-            SbusContactConfig config = getThingConfig(thing, SbusContactConfig.class);
+            SbusContactConfig config = thing.getConfiguration().as(SbusContactConfig.class);
             ContactSensorType sensorType = config.getSensorType();
 
             if (sensorType == ContactSensorType.MULTI_SENSOR_02CA) {
