@@ -30,12 +30,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.communication.RemoteAPIController;
 import org.openhab.binding.airgradient.internal.model.LocalConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -119,6 +121,7 @@ public class AirGradientLocalHandlerTest {
         Mockito.when(secondUpdatedThing.getProperties()).thenReturn(Map.of());
         Mockito.when(thing.getChannel(any(ChannelUID.class))).thenReturn(null);
         Mockito.when(updatedThing.getChannel(any(ChannelUID.class))).thenReturn(null);
+        Mockito.when(secondUpdatedThing.getChannel(any(ChannelUID.class))).thenReturn(Mockito.mock(Channel.class));
         Mockito.when(apiControllerMock.getMeasures()).thenReturn(List.of(TEST_MEASURE));
         Mockito.when(apiControllerMock.getConfig()).thenReturn(TEST_CONFIGURATION);
         Mockito.when(thingBuilder.withChannel(any())).thenReturn(Objects.requireNonNull(thingBuilder));
@@ -135,6 +138,27 @@ public class AirGradientLocalHandlerTest {
         verify(apiControllerMock, times(2)).getMeasures();
         verify(apiControllerMock, times(2)).getConfig();
         assertThat(((TestAirGradientLocalHandler) requireNonNull(sut)).getEditThingCalls(), is(2));
+    }
+
+    @SuppressWarnings({ "null", "unchecked" })
+    @Test
+    public void testPollingCodeAddsMeasurementChannelWhenValueAppearsOnLaterPoll() throws Exception {
+        Measure firstMeasure = new Measure();
+        firstMeasure.firmwareVersion = "3.1.21";
+        firstMeasure.model = "I-9PSL";
+        Measure secondMeasure = new Measure();
+        secondMeasure.firmwareVersion = firstMeasure.firmwareVersion;
+        secondMeasure.model = firstMeasure.model;
+        secondMeasure.tvocRaw = 123d;
+        Mockito.when(apiControllerMock.getMeasures()).thenReturn(List.of(firstMeasure), List.of(secondMeasure));
+        Mockito.when(apiControllerMock.getConfig()).thenReturn(null);
+
+        sut.pollingCode();
+        sut.pollingCode();
+
+        ArgumentCaptor<Channel> channelCaptor = ArgumentCaptor.forClass(Channel.class);
+        verify(thingBuilder).withChannel(channelCaptor.capture());
+        assertThat(channelCaptor.getValue().getUID().getId(), is("tvoc-raw"));
     }
 
     @SuppressWarnings("null")

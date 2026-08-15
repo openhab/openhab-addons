@@ -17,7 +17,6 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.config.AirGradientLocationConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
@@ -47,7 +46,6 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AirGradientLocationHandler.class);
 
     private @NonNullByDefault({}) AirGradientLocationConfiguration locationConfig = null;
-    private @Nullable String cachedCapabilitySignature;
 
     public AirGradientLocationHandler(Thing thing) {
         super(thing);
@@ -122,7 +120,6 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
         locationConfig = getConfigAs(AirGradientLocationConfiguration.class);
-        cachedCapabilitySignature = null;
 
         Bridge controller = getBridge();
         if (controller == null) {
@@ -139,15 +136,10 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     }
 
     public void setMeasurment(Measure measure) {
-        String capabilitySignature = DynamicChannelHelper
-                .getDynamicChannelCapabilitySignature(measure.getFirmwareVersion(), measure.getModel());
-        if (capabilitySignature == null || !capabilitySignature.equals(cachedCapabilitySignature)) {
-            ThingBuilder builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null, this::editThing,
-                    measure);
-            if (builder != null) {
-                updateThing(builder.build());
-            }
-            cachedCapabilitySignature = capabilitySignature;
+        ThingBuilder builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null, this::editThing,
+                measure);
+        if (builder != null) {
+            updateThing(builder.build());
         }
 
         updateProperties(MeasureHelper.createProperties(measure));

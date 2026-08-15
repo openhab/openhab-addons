@@ -62,7 +62,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) RemoteAPIController apiController = null;
     private @NonNullByDefault({}) AirGradientAPIConfiguration apiConfig = null;
-    private @Nullable String cachedCapabilitySignature;
+    private @Nullable String cachedDeviceSignature;
 
     public AirGradientLocalHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -153,7 +153,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                     "Need to set hostname to a valid URL. Refresh interval needs to be a positive integer.");
             return;
         }
-        cachedCapabilitySignature = null;
+        cachedDeviceSignature = null;
         apiController = new RemoteAPIController(httpClient, gson, apiConfig);
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
@@ -176,16 +176,10 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             }
 
             Measure measure = measures.get(0);
-            String capabilitySignature = DynamicChannelHelper
-                    .getDynamicChannelCapabilitySignature(measure.getFirmwareVersion(), measure.getModel());
-            boolean capabilitiesChanged = capabilitySignature == null
-                    || !capabilitySignature.equals(cachedCapabilitySignature);
-            if (capabilitiesChanged) {
-                ThingBuilder builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null,
-                        this::editThing, measure);
-                if (builder != null) {
-                    updateThing(builder.build());
-                }
+            ThingBuilder measurementBuilder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null,
+                    this::editThing, measure);
+            if (measurementBuilder != null) {
+                updateThing(measurementBuilder.build());
             }
 
             updateProperties(MeasureHelper.createProperties(measure));
@@ -196,9 +190,12 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                 }
             }
 
+            String deviceSignature = DynamicChannelHelper
+                    .getDynamicChannelCapabilitySignature(measure.getFirmwareVersion(), measure.getModel());
+            boolean deviceSignatureChanged = deviceSignature == null || !deviceSignature.equals(cachedDeviceSignature);
             LocalConfiguration localConfig = apiController.getConfig();
             if (localConfig != null) {
-                if (capabilitiesChanged) {
+                if (deviceSignatureChanged) {
                     ThingBuilder builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, null,
                             this::editThing, localConfig);
                     if (builder != null) {
@@ -213,7 +210,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                     }
                 }
             }
-            cachedCapabilitySignature = capabilitySignature;
+            cachedDeviceSignature = deviceSignature;
 
         } catch (AirGradientCommunicationException agce) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
