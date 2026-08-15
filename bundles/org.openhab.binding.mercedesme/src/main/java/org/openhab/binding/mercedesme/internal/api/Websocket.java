@@ -407,7 +407,14 @@ public class Websocket extends RestApi {
         Session localSession = session;
         if (localSession != null) {
             try {
-                pingSentAt = Instant.now();
+                // PR #21343 review (wborn): only start the watchdog clock for a ping that isn't already
+                // outstanding. Unconditionally overwriting pingSentAt here reset the timeout on every
+                // doRefresh cycle (every PING_INTERVAL_MS), so a pong that never arrives could never be
+                // detected as overdue - handlePong() clears pingSentAt back to null once answered, at
+                // which point the next call here is free to start tracking a new ping.
+                if (pingSentAt == null) {
+                    pingSentAt = Instant.now();
+                }
                 localSession.getRemote().sendPing(ByteBuffer.allocate(0));
             } catch (IOException e) {
                 logger.warn("Websocket ping failed {}", e.getMessage());
@@ -434,7 +441,10 @@ public class Websocket extends RestApi {
      */
     private boolean isPongOverdue() {
         Instant sent = pingSentAt;
-        return sent != null && Duration.between(sent, Instant.now()).toMillis() > PONG_TIMEOUT_MS;
+        // PR #21343 review (wborn): Duration.toMillis() truncates fractional milliseconds, so with ">"
+        // a refresh landing at e.g. 6000.4ms still reads as exactly 6000 and is not considered overdue.
+        // ">=" makes the timeout boundary itself count as overdue.
+        return sent != null && Duration.between(sent, Instant.now()).toMillis() >= PONG_TIMEOUT_MS;
     }
 
     private void handlePing(Frame frame) {
@@ -578,8 +588,10 @@ public class Websocket extends RestApi {
                 reloginAttempts++;
                 logger.info("429 detected - trying relogin with stored credentials (attempt {}/{})", reloginAttempts,
                         MAX_RELOGIN_ATTEMPTS);
-                accountHandler.authorize();
-                if (authTokenIsValid()) {
+                // PR #21343 review (wborn): base this on the actual login outcome, not authTokenIsValid() -
+                // that only checks token values are present, which can still be the previous (stale) token
+                // after a failed relogin attempt, masking the failure as a success.
+                if (accountHandler.authorize()) {
                     logger.info("Relogin successful after 429");
                     reloginAttempts = MAX_RELOGIN_ATTEMPTS;
                 } else {

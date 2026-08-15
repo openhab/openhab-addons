@@ -51,10 +51,10 @@ import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
-import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
 import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVehicleStatusUpdates;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdates;
 import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
@@ -71,10 +71,16 @@ import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsResponse;
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
     private static final int VARIANCE_PERCENT = 15; // 15% variance for refresh interval
 
+    // Placeholder logged instead of the real VIN in TRACE output - see anonymizeForTrace().
+    private static final String TRACE_VIN_PLACEHOLDER = "ANONYMIZED";
+    // Dummy coordinates logged instead of the real GPS position in TRACE output - see anonymizeForTrace().
+    private static final double TRACE_POSITION_LAT_PLACEHOLDER = 1.23;
+    private static final double TRACE_POSITION_LONG_PLACEHOLDER = 4.56;
+
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final Map<String, Map<String, Object>> vinCapabilitiesMap = new HashMap<>();
     private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<>();
-    private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<>();
+    private final Map<String, VehicleStatusAttributes> vehicleStatusMap = new HashMap<>();
     private final List<String> keepAliveList = new ArrayList<>();
     private final MercedesMeDiscoveryService discoveryService;
     private final LocaleProvider localeProvider;
@@ -161,9 +167,16 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         refreshScheduler = scheduler.schedule(this::refresh, delayInSeconds, TimeUnit.SECONDS);
     }
 
-    public void authorize() {
+    /**
+     * @return {@code true} if login actually succeeded, {@code false} otherwise. PR #21343 review (wborn):
+     *         callers must not infer success from {@code Websocket.authTokenIsValid()} afterward - that only
+     *         checks that some access/refresh token values are present, which can still be the previous
+     *         (stale) token values after a failed login attempt.
+     */
+    public boolean authorize() {
         try {
             api.login();
+            return true;
         } catch (MercedesMeAuthException e) {
             handleAuthError(e);
         } catch (MercedesMeApiException e) {
@@ -171,6 +184,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } catch (MercedesMeBindingException e) {
             handleBindingError(e);
         }
+        return false;
     }
 
     /**
@@ -235,7 +249,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         discoveryService.vehicleRemove(this, vin, handler.getThing().getThingTypeUID().getId());
         activeVehicleHandlerMap.put(vin, handler);
         discovery(vin); // update properties for added vehicle
-        VEPUpdate updateForVin = vepUpdateMap.get(vin);
+        VehicleStatusAttributes updateForVin = vehicleStatusMap.get(vin);
         if (updateForVin != null) {
             handler.enqueueUpdate(updateForVin);
         } else {
@@ -292,19 +306,15 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         // line that still tells us which message types are actually reaching AccountHandler vs. only being
         // seen at the Websocket layer.
         logger.debug("AccountHandler handling message type {}", pm.getMsgCase());
-        if (pm.hasVepUpdates()) {
-            boolean distributed = distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
-            if (distributed) {
-                AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
-                        .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
-                api.sendAcknowledgeMessage(cm);
-            }
-        } else if (pm.hasVehicleStatusUpdates()) {
-            // vehicle-events.proto: typed alternative to VEPUpdate, added in app version 165-1 (PushMessage
-            // field 24 / ClientMessage field 28). Mapper.fromVehicleStatusUpdate() builds the subset of
-            // MB_KEY_* attributes that has a 1:1 counterpart in the old VehicleAttributeStatus format, so it
-            // can be distributed through the existing pipeline unchanged.
+        if (pm.hasVehicleStatusUpdates()) {
+            // vehicle-events.proto: PushMessage field 24 / ClientMessage field 28. This is now the sole
+            // supported push format - the legacy VEPUpdate ingress branch (and everything downstream of it)
+            // was removed entirely; see ADR-002, docs/ADR/002-unified-vehicle-status-update-carrier.md, and
+            // its addendum for the full-removal decision and the residual risk (a server that still emits
+            // VEPUpdate would now be silently ignored - unverifiable from this environment).
+            // Mapper.fromVehicleStatusUpdate() builds the subset of MB_KEY_* attributes that has a 1:1
+            // counterpart in the old VehicleAttributeStatus format, so it can be distributed through the
+            // existing pipeline unchanged.
             VehicleStatusUpdates vsu = pm.getVehicleStatusUpdates();
             logger.debug("Received VehicleStatusUpdates seq {} for {} VIN(s)", vsu.getSequenceNumber(),
                     vsu.getVehicleStatusUpdatesMap().size());
@@ -313,21 +323,29 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // and must stay that way without $Architect + human approval). Meant to be captured from a running
             // instance and hand-converted into a JsonFormat test fixture under
             // src/test/resources/proto-json/ - see MapperTest.java for the existing pattern.
+            // VIN and GPS position are personal data (fin_or_vin, position_lat, position_long), so the dump is
+            // anonymized before logging - see anonymizeForTrace() - to make captures safe to paste into a PR
+            // without a manual redaction step.
             if (logger.isTraceEnabled()) {
                 vsu.getVehicleStatusUpdatesMap()
-                        .forEach((vin, update) -> logger.trace("Raw VehicleStatusUpdate for {}:\n{}", vin, update));
+                        .forEach((vin, update) -> logger.trace("Raw VehicleStatusUpdate for {}:\n{}",
+                                TRACE_VIN_PLACEHOLDER, anonymizeForTrace(update)));
             }
-            Map<String, VEPUpdate> converted = new HashMap<>();
-            vsu.getVehicleStatusUpdatesMap().forEach((vin, update) -> {
-                VEPUpdate.Builder builder = VEPUpdate.newBuilder().setVin(vin).setFullUpdate(update.getFullUpdate())
-                        .putAllAttributes(Mapper.fromVehicleStatusUpdate(update));
-                converted.put(vin, builder.build());
-            });
-            distributeVepUpdates(converted);
-            AcknowledgeVehicleStatusUpdates ack = AcknowledgeVehicleStatusUpdates.newBuilder()
-                    .setSequenceNumber(vsu.getSequenceNumber()).build();
-            ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVehicleStatusUpdates(ack).build();
-            api.sendAcknowledgeMessage(cm);
+            Map<String, VehicleStatusAttributes> converted = new HashMap<>();
+            vsu.getVehicleStatusUpdatesMap().forEach((vin, update) -> converted.put(vin,
+                    new VehicleStatusAttributes(update.getFullUpdate(), Mapper.fromVehicleStatusUpdate(update))));
+            // PR #21343 review (wborn): this path used to acknowledge unconditionally.
+            // distributeVehicleUpdates() only caches full updates for VINs with no active handler yet, so an
+            // undelivered partial update was silently dropped but still acknowledged - the server never
+            // resends an acknowledged sequence. Only acknowledge once the update was actually delivered or
+            // cached.
+            boolean distributed = distributeVehicleUpdates(converted);
+            if (distributed) {
+                AcknowledgeVehicleStatusUpdates ack = AcknowledgeVehicleStatusUpdates.newBuilder()
+                        .setSequenceNumber(vsu.getSequenceNumber()).build();
+                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVehicleStatusUpdates(ack).build();
+                api.sendAcknowledgeMessage(cm);
+            }
         } else if (pm.hasAssignedVehicles()) {
             for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
                 String vin = pm.getAssignedVehicles().getVins(i);
@@ -351,7 +369,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // vehicleapi.proto: "This request MUST eventually be answered with AppTwinPendingCommandsResponse."
             // We don't track commands across restarts, so we always report an empty pending list. Without
             // this reply the AppTwin actor on the server side appears to never proceed past this handshake
-            // step to start pushing regular VEPUpdatesByVIN.
+            // step to start pushing regular vehicle status updates.
             AppTwinPendingCommandsResponse response = AppTwinPendingCommandsResponse.newBuilder().build();
             ClientMessage cm = ClientMessage.newBuilder().setApptwinPendingCommandsResponse(response).build();
             api.sendAcknowledgeMessage(cm);
@@ -363,15 +381,38 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         }
     }
 
-    public boolean distributeVepUpdates(Map<String, VEPUpdate> map) {
+    /**
+     * Returns a copy of the given {@link VehicleStatusUpdate} with personal data replaced by fixed placeholder
+     * values, so it is safe to log at TRACE level and paste into a test fixture without a manual redaction step.
+     * Only {@code fin_or_vin} and the GPS position ({@code position_lat}/{@code position_long}) are replaced -
+     * every other attribute is operational vehicle status, not personal data. Uses the same dummy coordinates as
+     * {@link org.openhab.binding.mercedesme.internal.utils.Utils#proto2Json} for consistency.
+     *
+     * @param update the raw update as received from the backend
+     * @return an anonymized copy of update, safe for logging
+     */
+    private static VehicleStatusUpdate anonymizeForTrace(VehicleStatusUpdate update) {
+        VehicleStatusUpdate.Builder anonymized = update.toBuilder().setFinOrVin(TRACE_VIN_PLACEHOLDER);
+        if (update.hasPositionLat()) {
+            anonymized.setPositionLat(
+                    DoubleAttribute.newBuilder(update.getPositionLat()).setValue(TRACE_POSITION_LAT_PLACEHOLDER));
+        }
+        if (update.hasPositionLong()) {
+            anonymized.setPositionLong(
+                    DoubleAttribute.newBuilder(update.getPositionLong()).setValue(TRACE_POSITION_LONG_PLACEHOLDER));
+        }
+        return anonymized.build();
+    }
+
+    public boolean distributeVehicleUpdates(Map<String, VehicleStatusAttributes> map) {
         List<String> notFoundList = new ArrayList<>();
         map.forEach((key, value) -> {
             VehicleHandler h = activeVehicleHandlerMap.get(key);
             if (h != null) {
                 h.enqueueUpdate(value);
             } else {
-                if (value.getFullUpdate()) {
-                    vepUpdateMap.put(key, value);
+                if (value.fullUpdate()) {
+                    vehicleStatusMap.put(key, value);
                 }
                 notFoundList.add(key);
             }

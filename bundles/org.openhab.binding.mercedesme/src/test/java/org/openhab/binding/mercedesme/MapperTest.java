@@ -333,6 +333,60 @@ class MapperTest {
     }
 
     @Test
+    void whenDoorOpenReportedViaBoolValueThenChannelStateIsOpen() {
+        // Arrange - regression guard for PR #21343 review (wborn): getChannelStateMap() keeps a defensive
+        // bool_value fallback (true = open) for Doorstatus/Decklidstatus/EngineHoodStatus, even though the
+        // only currently active push path (Mapper.fromVehicleStatusUpdate()) always emits int_value - the
+        // legacy VEPUpdate ingress that used to send bool_value is gone entirely.
+        VehicleAttributeStatus doorOpen = VehicleAttributeStatus.newBuilder().setBoolValue(true).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORSTATUSFRONTRIGHT, doorOpen);
+
+        // Assert
+        assertEquals(OpenClosedType.OPEN, csm.getState());
+    }
+
+    @Test
+    void whenDoorClosedReportedViaBoolValueThenChannelStateIsClosed() {
+        // Arrange - legacy bool_value false = closed
+        VehicleAttributeStatus doorClosed = VehicleAttributeStatus.newBuilder().setBoolValue(false).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORSTATUSFRONTRIGHT, doorClosed);
+
+        // Assert
+        assertEquals(OpenClosedType.CLOSED, csm.getState());
+    }
+
+    @Test
+    void whenLockLockedReportedViaBoolValueThenChannelStateIsOn() {
+        // Arrange - regression guard for PR #21343 review (wborn): getChannelStateMap() keeps a defensive
+        // bool_value fallback for Doorlockstatus, reversed (false = locked) - see the "sad but true" note in
+        // Mapper.getChannelStateMap(). The only currently active push path always emits int_value; the
+        // legacy VEPUpdate ingress that used to send bool_value is gone entirely.
+        VehicleAttributeStatus locked = VehicleAttributeStatus.newBuilder().setBoolValue(false).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORLOCKSTATUSFRONTRIGHT, locked);
+
+        // Assert - ON means locked for this channel
+        assertEquals(OnOffType.ON, csm.getState());
+    }
+
+    @Test
+    void whenLockUnlockedReportedViaBoolValueThenChannelStateIsOff() {
+        // Arrange - legacy bool_value true = unlocked (reversed)
+        VehicleAttributeStatus unlocked = VehicleAttributeStatus.newBuilder().setBoolValue(true).build();
+
+        // Act
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORLOCKSTATUSFRONTRIGHT, unlocked);
+
+        // Assert
+        assertEquals(OnOffType.OFF, csm.getState());
+    }
+
+    @Test
     void whenTemperaturePointsConvertedThenZoneNameMatchesLegacyLookup() {
         // Arrange - VehicleHandler resolves the zone via Utils.getZoneNumber(String), whose lookup table is
         // built from TemperatureConfigure.TemperaturePoint.Zone.values()[i].name() (vehicle-commands.proto) -

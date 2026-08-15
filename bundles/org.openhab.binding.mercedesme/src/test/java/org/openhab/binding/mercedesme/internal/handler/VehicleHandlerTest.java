@@ -40,13 +40,8 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 
-import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
-import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage.Builder;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 
 /**
  * {@link VehicleHandlerTest} check state updates and command sending of vehicles
@@ -124,7 +119,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -158,7 +153,7 @@ class VehicleHandlerTest {
         assertNotNull(patternMock);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-ImperialUnits.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -219,7 +214,7 @@ class VehicleHandlerTest {
         vHandler.config = vehicleConfig;
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -257,7 +252,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -283,7 +278,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-Charging.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, false);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, false);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -303,7 +298,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-GPS.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, false);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, false);
         vHandler.enqueueUpdate(update);
 
         updateListener.waitForUpdates();
@@ -323,7 +318,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-Range.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, false);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, false);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -350,7 +345,7 @@ class VehicleHandlerTest {
         vh.setCallback(updateListener);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Hybrid-Charging.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vh.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -384,7 +379,7 @@ class VehicleHandlerTest {
         vh.setCallback(updateListener);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Hybrid-Charging.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vh.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -416,7 +411,7 @@ class VehicleHandlerTest {
         vh.setCallback(updateListener);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vh.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -464,7 +459,7 @@ class VehicleHandlerTest {
         vh.setCallback(updateListener);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vh.enqueueUpdate(update);
         updateListener.waitForUpdates();
         assertFalse(updateListener.updatesReceived.containsKey("test::bev:vehicle#proto-update"),
@@ -489,7 +484,7 @@ class VehicleHandlerTest {
         assertNotNull(thing);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
         assertEquals("22 °C", updateListener.getResponse("test::bev:hvac#temperature").toFullString(),
@@ -521,7 +516,7 @@ class VehicleHandlerTest {
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vh.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -552,7 +547,7 @@ class VehicleHandlerTest {
         vh.setCallback(updateListener);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vh.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -635,7 +630,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -658,7 +653,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -678,7 +673,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -699,7 +694,7 @@ class VehicleHandlerTest {
         assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Combustion.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -722,7 +717,7 @@ class VehicleHandlerTest {
 
         // One update to set the charge program
         String initJson = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-ChargeProgram0.json");
-        VEPUpdate update = ProtoConverter.json2Proto(initJson, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(initJson, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -732,16 +727,7 @@ class VehicleHandlerTest {
 
         // Partial update
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-MaxSoc.json");
-        Builder pmBuilder = PushMessage.newBuilder();
-        try {
-            JsonFormat.parser().ignoringUnknownFields().merge(json, pmBuilder);
-        } catch (InvalidProtocolBufferException e) {
-            fail(e.getMessage());
-        }
-        PushMessage pm = pmBuilder.build();
-        assertTrue(pm.hasVepUpdates());
-        update = pm.getVepUpdates().getUpdatesMap().get("UNIT_TEST_VIN");
-        assertNotNull(update);
+        update = ProtoConverter.json2Proto(json, false);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
@@ -771,7 +757,7 @@ class VehicleHandlerTest {
         vHandler.setCallback(updateListener);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-CLA.json");
-        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        VehicleStatusAttributes update = ProtoConverter.json2Proto(json, true);
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 

@@ -1,4 +1,4 @@
-fin_or_vin: "ABC"
+fin_or_vin: "ANONYMIZED"
 full_update: true
 average_speed_reset {
   value: 47.0

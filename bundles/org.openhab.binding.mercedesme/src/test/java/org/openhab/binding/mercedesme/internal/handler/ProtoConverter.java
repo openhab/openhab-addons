@@ -30,7 +30,6 @@ import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePoint;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ClockHourUnit;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.CombustionConsumptionUnit;
@@ -51,7 +50,7 @@ import com.google.protobuf.Int32Value;
 @NonNullByDefault
 public class ProtoConverter {
 
-    public static VEPUpdate json2Proto(String json, boolean fullUpdate) {
+    public static VehicleStatusAttributes json2Proto(String json, boolean fullUpdate) {
         JSONObject jsonObj = new JSONObject(json);
         Map<String, VehicleAttributeStatus> updateMap = new HashMap<>();
         Iterator<String> keyIter = jsonObj.keys();
@@ -177,7 +176,7 @@ public class ProtoConverter {
             }
             updateMap.put(key, builder.build());
         }
-        return VEPUpdate.newBuilder().setFullUpdate(fullUpdate).putAllAttributes(updateMap).build();
+        return new VehicleStatusAttributes(fullUpdate, updateMap);
     }
 
     public static JSONObject clientMessage2Json(ClientMessage cm) {

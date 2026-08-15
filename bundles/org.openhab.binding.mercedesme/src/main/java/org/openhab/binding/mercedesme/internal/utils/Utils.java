@@ -51,7 +51,6 @@ import com.daimler.mbcarkit.proto.VehicleEvents;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VVRTimeProfile;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.WeeklyProfileValue;
@@ -270,16 +269,15 @@ public class Utils {
     }
 
     /**
-     * Converts a protobuf update into JSON String
+     * Converts a vehicle attribute map into JSON String
      *
-     * @param protoUpdate - proto update
+     * @param m - attribute key to value map
      * @param uid - thing type uid for identification
      * @return JSON as String
      */
     @SuppressWarnings({ "unused", "null" })
-    public static String proto2Json(VEPUpdate protoUpdate, ThingTypeUID uid) {
+    public static String proto2Json(Map<String, VehicleAttributeStatus> m, ThingTypeUID uid) {
         JSONObject protoJson = new JSONObject();
-        Map<String, VehicleAttributeStatus> m = protoUpdate.getAttributesMap();
         m.forEach((key, value) -> {
             Map<FieldDescriptor, Object> attMap = value.getAllFields();
             JSONObject attributesJson = getJsonObject(attMap);

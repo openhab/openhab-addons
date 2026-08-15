@@ -277,11 +277,20 @@ public class Mapper {
                 case MB_KEY_ENGINE_HOOD_STATUS:
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
-                    } else {
+                    } else if (value.hasBoolValue()) {
+                        // Defensive fallback (true = open), kept from PR #21343 review (wborn) even though
+                        // no currently active push path produces bool_value for these keys anymore - the
+                        // legacy VEPUpdate ingress that used to is gone entirely (see
+                        // docs/changes/remove-vepupdate/proposal.md addendum). Mapper.fromVehicleStatusUpdate()
+                        // always emits the int_value enum below.
+                        state = getContact(value.getBoolValue());
+                    } else if (value.hasIntValue()) {
                         // Doorstatus / Decklidstatus / EngineHoodStatus are int_value enums
-                        // (CLOSED=0, OPEN=1) delivered via Mapper.putEnum() - not bool_value, so
-                        // getBoolValue() would always read the default false (= CLOSED)
+                        // (CLOSED=0, OPEN=1) in the typed VehicleStatusUpdate push, delivered via
+                        // Mapper.putEnum().
                         state = getContact(Utils.getInt(value) != 0);
+                    } else {
+                        state = UnDefType.UNDEF;
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -364,11 +373,19 @@ public class Mapper {
                 case MB_KEY_DOORLOCKSTATUSGAS:
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
-                    } else {
-                        // Doorlockstatus is an int_value enum (LOCKED=0, UNLOCKED=1) delivered via
-                        // Mapper.putEnum() - not bool_value, so getBoolValue() would always read the
-                        // default false.
+                    } else if (value.hasBoolValue()) {
+                        // Defensive fallback, reversed: false means locked. Kept from PR #21343 review
+                        // (wborn) even though no currently active push path produces bool_value for these
+                        // keys anymore - the legacy VEPUpdate ingress that used to is gone entirely (see
+                        // docs/changes/remove-vepupdate/proposal.md addendum). Mapper.fromVehicleStatusUpdate()
+                        // always emits the int_value enum below.
+                        state = OnOffType.from(!value.getBoolValue());
+                    } else if (value.hasIntValue()) {
+                        // Doorlockstatus is an int_value enum (LOCKED=0, UNLOCKED=1) in the typed
+                        // VehicleStatusUpdate push, delivered via Mapper.putEnum().
                         state = OnOffType.from(Utils.getInt(value) == 0);
+                    } else {
+                        state = UnDefType.UNDEF;
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -419,9 +436,13 @@ public class Mapper {
      * {@link #getChannelStateMap(String, VehicleAttributeStatus)}
      * without any behavior change there.
      * <p>
-     * Only the fields with a direct equivalent in the old attribute set are converted; the complex array-typed
-     * fields (temperature points, charge programs, auxiliary warnings) and the fields with no old channel are
-     * left out.
+     * Only the fields with a direct equivalent in the old attribute set are converted; fields with no old channel
+     * are left out. This does include the complex array-typed fields with an existing channel - temperature
+     * points, charge programs, and auxiliary warnings are all converted below (see
+     * {@code putTemperaturePoints}/{@code putChargePrograms}/{@code putAuxheatwarnings}). Verified field-by-field
+     * against two real {@code VehicleStatusUpdate} captures of a BEV (see
+     * {@code docs/changes/remove-vepupdate/proposal.md}): none of the currently-unconverted fields correspond to
+     * an existing channel for that vehicle type.
      * <p>
      * Enum-typed fields are converted via {@code getValueValue()}, the raw number declared for that value in the
      * {@code .proto} source (e.g. {@code IGNITIONSTATE_ON = 4;}) - not a positional/ordinal guess. Since these
