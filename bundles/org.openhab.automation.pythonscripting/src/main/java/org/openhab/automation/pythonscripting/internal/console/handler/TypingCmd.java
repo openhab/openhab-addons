@@ -82,8 +82,8 @@ public class TypingCmd {
         // 2. The scope object is dumped
         // All referenced openhab classes which are not already collected, are "registered" in the bundleClassMap
         // And all used/imported class are added to the import list
-        Collection<String> _imports = dumpScope(outputPath, bundleClassMap);
-        imports.addAll(_imports);
+        Collection<String> scopeImports = dumpScope(outputPath, bundleClassMap);
+        imports.addAll(scopeImports);
 
         // 3. All openhab classes are dumped
         for (ClassContainer container : bundleClassMap.values()) {
@@ -94,7 +94,7 @@ public class TypingCmd {
             dumped.add(container.getRelatedClass().getName());
         }
 
-        // 4. All collected imports are dumped (org.openhab is filtered out, because it was already handled.)
+        // 4. All collected imports are dumped, if they are not already dumped before
         imports = imports.stream().filter(i -> !dumped.contains(i)).collect(Collectors.toSet());
         Map<String, ClassContainer> reflectionClassMap = collector.collectReflectionClasses(imports);
         for (ClassContainer container : reflectionClassMap.values()) {
@@ -142,8 +142,8 @@ public class TypingCmd {
                         cls = value.getClass();
                         packageName = value.getClass().getName();
 
-                        if (packageName
-                                .equals("org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker")) {
+                        if ("org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker"
+                                .equals(packageName)) {
                             packageName = "org.openhab.core.automation.module.script.LifecycleScriptExtensionProvider$LifecycleTracker";
                         } else if (packageName.endsWith("Impl") || packageName.endsWith("Delegate")) {
                             cls = value.getClass().getInterfaces()[0];
