@@ -17,6 +17,7 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
@@ -41,19 +42,21 @@ import org.openhab.binding.solaredge.internal.model.DeviceTelemetryResponseTrans
 @NonNullByDefault
 public class AggregateDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
     private final SolarEdgeHandler handler;
+    private final long cycleId;
     private final boolean storage;
     private final boolean yearly;
     private final DeviceTelemetryResponseTransformerPublicApiV2 transformer;
     private int retries;
 
-    public AggregateDeviceTelemetryUpdatePublicApiV2(SolarEdgeHandler handler, boolean storage, boolean yearly,
-            StatusUpdateListener listener) {
+    public AggregateDeviceTelemetryUpdatePublicApiV2(SolarEdgeHandler handler, long cycleId, boolean storage,
+            boolean yearly, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener, handler::getPublicApiV2Credential,
                 handler::invalidatePublicApiV2Credential, handler::recordPublicApiV2Request,
                 response -> handler.updatePublicApiV2RateLimit(response.getHeaders().get("x-ratelimit-limit-minute"),
                         response.getHeaders().get("x-ratelimit-remaining-minute"),
                         response.getHeaders().get("Retry-After")));
         this.handler = handler;
+        this.cycleId = cycleId;
         this.storage = storage;
         this.yearly = yearly;
         transformer = new DeviceTelemetryResponseTransformerPublicApiV2(handler);
@@ -61,7 +64,7 @@ public class AggregateDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
 
     @Override
     protected Request prepareRequest(Request request) {
-        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
         OffsetDateTime from = yearly ? aggregateStart(now, AggregatePeriod.YEAR) : earliestRecentAggregateStart(now);
         return request.followRedirects(false).method(HttpMethod.GET)
                 .param(PUBLIC_DATA_API_V2_FROM_FIELD, from.toString())
@@ -87,7 +90,7 @@ public class AggregateDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
             if (json != null) {
                 DeviceTelemetryResponsePublicApiV2 response = fromJson(json, DeviceTelemetryResponsePublicApiV2.class);
                 if (response != null) {
-                    OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+                    OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
                     AggregatePeriod[] periods = yearly ? new AggregatePeriod[] { AggregatePeriod.YEAR }
                             : new AggregatePeriod[] { AggregatePeriod.DAY, AggregatePeriod.WEEK,
                                     AggregatePeriod.MONTH };
@@ -96,10 +99,11 @@ public class AggregateDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
                         handler.updateChannelStatus(transformer.transformAggregate(response, period, from));
                         AggregateEnergies energies = transformer.extractAggregateEnergies(response, from);
                         if (storage) {
-                            handler.updatePublicApiV2AggregateStorage(period, energies.charged(),
+                            handler.updatePublicApiV2AggregateStorage(cycleId, period, energies.charged(),
                                     energies.discharged());
                         } else {
-                            handler.updatePublicApiV2AggregateGrid(period, energies.imported(), energies.exported());
+                            handler.updatePublicApiV2AggregateGrid(cycleId, period, energies.imported(),
+                                    energies.exported(), energies.consumption());
                         }
                     }
                 }

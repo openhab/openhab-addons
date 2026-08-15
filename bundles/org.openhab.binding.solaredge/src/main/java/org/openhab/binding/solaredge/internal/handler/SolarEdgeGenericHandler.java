@@ -14,8 +14,6 @@ package org.openhab.binding.solaredge.internal.handler;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -90,15 +88,16 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     private final PublicApiV2RequestCounter publicApiV2RequestCounter;
     private final SolarEdgeOAuthServlet oAuthServlet;
     private String authorizationUrl = "";
-    private static final Duration V2_BALANCE_MAX_AGE = Duration.ofMinutes(2);
+    private long v2PollingCycle;
     private @Nullable TimedPower v2Production;
     private @Nullable TimedPower v2Import;
     private @Nullable TimedPower v2Export;
     private @Nullable TimedPower v2Charge;
     private @Nullable TimedPower v2Discharge;
+    private @Nullable TimedPower v2Consumption;
     private final Map<AggregatePeriod, AggregateBalance> v2AggregateBalances = new EnumMap<>(AggregatePeriod.class);
 
-    private record TimedPower(double value, Instant timestamp) {
+    private record TimedPower(double value, long cycleId) {
     }
 
     private static class AggregateBalance {
@@ -107,6 +106,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         private @Nullable TimedPower exported;
         private @Nullable TimedPower charged;
         private @Nullable TimedPower discharged;
+        private @Nullable TimedPower consumption;
     }
 
     /**
@@ -141,53 +141,60 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     }
 
     @Override
-    public synchronized void updatePublicApiV2Production(@Nullable Double production) {
-        v2Production = timed(production);
-        updatePublicApiV2LiveValues();
+    public synchronized void updatePublicApiV2Production(long cycleId, @Nullable Double production) {
+        v2Production = timed(production, cycleId);
+        updateStatus(CHANNEL_ID_PV_STATUS, production);
+        updatePublicApiV2LiveValues(cycleId);
     }
 
     @Override
-    public synchronized void updatePublicApiV2Grid(@Nullable Double imported, @Nullable Double exported) {
-        v2Import = timed(imported);
-        v2Export = timed(exported);
-        updatePublicApiV2LiveValues();
+    public synchronized void updatePublicApiV2Grid(long cycleId, @Nullable Double imported, @Nullable Double exported,
+            @Nullable Double consumption) {
+        v2Import = timed(imported, cycleId);
+        v2Export = timed(exported, cycleId);
+        v2Consumption = timed(consumption, cycleId);
+        updateStatus(CHANNEL_ID_GRID_STATUS, imported, exported);
+        updatePublicApiV2LiveValues(cycleId);
     }
 
     @Override
-    public synchronized void updatePublicApiV2Storage(@Nullable Double charged, @Nullable Double discharged,
-            @Nullable Double level) {
-        v2Charge = timed(charged);
-        v2Discharge = timed(discharged);
+    public synchronized void updatePublicApiV2Storage(long cycleId, @Nullable Double charged,
+            @Nullable Double discharged, @Nullable Double level) {
+        v2Charge = timed(charged, cycleId);
+        v2Discharge = timed(discharged, cycleId);
         Map<Channel, State> values = new HashMap<>();
         putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL,
                 batteryCriticalState(level, getConfiguration().getBatteryCriticalLevel()));
         updateChannelStatus(values);
-        updatePublicApiV2LiveValues();
+        updateStatus(CHANNEL_ID_BATTERY_STATUS, charged, discharged);
+        updatePublicApiV2LiveValues(cycleId);
     }
 
     @Override
-    public synchronized void updatePublicApiV2AggregateProduction(AggregatePeriod period, @Nullable Double production) {
+    public synchronized void updatePublicApiV2AggregateProduction(long cycleId, AggregatePeriod period,
+            @Nullable Double production) {
         AggregateBalance balance = aggregateBalance(period);
-        balance.production = timed(production);
-        updatePublicApiV2AggregateConsumption(period, balance);
+        balance.production = timed(production, cycleId);
+        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
     }
 
     @Override
-    public synchronized void updatePublicApiV2AggregateGrid(AggregatePeriod period, @Nullable Double imported,
-            @Nullable Double exported) {
+    public synchronized void updatePublicApiV2AggregateGrid(long cycleId, AggregatePeriod period,
+            @Nullable Double imported, @Nullable Double exported, @Nullable Double consumption) {
         AggregateBalance balance = aggregateBalance(period);
-        balance.imported = timed(imported);
-        balance.exported = timed(exported);
-        updatePublicApiV2AggregateConsumption(period, balance);
+        balance.imported = timed(imported, cycleId);
+        balance.exported = timed(exported, cycleId);
+        balance.consumption = timed(consumption, cycleId);
+        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
     }
 
     @Override
-    public synchronized void updatePublicApiV2AggregateStorage(AggregatePeriod period, @Nullable Double charged,
-            @Nullable Double discharged) {
+    public synchronized void updatePublicApiV2AggregateStorage(long cycleId, AggregatePeriod period,
+            @Nullable Double charged, @Nullable Double discharged) {
         AggregateBalance balance = aggregateBalance(period);
-        balance.charged = timed(charged);
-        balance.discharged = timed(discharged);
-        updatePublicApiV2AggregateConsumption(period, balance);
+        balance.charged = timed(charged, cycleId);
+        balance.discharged = timed(discharged, cycleId);
+        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
     }
 
     private AggregateBalance aggregateBalance(AggregatePeriod period) {
@@ -199,53 +206,66 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         return balance;
     }
 
-    private void updatePublicApiV2AggregateConsumption(AggregatePeriod period, AggregateBalance balance) {
-        Instant oldestAllowed = Instant.now().minus(V2_BALANCE_MAX_AGE);
-        if (isCurrent(balance.production, oldestAllowed) && isCurrent(balance.imported, oldestAllowed)
-                && isCurrent(balance.exported, oldestAllowed) && isCurrent(balance.charged, oldestAllowed)
-                && isCurrent(balance.discharged, oldestAllowed)) {
-            double consumption = calculateConsumption(valueOf(balance.production), valueOf(balance.imported),
+    private void updatePublicApiV2AggregateConsumption(long cycleId, AggregatePeriod period, AggregateBalance balance) {
+        TimedPower production = balance.production;
+        TimedPower directConsumption = balance.consumption;
+        Map<Channel, State> values = new HashMap<>();
+        @Nullable
+        Double consumption = null;
+        if (directConsumption != null && directConsumption.cycleId == cycleId) {
+            consumption = directConsumption.value;
+        } else if (production != null && production.cycleId == cycleId
+                && sameCycle(production, balance.imported, balance.exported, balance.charged, balance.discharged)) {
+            consumption = calculateConsumption(valueOf(production), valueOf(balance.imported),
                     valueOf(balance.exported), valueOf(balance.charged), valueOf(balance.discharged));
-            double selfConsumption = calculateSelfConsumption(valueOf(balance.production), valueOf(balance.exported),
-                    valueOf(balance.charged));
-            Map<Channel, State> values = new HashMap<>();
+        }
+        if (consumption != null) {
             putState(values, aggregateGroup(period), CHANNEL_ID_CONSUMPTION,
                     new QuantityType<>(consumption, Units.WATT_HOUR));
+        }
+        if (production != null && production.cycleId == cycleId
+                && sameCycle(production, balance.exported, balance.charged)) {
+            double selfConsumption = calculateSelfConsumption(valueOf(production), valueOf(balance.exported),
+                    valueOf(balance.charged));
             putState(values, aggregateGroup(period), CHANNEL_ID_SELF_CONSUMPTION_FOR_CONSUMPTION,
                     new QuantityType<>(selfConsumption, Units.WATT_HOUR));
-            putState(values, aggregateGroup(period), CHANNEL_ID_SELF_CONSUMPTION_COVERAGE,
-                    new QuantityType<>(calculateCoverage(selfConsumption, consumption), Units.PERCENT));
+            if (consumption != null) {
+                putState(values, aggregateGroup(period), CHANNEL_ID_SELF_CONSUMPTION_COVERAGE,
+                        new QuantityType<>(calculateCoverage(selfConsumption, consumption), Units.PERCENT));
+            }
+        }
+        if (!values.isEmpty()) {
             updateChannelStatus(values);
         }
     }
 
-    private @Nullable TimedPower timed(@Nullable Double value) {
-        return value == null ? null : new TimedPower(value, Instant.now());
+    private @Nullable TimedPower timed(@Nullable Double value, long cycleId) {
+        return value == null ? null : new TimedPower(value, cycleId);
     }
 
-    private void updatePublicApiV2LiveValues() {
-        Instant oldestAllowed = Instant.now().minus(V2_BALANCE_MAX_AGE);
+    private void updatePublicApiV2LiveValues(long cycleId) {
+        TimedPower directConsumption = v2Consumption;
+        if (directConsumption != null && directConsumption.cycleId == cycleId) {
+            updateLiveConsumption(directConsumption.value);
+            return;
+        }
         TimedPower production = v2Production;
         TimedPower imported = v2Import;
         TimedPower exported = v2Export;
         TimedPower charge = v2Charge;
         TimedPower discharge = v2Discharge;
-        if (isCurrent(production, oldestAllowed) && isCurrent(imported, oldestAllowed)
-                && isCurrent(exported, oldestAllowed) && isCurrent(charge, oldestAllowed)
-                && isCurrent(discharge, oldestAllowed)) {
-            double consumption = calculateConsumption(valueOf(production), valueOf(imported), valueOf(exported),
-                    valueOf(charge), valueOf(discharge));
-            Map<Channel, State> values = new HashMap<>();
-            putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_CONSUMPTION, new QuantityType<>(consumption, Units.WATT));
-            putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_PV_STATUS,
-                    new StringType(activeStatus(valueOf(production))));
-            putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_LOAD_STATUS, new StringType(activeStatus(consumption)));
-            putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_GRID_STATUS,
-                    new StringType(activeStatus(valueOf(imported), valueOf(exported))));
-            putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_STATUS,
-                    new StringType(activeStatus(valueOf(charge), valueOf(discharge))));
-            updateChannelStatus(values);
+        if (production != null && production.cycleId == cycleId
+                && sameCycle(production, imported, exported, charge, discharge)) {
+            updateLiveConsumption(calculateConsumption(valueOf(production), valueOf(imported), valueOf(exported),
+                    valueOf(charge), valueOf(discharge)));
         }
+    }
+
+    private void updateLiveConsumption(double consumption) {
+        Map<Channel, State> values = new HashMap<>();
+        putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_CONSUMPTION, new QuantityType<>(consumption, Units.WATT));
+        putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_LOAD_STATUS, new StringType(activeStatus(consumption)));
+        updateChannelStatus(values);
     }
 
     private void putState(Map<Channel, State> values, String group, String channelId, State state) {
@@ -255,12 +275,30 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         }
     }
 
-    private boolean isCurrent(@Nullable TimedPower power, Instant oldestAllowed) {
-        return power != null && !power.timestamp.isBefore(oldestAllowed);
+    private boolean sameCycle(TimedPower reference, @Nullable TimedPower... values) {
+        for (TimedPower value : values) {
+            if (value == null || value.cycleId != reference.cycleId) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private double valueOf(@Nullable TimedPower power) {
         return Objects.requireNonNull(power).value;
+    }
+
+    private void updateStatus(String channelId, @Nullable Double... powers) {
+        boolean active = false;
+        for (Double power : powers) {
+            if (power == null) {
+                return;
+            }
+            active |= power > 0;
+        }
+        Map<Channel, State> values = new HashMap<>();
+        putState(values, CHANNEL_GROUP_LIVE, channelId, new StringType(active ? "Active" : "Idle"));
+        updateChannelStatus(values);
     }
 
     static double calculateConsumption(double production, double imported, double exported, double charged,
@@ -328,7 +366,8 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
                 scheduler.scheduleWithFixedDelay(this::aggregateDataPollingRun, AGGREGATE_POLLING_INITIAL_DELAY,
                         getConfiguration().getAggregateDataPollingInterval(), TimeUnit.MINUTES));
 
-        if (PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
+        if (!getConfiguration().isUsePrivateApi()
+                && PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
             updateJobReference(yearlyAggregateDataPollingJobReference,
                     scheduler.scheduleWithFixedDelay(this::yearlyAggregateDataPollingRun,
                             YEARLY_AGGREGATE_POLLING_INITIAL_DELAY, YEARLY_AGGREGATE_POLLING_INTERVAL,
@@ -349,7 +388,14 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         if (getConfiguration().isUsePrivateApi()) {
             ldu = new LiveDataUpdatePrivateApi(this, this::updateOnlineStatus);
         } else if (PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
-            ldu = new LiveDataUpdatePublicApiV2(this, this::updateOnlineStatus);
+            long cycleId = ++v2PollingCycle;
+            ldu = new LiveDataUpdatePublicApiV2(this, cycleId, this::updateOnlineStatus);
+            getWebInterface().enqueueCommand(ldu);
+            getWebInterface().enqueueCommand(
+                    new LiveDeviceTelemetryUpdatePublicApiV2(this, cycleId, false, this::updateOnlineStatus));
+            getWebInterface().enqueueCommand(
+                    new LiveDeviceTelemetryUpdatePublicApiV2(this, cycleId, true, this::updateOnlineStatus));
+            return;
         } else {
             if (getConfiguration().isMeterInstalled()) {
                 ldu = new LiveDataUpdatePublicApi(this, this::updateOnlineStatus);
@@ -358,12 +404,6 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
             }
         }
         getWebInterface().enqueueCommand(ldu);
-        if (PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
-            getWebInterface()
-                    .enqueueCommand(new LiveDeviceTelemetryUpdatePublicApiV2(this, false, this::updateOnlineStatus));
-            getWebInterface()
-                    .enqueueCommand(new LiveDeviceTelemetryUpdatePublicApiV2(this, true, this::updateOnlineStatus));
-        }
     }
 
     /**
@@ -385,11 +425,12 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
                 commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.MONTH, this::updateOnlineStatus));
                 commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.YEAR, this::updateOnlineStatus));
             } else if (PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
-                commands.add(new AggregateDataUpdatePublicApiV2(this, false, this::updateOnlineStatus));
-                commands.add(
-                        new AggregateDeviceTelemetryUpdatePublicApiV2(this, false, false, this::updateOnlineStatus));
-                commands.add(
-                        new AggregateDeviceTelemetryUpdatePublicApiV2(this, true, false, this::updateOnlineStatus));
+                long cycleId = ++v2PollingCycle;
+                commands.add(new AggregateDataUpdatePublicApiV2(this, cycleId, false, this::updateOnlineStatus));
+                commands.add(new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, false, false,
+                        this::updateOnlineStatus));
+                commands.add(new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, true, false,
+                        this::updateOnlineStatus));
             } else {
                 commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.DAY, this::updateOnlineStatus));
                 commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.WEEK, this::updateOnlineStatus));
@@ -405,15 +446,18 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
 
     /** Poll yearly Monitoring API V2 aggregate data once per day. */
     void yearlyAggregateDataPollingRun() {
-        if (!hasPublicApiV2Credential() || !PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
+        if (getConfiguration().isUsePrivateApi() || !hasPublicApiV2Credential()
+                || !PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
             return;
         }
         logger.debug("polling SolarEdge yearly aggregate data {}", getConfiguration());
-        getWebInterface().enqueueCommand(new AggregateDataUpdatePublicApiV2(this, true, this::updateOnlineStatus));
+        long cycleId = ++v2PollingCycle;
+        getWebInterface()
+                .enqueueCommand(new AggregateDataUpdatePublicApiV2(this, cycleId, true, this::updateOnlineStatus));
         getWebInterface().enqueueCommand(
-                new AggregateDeviceTelemetryUpdatePublicApiV2(this, false, true, this::updateOnlineStatus));
+                new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, false, true, this::updateOnlineStatus));
         getWebInterface().enqueueCommand(
-                new AggregateDeviceTelemetryUpdatePublicApiV2(this, true, true, this::updateOnlineStatus));
+                new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, true, true, this::updateOnlineStatus));
     }
 
     private void updateOnlineStatus(CommunicationStatus status) {

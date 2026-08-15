@@ -16,6 +16,7 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,11 +39,12 @@ import org.openhab.binding.solaredge.internal.model.DeviceTelemetryResponseTrans
 @NonNullByDefault
 public class LiveDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
     private final SolarEdgeHandler handler;
+    private final long cycleId;
     private final boolean storage;
     private final DeviceTelemetryResponseTransformerPublicApiV2 transformer;
     private int retries;
 
-    public LiveDeviceTelemetryUpdatePublicApiV2(SolarEdgeHandler handler, boolean storage,
+    public LiveDeviceTelemetryUpdatePublicApiV2(SolarEdgeHandler handler, long cycleId, boolean storage,
             StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener, handler::getPublicApiV2Credential,
                 handler::invalidatePublicApiV2Credential, handler::recordPublicApiV2Request,
@@ -50,13 +52,14 @@ public class LiveDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
                         response.getHeaders().get("x-ratelimit-remaining-minute"),
                         response.getHeaders().get("Retry-After")));
         this.handler = handler;
+        this.cycleId = cycleId;
         this.storage = storage;
         transformer = new DeviceTelemetryResponseTransformerPublicApiV2(handler);
     }
 
     @Override
     protected Request prepareRequest(Request request) {
-        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
         return request.followRedirects(false).method(HttpMethod.GET)
                 .param(PUBLIC_DATA_API_V2_FROM_FIELD, now.minusHours(1).toString())
                 .param(PUBLIC_DATA_API_V2_TO_FIELD, now.toString())
@@ -84,9 +87,11 @@ public class LiveDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
                     handler.updateChannelStatus(transformer.transformLive(response));
                     LivePowers powers = transformer.extractLivePowers(response);
                     if (storage) {
-                        handler.updatePublicApiV2Storage(powers.charged(), powers.discharged(), powers.level());
+                        handler.updatePublicApiV2Storage(cycleId, powers.charged(), powers.discharged(),
+                                powers.level());
                     } else {
-                        handler.updatePublicApiV2Grid(powers.imported(), powers.exported());
+                        handler.updatePublicApiV2Grid(cycleId, powers.imported(), powers.exported(),
+                                powers.consumption());
                     }
                 }
             }

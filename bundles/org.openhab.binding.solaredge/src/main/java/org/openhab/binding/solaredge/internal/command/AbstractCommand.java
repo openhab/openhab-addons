@@ -187,6 +187,10 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             cookieStore.add(URI.create(getURL()), c);
         } else if (PublicApiVersion.V2.equals(config.getPublicApiVersion())) {
             String credential = Objects.requireNonNull(publicApiV2CredentialSupplier.get());
+            if (credential.isBlank()) {
+                logger.debug("Skipping Monitoring API V2 request because no credential is available");
+                return;
+            }
             if (PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())) {
                 request.header("Authorization", "Bearer " + credential);
             } else {

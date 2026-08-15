@@ -17,6 +17,7 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
@@ -41,24 +42,27 @@ import org.openhab.binding.solaredge.internal.model.MeasurementsResponseTransfor
 public class AggregateDataUpdatePublicApiV2 extends AbstractCommand {
 
     private final SolarEdgeHandler handler;
+    private final long cycleId;
     private final boolean yearly;
     private final MeasurementsResponseTransformerPublicApiV2 transformer;
     private int retries;
 
-    public AggregateDataUpdatePublicApiV2(SolarEdgeHandler handler, boolean yearly, StatusUpdateListener listener) {
+    public AggregateDataUpdatePublicApiV2(SolarEdgeHandler handler, long cycleId, boolean yearly,
+            StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener, handler::getPublicApiV2Credential,
                 handler::invalidatePublicApiV2Credential, handler::recordPublicApiV2Request,
                 response -> handler.updatePublicApiV2RateLimit(response.getHeaders().get("x-ratelimit-limit-minute"),
                         response.getHeaders().get("x-ratelimit-remaining-minute"),
                         response.getHeaders().get("Retry-After")));
         this.handler = handler;
+        this.cycleId = cycleId;
         this.yearly = yearly;
         this.transformer = new MeasurementsResponseTransformerPublicApiV2(handler);
     }
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-        OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
         OffsetDateTime from = yearly ? aggregateStart(now, AggregatePeriod.YEAR) : earliestRecentAggregateStart(now);
         return requestToPrepare.followRedirects(false).method(HttpMethod.GET)
                 .param(PUBLIC_DATA_API_V2_FROM_FIELD, from.toString())
@@ -84,14 +88,15 @@ public class AggregateDataUpdatePublicApiV2 extends AbstractCommand {
             if (json != null) {
                 MeasurementsResponsePublicApiV2 response = fromJson(json, MeasurementsResponsePublicApiV2.class);
                 if (response != null) {
-                    OffsetDateTime now = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+                    OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.SECONDS);
                     AggregatePeriod[] periods = yearly ? new AggregatePeriod[] { AggregatePeriod.YEAR }
                             : new AggregatePeriod[] { AggregatePeriod.DAY, AggregatePeriod.WEEK,
                                     AggregatePeriod.MONTH };
                     for (AggregatePeriod period : periods) {
                         OffsetDateTime from = aggregateStart(now, period);
                         handler.updateChannelStatus(transformer.transformEnergy(response, period, from));
-                        handler.updatePublicApiV2AggregateProduction(period, transformer.totalValue(response, from));
+                        handler.updatePublicApiV2AggregateProduction(cycleId, period,
+                                transformer.totalValue(response, from));
                     }
                 }
             }

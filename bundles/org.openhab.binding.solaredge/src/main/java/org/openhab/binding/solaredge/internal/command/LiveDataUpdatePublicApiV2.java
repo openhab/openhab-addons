@@ -16,6 +16,7 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,22 +39,24 @@ import org.openhab.binding.solaredge.internal.model.MeasurementsResponseTransfor
 public class LiveDataUpdatePublicApiV2 extends AbstractCommand {
 
     private final SolarEdgeHandler handler;
+    private final long cycleId;
     private final MeasurementsResponseTransformerPublicApiV2 transformer;
     private int retries;
 
-    public LiveDataUpdatePublicApiV2(SolarEdgeHandler handler, StatusUpdateListener listener) {
+    public LiveDataUpdatePublicApiV2(SolarEdgeHandler handler, long cycleId, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener, handler::getPublicApiV2Credential,
                 handler::invalidatePublicApiV2Credential, handler::recordPublicApiV2Request,
                 response -> handler.updatePublicApiV2RateLimit(response.getHeaders().get("x-ratelimit-limit-minute"),
                         response.getHeaders().get("x-ratelimit-remaining-minute"),
                         response.getHeaders().get("Retry-After")));
         this.handler = handler;
+        this.cycleId = cycleId;
         this.transformer = new MeasurementsResponseTransformerPublicApiV2(handler);
     }
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault());
         return requestToPrepare.followRedirects(false).method(HttpMethod.GET)
                 .param(PUBLIC_DATA_API_V2_FROM_FIELD, now.minusHours(1).truncatedTo(ChronoUnit.SECONDS).toString())
                 .param(PUBLIC_DATA_API_V2_TO_FIELD, now.truncatedTo(ChronoUnit.SECONDS).toString())
@@ -78,7 +81,7 @@ public class LiveDataUpdatePublicApiV2 extends AbstractCommand {
                 MeasurementsResponsePublicApiV2 response = fromJson(json, MeasurementsResponsePublicApiV2.class);
                 if (response != null) {
                     handler.updateChannelStatus(transformer.transformPower(response));
-                    handler.updatePublicApiV2Production(transformer.latestValue(response));
+                    handler.updatePublicApiV2Production(cycleId, transformer.latestValue(response));
                 }
             }
         }

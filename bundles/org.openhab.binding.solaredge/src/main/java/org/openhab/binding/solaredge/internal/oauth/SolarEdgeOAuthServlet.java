@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.ServletException;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeGenericHandler;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,29 +41,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ronny Grun - Initial contribution
  */
-@Component(service = SolarEdgeOAuthServlet.class, immediate = true)
+@Component(service = { Servlet.class,
+        SolarEdgeOAuthServlet.class }, property = HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "="
+                + SolarEdgeOAuthServlet.SERVLET_ALIAS)
 @NonNullByDefault
 public class SolarEdgeOAuthServlet extends HttpServlet {
     public static final String SERVLET_ALIAS = "/solaredge/oauth/callback";
     private static final long serialVersionUID = 1L;
 
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeOAuthServlet.class);
-    private final HttpService httpService;
     private final Map<String, SolarEdgeGenericHandler> pendingAuthorizations = new ConcurrentHashMap<>();
-
-    @Activate
-    public SolarEdgeOAuthServlet(@Reference HttpService httpService) {
-        this.httpService = httpService;
-        try {
-            httpService.registerServlet(SERVLET_ALIAS, this, null, null);
-        } catch (ServletException | NamespaceException e) {
-            logger.error("Failed to register SolarEdge OAuth callback servlet", e);
-        }
-    }
 
     @Deactivate
     protected void deactivate() {
-        httpService.unregister(SERVLET_ALIAS);
         pendingAuthorizations.clear();
     }
 
@@ -100,13 +87,14 @@ public class SolarEdgeOAuthServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incomplete SolarEdge OAuth callback");
             return;
         }
-        SolarEdgeGenericHandler handler = pendingAuthorizations.remove(externalId);
+        SolarEdgeGenericHandler handler = pendingAuthorizations.get(externalId);
         if (handler == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown or expired SolarEdge authorization");
             return;
         }
         try {
             handler.onOAuthAuthorized(code, siteId);
+            pendingAuthorizations.remove(externalId, handler);
             response.setContentType("text/html; charset=UTF-8");
             try (PrintWriter writer = response.getWriter()) {
                 writer.println("<h1>SolarEdge authorization successful</h1>");

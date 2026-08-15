@@ -36,12 +36,12 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataResponseTransformer {
-    public record LivePowers(@Nullable Double imported, @Nullable Double exported, @Nullable Double charged,
-            @Nullable Double discharged, @Nullable Double level) {
+    public record LivePowers(@Nullable Double imported, @Nullable Double exported, @Nullable Double consumption,
+            @Nullable Double charged, @Nullable Double discharged, @Nullable Double level) {
     }
 
-    public record AggregateEnergies(@Nullable Double imported, @Nullable Double exported, @Nullable Double charged,
-            @Nullable Double discharged) {
+    public record AggregateEnergies(@Nullable Double imported, @Nullable Double exported, @Nullable Double consumption,
+            @Nullable Double charged, @Nullable Double discharged) {
     }
 
     private final ChannelProvider channelProvider;
@@ -74,10 +74,7 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_DISCHARGE),
                     discharge, unit);
             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
-                    charge == null && discharge == null ? null
-                            : (charge == null ? 0 : charge.doubleValue())
-                                    - (discharge == null ? 0 : discharge.doubleValue()),
-                    unit);
+                    charge == null || discharge == null ? null : charge - discharge, unit);
             Double level = averageLatest(storage.values().stream().map(s -> s.stateOfEnergy).toList());
             // The API currently returns fractions although its documentation describes values from 0 to 100.
             if (level != null && level >= 0 && level <= 1) {
@@ -99,6 +96,7 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
         return new LivePowers(
                 meters == null ? null : sumLatest(meters.values().stream().map(m -> m.importPower).toList()),
                 meters == null ? null : sumLatest(meters.values().stream().map(m -> m.exportPower).toList()),
+                meters == null ? null : sumLatest(meters.values().stream().map(m -> m.consumptionPower).toList()),
                 storage == null ? null : sumLatest(storage.values().stream().map(s -> s.chargePower).toList()),
                 storage == null ? null : sumLatest(storage.values().stream().map(s -> s.dischargePower).toList()),
                 level);
@@ -115,10 +113,10 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
         return new AggregateEnergies(
                 meters == null ? null : sumAll(meters.values().stream().map(m -> m.importEnergy).toList(), from),
                 meters == null ? null : sumAll(meters.values().stream().map(m -> m.exportEnergy).toList(), from),
+                meters == null ? null : sumAll(meters.values().stream().map(m -> m.consumptionEnergy).toList(), from),
+                storage == null ? null : sumPositive(storage.values().stream().map(s -> s.chargeEnergy).toList(), from),
                 storage == null ? null
-                        : orZero(sumPositive(storage.values().stream().map(s -> s.chargeEnergy).toList(), from)),
-                storage == null ? null
-                        : orZero(sumPositive(storage.values().stream().map(s -> s.dischargeEnergy).toList(), from)));
+                        : sumPositive(storage.values().stream().map(s -> s.dischargeEnergy).toList(), from));
     }
 
     public Map<Channel, State> transformAggregate(DeviceTelemetryResponsePublicApiV2 response, AggregatePeriod period) {
@@ -145,7 +143,7 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
         if (storage != null) {
             var series = storage.values().stream().map(s -> s.dischargeEnergy).toList();
             putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_BATTERY_SELF_CONSUMPTION),
-                    orZero(sumPositive(series, from)), unitOf(series, "WH"));
+                    sumPositive(series, from), unitOf(series, "WH"));
         }
         return result;
     }
@@ -242,10 +240,6 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
         } catch (java.time.format.DateTimeParseException e) {
             return false;
         }
-    }
-
-    private static double orZero(@Nullable Double value) {
-        return value == null ? 0 : value;
     }
 
     private static String unitOf(Map<String, MeterTelemetry> meters, boolean imported) {

@@ -13,6 +13,7 @@
 package org.openhab.binding.solaredge.internal.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -76,6 +77,20 @@ public class DeviceTelemetryResponseTransformerPublicApiV2Test {
     }
 
     @Test
+    public void doesNotDeriveCombinedBatteryPowerFromIncompleteTelemetry() {
+        DeviceTelemetryResponsePublicApiV2 response = parse("""
+                {"storage":{"7E047411":{
+                  "chargePower":{"unit":"W","values":[{"value":55.0}]}
+                }}}
+                """);
+
+        Map<Channel, State> result = transformer.transformLive(response);
+
+        assertEquals("55 W", state(result, "battery_charge"));
+        assertEquals("UNDEF", state(result, "battery_charge_discharge"));
+    }
+
+    @Test
     public void doesNotOverwriteDerivedConsumptionWhenDirectSeriesIsMissing() {
         DeviceTelemetryResponsePublicApiV2 response = parse("""
                 {"meters":{"606599711":{
@@ -107,6 +122,34 @@ public class DeviceTelemetryResponseTransformerPublicApiV2Test {
         assertEquals(9.0, energies.charged());
         assertEquals(168.0, energies.discharged());
         assertEquals("168 Wh", state(result, "batterySelfConsumption"));
+    }
+
+    @Test
+    public void keepsMissingAggregateStorageValuesUndefined() {
+        DeviceTelemetryResponsePublicApiV2 response = parse("""
+                {"storage":{"7E047411":{
+                  "chargeEnergy":{"unit":"WH","values":[{"value":9.0}]}
+                }}}
+                """);
+
+        DeviceTelemetryResponseTransformerPublicApiV2.AggregateEnergies energies = transformer
+                .extractAggregateEnergies(response);
+
+        assertEquals(9.0, energies.charged());
+        assertNull(energies.discharged());
+    }
+
+    @Test
+    public void extractsDirectConsumption() {
+        DeviceTelemetryResponsePublicApiV2 response = parse("""
+                {"meters":{"606599711":{
+                  "consumptionPower":{"unit":"W","values":[{"value":321.0}]},
+                  "consumptionEnergy":{"unit":"WH","values":[{"value":654.0}]}
+                }}}
+                """);
+
+        assertEquals(321.0, transformer.extractLivePowers(response).consumption());
+        assertEquals(654.0, transformer.extractAggregateEnergies(response).consumption());
     }
 
     @Test

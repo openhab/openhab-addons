@@ -181,6 +181,11 @@ public class WebInterface implements AtomicReferenceTrait {
                     && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())
                     && !handler.hasPublicApiV2Credential()) {
                 return false;
+            } else if (!config.isUsePrivateApi()
+                    && (!PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                            || PublicApiAuthentication.API_KEY.equals(config.getPublicApiAuthentication()))
+                    && localTokenOrApiKey.isBlank()) {
+                preCheckStatusMessage = "An API key is required for the selected public API authentication";
             } else if (!config.isUsePrivateApi() && PublicApiVersion.V1.equals(config.getPublicApiVersion())
                     && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
                 preCheckStatusMessage = STATUS_INVALID_API_KEY_LENGTH;
