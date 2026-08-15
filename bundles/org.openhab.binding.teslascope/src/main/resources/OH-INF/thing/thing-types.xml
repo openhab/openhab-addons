@@ -119,7 +119,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>publicID</representation-property>
@@ -681,5 +681,27 @@
 		<label>Wiper Blade Heater</label>
 		<description>Indicates if the wiper blade heater is switched on</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="self-driving-miles-since-reset" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Self Driving distance</label>
+		<description>Self Driving distance since reset</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="miles-since-reset" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Driving distance</label>
+		<description>Driving distance since reset</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="self-driving-percentage" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Self Driving %</label>
+		<description>Percentage of driving that is on FSD</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

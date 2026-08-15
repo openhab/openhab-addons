@@ -42,6 +42,17 @@
 				<type>teslascope:charge-limit-soc-standard</type>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="self-driving-miles-since-reset">
+				<type>teslascope:self-driving-miles-since-reset</type>
+			</add-channel>
+			<add-channel id="miles-since-reset">
+				<type>teslascope:miles-since-reset</type>
+			</add-channel>
+			<add-channel id="self-driving-percentage">
+				<type>teslascope:self-driving-percentage</type>
+			</add-channel>
+		</instruction-set>
 
 	</thing-type>
 
