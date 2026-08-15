@@ -33,8 +33,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link OcppHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * Creates thing handlers for the OCPP binding.
  *
  * @author Stamate Viorel - Initial contribution
  */

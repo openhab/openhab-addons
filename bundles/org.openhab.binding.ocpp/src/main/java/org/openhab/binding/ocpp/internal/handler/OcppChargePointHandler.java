@@ -100,17 +100,16 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     // status after the BootNotification has been accepted and the boot configuration has run.
     private static final long STATUS_FALLBACK_SECONDS = 25;
     private static final int MAX_BOOT_CONFIG_ATTEMPTS = 3;
-    // Delay between handling a BootNotification and treating the charger as ready. The library sends
-    // the boot confirmation right after the event handler returns; this binding cannot hook that
-    // write, so readiness is flipped on a scheduled task that runs comfortably after it. Usually the
-    // flip happens even sooner and provably in order: the charger's first post-boot message (it may
-    // not send one before receiving the confirmation — OCPP-J allows one outstanding call per
-    // direction) marks it ready via touch().
+    // Delay before treating the charger as ready. The library sends the boot confirmation right after
+    // the event handler returns and this binding cannot hook that write, so readiness is flipped on a
+    // scheduled task that runs comfortably after it. Usually it flips sooner and provably in order: the
+    // charger's first post-boot message marks it ready via touch(), and OCPP-J's one-outstanding-call-
+    // per-direction rule means it cannot have sent that before receiving the confirmation.
     private static final long BOOT_READY_GRACE_MILLIS = 1000;
     private static final int PENDING_SEND_LIMIT = 32;
     // Backstop bound on the operational (post-readiness) dispatcher queue, mirroring PENDING_SEND_LIMIT
-    // on the readiness queue. Generous: with per-connector poll coalescing nothing reaches it in normal
-    // use — it only caps a pathological producer.
+    // on the readiness queue. Generous: per-connector poll coalescing keeps normal use far below it; it
+    // only caps a pathological producer.
     private static final int OUTBOUND_LIMIT = 64;
 
     private final Logger logger = LoggerFactory.getLogger(OcppChargePointHandler.class);
@@ -124,19 +123,18 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private final Object dispatchLock = new Object();
     private final Deque<PendingSend> outbound = new ArrayDeque<>();
     private boolean dispatching;
-    // The request currently handed to the transport (one at a time). Guarded by dispatchLock, and
-    // held HERE rather than in either queue, so a session change can complete its future promptly
-    // and reset the dispatcher: the embedded library does not complete an outstanding promise when
-    // its session closes, so without this the future — and the whole single-CALL dispatcher behind
-    // it — would stall until the request-timeout reaper fires, withholding every command to the
-    // reconnected charger for that whole window.
+    // The request currently handed to the transport (one at a time). Guarded by dispatchLock and held
+    // HERE, not in either queue, so a session change can complete its future promptly and reset the
+    // dispatcher: the embedded library does not complete an outstanding promise when its session
+    // closes, so otherwise the future — and the whole single-CALL dispatcher behind it — would stall
+    // until the request-timeout reaper fires, withholding every command to the reconnected charger.
     private @Nullable PendingSend inFlight;
     // Drain-chain generation, guarded by dispatchLock. enqueue starts a chain and captures the epoch;
     // failPendingSends BUMPS it (unconditionally) to kill the active chain. Every drainOutbound pass
     // and every transmit completion carries the epoch its chain started under and stops the instant the
     // epoch moves on — so a chain caught mid-drain when a session change reset the dispatcher can
     // neither keep draining beside the fresh chain the new session starts (two CALLs on the wire), nor
-    // complete a request the reset already failed. A primitive: compared by value, not object identity.
+    // complete a request the reset already failed.
     private long dispatchEpoch;
     // Guards the coupled transition of (session, operational): a reconnect that swaps the session
     // must not interleave with becomeReady flipping readiness, or readiness could latch onto a
@@ -309,11 +307,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
      * the charger is offline.
      *
      * <p>
-     * Two concerns are layered here. Readiness: while the charger is connected but not yet ready (its
-     * BootNotification confirmation has not gone out), the request is held and released once it is,
-     * so nothing is sent before the boot is answered. Serialization: every request then passes
-     * through {@link #enqueue}, a single per-session dispatcher that keeps one CALL outstanding at a
-     * time, since an OCPP-J peer need not accept a second CALL before answering the first.
+     * Two concerns are layered. Readiness: while the charger is connected but not yet ready (its
+     * BootNotification confirmation has not gone out), the request is held and released once it is, so
+     * nothing precedes the boot answer. Serialization: every request then passes through
+     * {@link #enqueue}, a single per-session dispatcher keeping one CALL outstanding at a time, since
+     * an OCPP-J peer need not accept a second CALL before answering the first.
      */
     public CompletionStage<Confirmation> send(Request request) {
         UUID localSession = session;
@@ -383,10 +381,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             }
         }
         if (full) {
-            // Backstop against a runaway producer — e.g. periodic polling of a charger that keeps its
-            // socket open but stops answering, so each request only clears on its timeout. That is
-            // coalesced at the connector, but the operational queue is bounded here too: fail the newest
-            // request rather than let the queue (and the memory behind it) grow without limit.
+            // Backstop against a runaway producer — e.g. polling a charger that keeps its socket open
+            // but stops answering, so each request only clears on its timeout. That is coalesced at the
+            // connector, but the operational queue is bounded here too: fail the newest request rather
+            // than let it grow without limit.
             pending.future().completeExceptionally(
                     new IllegalStateException("Charger " + chargePointId + " outbound queue is full"));
             return;
@@ -569,8 +567,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         statusFallbackTask = scheduler.schedule(() -> {
             if (!bootAccepted) {
                 // Bare-socket reopen with no fresh BootNotification: the charger will not become ready
-                // on its own and runBootConfig never runs, so this fallback both reads its configuration
-                // and recovers connector status, bypassing the readiness gate.
+                // on its own and runBootConfig never runs, so this fallback reads its configuration and
+                // recovers connector status, bypassing the readiness gate.
                 readCapabilitiesNow(connectedSession);
                 requestConnectorStatusesNow();
             }
@@ -578,9 +576,9 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Gated status refresh, used after a boot (and its configuration burst): the request is held behind
-     * the BootNotification response rather than racing it. In the default configuration with no boot
-     * steps this is what keeps the post-boot refresh from going out before the boot is accepted.
+     * Gated status refresh, used after a boot (and its configuration burst): held behind the
+     * BootNotification response rather than racing it. With the default configuration and no boot
+     * steps, this keeps the post-boot refresh from preceding the boot acceptance.
      */
     private void requestConnectorStatuses() {
         for (OcppConnectorHandler connector : connectors.values()) {
@@ -754,19 +752,18 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     private void runBootConfig(UUID bootSession) {
         // The sequence belongs to the session whose boot scheduled it (captured then, not now). If the
-        // charger has reconnected since — even a bare WebSocket reconnect that legitimately sends no
-        // fresh BootNotification — abandon it before anything else, so a brief interruption during the
-        // settle delay neither runs stale configuration against the replacement session nor burns an
-        // attempt against it.
+        // charger reconnected since — even a bare WebSocket reconnect that sends no fresh
+        // BootNotification — abandon it first, so an interruption during the settle delay neither runs
+        // stale configuration against the replacement session nor burns an attempt against it.
         if (!bootSession.equals(session)) {
             logger.debug("Boot config for {} skipped — its session was replaced during the settle delay",
                     chargePointId);
             return;
         }
-        // Read the charger's own configuration first, so the burst (and the connectors) can adapt to
-        // what it actually supports. Best-effort: GetConfiguration is a mandatory Core message, but a
-        // charger that fails or refuses it falls back to unknown capabilities — the binding's prior
-        // behaviour — and the burst still runs.
+        // Read the charger's own configuration first, so the burst (and connectors) can adapt to what
+        // it actually supports. Best-effort: GetConfiguration is a mandatory Core message, but a charger
+        // that fails or refuses it falls back to unknown capabilities — the prior behaviour — and the
+        // burst still runs.
         readCapabilities(bootSession);
     }
 
@@ -788,9 +785,9 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     /**
      * Read the charger's configuration on a bare socket reopen — a reconnect with no fresh
      * BootNotification, so {@link #runBootConfig} (and its read) never runs. Ungated like the
-     * status-recovery probe it sits beside: the charger has reconnected but may not prove itself ready
-     * on its own, and a charger that stays powered for months only ever reconnects this way, so without
-     * this its capabilities would never be read.
+     * status-recovery probe beside it: the charger may not prove itself ready on its own, and one that
+     * stays powered for months only ever reconnects this way, so otherwise its capabilities would never
+     * be read.
      */
     private void readCapabilitiesNow(UUID connectedSession) {
         sendNow(new GetConfigurationRequest()).whenComplete((confirmation, ex) -> {
@@ -832,8 +829,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     /**
      * The ChangeConfiguration burst: push the configured keys to the charger, one CALL at a time, once
-     * per changed configuration. Unchanged from before capability discovery — it is simply now entered
-     * after the configuration has been read.
+     * per changed configuration. Entered after the charger's configuration has been read.
      */
     private void runBootConfigBurst(UUID bootSession) {
         if (!bootSession.equals(session)) {
@@ -845,12 +841,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return;
         }
         OcppServerConfiguration config = serverHandler.getServerConfig();
-        // Do NOT push configuration on every reconnect. A charger that is busy (e.g. flushing an
-        // offline message queue) can leave a ChangeConfiguration unanswered; before requests were
-        // bounded that turned one reconnect into a permanent connect/configure/drop loop, and it is
-        // still pointless traffic. So: skip while the EFFECTIVE configuration is the one already
-        // applied, and cap the attempts per configuration so a charger that never answers is left
-        // alone rather than cycled forever. A changed configuration resets both.
+        // Do NOT push configuration on every reconnect: a busy charger (e.g. flushing an offline
+        // message queue) can leave a ChangeConfiguration unanswered, and it is pointless traffic
+        // anyway. So skip while the EFFECTIVE configuration is the one already applied, and cap the
+        // attempts per configuration so a charger that never answers is left alone rather than cycled
+        // forever. A changed configuration resets both.
         String fingerprint = configFingerprint(config);
         if (!fingerprint.equals(attemptedConfigFingerprint)) {
             attemptedConfigFingerprint = fingerprint;
@@ -960,7 +955,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                                 + "reconfigured or reconnects with different settings",
                         chargePointId, MAX_BOOT_CONFIG_ATTEMPTS);
             }
-            // Safe to ask now: the charger is booted and its configuration has settled.
             requestConnectorStatuses();
             return;
         }

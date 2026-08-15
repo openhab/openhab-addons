@@ -67,9 +67,8 @@ public class TransactionStore {
 
     /**
      * The next transaction id, resumed across restarts so it never reissues an id a charger may
-     * still hold for a transaction that outlived openHAB. Allocation and the persistent write happen
-     * under one lock so the stored value can only ever increase — with separate atomicity, two
-     * concurrent allocations can persist out of order and store the lower id last.
+     * still hold for a transaction that outlived openHAB. Allocation and its persistent write are one
+     * atomic step, so the stored value can only ever increase.
      */
     public synchronized int nextTransactionId() {
         int id = ++sequence;

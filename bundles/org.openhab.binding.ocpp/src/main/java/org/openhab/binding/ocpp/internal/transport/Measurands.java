@@ -40,10 +40,6 @@ public final class Measurands {
      * Return {@code list} with its final comma-separated entry removed and every remaining entry
      * trimmed. Returns the empty string when there is nothing left to drop to (null input, or a list
      * that holds at most one entry).
-     *
-     * <p>
-     * Implemented by locating the final separator and re-normalising the retained prefix, so no
-     * intermediate buffer of the whole token array is assembled by hand.
      */
     public static String dropLast(@Nullable String list) {
         if (list == null) {

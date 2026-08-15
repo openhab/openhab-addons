@@ -320,8 +320,7 @@ public final class MeterValueMapper {
                 return new QuantityType<>(parsed, ImperialUnits.FAHRENHEIT);
             default:
                 // A non-standard unit outside the OCPP 1.6 set: keep the number rather than dropping
-                // the sample. Every OCPP-defined unit is mapped above, so this stays dimensionless
-                // only for genuinely unknown input.
+                // the sample.
                 LOGGER.debug("Unrecognised MeterValues unit '{}'; keeping a dimensionless value", unit);
                 return new DecimalType(parsed);
         }

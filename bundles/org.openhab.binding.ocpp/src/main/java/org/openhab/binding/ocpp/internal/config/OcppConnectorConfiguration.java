@@ -53,7 +53,7 @@ public class OcppConnectorConfiguration {
 
     /**
      * Number of phases assumed when converting the Amperes charge-limit into Watts for a power-only
-     * charger. 1 for single-phase charging, 3 for three-phase. Only used for that conversion.
+     * charger. 1 for single-phase, 3 for three-phase.
      */
     public int phases = 1;
 

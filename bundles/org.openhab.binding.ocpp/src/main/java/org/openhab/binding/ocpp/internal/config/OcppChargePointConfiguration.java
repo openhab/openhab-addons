@@ -36,8 +36,8 @@ public class OcppChargePointConfiguration {
     public int configSettleSeconds = 0;
 
     /**
-     * The charger has no internal meter. Only the periodic clock-aligned emission is disabled; the
-     * meter measurand configuration is skipped.
+     * The charger has no internal meter: the periodic clock-aligned emission is disabled and the meter
+     * measurand configuration is skipped.
      */
     public boolean meterless = false;
 
