@@ -144,7 +144,7 @@ public class TypingCmd {
 
                         if (packageName
                                 .equals("org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker")) {
-                            packageName = "org.openhab.core.automation.module.script.LifecycleScriptExtensionProvider_LifecycleTracker";
+                            packageName = "org.openhab.core.automation.module.script.LifecycleScriptExtensionProvider$LifecycleTracker";
                         } else if (packageName.endsWith("Impl") || packageName.endsWith("Delegate")) {
                             cls = value.getClass().getInterfaces()[0];
                             packageName = cls.getName();
