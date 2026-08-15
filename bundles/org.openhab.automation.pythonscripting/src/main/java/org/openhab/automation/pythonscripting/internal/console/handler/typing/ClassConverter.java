@@ -530,8 +530,8 @@ public class ClassConverter {
 
     public static String buildClassImports(Collection<String> imports) {
         StringBuilder builder = new StringBuilder();
-        HashSet<String> hashSet = new HashSet<>(imports);
-        ArrayList<String> sortedImports = new ArrayList<>(hashSet);
+        Set<String> hashSet = new HashSet<>(imports);
+        List<String> sortedImports = new ArrayList<>(hashSet);
         Collections.sort(sortedImports, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
