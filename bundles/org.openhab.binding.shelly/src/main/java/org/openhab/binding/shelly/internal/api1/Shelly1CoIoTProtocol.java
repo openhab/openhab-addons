@@ -143,21 +143,9 @@ public class Shelly1CoIoTProtocol {
                         break;
                     // RGBW2/Bulb
                     case "red":
-                        col.setRed((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getPercentRed());
-                        break;
                     case "green":
-                        col.setGreen((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.getPercentGreen());
-                        break;
                     case "blue":
-                        col.setBlue((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getPercentBlue());
-                        break;
                     case "white":
-                        col.setWhite((int) s.value);
-                        updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getPercentWhite());
-                        break;
                     case "gain":
                         // TODO case "effect" ??
                         if (lightModelHandler.getLightModel(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
@@ -257,17 +245,6 @@ public class Shelly1CoIoTProtocol {
         if (profile.isLight || profile.isDimmer) {
             // RGBW-white uses 4 different Power, Brightness, VSwitch values
             String checkL = profile.isRGBW2 && !profile.inColor ? String.valueOf(id) : "";
-            if (profile.isBulb || profile.inColor) {
-                group = CHANNEL_GROUP_LIGHT_CONTROL;
-                channel = CHANNEL_LIGHT_POWER;
-            } else if (profile.isDuo) {
-                group = CHANNEL_GROUP_WHITE_CONTROL;
-            } else if (profile.isDimmer) {
-                group = CHANNEL_GROUP_RELAY_CONTROL;
-            } else if (profile.isRGBW2) {
-                group = lightChannelGroupPrefix(profile) + id;
-                logger.trace("{}: updatePower() for L={}", thingName, checkL);
-            }
 
             // We need to update brightness and on/off state at the same time to avoid "flipping brightness slider" in
             // the UI

@@ -1254,7 +1254,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ds.ison = value.output;
 
         status.lights.set(rgbwId, ds);
-        return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
+        return channelUpdate ? ShellyComponents.updateRGBW(getThing(), rgbwId, status) : false;
     }
 
     private boolean updateLightModeStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
@@ -1282,9 +1282,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.ison = output;
         }
         lights.set(lightId, ds);
-        if (channelUpdate) {
-            ShellyComponents.updateLightMode(getThing(), status);
-        }
+        // if (channelUpdate) {
+        // The light model does this automatically
+        // ShellyComponents.updateLightMode(getThing(), status);
+        // }
         // Always true: signals the watchdog even if the channel value itself didn't change.
         return true;
     }

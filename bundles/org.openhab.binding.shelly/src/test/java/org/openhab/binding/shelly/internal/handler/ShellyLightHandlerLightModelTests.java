@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,20 +21,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -33,9 +44,21 @@ import org.openhab.core.types.State;
 
 import sun.misc.Unsafe;
 
-class ShellyLightHandlerLightModelLockTest {
+/**
+ * Tests for {@link ShellyLightHandler} and {@link ShellyLightModel} classes.
+ *
+ * @author Andrew Fiddian-Green - Initial contribution
+ */
+@NonNullByDefault
+class ShellyLightHandlerLightModelTests {
 
+    /**
+     * A test harness for ShellyLightHandler that allows us to create an instance without calling the
+     * constructor, and manually initialize the required fields.
+     */
     public class TestLightHandler extends ShellyLightHandler {
+
+        public Map<String, State> updates;
 
         public TestLightHandler(Thing thing, ShellyTranslationProvider translationProvider,
                 ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable, Shelly1CoapServer coapServer,
@@ -45,15 +68,14 @@ class ShellyLightHandlerLightModelLockTest {
 
         public static TestLightHandler create(ThingTypeUID thingTypeUID) {
             try {
-                // Obtain Unsafe
                 Field f = Unsafe.class.getDeclaredField("theUnsafe");
                 f.setAccessible(true);
                 Unsafe unsafe = (Unsafe) f.get(null);
 
-                // Allocate ShellyLightHandler WITHOUT calling its constructor
+                // allocate ShellyLightHandler WITHOUT calling its constructor
                 TestLightHandler handler = (TestLightHandler) unsafe.allocateInstance(TestLightHandler.class);
 
-                // Manually initialize required fields
+                // manually initialize required fields
                 handler.profile = new ShellyDeviceProfile(thingTypeUID);
                 handler.profile.initialized = true;
                 handler.profile.isLight = true;
@@ -94,6 +116,8 @@ class ShellyLightHandlerLightModelLockTest {
                 apiField.setAccessible(true);
                 apiField.set(handler, api);
 
+                handler.updates = new HashMap<>();
+
                 return handler;
 
             } catch (Exception e) {
@@ -103,54 +127,61 @@ class ShellyLightHandlerLightModelLockTest {
 
         @Override
         public boolean updateChannel(String channelId, State value, boolean force) {
+            updates.put(channelId, value);
             return true;
         }
 
-        public ShellyLightModel addTestModel(int id) {
-            ShellyLightModel model = ShellyLightModel.create(this, id, new ThingTypeUID("shelly", "rgbw2"),
-                    this.profile, Shelly1ApiJsonDTO.SHELLY_DIM_STEPSIZE);
-
-            try {
-                Field lmField = ShellyLightHandler.class.getDeclaredField("lightModels");
-                lmField.setAccessible(true);
-                @SuppressWarnings("unchecked")
-                Map<Integer, ShellyLightModel> map = (Map<Integer, ShellyLightModel>) lmField.get(this);
-                map.put(id, model);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-            return model;
+        public Map<String, State> getUpdates() {
+            return updates;
         }
     }
 
     @Test
-    void testAcquireLockGetLightModelReleaseLock() {
+    void testFunctionalityOfTestHarness() {
         TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
 
-        // use a dummy command to ensure the light model is created and initialized
         handler.handleDeviceCommand(
                 new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYBULB, "test"), "color"), "red"),
-                new PercentType(50));
+                PercentType.HUNDRED);
 
-        handler.acquireLock();
+        Map<String, State> updates = handler.getUpdates();
+        assertEquals(6, updates.size());
+        assertEquals(PercentType.HUNDRED, updates.get("color#red"));
+        assertEquals(PercentType.ZERO, updates.get("color#green"));
+        assertEquals(PercentType.ZERO, updates.get("color#blue"));
+        assertEquals(PercentType.ZERO, updates.get("color#white"));
+        assertEquals(new StringType("red"), updates.get("color#full"));
+        Object obj = updates.get("color#hsb");
+        assertTrue(obj instanceof HSBType);
+        assertEquals(0, ((HSBType) obj).getHue().intValue());
+        assertEquals(100, ((HSBType) obj).getSaturation().intValue());
+        assertEquals(0, ((HSBType) obj).getBrightness().intValue());
 
-        ShellyLightModel model = handler.getLightModel(0);
-        assertNotNull(model);
-
-        model.setOnOff(true);
-        model.setBrightness(new PercentType(55));
-        model.setRGBX(new int[] { 10, 20, 30, 40 });
-        model.setColorTemp(3500);
-
-        assertTrue(handler.releaseLock());
-
-        ShellyLightModel m = handler.getLightModel(0);
-        assertNotNull(m);
-
-        assertArrayEquals(new int[] { 10, 20, 30, 40 }, m.getRGBX());
-        assertEquals(new PercentType(55), m.getBrightnessState());
-        assertEquals(OnOffType.ON, m.getOnOffState());
-        assertEquals(QuantityType.valueOf(3500, Units.KELVIN), m.getColorTemperatureAbsoluteState());
+        try {
+            handler.acquireLock();
+            ShellyLightModel model = handler.getLightModel(0);
+            assertNotNull(model);
+            int[] rgbx = model.getRGBX();
+            assertArrayEquals(new int[] { 255, 0, 0, 0 }, rgbx);
+        } finally {
+            assertFalse(handler.releaseLock()); // not dirty, so releaseLock returns false
+        }
     }
+
+    // TODO add detail test for THING_TYPE_SHELLYBULB
+    // TODO add detail test for THING_TYPE_SHELLYDUO
+    // TODO add detail test for THING_TYPE_SHELLYVINTAGE
+    // TODO add detail test for THING_TYPE_SHELLYDUORGBW
+    // TODO add detail test for THING_TYPE_SHELLYRGBW2_COLOR
+    // TODO add detail test for THING_TYPE_SHELLYRGBW2_WHITE
+    // TODO add detail test for THING_TYPE_SHELLYPLUSRGBWPM / SHELLY2_PROFILE_RGBW
+    // TODO add detail test for THING_TYPE_SHELLYPLUSRGBWPM / SHELLY2_PROFILE_LIGHT
+    // TODO add detail test for THING_TYPE_SHELLYPRORGBWWPM / SHELLY2_PROFILE_RGB
+    // TODO add detail test for THING_TYPE_SHELLYPRORGBWWPM / SHELLY2_PROFILE_RGBW
+    // TODO add detail test for THING_TYPE_SHELLYPRORGBWWPM / SHELLY2_PROFILE_LIGHT
+    // TODO add detail test for THING_TYPE_SHELLYPRORGBWWPM / SHELLY2_PROFILE_RGBCCT
+    // TODO add detail test for THING_TYPE_SHELLYPRORGBWWPM / SHELLY2_PROFILE_RGBX2LIGHT
+    // TODO add detail test for THING_TYPE_SHELLYPRORGBWWPM / SHELLY2_PROFILE_CCTX2
+    // TODO add detail test for THING_TYPE_SHELLYPLUSDUOBULB
+    // TODO add detail test for THING_TYPE_SHELLYPLUSCOLORBULB
 }
