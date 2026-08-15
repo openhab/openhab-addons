@@ -594,6 +594,9 @@ public class ShellyDevices {
             Map.entry("shelly1", THING_TYPE_SHELLY1), //
             Map.entry("shelly1pm", THING_TYPE_SHELLY1PM), //
             Map.entry("shelly1l", THING_TYPE_SHELLY1L), //
+            // Mode unknown here (mDNS-only/auth-protected); default relay, mismatched roller needs re-discovery
+            Map.entry("shelly2", THING_TYPE_SHELLY2_RELAY), //
+            Map.entry("shelly25", THING_TYPE_SHELLY25_RELAY), //
             Map.entry("shellyem3", THING_TYPE_SHELLY3EM), // Product name is 3EM
             Map.entry("shellyem", THING_TYPE_SHELLYEM), //
             Map.entry("shelly4pro", THING_TYPE_SHELLY4PRO), //
