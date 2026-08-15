@@ -65,7 +65,9 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
         }
         if (this.connection == null) {
             if (config.password != null) {
-                this.connection = new FritzAhaWebInterface(config, this, httpClient);
+                FritzAhaWebInterface webInterface = new FritzAhaWebInterface(config, this, httpClient);
+                this.connection = webInterface;
+                webInterface.authenticate();
                 stopPolling();
                 startPolling();
             } else {

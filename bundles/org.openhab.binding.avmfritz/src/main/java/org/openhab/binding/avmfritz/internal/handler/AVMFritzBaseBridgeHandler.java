@@ -148,7 +148,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     protected synchronized void manageConnections() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
         if (this.connection == null) {
-            this.connection = new FritzAhaWebInterface(config, this, httpClient);
+            FritzAhaWebInterface webInterface = new FritzAhaWebInterface(config, this, httpClient);
+            this.connection = webInterface;
+            webInterface.authenticate();
             stopPolling();
             startPolling();
         }
@@ -169,6 +171,12 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopPolling();
+        FritzAhaWebInterface webInterface = connection;
+        connection = null;
+        if (webInterface != null) {
+            webInterface.dispose();
+        }
+        super.dispose();
     }
 
     @Override
