@@ -42,6 +42,7 @@ Possible values:
 | Inverter Type      | Inverters supported                                | Notes                                                            |
 |--------------------|----------------------------------------------------|------------------------------------------------------------------|
 | deye_hybrid        | DEYE/Sunsynk/SolArk Hybrid inverters               | used when no lookup specified                                    |
+| deye_sg02lp1       | DEYE Hybrid 8/12K-SG02LP1                          | e.g. DEYE SUN-12K-SG02LP1-EU-AM3-P                               |
 | deye_sg04lp3       | DEYE/Sunsynk/SolArk Hybrid 8/12K-SG04LP3           | e.g. 12K-SG04LP3-EU                                              |
 | deye_sg01hp3       | DEYE/Sunsynk/SolArk Hybrid HighVoltage 30K-SG01HP3 | e.g. 30K-SG01HP3-EU                                              |
 | deye_string        | DEYE/Sunsynk/SolArk String inverters               | e.g. SUN-4/5/6/7/8/10/12K-G03 Plus                               |
