@@ -70,8 +70,7 @@ public class UniFiProtectPrivateWebSocket {
     private volatile @Nullable Session session;
     private volatile @Nullable CompletableFuture<Void> connectFuture;
     private volatile boolean shouldReconnect = true;
-    // Set when an established session drops, so the next successful connect knows it has to
-    // resynchronise. Updates sent while the socket was down are not replayed by Protect.
+    // Protect does not replay what was missed, so a dropped session has to resynchronise.
     private volatile boolean resyncAfterConnect = false;
     private final AtomicInteger reconnectAttempts = new AtomicInteger(0);
     private static final int MAX_RECONNECT_ATTEMPTS = 10;
@@ -101,11 +100,8 @@ public class UniFiProtectPrivateWebSocket {
         this.wsClient = new WebSocketClient(httpClient);
         // Prevent wsClient.stop() from stopping the shared HttpClient instance
         this.wsClient.unmanage(httpClient);
-        // Detect a silently dead / half-open connection: Jetty closes the session when no frame is
-        // read within the window -> onWebSocketClose -> reconnect. Jetty's own default already
-        // expired the session, but only after 300 s; this halves that so updates resume sooner.
-        // Note setMaxIdleTimeout also applies the value to the injected HttpClient, which is shared
-        // per bridge, so keep it comfortably above any request timeout used on that client.
+        // Halves Jetty's 300 s default so a half-open socket is closed, and reconnected, sooner.
+        // Also applies to the injected HttpClient, which is shared per bridge.
         this.wsClient.setMaxIdleTimeout(UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS);
 
         try {
@@ -138,11 +134,8 @@ public class UniFiProtectPrivateWebSocket {
 
             CompletableFuture.runAsync(() -> {
                 try {
-                    // Catch up on what was missed BEFORE the socket is opened. Doing it afterwards
-                    // let a live update arrive first and then be overwritten by the older bootstrap
-                    // snapshot, and a failed refresh had no way to be retried while the new socket
-                    // stayed healthy. As part of the connect, a failure fails the attempt and
-                    // scheduleReconnect tries the whole sequence again.
+                    // Before the socket opens, so a live update cannot be overwritten by the
+                    // older snapshot, and so a failure is retried by scheduleReconnect.
                     resyncBeforeConnect();
 
                     Future<Session> future = wsClient.connect(adapter, uri, request);
@@ -166,26 +159,18 @@ public class UniFiProtectPrivateWebSocket {
     }
 
     /**
-     * Resynchronise after an established session was re-established.
-     *
-     * Reconnecting only restores the stream of new updates: Protect does not replay what happened
-     * while the socket was down, and {@code /ws/updates} is opened without the cached
-     * {@code lastUpdateId}. Refreshing the bootstrap alone is not enough either, because that only
-     * replaces the client's cached copy — the Thing channels are written from it by the NVR
-     * handler's device sync, which otherwise runs only when the public event socket reopens. A
-     * private-only stall leaves that socket connected, so nothing would push the recovered state
-     * out. Hence: refresh the bootstrap, then notify the handler to sync devices from it.
+     * Refresh the bootstrap and push it onto the Thing channels before the socket reopens. The
+     * device sync is needed because a refresh only replaces the client's cached copy.
      */
     private void resyncBeforeConnect() throws ExecutionException, InterruptedException, TimeoutException {
         if (!resyncAfterConnect) {
-            // First connect of this socket: the caller has just bootstrapped, nothing to catch up on.
+            // First connect: the caller has just bootstrapped.
             return;
         }
         logger.debug("Refreshing bootstrap before reopening the WebSocket to pick up missed updates");
         client.refreshBootstrap().get(BOOTSTRAP_REFRESH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         onReconnected.run();
-        // Only now: if either step threw, the connect attempt fails and is retried with the flag
-        // still set, rather than the recovery being quietly abandoned.
+        // Only now: a throw above leaves the flag set so the retry repeats the whole sequence.
         resyncAfterConnect = false;
     }
 

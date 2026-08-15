@@ -276,13 +276,8 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     routePrivateApiUpdate(update);
                 });
             }, () -> {
-                // Runs before /ws/updates is reopened. Only the device sync writes the refreshed
-                // bootstrap onto the Thing channels, and it normally runs from the public event
-                // socket's onOpen, which does not fire when only the private socket dropped.
-                // Synchronous on purpose: handing it to the scheduler would return immediately and
-                // let the socket reopen while the sync was still writing, so a live update could be
-                // overwritten by the older snapshot. syncDevices logs and swallows its own failures,
-                // so a partial sync does not block the socket from coming back.
+                // Inline on purpose: the socket must not reopen until the sync has finished
+                // writing. syncDevices logs and swallows its own failures.
                 logger.debug("Private API WebSocket reconnected, syncing devices from refreshed bootstrap");
                 syncDevices();
             }).whenComplete((result, ex) -> {
