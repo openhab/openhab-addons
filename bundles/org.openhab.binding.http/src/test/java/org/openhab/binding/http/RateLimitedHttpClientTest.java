@@ -120,7 +120,8 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
 
             requestFuture.thenAccept(request -> {
                 try {
-                    responses.add(new Response(nextSeqNumber, request.send()));
+                    long requestTime = System.currentTimeMillis();
+                    responses.add(new Response(nextSeqNumber, requestTime, request.send()));
                 } catch (Exception e) {
                 }
             });
@@ -133,11 +134,12 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
 
     private static class Response {
         public final int seqNumber;
-        public final long time = System.currentTimeMillis();
+        public final long time;
         public final String content;
 
-        public Response(int seqNumber, ContentResponse contentResponse) {
+        public Response(int seqNumber, long time, ContentResponse contentResponse) {
             this.seqNumber = seqNumber;
+            this.time = time;
             this.content = contentResponse.getContentAsString();
         }
     }

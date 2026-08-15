@@ -886,6 +886,28 @@ public class ShellyComponents {
         return updated;
     }
 
+    public static boolean updateLightMode(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+            throws ShellyApiException {
+        boolean updated = false;
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (profile.isRGBW2 && !profile.inColor) {
+            if (!thingHandler.areChannelsCreated()) {
+                return false;
+            }
+            List<ShellySettingsLight> lights = orgStatus.lights;
+            for (int i = 0; i < lights.size(); i++) {
+                ShellySettingsLight light = lights.get(i);
+                String groupName = profile.getControlGroup(i);
+                OnOffType power = getOnOff(light.ison);
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", power);
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                        toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
+                                Units.PERCENT));
+            }
+        }
+        return updated;
+    }
+
     public static boolean updateDimmers(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
             throws ShellyApiException {
         boolean updated = false;

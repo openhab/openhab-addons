@@ -1254,7 +1254,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ds.ison = value.output;
 
         status.lights.set(rgbwId, ds);
-        return channelUpdate ? ShellyComponents.updateRGBW(getThing(), rgbwId, status) : false;
+        return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
     }
 
     private boolean updateLightModeStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
@@ -1277,10 +1277,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (brightness != null) {
             ds.brightness = brightness.intValue();
         }
-        ds.ison = value.output;
+        Boolean output = value.output;
+        if (output != null) {
+            ds.ison = output;
+        }
         lights.set(lightId, ds);
-        // Value processed successfully (signals the watchdog to restart); the actual openHAB channel
-        // update is deferred to the getLightStatus() polling cycle, so this never pushes channels itself.
+        if (channelUpdate) {
+            ShellyComponents.updateLightMode(getThing(), status);
+        }
+        // Always true: signals the watchdog even if the channel value itself didn't change.
         return true;
     }
 

@@ -68,7 +68,8 @@ public class ShellyBindingConstants {
      * CHANNEL_GROUP_LIGHT_CONTROL control Light power, color mode, timers
      * CHANNEL_GROUP_COLOR_CONTROL color HSB, RGBW values
      * CHANNEL_GROUP_WHITE_CONTROL white White brightness and temperature
-     * CHANNEL_GROUP_LIGHT_CHANNEL channel1..n RGBW2 individual white channels
+     * CHANNEL_GROUP_LIGHT_CHANNEL channel1..n RGBW2 individual white channels (deprecated, see light1..n)
+     * CHANNEL_GROUP_LIGHT_INDEX light1..n RGBW2/RGBW PM individual white channels
      * CHANNEL_GROUP_METER meter1..n Watts, kWh, voltage, current
      * CHANNEL_GROUP_NMETER nmeter 3EM neutral current
      * CHANNEL_GROUP_SENSOR sensors All environmental readings
@@ -215,6 +216,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_LIGHT_POWER = "power";
     public static final String CHANNEL_LIGHT_DEFSTATE = "defaultState";
     public static final String CHANNEL_GROUP_LIGHT_CHANNEL = "channel";
+    public static final String CHANNEL_GROUP_LIGHT_INDEX = "light";
 
     // Bulb/RGBW2 in color mode
     public static final String CHANNEL_GROUP_COLOR_CONTROL = "color";

@@ -17,6 +17,7 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,18 +54,26 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AVMFritzDiscoveryService extends AbstractThingHandlerDiscoveryService<AVMFritzBaseBridgeHandler>
         implements FritzAhaStatusListener, DiscoveryService {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(SUPPORTED_LIGHTING_THING_TYPES,
+            SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_POWER_METER_THING_TYPES,
+            SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS).flatMap(Set::stream)
+            .collect(Collectors.toUnmodifiableSet());
+
     private final Logger logger = LoggerFactory.getLogger(AVMFritzDiscoveryService.class);
     private final Bundle bundle;
 
     @Activate
     public AVMFritzDiscoveryService(final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider i18nProvider) {
-        super(AVMFritzBaseBridgeHandler.class,
-                Stream.of(SUPPORTED_LIGHTING_THING_TYPES, SUPPORTED_BUTTON_THING_TYPES_UIDS,
-                        SUPPORTED_HEATING_THING_TYPES, SUPPORTED_POWER_METER_THING_TYPES,
-                        SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS).flatMap(Set::stream)
-                        .collect(Collectors.toUnmodifiableSet()),
-                30);
+        super(AVMFritzBaseBridgeHandler.class, SUPPORTED_THING_TYPES, 30);
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
+        this.bundle = FrameworkUtil.getBundle(AVMFritzDiscoveryService.class);
+    }
+
+    AVMFritzDiscoveryService(ScheduledExecutorService scheduler, LocaleProvider localeProvider,
+            TranslationProvider i18nProvider) {
+        super(scheduler, AVMFritzBaseBridgeHandler.class, SUPPORTED_THING_TYPES, 30, true, null, null);
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;
         this.bundle = FrameworkUtil.getBundle(AVMFritzDiscoveryService.class);
