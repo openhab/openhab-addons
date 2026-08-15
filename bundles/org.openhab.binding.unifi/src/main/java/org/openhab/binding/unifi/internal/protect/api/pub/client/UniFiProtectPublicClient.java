@@ -522,11 +522,8 @@ public class UniFiProtectPublicClient implements Closeable {
                     }
                     super.onWebSocketConnect(session);
                     lastActivityMs = System.currentTimeMillis();
-                    // Heartbeat: ping to keep the link warm, and - since a write-only
-                    // ping does NOT fail on a half-open socket - close the session when
-                    // no frame has been *received* within the window so onWebSocketClose
-                    // -> reconnect runs. Without this a dead socket stays "ONLINE" and
-                    // real-time updates stop indefinitely.
+                    // A write-only ping does not fail on a half-open socket, so liveness is
+                    // judged on frames *received*, not on the ping succeeding.
                     heartbeatTask = executorService.scheduleWithFixedDelay(() -> {
                         Session s = getSession();
                         if (s == null || !s.isOpen()) {
@@ -580,18 +577,13 @@ public class UniFiProtectPublicClient implements Closeable {
 
                 @Override
                 public void onWebSocketPong(@Nullable ByteBuffer payload) {
-                    // Pong for our keepalive ping: proof the peer is still alive, so a
-                    // healthy-but-quiet link (the integration WS is sparse) is not
-                    // mistaken for dead by the received-frame staleness check.
+                    // Counts as activity: this WS is sparse, so quiet is not dead.
                     lastActivityMs = System.currentTimeMillis();
                 }
 
                 @Override
                 public void onWebSocketPing(@Nullable ByteBuffer payload) {
-                    // An inbound ping is a received frame - proof the peer is alive - so
-                    // count it as activity too (mirrors onWebSocketPong), so a quiet-but-
-                    // alive peer is not mistaken for dead by the staleness check. Jetty
-                    // still auto-replies with the pong itself.
+                    // Also activity; Jetty still sends the pong reply itself.
                     lastActivityMs = System.currentTimeMillis();
                 }
             }
