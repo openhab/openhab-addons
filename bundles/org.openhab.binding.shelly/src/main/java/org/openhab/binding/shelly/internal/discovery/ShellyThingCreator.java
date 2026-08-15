@@ -94,6 +94,10 @@ public class ShellyThingCreator {
         }
 
         if (!deviceType.isEmpty()) {
+            // RGBW2 is mode-sensitive regardless of service name (custom hostnames bypass the check above)
+            if (SHELLYDT_RGBW2.equals(deviceType)) {
+                return SHELLY_MODE_COLOR.equals(mode) ? THING_TYPE_SHELLYRGBW2_COLOR : THING_TYPE_SHELLYRGBW2_WHITE;
+            }
             Map<String, ThingTypeUID> deviceTypeMap = switch (mode) {
                 case SHELLY_MODE_RELAY -> RELAY_THING_TYPE_BY_DEVICE_TYPE;
                 case SHELLY_MODE_ROLLER -> ROLLER_THING_TYPE_BY_DEVICE_TYPE;
