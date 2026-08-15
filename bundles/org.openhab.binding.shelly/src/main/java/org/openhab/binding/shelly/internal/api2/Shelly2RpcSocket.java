@@ -361,6 +361,10 @@ public class Shelly2RpcSocket implements WriteCallback {
                         if (notifyEvents == null) {
                             logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
                         } else {
+                            // onNotifyEvent() walks the whole frame itself, so the frame is forwarded once
+                            // after this loop rather than per event: forwarding inside the loop would make
+                            // the hub process every regular event as often as the frame carries such events.
+                            boolean hasRegularEvent = false;
                             for (Shelly2NotifyEvent e : notifyEvents) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                                     Shelly2NotifyBluEventData blu = e.getBluData(gson);
@@ -393,9 +397,12 @@ public class Shelly2RpcSocket implements WriteCallback {
                                     // re-parsing the whole frame per event and flooding the log.
                                     logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, e.event);
                                 } else {
-                                    // non-BLU event: always use the hub's handler, never the BLU one
-                                    handler.onNotifyEvent(receivedMessage);
+                                    // non-BLU event: always the hub's handler, never the BLU one
+                                    hasRegularEvent = true;
                                 }
+                            }
+                            if (hasRegularEvent) {
+                                handler.onNotifyEvent(receivedMessage);
                             }
                         }
                         break;
