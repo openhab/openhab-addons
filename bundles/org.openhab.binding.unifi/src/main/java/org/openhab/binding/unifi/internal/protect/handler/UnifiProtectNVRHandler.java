@@ -713,12 +713,9 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         if (event.device == null) {
             return;
         }
-        // The same detection ADD can arrive on both the public integration WS and, as a
-        // fallback, on the private updates WS, so de-dup ADD to fire each detection once.
-        // UPDATEs are intentionally repeated over an event's lifetime (and coalesced by
-        // handleUpdateEvent's debounce), so they are not de-duped here -- otherwise the
-        // repeated sensor/ring UPDATEs, which only ever use the public WS, would be dropped
-        // for the whole dedup TTL after their first delivery.
+        // ADD can arrive on both the public integration WS and fallback private updates WS,
+        // so de-dupe it. UPDATEs repeat over an event's lifetime and are debounced by
+        // handleUpdateEvent; de-duping them would drop public-WS sensor/ring updates for the dedup TTL.
         String dedupId = event.id;
         if (eventType == WSEventType.ADD && dedupId != null && !markEventDispatched(dedupId)) {
             return;
