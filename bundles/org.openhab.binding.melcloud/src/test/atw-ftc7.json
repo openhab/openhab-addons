@@ -1,0 +1,132 @@
+{
+	"id": "***",
+	"firstname": "***",
+	"lastname": "***",
+	"email": "***",
+	"language": "nl",
+	"country": "NL",
+	"numberOfDevicesAllowed": 10,
+	"numberOfBuildingsAllowed": 2,
+	"numberOfGuestUsersAllowedPerUnit": 5,
+	"numberOfGuestDevicesAllowed": 10,
+	"buildings": [
+		{
+			"id": "***",
+			"name": "Home",
+			"timezone": "Europe/Amsterdam",
+			"airToAirUnits": [],
+			"airToWaterUnits": [
+				{
+					"macAddress": "***",
+					"ftcModel": "ftC7",
+					"schedule": [],
+					"scheduleEnabled": false,
+					"frostProtection": null,
+					"overheatProtection": null,
+					"holidayMode": null,
+					"capabilities": {
+						"maxImportPower": 0,
+						"maxHeatOutput": 0,
+						"temperatureUnit": "",
+						"hasHotWater": true,
+						"immersionHeaterCapacity": 0,
+						"minSetTankTemperature": 40,
+						"maxSetTankTemperature": 65,
+						"minSetTemperature": 10,
+						"maxSetTemperature": 30,
+						"temperatureIncrement": 0.5,
+						"temperatureIncrementOverride": "2",
+						"hasHalfDegrees": true,
+						"hasZone2": false,
+						"hasDualRoomTemperature": false,
+						"hasThermostatZone1": true,
+						"hasThermostatZone2": true,
+						"hasHeatZone1": true,
+						"hasHeatZone2": true,
+						"hasMeasuredEnergyConsumption": false,
+						"hasMeasuredEnergyProduction": false,
+						"hasEstimatedEnergyConsumption": true,
+						"hasEstimatedEnergyProduction": true,
+						"ftcModel": 5,
+						"refridgerentAddress": 0,
+						"hasDemandSideControl": true,
+						"hasWirelessRemote": false,
+						"hasBoiler": false,
+						"systemMaxFlowTemperature": null
+					},
+					"id": "***",
+					"givenDisplayName": "***",
+					"displayIcon": "Loft",
+					"settings": [
+						{
+							"name": "Power",
+							"value": "True"
+						},
+						{
+							"name": "InStandbyMode",
+							"value": "False"
+						},
+						{
+							"name": "OperationMode",
+							"value": "Heating"
+						},
+						{
+							"name": "HasZone2",
+							"value": "None"
+						},
+						{
+							"name": "OperationModeZone1",
+							"value": "HeatRoomTemperature"
+						},
+						{
+							"name": "RoomTemperatureZone1",
+							"value": "21"
+						},
+						{
+							"name": "SetTemperatureZone1",
+							"value": "21"
+						},
+						{
+							"name": "ProhibitHotWater",
+							"value": "False"
+						},
+						{
+							"name": "TankWaterTemperature",
+							"value": "53"
+						},
+						{
+							"name": "SetTankWaterTemperature",
+							"value": "55"
+						},
+						{
+							"name": "HasCoolingMode",
+							"value": "True"
+						},
+						{
+							"name": "ForcedHotWaterMode",
+							"value": "False"
+						},
+						{
+							"name": "IsInError",
+							"value": "False"
+						},
+						{
+							"name": "ErrorCode",
+							"value": ""
+						},
+						{
+							"name": "OutdoorTemperature",
+							"value": "0"
+						}
+					],
+					"timeZone": "Europe/Amsterdam",
+					"rssi": -55,
+					"isConnected": true,
+					"isInError": false
+				}
+			]
+		}
+	],
+	"guestBuildings": [],
+	"scenes": []
+}

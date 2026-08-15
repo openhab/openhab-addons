@@ -35,6 +35,7 @@ import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControl
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeTelemetryResponse;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeTrendSummaryReport;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContext;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,7 +203,8 @@ public class MelCloudHomeApiClient {
         headers.put("Authorization", "Bearer " + accessToken);
         try {
             String response = HttpUtil.executeUrl("GET", url, headers, null, null, TIMEOUT_MILLISECONDS);
-            logger.trace("MELCloud Home BFF GET {} -> {}", url, response);
+            logger.trace("MELCloud Home BFF GET {} -> {}", SensitiveDataMasker.maskGuidsInUrl(url),
+                    response == null ? "" : SensitiveDataMasker.maskJson(response));
             return response == null ? "" : response;
         } catch (IOException e) {
             throw new MelCloudCommException("Error occurred while calling " + url, e);
@@ -213,7 +215,8 @@ public class MelCloudHomeApiClient {
         Properties headers = new Properties();
         headers.put("Authorization", "Bearer " + accessToken);
         try (InputStream content = new ByteArrayInputStream(jsonBody.getBytes(StandardCharsets.UTF_8))) {
-            logger.trace("MELCloud Home BFF PUT {} body={}", url, jsonBody);
+            logger.trace("MELCloud Home BFF PUT {} body={}", SensitiveDataMasker.maskGuidsInUrl(url),
+                    SensitiveDataMasker.maskJson(jsonBody));
             HttpUtil.executeUrl("PUT", url, headers, content, "application/json", TIMEOUT_MILLISECONDS);
         } catch (IOException e) {
             throw new MelCloudCommException("Error occurred while calling " + url, e);

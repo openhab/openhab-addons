@@ -38,6 +38,7 @@ import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContex
 import org.openhab.binding.melcloud.internal.home.config.MelCloudHomeAccountConfig;
 import org.openhab.binding.melcloud.internal.home.discovery.MelCloudHomeUnitDiscoveryService;
 import org.openhab.binding.melcloud.internal.home.websocket.MelCloudHomeWebSocketListener;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -293,12 +294,12 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     private void doPollContext() {
         try {
             MelCloudHomeUserContext context = fetchUserContext();
-            ataUnitListeners.forEach(
-                    (unitId, listener) -> context.findAtaUnit(unitId).ifPresentOrElse(listener::onAtaUnitUpdated,
-                            () -> logger.debug("ATA unit {} not found in /context response", unitId)));
-            atwUnitListeners.forEach(
-                    (unitId, listener) -> context.findAtwUnit(unitId).ifPresentOrElse(listener::onAtwUnitUpdated,
-                            () -> logger.debug("ATW unit {} not found in /context response", unitId)));
+            ataUnitListeners.forEach((unitId, listener) -> context.findAtaUnit(unitId)
+                    .ifPresentOrElse(listener::onAtaUnitUpdated, () -> logger
+                            .debug("ATA unit {} not found in /context response", SensitiveDataMasker.maskId(unitId))));
+            atwUnitListeners.forEach((unitId, listener) -> context.findAtwUnit(unitId)
+                    .ifPresentOrElse(listener::onAtwUnitUpdated, () -> logger
+                            .debug("ATW unit {} not found in /context response", SensitiveDataMasker.maskId(unitId))));
         } catch (MelCloudCommException e) {
             logger.debug("MELCloud Home /context poll failed, will retry next cycle: {}", e.getMessage());
         }
@@ -388,7 +389,8 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
      */
     private void onRealtimeDeltaReceived(String unitId) {
         if (!ataUnitListeners.containsKey(unitId) && !atwUnitListeners.containsKey(unitId)) {
-            logger.debug("Ignoring realtime delta for unit {} with no registered listener", unitId);
+            logger.debug("Ignoring realtime delta for unit {} with no registered listener",
+                    SensitiveDataMasker.maskId(unitId));
             return;
         }
         if (realtimeDebounceFuture != null) {

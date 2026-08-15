@@ -17,6 +17,7 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class MelCloudHomeConnection {
         headers.put("Authorization", "Bearer " + accessToken);
         try {
             String response = HttpUtil.executeUrl("GET", MONITOR_USER_URL, headers, null, null, TIMEOUT_MILLISECONDS);
-            logger.trace("MELCloud Home monitor/user response: {}", response);
+            logger.trace("MELCloud Home monitor/user response: {}", SensitiveDataMasker.maskJson(response));
             return response;
         } catch (IOException e) {
             throw new MelCloudCommException("Error occurred while fetching MELCloud Home monitor/user", e);

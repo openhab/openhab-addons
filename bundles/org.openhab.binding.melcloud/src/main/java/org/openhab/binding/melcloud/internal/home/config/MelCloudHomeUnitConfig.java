@@ -13,6 +13,7 @@
 package org.openhab.binding.melcloud.internal.home.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 
 /**
  * Config class shared by the {@code ata-unit} and {@code atw-unit} Thing types: both only need the
@@ -27,6 +28,6 @@ public class MelCloudHomeUnitConfig {
 
     @Override
     public String toString() {
-        return "[unitId=" + unitId + "]";
+        return "[unitId=" + SensitiveDataMasker.maskId(unitId) + "]";
     }
 }

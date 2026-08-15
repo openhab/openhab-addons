@@ -27,6 +27,7 @@ import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaUnit;
 import org.openhab.binding.melcloud.internal.home.config.MelCloudHomeUnitConfig;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -370,7 +371,8 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
                     () -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, UnDefType.UNDEF));
         } catch (MelCloudCommException e) {
-            logger.debug("Telemetry poll failed for ATA unit {}, reason {}. ", config.unitId, e.getMessage());
+            logger.debug("Telemetry poll failed for ATA unit {}, reason {}. ",
+                    SensitiveDataMasker.maskId(config.unitId), e.getMessage());
         }
     }
 

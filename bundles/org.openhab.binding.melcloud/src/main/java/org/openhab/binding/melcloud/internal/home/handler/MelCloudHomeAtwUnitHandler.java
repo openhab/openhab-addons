@@ -25,6 +25,7 @@ import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 import org.openhab.binding.melcloud.internal.home.config.MelCloudHomeUnitConfig;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -337,7 +338,8 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                 updateState(CHANNEL_COP, UnDefType.UNDEF);
             }
         } catch (MelCloudCommException e) {
-            logger.debug("Telemetry poll failed for ATW unit {}, reason {}. ", config.unitId, e.getMessage());
+            logger.debug("Telemetry poll failed for ATW unit {}, reason {}. ",
+                    SensitiveDataMasker.maskId(config.unitId), e.getMessage());
         }
     }
 

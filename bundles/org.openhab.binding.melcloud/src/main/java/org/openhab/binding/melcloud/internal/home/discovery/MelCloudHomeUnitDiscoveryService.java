@@ -25,6 +25,7 @@ import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaUnit;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContext;
 import org.openhab.binding.melcloud.internal.home.handler.MelCloudHomeAccountHandler;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingStatus;
@@ -129,7 +130,7 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
         properties.put(PROPERTY_UNIT_ID, unit.id);
 
         String label = "MELCloud Home ATA - " + unit.givenDisplayName;
-        logger.debug("Found ATA unit: {} : {}", label, properties);
+        logger.debug("Found ATA unit: {} (id={})", label, SensitiveDataMasker.maskId(unit.id));
 
         thingDiscovered(DiscoveryResultBuilder.create(unitThing).withLabel(label).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_UNIT_ID).withBridge(bridgeUID).build());
@@ -143,7 +144,7 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
         properties.put(PROPERTY_UNIT_ID, unit.id);
 
         String label = "MELCloud Home ATW - " + unit.givenDisplayName;
-        logger.debug("Found ATW unit: {} : {}", label, properties);
+        logger.debug("Found ATW unit: {} (id={})", label, SensitiveDataMasker.maskId(unit.id));
 
         thingDiscovered(DiscoveryResultBuilder.create(unitThing).withLabel(label).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_UNIT_ID).withBridge(bridgeUID).build());
