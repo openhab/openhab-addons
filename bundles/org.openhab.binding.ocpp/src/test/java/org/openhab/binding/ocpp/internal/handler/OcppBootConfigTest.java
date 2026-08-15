@@ -435,7 +435,9 @@ class OcppBootConfigTest {
         verify(transport, org.mockito.Mockito.never()).send(any(), any());
         verify(connector, org.mockito.Mockito.never()).onChargePointReady();
 
-        verify(transport, timeout(3000)).send(any(), any());
+        // Once ready, traffic flows: at least one send (the boot GetConfiguration read, then the
+        // status refresh) — not exactly one, so the count cannot race the number of post-boot sends.
+        verify(transport, timeout(3000).atLeastOnce()).send(any(), any());
         verify(connector, timeout(3000)).onChargePointReady();
     }
 
