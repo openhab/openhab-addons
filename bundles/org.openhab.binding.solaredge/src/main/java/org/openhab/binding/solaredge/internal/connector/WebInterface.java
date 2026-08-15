@@ -27,7 +27,10 @@ import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
 import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
+import org.openhab.binding.solaredge.internal.command.PublicApiV2KeyCheck;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
+import org.openhab.binding.solaredge.internal.config.PublicApiAuthentication;
+import org.openhab.binding.solaredge.internal.config.PublicApiVersion;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.core.thing.ThingStatus;
@@ -150,6 +153,8 @@ public class WebInterface implements AtomicReferenceTrait {
 
                 if (config.isUsePrivateApi()) {
                     tokenCheckCommand = new PrivateApiTokenCheck(handler, this::processAuthenticationResult);
+                } else if (PublicApiVersion.V2.equals(config.getPublicApiVersion())) {
+                    tokenCheckCommand = new PublicApiV2KeyCheck(handler, this::processAuthenticationResult);
                 } else {
                     tokenCheckCommand = new PublicApiKeyCheck(handler, this::processAuthenticationResult);
                 }
@@ -168,9 +173,19 @@ public class WebInterface implements AtomicReferenceTrait {
 
             if (config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
                 preCheckStatusMessage = STATUS_INVALID_TOKEN_LENGTH;
-            } else if (!config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
+            } else if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                    && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())
+                    && (config.getOAuthClientId().isBlank() || config.getOAuthClientSecret().isBlank())) {
+                preCheckStatusMessage = "OAuth client ID and client secret are required";
+            } else if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                    && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())
+                    && !handler.hasPublicApiV2Credential()) {
+                return false;
+            } else if (!config.isUsePrivateApi() && PublicApiVersion.V1.equals(config.getPublicApiVersion())
+                    && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
                 preCheckStatusMessage = STATUS_INVALID_API_KEY_LENGTH;
-            } else if (!config.isUsePrivateApi() && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
+            } else if (!config.isUsePrivateApi() && PublicApiVersion.V1.equals(config.getPublicApiVersion())
+                    && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
                 preCheckStatusMessage = STATUS_REQUEST_LIMIT_EXCEEDED;
             } else if (config.isUsePrivateApi() && !config.isMeterInstalled()) {
                 preCheckStatusMessage = STATUS_NO_METER_CONFIGURED;
