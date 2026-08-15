@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYBULB;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -68,11 +68,12 @@ class ShellyLightHandlerLightModelTests {
 
         public static TestLightHandler create(ThingTypeUID thingTypeUID) {
             try {
+                // use Unsafe to allocate an instance of TestLightHandler without calling its constructor
                 Field f = Unsafe.class.getDeclaredField("theUnsafe");
                 f.setAccessible(true);
                 Unsafe unsafe = (Unsafe) f.get(null);
 
-                // allocate ShellyLightHandler WITHOUT calling its constructor
+                // allocate ShellyLightHandler without calling its constructor
                 TestLightHandler handler = (TestLightHandler) unsafe.allocateInstance(TestLightHandler.class);
 
                 // manually initialize required fields
@@ -168,12 +169,123 @@ class ShellyLightHandlerLightModelTests {
         }
     }
 
-    // TODO add detail test for THING_TYPE_SHELLYBULB
-    // TODO add detail test for THING_TYPE_SHELLYDUO
-    // TODO add detail test for THING_TYPE_SHELLYVINTAGE
-    // TODO add detail test for THING_TYPE_SHELLYDUORGBW
-    // TODO add detail test for THING_TYPE_SHELLYRGBW2_COLOR
-    // TODO add detail test for THING_TYPE_SHELLYRGBW2_WHITE
+    @Test
+    void bulbCreatesExpectedLightModel() {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
+
+        handler.handleDeviceCommand(
+                new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYBULB, "test"), "color"), "red"),
+                PercentType.HUNDRED);
+
+        try {
+            handler.acquireLock();
+            ShellyLightModel model = handler.getLightModel(0);
+            assertNotNull(model);
+            assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
+            assertArrayEquals(new int[] { 255, 0, 0, 0 }, model.getRGBX());
+        } finally {
+            handler.releaseLock();
+        }
+    }
+
+    @Test
+    void duoCreatesExpectedLightModel() {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYDUO);
+
+        handler.handleDeviceCommand(
+                new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYDUO, "test"), "white"), "brightness"),
+                new PercentType(42));
+
+        try {
+            handler.acquireLock();
+            ShellyLightModel model = handler.getLightModel(0);
+            assertNotNull(model);
+            assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
+            assertEquals(new PercentType(42), model.getBrightnessState());
+        } finally {
+            handler.releaseLock();
+        }
+    }
+
+    @Test
+    void vintageCreatesExpectedLightModel() {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYVINTAGE);
+
+        handler.handleDeviceCommand(
+                new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYVINTAGE, "test"), "white"),
+                        "brightness"),
+                new PercentType(25));
+
+        try {
+            handler.acquireLock();
+            ShellyLightModel model = handler.getLightModel(0);
+            assertNotNull(model);
+            assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
+            assertEquals(new PercentType(25), model.getBrightnessState());
+        } finally {
+            handler.releaseLock();
+        }
+    }
+
+    @Test
+    void duoRgbwCreatesExpectedLightModel() {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYDUORGBW);
+
+        handler.handleDeviceCommand(
+                new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYDUORGBW, "test"), "color"), "full"),
+                new StringType("white"));
+
+        try {
+            handler.acquireLock();
+            ShellyLightModel model = handler.getLightModel(0);
+            assertNotNull(model);
+            assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
+            assertArrayEquals(new int[] { 0, 0, 0, 255 }, model.getRGBX());
+        } finally {
+            handler.releaseLock();
+        }
+    }
+
+    @Test
+    void rgbw2ColorCreatesExpectedLightModel() {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYRGBW2_COLOR);
+
+        handler.handleDeviceCommand(
+                new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYRGBW2_COLOR, "test"), "color"),
+                        "blue"),
+                PercentType.HUNDRED);
+
+        try {
+            handler.acquireLock();
+            ShellyLightModel model = handler.getLightModel(0);
+            assertNotNull(model);
+            assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
+            assertArrayEquals(new int[] { 0, 0, 255, 0 }, model.getRGBX());
+        } finally {
+            handler.releaseLock();
+        }
+    }
+
+    @Test
+    void rgbw2WhiteCreatesExpectedLightModel() {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYRGBW2_WHITE);
+
+        handler.handleDeviceCommand(
+                new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYRGBW2_WHITE, "test"), "white"),
+                        "brightness"),
+                new PercentType(73));
+
+        try {
+            handler.acquireLock();
+            ShellyLightModel model = handler.getLightModel(0);
+            assertNotNull(model);
+            assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
+            assertEquals(new PercentType(73), model.getBrightnessState());
+        } finally {
+            handler.releaseLock();
+        }
+    }
+
     // TODO add detail test for THING_TYPE_SHELLYPLUSRGBWPM / SHELLY2_PROFILE_RGBW
     // TODO add detail test for THING_TYPE_SHELLYPLUSRGBWPM / SHELLY2_PROFILE_LIGHT
     // TODO add detail test for THING_TYPE_SHELLYPRORGBWWPM / SHELLY2_PROFILE_RGB
