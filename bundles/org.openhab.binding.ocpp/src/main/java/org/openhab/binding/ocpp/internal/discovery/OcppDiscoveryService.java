@@ -14,7 +14,10 @@ package org.openhab.binding.ocpp.internal.discovery;
 
 import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ocpp.internal.handler.OcppServerBridgeHandler;
@@ -38,6 +41,7 @@ public class OcppDiscoveryService extends AbstractThingHandlerDiscoveryService<O
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_CHARGEPOINT, THING_TYPE_CONNECTOR);
     private static final int DISCOVERY_TIMEOUT_SECONDS = 5;
+    private static final Pattern VALID_SEGMENT = Pattern.compile("[A-Za-z0-9_-]+");
 
     public OcppDiscoveryService() {
         super(OcppServerBridgeHandler.class, SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS, false);
@@ -76,7 +80,15 @@ public class OcppDiscoveryService extends AbstractThingHandlerDiscoveryService<O
                 .withRepresentationProperty(PROPERTY_UNIQUE_ID).withLabel("OCPP Connector " + connectorId).build());
     }
 
-    private static String sanitize(String id) {
-        return id.replaceAll("[^A-Za-z0-9_-]", "_");
+    /**
+     * A charge point id reduced to a valid ThingUID segment. A clean id is used as-is; one holding
+     * characters a segment cannot carry is encoded reversibly (URL-safe Base64) rather than blanket-
+     * replacing each with an underscore, so two distinct ids can never collide onto the same Thing.
+     */
+    static String sanitize(String id) {
+        if (VALID_SEGMENT.matcher(id).matches()) {
+            return id;
+        }
+        return "b64-" + Base64.getUrlEncoder().withoutPadding().encodeToString(id.getBytes(StandardCharsets.UTF_8));
     }
 }

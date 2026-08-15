@@ -225,4 +225,19 @@ class OcppServerBridgeHandlerTest {
         org.junit.jupiter.api.Assertions.assertNull(handler.openTransactionFor("", 1),
                 "a session with no charge point id must be ignored, mapping nothing");
     }
+
+    @Test
+    void aBareRootConnectionWithoutAChargePointIdIsClosed() {
+        // A no-id session cannot be onboarded, and with ping-cleanup off by default nothing else owns
+        // it — so the bridge must close the socket rather than leave it open for repeated bare-root
+        // probes to accumulate. Mirrors the allow-list-reject branch, which already closes.
+        handler.initialize();
+        verify(callback, timeout(2000)).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+
+        UUID session = UUID.randomUUID();
+        handler.onSessionOpened(session, "", null);
+
+        verify(transport).closeSession(session);
+    }
 }

@@ -680,12 +680,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (amps == null) {
             return;
         }
-        String value = Integer.toString((int) Math.round(amps));
-        dispatch(new ChangeConfigurationRequest(hardwareMaxCurrentKey, value), "ChangeConfiguration[hardwareMax]")
-                .whenComplete((confirmation, ex) -> {
+        int rounded = (int) Math.round(amps);
+        dispatch(new ChangeConfigurationRequest(hardwareMaxCurrentKey, Integer.toString(rounded)),
+                "ChangeConfiguration[hardwareMax]").whenComplete((confirmation, ex) -> {
                     if (ex == null && confirmation instanceof ChangeConfigurationConfirmation change
                             && change.getStatus() == ConfigurationStatus.Accepted) {
-                        updateState(CHANNEL_HARDWARE_MAX_CURRENT, new QuantityType<>(amps, Units.AMPERE));
+                        // Publish the whole-ampere value actually sent, not the fractional request.
+                        updateState(CHANNEL_HARDWARE_MAX_CURRENT, new QuantityType<>(rounded, Units.AMPERE));
                     }
                 });
     }
@@ -853,7 +854,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
         states.forEach(this::updateState);
         MeterValue[] meterValues = request.getMeterValue();
         if (meterValues != null && meterValues.length > 0) {
-            ZonedDateTime timestamp = meterValues[0].getTimestamp();
+            // The mapper lets a later block overwrite an earlier one, so the states above come from the
+            // last block — publish its timestamp (falling back to an earlier one only if it carries
+            // none), not the first block's, which may describe a different sample.
+            ZonedDateTime timestamp = null;
+            for (int i = meterValues.length - 1; i >= 0 && timestamp == null; i--) {
+                timestamp = meterValues[i].getTimestamp();
+            }
             if (timestamp != null) {
                 updateState(CHANNEL_TIMESTAMP, new DateTimeType(timestamp));
             }

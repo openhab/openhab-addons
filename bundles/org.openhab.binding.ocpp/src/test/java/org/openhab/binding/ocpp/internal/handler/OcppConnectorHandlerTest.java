@@ -189,6 +189,32 @@ class OcppConnectorHandlerTest {
     }
 
     @Test
+    void aMultiBlockMeterValuesPublishesTheLastBlocksTimestamp() {
+        // A request can carry several MeterValue blocks; the mapper lets a later block overwrite an
+        // earlier one, so the timestamp channel must describe the last block (matching the states just
+        // published), not the first.
+        java.time.ZonedDateTime older = java.time.ZonedDateTime.parse("2026-01-01T10:00:00Z");
+        java.time.ZonedDateTime newer = java.time.ZonedDateTime.parse("2026-01-01T10:05:00Z");
+        eu.chargetime.ocpp.model.core.SampledValue first = new eu.chargetime.ocpp.model.core.SampledValue("10");
+        first.setMeasurand("Energy.Active.Import.Register");
+        first.setUnit("Wh");
+        eu.chargetime.ocpp.model.core.SampledValue second = new eu.chargetime.ocpp.model.core.SampledValue("20");
+        second.setMeasurand("Energy.Active.Import.Register");
+        second.setUnit("Wh");
+        eu.chargetime.ocpp.model.core.MeterValuesRequest request = new eu.chargetime.ocpp.model.core.MeterValuesRequest(
+                1);
+        request.setMeterValue(new eu.chargetime.ocpp.model.core.MeterValue[] {
+                new eu.chargetime.ocpp.model.core.MeterValue(older,
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { first }),
+                new eu.chargetime.ocpp.model.core.MeterValue(newer,
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { second }) });
+
+        handler.onMeterValues(request);
+
+        assertChannel(CHANNEL_TIMESTAMP, new org.openhab.core.library.types.DateTimeType(newer));
+    }
+
+    @Test
     void aFaultLeavesAvailabilityAlone() {
         // Faulted describes a fault, not whether the operator has taken the connector out of service,
         // so it must not overwrite the availability the operator set.

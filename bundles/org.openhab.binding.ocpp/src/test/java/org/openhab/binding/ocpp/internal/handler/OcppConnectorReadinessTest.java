@@ -201,6 +201,33 @@ class OcppConnectorReadinessTest {
     }
 
     @Test
+    void hardwareMaxCurrentPublishesTheWholeAmpereActuallySent() {
+        // The vendor hardware-max key takes whole amperes, so a fractional command is rounded on the
+        // wire; the channel must then report that rounded value, not the fractional request — 16.4 A
+        // applies 16 A, and reporting 16.4 would misstate what the charger is enforcing.
+        ready.set(true);
+        List<Request> sent = new java.util.ArrayList<>();
+        when(parent.send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.ChangeConfigurationRequest)))
+                .thenAnswer(inv -> {
+                    sent.add(inv.getArgument(0));
+                    return CompletableFuture
+                            .completedFuture(new eu.chargetime.ocpp.model.core.ChangeConfigurationConfirmation(
+                                    eu.chargetime.ocpp.model.core.ConfigurationStatus.Accepted));
+                });
+        OcppConnectorHandler connector = newConnector(Map.of("connectorId", 1, "hardwareMaxCurrentKey", "MaxCurrent"));
+
+        connector.handleCommand(new ChannelUID(CONN_UID, CHANNEL_HARDWARE_MAX_CURRENT),
+                new QuantityType<>(16.4, Units.AMPERE));
+
+        org.junit.jupiter.api.Assertions.assertEquals("16",
+                ((eu.chargetime.ocpp.model.core.ChangeConfigurationRequest) sent.get(0)).getValue(),
+                "the whole-ampere value must go on the wire");
+        verify(callback).stateUpdated(
+                org.mockito.ArgumentMatchers.eq(new ChannelUID(CONN_UID, CHANNEL_HARDWARE_MAX_CURRENT)),
+                org.mockito.ArgumentMatchers.eq(new QuantityType<>(16, Units.AMPERE)));
+    }
+
+    @Test
     void aRequestedPhaseCountIsPutOnTheProfile() {
         // number-phases 1 requests single-phase charging; it appears on the schedule period sent with
         // the limit (the phase command alone, with no limit yet, clears — the limit send carries it).
