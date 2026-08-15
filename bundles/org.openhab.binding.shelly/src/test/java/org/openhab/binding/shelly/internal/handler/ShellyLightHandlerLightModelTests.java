@@ -14,9 +14,11 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,14 +28,22 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -80,9 +90,25 @@ class ShellyLightHandlerLightModelTests {
                 handler.profile = new ShellyDeviceProfile(thingTypeUID);
                 handler.profile.initialized = true;
                 handler.profile.isLight = true;
-                handler.profile.isRGBW2 = true;
-                handler.profile.inColor = true;
-                handler.profile.device.mode = "color";
+                handler.profile.isRGBW2 = false;
+                handler.profile.inColor = false;
+                handler.profile.device.mode = "white";
+
+                if (THING_TYPE_SHELLYBULB.equals(thingTypeUID)) {
+                    handler.profile.isBulb = true;
+                    handler.profile.inColor = true;
+                    handler.profile.isRGBW2 = false;
+                    handler.profile.device.mode = "color";
+                } else if (THING_TYPE_SHELLYDUO.equals(thingTypeUID)) {
+                    handler.profile.isDuo = true;
+                    handler.profile.inColor = false;
+                    handler.profile.isRGBW2 = false;
+                    handler.profile.device.mode = "white";
+                } else if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
+                    handler.profile.isRGBW2 = true;
+                    handler.profile.inColor = true;
+                    handler.profile.device.mode = "color";
+                }
 
                 Field lmField = ShellyLightHandler.class.getDeclaredField("lightModels");
                 lmField.setAccessible(true);
@@ -127,6 +153,11 @@ class ShellyLightHandlerLightModelTests {
         }
 
         @Override
+        public boolean areChannelsCreated() {
+            return true;
+        }
+
+        @Override
         public boolean updateChannel(String channelId, State value, boolean force) {
             updates.put(channelId, value);
             return true;
@@ -135,6 +166,35 @@ class ShellyLightHandlerLightModelTests {
         public Map<String, State> getUpdates() {
             return updates;
         }
+    }
+
+    private static ShellyStatusLightChannel lightChannel(Boolean isOn, Integer red, Integer green, Integer blue,
+            Integer white, Integer gain, Integer brightness, Integer temp, Integer effect, Boolean hasTimer) {
+        ShellyStatusLightChannel light = new ShellyStatusLightChannel();
+        light.ison = isOn;
+        light.red = red;
+        light.green = green;
+        light.blue = blue;
+        light.white = white;
+        light.gain = gain;
+        light.brightness = brightness;
+        light.temp = temp;
+        light.effect = effect;
+        light.hasTimer = hasTimer;
+        return light;
+    }
+
+    private static ShellyStatusLight singleLightStatus(ShellyStatusLightChannel channel) {
+        ShellyStatusLight status = new ShellyStatusLight();
+        status.lights = new ArrayList<>();
+        status.lights.add(channel);
+        return status;
+    }
+
+    private static Object getField(Object target, Class<?> declaringClass, String fieldName) throws Exception {
+        Field field = declaringClass.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(target);
     }
 
     @Test
@@ -146,7 +206,7 @@ class ShellyLightHandlerLightModelTests {
                 PercentType.HUNDRED);
 
         Map<String, State> updates = handler.getUpdates();
-        assertEquals(6, updates.size());
+        assertEquals(10, updates.size());
         assertEquals(PercentType.HUNDRED, updates.get("color#red"));
         assertEquals(PercentType.ZERO, updates.get("color#green"));
         assertEquals(PercentType.ZERO, updates.get("color#blue"));
@@ -157,6 +217,10 @@ class ShellyLightHandlerLightModelTests {
         assertEquals(0, ((HSBType) obj).getHue().intValue());
         assertEquals(100, ((HSBType) obj).getSaturation().intValue());
         assertEquals(0, ((HSBType) obj).getBrightness().intValue());
+        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR));
+        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_BRIGHTNESS));
+        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP));
+        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP_ABS));
 
         try {
             handler.acquireLock();
@@ -284,6 +348,99 @@ class ShellyLightHandlerLightModelTests {
         } finally {
             handler.releaseLock();
         }
+    }
+
+    @Test
+    void updateDeviceStatusReturnsFalseWhenProfileNotInitialized() throws Exception {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
+        handler.profile.initialized = false;
+
+        boolean updated = handler.updateDeviceStatus(new ShellySettingsStatus());
+
+        assertFalse(updated);
+        verify((Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api"), never()).getLightStatus();
+    }
+
+    @Test
+    void updateDeviceStatusCreatesModelAndUpdatesColorChannels() throws Exception {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+
+        ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 100, 80, 4000, 2, true);
+        when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
+
+        boolean updated = handler.updateDeviceStatus(new ShellySettingsStatus());
+
+        assertTrue(updated);
+        Map<String, State> updates = handler.getUpdates();
+        assertNotNull(handler.getLightModel(0));
+        assertEquals(OnOffType.ON, updates.get("control#power"));
+        assertEquals(PercentType.HUNDRED, updates.get("color#red"));
+        assertEquals(PercentType.ZERO, updates.get("color#green"));
+        assertEquals(PercentType.ZERO, updates.get("color#blue"));
+        assertEquals(PercentType.ZERO, updates.get("color#white"));
+        assertEquals(new StringType("red"), updates.get("color#full"));
+        assertEquals(new PercentType(80), updates.get("color#gain"));
+        assertEquals(new PercentType(80), updates.get("white#brightness"));
+        assertEquals(new DecimalType(2), updates.get("color#effect"));
+    }
+
+    @Test
+    void updateDeviceStatusUpdatesPrimaryChannelsWhenAvailable() throws Exception {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+
+        ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 75, 60, 3500, 0, false);
+        when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
+
+        boolean updated = handler.updateDeviceStatus(new ShellySettingsStatus());
+
+        assertTrue(updated);
+        Map<String, State> updates = handler.getUpdates();
+        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR));
+        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_BRIGHTNESS));
+        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP));
+        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP_ABS));
+    }
+
+    @Test
+    void updateDeviceStatusSynchronizesModelModeFromProfileDeviceMode() throws Exception {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        handler.profile.device.mode = "white";
+
+        ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 50, 40, 3000, 0, false);
+        when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
+
+        handler.updateDeviceStatus(new ShellySettingsStatus());
+
+        ShellyLightModel model = handler.getLightModel(0);
+        assertNotNull(model);
+        assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
+    }
+
+    @Test
+    void updateDeviceStatusUpdatesTimerChannelsFromProfileSettings() throws Exception {
+        TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+
+        ShellySettingsRgbwLight settings = new ShellySettingsRgbwLight();
+        settings.autoOn = 5.0;
+        settings.autoOff = 10.0;
+        handler.profile.settings.lights = new ArrayList<>();
+        handler.profile.settings.lights.add(settings);
+
+        ShellyStatusLightChannel dto = lightChannel(true, 0, 0, 255, 0, 30, 20, 4000, 0, true);
+        when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
+
+        boolean updated = handler.updateDeviceStatus(new ShellySettingsStatus());
+
+        assertTrue(updated);
+        Map<String, State> updates = handler.getUpdates();
+
+        assertEquals(OnOffType.ON, updates.get("control#timerActive"));
+        assertEquals(5, ((QuantityType<?>) updates.get("control#autoOn")).toUnit(Units.SECOND).intValue());
+        assertEquals(10, ((QuantityType<?>) updates.get("control#autoOff")).toUnit(Units.SECOND).intValue());
     }
 
     // TODO add detail test for THING_TYPE_SHELLYPLUSRGBWPM / SHELLY2_PROFILE_RGBW

@@ -496,16 +496,14 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         // PRIMARY GROUP:
         if (model.isDirty()) {
             group = CHANNEL_GROUP_PRIMARY;
-            if (thing.getChannel(group + "#" + CHANNEL_PRIMARY_COLOR) != null) {
+            if (model.configGetLightCapabilities().supportsColor()) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR, model.getColorState());
             }
-            if (thing.getChannel(group + "#" + CHANNEL_PRIMARY_BRIGHTNESS) != null) {
+            if (model.configGetLightCapabilities().supportsBrightness()) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_BRIGHTNESS, model.getBrightnessState());
             }
-            if (thing.getChannel(group + "#" + CHANNEL_PRIMARY_COLOR_TEMP) != null) {
+            if (model.configGetLightCapabilities().supportsColorTemperature()) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP, model.getColorTemperaturePercentState());
-            }
-            if (thing.getChannel(group + "#" + CHANNEL_PRIMARY_COLOR_TEMP_ABS) != null) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP_ABS,
                         model.getColorTemperatureAbsoluteState());
             }
