@@ -1278,7 +1278,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @param mode Device mode (e.g. relay, roller)
      */
     protected void changeThingType(String thingType, String mode) {
-        String deviceType = substringBefore(thingType, "-");
+        // Prefer the real hardware model over the service-name prefix so relay/roller maps resolve correctly
+        String deviceType = getString(profile.device.type);
+        if (deviceType.isEmpty()) {
+            deviceType = substringBefore(thingType, "-");
+        }
         ThingTypeUID thingTypeUID = ShellyThingCreator.getThingTypeUID(thingType, deviceType, mode);
         if (!thingTypeUID.equals(THING_TYPE_SHELLYUNKNOWN)) {
             logger.debug("{}: Changing thing type to {}", getThing().getLabel(), thingTypeUID);
