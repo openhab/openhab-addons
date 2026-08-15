@@ -43,7 +43,6 @@ public class EventDeserializationTest {
 
         assertNotNull(event);
         assertEquals(EventType.SMART_DETECT, event.type);
-        // The payload spells this "camera"; a mapping is required or every consumer of cameraId
         // (thumbnail/heatmap updates, camera event routing) silently drops the event.
         assertEquals("62e3a86301824803e700041d", event.cameraId);
         assertEquals("4b61ed79-7789-4ac1-8cce-927ded49c44e", event.id);

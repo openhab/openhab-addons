@@ -34,9 +34,6 @@ public class Event extends UniFiProtectModel {
     public Integer score;
     @SerializedName(value = "heatmap", alternate = { "heatmapId" })
     public String heatmapId;
-    // The event payload names the camera "camera"; nothing in it is called "cameraId", so without
-    // this mapping the field stays null and every consumer of it -- the thumbnail/heatmap update
-    // and the private-WS camera event routing -- silently does nothing.
     @SerializedName(value = "camera", alternate = { "cameraId" })
     public String cameraId;
     public List<SmartDetectObjectType> smartDetectTypes;

@@ -211,7 +211,6 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing NVR");
         shuttingDown = false;
-        // Recreated per initialize: the handler instance is reused across dispose/initialize.
         privateEventExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "OH-unifi-protect-events"));
         ensureStaticChannels();
 
@@ -829,8 +828,6 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             return new TimestampedPayload(merged, now);
         });
         if (result == null) {
-            // No add seen for this id; the delta is all there is. It still reaches the
-            // thumbnail/heatmap path below when it happens to carry those fields.
             return data;
         }
         return result.payload().deepCopy();
@@ -993,25 +990,16 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     if (event != null) {
                         logger.debug("Private updates WS event {}, id={}, type={}", update.action, update.id,
                                 event.type);
-                        // Fallback dispatch: smart-detect / motion events also arrive on the private
-                        // updates WS. Route them to the camera channels so detections keep working even
-                        // when the public integration events WS connects but silently delivers nothing.
                         BaseEvent pubEvent = toPublicCameraEvent(event);
                         if (pubEvent != null) {
                             pubEvent.id = update.id;
-                            // Mirror the public events WS: an "add" dispatches immediately; an
-                            // "update" goes through the same debounce as public updates, so a
-                            // private update coalesces with (and never beats) the settled public
-                            // one. Any other action -- notably "remove" for a deleted event --
-                            // must not fire a detection.
+                            // "remove" must not fire a detection.
                             if ("add".equals(update.action)) {
                                 routePublicApiEvent(pubEvent, WSEventType.ADD);
                             } else if ("update".equals(update.action)) {
                                 handleUpdateEvent(pubEvent, sequence);
                             }
                         }
-                        // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
-                        // generates them asynchronously after the event starts.
                         // Merging makes the ids sticky, so only act on an id not already fetched.
                         if ("update".equals(update.action) && event.cameraId != null
                                 && isNewEventMedia(update.id, event.thumbnailId, event.heatmapId)) {
