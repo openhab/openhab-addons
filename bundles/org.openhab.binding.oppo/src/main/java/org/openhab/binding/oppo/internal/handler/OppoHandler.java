@@ -16,6 +16,8 @@ import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 import static org.openhab.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -39,6 +41,7 @@ import org.openhab.binding.oppo.internal.configuration.OppoThingConfiguration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
@@ -47,7 +50,6 @@ import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -98,10 +100,13 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
     private long lastEventReceived = System.currentTimeMillis();
     private String verboseMode = VERBOSE_2;
+    private String currentTitle = BLANK;
     private String currentChapter = BLANK;
     private String currentTimeMode = T;
     private String currentPlayMode = BLANK;
     private String currentDiscType = BLANK;
+    private int titleElapsed = 0;
+    private int titleLength = -1;
     private volatile boolean isPowerOn = false;
     private volatile boolean powerCmdDebounce = false;
     private volatile boolean isStopped = true;
@@ -130,12 +135,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     public void initialize() {
         final OppoThingConfiguration config = getConfigAs(OppoThingConfiguration.class);
 
-        final Integer model = config.model;
-        final String serialPort = config.serialPort;
-        final String host = config.host;
-        Integer port = config.port;
-
-        this.verboseMode = config.verboseMode ? VERBOSE_3 : VERBOSE_2;
+        final int model = config.model;
         this.isUDP20X = (model == MODEL203 || model == MODEL205);
 
         // Check configuration settings
@@ -143,6 +143,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.player-model");
             return;
         }
+
+        final String serialPort = config.serialPort;
+        final String host = config.host;
+        Integer port = config.port;
 
         String configError = null;
         if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
@@ -164,6 +168,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 configError = "@text/error.invalid-port";
             }
         }
+
+        this.verboseMode = config.verboseMode && !isBdpIP ? VERBOSE_3 : VERBOSE_2;
 
         if (configError != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
@@ -316,7 +322,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (command instanceof StringType) {
                             connector.sendCommand(commandStr);
                             if ("STP".equals(commandStr) || "EJT".equals(commandStr)) {
+                                currentTitle = BLANK;
                                 currentChapter = BLANK;
+                                titleLength = -1;
                                 isStopped = true;
                             }
                         }
@@ -406,7 +414,13 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                     currentTimeMode = matcher.group(3);
                                     updateChannelState(CHANNEL_TIME_MODE, currentTimeMode);
                                 }
-                                updateChannelState(CHANNEL_TIME_DISPLAY, matcher.group(4));
+
+                                if (isValidTimecode(matcher.group(4))) {
+                                    updateState(CHANNEL_TIME_DISPLAY, new QuantityType<>(
+                                            getSecondsFromTimecode(matcher.group(4)), API_SECONDS_UNIT));
+                                } else {
+                                    logger.debug("Invalid timecode in {} message: {}", key, updateData);
+                                }
                             } else {
                                 logger.debug("no match on message: {}", updateData);
                             }
@@ -417,8 +431,58 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case QCE:
                     case QCR:
                         if (!isStopped) {
-                            // these are used with verbose mode 2
-                            updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
+                            int timecode = 0;
+
+                            if (!isValidTimecode(updateData)) {
+                                logger.debug("Invalid timecode in {} message: {}", key, updateData);
+                                break;
+                            } else {
+                                timecode = getSecondsFromTimecode(updateData);
+                            }
+
+                            // these are used with verbose mode 2 and BDP direct IP
+                            if (VERBOSE_2.equals(this.verboseMode) && ((key.equals(QTE) && T.equals(currentTimeMode))
+                                    || (key.equals(QTR) && X.equals(currentTimeMode))
+                                    || (key.equals(QCE) && C.equals(currentTimeMode))
+                                    || (key.equals(QCR) && K.equals(currentTimeMode)))) {
+                                updateState(CHANNEL_TIME_DISPLAY, new QuantityType<>(timecode, API_SECONDS_UNIT));
+                            }
+
+                            if (key.equals(QTE)) {
+                                titleElapsed = timecode;
+                                updateState(CHANNEL_TITLE_ELAPSED, new QuantityType<>(timecode, API_SECONDS_UNIT));
+                            }
+
+                            if (key.equals(QTR)) {
+                                final int remain = timecode;
+
+                                updateState(CHANNEL_TITLE_END_TIME, remain > 0
+                                        ? new DateTimeType(
+                                                Instant.now().plusSeconds(remain).truncatedTo(ChronoUnit.MINUTES))
+                                        : UnDefType.UNDEF);
+
+                                if (remain > 0
+                                        && (isLinked(CHANNEL_TITLE_LENGTH) || isLinked(CHANNEL_TITLE_PROGRESS))) {
+                                    final int elapsed = this.titleElapsed;
+                                    int titleLength = this.titleLength;
+
+                                    // If no titleLength set, calculate only once for the current title/track
+                                    if (titleLength == -1) {
+                                        titleLength = elapsed + remain;
+                                        this.titleLength = titleLength;
+
+                                        updateState(CHANNEL_TITLE_LENGTH,
+                                                new QuantityType<>(titleLength, API_SECONDS_UNIT));
+                                    }
+
+                                    if (titleLength > 0 && elapsed >= 0 && elapsed <= titleLength) {
+                                        updateState(CHANNEL_TITLE_PROGRESS, new PercentType(BigDecimal
+                                                .valueOf(Math.round(elapsed / (double) titleLength * 100.0))));
+                                    } else {
+                                        updateState(CHANNEL_TITLE_PROGRESS, UnDefType.UNDEF);
+                                    }
+                                }
+                            }
                         }
                         break;
                     case QVR:
@@ -467,10 +531,15 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case QTK:
                         if (!isStopped) {
                             // example: 02/10, split off both numbers
-                            final String[] track = updateData.split(SLASH);
-                            if (track.length == 2) {
-                                updateChannelState(CHANNEL_CURRENT_TITLE, track[0]);
-                                updateChannelState(CHANNEL_TOTAL_TITLE, track[1]);
+                            final String[] titleTrack = updateData.split(SLASH);
+                            if (titleTrack.length == 2 && !"00".equals(titleTrack[1])) {
+                                if (!currentTitle.equals(titleTrack[0])) {
+                                    currentTitle = titleTrack[0];
+                                    // reset title length when title/track changes
+                                    titleLength = -1;
+                                }
+                                updateChannelState(CHANNEL_CURRENT_TITLE, titleTrack[0]);
+                                updateChannelState(CHANNEL_TOTAL_TITLE, titleTrack[1]);
                             }
                         }
                         break;
@@ -478,7 +547,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (!isStopped && !CDDA.equals(currentDiscType) && !SACD.equals(currentDiscType)) {
                             // example: 03/03, split off the both numbers
                             final String[] chapter = updateData.split(SLASH);
-                            if (chapter.length == 2) {
+                            if (chapter.length == 2 && !"00".equals(chapter[1])) {
                                 updateChannelState(CHANNEL_CURRENT_CHAPTER, chapter[0]);
                                 updateChannelState(CHANNEL_TOTAL_CHAPTER, chapter[1]);
                             }
@@ -492,8 +561,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         // if playback has stopped, we have to zero out Time, Title and Track info and so on manually
                         if (STOPPED_STATES.contains(currentPlayMode)) {
                             clearStatusChannels(false);
-                            isStopped = true;
+                            currentTitle = BLANK;
                             currentChapter = BLANK;
+                            titleLength = -1;
+                            isStopped = true;
                         } else {
                             isStopped = false;
                         }
@@ -609,6 +680,29 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     }
 
     /**
+     * Validate if timecode is the proper hh:mm:ss format
+     *
+     * @param timecode the string containing a timecode
+     * @return true if timecode is valid
+     *
+     */
+    private boolean isValidTimecode(String timecode) {
+        return timecode.length() == 8 && timecode.replaceAll(COLON, BLANK).chars().allMatch(Character::isDigit);
+    }
+
+    /**
+     * Convert a timecode from hh:mm:ss format into the number of seconds
+     *
+     * @param timecode the string containing a timecode
+     * @return the number of seconds as int
+     *
+     */
+    private int getSecondsFromTimecode(String timecode) {
+        return (Integer.parseInt(timecode.substring(0, 2)) * 3600) + (Integer.parseInt(timecode.substring(3, 5)) * 60)
+                + Integer.parseInt(timecode.substring(6, 8));
+    }
+
+    /**
      * Clears the status channels
      */
     private void clearStatusChannels(boolean clearPlayMode) {
@@ -625,6 +719,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         updateChannelState(CHANNEL_CURRENT_CHAPTER, null);
         updateChannelState(CHANNEL_TOTAL_CHAPTER, null);
         updateChannelState(CHANNEL_TIME_DISPLAY, null);
+        updateChannelState(CHANNEL_TITLE_ELAPSED, null);
+        updateChannelState(CHANNEL_TITLE_LENGTH, null);
+        updateChannelState(CHANNEL_TITLE_END_TIME, null);
+        updateChannelState(CHANNEL_TITLE_PROGRESS, null);
         updateChannelState(CHANNEL_AUDIO_TYPE, null);
         updateChannelState(CHANNEL_SUBTITLE_TYPE, null);
     }
@@ -632,7 +730,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private void clearStateFlags() {
         if (!BLANK.equals(currentPlayMode)) {
             currentPlayMode = BLANK;
+            currentTitle = BLANK;
             currentChapter = BLANK;
+            titleLength = -1;
             clearStatusChannels(true);
         }
         isPowerOn = false;
@@ -697,8 +797,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         logger.debug("Schedule polling job");
         cancelPollingJob();
 
-        // when the Oppo is off, this will keep the connection (esp Serial over IP) alive and
-        // detect if the connection goes down
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (connector.isConnected()) {
                 logger.debug("Polling the player for updated status...");
@@ -736,9 +834,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 });
                             }
 
-                            // for Verbose mode 2 get the current play back time if we are playing, otherwise just do
-                            // NO_OP
-                            if ((VERBOSE_2.equals(this.verboseMode) && PLAY.equals(currentPlayMode)) || isBdpIP) {
+                            // for Verbose mode 2 get the current play back time if we are playing
+                            if (VERBOSE_2.equals(this.verboseMode) && PLAY.equals(currentPlayMode)) {
                                 switch (currentTimeMode) {
                                     case T:
                                         connector.sendCommand(OppoCommand.QUERY_TITLE_ELAPSED);
@@ -759,9 +856,33 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 connector.sendCommand(OppoCommand.QUERY_TITLE_TRACK);
                                 Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                 connector.sendCommand(OppoCommand.QUERY_CHAPTER);
+
+                                // If QUERY_TITLE_ELAPSED not run above, do now if necessary
+                                if (!T.equals(currentTimeMode) && (isLinked(CHANNEL_TITLE_ELAPSED)
+                                        || isLinked(CHANNEL_TITLE_LENGTH) || isLinked(CHANNEL_TITLE_END_TIME)
+                                        || isLinked(CHANNEL_TITLE_PROGRESS))) {
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                                    connector.sendCommand(OppoCommand.QUERY_TITLE_ELAPSED);
+                                }
+
+                                // If QUERY_TITLE_REMAIN not run above, do now if necessary
+                                if (!X.equals(currentTimeMode) && (isLinked(CHANNEL_TITLE_LENGTH)
+                                        || isLinked(CHANNEL_TITLE_END_TIME) || isLinked(CHANNEL_TITLE_PROGRESS))) {
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                                    connector.sendCommand(OppoCommand.QUERY_TITLE_REMAIN);
+                                }
                             } else if (!isBdpIP) {
-                                // verbose mode 3
-                                connector.sendCommand(OppoCommand.NO_OP);
+                                // Verbose mode 3 - QUERY_TITLE_ELAPSED and QUERY_TITLE_REMAIN polling if necessary
+                                if (PLAY.equals(currentPlayMode) && (isLinked(CHANNEL_TITLE_ELAPSED)
+                                        || isLinked(CHANNEL_TITLE_LENGTH) || isLinked(CHANNEL_TITLE_END_TIME)
+                                        || isLinked(CHANNEL_TITLE_PROGRESS))) {
+                                    connector.sendCommand(OppoCommand.QUERY_TITLE_ELAPSED);
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                                    connector.sendCommand(OppoCommand.QUERY_TITLE_REMAIN);
+                                } else {
+                                    // Verbose mode 3 and no polling above or 2 not playing, keep the connection alive
+                                    connector.sendCommand(OppoCommand.NO_OP);
+                                }
                             }
                         }
 
@@ -813,15 +934,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         State state = UnDefType.UNDEF;
 
         switch (channel) {
-            case CHANNEL_TIME_DISPLAY:
-                final String[] timeArr = value.split(COLON);
-                if (timeArr.length == 3) {
-                    state = new QuantityType<>((Integer.parseInt(timeArr[0]) * 3600)
-                            + (Integer.parseInt(timeArr[1]) * 60) + Integer.parseInt(timeArr[2]), Units.SECOND);
-                } else {
-                    state = UnDefType.UNDEF;
-                }
-                break;
             case CHANNEL_POWER:
             case CHANNEL_MUTE:
                 state = OnOffType.from(ON.equals(value));

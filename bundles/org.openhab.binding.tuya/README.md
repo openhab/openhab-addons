@@ -22,6 +22,9 @@ The `project` Thing represents a Tuya developer portal cloud project (see below)
 `tuyaDevice` things represent a single device.
 They can be configured manually or by discovery.
 
+Note that `project` is a regular Thing and not a bridge.
+`tuyaDevice` things communicate with the device directly over the local network and do not need a bridge at runtime.
+
 ## Discovery
 
 Discovery is supported for `tuyaDevice` things.
@@ -184,8 +187,51 @@ After pressing buttons and copying codes, assign the codes to the Item which con
 
 After receiving the key code, learning mode automatically continues until you send the `study_exit` command or send a key code via the Item containing a code.
 
+## Full Example
+
+tuya.things:
+
+```java
+// Only needed for discovery and for looking up device credentials.
+// This is a regular Thing, not a bridge.
+Thing tuya:project:cloud "Tuya Cloud Project" [
+    username="me@example.com",
+    password="app-password",
+    accessId="ACCESS_ID",
+    accessSecret="ACCESS_SECRET",
+    countryCode="49",
+    schema="smartLife",
+    dataCenter="https://openapi.tuyaeu.com"
+]
+
+// Devices are standalone: no bridge reference, not nested in a Bridge block.
+Thing tuya:tuyaDevice:plug "Smart Plug" [
+    deviceId="DEVICE_ID",
+    productId="PRODUCT_ID",
+    localKey="LOCAL_KEY",
+    ip="192.168.1.100",
+    protocol="3.3",
+    pollingInterval=10
+] {
+    Channels:
+        Type switch : power                        [ dp=1 ]
+        Type string : work_mode                    [ dp=4, range="white,colour,scene,music" ]
+        Type number : countdown "Countdown"        [ dp=9, min=0, max=86400 ]
+}
+```
+
+tuya.items:
+
+```java
+Switch Plug_Power       "Power"              { channel="tuya:tuyaDevice:plug:power" }
+String Plug_WorkMode    "Work mode"          { channel="tuya:tuyaDevice:plug:work_mode" }
+Number Plug_Countdown   "Countdown [%d s]"   { channel="tuya:tuyaDevice:plug:countdown" }
+```
+
 ## Troubleshooting
 
+- If a `tuyaDevice` stays in state `UNINITIALIZED (BRIDGE_UNINITIALIZED)`, it is configured with a bridge.
+Remove the bridge reference (and any surrounding `Bridge { ... }` block) from the Thing definition, as described in [Supported Things](#supported-things).
 - If the `project` Thing is not coming `ONLINE`, check if you see your devices in the cloud account on `iot.tuya.com`.
 If the list is empty, most likely you selected the wrong data center.
 - Check if there are errors in the log and if you see messages like `Configuring IP address '192.168.1.100' for Thing 'tuya:tuya:tuyaDevice:bf3122fba012345fc9pqa'`.

@@ -171,19 +171,12 @@ public class ShellyComponents {
 
             String state = getString(control.state);
             int pos = -1;
-            switch (state) {
-                case SHELLY_ALWD_ROLLER_TURN_OPEN:
-                    pos = SHELLY_MAX_ROLLER_POS;
-                    break;
-                case SHELLY_ALWD_ROLLER_TURN_CLOSE:
-                    pos = SHELLY_MIN_ROLLER_POS;
-                    break;
-                case SHELLY_ALWD_ROLLER_TURN_STOP:
-                    if (control.currentPos != null) {
-                        // only valid in stop state
-                        pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
-                    }
-                    break;
+            // The device can't report the live position while moving; only trust currentPos once the
+            // roller has stopped. Pushing a synthetic 0/100 for the "open"/"close" (moving) states here
+            // caused the position channels to flip to that endpoint and then flip again to the real
+            // stopped position, even when the roller was only moving to a partial position (#14189).
+            if (SHELLY_ALWD_ROLLER_TURN_STOP.equals(state) && control.currentPos != null) {
+                pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
             }
             if (pos != -1) {
                 thingHandler.logger.debug("{}: Update roller position to {}/{}, state={}", thingHandler.thingName, pos,

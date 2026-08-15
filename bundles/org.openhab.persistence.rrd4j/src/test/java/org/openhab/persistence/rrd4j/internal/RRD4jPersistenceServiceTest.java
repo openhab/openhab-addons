@@ -14,9 +14,12 @@ package org.openhab.persistence.rrd4j.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -48,24 +51,19 @@ import org.slf4j.LoggerFactory;
  */
 @ExtendWith(MockitoExtension.class)
 class RRD4jPersistenceServiceTest {
-    private static final long STORAGE_TIMEOUT_MS = 20000; // 20 seconds for CI
+    private static final long STORAGE_TIMEOUT_MS = 20_000; // 20 seconds for CI
     private static final long POLL_INTERVAL_MS = 250; // Check every 250ms
 
     private final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceServiceTest.class);
 
-    @Mock
-    private ItemRegistry itemRegistry;
-
-    @Mock
-    private NumberItem numberItem;
-
-    @Mock
-    private SwitchItem switchItem;
+    private @Mock ItemRegistry itemRegistry;
+    private @Mock NumberItem numberItem;
+    private @Mock SwitchItem switchItem;
 
     private RRD4jPersistenceService service;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         // Create service with empty config
         service = new RRD4jPersistenceService(itemRegistry, Map.of());
     }
@@ -74,27 +72,23 @@ class RRD4jPersistenceServiceTest {
      * Waits for data to be persisted by polling the database.
      * This is more robust than Thread.sleep() in CI environments with resource contention.
      *
-     * @param itemName the name of the item to check
-     * @param timeoutMs maximum time to wait in milliseconds
+     * @param criteria the query criteria to use to check for persisted data
      * @throws InterruptedException if interrupted while waiting
      */
-    private void waitForStorage(String itemName, long timeoutMs) throws InterruptedException {
+    private Iterable<HistoricItem> waitForStorage(FilterCriteria criteria) throws InterruptedException {
         long startTime = System.currentTimeMillis();
         int attempts = 0;
 
-        while (System.currentTimeMillis() - startTime < timeoutMs) {
+        while (System.currentTimeMillis() - startTime < STORAGE_TIMEOUT_MS) {
             attempts++;
-
-            FilterCriteria criteria = new FilterCriteria();
-            criteria.setItemName(itemName);
-            criteria.setPageSize(1);
 
             try {
                 Iterable<HistoricItem> results = service.query(criteria);
                 if (results.iterator().hasNext()) {
                     long elapsed = System.currentTimeMillis() - startTime;
-                    logger.info("Storage completed for '{}' after {}ms ({} attempts)", itemName, elapsed, attempts);
-                    return; // Success!
+                    logger.info("Storage completed for '{}' after {}ms ({} attempts)", criteria.getItemName(), elapsed,
+                            attempts);
+                    return results;
                 }
             } catch (Exception e) {
                 // Query might fail if data not ready yet, continue polling
@@ -105,8 +99,8 @@ class RRD4jPersistenceServiceTest {
         }
 
         long elapsed = System.currentTimeMillis() - startTime;
-        fail(String.format("Data for item '%s' was not persisted within %dms (%d polling attempts).", itemName, elapsed,
-                attempts));
+        return fail(String.format("Data for item '%s' was not persisted within %dms (%d polling attempts).",
+                criteria.getItemName(), elapsed, attempts));
     }
 
     private void configureNumberItem(String suffix) throws Exception {
@@ -124,17 +118,25 @@ class RRD4jPersistenceServiceTest {
         when(itemRegistry.getItem("TestSwitch" + suffix)).thenReturn(switchItem);
     }
 
+    private void deleteDatabaseFile(String itemName) throws Exception {
+        Path dbFile = RRD4jPersistenceService.getDatabasePath(itemName);
+        Files.deleteIfExists(dbFile);
+    }
+
     @AfterEach
     void tearDown() throws Exception {
         if (service != null) {
             service.deactivate();
         }
+        deleteDatabaseFile(numberItem.getName());
+        deleteDatabaseFile(switchItem.getName());
     }
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveNumberValue(boolean reloadAfterStore) throws Exception {
         configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
+        deleteDatabaseFile(numberItem.getName());
 
         // Store a value
         service.store(numberItem);
@@ -144,17 +146,14 @@ class RRD4jPersistenceServiceTest {
             service = new RRD4jPersistenceService(itemRegistry, Map.of());
         }
 
-        // Wait for background storage to complete
-        waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
-
-        // Query the value back
         FilterCriteria criteria = new FilterCriteria();
         criteria.setItemName(numberItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
 
-        Iterable<HistoricItem> results = service.query(criteria);
+        // Wait for background storage to complete
+        Iterable<HistoricItem> results = waitForStorage(criteria);
         assertNotNull(results);
 
         // Verify the retrieved value
@@ -168,6 +167,7 @@ class RRD4jPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveSwitchValue(boolean reloadAfterStore) throws Exception {
         configureSwitchItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
+        deleteDatabaseFile(switchItem.getName());
 
         // Store a value
         service.store(switchItem);
@@ -177,17 +177,14 @@ class RRD4jPersistenceServiceTest {
             service = new RRD4jPersistenceService(itemRegistry, Map.of());
         }
 
-        // Wait for background storage to complete
-        waitForStorage(switchItem.getName(), STORAGE_TIMEOUT_MS);
-
-        // Query the value back
         FilterCriteria criteria = new FilterCriteria();
         criteria.setItemName(switchItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
 
-        Iterable<HistoricItem> results = service.query(criteria);
+        // Wait for background storage to complete
+        Iterable<HistoricItem> results = waitForStorage(criteria);
         assertNotNull(results);
 
         // Verify the retrieved value (converted back to OnOffType by toStateMapper)
@@ -206,6 +203,7 @@ class RRD4jPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void queryWithTimeRange(boolean reloadAfterStore) throws Exception {
         configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
+        deleteDatabaseFile(numberItem.getName());
 
         // Store a value
         service.store(numberItem);
@@ -215,21 +213,18 @@ class RRD4jPersistenceServiceTest {
             service = new RRD4jPersistenceService(itemRegistry, Map.of());
         }
 
-        // Wait for background storage to complete
-        waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
-
-        // Query with time range
         FilterCriteria criteria = new FilterCriteria();
         criteria.setItemName(numberItem.getName());
         criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1));
         criteria.setEndDate(ZonedDateTime.now(ZoneId.systemDefault()).plusHours(1));
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
 
-        Iterable<HistoricItem> results = service.query(criteria);
+        // Wait for background storage to complete
+        Iterable<HistoricItem> results = waitForStorage(criteria);
         assertNotNull(results);
 
         // Verify we got at least one result
-        assertNotNull(results.iterator().hasNext());
+        assertTrue(results.iterator().hasNext());
     }
 
     @Test
@@ -259,6 +254,7 @@ class RRD4jPersistenceServiceTest {
         service = new RRD4jPersistenceService(itemRegistry, Map.of("something.invalid", "invalid/path/to/db"));
 
         configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
+        deleteDatabaseFile(numberItem.getName());
 
         // Store a value
         service.store(numberItem);
@@ -268,10 +264,6 @@ class RRD4jPersistenceServiceTest {
             service = new RRD4jPersistenceService(itemRegistry, Map.of("something.invalid", "invalid/path/to/db"));
         }
 
-        // Wait for background storage to complete
-        waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
-
-        // Query the value back
         FilterCriteria criteria = new FilterCriteria();
         criteria.setItemName(numberItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
@@ -279,7 +271,8 @@ class RRD4jPersistenceServiceTest {
         criteria.setPageNumber(0);
         criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1));
 
-        Iterable<HistoricItem> results = service.query(criteria);
+        // Wait for background storage to complete
+        Iterable<HistoricItem> results = waitForStorage(criteria);
         assertNotNull(results);
 
         // Verify the retrieved value

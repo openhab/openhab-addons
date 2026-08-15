@@ -148,6 +148,4 @@ Import-Package: \
 	com.fasterxml.jackson.core.jackson-databind;version='[2.21.4,2.21.5)',\
 	org.graalvm.python.python-language;version='[25.0.1,25.0.2)',\
 	org.graalvm.python.python-resources;version='[25.0.1,25.0.2)',\
-	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
-	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)',\
-	jakarta.ws.rs-api;version='[2.1.6,2.1.7)'
+	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)'
