@@ -28,11 +28,11 @@ import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
  * Builds a SetChargingProfile request that caps a connector to a fixed current.
  *
  * <p>
- * OCPP 1.6 offers two relevant profile purposes. A {@code TxProfile} limits the current
- * transaction and must carry its transaction id; a {@code TxDefaultProfile} applies whether or not a
- * transaction is running and must not carry one. A charge point that has no transaction active (or
- * one, like the Phoenix CHARX, that rejects a TxProfile outside a transaction) needs the default
- * profile — hence {@code forceTxDefault}.
+ * OCPP 1.6 offers two relevant profile purposes: a {@code TxProfile} limits the current transaction
+ * and must carry its transaction id; a {@code TxDefaultProfile} applies with or without a running
+ * transaction and must not carry one. A charge point with no active transaction (or one, like the
+ * Phoenix CHARX, that rejects a TxProfile outside a transaction) needs the default profile — hence
+ * {@code forceTxDefault}.
  *
  * <p>
  * The schedule is {@code Relative}: the cap applies from the start of charging for the whole

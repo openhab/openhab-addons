@@ -29,11 +29,10 @@ import eu.chargetime.ocpp.model.core.BootNotificationRequest;
  *
  * <p>
  * Registering it with {@code FeatureRepository.addFeature(...)} AFTER the core profile overrides the
- * strict feature: the repository keys features by action in a map, so the later put wins, and the
- * inbound path resolves the feature by that action and deserializes into {@link #getRequestType()}. A
- * charger whose model or vendor exceeds 20 characters — or omits one — can therefore still boot. Once
- * accepted the boot is handled identically: this delegates to the same {@link ServerCoreEventHandler}
- * the core feature uses.
+ * strict feature: the repository keys features by action, so the later put wins and the inbound path
+ * deserializes into {@link #getRequestType()}. A charger whose model or vendor exceeds 20 characters,
+ * or omits one, can therefore still boot. The boot itself is handled identically — this delegates to
+ * the same {@link ServerCoreEventHandler} the core feature uses.
  *
  * @author Stamate Viorel - Initial contribution
  */

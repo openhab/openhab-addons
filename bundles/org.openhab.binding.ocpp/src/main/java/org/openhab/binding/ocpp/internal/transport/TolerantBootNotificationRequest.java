@@ -20,17 +20,15 @@ import eu.chargetime.ocpp.model.core.BootNotificationRequest;
  * A {@link BootNotificationRequest} that accepts any payload.
  *
  * <p>
- * The embedded library validates an INBOUND BootNotification against the OCPP CiString20 constraint on
- * {@code chargePointModel} and {@code chargePointVendor} ({@code BootNotificationRequest.validate()} =
- * both non-null and no longer than 20 characters). When a charger exceeds that, or omits a field, the
- * library refuses the whole boot with a {@code CALLERROR} (OccurenceConstraintViolation) — and a
- * charger whose BootNotification is rejected never comes online, so nothing downstream works. A central
- * system must not brick a charger over a string-length technicality, so this override accepts the boot.
+ * The embedded library enforces the OCPP CiString20 constraint on inbound {@code chargePointModel} and
+ * {@code chargePointVendor} (non-null, at most 20 characters); a charger that exceeds it or omits a
+ * field is refused with a {@code CALLERROR} and never comes online. This override deliberately accepts
+ * the boot rather than brick a charger over a string-length technicality.
  *
  * <p>
  * The fields are still read as-is for the Thing properties: the library deserializes with Gson by field
- * reflection (see {@code JSONCommunicator}), so an over-long or absent value is written straight onto
- * the inherited field without passing through the length-checking setter — which would otherwise throw.
+ * reflection, so an over-long or absent value lands on the inherited field without passing through the
+ * length-checking setter that would otherwise throw.
  *
  * @author Stamate Viorel - Initial contribution
  */

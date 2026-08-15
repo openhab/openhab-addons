@@ -64,21 +64,20 @@ import eu.chargetime.ocpp.model.SessionInformation;
 import eu.chargetime.ocpp.wss.BaseWssFactoryBuilder;
 
 /**
- * {@link OcppTransport} backed by the ChargeTime OCA-OCPP 1.6-J server. This is the only class in
- * the binding that touches {@code eu.chargetime.*}.
+ * {@link OcppTransport} backed by the ChargeTime OCA-OCPP 1.6-J server; the only class in the
+ * binding that touches {@code eu.chargetime.*}.
  *
  * <p>
- * The server is composed from the library's public parts ({@link Server}, {@link WebSocketListener},
- * {@link FeatureRepository}) rather than through {@code JSONServer}, so a
- * {@link TimingOutPromiseRepository} can be injected: the library itself never times out an
- * outbound request, and an unanswered call would otherwise stay incomplete forever and be retained.
+ * Composed from the library's public parts ({@link Server}, {@link WebSocketListener},
+ * {@link FeatureRepository}) rather than {@code JSONServer}, so a {@link TimingOutPromiseRepository}
+ * can be injected: the library never times out an outbound request, so an unanswered call would
+ * otherwise stay incomplete and retained forever.
  *
  * <p>
- * {@link #start} verifies the server actually listens before it returns. The embedded WebSocket
- * server binds its socket asynchronously on its own thread and reports a bind failure only to an
- * internal error callback this composition cannot reach — {@code start()} returning says nothing.
- * So the port is bind-tested first (which surfaces the real failure, e.g. an occupied port, as an
- * exception) and the running server is then probed with a real TCP connection until it accepts.
+ * {@link #start} verifies the server listens before returning. The embedded WebSocket server binds
+ * asynchronously on its own thread and reports a bind failure only to an internal error callback
+ * this composition cannot reach, so the port is bind-tested first (surfacing the real failure, e.g.
+ * an occupied port) and the running server is then probed over TCP until it accepts.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -87,8 +86,8 @@ public class ChargeTimeTransport implements OcppTransport {
 
     private static final long STARTUP_PROBE_TIMEOUT_MILLIS = 3000;
     private static final int PROBE_CONNECT_TIMEOUT_MILLIS = 250;
-    // The library's own JSONConfiguration keys (not exposed as public constants) for the Basic-auth
-    // password-length bounds its WebSocketListener enforces during the handshake.
+    // The library's own (non-public) JSONConfiguration keys for the Basic-auth password-length bounds
+    // its WebSocketListener enforces during the handshake.
     private static final String MIN_BASIC_AUTH_PASSWORD_LENGTH_KEY = "OCPPJ_CP_MIN_PASSWORD_LENGTH";
     private static final String MAX_BASIC_AUTH_PASSWORD_LENGTH_KEY = "OCPPJ_CP_MAX_PASSWORD_LENGTH";
 
@@ -107,38 +106,35 @@ public class ChargeTimeTransport implements OcppTransport {
         this.authPassword = authPassword;
         FeatureRepository featureRepository = new FeatureRepository();
         InboundCoreHandler coreHandler = new InboundCoreHandler(ocppListener);
-        // Feature profiles the server sends beyond Core: SmartCharging carries SetChargingProfile
-        // (the charge-limit and pause path), RemoteTrigger carries TriggerMessage (status refresh on
-        // connect and optional MeterValues polling). Without a profile registered, sending its
-        // requests fails with UnsupportedFeatureException.
+        // Profiles beyond Core: SmartCharging carries SetChargingProfile (the charge-limit and pause
+        // path), RemoteTrigger carries TriggerMessage (status refresh on connect, optional MeterValues
+        // polling). Sending a request from an unregistered profile fails with UnsupportedFeatureException.
         featureRepository.addFeatureProfile(new ServerCoreProfile(coreHandler));
         featureRepository.addFeatureProfile(new ServerSmartChargingProfile());
         featureRepository.addFeatureProfile(new ServerRemoteTriggerProfile());
         // Override the core BootNotification feature (a later addFeature wins on the action) so a
-        // charger whose model or vendor exceeds the OCPP CiString20 limit — or omits one — is accepted
-        // rather than rejected with a CALLERROR, which would leave it unable to come online. Handled by
-        // the same core handler once accepted.
+        // charger whose model or vendor exceeds the OCPP CiString20 limit, or omits one, is accepted
+        // rather than rejected with a CALLERROR that would leave it unable to come online. Once
+        // accepted, the same core handler processes it.
         featureRepository.addFeature(new TolerantBootNotificationFeature(coreHandler));
 
         JSONConfiguration configuration = JSONConfiguration.get();
         // SO_REUSEADDR so the server can rebind the port immediately (e.g. when replacing another
         // OCPP server that just released it and left the socket in TIME_WAIT).
         configuration = configuration.setParameter(JSONConfiguration.REUSE_ADDR_PARAMETER, true);
-        // This maps to the WebSocket connection-lost timeout: the server pings every interval and
-        // CLOSES any connection that doesn't answer with a pong in time. Many OCPP chargers never
-        // answer WebSocket pings, so enabling this drops healthy sessions on a fixed cycle. Liveness
-        // is tracked at the OCPP level instead (heartbeats + the charge point liveness watchdog), so
-        // ping-based detection stays off (0) unless a positive interval is explicitly configured.
+        // Maps to the WebSocket connection-lost timeout: the server pings every interval and CLOSES any
+        // connection that doesn't pong in time. Many OCPP chargers never answer WebSocket pings, so this
+        // would drop healthy sessions on a fixed cycle; liveness is tracked at the OCPP level instead
+        // (heartbeats + the charge point liveness watchdog). Off (0) unless a positive interval is set.
         configuration = configuration.setParameter(JSONConfiguration.PING_INTERVAL_PARAMETER,
                 pingIntervalSeconds > 0 ? pingIntervalSeconds : 0);
-        // A charger that opens its connection with an HTTP Basic-auth header must clear the library's
-        // handshake password-length check (the OCPP profile-1 rule, 16-20 characters) BEFORE this
-        // binding's authenticateSession runs. Some chargers always send that header even with no backend
-        // authentication — a V2C Trydan sends its id with an empty password on every connection — and the
-        // check would then reject a connection we would otherwise accept, before it is ever logged. When
-        // no authPassword is configured (profile 0) relax the bounds so any Basic-auth header is accepted;
-        // authenticateSession still enforces the real credentials when a password IS set (profile 1), so
-        // authentication is not weakened. These are the library's own (non-public) JSONConfiguration keys.
+        // A charger opening with an HTTP Basic-auth header must clear the library's handshake
+        // password-length check (the OCPP profile-1 rule, 16-20 characters) BEFORE this binding's
+        // authenticateSession runs. Some chargers send it even with no backend auth — a V2C Trydan sends
+        // its id with an empty password on every connection — so the check would reject a connection we
+        // would otherwise accept, before it is even logged. With no authPassword (profile 0), relax the
+        // bounds so any Basic-auth header passes; authenticateSession still enforces the real credentials
+        // when a password IS set (profile 1), so authentication is not weakened.
         if (authPassword.isBlank()) {
             configuration = configuration.setParameter(MIN_BASIC_AUTH_PASSWORD_LENGTH_KEY, 0);
             configuration = configuration.setParameter(MAX_BASIC_AUTH_PASSWORD_LENGTH_KEY, Integer.MAX_VALUE);
@@ -152,9 +148,9 @@ public class ChargeTimeTransport implements OcppTransport {
                 new TrackingSessionFactory(new SessionFactory(featureRepository), requestSessions), configuration,
                 draft);
         if (!tlsKeystore.isBlank()) {
-            // Serve OCPP over TLS (wss://): hand the keystore's SSLContext to the library's WSS factory
-            // before the server opens. With authPassword this is OCPP security profile 2; without it, an
-            // encrypted profile 0. enableWSS has to be called before the listener opens its socket.
+            // Serve OCPP over TLS (wss://): hand the keystore's SSLContext to the library's WSS factory,
+            // which must happen before the listener opens its socket. With authPassword this is OCPP
+            // security profile 2; without it, an encrypted profile 0.
             WssListenerSupport.enableWss(listener,
                     BaseWssFactoryBuilder.builder().sslContext(sslContext(tlsKeystore, tlsKeystorePassword)));
         }
@@ -186,10 +182,9 @@ public class ChargeTimeTransport implements OcppTransport {
     @Override
     public void start(String host, int port) {
         // Surface bind failures synchronously: the embedded server would swallow them (see the class
-        // comment), leaving a bridge that believes it is listening. Binding and releasing the port
-        // here raises the genuine error — occupied port, unresolvable address, privileged port —
-        // before the real server starts. The moment between release and the server's own bind is
-        // covered by the listening probe below.
+        // comment), leaving a bridge that believes it is listening. Binding and releasing the port here
+        // raises the genuine error — occupied port, unresolvable address, privileged port — before the
+        // real server starts; the gap until the server's own bind is covered by the probe below.
         try (ServerSocket probe = new ServerSocket()) {
             probe.setReuseAddress(true);
             probe.bind(new InetSocketAddress(host, port));
@@ -303,10 +298,10 @@ public class ChargeTimeTransport implements OcppTransport {
     public void stop() {
         running = false;
         // The handler publishes this transport before starting it (so session callbacks can always
-        // reach it) — which means a dispose racing the startup task can invoke stop() before start(),
-        // and both the dispose path and the losing startup path can invoke it. Closing the library
-        // server before open() would fail on its unopened listener, and closing twice is not
-        // guaranteed safe either, so: never-started is a no-op and the close runs exactly once.
+        // reach it), so a dispose racing the startup task can invoke stop() before start(), and both the
+        // dispose and the losing startup path can invoke it. Closing before open() would fail on the
+        // unopened listener, and closing twice is not guaranteed safe, so never-started is a no-op and
+        // the close runs exactly once.
         if (!started) {
             return;
         }
@@ -331,10 +326,10 @@ public class ChargeTimeTransport implements OcppTransport {
             return server.send(session, request);
         } catch (OccurenceConstraintException | UnsupportedFeatureException | NotConnectedException
                 | RuntimeException e) {
-            // The declared checked exceptions plus any unchecked one the underlying WebSocket can
-            // raise — Java-WebSocket throws WebsocketNotConnectedException (a RuntimeException) when a
-            // session drops mid-send. All must become a failed stage: a synchronous throw here would
-            // abort the caller's drain loop and strand its other queued requests.
+            // The declared checked exceptions plus any unchecked one the WebSocket can raise —
+            // Java-WebSocket throws WebsocketNotConnectedException (a RuntimeException) when a session
+            // drops mid-send. All must become a failed stage: a synchronous throw would abort the
+            // caller's drain loop and strand its other queued requests.
             CompletableFuture<Confirmation> failed = new CompletableFuture<>();
             failed.completeExceptionally(e);
             return failed;

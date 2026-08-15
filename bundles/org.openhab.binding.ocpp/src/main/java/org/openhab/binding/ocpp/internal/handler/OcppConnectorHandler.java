@@ -103,8 +103,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
             ChargePointStatus.Finishing);
     private static final long STUCK_STATE_SECONDS = 120;
 
-    // Telemetry measurands created as channels on demand — only if the charger actually reports
-    // them — instead of declared statically on every connector. channelId -> channel spec.
+    // Telemetry channels created on demand, only if the charger reports the measurand, rather than
+    // declared statically on every connector.
     private record DynamicChannel(String channelTypeId, String itemType, String label) {
     }
 
@@ -197,10 +197,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private @Nullable CompletableFuture<eu.chargetime.ocpp.model.Confirmation> pendingPoll;
 
     /**
-     * The state one SetChargingProfile request stands for, captured when it is dispatched. The
-     * confirmation publishes these captured values — never the mutable fields, which may have moved
-     * on to a newer request by the time the charger answers — and only if this is still the newest
-     * dispatched profile, so an out-of-order or stale confirmation cannot misreport the channels.
+     * The state one SetChargingProfile request stands for, captured at dispatch. The confirmation
+     * publishes these captured values — not the mutable fields, which may already describe a newer
+     * request — and only if this is still the newest dispatched profile, so an out-of-order or stale
+     * confirmation cannot misreport the channels.
      */
     private record ProfileClaim(long generation, ChargingRateUnitType wireUnit, double wireValue, double limitAmps,
             double limitWatts, boolean powerSourced, @Nullable Integer numberPhases, boolean paused) {
@@ -237,9 +237,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
         parent.registerConnector(connectorId, this);
         recoverTransaction(parent);
         startPolling();
-        // If the charger is already online (this connector thing was added, or re-initialized, mid
-        // session) it will not volunteer a StatusNotification on its own — ask for one so the
-        // connector does not sit at UNKNOWN until the next status change.
+        // A charger already online (connector Thing added or re-initialized mid-session) will not
+        // volunteer a StatusNotification — ask for one so the connector does not sit at UNKNOWN
+        // until the next status change.
         if (parent.isReady()) {
             requestStatus();
         }
@@ -289,10 +289,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
             // concurrent re-arm and leak the freshly scheduled task.
             synchronized (lock) {
                 cancel(stuckTask);
-                // A coalesced limit/pause still waiting to flush would be silently dropped by this
-                // cancel. The latest values are already stored, so mark the intent deferred and let
-                // onChargePointReady re-apply it once the charge point is back, rather than lose the
-                // setpoint until the next command.
+                // This cancel would silently drop a coalesced limit/pause still waiting to flush.
+                // The latest values are stored, so mark the intent deferred and let onChargePointReady
+                // re-apply it once the charge point is back, rather than lose the setpoint.
                 if (pendingFlush != null) {
                     limitDeferred = true;
                 }
@@ -359,7 +358,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
             case CHANNEL_NUMBER_PHASES:
                 Integer phaseCount = toPhaseCount(command);
                 if (phaseCount != null) {
-                    numberPhasesRequested = phaseCount; // 0 clears the request (charger default)
+                    numberPhasesRequested = phaseCount;
                     if (!paused) {
                         applyLimit();
                     }
@@ -407,18 +406,18 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (isReadyToSend()) {
             coalesceProfile(paused ? 0.0 : currentLimitAmps);
         } else {
-            // The charger is not ready yet (just connected, before boot). Hold the intent — the
-            // latest values are already stored — and send it the moment the charger is ready, rather
-            // than transmit before it can accept the profile or drop the setting outright.
+            // Charger not ready yet (just connected, before boot). Hold the intent — the values are
+            // stored — and send it once the charger is ready, rather than transmit before it can
+            // accept the profile or drop the setting.
             limitDeferred = true;
         }
     }
 
     /**
-     * Whether the charger reported it does not support SmartCharging. A SetChargingProfile is then
-     * refused — and some chargers stop the running transaction on one — so charge-limit and pause are
-     * not sent; warned once. A charger that did not report its feature profiles is treated as capable
-     * (unknown is not "no").
+     * Whether the charger reported it does not support SmartCharging, in which case it would refuse a
+     * SetChargingProfile (and some chargers stop the running transaction on one), so charge-limit and
+     * pause are not sent, warned once. A charger that never reported its feature profiles is treated
+     * as capable (unknown is not "no").
      */
     private boolean smartChargingUnsupported() {
         OcppChargePointHandler cp = chargePoint;
@@ -474,25 +473,23 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     /**
-     * Marks a profile as being sent now and captures the state it stands for. Claiming the slot
-     * under the lock is what keeps the minimum interval honest when two commands arrive at once: the
-     * second one sees the timestamp already moved and coalesces instead of sending as well. Caller
-     * must hold {@link #lock}.
+     * Marks a profile as sent now and captures the state it stands for. Claiming the slot under the
+     * lock keeps the minimum interval honest when two commands arrive at once: the second sees the
+     * timestamp already moved and coalesces instead of also sending. Caller must hold {@link #lock}.
      */
     private ProfileClaim claimSend() {
         // Cancel any scheduled flush before dropping the reference: an immediate send that supersedes
-        // a still-pending coalesced flush must stop that flush from firing too, or it would put a
-        // second, redundant SetChargingProfile on the wire at the interval boundary. When claimSend
-        // itself runs FROM the flush task, cancelling the already-running task is a harmless no-op.
+        // a still-pending flush must stop it firing too, or a second redundant SetChargingProfile
+        // hits the wire at the interval boundary. When claimSend runs FROM the flush task, cancelling
+        // the already-running task is a harmless no-op.
         cancel(pendingFlush);
         pendingFlush = null;
         lastProfileSentAt = System.currentTimeMillis();
         profileGeneration++;
         // pendingLimitAmps already folds in pause (0 A when paused). Pick the unit the charger accepts:
         // an explicit watts limit wins on a power-capable charger; a charger that ONLY accepts power
-        // gets the amperes limit converted (W = A x V x phases); otherwise amperes, as before. An
-        // unknown allowed-unit set defaults to "amperes accepted", so a charger with no capability read
-        // behaves exactly as it did before.
+        // gets the amperes limit converted (W = A x V x phases); otherwise amperes. An unknown
+        // allowed-unit set defaults to amperes, so a charger with no capability read is unaffected.
         double amps = pendingLimitAmps;
         double watts = powerLimitWatts;
         OcppChargePointHandler cp = chargePoint;
@@ -530,9 +527,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     /**
      * Whether this accepted claim may publish: only if no newer claim has published yet. An older
-     * confirmation still publishes when the newer request was rejected — the charger is then
-     * genuinely running the older accepted state and the channels must say so — but once a newer
-     * claim has published, an out-of-order older confirmation cannot roll it back.
+     * confirmation still publishes when the newer request was rejected — the charger is then running
+     * the older accepted state, so the channels must say so — but once a newer claim has published,
+     * an out-of-order older one cannot roll it back.
      */
     private boolean claimPublication(ProfileClaim claim) {
         synchronized (lock) {
@@ -550,11 +547,11 @@ public class OcppConnectorHandler extends BaseThingHandler {
      */
     private void sendProfile(ProfileClaim claim) {
         // A not-paused claim with no positive cap means "resume to full". That is NOT a 0 A limit —
-        // 0 A is how a pause suspends a connector (the charger then reports SuspendedEVSE). Lifting a
-        // cap therefore has to REMOVE our profile (ClearChargingProfile) so the charger returns to its
-        // own maximum; re-sending 0 A here would leave a just-un-paused connector suspended — which is
-        // exactly what happens when a user only ever toggles pause and never sets a limit. Only a pause,
-        // or an explicit positive limit, goes out as a SetChargingProfile.
+        // 0 A is how a pause suspends a connector (reported as SuspendedEVSE). Lifting a cap must
+        // therefore REMOVE our profile (ClearChargingProfile) so the charger returns to its own
+        // maximum; re-sending 0 A would leave a just-un-paused connector suspended (the case when a
+        // user only toggles pause and never sets a limit). Only a pause or an explicit positive limit
+        // goes out as a SetChargingProfile.
         if (!claim.paused() && claim.wireValue() <= 0.0) {
             clearProfile(claim);
         } else {
@@ -565,9 +562,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private void setProfile(ProfileClaim claim) {
         dispatch(ChargingProfileBuilder.limit(connectorId, claim.wireUnit(), claim.wireValue(), claim.numberPhases(),
                 forceTxDefaultProfile, transactionId), "SetChargingProfile").whenComplete((confirmation, ex) -> {
-                    // A non-exceptional completion only means the charger answered; the answer can
-                    // still be Rejected or NotSupported. Publish only what THIS request carried —
-                    // never the mutable fields, which may describe a newer request by now.
+                    // A non-exceptional completion only means the charger answered; it can still be
+                    // Rejected or NotSupported. Publish only what THIS request carried — not the
+                    // mutable fields, which may describe a newer request by now.
                     if (ex == null && confirmation instanceof SetChargingProfileConfirmation profile
                             && profile.getStatus() == ChargingProfileStatus.Accepted) {
                         if (claimPublication(claim)) {
@@ -579,10 +576,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
                         logger.debug("SetChargingProfile on connector {} not accepted: {}", connectorId, confirmation);
                     } else {
                         // The send never reached the charger (offline / disconnected / superseded on a
-                        // reconnect). The latest limit/pause is still stored in the fields, so re-arm it
-                        // to be re-applied when the charge point next becomes ready. This is what covers
-                        // a coalesced flush that FIRED into a dropping session — the OFFLINE re-arm only
-                        // catches a flush still pending (pendingFlush != null), not one already sent.
+                        // reconnect). The latest limit/pause is still in the fields, so re-arm it for
+                        // the next time the charge point is ready. This covers a coalesced flush that
+                        // FIRED into a dropping session — the OFFLINE re-arm only catches a flush still
+                        // pending (pendingFlush != null), not one already sent.
                         limitDeferred = true;
                     }
                 });
@@ -609,10 +606,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private void clearProfile(ProfileClaim claim) {
         dispatch(ChargingProfileBuilder.clearLimit(connectorId), "ClearChargingProfile")
                 .whenComplete((confirmation, ex) -> {
-                    // Accepted means the cap was removed; Unknown means there was none to remove — both
-                    // leave the connector uncapped, so publish "no limit" for either. Anything else (a
-                    // failed or unexpected answer) leaves the old profile in place, so re-arm to retry
-                    // when the charge point is next ready, exactly as the set path does.
+                    // Accepted removed the cap; Unknown means there was none to remove — both leave the
+                    // connector uncapped, so publish "no limit" for either. Anything else leaves the old
+                    // profile in place, so re-arm to retry when the charge point is next ready, as the
+                    // set path does.
                     if (ex == null && confirmation instanceof ClearChargingProfileConfirmation cleared
                             && (cleared.getStatus() == ClearChargingProfileStatus.Accepted
                                     || cleared.getStatus() == ClearChargingProfileStatus.Unknown)) {
@@ -699,10 +696,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> previous = pendingPoll;
         if (previous != null && !previous.isDone()) {
-            // The previous poll for this connector is still queued or in flight. Skip this tick rather
-            // than pile another TriggerMessage on the dispatcher: a charger that keeps its socket open
-            // but stops answering would otherwise let one-second polling grow an unbounded backlog
-            // behind the request timeout, delaying real commands.
+            // The previous poll is still queued or in flight. Skip this tick rather than pile another
+            // TriggerMessage on the dispatcher: a charger that holds its socket open but stops
+            // answering would otherwise let one-second polling grow an unbounded backlog behind the
+            // request timeout, delaying real commands.
             logger.debug("MeterValues poll on connector {} skipped — the previous poll is still outstanding",
                     connectorId);
             return;
@@ -714,19 +711,19 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     /**
      * Ask the charger to (re)send this connector's StatusNotification, so status and availability are
-     * fresh after a boot or a mid-session Thing add instead of waiting for the charger to volunteer one.
-     * Goes through the GATED path, so after a boot it is held behind the BootNotification response like
-     * any other request rather than racing it.
+     * fresh after a boot or mid-session Thing add rather than waiting for the charger to volunteer one.
+     * Uses the GATED path, so after a boot it is held behind the BootNotification response rather than
+     * racing it.
      */
     public void requestStatus() {
         sendStatusRequest(false);
     }
 
     /**
-     * Status refresh that bypasses the readiness gate. Used only for the bare-WebSocket-reconnect
-     * fallback: a charger that reopened its socket without re-booting will not become ready until its
-     * next heartbeat (minutes away), so this recovers it. It still enters the outbound serializer and
-     * waits behind any request already in flight.
+     * Status refresh that bypasses the readiness gate. Only for the bare-WebSocket-reconnect fallback:
+     * a charger that reopened its socket without re-booting will not become ready until its next
+     * heartbeat (minutes away), so this recovers it. It still enters the outbound serializer, waiting
+     * behind any request already in flight.
      */
     public void requestStatusNow() {
         sendStatusRequest(true);
@@ -868,10 +865,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     /**
-     * Create any telemetry channel that this connector doesn't yet have but the charger has now
-     * reported (soc, rpm, temperature, reactive/apparent power, export direction, frequency, ...).
-     * The channels the site commonly uses are declared statically; these extras appear only if the
-     * hardware actually sends them.
+     * Create any telemetry channel the connector lacks but the charger has now reported (soc, rpm,
+     * temperature, reactive/apparent power, export direction, frequency, ...). Commonly-used channels
+     * are declared statically; these extras appear only if the hardware sends them.
      */
     private void ensureDynamicChannels(Set<String> reportedChannelIds) {
         ThingBuilder builder = null;
@@ -898,8 +894,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     public void onTransactionStarted(StartTransactionRequest request, int transactionId) {
-        // The charging channel itself is status-driven (see onStatusNotification); here we only record
-        // the transaction id (needed for RemoteStop / TxProfile) and the start metadata.
+        // The charging channel is status-driven (see onStatusNotification); record only the
+        // transaction id (needed for RemoteStop / TxProfile) and start metadata.
         this.transactionId = transactionId;
         updateState(CHANNEL_TRANSACTION_ID, new DecimalType(transactionId));
         String idTag = request.getIdTag();
@@ -917,7 +913,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     public void onTransactionStopped(StopTransactionRequest request) {
-        // charging channel is status-driven; here we only clear the id and record the stop metadata.
+        // charging channel is status-driven; clear only the id and record stop metadata.
         this.transactionId = null;
         updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         Integer meterStop = request.getMeterStop();
@@ -934,8 +930,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     private void armStuckWatchdog(ChargePointStatus status) {
         // Off by default: Preparing and Finishing are normal OCPP states (waiting for the vehicle or
-        // for the user to unplug), so treating elapsed time in them as a fault and auto-unlocking is a
-        // physical side effect that must be opted into per charger, not the default.
+        // for the user to unplug), so treating time spent in them as a fault and auto-unlocking is a
+        // physical side effect that must be opted into per charger.
         if (!stuckStateRecovery) {
             return;
         }

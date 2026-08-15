@@ -42,8 +42,8 @@ import eu.chargetime.ocpp.model.core.KeyValueType;
 @NonNullByDefault
 public final class ChargerCapabilities {
 
-    // Standard OCPP 1.6 configuration key names (spec §9). The values these keys carry are read from
-    // the charger, not assumed; only the key spellings are fixed here.
+    // Standard OCPP 1.6 configuration key names (spec §9); only the key spellings are fixed here, the
+    // values are read from the charger.
     private static final String SUPPORTED_FEATURE_PROFILES = "SupportedFeatureProfiles";
     private static final String ALLOWED_CHARGING_RATE_UNIT = "ChargingScheduleAllowedChargingRateUnit";
     private static final String HEARTBEAT_INTERVAL = "HeartbeatInterval";
@@ -145,8 +145,6 @@ public final class ChargerCapabilities {
     public Optional<Boolean> phaseSwitchSupported() {
         return bool(CONNECTOR_SWITCH_3_TO_1_PHASE);
     }
-
-    // --- defensive typed accessors over the raw string map ---
 
     /** The value of {@code key} parsed as an int, or empty when absent or not a number. */
     public OptionalInt integer(String key) {

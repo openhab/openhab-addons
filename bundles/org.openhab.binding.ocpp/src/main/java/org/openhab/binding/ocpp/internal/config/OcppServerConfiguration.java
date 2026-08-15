@@ -42,21 +42,17 @@ public class OcppServerConfiguration {
     public List<String> vendorConfig = List.of();
     /** WebSocket ping interval (seconds); 0 disables ping-based connection-loss detection. */
     public int pingInterval = 0;
-    /**
-     * Seconds before an unanswered outbound request fails. The embedded OCPP library itself never
-     * times a request out, so this bound is what keeps a caller from waiting forever on a charger
-     * that does not answer.
-     */
+    /** Seconds before an unanswered outbound request fails; the embedded OCPP library never times out itself. */
     public int requestTimeoutSeconds = 30;
     /**
-     * HTTP Basic authentication password chargers must present (with their charge point id as the
-     * username). Empty disables authentication — OCPP security profile 0, trusted-LAN operation.
+     * HTTP Basic password chargers must present (username = their charge point id). Empty disables it —
+     * OCPP security profile 0, trusted-LAN operation.
      */
     public String authPassword = "";
     /**
-     * Path to a PKCS12 keystore holding the server's TLS certificate and key. When set, the OCPP
-     * endpoint runs over {@code wss://} (TLS) instead of {@code ws://} — OCPP security profile 2 with
-     * {@code authPassword}, or an encrypted profile 0 without. Empty leaves the endpoint plain.
+     * Path to a PKCS12 keystore with the server's TLS cert and key. When set, the endpoint runs over
+     * {@code wss://} instead of {@code ws://} — OCPP security profile 2 with {@code authPassword}, else
+     * an encrypted profile 0. Empty leaves the endpoint plain.
      */
     public String tlsKeystore = "";
     /** Password for the {@link #tlsKeystore} (store and key password). */

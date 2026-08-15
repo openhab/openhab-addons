@@ -16,8 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link OcppBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * Common constants used across the OCPP binding.
  *
  * @author Stamate Viorel - Initial contribution
  */
