@@ -71,6 +71,8 @@ The binding also runs a heartbeat-derived liveness watchdog and self-heals when 
 | hardwareMaxCurrentKey | text | Vendor ChangeConfiguration key backing the `hardware-max-current` channel. Empty disables that channel | (empty) | no | yes |
 | remoteStartTag | text | idTag used when starting a transaction via the `charging` channel | openhab | no | yes |
 | meterValuesPollSeconds | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling | 0 | no | yes |
+| nominalVoltage | decimal | Line voltage for converting an amps charge-limit to watts on a charger that only accepts a power limit (W = A×V×phases) | 230 | no | yes |
+| phases | integer | Phases assumed in that amps→watts conversion — 1 single-phase, 3 three-phase | 1 | no | yes |
 | stuckStateRecovery | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long. Off by default; enable only for a charger known to wedge there | false | no | yes |
 
 Most connectors need no configuration beyond `connectorId`.
@@ -107,6 +109,8 @@ Vendor, model, firmware version and serial number are published as thing propert
 | energy-active-import | Number:Energy          | R          | Energy register (Energy.Active.Import.Register)        |
 | charging           | Switch                 | RW         | ON while a transaction runs; command to remote start/stop |
 | charge-limit        | Number:ElectricCurrent | RW         | Charge current cap via SetChargingProfile              |
+| power-limit         | Number:Power           | RW         | Charge power cap (watts); overrides charge-limit, for power-only chargers |
+| number-phases       | Number                 | RW         | Phases to charge on (1/2/3); 0 = charger default. Needs a charger that supports phase switching |
 | pause              | Switch                 | RW         | Pause charging (profile limit 0) without ending the transaction |
 | availability       | Switch                 | RW         | OCPP availability (Operative/Inoperative)              |
 | unlock             | Switch                 | W          | Momentary — unlock the connector                       |
@@ -131,6 +135,9 @@ A session started outside openHAB — by the vehicle or the charger's own app, o
 To keep stop working, start the charge from openHAB (`charging` `ON`), which makes the transaction tracked; for a session you did not start, suspend the power with `pause` (a 0 A profile needs no transaction) or end it with the `chargepoint`-level `reset` (a reset needs no transaction either, but reboots the whole charger).
 
 `charge-limit` caps the charging current: the value is sent as a `SetChargingProfile` and the channel reflects the applied limit once accepted.
+Some chargers only accept a charge limit expressed in watts (their OCPP `ChargingScheduleAllowedChargingRateUnit` is `Power`, not `Current`); the binding learns this from the charger and converts `charge-limit` amps to watts with `nominalVoltage` and `phases`, so the same amps channel still works.
+Alternatively set `power-limit` (watts) directly — when set it overrides `charge-limit` and is sent as-is, with no conversion, on any charger that accepts a power limit.
+`number-phases` requests charging on a given number of phases (1, 2 or 3) by setting `numberPhases` in the charging profile — for switching a car to single-phase when solar surplus is low, for instance; 0 clears the request so the charger keeps its own default (OCPP assumes 3). It only takes effect on a charger that supports phase switching (its `ConnectorSwitch3to1PhaseSupported` is true), and when set it also drives the amps→watts conversion above.
 `pause` suspends charging with a 0 A profile without ending the transaction; switching it off resumes — at your `charge-limit` if one is set, otherwise by removing the cap so the charger returns to its own maximum — distinct from `charging`, which ends the session.
 A pause is a 0 A limit, so a resume must lift the cap rather than send another 0 A, which a charger reads as "stay suspended".
 `availability` takes the connector Operative or Inoperative, `unlock` releases the cable lock, and the `chargepoint`-level `reset` performs a soft reset of the whole charger.

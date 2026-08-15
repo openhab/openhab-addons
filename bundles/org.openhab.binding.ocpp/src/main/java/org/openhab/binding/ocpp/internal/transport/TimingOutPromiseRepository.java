@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ocpp.internal.transport;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import eu.chargetime.ocpp.IPromiseRepository;
+import eu.chargetime.ocpp.ISession;
 import eu.chargetime.ocpp.PromiseRepository;
 import eu.chargetime.ocpp.model.Confirmation;
 
@@ -29,21 +31,12 @@ import eu.chargetime.ocpp.model.Confirmation;
  * An {@link IPromiseRepository} that bounds every outbound request with a timeout.
  *
  * <p>
- * The embedded ChargeTime library applies no timeout to outbound requests: a promise is removed
- * only when a CALLRESULT or CALLERROR arrives, and closing a session does not complete or remove
- * its outstanding promises. An unanswered request therefore stays incomplete forever, the caller
- * waits forever, and the abandoned promise is retained. This decorator completes each promise
- * exceptionally after the configured timeout and removes it from this repository, so callers always
- * get an outcome and timed-out promises do not accumulate. A confirmation that arrives after the
- * timeout finds no promise and is dropped by the library, which is the correct late-answer
- * behaviour.
- *
- * <p>
- * Known limitation: the request entry the session stores separately in the library's queue is only
- * removed when a CALLRESULT is processed — not on timeout or CALLERROR — so a long-lived session
- * whose charger repeatedly leaves requests unanswered still grows that queue. Cleaning that up needs
- * deeper integration with the embedded library and is tracked as a follow-up; the entries are freed
- * with the session.
+ * The embedded ChargeTime library never times out an outbound request: a promise is completed only
+ * when a CALLRESULT/CALLERROR arrives, and closing a session leaves its promises incomplete. This
+ * decorator completes each promise exceptionally after the timeout and removes it, so callers always
+ * get an outcome. On timeout it also removes the request from its session's queue (tracked by
+ * {@link TrackingSessionFactory}); the library removes that entry only on a response, so an ignored
+ * request would otherwise be retained for the session's life.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -53,10 +46,13 @@ public class TimingOutPromiseRepository implements IPromiseRepository {
     private final PromiseRepository delegate = new PromiseRepository();
     private final ScheduledExecutorService scheduler;
     private final long timeoutSeconds;
+    private final Map<String, ISession> requestSessions;
 
-    public TimingOutPromiseRepository(ScheduledExecutorService scheduler, long timeoutSeconds) {
+    public TimingOutPromiseRepository(ScheduledExecutorService scheduler, long timeoutSeconds,
+            Map<String, ISession> requestSessions) {
         this.scheduler = scheduler;
         this.timeoutSeconds = timeoutSeconds;
+        this.requestSessions = requestSessions;
     }
 
     @Override
@@ -64,12 +60,19 @@ public class TimingOutPromiseRepository implements IPromiseRepository {
     public CompletableFuture<Confirmation> createPromise(String uniqueId) {
         CompletableFuture<Confirmation> promise = delegate.createPromise(uniqueId);
         ScheduledFuture<?> reaper = scheduler.schedule(() -> {
+            ISession session = requestSessions.get(uniqueId);
             if (promise.completeExceptionally(
                     new TimeoutException("no response from charge point within " + timeoutSeconds + "s"))) {
                 delegate.removePromise(uniqueId);
+                if (session != null) {
+                    session.removeRequest(uniqueId);
+                }
             }
         }, timeoutSeconds, TimeUnit.SECONDS);
-        promise.whenComplete((confirmation, ex) -> reaper.cancel(false));
+        promise.whenComplete((confirmation, ex) -> {
+            reaper.cancel(false);
+            requestSessions.remove(uniqueId);
+        });
         return promise;
     }
 

@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.ocpp.internal.transport.ChargerCapabilities;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -213,6 +214,7 @@ class OcppConnectorHandlerTest {
         when(thing.getBridgeUID()).thenReturn(chargePointUID);
         OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
         when(chargePoint.isReady()).thenReturn(true);
+        when(chargePoint.getCapabilities()).thenReturn(ChargerCapabilities.unknown());
         when(chargePoint.send(any())).thenAnswer(invocation -> {
             Request request = invocation.getArgument(0);
             if (request instanceof ClearChargingProfileRequest) {

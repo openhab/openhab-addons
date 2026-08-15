@@ -43,6 +43,8 @@ public class OcppBindingConstants {
     public static final String CHANNEL_CABLE_CONNECTED = "cable-connected";
     public static final String CHANNEL_CHARGING = "charging";
     public static final String CHANNEL_CHARGE_LIMIT = "charge-limit";
+    public static final String CHANNEL_POWER_LIMIT = "power-limit";
+    public static final String CHANNEL_NUMBER_PHASES = "number-phases";
     public static final String CHANNEL_PAUSE = "pause";
     public static final String CHANNEL_AVAILABILITY = "availability";
     public static final String CHANNEL_UNLOCK = "unlock";

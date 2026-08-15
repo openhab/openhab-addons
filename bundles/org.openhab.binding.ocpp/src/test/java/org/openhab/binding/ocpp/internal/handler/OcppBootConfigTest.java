@@ -47,6 +47,8 @@ import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ConfigurationStatus;
+import eu.chargetime.ocpp.model.core.GetConfigurationConfirmation;
+import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
 
 /**
  * Tests the configuration a charger receives after it boots.
@@ -257,14 +259,16 @@ class OcppBootConfigTest {
     void configurationIsSentWhenAChargerBoots() {
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
 
-        verify(transport, timeout(2000)).send(any(), any());
+        verify(transport, timeout(2000)).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
         assertEquals(List.of("false"), sentValuesFor("AuthorizeRemoteTxRequests"));
     }
 
     @Test
     void anAcceptedConfigurationIsNotSentAgainOnTheNextBoot() {
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
-        verify(transport, timeout(2000)).send(any(), any());
+        verify(transport, timeout(2000)).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
 
@@ -284,7 +288,8 @@ class OcppBootConfigTest {
         });
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
-        verify(transport, timeout(2000)).send(any(), any());
+        verify(transport, timeout(2000)).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
 
         verify(transport, timeout(2000).times(2)).send(any(),
@@ -349,7 +354,13 @@ class OcppBootConfigTest {
         serverConfig.vendorConfig = List.of("VendorKey=42"); // steps: AuthorizeRemoteTxRequests, VendorKey
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstStep = new CompletableFuture<>();
         when(transport.send(any(), any())).thenAnswer(invocation -> {
-            record(invocation.getArgument(1));
+            Request request = invocation.getArgument(1);
+            record(request);
+            // Let the capability read complete so the burst starts; hang its first ChangeConfiguration
+            // step — the sequence element this test abandons on the reconnect.
+            if (request instanceof GetConfigurationRequest) {
+                return CompletableFuture.completedFuture(new GetConfigurationConfirmation());
+            }
             return firstStep;
         });
 

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -33,6 +34,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ocpp.internal.config.OcppChargePointConfiguration;
 import org.openhab.binding.ocpp.internal.config.OcppServerConfiguration;
+import org.openhab.binding.ocpp.internal.transport.ChargerCapabilities;
 import org.openhab.binding.ocpp.internal.transport.Measurands;
 import org.openhab.binding.ocpp.internal.transport.OcppTransport;
 import org.openhab.core.library.types.DateTimeType;
@@ -55,6 +57,8 @@ import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ConfigurationStatus;
+import eu.chargetime.ocpp.model.core.GetConfigurationConfirmation;
+import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
 import eu.chargetime.ocpp.model.core.MeterValuesRequest;
 import eu.chargetime.ocpp.model.core.ResetRequest;
 import eu.chargetime.ocpp.model.core.ResetType;
@@ -160,6 +164,9 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     // Accepted measurand list per configuration key: a list negotiated down for one key must not
     // narrow the starting point of the other.
     private final Map<String, String> acceptedMeasurands = new ConcurrentHashMap<>();
+    // Charger configuration read via GetConfiguration on each boot; drives adaptive behaviour. Volatile:
+    // written on a completion thread, read on hot paths. Defaults to "unknown" = "behave as before".
+    private volatile ChargerCapabilities capabilities = ChargerCapabilities.unknown();
     private volatile @Nullable ScheduledFuture<?> bootConfigTask;
     private volatile @Nullable ScheduledFuture<?> livenessTask;
     private volatile @Nullable ScheduledFuture<?> statusFallbackTask;
@@ -558,10 +565,13 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         // requested once boot configuration has run. This fallback only covers a charger that
         // reopens its socket without booting again.
         cancel(statusFallbackTask);
+        UUID connectedSession = session; // captured for the fallback's session guard
         statusFallbackTask = scheduler.schedule(() -> {
             if (!bootAccepted) {
                 // Bare-socket reopen with no fresh BootNotification: the charger will not become ready
-                // on its own, so this fallback bypasses the readiness gate to recover it.
+                // on its own and runBootConfig never runs, so this fallback both reads its configuration
+                // and recovers connector status, bypassing the readiness gate.
+                readCapabilitiesNow(connectedSession);
                 requestConnectorStatusesNow();
             }
         }, STATUS_FALLBACK_SECONDS, TimeUnit.SECONDS);
@@ -666,6 +676,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         return heartbeat;
     }
 
+    /** The charger's configuration as last read via GetConfiguration; unknown until the first read. */
+    public ChargerCapabilities getCapabilities() {
+        return capabilities;
+    }
+
     public void onStartTransaction(StartTransactionRequest request, int transactionId) {
         touch();
         int connectorId = request.getConnectorId() == null ? 0 : request.getConnectorId();
@@ -746,6 +761,83 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         if (!bootSession.equals(session)) {
             logger.debug("Boot config for {} skipped — its session was replaced during the settle delay",
                     chargePointId);
+            return;
+        }
+        // Read the charger's own configuration first, so the burst (and the connectors) can adapt to
+        // what it actually supports. Best-effort: GetConfiguration is a mandatory Core message, but a
+        // charger that fails or refuses it falls back to unknown capabilities — the binding's prior
+        // behaviour — and the burst still runs.
+        readCapabilities(bootSession);
+    }
+
+    /**
+     * Read the charger's configuration with a single GetConfiguration, store it, then run the
+     * ChangeConfiguration burst. The read is one CALL through the ordinary serialized dispatcher, so it
+     * cannot race the boot confirmation; a reconnect during it is abandoned by the session guard.
+     */
+    private void readCapabilities(UUID bootSession) {
+        send(new GetConfigurationRequest()).whenComplete((confirmation, ex) -> {
+            if (!bootSession.equals(session)) {
+                return; // the charger reconnected while its configuration was being read
+            }
+            applyCapabilities(confirmation, ex);
+            runBootConfigBurst(bootSession);
+        });
+    }
+
+    /**
+     * Read the charger's configuration on a bare socket reopen — a reconnect with no fresh
+     * BootNotification, so {@link #runBootConfig} (and its read) never runs. Ungated like the
+     * status-recovery probe it sits beside: the charger has reconnected but may not prove itself ready
+     * on its own, and a charger that stays powered for months only ever reconnects this way, so without
+     * this its capabilities would never be read.
+     */
+    private void readCapabilitiesNow(UUID connectedSession) {
+        sendNow(new GetConfigurationRequest()).whenComplete((confirmation, ex) -> {
+            if (!connectedSession.equals(session)) {
+                return;
+            }
+            applyCapabilities(confirmation, ex);
+        });
+    }
+
+    private void applyCapabilities(@Nullable Confirmation confirmation, @Nullable Throwable ex) {
+        if (ex != null) {
+            logger.debug("GetConfiguration for {} failed ({}); continuing with defaults", chargePointId,
+                    ex.getMessage());
+            capabilities = ChargerCapabilities.unknown();
+            return;
+        }
+        capabilities = confirmation instanceof GetConfigurationConfirmation gc ? ChargerCapabilities.from(gc)
+                : ChargerCapabilities.unknown();
+        publishCapabilities(capabilities);
+    }
+
+    /** Logs the discovered configuration and records the most useful values as Thing properties. */
+    private void publishCapabilities(ChargerCapabilities caps) {
+        if (caps.isEmpty()) {
+            logger.debug("Charge point {} reported no configuration", chargePointId);
+            return;
+        }
+        logger.info("Charge point {} capabilities: {}", chargePointId, caps.summary());
+        if (logger.isDebugEnabled()) {
+            caps.raw().forEach((key, value) -> logger.debug("  {} {} = {}", chargePointId, key, value));
+        }
+        caps.featureProfiles()
+                .ifPresent(profiles -> updateProperty("ocppSupportedFeatureProfiles", String.join(", ", profiles)));
+        caps.allowedChargingRateUnits()
+                .ifPresent(units -> updateProperty("ocppChargingRateUnit", String.join(", ", units)));
+        caps.heartbeatIntervalSeconds().ifPresent(seconds -> updateProperty("ocppHeartbeatInterval", seconds + " s"));
+    }
+
+    /**
+     * The ChangeConfiguration burst: push the configured keys to the charger, one CALL at a time, once
+     * per changed configuration. Unchanged from before capability discovery — it is simply now entered
+     * after the configuration has been read.
+     */
+    private void runBootConfigBurst(UUID bootSession) {
+        if (!bootSession.equals(session)) {
+            logger.debug("Boot config for {} skipped — its session was replaced", chargePointId);
             return;
         }
         OcppServerBridgeHandler serverHandler = server;
@@ -981,10 +1073,27 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
      * below a floor for chargers with a short or absent heartbeat.
      */
     private long livenessThresholdSeconds() {
-        int effective = heartbeat;
+        OcppServerBridgeHandler serverHandler = server;
+        int serverDefault = serverHandler != null ? serverHandler.getServerConfig().heartbeatInterval : 300;
+        return livenessThreshold(heartbeat, capabilities.heartbeatIntervalSeconds(), serverDefault);
+    }
+
+    /**
+     * The silence window before the watchdog reconnects an idle charger, sized from the heartbeat it
+     * actually uses so its heartbeats keep it alive. Precedence: an explicit Thing {@code heartbeat}
+     * override, then the reported {@code HeartbeatInterval}, then the server default; never below the
+     * floor.
+     */
+    static long livenessThreshold(int heartbeatOverride, OptionalInt reportedHeartbeat, int serverDefault) {
+        int effective = heartbeatOverride;
         if (effective <= 0) {
-            OcppServerBridgeHandler serverHandler = server;
-            effective = serverHandler != null ? serverHandler.getServerConfig().heartbeatInterval : 300;
+            effective = reportedHeartbeat.orElse(0);
+        }
+        if (effective <= 0) {
+            effective = serverDefault;
+        }
+        if (effective <= 0) {
+            effective = 300;
         }
         return Math.max(LIVENESS_FLOOR_SECONDS, 2L * effective + 60L);
     }

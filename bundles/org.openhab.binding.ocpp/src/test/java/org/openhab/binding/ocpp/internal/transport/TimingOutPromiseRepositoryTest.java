@@ -16,8 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import eu.chargetime.ocpp.ISession;
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.core.HeartbeatConfirmation;
 
@@ -51,7 +57,7 @@ class TimingOutPromiseRepositoryTest {
 
     @Test
     void anUnansweredPromiseFailsWithinTheConfiguredTimeoutAndIsRemoved() throws Exception {
-        TimingOutPromiseRepository repository = new TimingOutPromiseRepository(scheduler, 1);
+        TimingOutPromiseRepository repository = new TimingOutPromiseRepository(scheduler, 1, new ConcurrentHashMap<>());
 
         CompletableFuture<Confirmation> promise = repository.createPromise("call-1");
 
@@ -63,7 +69,7 @@ class TimingOutPromiseRepositoryTest {
 
     @Test
     void anAnsweredPromiseIsUntouchedByTheTimeout() throws Exception {
-        TimingOutPromiseRepository repository = new TimingOutPromiseRepository(scheduler, 1);
+        TimingOutPromiseRepository repository = new TimingOutPromiseRepository(scheduler, 1, new ConcurrentHashMap<>());
 
         CompletableFuture<Confirmation> promise = repository.createPromise("call-2");
         promise.complete(new HeartbeatConfirmation(java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)));
@@ -71,5 +77,20 @@ class TimingOutPromiseRepositoryTest {
         Thread.sleep(1500); // outlive the timeout: the reaper must not disturb a completed promise
         assertTrue(promise.isDone());
         assertFalse(promise.isCompletedExceptionally(), "the timeout must not fire on an answered promise");
+    }
+
+    @Test
+    void aTimedOutRequestIsRemovedFromItsSessionQueue() {
+        // The library retains a queued request until a response; on timeout the repository must remove
+        // it from its session so an ignored request does not accumulate for the session's life.
+        Map<String, ISession> requestSessions = new ConcurrentHashMap<>();
+        ISession session = mock(ISession.class);
+        requestSessions.put("call-3", session);
+        TimingOutPromiseRepository repository = new TimingOutPromiseRepository(scheduler, 1, requestSessions);
+
+        assertThrows(ExecutionException.class, () -> repository.createPromise("call-3").get(5, TimeUnit.SECONDS));
+
+        verify(session, timeout(2000)).removeRequest("call-3");
+        assertFalse(requestSessions.containsKey("call-3"), "the tracking entry must be cleaned up");
     }
 }
