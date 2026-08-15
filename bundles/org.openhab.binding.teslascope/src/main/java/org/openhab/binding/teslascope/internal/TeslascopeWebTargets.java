@@ -45,53 +45,32 @@ public class TeslascopeWebTargets {
         this.httpClient = httpClient;
     }
 
-    public String getVehicleList(String apiKey, String personalAccessToken)
+    public String getVehicleList(String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        if (personalAccessToken.isBlank()) {
-            return invoke(BASE_URI + "vehicles?api_key=" + apiKey, HttpMethod.GET, "");
-        } else {
-            return invoke(BASE_URI + "vehicles", HttpMethod.GET, personalAccessToken);
-        }
+        return invoke(BASE_URI + "vehicles", HttpMethod.GET, personalAccessToken);
     }
 
-    public String getDetailedInformation(String publicID, String apiKey, String personalAccessToken)
+    public String getDetailedInformation(String publicID, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        if (personalAccessToken.isBlank()) {
-            return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey, HttpMethod.GET, "");
-        } else {
-            return invoke(BASE_VEHICLE_URI + publicID + "/detailed", HttpMethod.GET, personalAccessToken);
-        }
+        return invoke(BASE_VEHICLE_URI + publicID + "/detailed", HttpMethod.GET, personalAccessToken);
     }
 
-    public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command)
+    public void sendCommand(String publicID, String personalAccessToken, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        if (personalAccessToken.isBlank()) {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey, HttpMethod.POST, "");
-        } else {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, HttpMethod.POST, personalAccessToken);
-        }
+        invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, HttpMethod.POST, personalAccessToken);
         return;
     }
 
-    public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command, String params)
+    public void sendCommand(String publicID, String personalAccessToken, String command, String params)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         String cleanParams = (params == null) ? "" : params.replaceFirst("^[?&]", "");
 
-        if (personalAccessToken.isBlank()) {
-            // Legacy API Key method (needs & separator because ? is already used)
-            String url = BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey;
-            if (!cleanParams.isEmpty()) {
-                url += "&" + cleanParams;
-            }
-            invoke(url, HttpMethod.POST, "");
-        } else {
-            // Personal Access Token method (needs ? separator)
-            String url = BASE_VEHICLE_URI + publicID + "/command/" + command;
-            if (!cleanParams.isEmpty()) {
-                url += "?" + cleanParams;
-            }
-            invoke(url, HttpMethod.POST, personalAccessToken);
+        // Personal Access Token method (needs ? separator)
+        String url = BASE_VEHICLE_URI + publicID + "/command/" + command;
+        if (!cleanParams.isEmpty()) {
+            url += "?" + cleanParams;
         }
+        invoke(url, HttpMethod.POST, personalAccessToken);
     }
 
     private String invoke(String uri, HttpMethod method, String personalAccessToken)
