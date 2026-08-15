@@ -249,6 +249,12 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             logger.warn(
                     "Charger connected without a charge point id in its URL path and was ignored (connection {}); it must dial ws://<host>:{}/<chargePointId>, not the bare root",
                     peer, config.port);
+            // Close the unusable socket — with ping-cleanup off by default and no charge point owning
+            // it, bare-root connections would otherwise pile up. Mirrors the allow-list-reject branch.
+            OcppTransport localTransport = transport;
+            if (localTransport != null) {
+                localTransport.closeSession(session);
+            }
             return;
         }
         // Connection allow-list: if configured, only listed charge points may connect.
