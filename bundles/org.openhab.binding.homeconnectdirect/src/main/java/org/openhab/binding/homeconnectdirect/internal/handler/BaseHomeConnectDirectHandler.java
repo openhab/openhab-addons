@@ -201,7 +201,11 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
+        // keep the Thing OFFLINE while reconnecting, otherwise the status would toggle between OFFLINE and UNKNOWN on
+        // every retry (e.g. appliances that power down their WiFi module when switched off)
+        if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
 
         scheduler.execute(() -> {
             // initialize deviceDescription and featureMapping service
@@ -246,7 +250,8 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                     }
                 }
             } catch (WebSocketClientServiceException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                logger.debug("Could not connect to appliance! error={} thingUID={}", e.getMessage(), thing.getUID());
+                updateStatus(ThingStatus.OFFLINE);
                 scheduleReconnect();
                 stopUpdateAllValuesFuture();
             }
@@ -531,10 +536,9 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
 
         var connectionError = this.connectionError;
         if (connectionError != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connectionError);
-        } else {
-            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("Connection error: {} (thingUID={})", connectionError, thing.getUID());
         }
+        updateStatus(ThingStatus.OFFLINE);
 
         // dispose websocket
         var webSocketClientService = this.webSocketClientService;
