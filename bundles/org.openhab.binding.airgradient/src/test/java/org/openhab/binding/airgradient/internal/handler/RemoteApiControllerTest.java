@@ -191,7 +191,7 @@ public class RemoteApiControllerTest {
     }
 
     @Test
-    public void testGetMeasuresVersion_3_1_21() throws Exception {
+    public void testGetMeasuresVersion3121() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
         Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
         Mockito.when(requestMock.send()).thenReturn(response);

@@ -150,7 +150,7 @@ public class AirGradientLocationHandlerTest {
 
     // Firmware Version 3.1.1 has slight changes in the Json
     @Test
-    public void testSetMeasureVersion3_1_1() {
+    public void testSetMeasureVersion311() {
         sut.setCallback(callbackMock);
         sut.setMeasurment(TEST_MEASURE_V3_1_1);
 
@@ -164,7 +164,7 @@ public class AirGradientLocationHandlerTest {
 
     // Firmware Version 3.1.21 has many new fields
     @Test
-    public void testSetMeasureVersion3_1_21() {
+    public void testSetMeasureVersion3121() {
         sut.setCallback(callbackMock);
         sut.setMeasurment(TEST_MEASURE_V3_1_21);
 

@@ -101,7 +101,7 @@ These configuration settings needs AirGradient firmware on the sensor of version
 | model                 | String               | Read/Write | The model of the device (can be changed e.g. if you change sensors) |
 | led-bar-test          | String               | Write      | Trigger test of LED bar                                             |
 
-The following additional measurement channels are available for firmware version 3.1.21 or later.
+The following additional measurement channels are added dynamically, depending on the device model and firmware version.
 
 | Channel          | Type                 | Read/Write | Description                                                   |
 |------------------|----------------------|------------|---------------------------------------------------------------|
