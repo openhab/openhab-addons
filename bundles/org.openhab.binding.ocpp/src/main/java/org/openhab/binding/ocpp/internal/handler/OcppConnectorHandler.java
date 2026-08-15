@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ocpp.internal.config.OcppConnectorConfiguration;
+import org.openhab.binding.ocpp.internal.transport.ChargerCapabilities;
 import org.openhab.binding.ocpp.internal.transport.ChargingProfileBuilder;
 import org.openhab.binding.ocpp.internal.transport.MeterValueMapper;
 import org.openhab.core.library.types.DateTimeType;
@@ -61,6 +62,7 @@ import eu.chargetime.ocpp.model.core.ChangeAvailabilityRequest;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ChargePointStatus;
+import eu.chargetime.ocpp.model.core.ChargingRateUnitType;
 import eu.chargetime.ocpp.model.core.ConfigurationStatus;
 import eu.chargetime.ocpp.model.core.MeterValue;
 import eu.chargetime.ocpp.model.core.MeterValuesRequest;
@@ -153,13 +155,26 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile String remoteStartTag = "openhab";
     private volatile int meterValuesPollSeconds;
     private volatile boolean stuckStateRecovery;
+    private volatile double nominalVoltage = 230.0;
+    private volatile int phases = 1;
 
     private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
     private volatile double currentLimitAmps;
+    // Optional watts limit (the power-limit channel); when > 0 and the charger accepts Power it wins over
+    // the amperes charge-limit, sent directly without conversion.
+    private volatile double powerLimitWatts;
+    // Requested charging phase count (the number-phases channel); 0 = unset, so the charger uses its own
+    // default. When set it is put on the profile and also used for the amps-to-watts conversion.
+    private volatile int numberPhasesRequested;
     private volatile boolean paused;
     // A limit/pause set while the charge point was not ready yet, to be sent once it is.
     private volatile boolean limitDeferred;
+    // Latches the one-time "no SmartCharging" warning so a charger that lacks it is not warned about on
+    // every limit/pause command.
+    private volatile boolean smartChargingUnsupportedLogged;
+    // Latches the one-time "phase switching not advertised" warning.
+    private volatile boolean phaseSwitchWarningLogged;
 
     // Guards the coalescing and watchdog state below. A dedicated lock rather than the handler
     // monitor: the base class synchronizes on the handler for things like status updates, so holding
@@ -187,7 +202,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
      * on to a newer request by the time the charger answers — and only if this is still the newest
      * dispatched profile, so an out-of-order or stale confirmation cannot misreport the channels.
      */
-    private record ProfileClaim(long generation, double amps, double limitAmps, boolean paused) {
+    private record ProfileClaim(long generation, ChargingRateUnitType wireUnit, double wireValue, double limitAmps,
+            double limitWatts, boolean powerSourced, @Nullable Integer numberPhases, boolean paused) {
     }
 
     public OcppConnectorHandler(Thing thing) {
@@ -204,6 +220,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
         remoteStartTag = config.remoteStartTag;
         meterValuesPollSeconds = config.meterValuesPollSeconds;
         stuckStateRecovery = config.stuckStateRecovery;
+        nominalVoltage = config.nominalVoltage;
+        phases = config.phases;
         OcppChargePointHandler parent = chargePointHandler();
         if (parent == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -329,6 +347,24 @@ public class OcppConnectorHandler extends BaseThingHandler {
                     }
                 }
                 break;
+            case CHANNEL_POWER_LIMIT:
+                Double powerWatts = toWatts(command);
+                if (powerWatts != null) {
+                    powerLimitWatts = powerWatts;
+                    if (!paused) {
+                        applyLimit();
+                    }
+                }
+                break;
+            case CHANNEL_NUMBER_PHASES:
+                Integer phaseCount = toPhaseCount(command);
+                if (phaseCount != null) {
+                    numberPhasesRequested = phaseCount; // 0 clears the request (charger default)
+                    if (!paused) {
+                        applyLimit();
+                    }
+                }
+                break;
             case CHANNEL_PAUSE:
                 if (command instanceof OnOffType onOff) {
                     paused = onOff == OnOffType.ON;
@@ -365,6 +401,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void applyLimit() {
+        if (smartChargingUnsupported()) {
+            return; // the charger cannot apply a profile; warned once, nothing sent or deferred
+        }
         if (isReadyToSend()) {
             coalesceProfile(paused ? 0.0 : currentLimitAmps);
         } else {
@@ -373,6 +412,27 @@ public class OcppConnectorHandler extends BaseThingHandler {
             // than transmit before it can accept the profile or drop the setting outright.
             limitDeferred = true;
         }
+    }
+
+    /**
+     * Whether the charger reported it does not support SmartCharging. A SetChargingProfile is then
+     * refused — and some chargers stop the running transaction on one — so charge-limit and pause are
+     * not sent; warned once. A charger that did not report its feature profiles is treated as capable
+     * (unknown is not "no").
+     */
+    private boolean smartChargingUnsupported() {
+        OcppChargePointHandler cp = chargePoint;
+        if (cp == null || !Boolean.FALSE.equals(cp.getCapabilities().supportsSmartCharging().orElse(null))) {
+            return false;
+        }
+        if (!smartChargingUnsupportedLogged) {
+            smartChargingUnsupportedLogged = true;
+            logger.warn(
+                    "Charger {} connector {} does not support OCPP SmartCharging; charge-limit and pause have "
+                            + "no effect and are not sent (some chargers stop charging on a profile)",
+                    cp.getChargePointId(), connectorId);
+        }
+        return true;
     }
 
     /** Called when the charge point becomes ready; sends a limit/pause that was set while it was not. */
@@ -428,7 +488,44 @@ public class OcppConnectorHandler extends BaseThingHandler {
         pendingFlush = null;
         lastProfileSentAt = System.currentTimeMillis();
         profileGeneration++;
-        return new ProfileClaim(profileGeneration, pendingLimitAmps, currentLimitAmps, paused);
+        // pendingLimitAmps already folds in pause (0 A when paused). Pick the unit the charger accepts:
+        // an explicit watts limit wins on a power-capable charger; a charger that ONLY accepts power
+        // gets the amperes limit converted (W = A x V x phases); otherwise amperes, as before. An
+        // unknown allowed-unit set defaults to "amperes accepted", so a charger with no capability read
+        // behaves exactly as it did before.
+        double amps = pendingLimitAmps;
+        double watts = powerLimitWatts;
+        OcppChargePointHandler cp = chargePoint;
+        ChargerCapabilities caps = cp != null ? cp.getCapabilities() : ChargerCapabilities.unknown();
+        boolean allowsPower = caps.allowsPowerUnit().orElse(false);
+        boolean allowsCurrent = caps.allowsCurrentUnit().orElse(true);
+        // Requested phase count goes on the profile and drives the conversion; unset ⇒ null (charger
+        // default 3), and the conversion falls back to the static phases config.
+        Integer numberPhases = numberPhasesRequested > 0 ? numberPhasesRequested : null;
+        int conversionPhases = numberPhasesRequested > 0 ? numberPhasesRequested : phases;
+        if (numberPhases != null && Boolean.FALSE.equals(caps.phaseSwitchSupported().orElse(null))
+                && !phaseSwitchWarningLogged) {
+            phaseSwitchWarningLogged = true;
+            logger.warn(
+                    "Charger {} connector {} does not advertise phase switching (ConnectorSwitch3to1PhaseSupported); "
+                            + "the requested {}-phase setting may be ignored",
+                    cp != null ? cp.getChargePointId() : "?", connectorId, numberPhases);
+        }
+        boolean powerSourced = watts > 0.0 && !paused && allowsPower;
+        ChargingRateUnitType wireUnit;
+        double wireValue;
+        if (powerSourced) {
+            wireUnit = ChargingRateUnitType.W;
+            wireValue = watts;
+        } else if (!allowsCurrent && allowsPower) {
+            wireUnit = ChargingRateUnitType.W;
+            wireValue = amps * nominalVoltage * conversionPhases;
+        } else {
+            wireUnit = ChargingRateUnitType.A;
+            wireValue = amps;
+        }
+        return new ProfileClaim(profileGeneration, wireUnit, wireValue, currentLimitAmps, watts, powerSourced,
+                numberPhases, paused);
     }
 
     /**
@@ -458,7 +555,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         // own maximum; re-sending 0 A here would leave a just-un-paused connector suspended — which is
         // exactly what happens when a user only ever toggles pause and never sets a limit. Only a pause,
         // or an explicit positive limit, goes out as a SetChargingProfile.
-        if (!claim.paused() && claim.amps() <= 0.0) {
+        if (!claim.paused() && claim.wireValue() <= 0.0) {
             clearProfile(claim);
         } else {
             setProfile(claim);
@@ -466,16 +563,15 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void setProfile(ProfileClaim claim) {
-        dispatch(ChargingProfileBuilder.currentLimit(connectorId, claim.amps(), forceTxDefaultProfile, transactionId),
-                "SetChargingProfile").whenComplete((confirmation, ex) -> {
+        dispatch(ChargingProfileBuilder.limit(connectorId, claim.wireUnit(), claim.wireValue(), claim.numberPhases(),
+                forceTxDefaultProfile, transactionId), "SetChargingProfile").whenComplete((confirmation, ex) -> {
                     // A non-exceptional completion only means the charger answered; the answer can
                     // still be Rejected or NotSupported. Publish only what THIS request carried —
                     // never the mutable fields, which may describe a newer request by now.
                     if (ex == null && confirmation instanceof SetChargingProfileConfirmation profile
                             && profile.getStatus() == ChargingProfileStatus.Accepted) {
                         if (claimPublication(claim)) {
-                            updateState(CHANNEL_CHARGE_LIMIT, new QuantityType<>(claim.limitAmps(), Units.AMPERE));
-                            updateState(CHANNEL_PAUSE, OnOffType.from(claim.paused()));
+                            publishAcceptedLimit(claim);
                         } else {
                             logger.debug("Stale SetChargingProfile confirmation on connector {} ignored", connectorId);
                         }
@@ -492,6 +588,24 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 });
     }
 
+    /**
+     * Publish the accepted limit to the channel it came from — the watts power-limit when that drove
+     * the send, otherwise the amperes charge-limit — plus the pause state, from the captured claim
+     * values so an out-of-order confirmation cannot misreport.
+     */
+    private void publishAcceptedLimit(ProfileClaim claim) {
+        if (claim.powerSourced()) {
+            updateState(CHANNEL_POWER_LIMIT, new QuantityType<>(claim.limitWatts(), Units.WATT));
+        } else {
+            updateState(CHANNEL_CHARGE_LIMIT, new QuantityType<>(claim.limitAmps(), Units.AMPERE));
+        }
+        Integer phaseCount = claim.numberPhases();
+        if (phaseCount != null) {
+            updateState(CHANNEL_NUMBER_PHASES, new DecimalType(phaseCount));
+        }
+        updateState(CHANNEL_PAUSE, OnOffType.from(claim.paused()));
+    }
+
     private void clearProfile(ProfileClaim claim) {
         dispatch(ChargingProfileBuilder.clearLimit(connectorId), "ClearChargingProfile")
                 .whenComplete((confirmation, ex) -> {
@@ -504,6 +618,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                                     || cleared.getStatus() == ClearChargingProfileStatus.Unknown)) {
                         if (claimPublication(claim)) {
                             updateState(CHANNEL_CHARGE_LIMIT, UnDefType.UNDEF);
+                            updateState(CHANNEL_POWER_LIMIT, UnDefType.UNDEF);
                             updateState(CHANNEL_PAUSE, OnOffType.OFF);
                         } else {
                             logger.debug("Stale ClearChargingProfile confirmation on connector {} ignored",
@@ -669,6 +784,30 @@ public class OcppConnectorHandler extends BaseThingHandler {
             return decimal.doubleValue();
         }
         return null;
+    }
+
+    private @Nullable Double toWatts(Command command) {
+        if (command instanceof QuantityType<?> quantity) {
+            QuantityType<?> inWatts = quantity.toUnit(Units.WATT);
+            return inWatts != null ? inWatts.doubleValue() : null;
+        }
+        if (command instanceof DecimalType decimal) {
+            return decimal.doubleValue();
+        }
+        return null;
+    }
+
+    /** A phase-count command as 0 (clear the request), 1, 2 or 3, or {@code null} if out of range. */
+    private @Nullable Integer toPhaseCount(Command command) {
+        int value;
+        if (command instanceof QuantityType<?> quantity) {
+            value = quantity.intValue();
+        } else if (command instanceof DecimalType decimal) {
+            value = decimal.intValue();
+        } else {
+            return null;
+        }
+        return value >= 0 && value <= 3 ? value : null;
     }
 
     // --- inbound (routed from the charge point) ---

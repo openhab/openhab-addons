@@ -45,6 +45,18 @@ public class OcppConnectorConfiguration {
     /** idTag used when starting a transaction remotely (the charging channel). */
     public String remoteStartTag = "openhab";
 
+    /**
+     * Nominal line voltage used to convert an Amperes charge-limit into Watts for a charger that only
+     * accepts a power limit ({@code ChargingScheduleAllowedChargingRateUnit} = Power). W = A x V x phases.
+     */
+    public double nominalVoltage = 230.0;
+
+    /**
+     * Number of phases assumed when converting the Amperes charge-limit into Watts for a power-only
+     * charger. 1 for single-phase charging, 3 for three-phase. Only used for that conversion.
+     */
+    public int phases = 1;
+
     /** If &gt; 0, poll this connector for MeterValues every N seconds via TriggerMessage. */
     public int meterValuesPollSeconds = 0;
 

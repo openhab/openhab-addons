@@ -176,6 +176,8 @@
 			<channel id="cable-connected" typeId="cable-connected"/>
 			<channel id="charging" typeId="charging"/>
 			<channel id="charge-limit" typeId="charge-limit"/>
+			<channel id="power-limit" typeId="power-limit"/>
+			<channel id="number-phases" typeId="number-phases"/>
 			<channel id="pause" typeId="pause"/>
 			<channel id="availability" typeId="availability"/>
 			<channel id="unlock" typeId="unlock"/>
@@ -256,6 +258,22 @@
 				<label>Remote Start Tag</label>
 				<description>idTag used when starting a transaction via the charging channel.</description>
 				<default>openhab</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="nominalVoltage" type="decimal" min="1" unit="V">
+				<label>Nominal Voltage</label>
+				<description>Line voltage used to convert an amperes charge limit to watts for a charger that only accepts
+					a power
+					limit. W = A x V x phases.</description>
+				<default>230</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="phases" type="integer" min="1" max="3">
+				<label>Phases</label>
+				<description>Phases assumed when converting the amperes charge limit to watts for a power-only charger: 1
+					for
+					single-phase, 3 for three-phase.</description>
+				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="meterValuesPollSeconds" type="integer" min="0" unit="s">
@@ -341,6 +359,36 @@
 			<tag>Current</tag>
 		</tags>
 		<state min="0" step="1" pattern="%.0f A"/>
+	</channel-type>
+
+	<channel-type id="power-limit">
+		<item-type>Number:Power</item-type>
+		<label>Charge Power Limit</label>
+		<description>Maximum charging power. Used for a charger that only accepts a power limit; when set it overrides
+			the
+			current limit. Leave unset to use the charge current limit.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state min="0" step="100" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="number-phases">
+		<item-type>Number</item-type>
+		<label>Charging Phases</label>
+		<description>Number of phases to charge on, sent in the charging profile; 0 clears the request so the charger
+			uses its
+			default. Only a charger that supports phase switching acts on it.</description>
+		<category>Energy</category>
+		<state pattern="%d">
+			<options>
+				<option value="0">Charger default</option>
+				<option value="1">1 phase</option>
+				<option value="3">3 phases</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="pause">

@@ -23,9 +23,11 @@ import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.chargetime.ocpp.AuthenticationException;
 import eu.chargetime.ocpp.FeatureRepository;
+import eu.chargetime.ocpp.ISession;
 import eu.chargetime.ocpp.JSONConfiguration;
 import eu.chargetime.ocpp.NotConnectedException;
 import eu.chargetime.ocpp.OccurenceConstraintException;
@@ -143,7 +146,11 @@ public class ChargeTimeTransport implements OcppTransport {
 
         // The same subprotocols the library's own JSON server advertises.
         Draft draft = new Draft_6455(List.of(), List.<IProtocol> of(new Protocol("ocpp1.6"), new Protocol("")));
-        this.listener = new WebSocketListener(new SessionFactory(featureRepository), configuration, draft);
+        // Shared with the promise repository so a timed-out request can be dropped from its session's queue.
+        Map<String, ISession> requestSessions = new ConcurrentHashMap<>();
+        this.listener = new WebSocketListener(
+                new TrackingSessionFactory(new SessionFactory(featureRepository), requestSessions), configuration,
+                draft);
         if (!tlsKeystore.isBlank()) {
             // Serve OCPP over TLS (wss://): hand the keystore's SSLContext to the library's WSS factory
             // before the server opens. With authPassword this is OCPP security profile 2; without it, an
@@ -151,8 +158,8 @@ public class ChargeTimeTransport implements OcppTransport {
             WssListenerSupport.enableWss(listener,
                     BaseWssFactoryBuilder.builder().sslContext(sslContext(tlsKeystore, tlsKeystorePassword)));
         }
-        this.server = new Server(listener,
-                new TimingOutPromiseRepository(ThreadPoolManager.getScheduledPool("ocpp"), requestTimeoutSeconds));
+        this.server = new Server(listener, new TimingOutPromiseRepository(ThreadPoolManager.getScheduledPool("ocpp"),
+                requestTimeoutSeconds, requestSessions));
     }
 
     /**

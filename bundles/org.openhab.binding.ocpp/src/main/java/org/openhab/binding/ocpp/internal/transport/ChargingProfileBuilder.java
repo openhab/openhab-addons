@@ -63,13 +63,27 @@ public final class ChargingProfileBuilder {
      */
     public static SetChargingProfileRequest currentLimit(int connectorId, double amps, boolean forceTxDefault,
             @Nullable Integer transactionId) {
+        return limit(connectorId, ChargingRateUnitType.A, amps, null, forceTxDefault, transactionId);
+    }
+
+    /**
+     * Build a SetChargingProfile capping the connector at {@code value} in {@code unit} — Amperes for a
+     * charger that limits by current, Watts for one whose
+     * {@code ChargingScheduleAllowedChargingRateUnit} is Power only. {@code numberPhases}, when non-null,
+     * requests charging on that many phases (1/2/3; OCPP assumes 3 when omitted). Same profile shape
+     * otherwise; only the schedule's unit, value and phase count differ.
+     */
+    public static SetChargingProfileRequest limit(int connectorId, ChargingRateUnitType unit, double value,
+            @Nullable Integer numberPhases, boolean forceTxDefault, @Nullable Integer transactionId) {
         boolean useTxProfile = transactionId != null && !forceTxDefault;
         ChargingProfilePurposeType purpose = useTxProfile ? ChargingProfilePurposeType.TxProfile
                 : ChargingProfilePurposeType.TxDefaultProfile;
 
-        ChargingSchedulePeriod period = new ChargingSchedulePeriod(0, amps);
-        ChargingSchedule schedule = new ChargingSchedule(ChargingRateUnitType.A,
-                new ChargingSchedulePeriod[] { period });
+        ChargingSchedulePeriod period = new ChargingSchedulePeriod(0, value);
+        if (numberPhases != null) {
+            period.setNumberPhases(numberPhases);
+        }
+        ChargingSchedule schedule = new ChargingSchedule(unit, new ChargingSchedulePeriod[] { period });
         ChargingProfile profile = new ChargingProfile(profileId(connectorId, useTxProfile), STACK_LEVEL, purpose,
                 ChargingProfileKindType.Relative, schedule);
         if (useTxProfile) {

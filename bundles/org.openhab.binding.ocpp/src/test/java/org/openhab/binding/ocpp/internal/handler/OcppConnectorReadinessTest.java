@@ -28,7 +28,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.ocpp.internal.transport.ChargerCapabilities;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -44,6 +46,10 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.model.core.ChargePointErrorCode;
 import eu.chargetime.ocpp.model.core.ChargePointStatus;
+import eu.chargetime.ocpp.model.core.ChargingRateUnitType;
+import eu.chargetime.ocpp.model.core.ChargingSchedule;
+import eu.chargetime.ocpp.model.core.GetConfigurationConfirmation;
+import eu.chargetime.ocpp.model.core.KeyValueType;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
 import eu.chargetime.ocpp.model.core.UnlockConnectorRequest;
 import eu.chargetime.ocpp.model.smartcharging.ChargingProfileStatus;
@@ -74,6 +80,7 @@ class OcppConnectorReadinessTest {
         parent = mock(OcppChargePointHandler.class);
         when(parent.isReady()).thenAnswer(invocation -> ready.get());
         when(parent.getChargePointId()).thenReturn("charger");
+        when(parent.getCapabilities()).thenReturn(ChargerCapabilities.unknown());
         when(parent.send(any())).thenReturn(
                 CompletableFuture.completedFuture(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted)));
 
@@ -98,6 +105,128 @@ class OcppConnectorReadinessTest {
 
     private static boolean isSetChargingProfile(Request request) {
         return request instanceof SetChargingProfileRequest;
+    }
+
+    private static ChargerCapabilities capsWithoutSmartCharging() {
+        KeyValueType profiles = new KeyValueType("SupportedFeatureProfiles", Boolean.TRUE);
+        profiles.setValue("Core,FirmwareManagement,RemoteTrigger");
+        GetConfigurationConfirmation confirmation = new GetConfigurationConfirmation();
+        confirmation.setConfigurationKey(new KeyValueType[] { profiles });
+        return ChargerCapabilities.from(confirmation);
+    }
+
+    @Test
+    void aChargerWithoutSmartChargingIsNeverSentAProfile() {
+        // The charger reported SupportedFeatureProfiles without SmartCharging, so a SetChargingProfile
+        // is refused and can even stop its charge — neither a charge limit nor a pause may go out.
+        ready.set(true);
+        when(parent.getCapabilities()).thenReturn(capsWithoutSmartCharging());
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_PAUSE), OnOffType.ON);
+
+        verify(parent, never()).send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
+    }
+
+    private static ChargerCapabilities capsWithRateUnit(String allowedUnits) {
+        KeyValueType profiles = new KeyValueType("SupportedFeatureProfiles", Boolean.TRUE);
+        profiles.setValue("Core,SmartCharging");
+        KeyValueType unit = new KeyValueType("ChargingScheduleAllowedChargingRateUnit", Boolean.TRUE);
+        unit.setValue(allowedUnits);
+        GetConfigurationConfirmation confirmation = new GetConfigurationConfirmation();
+        confirmation.setConfigurationKey(new KeyValueType[] { profiles, unit });
+        return ChargerCapabilities.from(confirmation);
+    }
+
+    private List<Request> captureAcceptedSends() {
+        List<Request> sent = new java.util.ArrayList<>();
+        when(parent.send(any())).thenAnswer(inv -> {
+            sent.add(inv.getArgument(0));
+            return CompletableFuture
+                    .completedFuture(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
+        });
+        return sent;
+    }
+
+    private static ChargingSchedule firstSchedule(List<Request> sent) {
+        SetChargingProfileRequest profile = (SetChargingProfileRequest) sent.stream()
+                .filter(OcppConnectorReadinessTest::isSetChargingProfile).findFirst().orElseThrow();
+        return profile.getCsChargingProfiles().getChargingSchedule();
+    }
+
+    @Test
+    void aPowerOnlyChargerGetsTheAmpsLimitConvertedToWatts() {
+        // The charger only accepts a power limit, so 16 A is converted with the defaults (230 V, 1
+        // phase): 16 * 230 = 3680 W, sent in the Power unit.
+        ready.set(true);
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Power"));
+        List<Request> sent = captureAcceptedSends();
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+
+        ChargingSchedule schedule = firstSchedule(sent);
+        org.junit.jupiter.api.Assertions.assertEquals(ChargingRateUnitType.W, schedule.getChargingRateUnit());
+        org.junit.jupiter.api.Assertions.assertEquals(3680.0,
+                schedule.getChargingSchedulePeriod()[0].getLimit().doubleValue());
+    }
+
+    @Test
+    void aWattsPowerLimitIsSentDirectlyWhenTheChargerAcceptsPower() {
+        // An explicit watts limit wins over the amps channel and is sent as-is, no conversion.
+        ready.set(true);
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current,Power"));
+        List<Request> sent = captureAcceptedSends();
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_POWER_LIMIT), new QuantityType<>(3000, Units.WATT));
+
+        ChargingSchedule schedule = firstSchedule(sent);
+        org.junit.jupiter.api.Assertions.assertEquals(ChargingRateUnitType.W, schedule.getChargingRateUnit());
+        org.junit.jupiter.api.Assertions.assertEquals(3000.0,
+                schedule.getChargingSchedulePeriod()[0].getLimit().doubleValue());
+    }
+
+    @Test
+    void aCurrentChargerStillGetsAmpsUnconverted() {
+        // The charger accepts a current limit, so the amps go out as amps — unchanged from before.
+        ready.set(true);
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
+        List<Request> sent = captureAcceptedSends();
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+
+        ChargingSchedule schedule = firstSchedule(sent);
+        org.junit.jupiter.api.Assertions.assertEquals(ChargingRateUnitType.A, schedule.getChargingRateUnit());
+        org.junit.jupiter.api.Assertions.assertEquals(16.0,
+                schedule.getChargingSchedulePeriod()[0].getLimit().doubleValue());
+    }
+
+    @Test
+    void aRequestedPhaseCountIsPutOnTheProfile() {
+        // number-phases 1 requests single-phase charging; it appears on the schedule period sent with
+        // the limit (the phase command alone, with no limit yet, clears — the limit send carries it).
+        ready.set(true);
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
+        List<Request> sent = captureAcceptedSends();
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_NUMBER_PHASES), new DecimalType(1));
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+
+        org.junit.jupiter.api.Assertions.assertEquals(Integer.valueOf(1),
+                firstSchedule(sent).getChargingSchedulePeriod()[0].getNumberPhases());
+    }
+
+    @Test
+    void withNoPhaseCountTheProfileKeepsTheDefault() {
+        // Unset ⇒ the binding does not touch numberPhases, so it stays at the library/OCPP default of 3
+        // (three-phase) that the schedule-period constructor sets — unchanged from before this channel.
+        ready.set(true);
+        when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
+        List<Request> sent = captureAcceptedSends();
+
+        handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
+
+        org.junit.jupiter.api.Assertions.assertEquals(Integer.valueOf(3),
+                firstSchedule(sent).getChargingSchedulePeriod()[0].getNumberPhases());
     }
 
     @Test
