@@ -143,16 +143,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public Home refreshHome() {
-        if (!isSessionValid()) {
-            return null;
-        }
         try {
             return webTargets.getHomeDetail(baseUri, token);
         } catch (RoborockException e) {
-            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
-                handleSessionExpired();
-                return null;
-            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return null;
         }
@@ -165,9 +158,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public HomeData refreshHomeData() {
-        if (!isSessionValid()) {
-            return new HomeData();
-        }
         try {
             Home home = homeCache.getValue();
             if (home == null || home.data == null) {
@@ -175,10 +165,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             }
             return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
         } catch (RoborockException e) {
-            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
-                handleSessionExpired();
-                return new HomeData();
-            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return new HomeData();
         }
@@ -186,16 +172,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public String getRoutines(String deviceId) {
-        if (!isSessionValid()) {
-            return "";
-        }
         try {
             return webTargets.getRoutines(deviceId, rriot);
         } catch (RoborockException e) {
-            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
-                handleSessionExpired();
-                return "";
-            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return "";
         }
@@ -203,16 +182,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public String setRoutine(String sceneID) {
-        if (!isSessionValid()) {
-            return "";
-        }
         try {
             return webTargets.setRoutine(sceneID, rriot);
         } catch (RoborockException e) {
-            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
-                handleSessionExpired();
-                return "";
-            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
             return "";
         }
@@ -284,53 +256,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         return fallbackThingId;
     }
 
-    /**
-     * Checks whether current in-memory cloud session credentials are valid and populated.
-     */
-    private boolean isSessionValid() {
-        return getThing().getStatus() == ThingStatus.ONLINE && !token.isBlank() && rriot.r != null && rriot.r.m != null
-                && !rriot.r.m.isBlank() && rriot.r.a != null && !rriot.r.a.isBlank() && rriot.u != null
-                && !rriot.u.isBlank() && rriot.s != null && !rriot.s.isBlank() && rriot.k != null && !rriot.k.isBlank();
-    }
-
-    /**
-     * Atomically invalidates an expired cloud session (code 2010), stops background MQTT tasks,
-     * purges persistent storage, clears stale 2fa config, and schedules 2FA re-authentication.
-     */
-    public synchronized void handleSessionExpired() {
-        // Avoid duplicate triggers if already cleared or offline
-        if (token.isEmpty() && rriot.r == null) {
-            return;
-        }
-
-        logger.warn("Roborock session expired (code 2010). Invalidating credentials and requesting new 2FA code.");
-
-        // 1. Cancel background MQTT connection and watchdog tasks
-        mqttConnectTask.cancel();
-        mqttWatchdogTask.cancel();
-        disconnectMqttClient();
-
-        // 2. Mark Thing status OFFLINE first to short-circuit any concurrent callers
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Session expired. Requesting new 2FA code...");
-
-        // 3. Clear persistent storage and reset in-memory fields
-        sessionStorage.remove("token");
-        sessionStorage.remove("rriot");
-        token = "";
-        rriot = new Rriot();
-
-        // 4. Clear 'twofa' from Thing configuration so initAPI() triggers a fresh code request
-        Configuration configuration = editConfiguration();
-        if (configuration.get("twofa") != null && !configuration.get("twofa").toString().isBlank()) {
-            configuration.put("twofa", "");
-            updateConfiguration(configuration);
-        }
-
-        // 5. Submit initTask to re-enter initAPI() and request a fresh 2FA code
-        initTask.submit();
-    }
-
     private void initAPI() {
         if (disposed) {
             logger.debug("Handler disposed, aborting API init");
@@ -358,6 +283,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         }
         String sessionStoreToken = sessionStorage.get("token");
         String sessionStoreRriot = sessionStorage.get("rriot");
+
         if (sessionStoreToken != null && sessionStoreRriot != null) {
             logger.debug("Retrieved token and rriot values from sessionStorage");
             token = sessionStoreToken;
@@ -375,9 +301,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     } else {
                         webTargets.requestCode(baseUri, localConfig.email);
                     }
-                    // Update status to explicitly inform the user that a new 2FA code was emailed
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "A new 2FA verification code has been sent to your email. Please enter it in the 'twofa' configuration setting.");
+                    updateStatus(ThingStatus.UNKNOWN);
                     return;
                 } else {
                     String response = "";
@@ -442,11 +366,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Handler disposed, aborting MQTT connection");
             return;
         }
-        if (token.isBlank() || rriot.r == null || rriot.r.m == null || rriot.r.m.isBlank() || rriot.k == null
-                || rriot.k.isBlank() || rriot.s == null || rriot.s.isBlank() || rriot.u == null || rriot.u.isBlank()) {
-            logger.debug("token and/or rriot are empty or invalid, delay connection to MQTT server");
+        if (token.isBlank() || rriot.r == null || rriot.r.m.isBlank() || rriot.k.isBlank() || rriot.s.isBlank()
+                || rriot.u.isBlank()) {
+            logger.debug("token and/or rriot are empty, delay connection to MQTT server");
             return;
         }
+
         try {
             connectMqttClient();
             logger.debug("Bridge connected to MQTT");
@@ -683,20 +608,22 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     void checkMqttInboundLiveness() {
-        if (disposed || !isSessionValid()) {
+        if (disposed) {
             return;
         }
+
         MqttClient localMqttClient = mqttClient;
         boolean connected = localMqttClient != null && localMqttClient.isConnected();
         Instant now = Instant.now();
         MqttInboundLivenessWatchdog.Decision decision = mqttWatchdog.evaluate(now, connected);
+
         if (decision == MqttInboundLivenessWatchdog.Decision.STALE) {
             @Nullable
             Instant lastInbound = mqttWatchdog.getLastInboundMessageAt();
             String lastInboundAge = lastInbound == null ? "never"
                     : Duration.between(lastInbound, now).toSeconds() + "s";
             logger.debug(
-                    "MQTT inbound watchdog detected possible silent cloud downlink stall (last inbound: {}). Recycling MQTT client.",
+                    "MQTT inbound watchdog detected possible silent cloud downlink stall (connection may appear alive but no inbound traffic; last inbound: {}). Recycling MQTT client as recovery.",
                     lastInboundAge);
             mqttWatchdog.noteRecycleAttempt(now);
             recycleMqttClient();
