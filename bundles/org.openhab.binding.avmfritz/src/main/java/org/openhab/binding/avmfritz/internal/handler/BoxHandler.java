@@ -86,8 +86,9 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (callMonitor != null) {
-            callMonitor.dispose();
+        CallMonitor cm = callMonitor;
+        if (cm != null) {
+            cm.dispose();
             callMonitor = null;
         }
         super.dispose();
