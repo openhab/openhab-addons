@@ -84,10 +84,10 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             acquireLock();
             try {
                 int lightId = getLightIdFromGroup(groupName);
-                if (lightModels.computeIfAbsent(lightId,
-                        id -> ShellyLightModel.create(this, id, thing.getThingTypeUID(), profile,
-                                DIM_STEPSIZE)) instanceof ShellyLightModel model
-                        && updateLightModelFromChannelCommand(model, channelUID, command)) {
+                if (lightModels.computeIfAbsent(lightId, id -> ShellyLightModel.create(this, id,
+                        thing.getThingTypeUID(), profile, DIM_STEPSIZE)) instanceof ShellyLightModel model) {
+                    model.acquire();
+                    updateLightModelFromChannelCommand(model, channelUID, command);
                     updateRemoteDeviceFromLightModel(model, lightId);
                     return true;
                 }
@@ -123,6 +123,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             for (ShellyStatusLightChannel light : status.lights) {
                 if (lightModels.computeIfAbsent(lightId, id -> ShellyLightModel.create(this, id,
                         thing.getThingTypeUID(), profile, DIM_STEPSIZE)) instanceof ShellyLightModel model) {
+                    model.acquire();
                     updateLightModelFromStatus(model, light);
                     updated |= updateChannelsFromLightStatusDTO(light, lightId);
                 }

@@ -159,7 +159,7 @@ public class ShellyLightModel extends LightModel {
 
         // **************** UNCOMMENT FOLLOWING LINES WHEN READY ****************
 
-        // ==== PRO RGBWPM ====
+        // ==== PRO RGBWWPM ====
         // if (THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
         // switch (gen23Profile) {
         // case SHELLY2_PROFILE_RGB:
@@ -317,7 +317,7 @@ public class ShellyLightModel extends LightModel {
      * Convert Kelvin to Mirek or vice-versa.
      */
     private static double reciprocal(double value) {
-        return Double.NaN == value ? 0 : 1000000.0 / value;
+        return (Double.isNaN(value) || value == 0.0) ? 0 : 1000000.0 / value;
     }
 
     /**
