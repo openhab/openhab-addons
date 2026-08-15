@@ -124,9 +124,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private int throttledReconnectAttempt = 0;
     final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> childRefreshRetryTasks = new ConcurrentHashMap<>();
-    // De-dup events that can arrive on BOTH the public integration WS and the private
-    // updates WS fallback path — dispatch each event id exactly once. Only ADDs are
-    // de-duplicated; UPDATEs for an already seen event are expected to pass through.
+    // Events can arrive on both WebSockets. Only ADDs are de-duplicated; UPDATEs pass through.
     private final Map<String, Long> dispatchedEventKeys = new ConcurrentHashMap<>();
     private static final long EVENT_DEDUP_TTL_MS = 120_000;
     // Last full payload per private event id, so incremental UPDATE deltas can be merged into it.
@@ -136,23 +134,17 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private record TimestampedPayload(JsonObject payload, long timestamp) {
     }
 
-    // Thumbnail/heatmap ids already fetched per event id, so a merged payload that keeps carrying
-    // them does not re-fetch the same image on every later frame.
+    // Already-fetched ids, so a merged payload carrying them does not re-fetch the same image.
     private final Map<String, TimestampedMedia> fetchedEventMedia = new ConcurrentHashMap<>();
 
     private record TimestampedMedia(String ids, long timestamp) {
     }
 
-    // Stamped where an event arrives, on the WebSocket thread, so a snapshot that was superseded
-    // before its dispatch task got to run can be recognised and skipped.
+    // Stamped on the WebSocket thread, so a superseded snapshot can be skipped on dispatch.
     private final AtomicLong eventSequence = new AtomicLong();
-    // Private EVENT frames are dispatched on one thread so an event's ADD is always processed
-    // before the UPDATEs that follow it. The shared pool gives no such guarantee, and an UPDATE
-    // overtaking its ADD would deliver a *_UPDATE trigger before the matching *_START.
+    // Single thread so an event's ADD is always processed before the UPDATEs that follow it.
     private volatile @Nullable ExecutorService privateEventExecutor;
-    // Highest sequence already delivered per event id. PendingUpdate is discarded on delivery, so
-    // without this a task delayed past the delivery of a newer one would find no pending state,
-    // start a fresh one, and be taken for the newest snapshot.
+    // Survives PendingUpdate, which is discarded on delivery, so a straggler cannot look new.
     private final Map<String, TimestampedSequence> deliveredEventSequences = new ConcurrentHashMap<>();
     private static final long EVENT_SEQUENCE_TTL_MS = 600_000;
 
@@ -219,9 +211,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing NVR");
         shuttingDown = false;
-        // Recreated per initialize: the same handler instance is reused across a dispose/initialize
-        // cycle, e.g. on a configuration update, and a once-only executor would stay shut down and
-        // silently reject every private EVENT frame from then on.
+        // Recreated per initialize: the handler instance is reused across dispose/initialize.
         privateEventExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "OH-unifi-protect-events"));
         ensureStaticChannels();
 
@@ -321,11 +311,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             connectDeviceWebSocket(apiClient);
             logger.debug("Enabling Private API WebSocket for real-time updates");
             apiClient.getPrivateClient().enableWebSocket(update -> {
-                // Fold incremental EVENT deltas into the last full payload here, on the WebSocket
-                // thread, where frames still arrive in the order the NVR sent them. The dispatch
-                // below runs on the shared multi-threaded handler pool, which does not preserve
-                // that order: an UPDATE could otherwise overtake the ADD it depends on, and two
-                // UPDATEs could merge from the same snapshot and lose one of the two changes.
+                // Merged here, on the WebSocket thread, where frames are still in NVR order.
                 long sequence = eventSequence.incrementAndGet();
                 if (update.modelType == ModelType.EVENT) {
                     update.data = trackPrivateEventPayload(update.action, update.id, update.data);
@@ -836,9 +822,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         if (!"update".equals(action)) {
             return data;
         }
-        // Read, merge and store as one atomic step. Callers are expected to be ordered (the
-        // WebSocket thread), but doing this under compute() means overlapping calls still cannot
-        // merge from the same snapshot and drop one of the two changes.
+        // One atomic step, so overlapping calls cannot merge from the same snapshot.
         TimestampedPayload result = privateEventPayloads.computeIfPresent(id, (key, cached) -> {
             JsonObject merged = cached.payload().deepCopy();
             data.entrySet().forEach(e -> merged.add(e.getKey(), e.getValue()));
@@ -1028,9 +1012,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         }
                         // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
                         // generates them asynchronously after the event starts.
-                        // Merging keeps thumbnailId/heatmapId in the payload once they appear, so
-                        // every later frame of the same event would otherwise re-fetch the identical
-                        // image. Only act when this frame actually brought a new id.
+                        // Merging makes the ids sticky, so only act on an id not already fetched.
                         if ("update".equals(update.action) && event.cameraId != null
                                 && isNewEventMedia(update.id, event.thumbnailId, event.heatmapId)) {
                             UnifiProtectCameraHandler camHandler = findChildHandler(event.cameraId,
@@ -1116,9 +1098,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             return;
         }
         final String eventId = event.id;
-        // Compare against what was already delivered as well: PendingUpdate is discarded on
-        // delivery, so a task delayed past it would otherwise start a fresh state and be taken for
-        // the newest snapshot even though a later one has already gone out.
+        // PendingUpdate is gone after delivery, so check the delivered mark too.
         TimestampedSequence delivered = deliveredEventSequences.get(eventId);
         if (delivered != null && sequence <= delivered.sequence()) {
             logger.trace("Skipping event {} snapshot {}, {} was already delivered", eventId, sequence,
@@ -1159,8 +1139,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         if (!state.equals(current)) {
             return;
         }
-        // Remember how far this event got before the pending state is dropped, so a straggler
-        // carrying an older snapshot cannot be mistaken for a new burst.
+        // Remember how far this event got before the pending state is dropped.
         long now = System.currentTimeMillis();
         deliveredEventSequences.values().removeIf(s -> now - s.timestamp() > EVENT_SEQUENCE_TTL_MS);
         if (state.lastSequence != Long.MIN_VALUE) {
