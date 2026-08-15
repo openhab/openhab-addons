@@ -22,7 +22,7 @@ As a minimum, the personalAccessToken is needed:
 
 | Thing Parameter     | Default Value | Required | Advanced | Description                                                                          |
 |---------------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
-| personalAccessToken | N/A           | No       | No       | Personal Access Token generated from the Teslascope website                          |
+| personalAccessToken | N/A           | Yes      | No       | Personal Access Token generated from the Teslascope website                          |
 | refreshInterval     | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
 
 ## `vehicle` Thing Configuration
