@@ -368,6 +368,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
         tmpPrf.initFromThingType(thing.getThingTypeUID());
+        if (tmpPrf.isRGBW2 && !tmpPrf.isGen2) {
+            tmpPrf.hasLegacyLightChannels = thing.getChannels().stream()
+                    .anyMatch(c -> c.getUID().getId().startsWith(CHANNEL_GROUP_LIGHT_CHANNEL));
+        }
         String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, mode);
@@ -423,12 +427,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // All initialization done, so keep the profile and set Thing to ONLINE
         profile = tmpPrf;
-        ShellyChannelMigration.migrateChannels(this);
         showThingConfig(profile);
 
         // Push the full channel state now rather than waiting for the next background poll,
         // so a disable/enable cycle doesn't show stale/default channel values in the meantime.
         updateAllChannels(profile.status);
+
+        // Must run after updateAllChannels(): dynamic per-device channels (e.g. RGBW2's
+        // channel1..4) don't exist yet before that call, so migration rules matching them
+        // would find nothing and the schema version would get stamped as up-to-date anyway.
+        ShellyChannelMigration.migrateChannels(this);
         postEvent(ALARM_TYPE_NONE, false);
 
         logger.debug("{}: Thing successfully initialized.", thingName);
@@ -1404,7 +1412,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public void publishState(String channelId, State value) {
-        String id = channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
+        String id = stripDeprecatedSuffix(channelId);
         if (!stopping && isLinked(id)) {
             updateState(id, value);
             logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, value, value.getClass());
@@ -1421,18 +1429,26 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (stopping) {
             return false;
         }
+        boolean updated = cache.updateChannel(channelId, value, force);
+
         String replacementChannelId = ShellyChannelDefinitions.getReplacementChannelId(channelId);
         if (replacementChannelId != null) {
             warnDeprecatedChannel(channelId, replacementChannelId);
-            boolean updated = cache.updateChannel(channelId, value, force);
             updated |= cache.updateChannel(replacementChannelId, value, force);
-            return updated;
         }
-        return cache.updateChannel(channelId, value, force);
+
+        String replacementGroupId = ShellyChannelDefinitions.getReplacementGroupId(channelId);
+        if (replacementGroupId != null) {
+            warnDeprecatedChannel(channelId, replacementGroupId);
+            updated |= cache.updateChannel(replacementGroupId, value, force);
+        }
+
+        return updated;
     }
 
     private synchronized void warnDeprecatedChannel(String channelId, String replacementChannelId) {
-        if (!isLinked(channelId)) {
+        String id = stripDeprecatedSuffix(channelId);
+        if (!isLinked(id)) {
             return;
         }
         long now = System.currentTimeMillis();

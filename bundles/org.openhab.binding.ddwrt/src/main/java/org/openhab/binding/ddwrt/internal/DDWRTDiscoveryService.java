@@ -169,9 +169,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             final String hostname = device != null && !device.getHostname().isEmpty() ? device.getHostname()
                     : radio.getParentDeviceMac();
 
-            // ID: deviceMac-interface (e.g., 24f5a2c61659-wlan0)
-            final String id = radio.getParentDeviceMac().replace(":", "-") + "-" + radio.getIfaceName();
-            final ThingUID thingUID = new ThingUID(THING_TYPE_RADIO, bridgeUID, id);
+            final ThingUID thingUID = createRadioThingUID(bridgeUID, radio.getParentDeviceMac(), radio.getIfaceName());
 
             // Label: hostname interface (e.g., "gateway-ap wlan0")
             final String label = hostname + " " + radio.getIfaceName();
@@ -186,6 +184,12 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             thingDiscovered(result);
         });
+    }
+
+    static ThingUID createRadioThingUID(ThingUID bridgeUID, String parentDeviceMac, String ifaceName) {
+        // Thing UID segments cannot contain dots used by virtual interfaces such as wlan0.1.
+        String id = (parentDeviceMac.replace(":", "-") + "-" + ifaceName).replaceAll("[^\\w-]", "-");
+        return new ThingUID(THING_TYPE_RADIO, bridgeUID, id);
     }
 
     private void discoverClients(DDWRTNetwork net) {

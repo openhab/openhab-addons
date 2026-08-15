@@ -136,8 +136,37 @@ public class ShellyChannelMigrationRulesTest {
     }
 
     @Test
+    void schema7RenamesGen1Rgbw2ChannelGroupsToLightGroups() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
+        profile.isRGBW2 = true;
+        ShellyThingInterface handler = handlerAtSchema(6, profile,
+                channel(CHANNEL_GROUP_LIGHT_CHANNEL + "1", CHANNEL_BRIGHTNESS),
+                channel(CHANNEL_GROUP_LIGHT_CHANNEL + "4", CHANNEL_TIMER_AUTOON));
+
+        ShellyChannelMigration.migrateChannels(handler);
+
+        assertEquals(
+                Set.of(mkChannelId(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_BRIGHTNESS),
+                        mkChannelId(CHANNEL_GROUP_LIGHT_INDEX + "4", CHANNEL_TIMER_AUTOON)),
+                capturedNewChannelIds(handler));
+    }
+
+    @Test
+    void schema7DoesNotApplyToGen2RgbwPm() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
+        profile.isRGBW2 = true;
+        profile.isGen2 = true;
+        ShellyThingInterface handler = handlerAtSchema(6, profile,
+                channel(CHANNEL_GROUP_LIGHT_CHANNEL + "1", CHANNEL_BRIGHTNESS));
+
+        ShellyChannelMigration.migrateChannels(handler);
+
+        assertTrue(capturedNewChannelIds(handler).isEmpty());
+    }
+
+    @Test
     void alreadyOnCurrentSchemaSkipsMigrationEntirely() {
-        ShellyThingInterface handler = handlerAtSchema(6, false,
+        ShellyThingInterface handler = handlerAtSchema(7, false,
                 channel(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER));
 
         ShellyChannelMigration.migrateChannels(handler);
@@ -169,7 +198,7 @@ public class ShellyChannelMigrationRulesTest {
     @SuppressWarnings("unchecked")
     private static Set<String> capturedNewChannelIds(ShellyThingInterface handler) {
         ArgumentCaptor<Map<String, Channel>> captor = ArgumentCaptor.forClass(Map.class);
-        verify(handler, atLeastOnce()).updateThingChannels(anyMap(), captor.capture());
+        verify(handler, atLeast(0)).updateThingChannels(anyMap(), captor.capture());
         Set<String> ids = new HashSet<>();
         for (Map<String, Channel> newChannels : captor.getAllValues()) {
             ids.addAll(newChannels.keySet());
