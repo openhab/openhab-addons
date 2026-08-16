@@ -98,7 +98,7 @@
 					<option value="https://openapi-sg.iotbing.com">Singapore</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<default>Central Europe</default>
+				<default>https://openapi.tuyaeu.com</default>
 			</parameter>
 		</config-description>
 	</thing-type>

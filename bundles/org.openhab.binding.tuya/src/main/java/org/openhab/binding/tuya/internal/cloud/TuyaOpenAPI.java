@@ -25,7 +25,6 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -185,8 +184,12 @@ public class TuyaOpenAPI {
 
                 synchronized (this) {
                     stopRefreshTokenJob();
-                    refreshTokenJob = scheduler.schedule(this::refreshToken, //
-                            (token.expire - 60) * 1000 - (CLOUD_RETRY_DELAY * CLOUD_RETRY_MAX), TimeUnit.MILLISECONDS);
+
+                    if (!Thread.interrupted()) {
+                        refreshTokenJob = scheduler.schedule(this::refreshToken, //
+                                (token.expire - 60) * 1000 - (CLOUD_RETRY_DELAY * CLOUD_RETRY_MAX),
+                                TimeUnit.MILLISECONDS);
+                    }
                 }
 
                 callback.tuyaOpenApiStatus(true);
@@ -216,16 +219,15 @@ public class TuyaOpenAPI {
 
     protected void processDevices(boolean allSchemas, Consumer<DiscoveryResult> callback,
             List<DeviceListInfo> devices) {
-        var fetching = new HashSet<String>();
+        var fetching = new HashMap<String, CompletableFuture<?>>();
 
         for (var device : devices) {
             CompletableFuture<List<FactoryInformation>> factoryInformationFuture = getFactoryInformation(device.id);
 
-            if (!fetching.contains(device.productId) //
-                    && (allSchemas || !TuyaSchemaDB.contains(device.productId))) {
-                fetching.add(device.productId);
+            var deviceSchemaFuture = fetching.get(device.productId);
 
-                var deviceSchemaFuture = getDeviceSchema(device.id).thenAccept(schema -> {
+            if (deviceSchemaFuture == null && (allSchemas || !TuyaSchemaDB.contains(device.productId))) {
+                deviceSchemaFuture = getDeviceSchema(device.id).thenAccept(schema -> {
                     List<SchemaDp> schemaDps = new ArrayList<>(schema.functions.size() + schema.status.size());
                     schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.FALSE));
                     schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.TRUE));
@@ -239,36 +241,42 @@ public class TuyaOpenAPI {
                     }
                 });
 
+                fetching.put(device.productId, deviceSchemaFuture);
+            }
+
+            if (deviceSchemaFuture != null) {
                 factoryInformationFuture = factoryInformationFuture //
                         .thenCombine(deviceSchemaFuture, (fiList, schema) -> fiList);
             }
 
             factoryInformationFuture //
                     .thenAccept(fiList -> {
-                        if (TuyaSchemaDB.contains(device.productId)) {
-                            var properties = new HashMap<String, Object>();
-
-                            properties.put(PROPERTY_CATEGORY, device.category);
-                            properties.put(CONFIG_LOCAL_KEY, device.localKey);
-                            properties.put(CONFIG_DEVICE_ID, device.id);
-                            properties.put(CONFIG_PRODUCT_ID, device.productId);
-
-                            String deviceMac = fiList.stream().filter(fi -> fi.id.equals(device.id)).findAny()
-                                    .map(fi -> fi.mac).orElse("");
-                            if (deviceMac != null && !deviceMac.isEmpty()) {
-                                properties.put(Thing.PROPERTY_MAC_ADDRESS, deviceMac.replaceAll("(..)(?!$)", "$1:"));
-                            }
-
-                            callback.accept(
-                                    DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_TUYA_DEVICE, device.id)) //
-                                            .withLabel(device.name) //
-                                            .withRepresentationProperty(CONFIG_DEVICE_ID) //
-                                            .withProperties(properties) //
-                                            .build());
-                        } else {
+                        if (!TuyaSchemaDB.contains(device.productId)) {
                             logger.warn("No schema available: id {} product {} \"{}\"", //
                                     device.id, device.productId, device.name);
+
+                            // Per code review request: fall through and discover the device anyway.
+                            // N.B. The device will not be usable unless the user adds Channels manually.
                         }
+
+                        var properties = new HashMap<String, Object>();
+
+                        properties.put(PROPERTY_CATEGORY, device.category);
+                        properties.put(CONFIG_LOCAL_KEY, device.localKey);
+                        properties.put(CONFIG_DEVICE_ID, device.id);
+                        properties.put(CONFIG_PRODUCT_ID, device.productId);
+
+                        String deviceMac = fiList.stream().filter(fi -> fi.id.equals(device.id)).findAny()
+                                .map(fi -> fi.mac).orElse("");
+                        if (deviceMac != null && !deviceMac.isEmpty()) {
+                            properties.put(Thing.PROPERTY_MAC_ADDRESS, deviceMac.replaceAll("(..)(?!$)", "$1:"));
+                        }
+
+                        callback.accept(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_TUYA_DEVICE, device.id)) //
+                                .withLabel(device.name) //
+                                .withRepresentationProperty(CONFIG_DEVICE_ID) //
+                                .withProperties(properties) //
+                                .build());
                     }) //
                     .exceptionally(this::logCauseAndThrow);
         }
