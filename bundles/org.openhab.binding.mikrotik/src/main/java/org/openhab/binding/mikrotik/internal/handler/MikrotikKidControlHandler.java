@@ -17,6 +17,7 @@ import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -67,10 +68,7 @@ public class MikrotikKidControlHandler extends MikrotikBaseThingHandler<KidContr
         refreshModels();
         String name = kid.get("name");
         if (name != null && config.name.contentEquals(name)) {
-            if (connectingJob != null) {
-                connectingJob.cancel(true);
-                connectingJob = null;
-            }
+            cancelConnectingJob();
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -200,11 +198,16 @@ public class MikrotikKidControlHandler extends MikrotikBaseThingHandler<KidContr
         }
     }
 
-    @Override
-    public void dispose() {
-        if (connectingJob != null) {
-            connectingJob.cancel(true);
+    private void cancelConnectingJob() {
+        Future<?> future = connectingJob;
+        if (future != null) {
+            future.cancel(true);
             connectingJob = null;
         }
+    }
+
+    @Override
+    public void dispose() {
+        cancelConnectingJob();
     }
 }

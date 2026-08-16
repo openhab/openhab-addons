@@ -17,6 +17,7 @@ import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -68,10 +69,7 @@ public class MikrotikDeviceHandler extends MikrotikBaseThingHandler<DeviceConfig
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "MAC Address was not found on Mikrotik Bridge, check correct MAC is entered in things config");
         } else {
-            if (connectingJob != null) {
-                connectingJob.cancel(true);
-                connectingJob = null;
-            }
+            cancelConnectingJob();
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -185,11 +183,16 @@ public class MikrotikDeviceHandler extends MikrotikBaseThingHandler<DeviceConfig
         return MikrotikBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID);
     }
 
-    @Override
-    public void dispose() {
-        if (connectingJob != null) {
-            connectingJob.cancel(true);
+    private void cancelConnectingJob() {
+        Future<?> future = connectingJob;
+        if (future != null) {
+            future.cancel(true);
             connectingJob = null;
         }
+    }
+
+    @Override
+    public void dispose() {
+        cancelConnectingJob();
     }
 }
