@@ -114,7 +114,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSEM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS3EM63, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRODM2PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
@@ -215,14 +215,14 @@ public class ShellyDeviceProfileTest {
     @ParameterizedTest
     @MethodSource("provideTestCasesForDimmerControlGroup")
     void getControlGroupForDimmer(int numDimmers, int index, String expectedControlGroup) throws ShellyApiException {
-        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODM2PM);
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODIMMER2PM);
         ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
         ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
 
         settingsGlobal.relays = new ArrayList<>();
         settingsGlobal.dimmers = IntStream.range(0, numDimmers).mapToObj(i -> new ShellySettingsDimmer())
                 .collect(Collectors.toCollection(ArrayList::new));
-        deviceProfile.initialize(THING_TYPE_SHELLYPRODM2PM, gson.toJson(settingsGlobal), settingsDevice);
+        deviceProfile.initialize(THING_TYPE_SHELLYPRODIMMER2PM, gson.toJson(settingsGlobal), settingsDevice);
 
         String actualControlGroup = deviceProfile.getControlGroup(index);
         assertThat("numDimmers: " + numDimmers + ", index: " + index, actualControlGroup,

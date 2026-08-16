@@ -87,7 +87,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellydimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER), //
                 Arguments.of("shellydimmer2-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER2), //
                 Arguments.of("shellydimmerg4us-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMERUS), //
-                Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODM2PM), //
+                Arguments.of("shellyprodm2pm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRODIMMER2PM), //
                 Arguments.of("shellyem-" + DEVICE_ID, "", THING_TYPE_SHELLYEM), //
                 Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM), //
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, "color", THING_TYPE_SHELLYRGBW2_COLOR), //
@@ -228,7 +228,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
                 Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V), //
                 Arguments.of(SHELLYDT_PLUSDIMMERG3, "", THING_TYPE_SHELLYPLUSDIMMER), //
-                Arguments.of(SHELLYDT_PRODM2PM, "", THING_TYPE_SHELLYPRODM2PM), //
+                Arguments.of(SHELLYDT_PRODIMMER2PM, "", THING_TYPE_SHELLYPRODIMMER2PM), //
                 Arguments.of(SHELLYDT_PLUSEM, "", THING_TYPE_SHELLYPLUSEM), //
                 Arguments.of(SHELLYDT_PLUS3EM63, "", THING_TYPE_SHELLYPLUS3EM63), //
                 Arguments.of(SHELLYDT_PLUSRGBWPM, "", THING_TYPE_SHELLYPLUSRGBWPM), //
