@@ -16,7 +16,9 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -49,8 +51,15 @@ import sun.misc.Unsafe;
 @NonNullByDefault
 public class ShellyTestLightHandler extends ShellyLightHandler {
 
+    // A record to capture API calls made by the handler
+    public record ApiCall(String method, Object[] args) {
+    }
+
     // Map of channel id to update state
     public @NonNullByDefault({}) Map<String, State> channelUpdates;
+
+    // List of calls made to the API
+    private @NonNullByDefault({}) List<ApiCall> apiCalls;
 
     public ShellyTestLightHandler(Thing thing, ShellyTranslationProvider translationProvider,
             ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable, Shelly1CoapServer coapServer,
@@ -108,15 +117,18 @@ public class ShellyTestLightHandler extends ShellyLightHandler {
             thingField.setAccessible(true);
             thingField.set(handler, thing);
 
-            Shelly1HttpApi api = mock(Shelly1HttpApi.class);
+            handler.channelUpdates = new HashMap<>();
+            handler.apiCalls = new ArrayList<>();
+
+            Shelly1HttpApi api = mock(Shelly1HttpApi.class, invocation -> {
+                handler.apiCalls.add(new ApiCall(invocation.getMethod().getName(), invocation.getArguments()));
+                return RETURNS_DEFAULTS.answer(invocation);
+            });
             Field apiField = ShellyBaseHandler.class.getDeclaredField("api");
             apiField.setAccessible(true);
             apiField.set(handler, api);
 
-            handler.channelUpdates = new HashMap<>();
-
             return handler;
-
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create ShellyTestLightHandler", e);
         }
@@ -124,7 +136,7 @@ public class ShellyTestLightHandler extends ShellyLightHandler {
 
     @Override
     public boolean areChannelsCreated() {
-        // for testing purposes, we assume channels are already created
+        // for testing purposes, we expect that channels are already created
         return true;
     }
 
@@ -146,5 +158,9 @@ public class ShellyTestLightHandler extends ShellyLightHandler {
     public void addLightModel(int id, ThingTypeUID thingTypeUID, ShellyDeviceProfile profile, double stepSize) {
         ShellyLightModel model = ShellyLightModel.create(this, id, thingTypeUID, profile, stepSize);
         Objects.requireNonNull(lightModels).put(id, model);
+    }
+
+    public List<ApiCall> getApiCalls() {
+        return List.copyOf(Objects.requireNonNull(apiCalls));
     }
 }
