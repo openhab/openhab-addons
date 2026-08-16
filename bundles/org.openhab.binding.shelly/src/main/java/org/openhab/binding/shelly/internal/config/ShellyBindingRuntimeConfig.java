@@ -24,7 +24,10 @@ import org.openhab.core.net.NetworkAddressService;
  *
  * Resolves the local IP address (config override wins; falls back to
  * {@link NetworkAddressService}) and carries the HTTP port once the OSGi HTTP
- * service has started.
+ * service has started. When no override is configured, {@link ShellyApiConfiguration}
+ * refines this per-device via {@code refreshLocalIp()} once a device's own IP is known,
+ * preferring a same-subnet interface (relevant for multi-homed OH hosts) over this
+ * single global fallback.
  *
  * Thread-safe (mutable object with synchronized access, updated in-place).
  * Held as volatile in {@link ShellyHandlerFactory} and {@link ShellyBaseHandler} to
@@ -45,6 +48,10 @@ public class ShellyBindingRuntimeConfig {
     private String localIP;
 
     // All access must be guarded by "this"
+    /** {@code true}: {@link #localIP} is an explicit admin override, not an auto-detected fallback */
+    private boolean localIPConfigured;
+
+    // All access must be guarded by "this"
     private int httpPort; // -1 = use DEFAULT_LOCAL_PORT sentinel
 
     // All access must be guarded by "this"
@@ -62,7 +69,8 @@ public class ShellyBindingRuntimeConfig {
         this.autoCoIoT = config.isAutoCoIoT();
         this.httpPort = httpPort;
         String cfgIp = config.getLocalIP();
-        this.localIP = cfgIp.isBlank() ? resolveLocalIP(nas) : cfgIp;
+        this.localIPConfigured = !cfgIp.isBlank();
+        this.localIP = localIPConfigured ? cfgIp : resolveLocalIP(nas);
     }
 
     /**
@@ -88,11 +96,16 @@ public class ShellyBindingRuntimeConfig {
             result = true;
         }
         s = config.getLocalIP();
-        if (s.isBlank()) {
+        boolean configured = !s.isBlank();
+        if (!configured) {
             s = resolveLocalIP(nas);
         }
         if (!s.equals(this.localIP)) {
             this.localIP = s;
+            result = true;
+        }
+        if (configured != this.localIPConfigured) {
+            this.localIPConfigured = configured;
             result = true;
         }
         return result;
@@ -108,6 +121,15 @@ public class ShellyBindingRuntimeConfig {
 
     public synchronized String getLocalIP() {
         return localIP;
+    }
+
+    /**
+     * @return {@code true} if {@link #getLocalIP()} is an explicit admin override (the
+     *         {@code localIP} binding property), {@code false} if it was auto-detected via
+     *         {@link NetworkAddressService}.
+     */
+    public synchronized boolean isLocalIpConfigured() {
+        return localIPConfigured;
     }
 
     /**

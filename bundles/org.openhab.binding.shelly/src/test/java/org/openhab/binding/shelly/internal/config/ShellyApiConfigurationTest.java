@@ -16,11 +16,17 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.reflect.Field;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
@@ -187,6 +193,98 @@ public class ShellyApiConfigurationTest {
         assertThat(config.getUserId(), is("newUser"));
         assertThat(config.getPassword(), is("newPass"));
         assertThat(config.getBearer(), is("newUser:newPass"));
+    }
+
+    @Test
+    void refreshLocalIpNoopWhenOverrideConfigured() {
+        // bindingConfig() always sets the CONFIG_LOCAL_IP override
+        ShellyBindingRuntimeConfig runtime = bindingConfig();
+        ShellyApiConfiguration config = new ShellyApiConfiguration(runtime, "realm", DEVICE_IP);
+        config.refreshLocalIp(runtime);
+        assertThat(config.getLocalIp(), is(LOCAL_IP));
+    }
+
+    @Test
+    void refreshLocalIpNoopWhenDeviceIpUnresolved() throws Exception {
+        ShellyBindingRuntimeConfig runtime = runtimeConfigNoOverride("10.0.0.1");
+        ShellyApiConfiguration config = new ShellyApiConfiguration(thingConfig("", true), runtime, "realm", false,
+                false);
+        config.refreshLocalIp(runtime);
+        assertThat(config.getLocalIp(), is("10.0.0.1"));
+    }
+
+    @Test
+    void refreshLocalIpFallsBackToGlobalWhenNoSameSubnetMatch() {
+        // 203.0.113.0/24 is RFC 5737 TEST-NET-3, guaranteed not to match any real local interface
+        ShellyBindingRuntimeConfig runtime = runtimeConfigNoOverride("10.0.0.1");
+        ShellyApiConfiguration config = new ShellyApiConfiguration(runtime, "realm", "203.0.113.5");
+        config.refreshLocalIp(runtime);
+        assertThat(config.getLocalIp(), is("10.0.0.1"));
+    }
+
+    @Test
+    void refreshLocalIpPrefersSameSubnetMatch() throws Exception {
+        String realIp = findNonLoopbackIPv4Address();
+        Assumptions.assumeTrue(realIp != null, "No non-loopback IPv4 interface found on this machine");
+        // 192.0.2.0/24 is RFC 5737 TEST-NET-1, guaranteed not to match any real local interface
+        ShellyBindingRuntimeConfig runtime = runtimeConfigNoOverride("192.0.2.1");
+        ShellyApiConfiguration config = new ShellyApiConfiguration(runtime, "realm", realIp);
+        config.refreshLocalIp(runtime);
+        assertThat(config.getLocalIp(), is(realIp));
+    }
+
+    private static @Nullable String findNonLoopbackIPv4Address() throws SocketException {
+        Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+        while (ifaces.hasMoreElements()) {
+            NetworkInterface iface = ifaces.nextElement();
+            if (iface.isLoopback() || !iface.isUp()) {
+                continue;
+            }
+            Enumeration<InetAddress> addresses = iface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress addr = addresses.nextElement();
+                if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                    return addr.getHostAddress();
+                }
+            }
+        }
+        return null;
+    }
+
+    private ShellyBindingRuntimeConfig runtimeConfigNoOverride(String nasIp) {
+        return new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(), 8080, networkAddressService(nasIp));
+    }
+
+    private static NetworkAddressService networkAddressService(@Nullable String ip) {
+        return new NetworkAddressService() {
+            @Override
+            public @Nullable String getPrimaryIpv4HostAddress() {
+                return ip;
+            }
+
+            @Override
+            public @Nullable String getConfiguredBroadcastAddress() {
+                return null;
+            }
+
+            @Override
+            public boolean isUseOnlyOneAddress() {
+                return false;
+            }
+
+            @Override
+            public boolean isUseIPv6() {
+                return false;
+            }
+
+            @Override
+            public void addNetworkAddressChangeListener(NetworkAddressChangeListener listener) {
+            }
+
+            @Override
+            public void removeNetworkAddressChangeListener(NetworkAddressChangeListener listener) {
+            }
+        };
     }
 
     private ShellyBindingRuntimeConfig bindingConfig() {

@@ -1170,6 +1170,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         "config-status.error.resolve-failed", apiConfig.getDeviceHostAddress());
                 return false;
             }
+            apiConfig.refreshLocalIp(bindingConfig);
         }
 
         if (apiConfig.getLocalIp().startsWith("169.254")) {

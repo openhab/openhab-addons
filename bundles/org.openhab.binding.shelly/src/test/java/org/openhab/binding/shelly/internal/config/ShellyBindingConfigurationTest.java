@@ -154,6 +154,35 @@ public class ShellyBindingConfigurationTest {
     }
 
     @Test
+    void runtimeConfigNasIpIsNotConfigured() {
+        ShellyBindingConfiguration raw = new ShellyBindingConfiguration();
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, -1, networkAddressService("10.0.0.1"));
+        assertThat(runtime.isLocalIpConfigured(), is(false));
+    }
+
+    @Test
+    void runtimeConfigLocalIpOverrideIsConfigured() {
+        ShellyBindingConfiguration raw = ShellyBindingConfiguration
+                .fromProperties(Map.of(CONFIG_LOCAL_IP, "192.168.1.5"));
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, -1, networkAddressService("10.0.0.1"));
+        assertThat(runtime.isLocalIpConfigured(), is(true));
+    }
+
+    @Test
+    void runtimeConfigUpdateTracksLocalIpConfiguredChange() {
+        ShellyBindingConfiguration raw = new ShellyBindingConfiguration();
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, -1, networkAddressService("10.0.0.1"));
+        assertThat(runtime.isLocalIpConfigured(), is(false));
+
+        ShellyBindingConfiguration overridden = ShellyBindingConfiguration
+                .fromProperties(Map.of(CONFIG_LOCAL_IP, "192.168.1.5"));
+        boolean changed = runtime.update(overridden, networkAddressService("10.0.0.1"));
+        assertThat(changed, is(true));
+        assertThat(runtime.isLocalIpConfigured(), is(true));
+        assertThat(runtime.getLocalIP(), is("192.168.1.5"));
+    }
+
+    @Test
     void setHttpPortPreservesOtherFields() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration.fromProperties(
                 Map.of(CONFIG_DEF_HTTP_USER, "user1", CONFIG_DEF_HTTP_PWD, "pass1", CONFIG_LOCAL_IP, "192.168.1.1"));

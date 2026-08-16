@@ -18,11 +18,13 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.InterfaceAddress;
 import java.net.UnknownHostException;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,8 +126,9 @@ public class ShellyApiConfiguration {
     // All access must be guarded by "this"
     private boolean enableRangeExtender;
 
-    /** Local ip addresses used to create callback url */
-    private final String localIp;
+    // All access must be guarded by "this"
+    /** Local ip address used to create callback url; refined per-device by {@link #refreshLocalIp} */
+    private String localIp;
 
     /** Local port, used by callbacks through servlet */
     private final String localPort;
@@ -360,7 +363,7 @@ public class ShellyApiConfiguration {
         return enableRangeExtender;
     }
 
-    public String getLocalIp() {
+    public synchronized String getLocalIp() {
         return localIp;
     }
 
@@ -401,6 +404,34 @@ public class ShellyApiConfiguration {
     }
 
     /**
+     * Refines the local IP address used for callback URLs once the device's own IP is known,
+     * by preferring a local network interface on the same subnet as the device over the
+     * binding's single global fallback — relevant for multi-homed OH hosts with Shelly devices
+     * on more than one subnet. No-op if the admin has explicitly configured a local IP override,
+     * or if the device's IP isn't resolved yet.
+     *
+     * @param bindingConfig current binding runtime configuration
+     */
+    public synchronized void refreshLocalIp(ShellyBindingRuntimeConfig bindingConfig) {
+        if (bindingConfig.isLocalIpConfigured()) {
+            return;
+        }
+        InetSocketAddress socketAddr = deviceSocketAddr;
+        InetAddress deviceAddr = socketAddr != null ? socketAddr.getAddress() : null;
+        if (deviceAddr == null) {
+            return;
+        }
+        InterfaceAddress sameSubnet = NetUtil.getSameSubnetInterfaceAddress(deviceAddr);
+        String newLocalIp = sameSubnet != null ? sameSubnet.getAddress().getHostAddress() : bindingConfig.getLocalIP();
+        if (!newLocalIp.isBlank() && !newLocalIp.equals(localIp)) {
+            logger.debug("{}: Using same-subnet local IP {} for device {} (was {})", realm, newLocalIp,
+                    deviceAddr.getHostAddress(), localIp);
+            localIp = newLocalIp;
+            urls = new ShellyApiUrls(localIp, localPort, deviceHostAddress);
+        }
+    }
+
+    /**
      * Refreshes all fields derived from the thing configuration so that changes made via
      * {@code handleConfigurationUpdate()} (new credentials, device address, event flags, etc.)
      * take effect on the next re-initialization cycle without rebuilding the handler or API client.
@@ -435,6 +466,7 @@ public class ShellyApiConfiguration {
                 deviceHostAddress = newHost;
                 deviceSocketAddr = null; // force re-resolve on next resolveIp() call
                 resolveIp();
+                refreshLocalIp(bindingConfig);
                 urls = new ShellyApiUrls(localIp, localPort, newHost);
             }
         }
