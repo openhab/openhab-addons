@@ -27,6 +27,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
@@ -43,7 +44,6 @@ import org.openhab.binding.homie.internal.homie300.Device;
 import org.openhab.binding.homie.internal.homie300.DeviceAttributes;
 import org.openhab.binding.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.homie.internal.homie300.DeviceCallback;
-import org.openhab.binding.homie.internal.homie300.Node;
 import org.openhab.binding.homie.internal.homie300.NodeAttributes;
 import org.openhab.binding.homie.internal.homie300.Property;
 import org.openhab.binding.homie.internal.homie300.PropertyAttributes;
@@ -51,7 +51,6 @@ import org.openhab.binding.homie.internal.homie300.PropertyAttributes.DataTypeEn
 import org.openhab.binding.homie.internal.homie300.PropertyHelper;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
-import org.openhab.binding.mqtt.generic.tools.WaitForTopicValue;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
@@ -60,6 +59,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.UnDefType;
+import org.w3c.dom.Node;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homie device tree.
@@ -169,8 +169,16 @@ public class HomieImplementationTest extends MqttOSGiTest {
 
     @Test
     public void retrieveOneAttribute() throws Exception {
-        WaitForTopicValue watcher = new WaitForTopicValue(homieConnection, DEVICE_TOPIC + "/$homie");
-        assertThat(watcher.waitForTopicValue(MQTT_TIMEOUT), is("3.0"));
+        String topic = DEVICE_TOPIC + "/$homie";
+        CompletableFuture<String> receivedValue = new CompletableFuture<>();
+        MqttMessageSubscriber subscriber = (receivedTopic, payload) -> receivedValue
+                .complete(new String(payload, StandardCharsets.UTF_8));
+        try {
+            assertTrue(homieConnection.subscribe(topic, subscriber).get(5, TimeUnit.SECONDS));
+            assertThat(receivedValue.get(MQTT_TIMEOUT, TimeUnit.MILLISECONDS), is("3.0"));
+        } finally {
+            homieConnection.unsubscribe(topic, subscriber).get(5, TimeUnit.SECONDS);
+        }
     }
 
     @SuppressWarnings("null")
@@ -302,10 +310,8 @@ public class HomieImplementationTest extends MqttOSGiTest {
         CompletableFuture<String> receivedValue = new CompletableFuture<>();
         MqttMessageSubscriber subscriber = (topic, payload) -> receivedValue
                 .complete(new String(payload, StandardCharsets.UTF_8));
-        assertTrue(brokerConnection.subscribe(commandTopic, subscriber).get(5, TimeUnit.SECONDS));
-
-        // Watch the topic. Publish a retain=false value to MQTT
         try {
+            assertTrue(brokerConnection.subscribe(commandTopic, subscriber).get(5, TimeUnit.SECONDS));
             property.getChannelState().publishValue(OnOffType.OFF).get();
             assertThat(receivedValue.get(MQTT_TIMEOUT, TimeUnit.MILLISECONDS), is("false"));
         } finally {
@@ -315,9 +321,14 @@ public class HomieImplementationTest extends MqttOSGiTest {
         // Publish a retain=false value to MQTT.
         property.getChannelState().publishValue(OnOffType.ON).get();
         // No value is expected to be retained on this MQTT topic
-        waitForAssert(() -> {
-            WaitForTopicValue w = new WaitForTopicValue(brokerConnection, propertyTestTopic + "/set");
-            assertNull(w.waitForTopicValue(50));
-        }, 500, 100);
+        CompletableFuture<String> retainedValue = new CompletableFuture<>();
+        MqttMessageSubscriber retainedSubscriber = (topic, payload) -> retainedValue
+                .complete(new String(payload, StandardCharsets.UTF_8));
+        try {
+            assertTrue(brokerConnection.subscribe(commandTopic, retainedSubscriber).get(5, TimeUnit.SECONDS));
+            assertThrows(TimeoutException.class, () -> retainedValue.get(1, TimeUnit.SECONDS));
+        } finally {
+            brokerConnection.unsubscribe(commandTopic, retainedSubscriber).get(5, TimeUnit.SECONDS);
+        }
     }
 }
