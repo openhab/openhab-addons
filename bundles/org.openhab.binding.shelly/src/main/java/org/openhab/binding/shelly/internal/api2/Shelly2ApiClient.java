@@ -75,6 +75,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DaliStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusFlood;
@@ -630,6 +631,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateEmStatus(11, status, result.em11, channelUpdate);
         updated |= updateEmStatus(12, status, result.em12, channelUpdate);
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
+        // Must run before updateDimmerStatus(): the latter triggers createDimmerChannels() on the first
+        // status refresh, which gates the DALI diagnostic channels on status.daliCgCount/daliScanActive
+        // already being populated.
+        updated |= updateDaliStatus(status, result.dali, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
         updated |= updateDimmerStatus(1, status, result.light1, channelUpdate);
         updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
@@ -1358,6 +1363,16 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateDeviceInnerTemp(status, value.temperature);
 
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
+    }
+
+    private boolean updateDaliStatus(ShellySettingsStatus status, @Nullable Shelly2DaliStatus value,
+            boolean channelUpdate) throws ShellyApiException {
+        if (value == null) {
+            return false;
+        }
+        status.daliCgCount = value.cgCount;
+        status.daliScanActive = value.scan != null;
+        return channelUpdate ? ShellyComponents.updateDali(getThing(), status) : false;
     }
 
     private boolean updateRGBWStatus(int id, ShellySettingsStatus status, @Nullable Shelly2RGBWStatus value,

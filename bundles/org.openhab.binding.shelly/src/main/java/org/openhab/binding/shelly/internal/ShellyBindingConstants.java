@@ -92,6 +92,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_TIMER_AUTOON = "autoOn";
     public static final String CHANNEL_TIMER_AUTOOFF = "autoOff";
     public static final String CHANNEL_TIMER_ACTIVE = "timerActive";
+    public static final String CHANNEL_DALI_DEVICES = "daliDeviceCount";
+    public static final String CHANNEL_DALI_SCAN_ACTIVE = "daliScanActive";
 
     // Roller
     public static final String CHANNEL_GROUP_ROL_CONTROL = "roller";

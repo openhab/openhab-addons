@@ -16,6 +16,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +30,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,30 +41,46 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DaliScanStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DaliStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 
 /**
  * Covers {@link Shelly2ApiClient#fillDeviceStatus} for RGBW2 devices, i.e. the light-mode
  * ({@code light:N}/{@code cct:N}) and color-mode ({@code rgbw:0}/{@code rgb:0}) status dispatch added for
  * Plus RGBW PM / Pro RGBWW PM. Exercises {@code updateLightModeStatus} and {@code updateRGBWStatus} without
- * a real HTTP/WebSocket connection by mocking {@link ShellyThingInterface#getProfile()}.
+ * a real HTTP/WebSocket connection by mocking {@link ShellyThingInterface#getProfile()}. Also covers the
+ * DALI bus diagnostics ({@code dali}) status dispatch via {@code updateDaliStatus}.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 public class Shelly2ApiClientLightStatusTest {
+
+    @BeforeAll
+    static void initChannelDefinitions() {
+        ShellyTranslationProvider messages = mock(ShellyTranslationProvider.class);
+        when(messages.get(anyString(), any(Object[].class))).thenAnswer(i -> i.getArgument(0));
+        new ShellyChannelDefinitions(messages);
+    }
 
     @Mock
     private @NonNullByDefault({}) ShellyThingInterface thing;
@@ -191,6 +210,86 @@ public class Shelly2ApiClientLightStatusTest {
         ls.voltage = voltage;
         ls.current = current;
         return ls;
+    }
+
+    private ShellyDeviceProfile dimmerProfile(int numChannels) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyplusdimmer"));
+        profile.isDimmer = true;
+        ShellySettingsStatus status = profile.status;
+        ArrayList<ShellyShortLightStatus> dimmers = new ArrayList<>();
+        for (int i = 0; i < numChannels; i++) {
+            dimmers.add(new ShellyShortLightStatus());
+        }
+        status.dimmers = dimmers;
+        return profile;
+    }
+
+    @Test
+    void daliStatusPushesDeviceCountAndScanActiveChannels() throws ShellyApiException {
+        ShellyDeviceProfile profile = dimmerProfile(1);
+        Shelly2ApiClient client = newClient(profile);
+        when(thing.areChannelsCreated()).thenReturn(true);
+        when(thing.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
+
+        Shelly2DaliScanStatus scan = new Shelly2DaliScanStatus();
+        scan.startedAt = 123.0;
+        Shelly2DaliStatus dali = new Shelly2DaliStatus();
+        dali.cgCount = 3;
+        dali.scan = scan;
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.dali = dali;
+        result.light0 = lightStatus(0, true, 55.0);
+
+        client.fillDeviceStatus(profile.status, result, true);
+
+        assertThat(profile.status.daliCgCount, is(3));
+        assertThat(profile.status.daliScanActive, is(true));
+        verify(thing).updateChannel(CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_DEVICES, new DecimalType(3));
+        verify(thing).updateChannel(CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_SCAN_ACTIVE, OnOffType.ON);
+    }
+
+    @Test
+    void daliStatusReportsScanInactiveWhenNoScanRunning() throws ShellyApiException {
+        ShellyDeviceProfile profile = dimmerProfile(1);
+        Shelly2ApiClient client = newClient(profile);
+        when(thing.areChannelsCreated()).thenReturn(true);
+        when(thing.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
+
+        Shelly2DaliStatus dali = new Shelly2DaliStatus();
+        dali.cgCount = 2;
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.dali = dali;
+        result.light0 = lightStatus(0, true, 55.0);
+
+        client.fillDeviceStatus(profile.status, result, true);
+
+        assertThat(profile.status.daliCgCount, is(2));
+        assertThat(profile.status.daliScanActive, is(false));
+        verify(thing).updateChannel(CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_SCAN_ACTIVE, OnOffType.OFF);
+    }
+
+    @Test
+    void daliChannelsAreCreatedOnFirstStatusRefreshBeforeDimmerChannelCreation() throws ShellyApiException {
+        ShellyDeviceProfile profile = dimmerProfile(1);
+        Shelly2ApiClient client = newClient(profile);
+        when(thing.areChannelsCreated()).thenReturn(false);
+        Thing ohThing = mock(Thing.class);
+        when(ohThing.getUID()).thenReturn(new ThingUID("shelly", "shellyplusdalidimmer", "test"));
+        when(thing.getThing()).thenReturn(ohThing);
+
+        Shelly2DaliStatus dali = new Shelly2DaliStatus();
+        dali.cgCount = 1;
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.dali = dali;
+        result.light0 = lightStatus(0, true, 55.0);
+
+        client.fillDeviceStatus(profile.status, result, true);
+
+        verify(thing).updateChannelDefinitions(
+                argThat(channels -> channels.containsKey(CHANNEL_GROUP_DIMMER_CONTROL + "#" + CHANNEL_DALI_DEVICES)));
     }
 
     @Test

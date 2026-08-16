@@ -802,6 +802,8 @@ public class Shelly1ApiJsonDTO {
         public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;
         public @Nullable ArrayList<@NonNull ShellyShortLightStatus> dimmers;
+        public @Nullable Integer daliCgCount; // Gen2 DALI Dimmer: control gear count on the DALI bus
+        public @Nullable Boolean daliScanActive; // Gen2 DALI Dimmer: a bus scan is currently in progress
         public ArrayList<ShellyRollerStatus> rollers;
         public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellySettingsMeter> meters;

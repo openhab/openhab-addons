@@ -1003,6 +1003,19 @@ public class ShellyComponents {
         return updated;
     }
 
+    public static boolean updateDali(ShellyThingInterface thingHandler, ShellySettingsStatus status)
+            throws ShellyApiException {
+        boolean updated = false;
+        String groupName = thingHandler.getProfile().getControlGroup(0);
+        if (status.daliCgCount != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_DALI_DEVICES, getDecimal(status.daliCgCount));
+        }
+        if (status.daliScanActive != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_DALI_SCAN_ACTIVE, getOnOff(status.daliScanActive));
+        }
+        return updated;
+    }
+
     public static boolean hasAddon(ShellySettingsStatus status) {
         return status.extTemperature != null || status.extHumidity != null || status.extVoltage != null
                 || status.extDigitalInput != null || status.extAnalogInput != null;
