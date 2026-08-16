@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLightModelHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
-    private final Map<Integer, ShellyLightModel> lightModels; // TODO do we need multiple LightModel instances?
+    protected final Map<Integer, ShellyLightModel> lightModels;
 
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, final ShellyThingTable thingTable,
@@ -177,7 +177,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
     /**
      * PHASE 1: Updates the light model from the incoming command (write before read)
-     * 
+     *
      * @param model the light model to update
      * @param channelUID the channel UID of the command
      * @param command the command to handle
@@ -251,7 +251,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
     /**
      * PHASE 2: Updates the device via the API from the final light model state (read after write)
-     * 
+     *
      * @param model the light model to update
      * @param lightId the light ID
      * @throws ShellyApiException if the API call fails
@@ -259,17 +259,17 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     public void updateRemoteDeviceFromLightModel(ShellyLightModel model, int lightId) throws ShellyApiException {
         // POWER:
         /**
-         * 
+         *
          * TODO: INFORMATION FOR CODE REVIEWER RELATING TO THE PRIOR IMPLEMENTATION OF POWER ON/OFF COMMANDS
-         * 
+         *
          * The prior code used three different API power on/off commands in response to different channel commands
          * as follows:
-         * 
+         *
          * - CHANNEL_LIGHT_POWER sends api.setLightTurn(lightId, ..)
          * - CHANNEL_BRIGHTNESS sends api.setLightParm(lightId, SHELLY_LIGHT_TURN, ..)
          * - CHANNEL_COLOR_PICKER sends parms.put(SHELLY_LIGHT_TURN, ..)
          * - and .. probably CHANNEL_COLOR_GAIN _should_ send api.setLightParm(lightId, SHELLY_LIGHT_TURN, ..)
-         * 
+         *
          * By contrast the new LightModel allows any channel input (primary, power, brightness, gain, color picker,
          * etc.) to change the model's power on/off state in a consistent manner regardless of which channel was used.
          * So therefore we use a single API call to set the power state based on the model's final state.
@@ -344,7 +344,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
     /**
      * PHASE 1: Updates the light model from the incoming status DTO (write before read)
-     * 
+     *
      * @param model the light model to update
      * @param light the incoming light status DTO
      */
@@ -403,7 +403,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
     /**
      * PHASE 2: Updates the channels from the incoming light status DTO (write before read)
-     * 
+     *
      * @param light the incoming light status DTO
      * @param lightId the light ID
      *
@@ -433,7 +433,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
     /**
      * PHASE 3: Updates the channels from the final light model state (read after write)
-     * 
+     *
      * @param model the light model to update
      *
      * @return true if any channel was updated, false otherwise
@@ -444,19 +444,19 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         String group = null;
 
         // POWER:
-        if (model.isOnOffDirty()) {
+        if (model.isOnOffDirty() && !(profile.isRGBW2 && !profile.inColor)) {
             group = buildControlGroupName(profile, channelId);
             updated |= updateChannel(group, CHANNEL_LIGHT_POWER, model.getOnOffState());
         }
 
         // MODE:
-        if (profile.isBulb && model.isModeDirty()) {
+        if (model.isModeDirty() && profile.isBulb) {
             group = CHANNEL_GROUP_LIGHT_CONTROL;
             updated |= updateChannel(group, CHANNEL_LIGHT_COLOR_MODE, model.getModeState());
         }
 
         // COLOR:
-        if (profile.inColor && model.isColorDirty()) {
+        if (model.isColorDirty() && profile.inColor) {
             group = CHANNEL_GROUP_COLOR_CONTROL;
             updated |= updateChannel(group, CHANNEL_COLOR_RED, model.getColorState(R));
             updated |= updateChannel(group, CHANNEL_COLOR_GREEN, model.getColorState(G));
@@ -469,26 +469,26 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
 
         // GAIN:
-        if (profile.inColor && model.isGainDirty()) {
+        if (model.isGainDirty() && profile.inColor) {
             group = CHANNEL_GROUP_COLOR_CONTROL;
             updated |= updateChannel(group, CHANNEL_COLOR_GAIN, model.getGainState());
         }
 
         // EFFECT:
-        if (profile.inColor && model.isEffectDirty()) {
+        if (model.isEffectDirty() && profile.inColor) {
             group = CHANNEL_GROUP_COLOR_CONTROL;
             updated |= updateChannel(group, CHANNEL_COLOR_EFFECT, model.getEffectState());
         }
 
         // BRIGHTNESS:
-        if (((!profile.inColor && (!profile.isGen2 || profile.isRGBW2)) || profile.isBulb)
-                && model.isBrightnessDirty()) {
+        if (model.isBrightnessDirty()
+                && ((!profile.inColor && (!profile.isGen2 || profile.isRGBW2)) || profile.isBulb)) {
             group = buildWhiteGroupName(profile, channelId);
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
         }
 
         // COLOR TEMP:
-        if (!profile.inColor && !profile.isRGBW2 && model.isColorTempDirty()) {
+        if (model.isColorTempDirty() && !profile.inColor && !profile.isRGBW2) {
             group = buildWhiteGroupName(profile, channelId);
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
         }
