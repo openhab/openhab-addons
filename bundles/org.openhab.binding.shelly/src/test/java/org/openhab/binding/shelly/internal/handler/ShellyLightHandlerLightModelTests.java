@@ -21,9 +21,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
@@ -68,7 +70,7 @@ class ShellyLightHandlerLightModelTests {
      */
     public class TestLightHandler extends ShellyLightHandler {
 
-        public Map<String, State> updates;
+        public @NonNullByDefault({}) Map<String, State> updates;
 
         public TestLightHandler(Thing thing, ShellyTranslationProvider translationProvider,
                 ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable, Shelly1CoapServer coapServer,
@@ -76,6 +78,7 @@ class ShellyLightHandlerLightModelTests {
             super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
         }
 
+        @SuppressWarnings("unchecked")
         public static TestLightHandler create(ThingTypeUID thingTypeUID) {
             try {
                 // use Unsafe to allocate an instance of TestLightHandler without calling its constructor
@@ -89,25 +92,12 @@ class ShellyLightHandlerLightModelTests {
                 // manually initialize required fields
                 handler.profile = new ShellyDeviceProfile(thingTypeUID);
                 handler.profile.initialized = true;
-                handler.profile.isLight = true;
-                handler.profile.isRGBW2 = false;
-                handler.profile.inColor = false;
-                handler.profile.device.mode = "white";
 
                 if (THING_TYPE_SHELLYBULB.equals(thingTypeUID)) {
-                    handler.profile.isBulb = true;
                     handler.profile.inColor = true;
-                    handler.profile.isRGBW2 = false;
-                    handler.profile.device.mode = "color";
-                } else if (THING_TYPE_SHELLYDUO.equals(thingTypeUID)) {
-                    handler.profile.isDuo = true;
-                    handler.profile.inColor = false;
-                    handler.profile.isRGBW2 = false;
-                    handler.profile.device.mode = "white";
-                } else if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
-                    handler.profile.isRGBW2 = true;
+                }
+                if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
                     handler.profile.inColor = true;
-                    handler.profile.device.mode = "color";
                 }
 
                 Field lmField = ShellyLightHandler.class.getDeclaredField("lightModels");
@@ -164,7 +154,7 @@ class ShellyLightHandlerLightModelTests {
         }
 
         public Map<String, State> getUpdates() {
-            return updates;
+            return Objects.requireNonNull(updates);
         }
     }
 
@@ -191,7 +181,8 @@ class ShellyLightHandlerLightModelTests {
         return status;
     }
 
-    private static Object getField(Object target, Class<?> declaringClass, String fieldName) throws Exception {
+    private static @Nullable Object getField(Object target, Class<?> declaringClass, String fieldName)
+            throws Exception {
         Field field = declaringClass.getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(target);
@@ -206,7 +197,7 @@ class ShellyLightHandlerLightModelTests {
                 PercentType.HUNDRED);
 
         Map<String, State> updates = handler.getUpdates();
-        assertEquals(10, updates.size());
+        assertEquals(9, updates.size());
         assertEquals(PercentType.HUNDRED, updates.get("color#red"));
         assertEquals(PercentType.ZERO, updates.get("color#green"));
         assertEquals(PercentType.ZERO, updates.get("color#blue"));
@@ -218,7 +209,6 @@ class ShellyLightHandlerLightModelTests {
         assertEquals(100, ((HSBType) obj).getSaturation().intValue());
         assertEquals(0, ((HSBType) obj).getBrightness().intValue());
         assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR));
-        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_BRIGHTNESS));
         assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP));
         assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP_ABS));
 
@@ -365,6 +355,7 @@ class ShellyLightHandlerLightModelTests {
     void updateDeviceStatusCreatesModelAndUpdatesColorChannels() throws Exception {
         TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
         Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
 
         ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 100, 80, 4000, 2, true);
         when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
@@ -389,6 +380,7 @@ class ShellyLightHandlerLightModelTests {
     void updateDeviceStatusUpdatesPrimaryChannelsWhenAvailable() throws Exception {
         TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
         Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
 
         ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 75, 60, 3500, 0, false);
         when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
@@ -398,7 +390,6 @@ class ShellyLightHandlerLightModelTests {
         assertTrue(updated);
         Map<String, State> updates = handler.getUpdates();
         assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR));
-        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_BRIGHTNESS));
         assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP));
         assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP_ABS));
     }
@@ -407,6 +398,7 @@ class ShellyLightHandlerLightModelTests {
     void updateDeviceStatusSynchronizesModelModeFromProfileDeviceMode() throws Exception {
         TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
         Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
         handler.profile.device.mode = "white";
 
         ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 50, 40, 3000, 0, false);
@@ -423,12 +415,13 @@ class ShellyLightHandlerLightModelTests {
     void updateDeviceStatusUpdatesTimerChannelsFromProfileSettings() throws Exception {
         TestLightHandler handler = TestLightHandler.create(THING_TYPE_SHELLYBULB);
         Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
 
         ShellySettingsRgbwLight settings = new ShellySettingsRgbwLight();
         settings.autoOn = 5.0;
         settings.autoOff = 10.0;
         handler.profile.settings.lights = new ArrayList<>();
-        handler.profile.settings.lights.add(settings);
+        Objects.requireNonNull(handler.profile.settings.lights).add(settings);
 
         ShellyStatusLightChannel dto = lightChannel(true, 0, 0, 255, 0, 30, 20, 4000, 0, true);
         when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
@@ -439,8 +432,17 @@ class ShellyLightHandlerLightModelTests {
         Map<String, State> updates = handler.getUpdates();
 
         assertEquals(OnOffType.ON, updates.get("control#timerActive"));
-        assertEquals(5, ((QuantityType<?>) updates.get("control#autoOn")).toUnit(Units.SECOND).intValue());
-        assertEquals(10, ((QuantityType<?>) updates.get("control#autoOff")).toUnit(Units.SECOND).intValue());
+        State qty = updates.get("control#autoOn");
+        assertTrue(qty instanceof QuantityType<?>);
+        QuantityType<?> sec = ((QuantityType<?>) qty).toUnit(Units.SECOND);
+        assertNotNull(sec);
+        assertEquals(5, sec.intValue());
+
+        qty = updates.get("control#autoOff");
+        assertTrue(qty instanceof QuantityType<?>);
+        sec = ((QuantityType<?>) qty).toUnit(Units.SECOND);
+        assertNotNull(sec);
+        assertEquals(10, sec.intValue());
     }
 
     // TODO add detail test for THING_TYPE_SHELLYPLUSRGBWPM / SHELLY2_PROFILE_RGBW

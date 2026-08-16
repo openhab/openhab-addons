@@ -207,7 +207,9 @@ class ShellyLightModelTest {
         assertNotNull(qty);
         qty = qty.toUnit(Units.KELVIN);
         assertNotNull(qty);
-        assertEquals(4000, qty.toUnit(Units.KELVIN).intValue());
+        QuantityType<?> kelvin = qty.toUnit(Units.KELVIN);
+        assertNotNull(kelvin);
+        assertEquals(4000, kelvin.intValue());
         assertEquals(Mode.WHITE, model.getMode());
     }
 

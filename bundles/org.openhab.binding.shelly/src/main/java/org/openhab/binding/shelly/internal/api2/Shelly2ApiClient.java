@@ -1282,10 +1282,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.ison = output;
         }
         lights.set(lightId, ds);
-        // if (channelUpdate) {
-        // The light model does this automatically
-        // ShellyComponents.updateLightMode(getThing(), status);
-        // }
+        if (channelUpdate) {
+            ShellyComponents.updateLightMode(getThing(), status);
+        }
         // Always true: signals the watchdog even if the channel value itself didn't change.
         return true;
     }
