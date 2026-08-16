@@ -48,6 +48,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link ShellyLightHandler} handles light (Bulb, Duo and RGBW2) specific commands and status. All other commands
  * will be routed of the ShellyBaseHandler.
@@ -75,23 +77,24 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
     @Override
     public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws IllegalArgumentException {
+        logger.trace("{}: handleDeviceCommand() channel {}, command {}", thingName, channelUID, command);
         String groupName = getString(channelUID.getGroupId());
         if (groupName.isEmpty()) {
             throw new IllegalArgumentException("Empty groupName");
         }
-
         try {
             acquireLock();
             try {
                 int lightId = getLightIdFromGroup(groupName);
-                if (lightModels.computeIfAbsent(lightId, id -> ShellyLightModel.create(this, id,
-                        thing.getThingTypeUID(), profile, DIM_STEPSIZE)) instanceof ShellyLightModel model) {
+                ShellyLightModel model = lightModels.get(lightId);
+                if (model == null) {
+                    model = ShellyLightModel.create(this, lightId, thing.getThingTypeUID(), profile, DIM_STEPSIZE);
                     model.acquire();
-                    updateLightModelFromChannelCommand(model, channelUID, command);
-                    updateRemoteDeviceFromLightModel(model, lightId);
-                    return true;
+                    lightModels.put(lightId, model);
                 }
-                return false;
+                updateLightModelFromChannelCommand(model, channelUID, command);
+                updateRemoteDeviceFromLightModel(model, lightId);
+                return true;
             } finally {
                 releaseLock();
             }
@@ -103,6 +106,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
     @Override
     public boolean updateDeviceStatus(ShellySettingsStatus genericStatus) throws ShellyApiException {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: updateDeviceStatus() called with {}", thingName, new Gson().toJson(genericStatus));
+        }
         if (!profile.isInitialized()) {
             logger.debug("{}: Device not yet initialized!", thingName);
             return false;
@@ -110,29 +116,25 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         if (!profile.isLight) {
             logger.debug("{}: ERROR: Device is not a light. but class ShellyHandlerLight is called!", thingName);
         }
-
         ShellyStatusLight status = api.getLightStatus();
-        logger.trace("{}: Updating light status in {} mode, {} channel(s)", thingName, profile.device.mode,
-                status.lights.size());
-
         boolean updated = false;
-
         try {
             acquireLock();
             int lightId = 0;
             for (ShellyStatusLightChannel light : status.lights) {
-                if (lightModels.computeIfAbsent(lightId, id -> ShellyLightModel.create(this, id,
-                        thing.getThingTypeUID(), profile, DIM_STEPSIZE)) instanceof ShellyLightModel model) {
+                ShellyLightModel model = lightModels.get(lightId);
+                if (model == null) {
+                    model = ShellyLightModel.create(this, lightId, thing.getThingTypeUID(), profile, DIM_STEPSIZE);
                     model.acquire();
-                    updateLightModelFromStatus(model, light);
-                    updated |= updateChannelsFromLightStatusDTO(light, lightId);
+                    lightModels.put(lightId, model);
                 }
+                updateLightModelFromStatus(model, light);
+                updated |= updateChannelsFromLightStatusDTO(light, lightId);
                 lightId++;
             }
         } finally {
             updated |= releaseLock();
         }
-
         return updated;
     }
 
@@ -184,6 +186,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @return true if the command was processed, false otherwise
      */
     private boolean updateLightModelFromChannelCommand(ShellyLightModel model, ChannelUID channelUID, Command command) {
+        logger.trace("{}: updateLightModelFromChannelCommand() channel {}, command {})", thingName, channelUID,
+                command);
         switch (channelUID.getIdWithoutGroup()) {
             default: // non-bulb commands will be handled by the generic handler
                 return false;
@@ -257,6 +261,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @throws ShellyApiException if the API call fails
      */
     public void updateRemoteDeviceFromLightModel(ShellyLightModel model, int lightId) throws ShellyApiException {
+        logger.trace("{}: updateRemoteDeviceFromLightModel() with [{}]", thingName, model);
         // POWER:
         /**
          *
@@ -349,6 +354,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @param light the incoming light status DTO
      */
     private void updateLightModelFromStatus(ShellyLightModel model, ShellyStatusLightChannel light) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: updateLightModelFromStatus() with {}", thingName, new Gson().toJson(light));
+        }
         // ON/OFF:
         if (light.ison != null) {
             model.setOnOff(light.ison);
@@ -410,6 +418,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @return true if any channel was updated, false otherwise
      */
     private boolean updateChannelsFromLightStatusDTO(ShellyStatusLightChannel light, int lightId) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: updateChannelsFromLightStatusDTO() with {}", thingName, new Gson().toJson(light));
+        }
         boolean updated = false;
         Integer channelId = lightId + 1;
         createLightChannels(light, lightId);
@@ -439,6 +450,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @return true if any channel was updated, false otherwise
      */
     public boolean updateDirtyChannelsForLightModel(ShellyLightModel model) {
+        logger.trace("{}: updateDirtyChannelsForLightModel() with [{}]", thingName, model);
         boolean updated = false;
         Integer channelId = model.getLightId() + 1;
         String group = null;

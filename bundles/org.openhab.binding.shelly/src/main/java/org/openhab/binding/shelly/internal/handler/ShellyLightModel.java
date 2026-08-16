@@ -531,7 +531,7 @@ public class ShellyLightModel extends LightModel {
 
     @Override
     public String toString() {
-        return "mode: %s, power: %s, gain/bri: %s, rgbw: %s, color-temp: %s, color-temp-abs: %s, effect: %s".formatted(
+        return "mode:%s, power:%s, gain/bri:%s, rgbw:%s, color-temp:%s, color-temp-abs:%s, effect:%s".formatted(
                 getMode(), getOnOffState(), getBrightnessState(), Arrays.toString(getRGBX()),
                 getColorTemperaturePercentState(), getColorTemperatureAbsoluteState(), getEffectState());
     }
