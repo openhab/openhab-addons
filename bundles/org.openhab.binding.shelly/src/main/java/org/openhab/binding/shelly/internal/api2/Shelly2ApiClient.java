@@ -260,6 +260,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.sntp.server = dc.sys.sntp.server;
         }
 
+        profile.initFromThingType(thingTypeUID);
         profile.isRoller = dc.cover0 != null;
         profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;
         profile.settings.relays = !profile.isCB ? fillRelaySettings(profile, dc) : fillBreakerSettings(profile, dc);
@@ -275,7 +276,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         List<ShellySettingsRoller> rollers = profile.settings.rollers;
         profile.numRollers = rollers != null ? rollers.size() : 0;
-        profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
+        profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0 || profile.isDimmer;
 
         ShellySettingsDevice device = profile.device;
         String realm = config.getRealm();
@@ -400,13 +401,21 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             // A dimmer exposes one light component per dimming channel (light:0, light:1, ...).
             // Multi-channel dimmers like the Pro Dimmer 2PM report more than one light component.
             int numDimmers = Math.max(1, countDimmers(dc));
-            ArrayList<@Nullable ShellySettingsDimmer> dimmers = new ArrayList<>();
-            profile.status.dimmers = new ArrayList<>();
+            ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
             for (int i = 0; i < numDimmers; i++) {
                 dimmers.add(new ShellySettingsDimmer());
-                profile.status.dimmers.add(new ShellyShortLightStatus());
             }
             profile.settings.dimmers = dimmers;
+            // keep the status list when the channel count is unchanged, a reset would wipe the
+            // brightness/ison values fetched by getStatus() in the same refresh cycle
+            ArrayList<ShellyShortLightStatus> statusDimmers = profile.status.dimmers;
+            if (statusDimmers == null || statusDimmers.size() != numDimmers) {
+                statusDimmers = new ArrayList<>(numDimmers);
+                for (int i = 0; i < numDimmers; i++) {
+                    statusDimmers.add(new ShellyShortLightStatus());
+                }
+                profile.status.dimmers = statusDimmers;
+            }
             fillDimmerSettings(profile, dc);
         }
         profile.status.thermostats = profile.isTRV ? new ArrayList<>() : null;
@@ -1189,6 +1198,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         throw new IllegalArgumentException("Update for invalid roller index");
     }
 
+    /**
+     * Copies Gen2 {@code light:N} config fields (auto-on/off, name) into the Gen1-compatible
+     * {@link ShellySettingsDimmer} entries that the shared dimmer handler reads.
+     */
     protected void fillDimmerSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
         List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
         if (!profile.isDimmer || dimmers == null) {
@@ -1275,18 +1288,31 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return ls;
     }
 
+    /**
+     * Merges a {@code light:N} NotifyStatus payload into the Gen1-compatible dimmer status arrays and,
+     * when {@code channelUpdate} is {@code true}, triggers a channel refresh via
+     * {@link ShellyComponents#updateDimmers}.
+     *
+     * @param id the component index used as a fallback when fw 1.6.1 omits {@code value.id}
+     * @return {@code true} if channels were updated
+     */
     private boolean updateDimmerStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
             boolean channelUpdate) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         if (!profile.isDimmer || value == null) {
             return false;
         }
-        if (value.id == null) { // fw 1.6.1
-            value.id = id;
+        Integer vId = value.id;
+        int dimId = vId != null ? vId : id;
+        if (vId == null) { // fw 1.6.1: light component missing id field
+            value.id = dimId;
         }
-        int dimmerId = getInteger(value.id);
 
-        ShellyShortLightStatus ds = status.dimmers.get(dimmerId);
+        ArrayList<ShellyShortLightStatus> dimmers = status.dimmers;
+        if (dimmers == null || dimId >= dimmers.size()) {
+            return false;
+        }
+        ShellyShortLightStatus ds = dimmers.get(dimId);
         Double brightness = value.brightness;
         if (brightness != null) {
             ds.brightness = brightness.intValue();
@@ -1294,7 +1320,32 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ds.ison = value.output;
         ds.hasTimer = value.timerStartedAt != null;
         ds.timerDuration = getDuration(value.timerStartedAt, value.timerDuration);
-        status.dimmers.set(dimmerId, ds);
+        dimmers.set(dimId, ds);
+
+        if (status.emeters != null && dimId < status.emeters.size()) {
+            ShellySettingsEMeter emeter = status.emeters.get(dimId);
+            if (value.voltage != null) {
+                emeter.voltage = value.voltage;
+            }
+            if (value.current != null) {
+                emeter.current = value.current;
+            }
+            if (value.apower != null) {
+                emeter.power = value.apower;
+            }
+            Shelly2Energy aenergy = value.aenergy;
+            if (aenergy != null) {
+                Double accumulatedEnergyWh = aenergy.total;
+                if (accumulatedEnergyWh != null) {
+                    emeter.total = accumulatedEnergyWh;
+                }
+                emeter.energyByMinute = byMinuteToWh(aenergy.byMinute);
+            }
+            updateMeter(status, dimId, emeter, channelUpdate);
+        }
+
+        updateDeviceInnerTemp(status, value.temperature);
+
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
 
@@ -1379,6 +1430,35 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
     private boolean updateLoraStatus(@Nullable Shelly2DeviceStatusLora value) throws ShellyApiException {
         return value != null && ShellyComponents.updateLoraStatus(getThing(), value);
+    }
+
+    /**
+     * Copies the Gen2 temperature payload into the Gen1-compatible {@code status.tmp} field.
+     * Keeps the highest observed temperature when multiple components report readings.
+     */
+    private void updateDeviceInnerTemp(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusTemp temperature) {
+        if (temperature == null) {
+            return;
+        }
+        Double tC = temperature.tC;
+        if (tC == null) {
+            return;
+        }
+        ShellySensorTmp tmp = status.tmp;
+        if (tmp == null) {
+            tmp = new ShellySensorTmp();
+            status.tmp = tmp;
+        }
+        Double currentTc = tmp.tC;
+        if (!getBool(tmp.isValid) || currentTc == null || tC > currentTc) {
+            tmp.isValid = true;
+            tmp.tC = tC;
+            tmp.tF = temperature.tF;
+            tmp.units = "C";
+        }
+        if (status.temperature == null || tC > status.temperature) {
+            status.temperature = tC;
+        }
     }
 
     protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {

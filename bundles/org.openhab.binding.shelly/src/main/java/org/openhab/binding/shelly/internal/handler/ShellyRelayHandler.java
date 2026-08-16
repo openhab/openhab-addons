@@ -337,6 +337,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             }
 
             if (!profile.isRoller) {
+                if (status.relays == null) {
+                    return updated;
+                }
                 logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
                 for (int i = 0; i < status.relays.size(); i++) {
                     createRelayChannels(status.relays.get(i), i);
@@ -344,6 +347,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             } else {
                 // Check for Relay in Roller Mode
+                if (status.rollers == null) {
+                    return updated;
+                }
                 logger.trace("{}: Updating {} rollers", thingName, profile.numRollers);
                 for (int i = 0; i < profile.numRollers; i++) {
                     ShellyRollerStatus roller = status.rollers.get(i);
