@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.measure.Quantity;
@@ -43,6 +42,7 @@ import org.openhab.binding.smartmeter.internal.helper.ProtocolMode;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -62,7 +62,7 @@ public class TestMeterReading {
     }
 
     @Test
-    public void testContinousReading() {
+    public void testContinuousReading() {
         final int executionCount = 5;
         MockMeterReaderConnector connector = getMockedConnector(false, () -> new Object());
         MeterDevice<Object> meter = getMeterDevice(connector);
