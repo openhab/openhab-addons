@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
@@ -29,6 +30,7 @@ import java.util.function.Supplier;
 import javax.measure.Quantity;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -55,6 +57,32 @@ public class TestMeterReading {
 
     private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration READ_PERIOD = Duration.ofMillis(100);
+
+    private class SourceTaskExecutor extends ScheduledThreadPoolExecutor {
+        private final CountDownLatch sourceTaskFinished = new CountDownLatch(1);
+        private @Nullable Thread sourceThread;
+
+        SourceTaskExecutor() {
+            super(2);
+        }
+
+        void markSourceTask() {
+            sourceThread = Thread.currentThread();
+        }
+
+        void awaitSourceTaskFinished() {
+            await(sourceTaskFinished, "The meter source task did not finish");
+        }
+
+        @Override
+        @NonNullByDefault({})
+        protected void afterExecute(Runnable runnable, Throwable throwable) {
+            super.afterExecute(runnable, throwable);
+            if (Thread.currentThread() == sourceThread) {
+                sourceTaskFinished.countDown();
+            }
+        }
+    }
 
     @AfterEach
     public void resetRxJavaPlugins() {
@@ -143,12 +171,13 @@ public class TestMeterReading {
         final int timeout = 1000;
         CountDownLatch readStarted = new CountDownLatch(1);
         CountDownLatch releaseRead = new CountDownLatch(1);
-        CountDownLatch emissionFinished = new CountDownLatch(1);
+        SourceTaskExecutor executorService = new SourceTaskExecutor();
         MockMeterReaderConnector connector = spy(getMockedConnector(true, () -> {
+            executorService.markSourceTask();
             readStarted.countDown();
             awaitUninterruptibly(releaseRead);
             throw new UncheckedIOException(new IOException("simulated read failure"));
-        }, emissionFinished::countDown));
+        }));
         MeterDevice<Object> meter = getMeterDevice(connector);
         @SuppressWarnings("unchecked")
         Consumer<Throwable> errorHandler = mock(Consumer.class);
@@ -160,13 +189,12 @@ public class TestMeterReading {
             return null;
         }).when(changeListener).errorOccurred(any());
         meter.addValueChangeListener(changeListener);
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
         Disposable disposable = meter.readValues(timeout, executorService, Duration.ZERO);
         try {
             await(readStarted, "The meter read did not start");
             await(timeoutOccurred, "The meter read did not time out");
             releaseRead.countDown();
-            await(emissionFinished, "The canceled meter read did not finish");
+            executorService.awaitSourceTaskFinished();
             verify(changeListener, times(1)).errorOccurred(any(TimeoutException.class));
             verifyNoInteractions(errorHandler);
         } finally {
@@ -176,13 +204,7 @@ public class TestMeterReading {
     }
 
     MockMeterReaderConnector getMockedConnector(boolean applyRetry, Supplier<Object> readNextSupplier) {
-        return getMockedConnector(applyRetry, readNextSupplier, () -> {
-        });
-    }
-
-    MockMeterReaderConnector getMockedConnector(boolean applyRetry, Supplier<Object> readNextSupplier,
-            Runnable emissionFinished) {
-        return new MockMeterReaderConnector("Test port", applyRetry, readNextSupplier, emissionFinished);
+        return new MockMeterReaderConnector("Test port", applyRetry, readNextSupplier);
     }
 
     MeterDevice<Object> getMeterDevice(ConnectorBase<Object> connector) {
