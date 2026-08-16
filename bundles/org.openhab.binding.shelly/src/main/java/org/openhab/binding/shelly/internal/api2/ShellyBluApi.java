@@ -87,6 +87,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private long lastTimeStampPacket = 0;
     private static final int PACKET_TIMESTAMP_TRESHOLD = 10;
     private @Nullable Integer warnedDataVersion;
+    private boolean warnedDataVersionSet;
 
     /**
      * Regular constructor - called by Thing handler
@@ -433,11 +434,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         }
         Integer version = blu.dataVersion;
         if ((version == null || version != BTHomeDecoder.SCRIPT_DATA_VERSION)
-                && !Objects.equals(version, warnedDataVersion)) {
+                && (!warnedDataVersionSet || !Objects.equals(version, warnedDataVersion))) {
             logger.warn(
                     "{}: BLU event data version {} doesn't match the binding's expected version {}; the installed oh-blu-scanner.js might be outdated or a custom override, decoding could be incomplete",
                     thingName, version, BTHomeDecoder.SCRIPT_DATA_VERSION);
             warnedDataVersion = version;
+            warnedDataVersionSet = true;
         }
         JsonObject decoded = BTHomeDecoder.decode(raw);
         JsonObject merged = gson.toJsonTree(blu).getAsJsonObject();
