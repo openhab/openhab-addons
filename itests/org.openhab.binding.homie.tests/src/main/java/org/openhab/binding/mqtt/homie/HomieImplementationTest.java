@@ -44,6 +44,7 @@ import org.openhab.binding.homie.internal.homie300.Device;
 import org.openhab.binding.homie.internal.homie300.DeviceAttributes;
 import org.openhab.binding.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.homie.internal.homie300.DeviceCallback;
+import org.openhab.binding.homie.internal.homie300.Node;
 import org.openhab.binding.homie.internal.homie300.NodeAttributes;
 import org.openhab.binding.homie.internal.homie300.Property;
 import org.openhab.binding.homie.internal.homie300.PropertyAttributes;
@@ -59,7 +60,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.UnDefType;
-import org.w3c.dom.Node;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homie device tree.
