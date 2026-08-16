@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * {@link FileReader} reads a file (e.g. a captured JSON API response fixture) into a {@link String}, relative to
- * the module's working directory (i.e. paths like {@code "src/test/ata.json"} are read as-is, not resolved via the
- * test classpath).
+ * the module's working directory (i.e. paths like {@code "src/test/resources/ata.json"} are read as-is, not
+ * resolved via the test classpath).
  *
  * @author Bernd Weymann - Initial contribution
  */

@@ -29,6 +29,15 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHA
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_RSSI;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_HAS_ENERGY_CONSUMED_METER;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_HAS_HALF_DEGREE_INCREMENTS;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_HAS_STANDBY;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_HAS_SWING;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_MAX_TEMP_COOL_DRY;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_MAX_TEMP_HEAT;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_MIN_TEMP_COOL_DRY;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_MIN_TEMP_HEAT;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATA_NUMBER_OF_FAN_SPEEDS;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ACCOUNT;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ATA_UNIT;
 
@@ -44,6 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeRequestPacer;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaCapabilities;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaUnit;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeSetting;
@@ -512,5 +522,58 @@ class MelCloudHomeAtaUnitHandlerTest {
 
         // Assert
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_OUTDOOR_TEMPERATURE));
+    }
+
+    @Test
+    void whenUnitUpdateArrivesThenCapabilitiesAreWrittenAsThingProperties() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("Power", "True");
+        MelCloudHomeAtaCapabilities capabilities = new MelCloudHomeAtaCapabilities();
+        capabilities.numberOfFanSpeeds = 5;
+        capabilities.minTempHeat = 10.0;
+        capabilities.maxTempHeat = 31.0;
+        capabilities.minTempCoolDry = 16.0;
+        capabilities.maxTempCoolDry = 31.0;
+        capabilities.hasHalfDegreeIncrements = true;
+        capabilities.hasSwing = true;
+        capabilities.hasStandby = true;
+        capabilities.hasEnergyConsumedMeter = true;
+        unit.capabilities = capabilities;
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        Map<String, String> properties = handler.getThing().getProperties();
+        assertEquals("5", properties.get(PROPERTY_ATA_NUMBER_OF_FAN_SPEEDS));
+        assertEquals("10.0", properties.get(PROPERTY_ATA_MIN_TEMP_HEAT));
+        assertEquals("31.0", properties.get(PROPERTY_ATA_MAX_TEMP_HEAT));
+        assertEquals("16.0", properties.get(PROPERTY_ATA_MIN_TEMP_COOL_DRY));
+        assertEquals("31.0", properties.get(PROPERTY_ATA_MAX_TEMP_COOL_DRY));
+        assertEquals("true", properties.get(PROPERTY_ATA_HAS_HALF_DEGREE_INCREMENTS));
+        assertEquals("true", properties.get(PROPERTY_ATA_HAS_SWING));
+        assertEquals("true", properties.get(PROPERTY_ATA_HAS_STANDBY));
+        assertEquals("true", properties.get(PROPERTY_ATA_HAS_ENERGY_CONSUMED_METER));
+    }
+
+    @Test
+    void whenSecondUnitUpdateArrivesWithDifferentCapabilitiesThenPropertiesAreNotOverwritten() {
+        // Arrange: capabilities are static for a unit's lifetime (ADR-009-adjacent assumption), so the handler
+        // writes them once and ignores any later change rather than re-writing on every /context poll.
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit firstUnit = unitWithSettings("Power", "True");
+        firstUnit.capabilities.numberOfFanSpeeds = 5;
+        MelCloudHomeAtaUnit secondUnit = unitWithSettings("Power", "True");
+        secondUnit.capabilities.numberOfFanSpeeds = 3;
+
+        // Act
+        handler.onAtaUnitUpdated(firstUnit);
+        handler.onAtaUnitUpdated(secondUnit);
+
+        // Assert
+        assertEquals("5", handler.getThing().getProperties().get(PROPERTY_ATA_NUMBER_OF_FAN_SPEEDS));
     }
 }

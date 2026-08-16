@@ -32,8 +32,8 @@ Several handler/discovery call sites also interpolate a raw `unitId` or
 `"Telemetry poll failed for ATA unit {}"`, `"Found device: {} : {}"` with a
 raw properties map).
 
-Real captured payloads confirmed this in practice: `src/test/ata.json` and
-`src/test/atw-ftc7.json` (added as MELCloud Home Thing-handler test fixtures)
+Real captured payloads confirmed this in practice: `src/test/resources/ata.json` and
+`src/test/resources/atw-ftc7.json` (added as MELCloud Home Thing-handler test fixtures)
 contain a real account holder's name, e-mail, building ID, unit ID, and
 `connectedInterfaceIdentifier` (MAC address) — exactly the kind of data that
 was ending up unredacted in `debug`/`trace` logs whenever these responses
@@ -64,7 +64,7 @@ personal data or identifiers:
   currently do that, and a full JSON-tree-aware redactor was judged
   disproportionate to the risk.
   - The generic `name` key is deliberately **not** in the redaction list.
-    Testing against the real `src/test/ata.json` capture caught this: the
+    Testing against the real `src/test/resources/ata.json` capture caught this: the
     MELCloud Home API reuses `name` as a technical field-name inside its
     `settings` arrays (`{"name": "OperationMode", "value": "Cool"}`), so
     redacting it wholesale would also destroy unrelated, non-sensitive

@@ -24,16 +24,16 @@ import org.openhab.binding.melcloud.internal.mock.FileReader;
 
 /**
  * Unit tests for {@link SensitiveDataMasker}, including regression tests against the real MELCloud Home API
- * captures {@code src/test/ata.json} and {@code src/test/atw-ftc7.json} (see ADR-010) to confirm that personal
- * data and hardware identifiers no longer survive masking.
+ * captures {@code src/test/resources/ata.json} and {@code src/test/resources/atw-ftc7.json} (see ADR-010) to
+ * confirm that personal data and hardware identifiers no longer survive masking.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 class SensitiveDataMaskerTest {
 
-    private static final String ATA_FIXTURE = "src/test/ata.json";
-    private static final String ATW_FIXTURE = "src/test/atw-ftc7.json";
+    private static final String ATA_FIXTURE = "src/test/resources/ata.json";
+    private static final String ATW_FIXTURE = "src/test/resources/atw-ftc7.json";
 
     @Test
     void whenIdIsLongerThanFourCharactersThenMaskIdKeepsLastFourVisible() {

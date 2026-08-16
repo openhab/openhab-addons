@@ -16,12 +16,14 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwCapabilities;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 import org.openhab.binding.melcloud.internal.home.config.MelCloudHomeUnitConfig;
@@ -73,6 +75,7 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     private @Nullable MelCloudHomeAccountHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> telemetryFuture;
     private volatile @Nullable MelCloudHomeAtwUnit lastKnownUnit;
+    private volatile boolean capabilitiesPropertiesSet;
 
     public MelCloudHomeAtwUnitHandler(Thing thing) {
         super(thing);
@@ -233,6 +236,7 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     @Override
     public void onAtwUnitUpdated(MelCloudHomeAtwUnit unit) {
         lastKnownUnit = unit;
+        updateCapabilityProperties(unit.capabilities);
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
         updateState(CHANNEL_OPERATION_STATUS, new StringType(unit.getOperationStatus()));
@@ -279,6 +283,28 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         } else {
             updateState(CHANNEL_RSSI, UnDefType.UNDEF);
         }
+    }
+
+    /**
+     * Writes the unit's capability flags as Thing properties, once. Capabilities are static for the lifetime of a
+     * unit (they don't change between {@code /context} polls), so there is no need to re-write them on every update.
+     *
+     * @param capabilities the unit's capability flags, as last reported by the API
+     */
+    private void updateCapabilityProperties(MelCloudHomeAtwCapabilities capabilities) {
+        if (capabilitiesPropertiesSet) {
+            return;
+        }
+        updateProperties(Map.of(PROPERTY_ATW_HAS_HOT_WATER, String.valueOf(capabilities.hasHotWater),
+                PROPERTY_ATW_HAS_ZONE2, String.valueOf(capabilities.hasZone2), PROPERTY_ATW_HAS_HALF_DEGREES,
+                String.valueOf(capabilities.hasHalfDegrees), PROPERTY_ATW_HAS_COOLING_MODE,
+                String.valueOf(capabilities.hasCoolingMode), PROPERTY_ATW_HAS_MEASURED_ENERGY_CONSUMPTION,
+                String.valueOf(capabilities.hasMeasuredEnergyConsumption), PROPERTY_ATW_HAS_MEASURED_ENERGY_PRODUCTION,
+                String.valueOf(capabilities.hasMeasuredEnergyProduction), PROPERTY_ATW_HAS_ESTIMATED_ENERGY_CONSUMPTION,
+                String.valueOf(capabilities.hasEstimatedEnergyConsumption),
+                PROPERTY_ATW_HAS_ESTIMATED_ENERGY_PRODUCTION, String.valueOf(capabilities.hasEstimatedEnergyProduction),
+                PROPERTY_ATW_FTC_MODEL, String.valueOf(capabilities.ftcModel)));
+        capabilitiesPropertiesSet = true;
     }
 
     /**

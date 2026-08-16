@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaCapabilities;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaUnit;
 import org.openhab.binding.melcloud.internal.home.config.MelCloudHomeUnitConfig;
@@ -111,6 +112,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
     private @Nullable MelCloudHomeAccountHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> telemetryFuture;
     private volatile @Nullable MelCloudHomeAtaUnit lastKnownUnit;
+    private volatile boolean capabilitiesPropertiesSet;
 
     public MelCloudHomeAtaUnitHandler(Thing thing) {
         super(thing);
@@ -277,6 +279,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
     @Override
     public void onAtaUnitUpdated(MelCloudHomeAtaUnit unit) {
         lastKnownUnit = unit;
+        updateCapabilityProperties(unit.capabilities);
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
         Integer operationModeCode = OPERATION_MODE_WORD_TO_CODE.get(unit.getOperationMode());
@@ -325,6 +328,29 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         } else {
             updateState(CHANNEL_RSSI, UnDefType.UNDEF);
         }
+    }
+
+    /**
+     * Writes the unit's capability flags/limits as Thing properties, once. Capabilities are static for the lifetime
+     * of a unit (they don't change between {@code /context} polls), so there is no need to re-write them on every
+     * update.
+     *
+     * @param capabilities the unit's capability flags/limits, as last reported by the API
+     */
+    private void updateCapabilityProperties(MelCloudHomeAtaCapabilities capabilities) {
+        if (capabilitiesPropertiesSet) {
+            return;
+        }
+        updateProperties(Map.of(PROPERTY_ATA_NUMBER_OF_FAN_SPEEDS, String.valueOf(capabilities.numberOfFanSpeeds),
+                PROPERTY_ATA_MIN_TEMP_HEAT, String.valueOf(capabilities.minTempHeat), PROPERTY_ATA_MAX_TEMP_HEAT,
+                String.valueOf(capabilities.maxTempHeat), PROPERTY_ATA_MIN_TEMP_COOL_DRY,
+                String.valueOf(capabilities.minTempCoolDry), PROPERTY_ATA_MAX_TEMP_COOL_DRY,
+                String.valueOf(capabilities.maxTempCoolDry), PROPERTY_ATA_HAS_HALF_DEGREE_INCREMENTS,
+                String.valueOf(capabilities.hasHalfDegreeIncrements), PROPERTY_ATA_HAS_SWING,
+                String.valueOf(capabilities.hasSwing), PROPERTY_ATA_HAS_STANDBY,
+                String.valueOf(capabilities.hasStandby), PROPERTY_ATA_HAS_ENERGY_CONSUMED_METER,
+                String.valueOf(capabilities.hasEnergyConsumedMeter)));
+        capabilitiesPropertiesSet = true;
     }
 
     /**

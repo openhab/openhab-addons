@@ -31,6 +31,15 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHA
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_RSSI;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_FTC_MODEL;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_COOLING_MODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_ESTIMATED_ENERGY_CONSUMPTION;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_ESTIMATED_ENERGY_PRODUCTION;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_HALF_DEGREES;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_HOT_WATER;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_MEASURED_ENERGY_CONSUMPTION;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_MEASURED_ENERGY_PRODUCTION;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_ZONE2;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ACCOUNT;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ATW_UNIT;
 
@@ -46,6 +55,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeRequestPacer;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwCapabilities;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeSetting;
@@ -328,5 +338,58 @@ class MelCloudHomeAtwUnitHandlerTest {
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ENERGY_CONSUMED));
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ENERGY_PRODUCED));
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_COP));
+    }
+
+    @Test
+    void whenUnitUpdateArrivesThenCapabilitiesAreWrittenAsThingProperties() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+        MelCloudHomeAtwCapabilities capabilities = new MelCloudHomeAtwCapabilities();
+        capabilities.hasHotWater = true;
+        capabilities.hasZone2 = false;
+        capabilities.hasHalfDegrees = true;
+        capabilities.hasCoolingMode = true;
+        capabilities.hasMeasuredEnergyConsumption = false;
+        capabilities.hasMeasuredEnergyProduction = false;
+        capabilities.hasEstimatedEnergyConsumption = true;
+        capabilities.hasEstimatedEnergyProduction = true;
+        capabilities.ftcModel = 5;
+        unit.capabilities = capabilities;
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        Map<String, String> properties = handler.getThing().getProperties();
+        assertEquals("true", properties.get(PROPERTY_ATW_HAS_HOT_WATER));
+        assertEquals("false", properties.get(PROPERTY_ATW_HAS_ZONE2));
+        assertEquals("true", properties.get(PROPERTY_ATW_HAS_HALF_DEGREES));
+        assertEquals("true", properties.get(PROPERTY_ATW_HAS_COOLING_MODE));
+        assertEquals("false", properties.get(PROPERTY_ATW_HAS_MEASURED_ENERGY_CONSUMPTION));
+        assertEquals("false", properties.get(PROPERTY_ATW_HAS_MEASURED_ENERGY_PRODUCTION));
+        assertEquals("true", properties.get(PROPERTY_ATW_HAS_ESTIMATED_ENERGY_CONSUMPTION));
+        assertEquals("true", properties.get(PROPERTY_ATW_HAS_ESTIMATED_ENERGY_PRODUCTION));
+        assertEquals("5", properties.get(PROPERTY_ATW_FTC_MODEL));
+    }
+
+    @Test
+    void whenSecondUnitUpdateArrivesWithDifferentCapabilitiesThenPropertiesAreNotOverwritten() {
+        // Arrange: capabilities are static for a unit's lifetime, so the handler writes them once and ignores any
+        // later change rather than re-writing on every /context poll.
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit firstUnit = unitWithSettings("Power", "True");
+        firstUnit.capabilities.ftcModel = 5;
+        MelCloudHomeAtwUnit secondUnit = unitWithSettings("Power", "True");
+        secondUnit.capabilities.ftcModel = 3;
+
+        // Act
+        handler.onAtwUnitUpdated(firstUnit);
+        handler.onAtwUnitUpdated(secondUnit);
+
+        // Assert
+        assertEquals("5", handler.getThing().getProperties().get(PROPERTY_ATW_FTC_MODEL));
     }
 }
