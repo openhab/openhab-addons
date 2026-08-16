@@ -758,7 +758,11 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYPRO3EM400, 3), //
             Map.entry(THING_TYPE_SHELLYPRODIMMER1PM, 1), //
             Map.entry(THING_TYPE_SHELLYPRODIMMER2PM, 2), //
-            Map.entry(THING_TYPE_SHELLYPRODIMMER10V, 1));
+            Map.entry(THING_TYPE_SHELLYPRODIMMER10V, 1), //
+            Map.entry(THING_TYPE_SHELLYPLUSDIMMER, 1), //
+            Map.entry(THING_TYPE_SHELLYPLUSDIMMERUS, 1), //
+            Map.entry(THING_TYPE_SHELLYPLUSDIMMER10V, 1), //
+            Map.entry(THING_TYPE_SHELLYPLUSDALIDIMMER, 1));
 
     // Number of inputs
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //

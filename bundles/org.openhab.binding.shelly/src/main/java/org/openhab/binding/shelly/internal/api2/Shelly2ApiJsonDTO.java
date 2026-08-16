@@ -604,6 +604,7 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Double apower;
             public @Nullable Double voltage;
             public @Nullable Double current;
+            public @Nullable Shelly2Energy aenergy;
             public @Nullable Shelly2DeviceStatusTemp temperature;
         }
 
