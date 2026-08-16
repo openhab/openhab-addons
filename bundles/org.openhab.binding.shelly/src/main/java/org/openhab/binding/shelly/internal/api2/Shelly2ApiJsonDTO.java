@@ -770,6 +770,20 @@ public class Shelly2ApiJsonDTO {
                 public @Nullable String[] errors;
             }
 
+            public static class Shelly2DaliScanStatus {
+                @SerializedName("cg_count")
+                public @Nullable Integer cgCount;
+                @SerializedName("started_at")
+                public @Nullable Double startedAt;
+                public @Nullable ArrayList<String> errors;
+            }
+
+            public static class Shelly2DaliStatus {
+                @SerializedName("cg_count")
+                public @Nullable Integer cgCount;
+                public @Nullable Shelly2DaliScanStatus scan;
+            }
+
             public static class Shelly2RGBWStatus {
                 public @Nullable Integer id;
                 public @Nullable String source;
@@ -902,6 +916,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+
+            @SerializedName("dali")
+            public @Nullable Shelly2DaliStatus dali;
         }
 
         public class Shelly2DeviceStatusSys {
