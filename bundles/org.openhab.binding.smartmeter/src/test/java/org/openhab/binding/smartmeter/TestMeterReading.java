@@ -78,7 +78,7 @@ public class TestMeterReading {
         @NonNullByDefault({})
         protected void afterExecute(Runnable runnable, Throwable throwable) {
             super.afterExecute(runnable, throwable);
-            if (Thread.currentThread() == sourceThread) {
+            if (Thread.currentThread().equals(sourceThread)) {
                 sourceTaskFinished.countDown();
             }
         }
