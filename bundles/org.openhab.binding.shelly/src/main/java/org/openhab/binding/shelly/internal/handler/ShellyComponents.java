@@ -894,6 +894,12 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
                                 Units.PERCENT));
+                if (light.temp != null) {
+                    ShellyColorUtils col = new ShellyColorUtils();
+                    col.setMinMaxTemp(profile.minTemp, profile.maxTemp);
+                    col.setTemp(getInteger(light.temp));
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
+                }
             }
         }
         return updated;

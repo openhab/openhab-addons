@@ -34,6 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -65,6 +66,8 @@ public class Shelly2ApiRpcLightDispatchTest {
     private static class StubApiRpc extends Shelly2ApiRpc {
         final List<String> calledMethods = new ArrayList<>();
         final List<Shelly2RpcRequestParams> calledParams = new ArrayList<>();
+        final List<Object> cannedResponses = new ArrayList<>();
+        private int cannedIndex = 0;
 
         StubApiRpc(ShellyThingInterface thing, ShellyApiConfiguration config) {
             super("test", Mockito.mock(ShellyThingTable.class), thing, config, Mockito.mock(WebSocketClient.class),
@@ -76,6 +79,9 @@ public class Shelly2ApiRpcLightDispatchTest {
             calledMethods.add(method);
             if (params instanceof Shelly2RpcRequestParams) {
                 calledParams.add((Shelly2RpcRequestParams) params);
+            }
+            if (cannedIndex < cannedResponses.size()) {
+                return classOfT.cast(cannedResponses.get(cannedIndex++));
             }
             try {
                 return classOfT.getDeclaredConstructor().newInstance();
@@ -145,6 +151,19 @@ public class Shelly2ApiRpcLightDispatchTest {
         profile.isRGBW2 = true;
         profile.inColor = false;
         profile.device.profile = SHELLY2_PROFILE_LIGHT;
+        ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
+        for (int i = 0; i < numChannels; i++) {
+            lights.add(new ShellySettingsRgbwLight());
+        }
+        profile.settings.lights = lights;
+        return profile;
+    }
+
+    private ShellyDeviceProfile cctx2Profile(int numChannels) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyprorgbwwpm"));
+        profile.isRGBW2 = true;
+        profile.inColor = false;
+        profile.device.profile = SHELLY2_PROFILE_CCTX2;
         ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
         for (int i = 0; i < numChannels; i++) {
             lights.add(new ShellySettingsRgbwLight());
@@ -301,5 +320,63 @@ public class Shelly2ApiRpcLightDispatchTest {
 
         assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_LIGHT_SETCONFIG));
         assertThat(rpc.lastParams().config.autoOn, is(true));
+    }
+
+    @Test
+    void setLightParmsCctx2ProfileSendsCctSetWithCt() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(cctx2Profile(2));
+        rpc.setLightParms(1, Map.of(SHELLY_COLOR_TEMP, "4200", SHELLY_LIGHT_TURN, SHELLY_API_ON));
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_CCT_SET));
+        Shelly2RpcRequestParams params = rpc.lastParams();
+        assertThat(params.id, is(1));
+        assertThat(params.ct, is(4200));
+        assertThat(params.on, is(true));
+    }
+
+    @Test
+    void setBrightnessCctx2ProfileSendsCctSet() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(cctx2Profile(2));
+        rpc.setBrightness(1, 42, true);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_CCT_SET));
+        Shelly2RpcRequestParams params = rpc.lastParams();
+        assertThat(params.brightness, is(42));
+        assertThat(params.on, is(true));
+    }
+
+    @Test
+    void getLightStatusCctx2ProfileLoopsCctGetStatusPerChannel() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(cctx2Profile(2));
+        rpc.getLightStatus();
+
+        assertThat(rpc.calledMethods, is(List.of(SHELLYRPC_METHOD_CCT_STATUS, SHELLYRPC_METHOD_CCT_STATUS)));
+        assertThat(rpc.calledParams.get(0).id, is(0));
+        assertThat(rpc.calledParams.get(1).id, is(1));
+    }
+
+    @Test
+    void getLightStatusCctx2ProfilePropagatesCtIntoLightChannelTemp() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(cctx2Profile(2));
+        Shelly2DeviceStatusLight ls0 = new Shelly2DeviceStatusLight();
+        ls0.ct = 2700;
+        Shelly2DeviceStatusLight ls1 = new Shelly2DeviceStatusLight();
+        ls1.ct = 6500;
+        rpc.cannedResponses.add(ls0);
+        rpc.cannedResponses.add(ls1);
+
+        ShellyStatusLight status = rpc.getLightStatus();
+
+        assertThat(status.lights.get(0).temp, is(2700));
+        assertThat(status.lights.get(1).temp, is(6500));
+    }
+
+    @Test
+    void getLightStatusIndexedCctx2ProfileCallsCctGetStatus() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(cctx2Profile(2));
+        rpc.getLightStatus(1);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_CCT_STATUS));
+        assertThat(rpc.lastParams().id, is(1));
     }
 }

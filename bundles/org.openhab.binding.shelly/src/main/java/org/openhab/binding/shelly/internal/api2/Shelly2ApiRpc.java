@@ -852,6 +852,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     if (b != null) {
                         lightChannel.brightness = b.intValue();
                     }
+                    lightChannel.temp = ls.ct;
                     status.lights.add(lightChannel);
                 }
                 status.ison = !status.lights.isEmpty() ? status.lights.get(0).ison : null;

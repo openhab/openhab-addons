@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
@@ -406,11 +407,14 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         toQuantityType(col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : 0, DIGITS_NONE,
                                 Units.PERCENT));
 
-                if ((profile.isBulb || profile.isDuo) && (light.temp != null)) {
+                boolean isCctComponent = SHELLY2_PROFILE_CCTX2.equals(profile.device.profile);
+                if ((profile.isBulb || profile.isDuo || isCctComponent) && (light.temp != null)) {
                     col.setTemp(getInteger(light.temp));
                     updated |= updateChannel(whiteGroup, CHANNEL_COLOR_TEMP, col.percentTemp);
-                    logger.trace("{}: update {}.color picker", thingName, whiteGroup);
-                    updated |= updateChannel(whiteGroup, CHANNEL_COLOR_PICKER, col.toHSB());
+                    if (profile.isBulb || profile.isDuo) {
+                        logger.trace("{}: update {}.color picker", thingName, whiteGroup);
+                        updated |= updateChannel(whiteGroup, CHANNEL_COLOR_PICKER, col.toHSB());
+                    }
                 }
             }
 

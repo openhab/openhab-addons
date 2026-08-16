@@ -79,10 +79,7 @@ public class ShellyChannelDefinitionsLightTest {
     }
 
     @Test
-    void gen1Rgbw2WhiteModeWithUnexpectedTempDoesNotThrow() {
-        // RGBW2 hardware has no CCT control and never reports "temp" in practice, but
-        // createLightChannels() must not blow up (IllegalArgumentException from createChannel())
-        // if it ever did, since the indexed light group has no colorTemp channel-type definition.
+    void gen1Rgbw2WhiteModeWithTempCreatesColorTempChannelSharedWithProRgbwwPmCctx2Profile() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
         profile.inColor = false;
         profile.settings.lights = new ArrayList<>(java.util.List.of(newLight(), newLight(), newLight(), newLight()));
@@ -93,7 +90,7 @@ public class ShellyChannelDefinitionsLightTest {
         Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellyrgbw2-white"),
                 profile, status, 1);
 
-        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_INDEX + "2", CHANNEL_COLOR_TEMP)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_INDEX + "2", CHANNEL_COLOR_TEMP)));
     }
 
     @Test
@@ -130,13 +127,8 @@ public class ShellyChannelDefinitionsLightTest {
     }
 
     @Test
-    void indexedLightGroupHasNoColorTempDefinition() {
-        // RGBW2/RGBW PM hardware has no color-temperature control (confirmed for Gen2 RGBW PM by
-        // Shelly2ApiRpc: "no device temp available"), so this group/channel pair has no channel-type
-        // definition and ChannelMap.get() throws. createLightChannels() relies on this test staying
-        // true: it only calls addChannel(..., CHANNEL_COLOR_TEMP) for the indexed group when
-        // status.temp is guarded off, specifically to avoid ever reaching this throw.
-        assertThrows(IllegalArgumentException.class,
+    void indexedLightGroupHasColorTempDefinitionForProRgbwwPmCctx2Profile() {
+        assertDoesNotThrow(
                 () -> ShellyChannelDefinitions.getDefinition(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP));
     }
 }
