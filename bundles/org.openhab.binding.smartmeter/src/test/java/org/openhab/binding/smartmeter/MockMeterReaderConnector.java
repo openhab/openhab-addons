@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.connectors.ConnectorBase;
 
+import io.reactivex.FlowableEmitter;
+
 /**
  *
  * @author Matthias Steigenberger - Initial contribution
@@ -27,13 +29,16 @@ import org.openhab.binding.smartmeter.connectors.ConnectorBase;
 @NonNullByDefault
 public class MockMeterReaderConnector extends ConnectorBase<Object> {
 
-    private boolean applyRetry;
-    private Supplier<Object> readNextSupplier;
+    private final boolean applyRetry;
+    private final Supplier<Object> readNextSupplier;
+    private final Runnable emissionFinished;
 
-    protected MockMeterReaderConnector(String portName, boolean applyRetry, Supplier<Object> readNextSupplier) {
+    protected MockMeterReaderConnector(String portName, boolean applyRetry, Supplier<Object> readNextSupplier,
+            Runnable emissionFinished) {
         super(portName);
         this.applyRetry = applyRetry;
         this.readNextSupplier = readNextSupplier;
+        this.emissionFinished = emissionFinished;
     }
 
     @Override
@@ -53,6 +58,16 @@ public class MockMeterReaderConnector extends ConnectorBase<Object> {
                 throw cause;
             }
             throw e;
+        }
+    }
+
+    @Override
+    protected void emitValues(byte @Nullable [] initMessage, FlowableEmitter<@Nullable Object> emitter)
+            throws IOException {
+        try {
+            super.emitValues(initMessage, emitter);
+        } finally {
+            emissionFinished.run();
         }
     }
 
