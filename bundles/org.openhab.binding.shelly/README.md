@@ -1768,7 +1768,8 @@ In `rgbcct` or `rgbx2light` profile (color mode):
 
 `Note`:
 `rgbcct` and `rgbx2light` combine an RGB component with additional CCT/Light components on the device.
-Only the RGB portion is currently exposed as channels; the CCT/extra Light components are not yet mapped.
+Only the RGB component's power/energy is metered and exposed as channels; the additional CCT/Light
+components are not yet mapped.
 
 In `light` profile (white mode), each of the 5 LED output channels is exposed as its own group:
 
@@ -1784,16 +1785,18 @@ In `light` profile (white mode), each of the 5 LED output channels is exposed as
 | light5 |             |        |           | Same for LED channel 5                                                  |
 | meter  |             |        |           | Same as color mode, see above                                           |
 
-In `cctx2` profile (dual color-temperature white mode), the warm-white and cool-white channels are each exposed as their own group:
+In `cctx2` profile (dual color-temperature white mode), the warm-white and cool-white channels are each exposed as their own group, each with its own independent meter:
 
 | Group  | Channel     | Type   | read-only | Description                                                             |
 | ------ | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
 | light1 | brightness  | Dimmer | r/w       | Warm-white channel: Brightness: 0..100, control power state with ON/OFF |
+|        | colorTemp   | Dimmer | r/w       | Warm-white channel: Color temperature: 0..100% (2700K..6500K)           |
 |        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
 |        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
 | light2 |             |        |           | Same for the cool-white channel                                         |
-| meter  |             |        |           | Same as color mode, see above                                           |
+| meter1 |             |        |           | Meter for the warm-white channel (light1), see meter group above        |
+| meter2 |             |        |           | Meter for the cool-white channel (light2), see meter group above        |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
