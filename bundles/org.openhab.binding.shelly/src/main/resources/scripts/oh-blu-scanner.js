@@ -37,6 +37,23 @@ Shelly.call("KVS.GetMany", { match: "oh-blu-scanner.*" }, function (res) {
 let SHELLY_BLU_CACHE = {};
 let LAST_PID = {};
 
+// Bounds SHELLY_BLU_CACHE/LAST_PID so an infinite scan seeing many rotating/random
+// BLE addresses over time can't grow memory usage without limit.
+let CACHE_ORDER = [];
+let MAX_CACHE_SIZE = 128;
+
+function cacheSet(addr, value) {
+  if (typeof SHELLY_BLU_CACHE[addr] === 'undefined') {
+    CACHE_ORDER.push(addr);
+    if (CACHE_ORDER.length > MAX_CACHE_SIZE) {
+      let evictAddr = CACHE_ORDER.shift();
+      delete SHELLY_BLU_CACHE[evictAddr];
+      delete LAST_PID[evictAddr];
+    }
+  }
+  SHELLY_BLU_CACHE[addr] = value;
+}
+
 // No separators - also used as the raw payload sent to the binding
 function bufToHex(buffer) {
   let hex = "";
@@ -62,14 +79,14 @@ function scanCB(ev, res) {
       if (res.local_name.indexOf(prefix) === 0) {
         if (LOG_LEVEL >= LVL_INFO) console.log('New device found: address=', res.addr, ', name=', res.local_name);
         Shelly.emitEvent("oh-blu.scan_result", {"addr":res.addr, "name":res.local_name, "rssi":res.rssi, "tx_power":res.tx_power_level});
-        SHELLY_BLU_CACHE[res.addr] = res.local_name;
+        cacheSet(res.addr, res.local_name);
         found = true;
         break;
       }
     }
     if (!found) {
       if (LOG_LEVEL >= LVL_INFO) console.log('Unknown device: ', res.local_name);
-      SHELLY_BLU_CACHE[res.addr] = false;
+      cacheSet(res.addr, false);
       return;
     }
   }
