@@ -50,10 +50,10 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
 
 /**
- * Covers {@link Shelly2ApiClient#fillDeviceStatus} for Plus RGBW PM: the light-mode ({@code light:N}) and
- * color-mode ({@code rgbw:0}/{@code rgb:0}) status dispatch, exercising {@code updateLightModeStatus} and
- * {@code updateRGBWStatus} without a real HTTP/WebSocket connection by mocking
- * {@link ShellyThingInterface#getProfile()}.
+ * Covers {@link Shelly2ApiClient#fillDeviceStatus} for RGBW2 devices, i.e. the light-mode
+ * ({@code light:N}/{@code cct:N}) and color-mode ({@code rgbw:0}/{@code rgb:0}) status dispatch added for
+ * Plus RGBW PM / Pro RGBWW PM. Exercises {@code updateLightModeStatus} and {@code updateRGBWStatus} without
+ * a real HTTP/WebSocket connection by mocking {@link ShellyThingInterface#getProfile()}.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -129,9 +129,8 @@ public class Shelly2ApiClientLightStatusTest {
         profile.isRGBW2 = true;
         profile.inColor = true;
         ShellySettingsStatus status = profile.status;
-        ArrayList<ShellySettingsLight> lights = new ArrayList<>();
-        lights.add(new ShellySettingsLight());
-        status.lights = lights;
+        status.lights = new ArrayList<>();
+        status.lights.add(new ShellySettingsLight());
         return profile;
     }
 
@@ -192,8 +191,6 @@ public class Shelly2ApiClientLightStatusTest {
 
         boolean updated = client.fillDeviceStatus(profile.status, result, true);
 
-        // updateLightModeStatus always signals "processed" for watchdog purposes, independent of
-        // whether the channel push itself (verified below) reports a changed value.
         assertThat(updated, is(true));
         verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
     }
@@ -209,6 +206,22 @@ public class Shelly2ApiClientLightStatusTest {
         client.fillDeviceStatus(profile.status, result, false);
 
         verify(thing, never()).updateChannel(anyString(), anyString(), any(State.class));
+    }
+
+    @Test
+    void cctx2ProfileUpdatesBothChannelsFromCctFields() throws ShellyApiException {
+        ShellyDeviceProfile profile = lightModeProfile(2);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.cct0 = lightStatus(0, true, 30.0);
+        result.cct1 = lightStatus(1, true, 60.0);
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        List<ShellySettingsLight> lights = profile.status.lights;
+        assertThat(lights.get(0).brightness, is(30));
+        assertThat(lights.get(1).brightness, is(60));
     }
 
     @Test

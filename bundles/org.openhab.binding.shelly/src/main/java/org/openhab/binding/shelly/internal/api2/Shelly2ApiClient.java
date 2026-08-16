@@ -188,7 +188,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             SHELLY2_PROFILE_RGB, SHELLY_MODE_COLOR, //
             SHELLY2_PROFILE_RGBW, SHELLY_MODE_COLOR, //
             SHELLY2_PROFILE_MONOPHASE, SHELLY_CLASS_EMETER, //
-            SHELLY2_PROFILE_TRIPHASE, SHELLY_CLASS_EMETER);
+            SHELLY2_PROFILE_TRIPHASE, SHELLY_CLASS_EMETER, //
+            SHELLY2_PROFILE_RGBCCT, SHELLY_MODE_COLOR, // Pro RGBWW PM: RGB+CCT, color mode (CCT deferred)
+            SHELLY2_PROFILE_CCTX2, SHELLY_MODE_WHITE, // Pro RGBWW PM: dual-CCT, white mode (CCT deferred)
+            SHELLY2_PROFILE_RGBX2LIGHT, SHELLY_MODE_COLOR); // Pro RGBWW PM: RGB+2xLight, color mode
 
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
@@ -390,8 +393,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (profile.isRGBW2) {
             profile.settings.lights = new ArrayList<>();
             fillRgbwSettings(profile, dc);
-            @Nullable
-            List<ShellySettingsRgbwLight> sl = profile.settings.lights;
+            List<@Nullable ShellySettingsRgbwLight> sl = profile.settings.lights;
             int numLights = sl != null && !sl.isEmpty() ? sl.size() : 1;
             profile.status.lights = new ArrayList<>();
             for (int i = 0; i < numLights; i++) {
@@ -601,6 +603,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateLightModeStatus(1, status, result.light1, channelUpdate);
         updated |= updateLightModeStatus(2, status, result.light2, channelUpdate);
         updated |= updateLightModeStatus(3, status, result.light3, channelUpdate);
+        updated |= updateLightModeStatus(4, status, result.light4, channelUpdate);
+        updated |= updateLightModeStatus(0, status, result.cct0, channelUpdate);
+        updated |= updateLightModeStatus(1, status, result.cct1, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -1170,7 +1175,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return;
         }
 
-        ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
+        ArrayList<@Nullable ShellySettingsRgbwLight> lights = new ArrayList<>();
         Shelly2GetConfigLight rgbw0 = dc.rgbw0;
         Shelly2GetConfigLight rgb0 = dc.rgb0;
         if (rgbw0 != null) {
@@ -1182,7 +1187,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         } else {
             profile.inColor = false;
             @Nullable
-            Shelly2GetConfigLight[] lightConfigs = { dc.light0, dc.light1, dc.light2, dc.light3 };
+            Shelly2GetConfigLight[] lightConfigs = { dc.light0, dc.light1, dc.light2, dc.light3, dc.light4, dc.cct0,
+                    dc.cct1 };
             for (@Nullable
             Shelly2GetConfigLight lc : lightConfigs) {
                 if (lc != null) {
@@ -1265,12 +1271,14 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             value.id = id;
         }
         int lightId = getInteger(value.id);
-        @Nullable
-        List<ShellySettingsLight> lights = status.lights;
+        List<@Nullable ShellySettingsLight> lights = status.lights;
         if (lights == null || lightId >= lights.size()) {
             return false;
         }
         ShellySettingsLight ds = lights.get(lightId);
+        if (ds == null) {
+            return false;
+        }
         Double brightness = value.brightness;
         if (brightness != null) {
             ds.brightness = brightness.intValue();
