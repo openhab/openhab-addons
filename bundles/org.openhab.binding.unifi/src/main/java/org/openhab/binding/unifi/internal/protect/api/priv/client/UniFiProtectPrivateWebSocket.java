@@ -100,8 +100,6 @@ public class UniFiProtectPrivateWebSocket {
         this.wsClient = new WebSocketClient(httpClient);
         // Prevent wsClient.stop() from stopping the shared HttpClient instance
         this.wsClient.unmanage(httpClient);
-        // Halves Jetty's 300 s default so a half-open socket is closed, and reconnected, sooner.
-        // Also applies to the injected HttpClient, which is shared per bridge.
         this.wsClient.setMaxIdleTimeout(UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS);
 
         try {

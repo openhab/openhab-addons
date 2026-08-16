@@ -27,10 +27,6 @@ public class UnifiProtectBindingConstants {
     public static final String BINDING_ID = "unifi";
     public static final String SERVICE_ID = "org.openhab.unifiprotect";
 
-    /**
-     * How long a Protect WebSocket may go without receiving a frame before it is treated as dead
-     * and closed so the reconnect logic runs. Shared by the private and public clients.
-     */
     public static final long WEBSOCKET_IDLE_TIMEOUT_MS = 150_000L;
 
     // List of all Thing Type UIDs (canonical unifi:* used for discovery and new things)

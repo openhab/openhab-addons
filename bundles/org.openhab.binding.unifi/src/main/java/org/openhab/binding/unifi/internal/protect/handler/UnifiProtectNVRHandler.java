@@ -276,8 +276,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     routePrivateApiUpdate(update);
                 });
             }, () -> {
-                // Inline on purpose: the socket must not reopen until the sync has finished
-                // writing. syncDevices logs and swallows its own failures.
+                // The socket must not reopen until the sync has finished writing.
                 logger.debug("Private API WebSocket reconnected, syncing devices from refreshed bootstrap");
                 syncDevices();
             }).whenComplete((result, ex) -> {

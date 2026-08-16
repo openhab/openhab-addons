@@ -523,7 +523,7 @@ public class UniFiProtectPublicClient implements Closeable {
                     super.onWebSocketConnect(session);
                     lastActivityMs = System.currentTimeMillis();
                     // A write-only ping does not fail on a half-open socket, so liveness is
-                    // judged on frames *received*, not on the ping succeeding.
+                    // judged on frames *received*.
                     heartbeatTask = executorService.scheduleWithFixedDelay(() -> {
                         Session s = getSession();
                         if (s == null || !s.isOpen()) {
@@ -577,13 +577,11 @@ public class UniFiProtectPublicClient implements Closeable {
 
                 @Override
                 public void onWebSocketPong(@Nullable ByteBuffer payload) {
-                    // Counts as activity: this WS is sparse, so quiet is not dead.
                     lastActivityMs = System.currentTimeMillis();
                 }
 
                 @Override
                 public void onWebSocketPing(@Nullable ByteBuffer payload) {
-                    // Also activity; Jetty still sends the pong reply itself.
                     lastActivityMs = System.currentTimeMillis();
                 }
             }
