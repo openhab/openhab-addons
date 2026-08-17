@@ -23,6 +23,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -224,8 +225,9 @@ public class ShellyApiConfigurationTest {
 
     @Test
     void refreshLocalIpPrefersSameSubnetMatch() throws Exception {
-        String realIp = findNonLoopbackIPv4Address();
-        Assumptions.assumeTrue(realIp != null, "No non-loopback IPv4 interface found on this machine");
+        String maybeRealIp = findNonLoopbackIPv4Address();
+        Assumptions.assumeTrue(maybeRealIp != null, "No non-loopback IPv4 interface found on this machine");
+        String realIp = Objects.requireNonNull(maybeRealIp);
         // 192.0.2.0/24 is RFC 5737 TEST-NET-1, guaranteed not to match any real local interface
         ShellyBindingRuntimeConfig runtime = runtimeConfigNoOverride("192.0.2.1");
         ShellyApiConfiguration config = new ShellyApiConfiguration(runtime, "realm", realIp);
