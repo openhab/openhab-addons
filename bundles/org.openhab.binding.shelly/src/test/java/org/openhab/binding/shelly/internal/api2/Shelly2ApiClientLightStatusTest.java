@@ -299,44 +299,47 @@ public class Shelly2ApiClientLightStatusTest {
     }
 
     @Test
-    void rgbcctProfilePopulatesSingleMeterSlotFromRgb0OnlyIgnoringCct0Meter() throws ShellyApiException {
-        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_RGBCCT, 1, 1);
+    void rgbcctProfilePopulatesMeterSlotsForBothRgb0AndCct0() throws ShellyApiException {
+        // slot 0 = rgb0 (color), slot 1 = cct0 (secondary) - matches fillRgbwSettings()'s flat layout
+        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_RGBCCT, 2, 2);
         Shelly2ApiClient client = newClient(profile);
 
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.rgb0 = rgbwStatusWithMeter(20.0, 200.0, 230.0, 0.1);
-        Shelly2DeviceStatusLight unprocessedCct0SecondaryComponentMeter = lightStatusWithMeter(0, 999.0, 999.0, 999.0,
-                999.0);
-        result.cct0 = unprocessedCct0SecondaryComponentMeter;
+        result.cct0 = lightStatusWithMeter(0, 12.5, 100.0, 231.0, 0.05);
 
         client.fillDeviceStatus(profile.status, result, false);
 
         List<ShellySettingsEMeter> emeters = profile.status.emeters;
-        assertThat(emeters.size(), is(1));
         assertThat(emeters.get(0).power, is(20.0));
         assertThat(emeters.get(0).total, is(200.0));
+        assertThat(emeters.get(1).power, is(12.5));
+        assertThat(emeters.get(1).total, is(100.0));
+        assertThat(profile.status.lights.get(1).ison, is(true));
     }
 
     @Test
-    void rgbx2lightProfilePopulatesSingleMeterSlotFromRgb0OnlyIgnoringLight0And1Meters() throws ShellyApiException {
-        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_RGBX2LIGHT, 1, 1);
+    void rgbx2lightProfilePopulatesMeterSlotsForRgb0AndBothLightChannels() throws ShellyApiException {
+        // slot 0 = rgb0 (color), slots 1/2 = light0/light1 (secondary) - matches fillRgbwSettings()'s flat layout
+        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_RGBX2LIGHT, 3, 3);
         Shelly2ApiClient client = newClient(profile);
 
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.rgb0 = rgbwStatusWithMeter(15.0, 150.0, 229.0, 0.08);
-        Shelly2DeviceStatusLight unprocessedLight0SecondaryComponentMeter = lightStatusWithMeter(0, 999.0, 999.0, 999.0,
-                999.0);
-        Shelly2DeviceStatusLight unprocessedLight1SecondaryComponentMeter = lightStatusWithMeter(1, 999.0, 999.0, 999.0,
-                999.0);
-        result.light0 = unprocessedLight0SecondaryComponentMeter;
-        result.light1 = unprocessedLight1SecondaryComponentMeter;
+        result.light0 = lightStatusWithMeter(0, 5.0, 50.0, 228.0, 0.02);
+        result.light1 = lightStatusWithMeter(1, 6.0, 60.0, 227.0, 0.03);
 
         client.fillDeviceStatus(profile.status, result, false);
 
         List<ShellySettingsEMeter> emeters = profile.status.emeters;
-        assertThat(emeters.size(), is(1));
         assertThat(emeters.get(0).power, is(15.0));
         assertThat(emeters.get(0).total, is(150.0));
+        assertThat(emeters.get(1).power, is(5.0));
+        assertThat(emeters.get(1).total, is(50.0));
+        assertThat(emeters.get(2).power, is(6.0));
+        assertThat(emeters.get(2).total, is(60.0));
+        assertThat(profile.status.lights.get(1).ison, is(true));
+        assertThat(profile.status.lights.get(2).ison, is(true));
     }
 
     @Test

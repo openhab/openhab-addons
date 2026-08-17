@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -230,6 +231,65 @@ public class ShellyDeviceProfileTest {
                 // Multi-channel dimmers (e.g. Pro Dimmer 2PM) get numbered control groups
                 Arguments.of(2, 0, CHANNEL_GROUP_DIMMER_CONTROL + "1"), //
                 Arguments.of(2, 1, CHANNEL_GROUP_DIMMER_CONTROL + "2"));
+    }
+
+    private static ArrayList<ShellySettingsRgbwLight> taggedLights(List<String> apiComponents) {
+        return apiComponents.stream().map(c -> {
+            ShellySettingsRgbwLight light = new ShellySettingsRgbwLight();
+            light.apiComponent = c;
+            return light;
+        }).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForHybridControlGroup")
+    void getControlGroupForHybridProRgbwwPmProfile(List<String> apiComponents, int index, String expectedControlGroup) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        deviceProfile.isRGBW2 = true;
+        deviceProfile.inColor = apiComponents.stream().anyMatch(c -> "rgb".equals(c) || "rgbw".equals(c));
+        deviceProfile.settings.lights = taggedLights(apiComponents);
+
+        assertThat("apiComponents: " + apiComponents + ", index: " + index, deviceProfile.getControlGroup(index),
+                is(equalTo(expectedControlGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForHybridControlGroup() {
+        return Stream.of( //
+                // rgbcct: index 0 (rgb, color) -> control; index 1 (cct, secondary) -> light1
+                Arguments.of(List.of("rgb", "cct"), 0, CHANNEL_GROUP_LIGHT_CONTROL), //
+                Arguments.of(List.of("rgb", "cct"), 1, CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                // rgbx2light: index 0 (rgb) -> control; indexes 1/2 (light) -> light1/light2
+                Arguments.of(List.of("rgb", "light", "light"), 0, CHANNEL_GROUP_LIGHT_CONTROL), //
+                Arguments.of(List.of("rgb", "light", "light"), 1, CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                Arguments.of(List.of("rgb", "light", "light"), 2, CHANNEL_GROUP_LIGHT_INDEX + "2"), //
+                // cctx2: no color component at all -> both indexes numbered from 1
+                Arguments.of(List.of("cct", "cct"), 0, CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                Arguments.of(List.of("cct", "cct"), 1, CHANNEL_GROUP_LIGHT_INDEX + "2"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForIsColorComponent")
+    void isColorComponent(List<String> apiComponents, boolean profileInColor, int idx, boolean expected) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        deviceProfile.inColor = profileInColor;
+        deviceProfile.settings.lights = taggedLights(apiComponents);
+
+        assertThat("apiComponents: " + apiComponents + ", idx: " + idx, deviceProfile.isColorComponent(idx),
+                is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForIsColorComponent() {
+        return Stream.of( //
+                Arguments.of(List.of("rgb", "cct"), true, 0, true), //
+                Arguments.of(List.of("rgb", "cct"), true, 1, false), //
+                Arguments.of(List.of("rgb", "light", "light"), true, 0, true), //
+                Arguments.of(List.of("rgb", "light", "light"), true, 2, false), //
+                Arguments.of(List.of("cct", "cct"), false, 0, false), //
+                // untagged Gen1 RGBW2 entry falls back to the whole-profile inColor flag
+                Arguments.of(List.of(""), true, 0, true), //
+                Arguments.of(List.of(""), false, 0, false), //
+                // out-of-range index also falls back to the whole-profile inColor flag
+                Arguments.of(List.of("rgb"), true, 5, true));
     }
 
     @Test
