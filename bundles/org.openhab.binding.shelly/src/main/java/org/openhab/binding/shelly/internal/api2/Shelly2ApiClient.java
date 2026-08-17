@@ -189,8 +189,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             SHELLY2_PROFILE_RGBW, SHELLY_MODE_COLOR, //
             SHELLY2_PROFILE_MONOPHASE, SHELLY_CLASS_EMETER, //
             SHELLY2_PROFILE_TRIPHASE, SHELLY_CLASS_EMETER, //
-            SHELLY2_PROFILE_RGBCCT, SHELLY_MODE_COLOR, // Pro RGBWW PM: RGB+CCT, color mode (CCT deferred)
-            SHELLY2_PROFILE_CCTX2, SHELLY_MODE_WHITE, // Pro RGBWW PM: dual-CCT, white mode (CCT deferred)
+            SHELLY2_PROFILE_RGBCCT, SHELLY_MODE_COLOR, // Pro RGBWW PM: RGB+CCT, color mode
+            SHELLY2_PROFILE_CCTX2, SHELLY_MODE_WHITE, // Pro RGBWW PM: dual-CCT, white mode
             SHELLY2_PROFILE_RGBX2LIGHT, SHELLY_MODE_COLOR); // Pro RGBWW PM: RGB+2xLight, color mode
 
     @Override
@@ -339,6 +339,18 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
         }
 
+        profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
+        if (profile.isRGBW2) {
+            profile.settings.lights = new ArrayList<>();
+            fillRgbwSettings(profile, dc);
+            List<@Nullable ShellySettingsRgbwLight> sl = profile.settings.lights;
+            int numLights = sl != null && !sl.isEmpty() ? sl.size() : 1;
+            profile.status.lights = new ArrayList<>();
+            for (int i = 0; i < numLights; i++) {
+                profile.status.lights.add(new ShellySettingsLight());
+            }
+        }
+
         int fromDeviceConfig;
         if (dc.pm10 != null) {
             fromDeviceConfig = 1; // pm1:0 → single power meter (e.g. Plus 1PM Gen4)
@@ -351,22 +363,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         } else if (dc.em10 != null) {
             fromDeviceConfig = 1; // em1:0 alone → single clamp (EM Mini)
         } else if (THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
-            // No dedicated PM/EM component: count the metered RGB/CCT components instead.
-            // rgbcct/rgbx2light: rgb0/rgbw0 is the only component currently wired for metering (its secondary
-            // component - cct0, or light0/light1 - isn't processed yet, see updateLightModeStatus()'s inColor
-            // guard). cctx2 has no color component; both cct0 and cct1 are metered independently.
-            if (dc.rgb0 != null || dc.rgbw0 != null) {
-                fromDeviceConfig = 1;
-            } else {
-                int n = 0;
-                if (dc.cct0 != null) {
-                    n++;
-                }
-                if (dc.cct1 != null) {
-                    n++;
-                }
-                fromDeviceConfig = n > 0 ? n : -1;
-            }
+            // No dedicated PM/EM component: every settings.lights entry (color, CCT or Light) is its own
+            // metered component.
+            List<ShellySettingsRgbwLight> sl = profile.settings.lights;
+            fromDeviceConfig = sl != null && !sl.isEmpty() ? sl.size() : -1;
         } else {
             fromDeviceConfig = -1; // not detectable from config → relay count fallback
         }
@@ -405,17 +405,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
             profile.settings.dimmers = dimmers;
             fillDimmerSettings(profile, dc);
-        }
-        profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
-        if (profile.isRGBW2) {
-            profile.settings.lights = new ArrayList<>();
-            fillRgbwSettings(profile, dc);
-            List<@Nullable ShellySettingsRgbwLight> sl = profile.settings.lights;
-            int numLights = sl != null && !sl.isEmpty() ? sl.size() : 1;
-            profile.status.lights = new ArrayList<>();
-            for (int i = 0; i < numLights; i++) {
-                profile.status.lights.add(new ShellySettingsLight());
-            }
         }
         profile.status.thermostats = profile.isTRV ? new ArrayList<>() : null;
 
@@ -1316,8 +1305,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         status.lights.set(rgbwId, ds);
         if (isProRgbwwPmProfile(profile)) {
-            // rgb0 is the only metered component currently wired for rgbcct/rgbx2light (their secondary
-            // component - cct0, or light0/light1 - isn't processed yet, see updateLightModeStatus())
+            // the color component always sits at settings.lights[0]
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
         return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
@@ -1326,13 +1314,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     private boolean updateLightModeStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
             boolean channelUpdate) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        if (!profile.isRGBW2 || profile.inColor || value == null) {
+        if (!profile.isRGBW2 || value == null) {
             return false;
         }
         if (value.id == null) {
             value.id = id;
         }
-        int lightId = getInteger(value.id);
+        // device reports each component type 0-based; the flat settings.lights list reserves slot 0 for the
+        // color component (rgb0/rgbw0) whenever one is present, so shift by that offset here.
+        int lightId = getInteger(value.id) + profile.getColorComponentCount();
         List<@Nullable ShellySettingsLight> lights = status.lights;
         if (lights == null || lightId >= lights.size()) {
             return false;
@@ -1354,10 +1344,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.temp = ct;
         }
         lights.set(lightId, ds);
-        if (SHELLY2_PROFILE_CCTX2.equals(profile.device.profile)) {
-            // the only Pro RGBWW PM profile that reaches this point (rgbcct/rgbx2light are blocked above by the
-            // inColor check, since their light entry - cct0/light0/light1 - isn't processed yet); Plus RGBW PM's
-            // white-mode light0..3 channels also reach this point but must not be metered here - out of scope
+        if (isProRgbwwPmProfile(profile)) {
+            // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
             updateComponentMeter(status, lightId, value.apower, value.aenergy, value.voltage, value.current,
                     channelUpdate);
         }

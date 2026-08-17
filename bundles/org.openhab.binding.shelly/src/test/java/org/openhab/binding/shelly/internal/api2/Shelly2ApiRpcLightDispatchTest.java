@@ -138,11 +138,21 @@ public class Shelly2ApiRpcLightDispatchTest {
         };
     }
 
+    private static ShellySettingsRgbwLight taggedLight(String apiComponent) {
+        ShellySettingsRgbwLight light = new ShellySettingsRgbwLight();
+        light.apiComponent = apiComponent;
+        return light;
+    }
+
     private ShellyDeviceProfile colorModeProfile(String rawProfile) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyplusrgbwpm"));
         profile.isRGBW2 = true;
         profile.inColor = true;
         profile.device.profile = rawProfile;
+        String tag = SHELLY2_PROFILE_RGB.equals(rawProfile) ? "rgb" : "rgbw";
+        ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
+        lights.add(taggedLight(tag));
+        profile.settings.lights = lights;
         return profile;
     }
 
@@ -153,7 +163,7 @@ public class Shelly2ApiRpcLightDispatchTest {
         profile.device.profile = SHELLY2_PROFILE_LIGHT;
         ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
         for (int i = 0; i < numChannels; i++) {
-            lights.add(new ShellySettingsRgbwLight());
+            lights.add(taggedLight("light"));
         }
         profile.settings.lights = lights;
         return profile;
@@ -166,7 +176,7 @@ public class Shelly2ApiRpcLightDispatchTest {
         profile.device.profile = SHELLY2_PROFILE_CCTX2;
         ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
         for (int i = 0; i < numChannels; i++) {
-            lights.add(new ShellySettingsRgbwLight());
+            lights.add(taggedLight("cct"));
         }
         profile.settings.lights = lights;
         return profile;
