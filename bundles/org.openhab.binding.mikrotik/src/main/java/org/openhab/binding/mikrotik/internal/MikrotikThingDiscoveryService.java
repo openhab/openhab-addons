@@ -81,7 +81,7 @@ public class MikrotikThingDiscoveryService extends AbstractThingHandlerDiscovery
 
         Set<String> kids = handler.getKidControlNames();
         for (String kid : kids) {
-            String cleanedKid = kid.replaceAll("[^a-zA-Z0-9]", "");
+            String cleanedKid = org.openhab.core.util.UIDUtils.encode(kid);
             ThingUID thingUID = new ThingUID(THING_TYPE_KID_CONTROL, handler.getThing().getUID(), cleanedKid);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                     .withBridge(handler.getThing().getUID()).withLabel("Kid Controls for " + kid)

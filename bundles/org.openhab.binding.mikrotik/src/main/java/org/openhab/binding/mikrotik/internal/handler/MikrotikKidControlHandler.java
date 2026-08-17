@@ -91,7 +91,7 @@ public class MikrotikKidControlHandler extends MikrotikBaseThingHandler<KidContr
             return;
         }
         if (command instanceof RefreshType) {
-            this.devices = routeros.updateKidControlCache();
+            refresh(routeros.updateKidControlCache(), routeros.updateDeviceData());
             refreshChannel(channelUID);
             return;
         }
@@ -140,7 +140,7 @@ public class MikrotikKidControlHandler extends MikrotikBaseThingHandler<KidContr
         BigInteger totalRate = BigInteger.ZERO;
         for (Map<String, String> device : devices) {
             String user = device.get("user");
-            if (user != null && !user.isEmpty()) {
+            if (user != null && !user.isEmpty() && config.name.equals(user)) {
                 String rate = device.get(key);
                 if (rate != null && !rate.isEmpty()) {
                     totalRate = totalRate.add(new BigInteger(rate));
@@ -191,7 +191,7 @@ public class MikrotikKidControlHandler extends MikrotikBaseThingHandler<KidContr
         for (Map<String, String> kid : kids) {
             if (kid.containsKey("name")) {
                 String name = kid.get("name");
-                if (name != null && !name.isEmpty()) {
+                if (name != null && !name.isEmpty() && config.name.equals(name)) {
                     this.kid = kid;
                 }
             }
@@ -209,5 +209,6 @@ public class MikrotikKidControlHandler extends MikrotikBaseThingHandler<KidContr
     @Override
     public void dispose() {
         cancelConnectingJob();
+        super.dispose();
     }
 }

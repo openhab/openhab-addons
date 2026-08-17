@@ -54,7 +54,6 @@ public class MikrotikDiscoveryService extends AbstractDiscoveryService {
 
         try (DatagramSocket txSocket = new DatagramSocket()) {
             txSocket.setBroadcast(true);
-
             // MNDP Request Header
             byte[] requestBytes = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00 };
             DatagramPacket pingPacket = new DatagramPacket(requestBytes, requestBytes.length,
@@ -63,7 +62,6 @@ public class MikrotikDiscoveryService extends AbstractDiscoveryService {
         } catch (IOException e) {
             logger.error("Failed to send MNDP discovery probe: {}", e.getMessage());
         }
-
         Thread listenerThread = new Thread(() -> {
             try (DatagramSocket rxSocket = new DatagramSocket(MNDP_PORT)) {
                 rxSocket.setSoTimeout(TIMEOUT_MS);
@@ -72,7 +70,6 @@ public class MikrotikDiscoveryService extends AbstractDiscoveryService {
                     DatagramPacket responsePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                     try {
                         rxSocket.receive(responsePacket);
-                        // Forward the raw array to your verified parsing method
                         parseMndpPacket(responsePacket.getAddress(), responsePacket.getData());
                     } catch (SocketTimeoutException e) {
                         logger.debug("MNDP discovery scan completed (listen window timeout reached).");
@@ -83,7 +80,6 @@ public class MikrotikDiscoveryService extends AbstractDiscoveryService {
                 logger.error("MNDP Port 5678, Ensure another process isn't holding the port: {}", e.getMessage());
             }
         });
-
         listenerThread.setName("openhab-mikrotik-mndp-listener");
         listenerThread.start();
     }

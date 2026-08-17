@@ -187,7 +187,8 @@ The name can be auto detected if you first setup a kid and their devices in the 
 
 ## Device Thing Configuration
 
-Is designed to control the internet access to your kids devices, but could easily be setup to block internet to any group of devices. You setup a time and bandwidth limit for each day of the week and the routerOS will control it automatically for you. openHAB can then enable/disable this feature to give full time access, or you can pause to remove the access at any time.
+Is designed to control the internet access to your kids devices, but can also be setup to block internet to any type of device on your LAN with a MAC address.
+It can enable or disable the LAN device and report its transmit and receive rates.
 
 > Thing type: `kidControl`
 

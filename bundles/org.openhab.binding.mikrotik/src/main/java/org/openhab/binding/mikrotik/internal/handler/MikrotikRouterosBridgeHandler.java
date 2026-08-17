@@ -97,10 +97,16 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     }
 
     public Set<String> getKidControlNames() {
+        if (routeros == null) {
+            return Set.of();
+        }
         return routeros.getKidControlNames();
     }
 
     public List<Map<String, String>> getDevices() {
+        if (routeros == null) {
+            return List.of();
+        }
         return routeros.updateDeviceData();
     }
 

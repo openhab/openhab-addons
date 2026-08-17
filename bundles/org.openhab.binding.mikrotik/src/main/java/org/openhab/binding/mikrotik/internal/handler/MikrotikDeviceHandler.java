@@ -113,6 +113,7 @@ public class MikrotikDeviceHandler extends MikrotikBaseThingHandler<DeviceConfig
         for (Map<String, String> device : devices) {
             String mac = device.get("mac-address");
             if (mac != null && mac.contentEquals(config.mac)) {
+                logger.info("Found device {}", device);
                 return index;
             }
             index++;
@@ -163,8 +164,9 @@ public class MikrotikDeviceHandler extends MikrotikBaseThingHandler<DeviceConfig
                 }
                 break;
             case CHANNEL_RX_DATA_RATE:
-                BigInteger rxTotalBps = new BigInteger(getDevicesValue(devices, "rate-down"));
-                updateState(CHANNEL_RX_DATA_RATE, new QuantityType<>(rxTotalBps, Units.BIT_PER_SECOND));
+                String rxRate = getDevicesValue(devices, "rate-down");
+                updateState(CHANNEL_RX_DATA_RATE, rxRate.isEmpty() ? org.openhab.core.types.UnDefType.UNDEF
+                        : new QuantityType<>(new BigInteger(rxRate), Units.BIT_PER_SECOND));
                 break;
             case CHANNEL_TX_DATA_RATE:
                 BigInteger txTotalBps = new BigInteger(getDevicesValue(devices, "rate-up"));
@@ -194,5 +196,6 @@ public class MikrotikDeviceHandler extends MikrotikBaseThingHandler<DeviceConfig
     @Override
     public void dispose() {
         cancelConnectingJob();
+        super.dispose();
     }
 }
