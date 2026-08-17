@@ -65,6 +65,7 @@ import org.openhab.core.types.UnDefType;
  * A full implementation test, that starts the embedded MQTT broker and publishes a homie device tree.
  *
  * @author David Graeff - Initial contribution
+ * @author Leo Siepel - Test stabilization refactoring
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
