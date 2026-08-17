@@ -305,8 +305,8 @@ foo: !sub:jinja "Hello {{ username }}!"
 
 ## Common Pitfalls
 
-1. **Unquoted Operators**: Expressions with operators should be quoted so YAML doesn't misinterpret characters.
+1. **Unquoted Operators**: Expressions containing YAML‑significant characters such as `:` or `?` must be quoted; otherwise YAML interprets those characters as structural syntax and rejects the value
 1. **Reserved Names**: Avoid naming variables using keywords like `true`, `false`, `null`, `in`, or `if`.
 1. **`+` vs `~`**: Use `~` for strings to avoid type mismatch errors and use `+` for numbers or lists.
-1. **Jinja Blocks**: Template blocks such as `{% for %}` are not supported; use inline `if` expressions instead.
+1. **Jinja Blocks**: Block‑level Jinja constructs (e.g., `{% for %}`) are not supported. Use YAMLComposer’s own control‑flow tags, such as `!if`/`!elseif`/`!else` and `!for`.
 1. **Whitespace Sensitivity**: Spaces outside of quotes inside `${ ... }` are ignored, but spaces in quoted strings are preserved.
