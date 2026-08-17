@@ -78,7 +78,6 @@ See section [Discovery](#discovery) for details.
 | shellybutton1     | Shelly Button 1                                        | SHBTN-1             |
 | shellybutton2     | Shelly Button 2                                        | SHBTN-2             |
 | shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
-| shellyseye        | Shelly Eye                                             | SHEYE-1             |
 | shellytrv         | Shelly TRV                                             | SHTRV-01            |
 
 ### Shelly Plus series (Generation 2+3+4)
