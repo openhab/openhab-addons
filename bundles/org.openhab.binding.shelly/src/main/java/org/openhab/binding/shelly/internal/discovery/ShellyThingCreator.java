@@ -105,6 +105,10 @@ public class ShellyThingCreator {
             };
 
             ThingTypeUID res = deviceTypeMap.get(deviceType);
+            if (res == null && deviceTypeMap != THING_TYPE_BY_DEVICE_TYPE) {
+                // single-mode devices (e.g. SHSW-1, SHSW-PM, SHDM-2) are only listed in the general map
+                res = THING_TYPE_BY_DEVICE_TYPE.get(deviceType);
+            }
             if (res != null) {
                 return res;
             }
