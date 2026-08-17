@@ -219,6 +219,9 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
         remainingDuration = initializingCluster.remainingDuration;
         updateCloseTime();
         updateDuration(CHANNEL_ID_VALVE_DURATION, initializingCluster.defaultOpenDuration);
+        // Seed the faults that are already active, without firing them: the ValveFault event carries the whole
+        // bitmap, so an unseeded set would re-report them on the first fault change after startup.
+        activeFaults.addAll(faultNames(initializingCluster.valveFault));
     }
 
     private void sendClusterCommand(ClusterCommand command) {
@@ -267,21 +270,21 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
     /**
      * Publishes the time at which the valve will close.
      *
-     * A valve with the TimeSync feature reports AutoCloseTime, which is the valve's own answer and is authoritative
-     * including when it is null, so it is the only source used on such a valve. Otherwise the time is derived from
-     * RemainingDuration, which the cluster reports only when it becomes or stops being null, when it reaches 0, when
-     * it increases, or when the closing time changes -- published as a remaining duration it would sit at a stale
-     * value throughout the countdown, whereas a close time stays correct without being reported at all.
+     * A valve with the TimeSync feature reports AutoCloseTime, which is the valve's own answer, so it is preferred
+     * when it is set. The feature only means the valve can synchronize time, not that it currently has UTC time, and
+     * AutoCloseTime is null until it does -- so a null there falls back to the same derivation used by a valve without
+     * the feature. That derives the time from RemainingDuration, which the cluster reports only when it becomes or
+     * stops being null, when it reaches 0, when it increases, or when the closing time changes -- published as a
+     * remaining duration it would sit at a stale value throughout the countdown, whereas a close time stays correct
+     * without being reported at all.
      */
     private void updateCloseTime() {
         Long autoClose = autoCloseTime;
         Integer remaining = remainingDuration;
         State state = UnDefType.UNDEF;
-        if (timeSyncSupported) {
-            if (autoClose != null) {
-                state = new DateTimeType(
-                        Instant.ofEpochSecond(MATTER_EPOCH_OFFSET_SECONDS).plus(autoClose, ChronoUnit.MICROS));
-            }
+        if (timeSyncSupported && autoClose != null) {
+            state = new DateTimeType(
+                    Instant.ofEpochSecond(MATTER_EPOCH_OFFSET_SECONDS).plus(autoClose, ChronoUnit.MICROS));
         } else if (remaining != null && remaining > 0) {
             state = new DateTimeType(Instant.now().plusSeconds(remaining));
         }
@@ -327,6 +330,19 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
      * faults that have already been reported.
      */
     private void triggerFault(@Nullable ValveFaultBitmap fault) {
+        Set<String> faults = faultNames(fault);
+        for (String name : faults) {
+            if (activeFaults.add(name)) {
+                triggerChannel(CHANNEL_ID_VALVE_FAULT, name);
+            }
+        }
+        activeFaults.retainAll(faults);
+    }
+
+    /**
+     * Maps a fault bitmap to the names of the bits that are set, in a stable order.
+     */
+    private Set<String> faultNames(@Nullable ValveFaultBitmap fault) {
         Set<String> faults = new LinkedHashSet<>();
         if (fault != null) {
             if (fault.generalFault) {
@@ -348,11 +364,6 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 faults.add("currentExceeded");
             }
         }
-        for (String name : faults) {
-            if (activeFaults.add(name)) {
-                triggerChannel(CHANNEL_ID_VALVE_FAULT, name);
-            }
-        }
-        activeFaults.retainAll(faults);
+        return faults;
     }
 }
