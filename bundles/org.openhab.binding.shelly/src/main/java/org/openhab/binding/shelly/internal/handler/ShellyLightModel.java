@@ -86,7 +86,20 @@ public class ShellyLightModel extends LightModel {
     private final ShellyLightHandler lightHandler;
     private final ReentrantLock lock = new ReentrantLock();
     private final boolean modeChangesAllowed;
-    private final ShellyDeviceProfile profile;
+
+    // essential fields copied from profile
+    private final boolean isBulb;
+    private final boolean isDuo;
+    private final boolean isRGBW2;
+    private final boolean isGen2;
+    private final boolean isG3DuoBulb;
+    private final boolean isG3ColorBulb;
+    private final boolean isProfileLIGHT;
+    private final boolean isProfileRGB;
+    private final boolean isProfileRGBW;
+    private final boolean isProfileRGBCCT;
+    private final boolean isProfileRGBX2LIGHT;
+    private final boolean isProfileCCTX2;
 
     private Mode shellyMode = Mode.WHITE;
     private int effect = 0;
@@ -188,6 +201,8 @@ public class ShellyLightModel extends LightModel {
     /**
      * Private constructor to create a ShellyLightModel with the given parameters.
      * 
+     * @param thingTypeUID
+     * 
      * @param profile
      */
     private ShellyLightModel(ShellyLightHandler lightHandler, int lightId, LightCapabilities lightCapabilities,
@@ -202,7 +217,22 @@ public class ShellyLightModel extends LightModel {
         this.lightId = lightId;
         this.shellyMode = shellyMode;
         this.modeChangesAllowed = modeChangesAllowed;
-        this.profile = profile;
+
+        // initialize light capability flags from the device profile (Generation 1)
+        isBulb = profile.isBulb;
+        isDuo = profile.isDuo;
+        isRGBW2 = profile.isRGBW2;
+        isGen2 = profile.isGen2;
+        isG3DuoBulb = profile.isRGBBulb; // TODO I think mapping in #20909 is wrong
+        isG3ColorBulb = profile.isRGBCCT; // TODO I think mapping in #20909 is wrong
+
+        // initialize light capability flags from the device profile (Generation 2/3)
+        isProfileLIGHT = SHELLY2_PROFILE_LIGHT.equalsIgnoreCase(profile.device.profile);
+        isProfileRGB = SHELLY2_PROFILE_RGB.equalsIgnoreCase(profile.device.profile);
+        isProfileRGBW = SHELLY2_PROFILE_RGBW.equalsIgnoreCase(profile.device.profile);
+        isProfileRGBCCT = SHELLY2_PROFILE_RGBCCT.equalsIgnoreCase(profile.device.profile);
+        isProfileRGBX2LIGHT = SHELLY2_PROFILE_RGBX2LIGHT.equalsIgnoreCase(profile.device.profile);
+        isProfileCCTX2 = SHELLY2_PROFILE_CCTX2.equalsIgnoreCase(profile.device.profile);
 
         rgbxLength = WHITE_ONLY == ledOperatingMode ? 3 : super.getRGBx().length;
         initialRGBX = new int[rgbxLength];
@@ -583,12 +613,15 @@ public class ShellyLightModel extends LightModel {
      * @return true if such channels are supported, false otherwise
      */
     public boolean supportsBrightnessChannel() {
-        boolean inWhiteMode = Mode.WHITE == shellyMode;
         return
         // @formatter:off
             supportsColorTempChannel() ||
-            (profile.isRGBW2 && inWhiteMode) ||
-            (!profile.isGen2 && inWhiteMode)
+            (isRGBW2 && Mode.WHITE == shellyMode) ||
+            (!isGen2 && Mode.WHITE == shellyMode) ||
+            (isProfileLIGHT) ||
+            (isProfileRGBCCT && lightId > 0) || 
+            (isProfileRGBX2LIGHT && lightId > 0) ||
+            (isProfileCCTX2)
         // @formatter:on
         ;
     }
@@ -601,16 +634,15 @@ public class ShellyLightModel extends LightModel {
      * @return true if such channels are supported, false otherwise
      */
     public boolean supportsColorChannel() {
-        boolean inColorMode = Mode.COLOR == shellyMode;
         return
         // @formatter:off
-           (profile.isBulb && inColorMode) ||
-           (profile.isRGBW2 && inColorMode) ||
-           (profile.isRGBBulb && inColorMode) ||
-           (SHELLY2_PROFILE_RGB.equals(profile.device.profile)) ||
-           (SHELLY2_PROFILE_RGBW.equals(profile.device.profile)) ||
-           (SHELLY2_PROFILE_RGBCCT.equals(profile.device.profile)  && inColorMode) ||
-           (SHELLY2_PROFILE_RGBX2LIGHT.equals(profile.device.profile) && lightId == 0)
+           (isBulb) ||
+           (isRGBW2 && Mode.COLOR == shellyMode) ||
+           (isG3ColorBulb) ||
+           (isProfileRGB) ||
+           (isProfileRGBW) ||
+           (isProfileRGBCCT && lightId == 0) || 
+           (isProfileRGBX2LIGHT && lightId == 0)
         // @formatter:on
         ;
     }
@@ -621,15 +653,14 @@ public class ShellyLightModel extends LightModel {
      * @return true if such channels are supported, false otherwise
      */
     public boolean supportsColorTempChannel() {
-        boolean inWhiteMode = Mode.WHITE == shellyMode;
         return
         // @formatter:off
-            (profile.isDuo) ||
-            (profile.isBulb && inWhiteMode) ||
-            (profile.isRGBBulb && inWhiteMode) ||
-            (profile.isRGBCCT) ||
-            (SHELLY2_PROFILE_RGBCCT.equals(profile.device.profile) && inWhiteMode) ||
-            (SHELLY2_PROFILE_CCTX2.equals(profile.device.profile))
+            (isDuo) || 
+            (isBulb) || 
+            (isG3DuoBulb) || 
+            (isG3ColorBulb) || 
+            (isProfileCCTX2) ||
+            (isProfileRGBCCT && lightId > 0) 
         // @formatter:on
         ;
     }
@@ -656,11 +687,24 @@ public class ShellyLightModel extends LightModel {
     /**
      * Returns true if the light model supports a switch channel, false otherwise.
      * All devices, except RGBW2 devices operating in light mode, support switch
-     * .. BUT for the first light model only.
+     * .. BUT for the first light model only!
      *
      * @return true if such channels are supported, false otherwise
      */
     public boolean supportsOnOffChannel() {
-        return lightId == 0 && !(profile.isRGBW2 && Mode.WHITE == shellyMode);
+        return
+        // @formatter:off
+            (isDuo) || 
+            (isBulb) ||
+            (isRGBW2 && Mode.COLOR == shellyMode) ||
+            (isG3DuoBulb) || 
+            (isG3ColorBulb) ||
+            (isProfileCCTX2 && lightId == 0) ||
+            (isProfileRGB) ||
+            (isProfileRGBW) ||
+            (isProfileRGBCCT && lightId == 0) || 
+            (isProfileRGBX2LIGHT && lightId == 0)
+        // @formatter:on
+        ;
     }
 }

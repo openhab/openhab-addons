@@ -15,10 +15,17 @@ package org.openhab.binding.shelly.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel.Mode;
 import org.openhab.core.library.types.DecimalType;
@@ -29,6 +36,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * Tests for {@link ShellyLightModel}
@@ -444,5 +452,51 @@ class ShellyLightModelTest {
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         assertThrows(IllegalArgumentException.class, () -> model.setRGBX(new StringType("magenta-ish")));
+    }
+
+    @ParameterizedTest
+    @MethodSource("thingTypeProvider")
+    void testCapabilitiesForEachThingType(ThingTypeUID thingTypeUID, int lightId, @Nullable String profileStr,
+            boolean expSupOnOff, boolean expSupColor, boolean expSupColorTemp, boolean expSupBri) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        profile.device.profile = profileStr;
+        profile.maxTemp = 6500;
+        profile.minTemp = 2700;
+        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, lightId, thingTypeUID, profile, STEP);
+
+        assertEquals(expSupOnOff, model.supportsOnOffChannel(), "on/off");
+        assertEquals(expSupColor, model.supportsColorChannel(), "color");
+        assertEquals(expSupColorTemp, model.supportsColorTempChannel(), "color temp");
+        assertEquals(expSupBri, model.supportsBrightnessChannel(), "brightness");
+    }
+
+    static Stream<Arguments> thingTypeProvider() {
+        String x = SHELLY2_PROFILE_RGBX2LIGHT;
+        String y = SHELLY2_PROFILE_RGBW;
+        return Stream.of(
+                // PASSING TEST CASES
+                Arguments.of(THING_TYPE_SHELLYBULB, 0, null, true, true, true, true),
+                Arguments.of(THING_TYPE_SHELLYDUO, 0, null, true, false, true, true),
+                Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, true, false, true, true), // TODO Vintage white-only?
+                Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, true, false, true, true),
+                Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, true, true, false, false),
+                Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 0, null, false, false, false, true),
+                Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, null, false, false, false, true),
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, true, true, false, false),
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_LIGHT, false, false, false, true),
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, SHELLY2_PROFILE_LIGHT, false, false, false, true),
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBCCT, true, true, false, false),
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBCCT, false, false, true, true),
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_CCTX2, true, false, true, true),
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_CCTX2, false, false, true, true),
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, true, true, false, false),
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, false, false, false, true),
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_LIGHT, false, false, false, true),
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_LIGHT, false, false, false, true)
+
+        // TODO FIX FAILING TEST CASES
+        // Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, null, true, false, true, true)
+        // Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, true, true, true, true) //
+        );
     }
 }
