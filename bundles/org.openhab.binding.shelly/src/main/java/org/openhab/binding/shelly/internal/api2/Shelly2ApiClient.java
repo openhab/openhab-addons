@@ -307,6 +307,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         List<ShellySettingsRoller> rollers = profile.settings.rollers;
         profile.numRollers = rollers != null ? rollers.size() : 0;
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0 || profile.isDimmer;
+        profile.numInputs = ShellyDeviceProfile.resolveNumInputs(profile.numInputs, profile.hasRelays, profile.isRoller,
+                profile.isDimmer, profile.numRelays);
 
         ShellySettingsDevice device = profile.device;
         String realm = config.getRealm();
