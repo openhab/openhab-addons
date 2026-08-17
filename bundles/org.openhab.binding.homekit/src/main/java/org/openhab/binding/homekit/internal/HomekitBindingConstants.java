@@ -123,5 +123,8 @@ public class HomekitBindingConstants {
     public static final String I18N_SUFFIX_ACCESSORY_FETCH_ERROR = "accessory fetch error";
     public static final String I18N_SUFFIX_ERROR_SENDING_COMMAND = "error sending command";
 
+    // i18n translatable text keys
+    public static final String TEXT_ONLINE_BATTERY_LOW = "@text/online.battery-low";
+
     public static final String CHECK_MARK = "✓";
 }
