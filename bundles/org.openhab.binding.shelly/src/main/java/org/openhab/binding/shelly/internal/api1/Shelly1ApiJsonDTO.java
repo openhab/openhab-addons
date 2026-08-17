@@ -521,6 +521,9 @@ public class Shelly1ApiJsonDTO {
         public String outOnUrl; // output is activated
         @SerializedName("out_off_url")
         public String outOffUrl; // output is deactivated
+
+        // Gen2 (Pro RGBWW PM) only: which RPC component this entry maps to, see Shelly2ApiRpc.API_COMPONENT_*
+        public transient String apiComponent = "";
     }
 
     public static class ShellyFavPos { // FW 1.9.2+ in roller mode

@@ -1222,43 +1222,46 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return numDimmers;
     }
 
+    /**
+     * Builds profile.settings.lights as one entry per present device component, tagged with its apiComponent kind.
+     * Works uniformly for all Pro/Plus RGBW(W) PM profiles: the color component (rgbw0/rgb0), if present, is
+     * always first, followed by any secondary CCT/Light components - so hybrid profiles (rgbcct, rgbx2light) end
+     * up with both their color AND their secondary component(s) represented, not just the color one.
+     */
     protected void fillRgbwSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
         if (!profile.isRGBW2) {
             return;
         }
 
-        ArrayList<@Nullable ShellySettingsRgbwLight> lights = new ArrayList<>();
-        Shelly2GetConfigLight rgbw0 = dc.rgbw0;
-        Shelly2GetConfigLight rgb0 = dc.rgb0;
-        if (rgbw0 != null) {
-            profile.inColor = true;
-            lights.add(createRgbwLightSetting(rgbw0));
-        } else if (rgb0 != null) {
-            profile.inColor = true;
-            lights.add(createRgbwLightSetting(rgb0));
-        } else {
-            profile.inColor = false;
-            @Nullable
-            Shelly2GetConfigLight[] lightConfigs = { dc.light0, dc.light1, dc.light2, dc.light3, dc.light4, dc.cct0,
-                    dc.cct1 };
-            for (@Nullable
-            Shelly2GetConfigLight lc : lightConfigs) {
-                if (lc != null) {
-                    lights.add(createRgbwLightSetting(lc));
-                }
-            }
-            if (lights.isEmpty()) {
-                lights.add(new ShellySettingsRgbwLight());
+        record Candidate(String apiComponent, @Nullable Shelly2GetConfigLight config) {
+        }
+        List<Candidate> candidates = List.of(new Candidate(API_COMPONENT_RGBW, dc.rgbw0),
+                new Candidate(API_COMPONENT_RGB, dc.rgb0), new Candidate(API_COMPONENT_CCT, dc.cct0),
+                new Candidate(API_COMPONENT_CCT, dc.cct1), new Candidate(API_COMPONENT_LIGHT, dc.light0),
+                new Candidate(API_COMPONENT_LIGHT, dc.light1), new Candidate(API_COMPONENT_LIGHT, dc.light2),
+                new Candidate(API_COMPONENT_LIGHT, dc.light3), new Candidate(API_COMPONENT_LIGHT, dc.light4));
+
+        ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
+        for (Candidate c : candidates) {
+            Shelly2GetConfigLight config = c.config();
+            if (config != null) {
+                lights.add(createRgbwLightSetting(config, c.apiComponent()));
             }
         }
+        if (lights.isEmpty()) {
+            lights.add(new ShellySettingsRgbwLight());
+        }
+        profile.inColor = lights.stream()
+                .anyMatch(l -> API_COMPONENT_RGB.equals(l.apiComponent) || API_COMPONENT_RGBW.equals(l.apiComponent));
         profile.settings.lights = lights;
     }
 
-    private ShellySettingsRgbwLight createRgbwLightSetting(Shelly2GetConfigLight src) {
+    private ShellySettingsRgbwLight createRgbwLightSetting(Shelly2GetConfigLight src, String apiComponent) {
         ShellySettingsRgbwLight ls = new ShellySettingsRgbwLight();
         ls.autoOn = src.autoOnDelay;
         ls.autoOff = src.autoOffDelay;
         ls.name = src.name;
+        ls.apiComponent = apiComponent;
         return ls;
     }
 

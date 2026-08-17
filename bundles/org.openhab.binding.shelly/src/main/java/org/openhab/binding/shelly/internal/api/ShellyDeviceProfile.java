@@ -326,10 +326,13 @@ public class ShellyDeviceProfile {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
             List<ShellySettingsRgbwLight> lights = settings.lights;
-            if (lights == null || lights.size() <= 1) {
+            int count = lights == null ? 0 : lights.size();
+            if (count <= 1 || (inColor && i == 0)) {
+                // count<=1: the single light/color component always lives in the bare "control" group.
+                // inColor && i==0: hybrid profile (color + secondary CCT/Light) - index 0 is the color slot.
                 return CHANNEL_GROUP_LIGHT_CONTROL;
             }
-            return lightChannelGroupPrefix(this) + idx;
+            return lightChannelGroupPrefix(this) + (idx - getColorComponentCount());
         } else if (isLight) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {
@@ -346,6 +349,16 @@ public class ShellyDeviceProfile {
 
     public String getMeterGroup(int idx) {
         return numMeters > 1 ? CHANNEL_GROUP_METER + (idx + 1) : CHANNEL_GROUP_METER;
+    }
+
+    /**
+     * Number of leading color-component slots in settings.lights (0 or 1 - no profile has more than one).
+     * Used to convert a device-local component id (as reported by the device, 0-based per component type,
+     * e.g. CCT:0/CCT:1 or Light:0/Light:1) into its index in the flat settings.lights list, where slot 0 is
+     * reserved for the color component (rgb0/rgbw0) whenever one is present.
+     */
+    public int getColorComponentCount() {
+        return inColor ? 1 : 0;
     }
 
     public String getInputGroup(int i) {

@@ -71,6 +71,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RGBW_SETCONFIG = "RGBW.SetConfig";
     public static final String SHELLYRPC_METHOD_CCT_STATUS = "CCT.GetStatus";
     public static final String SHELLYRPC_METHOD_CCT_SET = "CCT.Set";
+    public static final String SHELLYRPC_METHOD_CCT_SETCONFIG = "CCT.SetConfig";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
@@ -110,8 +111,15 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_PROFILE_MONOPHASE = "monophase";
     public static final String SHELLY2_PROFILE_TRIPHASE = "triphase";
     public static final String SHELLY2_PROFILE_RGBCCT = "rgbcct"; // Pro RGBWW PM: RGB:0 + CCT:0
-    public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1 (CCT deferred)
+    public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1
     public static final String SHELLY2_PROFILE_RGBX2LIGHT = "rgbx2light"; // Pro RGBWW PM: RGB:0 + Light:0/1
+
+    // Pro RGBWW PM: settings.lights[i].apiComponent tag, selects which RPC component family (and thus which
+    // Light.*/RGB.*/RGBW.*/CCT.* method) an index maps to - see Shelly2ApiRpc.LIGHT_RPC_METHODS
+    public static final String API_COMPONENT_RGB = "rgb";
+    public static final String API_COMPONENT_RGBW = "rgbw";
+    public static final String API_COMPONENT_CCT = "cct";
+    public static final String API_COMPONENT_LIGHT = "light";
 
     // Button types/modes
     public static final String SHELLY2_BTNT_MOMENTARY = "momentary";
