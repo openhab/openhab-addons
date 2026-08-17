@@ -58,6 +58,9 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="meter1" typeId="meter"/>
 			<channel-group id="meter2" typeId="meter"/>
+			<channel-group id="meter3" typeId="meter"/>
+			<channel-group id="meter4" typeId="meter"/>
+			<channel-group id="meter5" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
