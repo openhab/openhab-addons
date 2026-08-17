@@ -864,7 +864,6 @@ public class ShellyComponents {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
-            // TODO check this
             ShellySettingsLight light = orgStatus.lights.get(rgbwId);
             if (light == null) {
                 throw new ShellyApiException("Shelly RGBW2 update failed: light " + rgbwId + " not found");

@@ -50,8 +50,10 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class ShellyLightHandlerLightModelTests {
 
-    private static ShellyStatusLightChannel lightChannel(Boolean isOn, Integer red, Integer green, Integer blue,
-            Integer white, Integer gain, Integer brightness, Integer temp, Integer effect, Boolean hasTimer) {
+    private static ShellyStatusLightChannel lightChannel(@Nullable Boolean isOn, @Nullable Integer red,
+            @Nullable Integer green, @Nullable Integer blue, @Nullable Integer white, @Nullable Integer gain,
+            @Nullable Integer brightness, @Nullable Integer temp, @Nullable Integer effect,
+            @Nullable Boolean hasTimer) {
         ShellyStatusLightChannel light = new ShellyStatusLightChannel();
         light.ison = isOn;
         light.red = red;
@@ -249,7 +251,7 @@ class ShellyLightHandlerLightModelTests {
         Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
         assertNotNull(api);
 
-        ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 100, 80, 4000, 2, true);
+        ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 80, null, null, 2, true);
         when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
 
         boolean updated = handler.updateDeviceStatus(new ShellySettingsStatus());
@@ -264,8 +266,38 @@ class ShellyLightHandlerLightModelTests {
         assertEquals(PercentType.ZERO, updates.get("color#white"));
         assertEquals(new StringType("red"), updates.get("color#full"));
         assertEquals(new PercentType(80), updates.get("color#gain"));
-        assertEquals(new PercentType(80), updates.get("white#brightness"));
         assertEquals(new DecimalType(2), updates.get("color#effect"));
+
+        assertNull(updates.get("white#brightness"));
+    }
+
+    @Test
+    void updateDeviceStatusCreatesModelAndUpdatesColorTempChannels() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
+
+        ShellyStatusLightChannel dto = lightChannel(true, null, null, null, null, null, 80, 4000, null, true);
+        when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
+
+        boolean updated = handler.updateDeviceStatus(new ShellySettingsStatus());
+
+        assertTrue(updated);
+        Map<String, State> updates = handler.getChannelUpdates();
+        assertNotNull(handler.getLightModel(0));
+
+        assertEquals(new PercentType(80), updates.get("white#brightness"));
+        assertEquals(QuantityType.valueOf(4000, Units.KELVIN), updates.get("primary#primary-color-temp-abs"));
+
+        Object ct = updates.get("primary#primary-color-temp");
+        assertTrue(ct instanceof PercentType);
+        assertEquals(54, Math.round(((PercentType) ct).doubleValue()));
+
+        ct = updates.get("white#temperature");
+        assertTrue(ct instanceof PercentType);
+        assertEquals(54, Math.round(((PercentType) ct).doubleValue()));
+
+        assertNull(updates.get("color#gain"));
     }
 
     @Test
@@ -293,14 +325,14 @@ class ShellyLightHandlerLightModelTests {
         assertNotNull(api);
         handler.profile.device.mode = "white";
 
-        ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 50, 40, 3000, 0, false);
+        ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 50, null, null, 0, false);
         when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
 
         handler.updateDeviceStatus(new ShellySettingsStatus());
 
         ShellyLightModel model = handler.getLightModel(0);
         assertNotNull(model);
-        assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
+        assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
     }
 
     @Test
@@ -315,7 +347,7 @@ class ShellyLightHandlerLightModelTests {
         handler.profile.settings.lights = new ArrayList<>();
         Objects.requireNonNull(handler.profile.settings.lights).add(settings);
 
-        ShellyStatusLightChannel dto = lightChannel(true, 0, 0, 255, 0, 30, 20, 4000, 0, true);
+        ShellyStatusLightChannel dto = lightChannel(true, 0, 0, 255, 0, 30, null, null, 0, true);
         when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
 
         boolean updated = handler.updateDeviceStatus(new ShellySettingsStatus());
