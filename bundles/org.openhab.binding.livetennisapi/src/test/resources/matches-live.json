@@ -1,0 +1,149 @@
+{
+  "data": [
+    {
+      "id": 910001,
+      "tournament": "Cincinnati Open",
+      "tournament_id": "atp-cincinnati",
+      "tour": "atp",
+      "surface": "hard",
+      "indoor": false,
+      "format": "BO3",
+      "round": "Quarterfinal",
+      "round_code": "QF",
+      "status": "live",
+      "event_status": null,
+      "is_doubles": false,
+      "scheduled_time": "2026-08-15T17:00:00Z",
+      "players": {
+        "p1": {
+          "id": 3333,
+          "name": "Player One",
+          "tour": "atp",
+          "country": "sui",
+          "ranking": 5,
+          "ranking_points": 4980,
+          "ranking_movement": "same",
+          "is_doubles_team": false
+        },
+        "p2": {
+          "id": 4444,
+          "name": "Player Two",
+          "tour": "atp",
+          "country": "ned",
+          "ranking": 12,
+          "ranking_points": 2725,
+          "ranking_movement": "up",
+          "is_doubles_team": false
+        }
+      },
+      "score": {
+        "sets": [1, 0],
+        "games": [[6, 3], [4, 2]],
+        "points": ["15", "40"],
+        "server": 1,
+        "is_tiebreak": false,
+        "timestamp": "2026-08-15T18:20:11Z"
+      },
+      "winner": null
+    },
+    {
+      "id": 910002,
+      "tournament": "Cincinnati Open",
+      "tournament_id": "wta-cincinnati",
+      "tour": "wta",
+      "surface": "hard",
+      "indoor": false,
+      "format": "BO3",
+      "round": "Semifinal",
+      "round_code": "SF",
+      "status": "live",
+      "event_status": null,
+      "is_doubles": false,
+      "scheduled_time": "2026-08-15T19:00:00Z",
+      "players": {
+        "p1": {
+          "id": 5555,
+          "name": "Player Three",
+          "tour": "wta",
+          "country": "pol",
+          "ranking": 2,
+          "ranking_points": 8375,
+          "ranking_movement": "same",
+          "is_doubles_team": false
+        },
+        "p2": {
+          "id": 6666,
+          "name": "Player Four",
+          "tour": "wta",
+          "country": "usa",
+          "ranking": 7,
+          "ranking_points": 4088,
+          "ranking_movement": "down",
+          "is_doubles_team": false
+        }
+      },
+      "score": {
+        "sets": [0, 0],
+        "games": [[6], [6]],
+        "points": ["6", "5"],
+        "server": 2,
+        "is_tiebreak": true,
+        "timestamp": "2026-08-15T19:48:02Z"
+      },
+      "winner": null
+    },
+    {
+      "id": 910003,
+      "tournament": "Chicago Challenger",
+      "tournament_id": null,
+      "tour": "challenger",
+      "surface": "hard",
+      "indoor": false,
+      "format": "BO3",
+      "round": "Round of 16",
+      "round_code": "R16",
+      "status": "live",
+      "event_status": "Interrupted",
+      "is_doubles": false,
+      "scheduled_time": null,
+      "players": {
+        "p1": {
+          "id": 7777,
+          "name": "Player Five",
+          "tour": "challenger_men",
+          "country": null,
+          "ranking": null,
+          "ranking_points": null,
+          "ranking_movement": null,
+          "is_doubles_team": false
+        },
+        "p2": {
+          "id": 8888,
+          "name": "Player Six",
+          "tour": "challenger_men",
+          "country": "arg",
+          "ranking": 214,
+          "ranking_points": 261,
+          "ranking_movement": "same",
+          "is_doubles_team": false
+        }
+      },
+      "score": {
+        "sets": [1, 1],
+        "games": [],
+        "points": [null, null],
+        "server": null,
+        "is_tiebreak": false,
+        "timestamp": "2026-08-15T20:01:40Z"
+      },
+      "winner": null
+    }
+  ],
+  "meta": {
+    "limit": 200,
+    "offset": 0,
+    "count": 3,
+    "total": 3,
+    "has_more": false
+  }
+}
