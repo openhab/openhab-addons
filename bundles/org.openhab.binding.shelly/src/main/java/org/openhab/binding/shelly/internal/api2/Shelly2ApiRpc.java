@@ -119,6 +119,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private record LightRpcMethods(String getStatus, String set, String setConfig) {
     }
 
+    private static final LightRpcMethods LIGHT_RPC_METHODS_LIGHT = new LightRpcMethods(SHELLYRPC_METHOD_LIGHT_STATUS,
+            SHELLYRPC_METHOD_LIGHT_SET, SHELLYRPC_METHOD_LIGHT_SETCONFIG);
     private static final Map<String, LightRpcMethods> LIGHT_RPC_METHODS = Map.of(API_COMPONENT_RGB,
             new LightRpcMethods(SHELLYRPC_METHOD_RGB_STATUS, SHELLYRPC_METHOD_RGB_SET, SHELLYRPC_METHOD_RGB_SETCONFIG),
             API_COMPONENT_RGBW,
@@ -126,14 +128,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     SHELLYRPC_METHOD_RGBW_SETCONFIG),
             API_COMPONENT_CCT,
             new LightRpcMethods(SHELLYRPC_METHOD_CCT_STATUS, SHELLYRPC_METHOD_CCT_SET, SHELLYRPC_METHOD_CCT_SETCONFIG),
-            API_COMPONENT_LIGHT, new LightRpcMethods(SHELLYRPC_METHOD_LIGHT_STATUS, SHELLYRPC_METHOD_LIGHT_SET,
-                    SHELLYRPC_METHOD_LIGHT_SETCONFIG));
+            API_COMPONENT_LIGHT, LIGHT_RPC_METHODS_LIGHT);
 
     private LightRpcMethods lightRpcMethods(ShellyDeviceProfile profile, int index) {
         List<@Nullable ShellySettingsRgbwLight> lights = profile.settings.lights;
         String tag = lights != null && index >= 0 && index < lights.size() ? lights.get(index).apiComponent : null;
         LightRpcMethods methods = tag != null ? LIGHT_RPC_METHODS.get(tag) : null;
-        return methods != null ? methods : LIGHT_RPC_METHODS.get(API_COMPONENT_LIGHT);
+        return methods != null ? methods : LIGHT_RPC_METHODS_LIGHT;
     }
 
     /**
