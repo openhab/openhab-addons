@@ -316,6 +316,46 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
     }
 
     @Test
+    void testOnEventCurrentLevelNullMapsToUndef() {
+        mockCluster.featureMap = new FeatureMap(false, true);
+        ValveConfigurationAndControlConverter levelConverter = new ValveConfigurationAndControlConverter(mockCluster,
+                mockHandler, 1, "TestLabel");
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_CURRENT_LEVEL;
+        message.value = null;
+        levelConverter.onEvent(message);
+        // A null CurrentLevel means the level is unknown, which must not leave the last one showing.
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-level"), eq(UnDefType.UNDEF));
+    }
+
+    @Test
+    void testOnEventCloseTimeKeepsDerivedInstantWhenAutoCloseTimeClears() throws InterruptedException {
+        mockCluster.featureMap = new FeatureMap(true, false);
+        ValveConfigurationAndControlConverter tsConverter = new ValveConfigurationAndControlConverter(mockCluster,
+                mockHandler, 1, "TestLabel");
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_REMAINING_DURATION;
+        message.value = 120;
+        tsConverter.onEvent(message);
+        ArgumentCaptor<State> state = ArgumentCaptor.forClass(State.class);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("valve-close-time"), state.capture());
+        Instant derived = ((DateTimeType) state.getValue()).getInstant();
+
+        // Let the clock move, so re-basing the duration would give a different instant.
+        Thread.sleep(10);
+
+        // The valve loses its UTC time mid-countdown. RemainingDuration is not reported as it counts down, so the
+        // close time must stay where the earlier report put it.
+        message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_AUTO_CLOSE_TIME;
+        message.value = null;
+        tsConverter.onEvent(message);
+        verify(mockHandler, times(2)).updateState(eq(1), eq("valve-close-time"), state.capture());
+        assertEquals(derived, ((DateTimeType) state.getValue()).getInstant());
+    }
+
+    @Test
     void testOnEventRemainingDurationNullMapsToUndef() {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();

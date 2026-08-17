@@ -64,7 +64,7 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
     private final int levelStep;
     private final Set<String> activeFaults = new LinkedHashSet<>();
     private @Nullable Long autoCloseTime;
-    private @Nullable Integer remainingDuration;
+    private @Nullable Instant derivedCloseTime;
 
     public ValveConfigurationAndControlConverter(ValveConfigurationAndControlCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
@@ -175,8 +175,10 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 updateTargetState(message.value instanceof ValveStateEnum valveState ? valveState : null);
                 break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_CURRENT_LEVEL:
-                if (levelSupported && message.value instanceof Number number) {
-                    updateState(CHANNEL_ID_VALVE_LEVEL, new PercentType(number.intValue()));
+                if (levelSupported) {
+                    updateState(CHANNEL_ID_VALVE_LEVEL,
+                            message.value instanceof Number number ? new PercentType(number.intValue())
+                                    : UnDefType.UNDEF);
                 }
                 break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_AUTO_CLOSE_TIME:
@@ -184,7 +186,8 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                 updateCloseTime();
                 break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_REMAINING_DURATION:
-                remainingDuration = message.value instanceof Number remaining ? remaining.intValue() : null;
+                derivedCloseTime = deriveCloseTime(
+                        message.value instanceof Number remaining ? remaining.intValue() : null);
                 updateCloseTime();
                 break;
             case ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION:
@@ -211,12 +214,13 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
     public void initState() {
         updateValveState(initializingCluster.currentState);
         updateTargetState(initializingCluster.targetState);
-        if (levelSupported && initializingCluster.currentLevel != null) {
-            updateState(CHANNEL_ID_VALVE_LEVEL, new PercentType(initializingCluster.currentLevel));
+        if (levelSupported) {
+            updateState(CHANNEL_ID_VALVE_LEVEL, initializingCluster.currentLevel == null ? UnDefType.UNDEF
+                    : new PercentType(initializingCluster.currentLevel));
         }
         autoCloseTime = initializingCluster.autoCloseTime == null ? null
                 : initializingCluster.autoCloseTime.longValue();
-        remainingDuration = initializingCluster.remainingDuration;
+        derivedCloseTime = deriveCloseTime(initializingCluster.remainingDuration);
         updateCloseTime();
         updateDuration(CHANNEL_ID_VALVE_DURATION, initializingCluster.defaultOpenDuration);
         // Seed the faults that are already active, without firing them: the ValveFault event carries the whole
@@ -280,15 +284,23 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
      */
     private void updateCloseTime() {
         Long autoClose = autoCloseTime;
-        Integer remaining = remainingDuration;
+        Instant derived = derivedCloseTime;
         State state = UnDefType.UNDEF;
         if (timeSyncSupported && autoClose != null) {
             state = new DateTimeType(
                     Instant.ofEpochSecond(MATTER_EPOCH_OFFSET_SECONDS).plus(autoClose, ChronoUnit.MICROS));
-        } else if (remaining != null && remaining > 0) {
-            state = new DateTimeType(Instant.now().plusSeconds(remaining));
+        } else if (derived != null) {
+            state = new DateTimeType(derived);
         }
         updateState(CHANNEL_ID_VALVE_CLOSE_TIME, state);
+    }
+
+    /**
+     * Derives the close time as RemainingDuration is reported. The duration is an offset from that report, so it is
+     * converted once, here, rather than re-based on a later clock reading.
+     */
+    private @Nullable Instant deriveCloseTime(@Nullable Integer remaining) {
+        return remaining == null || remaining <= 0 ? null : Instant.now().plusSeconds(remaining);
     }
 
     private void updateDuration(String channelId, @Nullable Object value) {
