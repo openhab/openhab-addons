@@ -13,6 +13,8 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_ACTIVATE;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_BTNT_ACTIVATE;
 
 import java.util.ArrayList;
 
@@ -106,5 +108,11 @@ public class Shelly2ApiClientTest {
         emData.totalActiveEnergy = 10.0;
 
         assertDoesNotThrow(() -> Shelly2ApiClient.applyEm1Data(status, 5, emData));
+    }
+
+    @Test
+    void inModeActivateMapsToDedicatedButtonType() {
+        // #19755: Mini G3/G4 and Plus devices report in_mode "activate", which was missing from the map
+        assertEquals(SHELLY_BTNT_ACTIVATE, Shelly2ApiClient.MAP_INMODE_BTNTYPE.get(SHELLY2_BTNT_ACTIVATE));
     }
 }

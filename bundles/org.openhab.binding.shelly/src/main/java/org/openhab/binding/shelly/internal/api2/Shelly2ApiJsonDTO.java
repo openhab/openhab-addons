@@ -113,6 +113,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_BTNT_FLIP = "flip";
     public static final String SHELLY2_BTNT_FOLLOW = "follow";
     public static final String SHELLY2_BTNT_DETACHED = "detached";
+    public static final String SHELLY2_BTNT_ACTIVATE = "activate";
 
     // Input types
     public static final String SHELLY2_INPUTT_SWITCH = "switch";
