@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -104,6 +105,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final ExpiringCache<Home> homeCache = new ExpiringCache<>(Duration.ofMinutes(10), this::refreshHome);
     private final ExpiringCache<HomeData> homeDataCache = new ExpiringCache<>(Duration.ofMinutes(10),
             this::refreshHomeData);
+    private final AtomicInteger cloudSequenceCounter = new AtomicInteger(1);
+
+    private int nextCloudSequence() {
+        return cloudSequenceCounter.updateAndGet(current -> current >= Integer.MAX_VALUE ? 2 : current + 1);
+    }
 
     private final Gson gson = new Gson();
 
@@ -656,7 +662,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             byte[] encryptedPayload = ProtocolUtils.encrypt(payload, key);
 
             int randomInt = secureRandom.nextInt(90000) + 10000;
-            int seq = secureRandom.nextInt(900000) + 100000;
+            int seq = nextCloudSequence();
 
             int totalLength = HEADER_LENGTH_WITHOUT_CRC + encryptedPayload.length + CRC_LENGTH;
             byte[] message = new byte[totalLength];
@@ -973,7 +979,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             int timestamp = JsonParser.parseString(new String(payload, StandardCharsets.UTF_8)).getAsJsonObject()
                     .get("t").getAsInt();
             int randomInt = secureRandom.nextInt(90000) + 10000;
-            int seq = secureRandom.nextInt(900000) + 100000;
+            int seq = nextCloudSequence();
             int protocol = 101;
 
             byte[] encryptedPayload = ProtocolUtils.encryptB01(payload, localKey, randomInt);
