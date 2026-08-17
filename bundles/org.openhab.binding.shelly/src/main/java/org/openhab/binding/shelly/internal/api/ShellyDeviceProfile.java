@@ -361,6 +361,20 @@ public class ShellyDeviceProfile {
         return inColor ? 1 : 0;
     }
 
+    /**
+     * True when settings.lights[idx] is an RGB/RGBW color component, as opposed to a CCT/Light one - needed
+     * because a hybrid profile's (rgbcct, rgbx2light) secondary component(s) are not color even though the
+     * whole-profile inColor flag is true. Untagged (Gen1 RGBW2) entries fall back to that whole-profile flag.
+     */
+    public boolean isColorComponent(int idx) {
+        List<ShellySettingsRgbwLight> lights = settings.lights;
+        if (lights == null || idx < 0 || idx >= lights.size()) {
+            return inColor;
+        }
+        String tag = lights.get(idx).apiComponent;
+        return tag.isEmpty() ? inColor : ("rgb".equals(tag) || "rgbw".equals(tag));
+    }
+
     public String getInputGroup(int i) {
         int idx = i + 1; // group names are 1-based
         if (isRGBW2) {
