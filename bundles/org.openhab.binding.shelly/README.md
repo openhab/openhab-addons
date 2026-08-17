@@ -1746,7 +1746,7 @@ totalEnergy might reset on restart depending on device type and firmware version
 The active device profile (`light`, `rgbcct`, `cctx2` or `rgbx2light`) is selected in the Shelly App/device settings and determines which channel groups below are populated.
 Changing the profile requires deleting and re-discovering the Thing.
 
-In `rgbcct` or `rgbx2light` profile (color mode):
+In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color component (color mode):
 
 | Group   | Channel       | Type     | read-only | Description                                                             |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
@@ -1761,15 +1761,15 @@ In `rgbcct` or `rgbx2light` profile (color mode):
 |         | green         | Dimmer   | r/w       | Green brightness: 0..100% (control only the green channel)              |
 |         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% (control only the blue channel)                |
 |         | white         | Dimmer   | r/w       | White brightness: 0..100% (control only the white channel)              |
-| meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
+| meter1  | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
 |         | energyAvg1Min | Number   | yes       | Energy consumed in the previous minute (Wh)                             |
 |         | totalEnergy   | Number   | yes       | Total energy consumption in kWh                                         |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                       |
 
 `Note`:
-`rgbcct` and `rgbx2light` combine an RGB component with additional CCT/Light components on the device.
-Only the RGB component's power/energy is metered and exposed as channels; the additional CCT/Light
-components are not yet mapped.
+`rgbcct` and `rgbx2light` combine the RGB component above with additional CCT (`rgbcct`) or Light
+(`rgbx2light`) components. Each additional component is exposed as its own `light1`/`light2` group
+(same layout as the `light` profile below) with its own independent meter (`meter2`/`meter3`).
 
 In `light` profile (white mode), each of the 5 LED output channels is exposed as its own group:
 
@@ -1783,7 +1783,11 @@ In `light` profile (white mode), each of the 5 LED output channels is exposed as
 | light3 |             |        |           | Same for LED channel 3                                                  |
 | light4 |             |        |           | Same for LED channel 4                                                  |
 | light5 |             |        |           | Same for LED channel 5                                                  |
-| meter  |             |        |           | Same as color mode, see above                                           |
+| meter1 |             |        |           | Meter for LED channel 1, see meter group in color mode above            |
+| meter2 |             |        |           | Meter for LED channel 2 (if configured)                                 |
+| meter3 |             |        |           | Meter for LED channel 3 (if configured)                                 |
+| meter4 |             |        |           | Meter for LED channel 4 (if configured)                                 |
+| meter5 |             |        |           | Meter for LED channel 5 (if configured)                                 |
 
 In `cctx2` profile (dual color-temperature white mode), the warm-white and cool-white channels are each exposed as their own group, each with its own independent meter:
 
