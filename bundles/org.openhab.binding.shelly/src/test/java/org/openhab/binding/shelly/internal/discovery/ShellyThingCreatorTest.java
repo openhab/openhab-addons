@@ -371,6 +371,26 @@ public class ShellyThingCreatorTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideTestCasesForSingleModeDeviceFallsBackToGeneralMap")
+    void singleModeGen1DeviceFallsBackToGeneralDeviceTypeMapWhenModeIsRelay(String serviceName, String deviceType,
+            ThingTypeUID expectedThingTypeUid) {
+        ThingUID actual = ShellyThingCreator.getThingUID(serviceName, deviceType, "relay");
+        ThingUID expected = new ThingUID(expectedThingTypeUid, DEVICE_ID);
+        assertThat("serviceName: " + serviceName + "; deviceType: " + deviceType, actual, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForSingleModeDeviceFallsBackToGeneralMap() {
+        return Stream.of( //
+                // SHSW-1/SHSW-PM/SHDM-2 exist only in THING_TYPE_BY_DEVICE_TYPE, not in
+                // RELAY_THING_TYPE_BY_DEVICE_TYPE. Old Gen1 firmware derives mode="relay" from num_outputs even for
+                // single-relay/dimmer devices, and a custom hostname bypasses the service-name-based resolution
+                // above, so the mode-specific lookup must fall back to the general map instead of shellyunknown.
+                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_1, THING_TYPE_SHELLY1), //
+                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_1PM, THING_TYPE_SHELLY1PM), //
+                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2));
+    }
+
+    @ParameterizedTest
     @MethodSource("provideTestCasesForGetThingUIDReturnsThingUidByServiceNameDeviceTypeAndMode")
     void getThingUIDReturnsThingUidByServiceNameDeviceTypeAndMode(String serviceName, String deviceType, String mode,
             ThingTypeUID expectedThingTypeUid) {
