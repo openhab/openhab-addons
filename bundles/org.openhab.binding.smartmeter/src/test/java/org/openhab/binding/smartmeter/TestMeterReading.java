@@ -129,11 +129,11 @@ public class TestMeterReading {
         Disposable disposable = meter.readValues(EVENT_TIMEOUT.toMillis(), executorService, READ_PERIOD);
         try {
             await(readingError, "Did not receive the expected reading error");
-            verify(changeListener, times(1)).errorOccurred(any());
-            verify(connector, times(ConnectorBase.NUMBER_OF_RETRIES)).retryHook(ArgumentMatchers.anyInt());
         } finally {
             dispose(disposable, executorService);
         }
+        verify(changeListener, times(1)).errorOccurred(any());
+        verify(connector, times(ConnectorBase.NUMBER_OF_RETRIES)).retryHook(ArgumentMatchers.anyInt());
     }
 
     @Test
