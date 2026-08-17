@@ -324,7 +324,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Process Inbound WebSocket message
      *
      * @param session WebSocket session
-     * @param receivedMessage Textual API message
+     * @param eventMessage Textual API message
      */
     @OnWebSocketMessage
     public void onMessage(Session session, String eventMessage) {
@@ -355,19 +355,20 @@ public class Shelly2RpcSocket implements WriteCallback {
                         handler.onNotifyStatus(status);
                         return;
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
-                        if (receivedMessage.contains("\"component\":\"lora:")) {
+                        String processedMessage = receivedMessage;
+                        if (processedMessage.contains("\"component\":\"lora:")) {
                             // The LoRa add-on reports its payload as raw String in "data", whereas the shared
                             // Shelly2NotifyEvent.data is a structure for all other event types. Rename the key so
                             // Gson maps the payload to the String field "lora" instead of failing on "data".
-                            receivedMessage = eventMessage.replace("\"data\":\"", "\"lora\":\"");
+                            processedMessage = eventMessage.replace("\"data\":\"", "\"lora\":\"");
                         }
 
-                        Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
+                        Shelly2RpcNotifyEvent events = fromJson(gson, processedMessage, Shelly2RpcNotifyEvent.class);
                         events.src = message.src;
                         Shelly2NotifyEventData eventParams = events.params;
                         ArrayList<Shelly2NotifyEvent> notifyEvents = eventParams != null ? eventParams.events : null;
                         if (notifyEvents == null) {
-                            logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
+                            logger.debug("{}: Malformed event data: {}", thingName, processedMessage);
                         } else {
                             boolean hasRegularEvent = false;
                             for (Shelly2NotifyEvent e : notifyEvents) {
@@ -378,7 +379,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                                     if (bluThing != null) {
                                         // known device — route to the BLU thing's own handler
                                         if (bluThing.getApi() instanceof Shelly2ApiRpc bluApi) {
-                                            bluApi.getRpcHandler().onNotifyEvent(receivedMessage);
+                                            bluApi.getRpcHandler().onNotifyEvent(processedMessage);
                                         } else {
                                             logger.debug("{}: BLU thing {} has unexpected API type, skipping event",
                                                     thingName, address);
@@ -399,11 +400,12 @@ public class Shelly2RpcSocket implements WriteCallback {
                                 } else if (SHELLY2_EVENT_BLE_SCAN_RESULT.equals(e.event)) {
                                     logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, e.event);
                                 } else {
+                                    // non-BLU event: always use the hub's handler, never the BLU one
                                     hasRegularEvent = true;
                                 }
                             }
                             if (hasRegularEvent) {
-                                handler.onNotifyEvent(receivedMessage);
+                                handler.onNotifyEvent(processedMessage);
                             }
                         }
                         break;
