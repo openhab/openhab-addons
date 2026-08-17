@@ -114,6 +114,28 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     // We want to limit script ids being checked, so define a max id
     private static final int MAX_SCRIPT_ID = 15;
 
+    // Pro/Plus RGBW(W) PM: RPC method family per settings.lights[i].apiComponent tag - replaces per-call-site
+    // profile-string checks (SHELLY2_PROFILE_CCTX2.equals(...)) with a single lookup, correct for hybrid profiles.
+    private record LightRpcMethods(String getStatus, String set, String setConfig) {
+    }
+
+    private static final Map<String, LightRpcMethods> LIGHT_RPC_METHODS = Map.of(API_COMPONENT_RGB,
+            new LightRpcMethods(SHELLYRPC_METHOD_RGB_STATUS, SHELLYRPC_METHOD_RGB_SET, SHELLYRPC_METHOD_RGB_SETCONFIG),
+            API_COMPONENT_RGBW,
+            new LightRpcMethods(SHELLYRPC_METHOD_RGBW_STATUS, SHELLYRPC_METHOD_RGBW_SET,
+                    SHELLYRPC_METHOD_RGBW_SETCONFIG),
+            API_COMPONENT_CCT,
+            new LightRpcMethods(SHELLYRPC_METHOD_CCT_STATUS, SHELLYRPC_METHOD_CCT_SET, SHELLYRPC_METHOD_CCT_SETCONFIG),
+            API_COMPONENT_LIGHT, new LightRpcMethods(SHELLYRPC_METHOD_LIGHT_STATUS, SHELLYRPC_METHOD_LIGHT_SET,
+                    SHELLYRPC_METHOD_LIGHT_SETCONFIG));
+
+    private LightRpcMethods lightRpcMethods(ShellyDeviceProfile profile, int index) {
+        List<@Nullable ShellySettingsRgbwLight> lights = profile.settings.lights;
+        String tag = lights != null && index >= 0 && index < lights.size() ? lights.get(index).apiComponent : null;
+        LightRpcMethods methods = tag != null ? LIGHT_RPC_METHODS.get(tag) : null;
+        return methods != null ? methods : LIGHT_RPC_METHODS.get(API_COMPONENT_LIGHT);
+    }
+
     /**
      * Regular constructor - called by Thing handler
      *
@@ -812,16 +834,21 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        if (profile.isRGBW2) {
-            ShellyStatusLight status = new ShellyStatusLight();
-            status.lights = new ArrayList<>();
-            if (profile.inColor) {
-                String method = SHELLY2_PROFILE_RGBW.equals(getString(profile.device.profile))
-                        ? SHELLYRPC_METHOD_RGBW_STATUS
-                        : SHELLYRPC_METHOD_RGB_STATUS; // rgb, rgbcct, rgbx2light all use RGB:0
-                Shelly2RGBWStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(method).withId(0),
+        if (!profile.isRGBW2) {
+            throw new ShellyApiException("API call not implemented");
+        }
+        ShellyStatusLight status = new ShellyStatusLight();
+        status.lights = new ArrayList<>();
+        List<@Nullable ShellySettingsRgbwLight> settingLights = profile.settings.lights;
+        int numLights = settingLights != null ? settingLights.size() : 1;
+        for (int i = 0; i < numLights; i++) {
+            LightRpcMethods methods = lightRpcMethods(profile, i);
+            ShellyStatusLightChannel lightChannel;
+            if (methods.getStatus().equals(SHELLYRPC_METHOD_RGB_STATUS)
+                    || methods.getStatus().equals(SHELLYRPC_METHOD_RGBW_STATUS)) {
+                Shelly2RGBWStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(methods.getStatus()).withId(i),
                         Shelly2RGBWStatus.class);
-                ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+                lightChannel = new ShellyStatusLightChannel();
                 if (ls.rgb != null && ls.rgb.length >= 3) {
                     lightChannel.red = ls.rgb[0];
                     lightChannel.green = ls.rgb[1];
@@ -833,41 +860,30 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     lightChannel.brightness = rgbBrightness.intValue();
                 }
                 lightChannel.ison = ls.output;
-                status.lights.add(lightChannel);
-                status.ison = ls.output;
             } else {
-                String rawProfile = getString(profile.device.profile);
-                String lightMethod = SHELLY2_PROFILE_CCTX2.equals(rawProfile) ? SHELLYRPC_METHOD_CCT_STATUS
-                        : SHELLYRPC_METHOD_LIGHT_STATUS;
-                List<@Nullable ShellySettingsRgbwLight> settingLights = profile.settings.lights;
-                int numLights = settingLights != null ? settingLights.size() : 1;
-                for (int i = 0; i < numLights; i++) {
-                    Shelly2DeviceStatusLight ls = apiRequest(new Shelly2RpcRequest().withMethod(lightMethod).withId(i),
-                            Shelly2DeviceStatusLight.class);
-                    ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
-                    lightChannel.ison = ls.output;
-                    lightChannel.hasTimer = ls.timerStartedAt != null;
-                    lightChannel.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
-                    Double b = ls.brightness;
-                    if (b != null) {
-                        lightChannel.brightness = b.intValue();
-                    }
-                    lightChannel.temp = ls.ct;
-                    status.lights.add(lightChannel);
+                Shelly2DeviceStatusLight ls = apiRequest(
+                        new Shelly2RpcRequest().withMethod(methods.getStatus()).withId(i),
+                        Shelly2DeviceStatusLight.class);
+                lightChannel = new ShellyStatusLightChannel();
+                lightChannel.ison = ls.output;
+                lightChannel.hasTimer = ls.timerStartedAt != null;
+                lightChannel.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
+                Double b = ls.brightness;
+                if (b != null) {
+                    lightChannel.brightness = b.intValue();
                 }
-                status.ison = !status.lights.isEmpty() ? status.lights.get(0).ison : null;
+                lightChannel.temp = ls.ct;
             }
-            return status;
+            status.lights.add(lightChannel);
         }
-
-        throw new ShellyApiException("API call not implemented");
+        status.ison = !status.lights.isEmpty() ? status.lights.get(0).ison : null;
+        return status;
     }
 
     @Override
     public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        String method = SHELLY2_PROFILE_CCTX2.equals(getString(profile.device.profile)) ? SHELLYRPC_METHOD_CCT_STATUS
-                : SHELLYRPC_METHOD_LIGHT_STATUS;
+        String method = lightRpcMethods(profile, index).getStatus();
         ShellyShortLightStatus status = new ShellyShortLightStatus();
         Shelly2DeviceStatusLight ls = apiRequest(new Shelly2RpcRequest().withMethod(method).withId(index),
                 Shelly2DeviceStatusLight.class);
@@ -895,9 +911,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             // Gen2 firmware rejects/clamps brightness=0; on=false is used to turn the light off instead
             params.on = false;
         }
-        String method = SHELLY2_PROFILE_CCTX2.equals(getString(profile.device.profile)) ? SHELLYRPC_METHOD_CCT_SET
-                : SHELLYRPC_METHOD_LIGHT_SET;
-        apiRequest(method, params, String.class);
+        apiRequest(lightRpcMethods(profile, id).set(), params, String.class);
     }
 
     @Override
@@ -906,9 +920,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
         params.on = turnMode.equals(SHELLY_API_ON);
-        String method = SHELLY2_PROFILE_CCTX2.equals(getString(profile.device.profile)) ? SHELLYRPC_METHOD_CCT_SET
-                : SHELLYRPC_METHOD_LIGHT_SET;
-        apiRequest(method, params, String.class);
+        apiRequest(lightRpcMethods(profile, id).set(), params, String.class);
         return getLightStatus(id);
     }
 
@@ -922,10 +934,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         ShellyDeviceProfile profile = getProfile();
         String method;
         String component;
-        if (profile.isRGBW2 && profile.inColor) {
-            boolean rgbw = SHELLY2_PROFILE_RGBW.equals(getString(profile.device.profile));
-            method = rgbw ? SHELLYRPC_METHOD_RGBW_SETCONFIG : SHELLYRPC_METHOD_RGB_SETCONFIG;
-            component = rgbw ? "RGBW" : "RGB";
+        if (profile.isRGBW2) {
+            method = lightRpcMethods(profile, index).setConfig();
+            component = method.substring(0, method.indexOf('.')); // "RGB"/"RGBW"/"CCT"/"Light"
         } else if (profile.isLight || profile.isDimmer) {
             method = SHELLYRPC_METHOD_LIGHT_SETCONFIG;
             component = "Light";
