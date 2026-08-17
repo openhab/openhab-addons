@@ -19,6 +19,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api.ShellyLightApiComponentDTO.API_COMPONENT_CCT;
+import static org.openhab.binding.shelly.internal.api.ShellyLightApiComponentDTO.API_COMPONENT_RGB;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_CLOSE;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_OPEN;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
@@ -40,8 +42,10 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurre
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
@@ -833,6 +837,28 @@ public class ShellyComponentsTest {
         verify(handler, never()).postEvent(any(), anyBoolean());
     }
 
+    @Test
+    void updateLightModeHybridProfileSkipsColorSlotAndUpdatesSecondaryComponent() throws Exception {
+        ShellyDeviceProfile profile = proRgbwwPmHybridProfile();
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight colorLight = new ShellySettingsLight(); // settings.lights[0], the "rgb" color slot
+        ShellySettingsLight cctLight = new ShellySettingsLight(); // settings.lights[1], the "cct" secondary slot
+        cctLight.ison = true;
+        cctLight.brightness = 42;
+        cctLight.temp = 4000;
+        status.lights = new ArrayList<>(List.of(colorLight, cctLight));
+
+        boolean updated = ShellyComponents.updateLightMode(handler, status);
+
+        assertThat(updated, is(true));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_LIGHT_CONTROL), anyString(), any());
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_INDEX + "1"), eq(CHANNEL_BRIGHTNESS + "$Switch"),
+                eq(OnOffType.ON));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_INDEX + "1"), eq(CHANNEL_COLOR_TEMP), any());
+    }
+
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.isSensor = false;
@@ -927,6 +953,18 @@ public class ShellyComponentsTest {
         profile.isGen2 = false;
         profile.isRoller = true;
         profile.numMeters = 1;
+        return profile;
+    }
+
+    // Pro RGBWW PM "rgbcct" profile: settings.lights[0] is the color (rgb) component, [1] is the secondary cct one
+    private static ShellyDeviceProfile proRgbwwPmHybridProfile() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        profile.inColor = true;
+        ShellySettingsRgbwLight colorComponent = new ShellySettingsRgbwLight();
+        colorComponent.apiComponent = API_COMPONENT_RGB;
+        ShellySettingsRgbwLight cctComponent = new ShellySettingsRgbwLight();
+        cctComponent.apiComponent = API_COMPONENT_CCT;
+        profile.settings.lights = new ArrayList<>(List.of(colorComponent, cctComponent));
         return profile;
     }
 
