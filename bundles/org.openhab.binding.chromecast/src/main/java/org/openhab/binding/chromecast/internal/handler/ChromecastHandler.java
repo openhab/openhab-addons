@@ -287,6 +287,12 @@ public class ChromecastHandler extends BaseThingHandler {
             try {
                 chromeCast.connect();
 
+                if (destroyed) {
+                    // destroy() ran while this connect was in flight. The connection is already being
+                    // torn down, so updating status here would report a disposed handler as online.
+                    return;
+                }
+
                 statusUpdater.updateMediaStatus(null);
                 statusUpdater.updateStatus(ThingStatus.ONLINE);
 
