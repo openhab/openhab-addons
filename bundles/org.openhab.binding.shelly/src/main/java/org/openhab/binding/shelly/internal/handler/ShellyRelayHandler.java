@@ -138,7 +138,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
-
             case CHANNEL_LORA_TXDATA: // Text data -> encode BASE64
                 logger.debug("{}: Send LoRa Data {}", thingName, command);
                 String data = getString(command);
