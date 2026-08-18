@@ -138,40 +138,50 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         }
 
         // Fetch job info
-        String jobJson = httpGet(baseUrl + "/api/job", cfg.apiKey).body;
+        HttpGetResult jobResult = httpGet(baseUrl + "/api/job", cfg.apiKey);
+        String jobJson = jobResult.body;
         if (jobJson == null) {
+            markHttpFailure(jobResult.status);
             return;
         }
 
         OctoPrintJobResponse jobResponse = fromJson(jobJson, OctoPrintJobResponse.class);
         if (jobResponse == null) {
+            markOffline("@text/offline.comm-error-json");
             return;
         }
 
         OctoPrintJob job = jobResponse.job;
         OctoPrintJob.OctoPrintFile file = job != null ? job.file : null;
-        String filename = file != null ? file.name : "";
-
-        if (file == null || filename.isBlank()) {
+        if (file == null) {
             clearJobState();
             clearPreview();
             return;
         }
 
-        String name = file.display.isBlank() ? file.name : file.display;
+        String rawFileName = file.name;
+        String fileName = rawFileName != null ? rawFileName : "";
+        if (fileName.isBlank()) {
+            clearJobState();
+            clearPreview();
+            return;
+        }
+
+        String display = file.display;
+        String name = display != null && !display.isBlank() ? display : fileName;
         updateState(CHANNEL_JOB_NAME, new StringType(name));
 
         OctoPrintProgress progress = jobResponse.progress;
         if (progress != null) {
-            updateState(CHANNEL_JOB_PROGRESS,
-                    new QuantityType<>(progress.completion > 0 ? progress.completion : 0, Units.PERCENT));
-            updateState(CHANNEL_TIME_ELAPSED, new QuantityType<>(progress.printTime, Units.SECOND));
-            updateState(CHANNEL_TIME_REMAINING, new QuantityType<>(progress.printTimeLeft, Units.SECOND));
+            updateState(CHANNEL_JOB_PROGRESS, toPercentState(progress.completion));
+            updateState(CHANNEL_TIME_ELAPSED, toSecondsState(progress.printTime));
+            updateState(CHANNEL_TIME_REMAINING, toSecondsState(progress.printTimeLeft));
         }
 
         // The PrusaSlicer Thumbnails plugin serves thumbnails at the job's relative path with the extension
         // replaced by .png, not at the raw OctoPrint file name.
-        String relativePath = file.path.isBlank() ? filename : file.path;
+        String path = file.path;
+        String relativePath = path != null && !path.isBlank() ? path : fileName;
         if (!relativePath.equals(lastPreviewFilename)) {
             byte @Nullable [] bytes = httpGetBytes(
                     baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + thumbnailPathFor(relativePath), cfg.apiKey);
@@ -217,6 +227,22 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
      */
     private State toTemperatureState(@Nullable Double target) {
         return target != null ? new QuantityType<Temperature>(target, SIUnits.CELSIUS) : UnDefType.UNDEF;
+    }
+
+    /**
+     * OctoPrint reports {@code completion} as {@code null} when the print's progress is not yet known; publish
+     * {@link UnDefType#UNDEF} in that case rather than a misleading {@code 0 %}.
+     */
+    private State toPercentState(@Nullable Double value) {
+        return value != null ? new QuantityType<>(value, Units.PERCENT) : UnDefType.UNDEF;
+    }
+
+    /**
+     * OctoPrint reports {@code printTime}/{@code printTimeLeft} as {@code null} when not yet known; publish
+     * {@link UnDefType#UNDEF} in that case rather than a misleading {@code 0 s}.
+     */
+    private State toSecondsState(@Nullable Integer value) {
+        return value != null ? new QuantityType<>(value, Units.SECOND) : UnDefType.UNDEF;
     }
 
     private void clearPreview() {

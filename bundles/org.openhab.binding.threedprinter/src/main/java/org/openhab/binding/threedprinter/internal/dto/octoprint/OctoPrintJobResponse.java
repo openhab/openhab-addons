@@ -43,25 +43,25 @@ public class OctoPrintJobResponse {
 
         public static class OctoPrintFile {
             @SerializedName("name")
-            public String name = "";
+            public @Nullable String name;
 
             @SerializedName("display")
-            public String display = "";
+            public @Nullable String display;
 
             /** Path relative to the file's storage root, e.g. {@code "subdir/file.gcode"}. */
             @SerializedName("path")
-            public String path = "";
+            public @Nullable String path;
         }
     }
 
     public static class OctoPrintProgress {
         @SerializedName("completion")
-        public double completion;
+        public @Nullable Double completion;
 
         @SerializedName("printTime")
-        public int printTime;
+        public @Nullable Integer printTime;
 
         @SerializedName("printTimeLeft")
-        public int printTimeLeft;
+        public @Nullable Integer printTimeLeft;
     }
 }
