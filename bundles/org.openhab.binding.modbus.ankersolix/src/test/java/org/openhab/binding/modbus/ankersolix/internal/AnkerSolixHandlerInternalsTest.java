@@ -19,7 +19,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.measure.MetricPrefix;
 
@@ -258,11 +260,48 @@ class AnkerSolixHandlerInternalsTest {
         assertNull(reserveOutOfRangeShadow);
     }
 
+    @Test
+    void capabilityMaskShouldGateBackupSocCommands() throws Exception {
+        Map<Integer, Integer> registerCache = getField(handler, "registerCache");
+        registerCache.put(32775, 0);
+
+        Boolean unsupported = invoke(handler, "isCapabilitySupported", 0);
+        assertFalse(unsupported);
+
+        invokeVoid(handler, "handleDeviceCommand", "charging-limit-soc", new DecimalType("80"));
+        assertNull(invoke(handler, "getShadowState", "charging-limit-soc"));
+
+        registerCache.put(32775, 1 << 0);
+        Boolean supported = invoke(handler, "isCapabilitySupported", 0);
+        assertTrue(supported);
+
+        invokeVoid(handler, "handleDeviceCommand", "charging-limit-soc", new DecimalType("80"));
+        assertNotNull(invoke(handler, "getShadowState", "charging-limit-soc"));
+    }
+
+    @Test
+    void capabilityMaskPollShouldBeOptionalAndReadSeparately() throws Exception {
+        List<?> pollRanges = invoke(handler, "getPollRanges");
+        Object capabilityRange = nonNull(pollRanges.get(pollRanges.size() - 1));
+        Object startAddress = nonNull(invoke(capabilityRange, "startAddress"));
+        Object length = nonNull(invoke(capabilityRange, "length"));
+        Object optional = nonNull(invoke(capabilityRange, "optional"));
+
+        assertEquals(Integer.valueOf(32775), startAddress);
+        assertEquals(Integer.valueOf(1), length);
+        assertEquals(true, optional);
+    }
+
     @SuppressWarnings("unchecked")
     private static <T> T getField(Object target, String fieldName) throws Exception {
         Field field = findField(target.getClass(), fieldName);
         field.setAccessible(true);
         return (T) field.get(target);
+    }
+
+    @SuppressWarnings("null")
+    private static Object nonNull(@Nullable Object value) {
+        return Objects.requireNonNull(value);
     }
 
     private static void setField(Object target, String fieldName, @Nullable Object value) throws Exception {
