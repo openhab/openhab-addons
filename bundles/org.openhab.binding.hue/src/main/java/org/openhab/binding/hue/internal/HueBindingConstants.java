@@ -135,6 +135,8 @@ public class HueBindingConstants {
     // I18N string references
     public static final String TEXT_OFFLINE_COMMUNICATION_ERROR = "@text/offline.communication-error";
     public static final String TEXT_OFFLINE_CONFIGURATION_ERROR_INVALID_SSL_CERIFICATE = "@text/offline.conf-error-invalid-ssl-certificate";
+    public static final String TEXT_OFFLINE_ZIGBEE_CONNECTIVITY_ISSUE = "@text/offline.api2.comm-error.zigbee-connectivity-issue";
+    public static final String TEXT_OFFLINE_ZIGBEE_DISCONNECTED = "@text/offline.api2.comm-error.zigbee-disconnected";
 
     // Config status messages
     public static final String IP_ADDRESS_MISSING = "missing-ip-address-configuration";
