@@ -83,6 +83,9 @@ In other words, connection parameters are bridge-level and can still be unique p
 
 The `ankersolix-solarbank4` and `ankersolix-solarbank-ac` things expose the following channels:
 
+When available, the optional capability mask is checked during polling and unsupported backup SOC channels are
+reported as `UNDEF`. Devices that do not provide this register continue to be handled as before.
+
 | Channel ID | Item Type | Access | Description |
 | ------------ | ----------- | -------- | ------------- |
 | `device-model` | `String` | read-only | Device model string. |

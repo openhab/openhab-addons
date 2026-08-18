@@ -53,7 +53,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
 
-    protected record PollRange(ModbusReadFunctionCode functionCode, int startAddress, int length) {
+    protected record PollRange(ModbusReadFunctionCode functionCode, int startAddress, int length, boolean optional) {
+        protected PollRange(ModbusReadFunctionCode functionCode, int startAddress, int length) {
+            this(functionCode, startAddress, length, false);
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -118,7 +121,7 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
             ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), range.functionCode,
                     range.startAddress, range.length, localConfig.maxTries);
             registerRegularPoll(request, localConfig.pollInterval, 0, result -> handleReadSuccess(range, result),
-                    this::handleReadFailure);
+                    failure -> handleReadFailure(range, failure));
         }
     }
 
@@ -130,7 +133,8 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
         for (PollRange range : getPollRanges()) {
             ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), range.functionCode,
                     range.startAddress, range.length, localConfig.maxTries);
-            submitOneTimePoll(request, result -> handleReadSuccess(range, result), this::handleReadFailure);
+            submitOneTimePoll(request, result -> handleReadSuccess(range, result),
+                    failure -> handleReadFailure(range, failure));
         }
     }
 
@@ -151,9 +155,12 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
         });
     }
 
-    private void handleReadFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+    private void handleReadFailure(PollRange range, AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
         String message = String.valueOf(failure.getCause().getMessage());
         logger.debug("Failed to read Anker SOLIX registers: {}", message);
+        if (range.optional()) {
+            return;
+        }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
     }
 

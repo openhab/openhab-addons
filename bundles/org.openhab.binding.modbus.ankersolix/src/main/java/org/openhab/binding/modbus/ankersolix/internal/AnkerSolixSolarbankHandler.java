@@ -30,6 +30,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
 
+    private static final int PARALLEL_CAPABILITY_MASK_REGISTER = 32775;
+    private static final int CAPABILITY_CHARGING_LIMIT_SOC = 0;
+    private static final int CAPABILITY_DISCHARGE_LIMIT_SOC = 1;
+    private static final int CAPABILITY_BACKUP_RESERVE_SOC = 2;
+    private static final int CAPABILITY_BACKUP_SOC_ENABLE = 3;
+
     private static final List<PollRange> POLL_RANGES = Arrays.asList(
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 10000, 51),
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 10090, 67),
@@ -48,7 +55,8 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 32768, 7),
             new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 10060, 13),
             new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 10074, 8),
-            new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 60000, 4));
+            new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 60000, 4),
+            new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, PARALLEL_CAPABILITY_MASK_REGISTER, 1, true));
 
     private static final Map<String, Integer> OPERATING_MODE_VALUES = Map.ofEntries(Map.entry("self_consumption", 0),
             Map.entry("tou_mode", 1), Map.entry("third_party_control", 3), Map.entry("custom_mode", 4),
@@ -122,6 +130,10 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
         }
 
         if (CHANNEL_BACKUP_SOC_ENABLE.equals(channelId)) {
+            if (!isCapabilitySupported(CAPABILITY_BACKUP_SOC_ENABLE)) {
+                logger.warn("Backup SOC enable is not supported by this device");
+                return;
+            }
             if (command instanceof OnOffType onOffType) {
                 int value = onOffType == OnOffType.ON ? 1 : 0;
                 writeInt16Holding(60003, value);
@@ -133,6 +145,10 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
         }
 
         if (CHANNEL_CHARGING_LIMIT_SOC.equals(channelId)) {
+            if (!isCapabilitySupported(CAPABILITY_CHARGING_LIMIT_SOC)) {
+                logger.warn("Charging limit SOC is not supported by this device");
+                return;
+            }
             Integer value = parseSetpointCommand(command);
             if (value != null && value >= 80 && value <= 100) {
                 writeInt16Holding(60000, value);
@@ -145,6 +161,10 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
         }
 
         if (CHANNEL_DISCHARGE_LIMIT_SOC.equals(channelId)) {
+            if (!isCapabilitySupported(CAPABILITY_DISCHARGE_LIMIT_SOC)) {
+                logger.warn("Discharge limit SOC is not supported by this device");
+                return;
+            }
             Integer value = parseSetpointCommand(command);
             if (value != null && value >= 0 && value <= 20) {
                 writeInt16Holding(60001, value);
@@ -157,6 +177,10 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
         }
 
         if (CHANNEL_BACKUP_RESERVE_SOC.equals(channelId)) {
+            if (!isCapabilitySupported(CAPABILITY_BACKUP_RESERVE_SOC)) {
+                logger.warn("Backup reserve SOC is not supported by this device");
+                return;
+            }
             Integer value = parseSetpointCommand(command);
             if (value != null && value >= 0 && value <= 100) {
                 writeInt16Holding(60002, value);
@@ -255,19 +279,24 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
                     BigDecimal.valueOf(cumulativeDischargeRaw).divide(BigDecimal.TEN), Units.KILOWATT_HOUR));
         }
 
-        State backupSocEnableShadow = getShadowState(CHANNEL_BACKUP_SOC_ENABLE);
-        if (backupSocEnableShadow instanceof OnOffType onOffType) {
-            updateChannelState(CHANNEL_BACKUP_SOC_ENABLE, onOffType);
-        } else {
-            Integer backupSocEnableRaw = readUInt16(60003);
-            if (backupSocEnableRaw != null) {
-                updateChannelState(CHANNEL_BACKUP_SOC_ENABLE, backupSocEnableRaw == 1 ? OnOffType.ON : OnOffType.OFF);
+        if (isCapabilitySupported(CAPABILITY_BACKUP_SOC_ENABLE)) {
+            State backupSocEnableShadow = getShadowState(CHANNEL_BACKUP_SOC_ENABLE);
+            if (backupSocEnableShadow instanceof OnOffType onOffType) {
+                updateChannelState(CHANNEL_BACKUP_SOC_ENABLE, onOffType);
+            } else {
+                Integer backupSocEnableRaw = readUInt16(60003);
+                if (backupSocEnableRaw != null) {
+                    updateChannelState(CHANNEL_BACKUP_SOC_ENABLE,
+                            backupSocEnableRaw == 1 ? OnOffType.ON : OnOffType.OFF);
+                }
             }
+        } else {
+            updateChannelState(CHANNEL_BACKUP_SOC_ENABLE, UnDefType.UNDEF);
         }
 
-        updateSocSettingChannel(CHANNEL_CHARGING_LIMIT_SOC, 60000);
-        updateSocSettingChannel(CHANNEL_DISCHARGE_LIMIT_SOC, 60001);
-        updateSocSettingChannel(CHANNEL_BACKUP_RESERVE_SOC, 60002);
+        updateSocSettingChannel(CHANNEL_CHARGING_LIMIT_SOC, 60000, CAPABILITY_CHARGING_LIMIT_SOC);
+        updateSocSettingChannel(CHANNEL_DISCHARGE_LIMIT_SOC, 60001, CAPABILITY_DISCHARGE_LIMIT_SOC);
+        updateSocSettingChannel(CHANNEL_BACKUP_RESERVE_SOC, 60002, CAPABILITY_BACKUP_RESERVE_SOC);
 
         State modeShadow = getShadowState(CHANNEL_OPERATING_MODE);
         if (modeShadow != null) {
@@ -314,7 +343,11 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
         return null;
     }
 
-    private void updateSocSettingChannel(String channelId, int registerAddress) {
+    private void updateSocSettingChannel(String channelId, int registerAddress, int capabilityBit) {
+        if (!isCapabilitySupported(capabilityBit)) {
+            updateChannelState(channelId, UnDefType.UNDEF);
+            return;
+        }
         State shadow = getShadowState(channelId);
         if (shadow != null) {
             updateChannelState(channelId, shadow);
@@ -325,5 +358,10 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
         if (value != null) {
             updateChannelState(channelId, new QuantityType<>(BigDecimal.valueOf(value), Units.PERCENT));
         }
+    }
+
+    private boolean isCapabilitySupported(int capabilityBit) {
+        Integer capabilityMask = readUInt16(PARALLEL_CAPABILITY_MASK_REGISTER);
+        return capabilityMask == null || (capabilityMask & (1 << capabilityBit)) != 0;
     }
 }
