@@ -256,14 +256,17 @@ class ValveConfigurationAndControlConverterTest extends BaseMatterConverterTest 
     }
 
     @Test
-    void testOnEventValveFaultAttributeDoesNotTrigger() {
+    void testOnEventValveFaultAttributeTriggersOnlyOnce() {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();
         message.path.attributeName = ValveConfigurationAndControlCluster.ATTRIBUTE_VALVE_FAULT;
         message.value = new ValveFaultBitmap(false, true, false, false, false, false);
         converter.onEvent(message);
-        // Faults are reported through the ValveFault event only, so the attribute must not trigger a second time.
-        verify(mockHandler, never()).triggerChannel(eq(1), eq("valve-fault"), anyString());
+        // A valve that reports the attribute but not the event still triggers.
+        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
+        // One that reports both does not trigger twice, since each carries the whole bitmap.
+        converter.onEvent(valveFaultEvent(new ValveFaultBitmap(false, true, false, false, false, false)));
+        verify(mockHandler, times(1)).triggerChannel(eq(1), eq("valve-fault"), eq("blocked"));
     }
 
     @Test

@@ -193,6 +193,10 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
             case ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION:
                 updateDuration(CHANNEL_ID_VALVE_DURATION, message.value);
                 break;
+            case ValveConfigurationAndControlCluster.ATTRIBUTE_VALVE_FAULT:
+                // The attribute and the event are independently optional, so a valve may report only one of them.
+                triggerFault(message.value instanceof ValveFaultBitmap faultBitmap ? faultBitmap : null);
+                break;
             default:
                 break;
         }
@@ -337,9 +341,9 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
      * Fires one trigger event per newly set fault bit, so each payload is a single fault name that rules can match
      * directly, rather than a combined comma-separated payload.
      *
-     * The ValveFault event carries the whole fault bitmap rather than just what changed, so only bits that were not
-     * already set are fired. That stops an unrelated fault appearing, or one of several clearing, from re-firing
-     * faults that have already been reported.
+     * The ValveFault attribute and event each carry the whole fault bitmap rather than just what changed, so only bits
+     * that were not already set are fired. That stops a valve reporting both from firing twice, an unrelated fault
+     * appearing, or one of several clearing, from re-firing faults that have already been reported.
      */
     private void triggerFault(@Nullable ValveFaultBitmap fault) {
         Set<String> faults = faultNames(fault);
