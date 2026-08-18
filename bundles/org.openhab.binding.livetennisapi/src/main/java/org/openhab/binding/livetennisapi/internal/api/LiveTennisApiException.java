@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Thrown when a request to the Live Tennis API fails.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiException extends Exception {

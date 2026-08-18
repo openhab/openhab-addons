@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.livetennisapi.internal.handler;
 
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_CALLS_TODAY;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_REMAINING_TODAY;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_TIER;
+import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.*;
 
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +25,8 @@ import org.openhab.binding.livetennisapi.internal.api.LiveTennisApiAuthenticatio
 import org.openhab.binding.livetennisapi.internal.api.LiveTennisApiClient;
 import org.openhab.binding.livetennisapi.internal.api.LiveTennisApiException;
 import org.openhab.binding.livetennisapi.internal.api.dto.Match;
+import org.openhab.binding.livetennisapi.internal.api.dto.Player;
+import org.openhab.binding.livetennisapi.internal.api.dto.Tournament;
 import org.openhab.binding.livetennisapi.internal.api.dto.Usage;
 import org.openhab.binding.livetennisapi.internal.config.LiveTennisApiAccountConfiguration;
 import org.openhab.core.library.types.DecimalType;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * Bridge handler for one Live Tennis API key. Polls the current live match snapshot once per cycle and pushes it to
  * all child things, so the request budget does not grow with the number of tracked players or tournaments.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
@@ -119,9 +119,30 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    /** Returns the API client, or null while the bridge is not configured. */
-    public @Nullable LiveTennisApiClient getApiClient() {
-        return apiClient;
+    /**
+     * Fetches one player's bio and current ranking on behalf of a child thing. The bridge owns the API client and
+     * exposes only these data methods, so children never hold implementation details of the transport.
+     */
+    public Player fetchPlayer(long playerId) throws LiveTennisApiException {
+        return requireClient().getPlayer(playerId);
+    }
+
+    /** Fetches the given player's next upcoming match on behalf of a child thing, or null when none is scheduled. */
+    public @Nullable Match fetchNextMatch(long playerId) throws LiveTennisApiException {
+        return requireClient().getNextMatch(playerId);
+    }
+
+    /** Fetches one tournament of the catalogue on behalf of a child thing. */
+    public Tournament fetchTournament(String tournamentId) throws LiveTennisApiException {
+        return requireClient().getTournament(tournamentId);
+    }
+
+    private LiveTennisApiClient requireClient() throws LiveTennisApiException {
+        LiveTennisApiClient client = apiClient;
+        if (client == null) {
+            throw new LiveTennisApiException("The account bridge is not initialized");
+        }
+        return client;
     }
 
     private void poll() {

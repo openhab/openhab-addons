@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.livetennisapi.internal;
 
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.SUPPORTED_THING_TYPES;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.THING_TYPE_ACCOUNT;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.THING_TYPE_PLAYER;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.THING_TYPE_TOURNAMENT;
+import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link LiveTennisApiHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.livetennisapi", service = ThingHandlerFactory.class)

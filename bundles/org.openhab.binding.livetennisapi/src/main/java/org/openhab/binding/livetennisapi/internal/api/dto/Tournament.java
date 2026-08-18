@@ -12,19 +12,21 @@
  */
 package org.openhab.binding.livetennisapi.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A tournament of the catalogue as returned by the Live Tennis API.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 public class Tournament {
 
-    public String id;
-    public String name;
-    public String tour;
-    public String surface;
-    public Boolean indoor;
-    public String city;
-    public String country;
-    public String category;
+    public @Nullable String id;
+    public @Nullable String name;
+    public @Nullable String tour;
+    public @Nullable String surface;
+    public @Nullable Boolean indoor;
+    public @Nullable String city;
+    public @Nullable String country;
+    public @Nullable String category;
 }

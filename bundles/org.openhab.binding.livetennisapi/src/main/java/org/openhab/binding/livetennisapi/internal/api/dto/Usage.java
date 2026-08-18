@@ -12,26 +12,28 @@
  */
 package org.openhab.binding.livetennisapi.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The calling key's own usage and quota as returned by {@code GET /usage}. Calls to that endpoint are quota-exempt.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 public class Usage {
 
-    public String tier;
-    public Limits limits;
-    public Today today;
-    public String asOf;
+    public @Nullable String tier;
+    public @Nullable Limits limits;
+    public @Nullable Today today;
+    public @Nullable String asOf;
 
     public static class Limits {
-        public Integer perMinute;
-        public Integer perDay;
+        public @Nullable Integer perMinute;
+        public @Nullable Integer perDay;
     }
 
     public static class Today {
-        public Integer calls;
-        public Integer errors;
-        public Integer remainingDay;
+        public @Nullable Integer calls;
+        public @Nullable Integer errors;
+        public @Nullable Integer remainingDay;
     }
 }

@@ -26,7 +26,7 @@ import org.openhab.binding.livetennisapi.internal.api.dto.Score;
 /**
  * Tests the mapping of {@link Score} snapshots to channel value semantics.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public class MatchStateMapperTest {

@@ -42,7 +42,7 @@ import com.google.gson.JsonSyntaxException;
  * Client for the free-tier endpoints of the Live Tennis API
  * (see <a href="https://docs.livetennisapi.com">the API documentation</a>).
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiClient {
@@ -77,7 +77,14 @@ public class LiveTennisApiClient {
     public List<Match> getLiveMatches() throws LiveTennisApiException {
         MatchListResponse response = get("/matches?status=live&limit=" + LIVE_MATCH_LIMIT, MatchListResponse.class);
         List<Match> matches = response.data;
-        return matches == null ? List.of() : matches;
+        if (matches == null) {
+            return List.of();
+        }
+        if (matches.size() >= LIVE_MATCH_LIMIT) {
+            logger.warn("The live match snapshot hit the page limit of {}; any matches beyond it are not tracked",
+                    LIVE_MATCH_LIMIT);
+        }
+        return matches;
     }
 
     /** Returns the given player's next upcoming match, or null if none is scheduled. */
@@ -124,7 +131,9 @@ public class LiveTennisApiClient {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new LiveTennisApiException("Request interrupted: " + url, e);
-        } catch (ExecutionException | TimeoutException e) {
+        } catch (TimeoutException e) {
+            throw new LiveTennisApiTransientException("Request timed out: " + url, e);
+        } catch (ExecutionException e) {
             throw new LiveTennisApiException("Request failed: " + url, e);
         }
     }
@@ -137,7 +146,7 @@ public class LiveTennisApiClient {
             throw new LiveTennisApiNotFoundException("HTTP 404 for " + url);
         }
         if (status == HttpStatus.TOO_MANY_REQUESTS_429) {
-            throw new LiveTennisApiException("@text/offline.comm-error-rate-limited");
+            throw new LiveTennisApiTransientException("@text/offline.comm-error-rate-limited");
         }
         if (status < HttpStatus.OK_200 || status >= HttpStatus.MULTIPLE_CHOICES_300) {
             throw new LiveTennisApiException("HTTP " + status + " for " + url);

@@ -12,25 +12,34 @@
  */
 package org.openhab.binding.livetennisapi.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * A match as returned by the Live Tennis API.
+ * A match as returned by the Live Tennis API. Singles and doubles share this shape; {@link #draw} states which it
+ * is, and for a doubles match {@link #players} holds the two teams.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 public class Match {
 
-    public Long id;
-    public String tournament;
-    public String tournamentId;
-    public String tour;
-    public String surface;
-    public String round;
-    public String roundCode;
-    public String status;
-    public String eventStatus;
-    public Boolean isDoubles;
-    public String scheduledTime;
-    public MatchPlayers players;
-    public Score score;
-    public Integer winner;
+    public @Nullable Long id;
+    public @Nullable String tournament;
+    public @Nullable String tournamentId;
+    public @Nullable String tour;
+    public @Nullable String surface;
+    public @Nullable String round;
+    public @Nullable String roundCode;
+    public @Nullable String status;
+    public @Nullable String eventStatus;
+
+    /** Whether this is a doubles match. Kept for compatibility and lossy (false also covers "unknown"). */
+    public @Nullable Boolean isDoubles;
+
+    /** The honest three-valued draw: {@code "singles"}, {@code "doubles"}, or null when the feed states neither. */
+    public @Nullable String draw;
+
+    public @Nullable String scheduledTime;
+    public @Nullable MatchPlayers players;
+    public @Nullable Score score;
+    public @Nullable Integer winner;
 }

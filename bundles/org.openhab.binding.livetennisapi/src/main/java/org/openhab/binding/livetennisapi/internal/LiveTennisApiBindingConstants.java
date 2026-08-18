@@ -21,7 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link LiveTennisApiBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiBindingConstants {
@@ -43,6 +43,7 @@ public class LiveTennisApiBindingConstants {
 
     // Live match channels, shared by the player and tournament things
     public static final String CHANNEL_LIVE_STATUS = "live#status";
+    public static final String CHANNEL_LIVE_DISCIPLINE = "live#discipline";
     public static final String CHANNEL_LIVE_SCORE_LINE = "live#score-line";
     public static final String CHANNEL_LIVE_SETS = "live#sets";
     public static final String CHANNEL_LIVE_POINTS = "live#points";

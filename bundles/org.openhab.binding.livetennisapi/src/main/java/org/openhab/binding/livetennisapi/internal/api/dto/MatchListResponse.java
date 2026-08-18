@@ -14,12 +14,14 @@ package org.openhab.binding.livetennisapi.internal.api.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Envelope of the match list endpoints ({@code {"data": [...], "meta": {...}}}).
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 public class MatchListResponse {
 
-    public List<Match> data;
+    public @Nullable List<Match> data;
 }

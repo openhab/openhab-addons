@@ -7,8 +7,7 @@
 	<!-- Account Bridge -->
 	<bridge-type id="account">
 		<label>Live Tennis API Account</label>
-		<description>Provides access to the Live Tennis API with one API key. Polls the live match snapshot once per
-			refresh
+		<description>Provides access to the Live Tennis API with one API key. Polls the live match snapshot once per refresh
 			interval and shares it with all player and tournament things of this bridge.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
@@ -22,13 +21,11 @@
 			<parameter name="apiKey" type="text" required="true">
 				<context>password</context>
 				<label>API Key</label>
-				<description>API key for the Live Tennis API. A free key is self-serve at
-					https://livetennisapi.com/subscribe/free.</description>
+				<description>API key for the Live Tennis API. A free key is self-serve at https://livetennisapi.com/subscribe/free.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="60" unit="s">
 				<label>Refresh Interval</label>
-				<description>How often to poll the live match snapshot in seconds. The default of 900 s stays within the
-					free tier's
+				<description>How often to poll the live match snapshot in seconds. The default of 900 s stays within the free tier's
 					daily quota; lower values need a paid tier.</description>
 				<default>900</default>
 				<unitLabel>seconds</unitLabel>
@@ -43,8 +40,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Tennis Player</label>
-		<description>Tracks one player (or doubles team): their live match state, their next scheduled match and their
-			current
+		<description>Tracks one player (or doubles team): their live match state, their next scheduled match and their current
 			ranking. Score channels list the tracked player first.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
@@ -63,8 +59,7 @@
 			</parameter>
 			<parameter name="detailRefreshInterval" type="integer" min="300" unit="s">
 				<label>Detail Refresh Interval</label>
-				<description>How often to refresh the next match and the ranking in seconds. Each cycle costs two API
-					requests per
+				<description>How often to refresh the next match and the ranking in seconds. Each cycle costs two API requests per
 					player thing.</description>
 				<default>3600</default>
 				<unitLabel>seconds</unitLabel>
@@ -80,8 +75,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Tennis Tournament</label>
-		<description>Tracks one tournament of the catalogue: its metadata, how many of its matches are in progress and
-			the
+		<description>Tracks one tournament of the catalogue: its metadata, how many of its matches are in progress and the
 			state of the first listed live match.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
@@ -95,8 +89,7 @@
 		<config-description>
 			<parameter name="tournamentId" type="text" required="true">
 				<label>Tournament ID</label>
-				<description>The tournament's stable id in the Live Tennis API. Look it up with GET
-					/tournaments?search=name.</description>
+				<description>The tournament's stable id in the Live Tennis API. Look it up with GET /tournaments?search=name.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -114,11 +107,11 @@
 
 	<channel-group-type id="live-match">
 		<label>Live Match</label>
-		<description>The tracked player's match currently in progress. All channels are UNDEF while the player has no
-			live
+		<description>The tracked player's match currently in progress. All channels are UNDEF while the player has no live
 			match.</description>
 		<channels>
 			<channel id="status" typeId="match-status"/>
+			<channel id="discipline" typeId="discipline"/>
 			<channel id="tournament" typeId="tournament-name"/>
 			<channel id="round" typeId="round"/>
 			<channel id="opponent" typeId="opponent"/>
@@ -162,8 +155,7 @@
 
 	<channel-group-type id="tournament-info">
 		<label>Tournament Info</label>
-		<description>Curated tournament metadata; individual values can be UNDEF where the catalogue has no curated
-			entry.</description>
+		<description>Curated tournament metadata; individual values can be UNDEF where the catalogue has no curated entry.</description>
 		<channels>
 			<channel id="name" typeId="tournament-name">
 				<label>Name</label>
@@ -176,11 +168,11 @@
 
 	<channel-group-type id="tournament-live">
 		<label>Live Matches</label>
-		<description>The tournament's matches currently in progress. Match channels show the first listed live
-			match.</description>
+		<description>The tournament's matches currently in progress. Match channels show the first listed live match.</description>
 		<channels>
 			<channel id="match-count" typeId="match-count"/>
 			<channel id="players" typeId="match-players"/>
+			<channel id="discipline" typeId="discipline"/>
 			<channel id="status" typeId="match-status"/>
 			<channel id="score-line" typeId="score-line"/>
 			<channel id="sets" typeId="sets"/>
@@ -223,6 +215,18 @@
 				<option value="live">Live</option>
 				<option value="completed">Completed</option>
 				<option value="cancelled">Cancelled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="discipline">
+		<item-type>String</item-type>
+		<label>Discipline</label>
+		<description>Whether the match is singles or doubles; UNDEF when the feed states neither</description>
+		<state readOnly="true">
+			<options>
+				<option value="singles">Singles</option>
+				<option value="doubles">Doubles</option>
 			</options>
 		</state>
 	</channel-type>
@@ -279,8 +283,7 @@
 	<channel-type id="break-point">
 		<item-type>Switch</item-type>
 		<label>Break Point</label>
-		<description>ON while the current game stands at break point; never ON in a tiebreak; UNDEF when the score
-			state does
+		<description>ON while the current game stands at break point; never ON in a tiebreak; UNDEF when the score state does
 			not allow deriving it</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -329,8 +332,7 @@
 	<channel-type id="category">
 		<item-type>String</item-type>
 		<label>Category</label>
-		<description>Tournament category where the catalogue states it unambiguously, e.g. grand_slam or
-			atp_250</description>
+		<description>Tournament category where the catalogue states it unambiguously, e.g. grand_slam or atp_250</description>
 		<state readOnly="true"/>
 	</channel-type>
 

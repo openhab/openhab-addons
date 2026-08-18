@@ -15,16 +15,22 @@ package org.openhab.binding.livetennisapi.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown when the Live Tennis API rejects the configured API key.
+ * Thrown for a transient Live Tennis API failure that is worth retrying: a rate-limit or quota rejection (HTTP 429)
+ * or a request timeout. Handlers can catch this specifically to schedule a delayed retry rather than giving up until
+ * the next scheduled cycle.
  *
  * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
-public class LiveTennisApiAuthenticationException extends LiveTennisApiException {
+public class LiveTennisApiTransientException extends LiveTennisApiException {
 
     private static final long serialVersionUID = 1L;
 
-    public LiveTennisApiAuthenticationException(String message) {
+    public LiveTennisApiTransientException(String message) {
         super(message);
+    }
+
+    public LiveTennisApiTransientException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

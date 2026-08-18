@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.livetennisapi.internal.api.dto.Match;
 import org.openhab.binding.livetennisapi.internal.api.dto.Score;
 
 /**
@@ -25,7 +26,7 @@ import org.openhab.binding.livetennisapi.internal.api.dto.Score;
  * {@code points} entries and {@code server} can be null and that {@code games} can be empty, and this binding maps
  * those states to UNDEF rather than guessing.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public final class MatchStateMapper {
@@ -131,6 +132,22 @@ public final class MatchStateMapper {
         }
         return "AD".equals(receiverPoints) || ("40".equals(receiverPoints)
                 && ("0".equals(serverPoints) || "15".equals(serverPoints) || "30".equals(serverPoints)));
+    }
+
+    /**
+     * Returns the match's draw as the honest {@code singles}/{@code doubles} string, or null when it cannot be stated.
+     * The three-valued {@code draw} field is preferred; the older, lossy {@code isDoubles} flag only ever promotes to
+     * {@code doubles} (a false there is not a claim of singles, so it maps to null rather than guessing).
+     */
+    public static @Nullable String discipline(@Nullable Match match) {
+        if (match == null) {
+            return null;
+        }
+        String draw = match.draw;
+        if (draw != null) {
+            return draw;
+        }
+        return Boolean.TRUE.equals(match.isDoubles) ? "doubles" : null;
     }
 
     /** Returns the serving side (1 or 2), or null when no game is in progress or the side is not stated. */

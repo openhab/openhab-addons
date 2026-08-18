@@ -21,7 +21,7 @@ import org.openhab.binding.livetennisapi.internal.api.dto.Match;
  * Implemented by thing handlers that consume the live match snapshot polled by the account bridge, so one API request
  * per poll cycle serves all things of the bridge.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public interface LiveMatchesListener {
