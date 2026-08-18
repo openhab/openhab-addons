@@ -23,5 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class LiveTennisApiPlayerConfiguration {
 
     public long playerId = -1;
-    public int detailRefreshInterval = 3600;
+    public int detailRefreshInterval = 7200;
+    public boolean detailRefreshEnabled = true;
 }

@@ -17,6 +17,7 @@ import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingCon
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,6 +65,9 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
     private String tournamentId = "";
 
     private @Nullable ScheduledFuture<?> infoJob;
+    private @Nullable ScheduledFuture<?> retryJob;
+    private volatile boolean disposed;
+    private final AtomicBoolean refreshInProgress = new AtomicBoolean();
     private @Nullable Tournament tournament;
     private List<Match> tournamentMatches = List.of();
 
@@ -81,6 +85,7 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
             return;
         }
         tournamentId = config.tournamentId;
+        disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduleInfoRefresh(0);
@@ -88,10 +93,16 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
 
     @Override
     public void dispose() {
+        disposed = true;
         ScheduledFuture<?> job = infoJob;
         if (job != null) {
             job.cancel(true);
             infoJob = null;
+        }
+        ScheduledFuture<?> retry = retryJob;
+        if (retry != null) {
+            retry.cancel(true);
+            retryJob = null;
         }
         tournament = null;
         tournamentMatches = List.of();
@@ -116,6 +127,9 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
 
     @Override
     public void onLiveMatches(List<Match> liveMatches) {
+        if (disposed) {
+            return;
+        }
         List<Match> matches = liveMatches.stream().filter(match -> tournamentId.equals(match.tournamentId)).toList();
         tournamentMatches = matches;
         updateLiveChannels(matches);
@@ -131,6 +145,19 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
         infoJob = scheduler.schedule(this::refreshInfo, delaySeconds, TimeUnit.SECONDS);
     }
 
+    /**
+     * Schedules the transient-error retry on its own future. It must not gate on {@code infoJob}: the retry is
+     * requested from inside {@code refreshInfo}, which runs AS {@code infoJob}, so that future is never done at this
+     * point and gating on it would drop every retry.
+     */
+    private void scheduleInfoRetry() {
+        ScheduledFuture<?> retry = retryJob;
+        if (retry != null && !retry.isDone()) {
+            return;
+        }
+        retryJob = scheduler.schedule(this::refreshInfo, TRANSIENT_RETRY_DELAY_S, TimeUnit.SECONDS);
+    }
+
     private void refreshInfo() {
         LiveTennisApiAccountHandler bridge = accountHandler();
         Bridge bridgeThing = getBridge();
@@ -138,20 +165,33 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
             // Do not spend quota while the bridge is not known to be up; bridgeStatusChanged retriggers on recovery
             return;
         }
+        // The initial fetch, the ONLINE-triggered fetch and the retry can coincide; let only one run at a time.
+        if (!refreshInProgress.compareAndSet(false, true)) {
+            return;
+        }
         try {
             Tournament refreshedTournament = bridge.fetchTournament(tournamentId);
+            if (disposed) {
+                return;
+            }
             tournament = refreshedTournament;
             updateInfoChannels(refreshedTournament);
         } catch (LiveTennisApiNotFoundException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-tournament-not-found");
+            if (!disposed) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error-tournament-not-found");
+            }
         } catch (LiveTennisApiAuthenticationException e) {
             logger.debug("Authentication failed, the bridge poll will report it", e);
         } catch (LiveTennisApiTransientException e) {
-            logger.debug("Tournament info refresh hit a transient error, scheduling a retry", e);
-            scheduleInfoRefresh(TRANSIENT_RETRY_DELAY_S);
+            if (!disposed) {
+                logger.debug("Tournament info refresh hit a transient error, scheduling a retry", e);
+                scheduleInfoRetry();
+            }
         } catch (LiveTennisApiException e) {
             logger.debug("Tournament info refresh failed", e);
+        } finally {
+            refreshInProgress.set(false);
         }
     }
 

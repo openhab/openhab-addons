@@ -59,6 +59,19 @@ public class DeserializationTest {
     }
 
     @Test
+    public void deserializesListPaginationMeta() throws IOException {
+        MatchListResponse response = fromResource("matches-live.json", MatchListResponse.class);
+
+        MatchListResponse.Meta meta = Objects.requireNonNull(response.meta);
+        assertEquals(200, meta.limit);
+        assertEquals(0, meta.offset);
+        assertEquals(4, meta.count);
+        assertEquals(4, meta.total);
+        // has_more is the flag the client pages on; it must map from snake_case
+        assertEquals(Boolean.FALSE, meta.hasMore);
+    }
+
+    @Test
     public void deserializesLiveMatchWithScore() throws IOException {
         List<Match> matches = matches();
         assertEquals(4, matches.size());

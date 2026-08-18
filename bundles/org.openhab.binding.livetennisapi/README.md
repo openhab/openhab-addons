@@ -33,14 +33,15 @@ Configure a `player` thing with a doubles team's id to track that team exactly a
 | Parameter         | Type      | Required | Default | Description                                                                                                                                          |
 |-------------------|-----------|----------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `apiKey`          | `text`    | yes      | —       | API key for the Live Tennis API                                                                                                                     |
-| `refreshInterval` | `integer` | no       | 900     | How often to poll the live match snapshot in seconds (min: 60). The default stays within the free tier's daily quota; lower values need a paid tier. |
+| `refreshInterval` | `integer` | no       | 1800    | How often to poll the live match snapshot in seconds (min: 60). The default keeps the bridge plus one player thing within the free tier's daily quota; lower values need a paid tier. |
 
 ### `player` Thing
 
 | Parameter               | Type      | Required | Default | Description                                                                                        |
 |-------------------------|-----------|----------|---------|----------------------------------------------------------------------------------------------------|
 | `playerId`              | `integer` | yes      | —       | The player's or doubles team's id in the Live Tennis API; look it up with `GET /players?search=name` |
-| `detailRefreshInterval` | `integer` | no       | 3600    | How often to refresh the next match and ranking in seconds (min: 300); two API requests per cycle   |
+| `detailRefreshEnabled`  | `boolean` | no       | `true`  | Whether to refresh the next match and ranking. Turn it off to track only live match state (pushed by the bridge at no extra cost) and spend no quota of this thing's own |
+| `detailRefreshInterval` | `integer` | no       | 7200    | How often to refresh the next match and ranking in seconds when enabled (min: 300); two API requests per cycle |
 
 ### `tournament` Thing
 
@@ -78,7 +79,7 @@ All `live` channels are `UNDEF` while the player has no match in progress.
 | `live#sets`              | `String`   | Sets won, e.g. `1-0`                                                                                                                         |
 | `live#points`            | `String`   | In-game points, e.g. `40-15` or `AD-40`; `UNDEF` when the feed states no points                                                             |
 | `live#serving`           | `Switch`   | `ON` while the tracked player is serving; `UNDEF` when no game is in progress                                                                |
-| `live#break-point`       | `Switch`   | `ON` while the current game stands at break point (receiver at `AD`, or receiver at `40` with the server at `0`/`15`/`30`); never `ON` in a tiebreak; `UNDEF` when the score state does not allow deriving it |
+| `live#break-point`       | `Switch`   | `ON` while the current game stands at break point (receiver at `AD`, or receiver at `40` with the server at `0`/`15`/`30`); never `ON` in a tiebreak; `UNDEF` when the score state does not allow deriving it, including at `40-40` where the API does not state whether advantage or no-advantage scoring is in play |
 | `live#tiebreak`          | `Switch`   | `ON` while a tiebreak is being played                                                                                                        |
 | `next-match#opponent`    | `String`   | Opponent in the next scheduled match                                                                                                        |
 | `next-match#start-time`  | `DateTime` | Scheduled start of the next match; `UNDEF` until the order of play assigns a time                                                            |
@@ -110,20 +111,22 @@ Match channels show the tournament's first listed live match.
 ## Request Budget and the Free Tier
 
 The free tier allows 100 requests per day.
-The bridge makes one counted request per refresh cycle (the usage read is quota-exempt), shared by all player and tournament things, so at the default 900 s interval the bridge uses 96 requests per day.
-Each player thing additionally makes two requests per detail refresh cycle — 48 per day at the default 3600 s interval.
+The bridge makes one counted request per refresh cycle (the usage read is quota-exempt), shared by all player and tournament things, so at the default 1800 s interval the bridge uses 48 requests per day.
+Each player thing additionally makes two requests per detail refresh cycle — 24 per day at the default 7200 s interval; setting `detailRefreshEnabled=false` drops those to zero and the thing then tracks only live match state.
 
-A free key therefore fits the bridge alone at the defaults, or the bridge plus one player thing with slower settings (for example `refreshInterval=1800` and `detailRefreshInterval=7200`, together 72 requests per day).
+At the defaults a free key therefore fits the bridge plus one player thing (48 + 24 = 72 requests per day, within the 100 per day allowance).
 For several player things or faster live updates, a paid tier with a higher daily quota is required.
 The API answers requests over quota with HTTP 429; the bridge then goes `OFFLINE` with a communication error until a later poll succeeds, and the child things retry their own detail requests with a short backoff.
+
+The live match list is paginated. The bridge reads the `meta.has_more` flag and pages forward until the snapshot is complete, so more than 200 concurrent live matches are not silently dropped; in practice the whole live board is well under one page, so this remains a single request per cycle.
 
 ## Full Example
 
 ### `livetennisapi.things`
 
 ```java
-Bridge livetennisapi:account:myaccount "Live Tennis API" [ apiKey="XXXX", refreshInterval=900 ] {
-    Thing player alcaraz "Carlos Alcaraz" [ playerId=1234, detailRefreshInterval=3600 ]
+Bridge livetennisapi:account:myaccount "Live Tennis API" [ apiKey="XXXX", refreshInterval=1800 ] {
+    Thing player alcaraz "Carlos Alcaraz" [ playerId=1234, detailRefreshInterval=7200 ]
     Thing tournament cincinnati "Cincinnati Open" [ tournamentId="atp-cincinnati" ]
 }
 ```
