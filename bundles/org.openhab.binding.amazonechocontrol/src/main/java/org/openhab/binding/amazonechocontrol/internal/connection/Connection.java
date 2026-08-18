@@ -1390,14 +1390,14 @@ public class Connection {
         }
     }
 
-    public List<NotificationTO> getNotifications() {
-        try {
-            return requestBuilder.get(getAlexaServer() + "/api/notifications")
-                    .syncSend(NotificationListResponseTO.class).notifications;
-        } catch (ConnectionException e) {
-            logger.warn("Failed to get notifications: {}", e.getMessage());
-        }
-        return List.of();
+    public List<NotificationTO> getNotifications() throws ConnectionException {
+        // Unlike the neighbouring getters that swallow a ConnectionException and return an empty
+        // list, this one propagates it: an empty list here was indistinguishable from "no
+        // notifications set" (see AccountHandler#refreshNotifications for what that used to
+        // break). The other swallowing getters feed command options and per-device states, where
+        // an empty result is not published as a statement about the device.
+        return requestBuilder.get(getAlexaServer() + "/api/notifications")
+                .syncSend(NotificationListResponseTO.class).notifications;
     }
 
     public NotificationTO getNotification(String notificationId) throws ConnectionException {
