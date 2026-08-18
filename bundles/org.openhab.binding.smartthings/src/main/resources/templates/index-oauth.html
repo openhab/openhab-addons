@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Authorize openHAB binding for SmartThings</title>
+<base href="${assetBaseUri}/">
+<link rel="stylesheet" href="img/auth.css">
+</head>
+<body class="auth-page">
+    <main class="auth-card">
+        <div class="auth-accent"></div>
+        <div class="auth-body">
+            <div class="brand-row">
+                <div class="logo-pair">
+                    <img class="openhab-logo" src="img/openhab-logo.svg" alt="openHAB logo">
+                    <span class="logo-connector" aria-hidden="true"></span>
+                    <img class="smartthings-logo" src="img/smartthings-logo.svg" alt="SmartThings logo">
+                </div>
+                <div class="brand-copy">
+                    <strong>openHAB SmartThings Binding</strong>
+                    <span>Account authorization</span>
+                </div>
+            </div>
+
+            <p class="kicker">SmartThings authorization</p>
+            <h1>Authorize SmartThings</h1>
+            <p class="lead">Connect your Samsung SmartThings account so openHAB can discover devices and keep them in sync.</p>
+
+            ${error}
+
+            ${callbackInfo}
+
+            ${localhostRedirectInfo}
+
+            <div class="action-row">
+                <a class="primary-button" href="${bridge.uri}">Authorize Bridge</a>
+            </div>
+
+            <p class="footnote">You will be redirected to SmartThings, then returned to openHAB to finish the setup.</p>
+        </div>
+    </main>
+</body>
+</html>

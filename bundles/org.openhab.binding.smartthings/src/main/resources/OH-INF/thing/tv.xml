@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+
+	<!-- ═══════════════════════════════════════════════════════════════════
+		Television thing type
+		═══════════════════════════════════════════════════════════════════ -->
+
+	<thing-type id="generic-television">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>SmartThings TV</label>
+		<description>A television connected via SmartThings Cloud.</description>
+
+		<channel-groups>
+			<channel-group typeId="tv-control-group" id="control"/>
+			<channel-group typeId="tv-picture-group" id="picture"/>
+			<channel-group typeId="tv-remote-group" id="remote"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="Samsung_The_Frame">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Samsung The Frame</label>
+		<description>A Samsung The Frame TV connected via SmartThings Cloud.</description>
+
+		<channel-groups>
+			<channel-group typeId="frame-control-group" id="control"/>
+			<channel-group typeId="tv-picture-group" id="picture"/>
+			<channel-group typeId="tv-remote-group" id="remote"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="tv-control-group">
+		<label>Control</label>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">audioVolume</property>
+					<property name="attribute">volume</property>
+					<property name="command">setVolume</property>
+				</properties>
+			</channel>
+			<channel id="mute" typeId="system.mute">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">audioMute</property>
+					<property name="attribute">mute</property>
+				</properties>
+			</channel>
+			<channel id="input-source" typeId="tv-input-source">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">mediaInputSource</property>
+					<property name="attribute">inputSource</property>
+					<property name="command">setInputSource</property>
+				</properties>
+			</channel>
+			<channel id="channel" typeId="tv-channel">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">tvChannel</property>
+					<property name="attribute">tvChannel</property>
+					<property name="command">setTvChannel</property>
+				</properties>
+			</channel>
+			<channel id="playback" typeId="system.media-control">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">mediaPlayback</property>
+					<property name="attribute">playbackStatus</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="frame-control-group">
+		<label>Control</label>
+		<channels>
+			<channel id="switch" typeId="system.power">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">switch</property>
+					<property name="attribute">switch</property>
+				</properties>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">audioVolume</property>
+					<property name="attribute">volume</property>
+					<property name="command">setVolume</property>
+				</properties>
+			</channel>
+			<channel id="mute" typeId="system.mute">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">audioMute</property>
+					<property name="attribute">mute</property>
+				</properties>
+			</channel>
+			<channel id="input-source" typeId="tv-input-source">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">mediaInputSource</property>
+					<property name="attribute">inputSource</property>
+					<property name="command">setInputSource</property>
+				</properties>
+			</channel>
+			<channel id="channel" typeId="tv-channel">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">tvChannel</property>
+					<property name="attribute">tvChannel</property>
+					<property name="command">setTvChannel</property>
+				</properties>
+			</channel>
+			<channel id="playback" typeId="system.media-control">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">mediaPlayback</property>
+					<property name="attribute">playbackStatus</property>
+					<property name="smartthings-converter">media-control</property>
+				</properties>
+			</channel>
+			<channel id="art-mode" typeId="frame-art-mode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">samsungvd.ambient</property>
+					<property name="attribute">ambient</property>
+					<property name="command">setAmbientOn</property>
+					<property name="smartthings-converter">no-argument-command</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tv-picture-group">
+		<label>Picture and Sound</label>
+		<channels>
+			<channel id="picture-mode" typeId="tv-picture-mode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">custom.picturemode</property>
+					<property name="attribute">pictureMode</property>
+					<property name="command">setPictureMode</property>
+				</properties>
+			</channel>
+			<channel id="sound-mode" typeId="tv-sound-mode">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">custom.soundmode</property>
+					<property name="attribute">soundMode</property>
+					<property name="command">setSoundMode</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tv-remote-group">
+		<label>Remote</label>
+		<channels>
+			<channel id="channel-up" typeId="tv-channel-up">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">tvChannel</property>
+					<property name="attribute">tvChannel</property>
+					<property name="command">channelUp</property>
+					<property name="smartthings-converter">no-argument-command</property>
+				</properties>
+			</channel>
+			<channel id="channel-down" typeId="tv-channel-down">
+				<properties>
+					<property name="component">main</property>
+					<property name="capability">tvChannel</property>
+					<property name="attribute">tvChannel</property>
+					<property name="command">channelDown</property>
+					<property name="smartthings-converter">no-argument-command</property>
+				</properties>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="tv-input-source">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Active TV input source.</description>
+	</channel-type>
+
+	<channel-type id="tv-channel">
+		<item-type>String</item-type>
+		<label>TV Channel</label>
+		<description>Current TV channel number.</description>
+	</channel-type>
+
+	<channel-type id="frame-art-mode">
+		<item-type>Switch</item-type>
+		<label>Art Mode</label>
+		<description>Frame art or ambient mode. Send ON to activate it.</description>
+	</channel-type>
+
+	<channel-type id="tv-picture-mode">
+		<item-type>String</item-type>
+		<label>Picture Mode</label>
+		<description>TV picture mode.</description>
+	</channel-type>
+
+	<channel-type id="tv-sound-mode">
+		<item-type>String</item-type>
+		<label>Sound Mode</label>
+		<description>TV sound mode.</description>
+	</channel-type>
+
+	<channel-type id="tv-channel-up" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Channel Up</label>
+		<description>Send ON to switch to the next TV channel.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="tv-channel-down" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Channel Down</label>
+		<description>Send ON to switch to the previous TV channel.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+
+</thing:thing-descriptions>
