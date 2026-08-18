@@ -387,7 +387,8 @@
 		<item-type>String</item-type>
 		<label>Current Room</label>
 		<description>Name of the room the robot is currently in, resolved from the live map segment at the robot's
-			position.</description>
+			position.
+			While the robot is docked, the channel reflects the room of the charging dock.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>

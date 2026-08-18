@@ -123,13 +123,17 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
         String source = Files.readString(HANDLER_PATH);
         String updateCurrentRoomStateBody = extractMethodBody(source,
                 "private void updateCurrentRoomState(RRMapData mapData)");
+        String roomStateAtBody = extractMethodBody(source,
+                "private static State roomStateAt(RRMapData mapData, MapPoint position,");
 
-        assertTrue(updateCurrentRoomStateBody.contains("RoomAtRobotResolver.resolveSegmentId"),
-                "updateCurrentRoomState should resolve the segment id via RoomAtRobotResolver");
         assertTrue(updateCurrentRoomStateBody.contains("segmentRoomNames"),
                 "updateCurrentRoomState should resolve the room name via the segmentRoomNames table");
-        assertTrue(updateCurrentRoomStateBody.contains("UnDefType.UNDEF"),
-                "updateCurrentRoomState should fall back to UNDEF when no room name is resolved");
+        assertTrue(roomStateAtBody.contains("RoomAtRobotResolver.resolveSegmentId"),
+                "the room lookup should resolve the segment id via RoomAtRobotResolver");
+        assertTrue(roomStateAtBody.contains("segmentRoomNames"),
+                "the room lookup should translate the segment id through the segmentRoomNames table");
+        assertTrue(roomStateAtBody.contains("UnDefType.UNDEF"),
+                "the room lookup should fall back to UNDEF when no room name is resolved");
     }
 
     @Test
@@ -152,6 +156,104 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
                 "handleGetRoomMapping should populate segmentRoomNames while building the room-mapping JSON");
         assertFalse(handleGetRoomMappingBody.contains("JsonParser.parseString(mappedRoom"),
                 "segmentRoomNames should be filled while building the JSON, not by re-parsing the published string");
+    }
+
+    @Test
+    void handleGetMapCachesTheParsedMapForTheDockingTransition() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String handleGetMapBody = extractMethodBody(source,
+                "private void handleGetMap(int requestId, byte[] mapPayload)");
+
+        int parseIndex = handleGetMapBody.indexOf("rrMapParser.parse(mapPayload);");
+        int cacheIndex = handleGetMapBody.indexOf("lastParsedMapData = mapData;");
+
+        assertTrue(cacheIndex > parseIndex,
+                "a successfully parsed map must be retained, so that the room can be re-resolved from the "
+                        + "dock position when the robot docks - no map is polled while it sits there");
+    }
+
+    @Test
+    void invalidateMapDerivedStateAlsoDropsTheCachedMap() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String body = extractMethodBody(source, "private void invalidateMapDerivedState()");
+
+        assertTrue(body.contains("lastParsedMapData = null;"),
+                "map data that was just declared unusable must not survive to place a docking robot: "
+                        + "after an invalidation status#current-room stays UNDEF until the next map cycle");
+    }
+
+    @Test
+    void aStateIdChangeIntoADockedStateReResolvesTheRoomFromTheDock() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String body = extractMethodBody(source,
+                "private void updateStateIdAndRequestStatusIfChanged(int stateId, boolean triggerImmediateStatusQuery)");
+
+        assertTrue(body.contains("hasJustDocked(previousStateId, stateId)"),
+                "the docking transition should be detected where the state id change is already known");
+        assertTrue(body.contains("updateCurrentRoomStateFromDock();"),
+                "a robot arriving on its dock should re-resolve status#current-room from the dock position");
+    }
+
+    @Test
+    void mapCycleResolutionKnowsWhetherTheRobotIsDocked() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String body = extractMethodBody(source, "private void updateCurrentRoomState(RRMapData mapData)");
+
+        assertTrue(body.contains("resolveRoomStateFromMap(mapData, isAtDock(), segmentRoomNames)"),
+                "a map arriving while the robot is docked must be resolved from the dock position, otherwise "
+                        + "it pushes the room of the interrupted cleaning run back out");
+    }
+
+    @Test
+    void theDockRoomIsResolvedWithoutFetchingAnotherMap() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String body = extractMethodBody(source, "private void updateCurrentRoomStateFromDock()");
+
+        assertFalse(
+                body.contains("sendRPCCommand") || body.contains("COMMAND_GET_MAP")
+                        || body.contains("requestMapRefreshIfDue"),
+                "docking must reuse the map already parsed, not trigger an extra map fetch");
+        assertTrue(body.contains("resolveDockRoomState(lastParsedMapData, segmentRoomNames)"),
+                "the dock room comes from the retained map plus the segment-name table");
+    }
+
+    @Test
+    void theRoomDecisionAndItsPublicationAreAtomicAgainstTheOtherThread() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+
+        String mapGuarded = extractGuardedBlock(
+                extractMethodBody(source, "private void handleGetMap(int requestId, byte[] mapPayload)"));
+        assertTrue(
+                mapGuarded.contains("lastParsedMapData = mapData;") && mapGuarded.contains("updateCurrentRoomState("),
+                "retaining the map and resolving the room from it must happen under the lock: the docked check "
+                        + "it reads is written by the status thread, and a lost race would leave the robot "
+                        + "position on top of the dock room until the next undock");
+
+        String stateIdGuarded = extractGuardedBlock(extractMethodBody(source,
+                "private void updateStateIdAndRequestStatusIfChanged(int stateId, boolean triggerImmediateStatusQuery)"));
+        assertTrue(
+                stateIdGuarded.contains("lastKnownStateId = stateId;")
+                        && stateIdGuarded.contains("updateCurrentRoomStateFromDock();"),
+                "publishing the state id change and the dock room must happen under the same lock, so the map "
+                        + "thread cannot decide 'not docked' and publish afterwards");
+
+        String invalidateGuarded = extractGuardedBlock(
+                extractMethodBody(source, "private void invalidateMapDerivedState()"));
+        assertTrue(invalidateGuarded.contains("lastParsedMapData = null;"),
+                "dropping the retained map and clearing the channel belong in the same guarded section");
+
+        String clearGuarded = extractGuardedBlock(extractMethodBody(source, "private void clearSegmentRoomNames()"));
+        assertTrue(clearGuarded.contains("segmentRoomNames = Map.of()"),
+                "losing the room metadata must not interleave with a room publication either");
+    }
+
+    private static String extractGuardedBlock(String methodBody) {
+        int guardIndex = methodBody.indexOf("synchronized (currentRoomLock)");
+        assertTrue(guardIndex >= 0, "no synchronized (currentRoomLock) section found");
+
+        int bodyStart = methodBody.indexOf('{', guardIndex);
+        assertTrue(bodyStart >= 0, "guarded section has no body");
+        return methodBody.substring(bodyStart + 1, findBlockEnd(methodBody, bodyStart));
     }
 
     private static String extractMethodBody(String source, String methodSignature) {

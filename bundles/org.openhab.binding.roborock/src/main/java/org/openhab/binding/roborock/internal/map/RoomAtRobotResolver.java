@@ -19,17 +19,23 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Resolves the map segment (room) id at the robot's current position.
+ * Resolves the map segment (room) id at a position on the map, primarily the robot's own.
  * <p>
  * The RR map format already retains a per-pixel segment id in {@link RRMapData#imageData()} (see
  * {@link RRMapRenderer#decodeSegmentId(int)}) - it is decoded there only to pick a fill color and
- * otherwise discarded. This class locates the robot's own pixel in that same retained image data
- * and decodes it the same way, so "which room is the robot in" is answered from data the binding
- * already keeps, without changing the map wire format or {@link RRMapData}'s shape.
+ * otherwise discarded. This class locates a given map position's pixel in that same retained image
+ * data and decodes it the same way, so "which room is the robot in" is answered from data the
+ * binding already keeps, without changing the map wire format or {@link RRMapData}'s shape.
  * <p>
- * Coordinates: {@code robotX}/{@code robotY} are in the RR map's raw coordinate units (as parsed by
- * {@code RRMapParser}, same units as {@code chargerX}/{@code chargerY} and path points). They are
- * converted to a pixel index using the same fixed divisor and {@code top}/{@code left} offsets as
+ * The lookup itself is position-agnostic: the same map coordinate space holds the robot position,
+ * the charger position and the path points, so the caller decides which of them to ask about. The
+ * handler asks for the robot's position while it drives and for the charging dock's position while
+ * it is docked, where the robot's own position in a map may lag behind reality.
+ * <p>
+ * Coordinates: {@code positionX}/{@code positionY} are in the RR map's raw coordinate units (as
+ * parsed by {@code RRMapParser}, the same units as {@code robotX}/{@code robotY},
+ * {@code chargerX}/{@code chargerY} and path points). They are converted to a pixel index using the
+ * same fixed divisor and {@code top}/{@code left} offsets as
  * {@code RRMapRenderer.toXCoord}/{@code toYCoord}, inverted to land on the pixel grid backing
  * {@link RRMapData#imageData()} rather than the rendered/flipped canvas.
  *
@@ -42,10 +48,11 @@ public final class RoomAtRobotResolver {
     private static final int MM = 50;
 
     /**
-     * Maximum Chebyshev-distance ring searched outward from the robot's own pixel when that pixel
-     * is not itself a segmented-floor pixel (for example the robot is on a wall/scan boundary
-     * pixel, or docked at the edge of a segment). Two rings is a small, cheap search that still
-     * covers the robot's immediate footprint without risking a false match from a distant room.
+     * Maximum Chebyshev-distance ring searched outward from the queried pixel when that pixel is
+     * not itself a segmented-floor pixel (for example the robot is on a wall/scan boundary pixel,
+     * or the charging dock sits at the edge of a segment). Two rings is a small, cheap search that
+     * still covers the robot's immediate footprint without risking a false match from a distant
+     * room.
      */
     private static final int FALLBACK_SEARCH_RADIUS = 2;
 
@@ -53,7 +60,7 @@ public final class RoomAtRobotResolver {
     }
 
     /**
-     * Resolves the segment id of the map pixel at the robot's position, falling back to a small
+     * Resolves the segment id of the map pixel at the given position, falling back to a small
      * outward search if that exact pixel is not a segmented-floor pixel.
      * <p>
      * The fallback is decided by the nearest ring that contains any segmented-floor pixel at all:
@@ -66,12 +73,12 @@ public final class RoomAtRobotResolver {
      *
      * @param mapData parsed map data; {@code imageData()}/{@code imageWidth()}/{@code imageHeight()}
      *            /{@code top()}/{@code left()} are used to locate and decode the pixel
-     * @param robotX robot X position in raw RR map coordinate units
-     * @param robotY robot Y position in raw RR map coordinate units
+     * @param positionX X position in raw RR map coordinate units
+     * @param positionY Y position in raw RR map coordinate units
      * @return the segment id (1-30, the range {@link RRMapRenderer#decodeSegmentId(int)} can yield)
-     *         if one was unambiguously found at or near the robot's position, empty otherwise
+     *         if one was unambiguously found at or near the given position, empty otherwise
      */
-    public static Optional<Integer> resolveSegmentId(RRMapData mapData, int robotX, int robotY) {
+    public static Optional<Integer> resolveSegmentId(RRMapData mapData, int positionX, int positionY) {
         int width = mapData.imageWidth();
         int height = mapData.imageHeight();
         byte[] imageData = mapData.imageData();
@@ -79,8 +86,8 @@ public final class RoomAtRobotResolver {
             return Optional.empty();
         }
 
-        int centerX = Math.round(robotX / (float) MM) - mapData.left() - 1;
-        int centerY = Math.round(robotY / (float) MM) - mapData.top() - 1;
+        int centerX = Math.round(positionX / (float) MM) - mapData.left() - 1;
+        int centerY = Math.round(positionY / (float) MM) - mapData.top() - 1;
 
         Optional<Integer> exactHit = segmentAt(imageData, width, height, centerX, centerY);
         if (exactHit.isPresent()) {
