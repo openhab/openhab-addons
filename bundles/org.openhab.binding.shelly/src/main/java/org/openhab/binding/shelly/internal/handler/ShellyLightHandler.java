@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,7 +69,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             final ShellyBindingRuntimeConfig bindingConfig, final ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
         super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
-        lightModels = new TreeMap<>();
+        lightModels = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -132,7 +133,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 }
                 updateLightModelFromStatus(model, light);
                 updated |= updateChannelsFromLightStatusDTO(light, lightId);
-                updated |= updateChannelsFromLightModel(model);
                 lightId++;
             }
         } finally {

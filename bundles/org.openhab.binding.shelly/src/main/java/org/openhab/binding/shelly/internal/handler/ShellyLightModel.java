@@ -35,6 +35,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.LightModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class ShellyLightModel extends LightModel {
      * The {@link LightModel} class does not round trip RGBX values cleanly (e.g. because [255,155,155,0] is a
      * functional synonym for [100,0,0,155]) so we cache the input values here to avoid data loss or confusion.
      */
-    private final int[] cacheRGBX = new int[RGBX.values().length];
+    private final int[] cacheRGBX;
     private final int rgbxLength;
     private final int lightId;
     private final ShellyLightHandler lightHandler;
@@ -111,13 +112,13 @@ public class ShellyLightModel extends LightModel {
     private int effect = 0;
 
     // initial values used to determine if the model dirty state changes
-    private volatile Mode initialShellyMode;
-    private volatile int initialEffect;
-    private volatile int[] initialRGBX;
-    private volatile @Nullable PercentType initialBrightness;
-    private volatile @Nullable OnOffType initialOnOff;
-    private volatile @Nullable QuantityType<?> initialColorTemperature;
-    private volatile @Nullable String initialSnapshot;
+    private volatile Mode baselineOperatingMode;
+    private volatile int baselineEffect;
+    private volatile int[] baselineRGBX;
+    private volatile @Nullable PercentType baselineBrightness;
+    private volatile @Nullable OnOffType baselineOnOff;
+    private volatile @Nullable QuantityType<?> baselineColorTemperature;
+    private volatile @Nullable String baselineSnapshot;
 
     /**
      * Public static class factory that creates a {@link ShellyLightModel} with the correct parameters based on the
@@ -145,10 +146,10 @@ public class ShellyLightModel extends LightModel {
             return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
         }
         if (THING_TYPE_SHELLYDUO.equals(thingTypeUID)) {
-            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
         }
         if (THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID)) {
-            return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+            return new Parameters(BRIGHTNESS, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
         }
         if (THING_TYPE_SHELLYDUORGBW.equals(thingTypeUID)) {
             return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
@@ -159,7 +160,7 @@ public class ShellyLightModel extends LightModel {
             return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
         }
         if (THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID)) {
-            return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+            return new Parameters(BRIGHTNESS, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
         }
 
         // ==== GENERATION 3 ====
@@ -168,9 +169,9 @@ public class ShellyLightModel extends LightModel {
                 case SHELLY2_PROFILE_RGB:
                     return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_RGBW:
-                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
+                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
                 case SHELLY2_PROFILE_LIGHT:
-                    return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+                    return new Parameters(BRIGHTNESS, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
             }
         }
         if (THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
@@ -178,28 +179,30 @@ public class ShellyLightModel extends LightModel {
                 case SHELLY2_PROFILE_RGB:
                     return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_RGBW:
-                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
+                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
                 case SHELLY2_PROFILE_LIGHT:
-                    return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+                    return new Parameters(BRIGHTNESS, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
                 case SHELLY2_PROFILE_RGBCCT:
                     if (lightIndex > 0) {
-                        return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+                        return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, WHITE_ONLY,
+                                Mode.WHITE, true);
                     }
-                    return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
+                    return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_RGBX2LIGHT:
                     if (lightIndex > 0) {
-                        return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+                        return new Parameters(BRIGHTNESS, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
                     }
                     return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_CCTX2:
-                    return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+                    return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, WHITE_ONLY,
+                            Mode.WHITE, true);
             }
         }
         if (THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID)) {
-            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
         }
         if (THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID)) {
-            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
+            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
         }
 
         throw new IllegalArgumentException("Error creating Light Model for: " + thingTypeUID.toString());
@@ -222,7 +225,7 @@ public class ShellyLightModel extends LightModel {
         this.lightHandler = lightHandler;
         this.lightId = lightId;
         this.operatingMode = operatingMode;
-        this.initialShellyMode = operatingMode;
+        this.baselineOperatingMode = operatingMode;
         this.isOperatingModeReadOnly = isOperatingModeReadOnly;
 
         // TODO currently initialize flags from ThingTypeUID because ShellyDeviceProfile has errors
@@ -241,13 +244,15 @@ public class ShellyLightModel extends LightModel {
         isProfileRGBX2LIGHT = SHELLY2_PROFILE_RGBX2LIGHT.equalsIgnoreCase(gen23Profile);
         isProfileCCTX2 = SHELLY2_PROFILE_CCTX2.equalsIgnoreCase(gen23Profile);
 
-        rgbxLength = WHITE_ONLY == ledOperatingMode ? 3 : super.getRGBx().length;
-        initialRGBX = new int[rgbxLength];
+        rgbxLength = super.getRGBx().length;
+        baselineRGBX = new int[rgbxLength];
+        cacheRGBX = Arrays.copyOf(baselineRGBX, rgbxLength);
+        super.setRGBx(Arrays.stream(cacheRGBX).mapToDouble(i -> (double) i).toArray());
 
         logger.debug(
                 "{}: created model for lightId:{} with capabilities:{}, rgbDataType:{}, ledOperatingMode:{}, shellyMode:{}, isModeReadOnly:{}, ct-range: [{} K..{} K]",
-                lightHandler.thingName, lightId, lightCapabilities, rgbDataType, ledOperatingMode, initialShellyMode,
-                isOperatingModeReadOnly, Math.round(reciprocal(mirekControlWarmest)),
+                lightHandler.thingName, lightId, lightCapabilities, rgbDataType, ledOperatingMode,
+                baselineOperatingMode, isOperatingModeReadOnly, Math.round(reciprocal(mirekControlWarmest)),
                 Math.round(reciprocal(mirekControlCoolest)));
     }
 
@@ -307,7 +312,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the brightness has been changed since lock() was called.
      */
     public boolean isBrightnessDirty() {
-        return !Objects.equals(initialBrightness, super.getBrightness(true));
+        return !Objects.equals(baselineBrightness, super.getBrightness(true));
     }
 
     /**
@@ -347,7 +352,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the color has been changed since lock() was called.
      */
     public boolean isColorDirty() {
-        return !Arrays.equals(initialRGBX, 0, rgbxLength, cacheRGBX, 0, rgbxLength);
+        return !Arrays.equals(baselineRGBX, 0, rgbxLength, cacheRGBX, 0, rgbxLength);
     }
 
     /**
@@ -370,14 +375,16 @@ public class ShellyLightModel extends LightModel {
      * Get the color temperature as a QuantityType.
      */
     public State getColorTemperatureAbsoluteState() {
-        return toNonNull(super.getColorTemperature());
+        QuantityType<?> ct = super.getColorTemperature();
+        return ct != null ? new QuantityType<>(Math.round(ct.doubleValue()), ct.getUnit()) : UnDefType.UNDEF;
     }
 
     /**
      * Get the color temperature as a PercentType.
      */
     public State getColorTemperaturePercentState() {
-        return toNonNull(super.getColorTemperaturePercent());
+        PercentType pct = super.getColorTemperaturePercent();
+        return pct != null ? new PercentType((int) Math.round(pct.doubleValue())) : UnDefType.UNDEF;
     }
 
     /**
@@ -393,7 +400,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the color temperature has been changed since lock() was called.
      */
     public boolean isColorTempDirty() {
-        return !Objects.equals(initialColorTemperature, super.getColorTemperature());
+        return !Objects.equals(baselineColorTemperature, super.getColorTemperature());
     }
 
     /**
@@ -415,7 +422,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the effect has been changed since lock() was called.
      */
     public boolean isEffectDirty() {
-        return !Objects.equals(initialEffect, effect);
+        return !Objects.equals(baselineEffect, effect);
     }
 
     /**
@@ -484,7 +491,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the mode has been changed since lock() was called.
      */
     public boolean isModeDirty() {
-        return initialShellyMode != operatingMode;
+        return baselineOperatingMode != operatingMode;
     }
 
     public State getOnOffState() {
@@ -504,7 +511,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the on/off state has been changed since lock() was called.
      */
     public boolean isOnOffDirty() {
-        return !Objects.equals(initialOnOff, super.getOnOff(true));
+        return !Objects.equals(baselineOnOff, super.getOnOff(true));
     }
 
     /**
@@ -581,13 +588,13 @@ public class ShellyLightModel extends LightModel {
      */
     public void acquire() {
         lock.lock();
-        initialSnapshot = logger.isDebugEnabled() ? toString() : null;
-        initialRGBX = getRGBX();
-        initialOnOff = super.getOnOff(true);
-        initialEffect = effect;
-        initialShellyMode = operatingMode;
-        initialBrightness = super.getBrightness(true);
-        initialColorTemperature = super.getColorTemperature();
+        baselineSnapshot = logger.isDebugEnabled() ? toString() : null;
+        baselineRGBX = getRGBX();
+        baselineOnOff = super.getOnOff(true);
+        baselineEffect = effect;
+        baselineOperatingMode = operatingMode;
+        baselineBrightness = super.getBrightness(true);
+        baselineColorTemperature = super.getColorTemperature();
         logger.debug("{}: light model {} acquired", lightHandler.thingName, lightId);
     }
 
@@ -600,7 +607,7 @@ public class ShellyLightModel extends LightModel {
         boolean updated = lightHandler.updateChannelsFromLightModel(this);
         if (updated) {
             logger.debug("{}: light {} model updated..\n => OLD: {}\n => NEW: {}", lightHandler.thingName, lightId,
-                    initialSnapshot, this);
+                    baselineSnapshot, this);
         }
         logger.debug("{}: light model {} released", lightHandler.thingName, lightId);
         lock.unlock();
