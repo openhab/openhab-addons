@@ -71,9 +71,15 @@ public class ShellyLightModel extends LightModel {
 
     /**
      * A record that carries the light capabilities, RGB data type, and LED operating mode.
+     * 
+     * @param lightCapabilities the light capabilities
+     * @param rgbDataType the RGB data type
+     * @param ledOperatingMode the LED operating mode
+     * @param modelOperatingMode the COLOR/WHITE operating mode
+     * @param isOperatingModeReadOnly true if the mode is read-only, false otherwise
      */
     private record Parameters(LightCapabilities lightCapabilities, RgbDataType rgbDataType,
-            LedOperatingMode ledOperatingMode, Mode shellyMode, boolean modeChangesAllowed) {
+            LedOperatingMode ledOperatingMode, Mode modelOperatingMode, boolean isOperatingModeReadOnly) {
     }
 
     /*
@@ -85,13 +91,13 @@ public class ShellyLightModel extends LightModel {
     private final int lightId;
     private final ShellyLightHandler lightHandler;
     private final ReentrantLock lock = new ReentrantLock();
-    private final boolean modeChangesAllowed;
+    private final boolean isOperatingModeReadOnly;
 
     // essential fields copied from profile
     private final boolean isBulb;
     private final boolean isDuo;
     private final boolean isRGBW2;
-    private final boolean isGen2;
+    private final boolean isVintage;
     private final boolean isG3DuoBulb;
     private final boolean isG3ColorBulb;
     private final boolean isProfileLIGHT;
@@ -101,7 +107,7 @@ public class ShellyLightModel extends LightModel {
     private final boolean isProfileRGBX2LIGHT;
     private final boolean isProfileCCTX2;
 
-    private Mode shellyMode = Mode.WHITE;
+    private Mode operatingMode = Mode.WHITE;
     private int effect = 0;
 
     // initial values used to determine if the model dirty state changes
@@ -120,9 +126,9 @@ public class ShellyLightModel extends LightModel {
     public static ShellyLightModel create(ShellyLightHandler lightHandler, int lightId, ThingTypeUID thingTypeUID,
             ShellyDeviceProfile profile, double stepSize) {
         Parameters params = getParams(thingTypeUID, lightId, profile.device.profile);
-        return new ShellyLightModel(lightHandler, lightId, params.lightCapabilities, params.rgbDataType,
-                reciprocal(profile.maxTemp), reciprocal(profile.minTemp), stepSize, params.ledOperatingMode,
-                params.shellyMode, params.modeChangesAllowed, profile);
+        return new ShellyLightModel(lightHandler, lightId, thingTypeUID, profile.device.profile,
+                params.lightCapabilities, params.rgbDataType, params.ledOperatingMode, reciprocal(profile.maxTemp),
+                reciprocal(profile.minTemp), stepSize, params.modelOperatingMode, params.isOperatingModeReadOnly);
     }
 
     /**
@@ -131,68 +137,69 @@ public class ShellyLightModel extends LightModel {
      * carry all necessary clues to create the LightModel with the correct parameters.
      * 
      * @param thingTypeUID the ThingTypeUID of the Shelly light
-     * @param gen23DeviceProfile the Shelly Gen 2/3 device profile
+     * @param gen23Profile the Shelly Gen 2/3 device profile
      */
-    private static Parameters getParams(ThingTypeUID thingTypeUID, int lightIndex, String gen23DeviceProfile) {
+    private static Parameters getParams(ThingTypeUID thingTypeUID, int lightIndex, String gen23Profile) {
         // ==== GENERATION 1 ====
         if (THING_TYPE_SHELLYBULB.equals(thingTypeUID)) {
-            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
+            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
         }
         if (THING_TYPE_SHELLYDUO.equals(thingTypeUID)) {
-            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
+            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
         }
         if (THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID)) {
-            return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
+            return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
         }
         if (THING_TYPE_SHELLYDUORGBW.equals(thingTypeUID)) {
-            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
+            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
         }
 
         // ==== GENERATION 2 ====
         if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
-            return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
+            return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
         }
         if (THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID)) {
-            return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
+            return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
         }
 
         // ==== GENERATION 3 ====
         if (THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID)) {
-            switch (gen23DeviceProfile) {
+            switch (gen23Profile) {
                 case SHELLY2_PROFILE_RGB:
-                    return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, false);
+                    return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_RGBW:
-                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, false);
+                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_LIGHT:
-                    return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
+                    return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
             }
         }
         if (THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
-            switch (gen23DeviceProfile) {
+            switch (gen23Profile) {
                 case SHELLY2_PROFILE_RGB:
-                    return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, false);
+                    return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_RGBW:
-                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, false);
+                    return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_LIGHT:
-                    return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
+                    return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
                 case SHELLY2_PROFILE_RGBCCT:
-                    // TODO check these parameters
+                    if (lightIndex > 0) {
+                        return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
+                    }
                     return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
                 case SHELLY2_PROFILE_RGBX2LIGHT:
                     if (lightIndex > 0) {
-                        return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
+                        return new Parameters(BRIGHTNESS, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
                     }
-                    return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, false);
+                    return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
                 case SHELLY2_PROFILE_CCTX2:
-                    return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
+                    return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
             }
         }
         if (THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID)) {
-            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
+            return new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, DEFAULT, WHITE_ONLY, Mode.WHITE, true);
         }
         if (THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID)) {
-            // TODO check these parameters
-            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
+            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
         }
 
         throw new IllegalArgumentException("Error creating Light Model for: " + thingTypeUID.toString());
@@ -202,46 +209,45 @@ public class ShellyLightModel extends LightModel {
      * Private constructor to create a ShellyLightModel with the given parameters.
      * 
      * @param thingTypeUID
-     * 
      * @param profile
      */
-    private ShellyLightModel(ShellyLightHandler lightHandler, int lightId, LightCapabilities lightCapabilities,
-            RgbDataType rgbDataType, Double mirekControlCoolest, Double mirekControlWarmest, Double stepSize,
-            LedOperatingMode ledOperatingMode, Mode shellyMode, boolean modeChangesAllowed, ShellyDeviceProfile profile)
-            throws IllegalArgumentException {
+    private ShellyLightModel(ShellyLightHandler lightHandler, int lightId, ThingTypeUID thingTypeUID,
+            String gen23Profile, LightCapabilities lightCapabilities, RgbDataType rgbDataType,
+            LedOperatingMode ledOperatingMode, Double mirekControlCoolest, Double mirekControlWarmest, Double stepSize,
+            Mode operatingMode, boolean isOperatingModeReadOnly) throws IllegalArgumentException {
 
         super(lightCapabilities, rgbDataType, null, mirekControlCoolest, mirekControlWarmest, stepSize, null, null);
         super.setLedOperatingMode(ledOperatingMode);
 
         this.lightHandler = lightHandler;
         this.lightId = lightId;
-        this.shellyMode = shellyMode;
-        this.modeChangesAllowed = modeChangesAllowed;
+        this.operatingMode = operatingMode;
+        this.initialShellyMode = operatingMode;
+        this.isOperatingModeReadOnly = isOperatingModeReadOnly;
 
-        // initialize light capability flags from the device profile (Generation 1)
-        isBulb = profile.isBulb;
-        isDuo = profile.isDuo;
-        isRGBW2 = profile.isRGBW2;
-        isGen2 = profile.isGen2;
-        isG3DuoBulb = profile.isRGBBulb; // TODO I think mapping in #20909 is wrong
-        isG3ColorBulb = profile.isRGBCCT; // TODO I think mapping in #20909 is wrong
+        // TODO currently initialize flags from ThingTypeUID because ShellyDeviceProfile has errors
+        isVintage = THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID);
+        isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
+        isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
+        isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
+        isG3DuoBulb = THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID); // TODO mapping in #20909 is wrong
+        isG3ColorBulb = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID); // TODO mapping in #20909 is wrong
 
-        // initialize light capability flags from the device profile (Generation 2/3)
-        isProfileLIGHT = SHELLY2_PROFILE_LIGHT.equalsIgnoreCase(profile.device.profile);
-        isProfileRGB = SHELLY2_PROFILE_RGB.equalsIgnoreCase(profile.device.profile);
-        isProfileRGBW = SHELLY2_PROFILE_RGBW.equalsIgnoreCase(profile.device.profile);
-        isProfileRGBCCT = SHELLY2_PROFILE_RGBCCT.equalsIgnoreCase(profile.device.profile);
-        isProfileRGBX2LIGHT = SHELLY2_PROFILE_RGBX2LIGHT.equalsIgnoreCase(profile.device.profile);
-        isProfileCCTX2 = SHELLY2_PROFILE_CCTX2.equalsIgnoreCase(profile.device.profile);
+        // initialize flags from the device profile (Generation 2/3)
+        isProfileLIGHT = SHELLY2_PROFILE_LIGHT.equalsIgnoreCase(gen23Profile);
+        isProfileRGB = SHELLY2_PROFILE_RGB.equalsIgnoreCase(gen23Profile);
+        isProfileRGBW = SHELLY2_PROFILE_RGBW.equalsIgnoreCase(gen23Profile);
+        isProfileRGBCCT = SHELLY2_PROFILE_RGBCCT.equalsIgnoreCase(gen23Profile);
+        isProfileRGBX2LIGHT = SHELLY2_PROFILE_RGBX2LIGHT.equalsIgnoreCase(gen23Profile);
+        isProfileCCTX2 = SHELLY2_PROFILE_CCTX2.equalsIgnoreCase(gen23Profile);
 
         rgbxLength = WHITE_ONLY == ledOperatingMode ? 3 : super.getRGBx().length;
         initialRGBX = new int[rgbxLength];
-        initialShellyMode = shellyMode;
 
         logger.debug(
-                "{}: created model for lightId:{} with capabilities:{}, rgbDataType:{}, ledOperatingMode:{}, shellyMode:{}, modeChangeAllowed:{}, ct-range: [{} K..{} K]",
+                "{}: created model for lightId:{} with capabilities:{}, rgbDataType:{}, ledOperatingMode:{}, shellyMode:{}, isModeReadOnly:{}, ct-range: [{} K..{} K]",
                 lightHandler.thingName, lightId, lightCapabilities, rgbDataType, ledOperatingMode, initialShellyMode,
-                modeChangesAllowed, Math.round(reciprocal(mirekControlWarmest)),
+                isOperatingModeReadOnly, Math.round(reciprocal(mirekControlWarmest)),
                 Math.round(reciprocal(mirekControlCoolest)));
     }
 
@@ -457,20 +463,20 @@ public class ShellyLightModel extends LightModel {
      * Get the shelly device mode.
      */
     public Mode getMode() {
-        return shellyMode;
+        return operatingMode;
     }
 
     public OnOffType getModeState() {
-        return OnOffType.from(shellyMode == Mode.COLOR);
+        return OnOffType.from(operatingMode == Mode.COLOR);
     }
 
     /**
      * Set the shelly device mode.
      */
     public void setMode(Mode shellyMode) {
-        if (modeChangesAllowed) {
+        if (!isOperatingModeReadOnly) {
             logger.trace("{}: light {} setMode({})", lightHandler.thingName, lightId, shellyMode);
-            this.shellyMode = shellyMode;
+            this.operatingMode = shellyMode;
         }
     }
 
@@ -478,7 +484,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the mode has been changed since lock() was called.
      */
     public boolean isModeDirty() {
-        return initialShellyMode != shellyMode;
+        return initialShellyMode != operatingMode;
     }
 
     public State getOnOffState() {
@@ -579,7 +585,7 @@ public class ShellyLightModel extends LightModel {
         initialRGBX = getRGBX();
         initialOnOff = super.getOnOff(true);
         initialEffect = effect;
-        initialShellyMode = shellyMode;
+        initialShellyMode = operatingMode;
         initialBrightness = super.getBrightness(true);
         initialColorTemperature = super.getColorTemperature();
         logger.debug("{}: light model {} acquired", lightHandler.thingName, lightId);
@@ -603,27 +609,32 @@ public class ShellyLightModel extends LightModel {
 
     /**
      * Returns true if the light model supports brightness channels, false otherwise.
-     * All devices with color temperature support brightness, plus RGBW2 and all non-gen2
-     * devices operating in white mode.
      * 
-     * NOTE: gain channel is the brightness channel when devices are in color mode.
+     * NOTE: the gain channel valid when devices are in COLOR mode, and the brightness
+     * channel is valid when devices are in WHITE mode.
      * 
-     * @param index the zero based index of the light model in the map
-     * @param mode the light model operating mode
-     * @return true if such channels are supported, false otherwise
+     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
+     * @return true if such channels are supported, false otherwise.
      */
-    public boolean supportsBrightnessChannel() {
-        return
+    public boolean supportsBrightnessChannel(boolean ignoreLiveOperatingMode) {
+        return (
         // @formatter:off
-            supportsColorTempChannel() ||
-            (isRGBW2 && Mode.WHITE == shellyMode) ||
-            (!isGen2 && Mode.WHITE == shellyMode) ||
+            (isVintage) || 
+            (isDuo) ||
+            (isBulb) ||
+            (isRGBW2 && Mode.WHITE == operatingMode) || // never ignore the operating mode
+            (isG3DuoBulb) ||
+            (isG3ColorBulb) ||
+            (isProfileCCTX2) ||
             (isProfileLIGHT) ||
-            (isProfileRGBCCT && lightId > 0) || 
-            (isProfileRGBX2LIGHT && lightId > 0) ||
-            (isProfileCCTX2)
+            (isProfileRGBCCT && lightId > 0) ||
+            (isProfileRGBX2LIGHT && lightId > 0)
         // @formatter:on
-        ;
+        ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
+    }
+
+    public boolean supportsBrightnessChannel() {
+        return supportsBrightnessChannel(false);
     }
 
     /**
@@ -631,73 +642,95 @@ public class ShellyLightModel extends LightModel {
      * In case of dual mode devices, the inColor flag is used to refine the check.
      * In case of multiple profile devices, the model id is used to refine the check.
      *
-     * @return true if such channels are supported, false otherwise
+     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
+     * @return true if such channels are supported, false otherwise.
      */
-    public boolean supportsColorChannel() {
-        return
+    public boolean supportsColorChannel(boolean ignoreLiveOperatingMode) {
+        return (
         // @formatter:off
            (isBulb) ||
-           (isRGBW2 && Mode.COLOR == shellyMode) ||
+           (isRGBW2 && Mode.COLOR == operatingMode) || // never ignore the operating mode
            (isG3ColorBulb) ||
            (isProfileRGB) ||
            (isProfileRGBW) ||
            (isProfileRGBCCT && lightId == 0) || 
            (isProfileRGBX2LIGHT && lightId == 0)
         // @formatter:on
-        ;
+        ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.COLOR == operatingMode);
+    }
+
+    public boolean supportsColorChannel() {
+        return supportsColorChannel(false);
     }
 
     /**
      * Returns true if the light model supports color temperature channels, false otherwise.
      * 
-     * @return true if such channels are supported, false otherwise
+     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
+     * @return true if such channels are supported, false otherwise.
      */
-    public boolean supportsColorTempChannel() {
-        return
+    public boolean supportsColorTempChannel(boolean ignoreLiveOperatingMode) {
+        return (
         // @formatter:off
-            (isDuo) || 
-            (isBulb) || 
+            (isDuo && !isVintage) || // Vintage bulb is white-only!
+            (isBulb) ||
             (isG3DuoBulb) || 
             (isG3ColorBulb) || 
             (isProfileCCTX2) ||
             (isProfileRGBCCT && lightId > 0) 
         // @formatter:on
-        ;
+        ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
+    }
+
+    public boolean supportsColorTempChannel() {
+        return supportsColorTempChannel(false);
     }
 
     /**
      * Returns true if the light model supports effect channels, false otherwise.
      *
-     * @return true if such channels are supported, false otherwise
+     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
+     * @return true if such channels are supported, false otherwise.
      */
+    public boolean supportsEffectChannel(boolean ignoreLiveOperatingMode) {
+        return supportsColorChannel(ignoreLiveOperatingMode);
+    }
+
     public boolean supportsEffectChannel() {
-        return supportsColorChannel();
+        return supportsEffectChannel(false);
     }
 
     /**
      * Returns true if the light model supports gain channels, false otherwise.
-     * NOTE: gain channel is the brightness channel when devices are in color mode.
+     * 
+     * NOTE: the gain channel valid when devices are in COLOR mode, and the brightness
+     * channel is valid when devices are in WHITE mode.
      *
-     * @return true if such channels are supported, false otherwise
+     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
+     * @return true if such channels are supported, false otherwise.
      */
+    public boolean supportsGainChannel(boolean ignoreLiveOperatingMode) {
+        return supportsColorChannel(ignoreLiveOperatingMode);
+    }
+
     public boolean supportsGainChannel() {
-        return supportsColorChannel();
+        return supportsGainChannel(false);
     }
 
     /**
      * Returns true if the light model supports a switch channel, false otherwise.
-     * All devices, except RGBW2 devices operating in light mode, support switch
+     * All devices, except RGBW2 devices operating in light mode, support switch channels
      * .. BUT for the first light model only!
      *
-     * @return true if such channels are supported, false otherwise
+     * @return true if such channels are supported, false otherwise.
      */
     public boolean supportsOnOffChannel() {
         return
         // @formatter:off
             (isDuo) || 
             (isBulb) ||
-            (isRGBW2 && Mode.COLOR == shellyMode) ||
-            (isG3DuoBulb) || 
+            (isRGBW2 && Mode.COLOR == operatingMode) ||
+            (isG3DuoBulb) ||
             (isG3ColorBulb) ||
             (isProfileCCTX2 && lightId == 0) ||
             (isProfileRGB) ||

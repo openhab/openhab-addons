@@ -456,47 +456,48 @@ class ShellyLightModelTest {
 
     @ParameterizedTest
     @MethodSource("thingTypeProvider")
-    void testCapabilitiesForEachThingType(ThingTypeUID thingTypeUID, int lightId, @Nullable String profileStr,
-            boolean expSupOnOff, boolean expSupColor, boolean expSupColorTemp, boolean expSupBri) {
+    void testCapabilitiesForEachThingType(ThingTypeUID thingTypeUID, int lightId, @Nullable String profileOverride,
+            boolean expectSupportsOnOff, boolean expectSupportsColor, boolean expectSupportsColorTemperature,
+            boolean expectSupportsBrightness) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
-        profile.device.profile = profileStr;
         profile.maxTemp = 6500;
         profile.minTemp = 2700;
+        profile.device.profile = profileOverride;
         ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, lightId, thingTypeUID, profile, STEP);
 
-        assertEquals(expSupOnOff, model.supportsOnOffChannel(), "on/off");
-        assertEquals(expSupColor, model.supportsColorChannel(), "color");
-        assertEquals(expSupColorTemp, model.supportsColorTempChannel(), "color temp");
-        assertEquals(expSupBri, model.supportsBrightnessChannel(), "brightness");
+        String uid = thingTypeUID.toString() + " ";
+        assertEquals(expectSupportsOnOff, model.supportsOnOffChannel(), uid + "on/off");
+        assertEquals(expectSupportsColor, model.supportsColorChannel(true), uid + "color");
+        assertEquals(expectSupportsColorTemperature, model.supportsColorTempChannel(true), uid + "color temp");
+        assertEquals(expectSupportsBrightness, model.supportsBrightnessChannel(true), uid + "brightness");
     }
 
     static Stream<Arguments> thingTypeProvider() {
-        String x = SHELLY2_PROFILE_RGBX2LIGHT;
-        String y = SHELLY2_PROFILE_RGBW;
-        return Stream.of(
-                // PASSING TEST CASES
-                Arguments.of(THING_TYPE_SHELLYBULB, 0, null, true, true, true, true),
-                Arguments.of(THING_TYPE_SHELLYDUO, 0, null, true, false, true, true),
-                Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, true, false, true, true), // TODO Vintage white-only?
-                Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, true, false, true, true),
-                Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, true, true, false, false),
-                Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 0, null, false, false, false, true),
-                Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, null, false, false, false, true),
-                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, true, true, false, false),
-                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_LIGHT, false, false, false, true),
-                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, SHELLY2_PROFILE_LIGHT, false, false, false, true),
-                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBCCT, true, true, false, false),
-                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBCCT, false, false, true, true),
-                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_CCTX2, true, false, true, true),
-                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_CCTX2, false, false, true, true),
-                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, true, true, false, false),
-                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, false, false, false, true),
-                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_LIGHT, false, false, false, true),
-                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_LIGHT, false, false, false, true)
-
-        // TODO FIX FAILING TEST CASES
-        // Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, null, true, false, true, true)
-        // Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, true, true, true, true) //
+        // TODO ask maintainer to confirm this table
+        return Stream.of( //
+        // @formatter:off
+            Arguments.of(THING_TYPE_SHELLYBULB, 0, null, true, true, true, true),
+            Arguments.of(THING_TYPE_SHELLYDUO, 0, null, true, false, true, true),
+            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, true, false, false, true), // NOTE: Vintage white-only!
+            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, true, false, true, true),
+            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, true, true, false, false),
+            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 0, null, false, false, false, true),
+            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, null, false, false, false, true),
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, true, true, false, false),
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_LIGHT, false, false, false, true),
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, SHELLY2_PROFILE_LIGHT, false, false, false, true),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBCCT, true, true, false, false),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBCCT, false, false, true, true),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_CCTX2, true, false, true, true),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_CCTX2, false, false, true, true),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, true, true, false, false),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, false, false, false, true),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_LIGHT, false, false, false, true),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_LIGHT, false, false, false, true),
+            // TODO check if Generation 3 bulbs in fact provide a profile
+            Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, null, true, false, true, true),
+            Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, true, true, true, true)
+        // @formatter:on
         );
     }
 }

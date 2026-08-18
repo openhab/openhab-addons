@@ -95,8 +95,6 @@ public class ShellyDeviceProfile {
     public boolean isBulb; // true only if it is a Bulb
     public boolean isDuo; // true only if it is a Duo
     public boolean isRGBW2; // true only if it a RGBW2
-    public boolean isRGBBulb; // true for Gen3 Multicolor Bulb (rgb:0 component, RGB+CCT)
-    public boolean isRGBCCT; // true for Gen3 Duo Bulb with rgbcct:0 component (RGB + CCT mode switching)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
     public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
 

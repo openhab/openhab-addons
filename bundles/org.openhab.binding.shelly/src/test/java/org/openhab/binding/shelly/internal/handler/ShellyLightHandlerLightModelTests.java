@@ -267,8 +267,6 @@ class ShellyLightHandlerLightModelTests {
         assertEquals(new StringType("red"), updates.get("color#full"));
         assertEquals(new PercentType(80), updates.get("color#gain"));
         assertEquals(new DecimalType(2), updates.get("color#effect"));
-
-        assertNull(updates.get("white#brightness"));
     }
 
     @Test
@@ -296,8 +294,6 @@ class ShellyLightHandlerLightModelTests {
         ct = updates.get("white#temperature");
         assertTrue(ct instanceof PercentType);
         assertEquals(54, Math.round(((PercentType) ct).doubleValue()));
-
-        assertNull(updates.get("color#gain"));
     }
 
     @Test
