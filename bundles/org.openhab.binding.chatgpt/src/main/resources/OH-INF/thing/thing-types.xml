@@ -78,9 +78,10 @@
 				<default>1000</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="maxToolCalls" type="integer" min="1" groupName="hli">
-				<label>Maximum Number of Tool Calls</label>
-				<description>The maximum number of sequential tool calls to execute in a single HLI request.</description>
+			<parameter name="maxModelTurns" type="integer" min="1" groupName="hli">
+				<label>Maximum Model Turns</label>
+				<description>The maximum number of interaction turns with the model allowed in a single request to prevent infinite
+					loops and excess resource usage.</description>
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>

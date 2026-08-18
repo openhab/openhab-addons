@@ -177,9 +177,11 @@ public class ChatGPTHandler extends BaseThingHandler {
         final ChatGPTConfiguration c = getConfigAs(ChatGPTConfiguration.class);
         this.config = c;
 
+        String baseUrl = resolveBaseUrl(c);
+        c.baseUrl = baseUrl;
         String apiKey = c.apiKey;
 
-        if (apiKey.isBlank() && isTokenRequiredEndpoint(c.baseUrl)) {
+        if (apiKey.isBlank() && isTokenRequiredEndpoint(baseUrl)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error");
             return;
@@ -198,7 +200,7 @@ public class ChatGPTHandler extends BaseThingHandler {
             return;
         }
 
-        this.apiClient = new ChatGPTApiClient(httpClient, apiKey, c.baseUrl);
+        this.apiClient = new ChatGPTApiClient(httpClient, apiKey, baseUrl);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -222,6 +224,22 @@ public class ChatGPTHandler extends BaseThingHandler {
                 logger.debug("Fetching models failed: {}", e.getMessage(), e);
             }
         });
+    }
+
+    /**
+     * Resolves the base URL for the API requests, providing backward compatibility for legacy configuration fields.
+     */
+    private String resolveBaseUrl(ChatGPTConfiguration c) {
+        String baseUrl = c.baseUrl;
+        String legacyApiUrl = c.apiUrl;
+        if ((baseUrl.isBlank() || DEFAULT_BASE_URL.equals(baseUrl)) && legacyApiUrl != null
+                && !legacyApiUrl.isBlank()) {
+            if (legacyApiUrl.endsWith("/chat/completions")) {
+                return legacyApiUrl.substring(0, legacyApiUrl.length() - "/chat/completions".length());
+            }
+            return legacyApiUrl;
+        }
+        return baseUrl;
     }
 
     boolean isTokenRequiredEndpoint(@Nullable String baseUrl) {

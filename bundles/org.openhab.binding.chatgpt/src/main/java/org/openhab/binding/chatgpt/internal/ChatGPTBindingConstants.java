@@ -39,7 +39,7 @@ public class ChatGPTBindingConstants {
     public static final double DEFAULT_TEMPERATURE = 1.0;
     public static final double DEFAULT_TOP_P = 1.0;
     public static final int DEFAULT_MAX_TOKENS = 1000;
-    public static final int DEFAULT_MAX_TOOL_CALLS = 10;
+    public static final int DEFAULT_MAX_MODEL_TURNS = 10;
     public static final String DEFAULT_SYSTEM_MESSAGE = "You are a helpful assistant.";
     public static final int DEFAULT_REQUEST_TIMEOUT = 10;
 }
