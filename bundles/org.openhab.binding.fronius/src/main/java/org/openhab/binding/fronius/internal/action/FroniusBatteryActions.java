@@ -27,6 +27,7 @@ import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType;
+import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecord;
 import org.openhab.binding.fronius.internal.handler.FroniusBatteryHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
@@ -259,6 +260,25 @@ public class FroniusBatteryActions implements ThingActions {
 
     public static boolean setBackupReservedBatteryCapacity(ThingActions actions, PercentType percent) {
         return toFroniusBatteryActions(actions).setBackupReservedBatteryCapacity(percent);
+    }
+
+    public static TimeOfUseRecord[] getTimeOfUseSchedules(ThingActions actions) {
+        return toFroniusBatteryActions(actions).getTimeOfUseSchedules();
+    }
+
+    @RuleAction(label = "@text/actions.get-time-of-use-schedules.label", description = "@text/actions.get-time-of-use-schedules.description")
+    public @ActionOutput(type = "org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecord[]", label = "Schedules") TimeOfUseRecord[] getTimeOfUseSchedules() {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                return batteryControl.getTimeOfUse().records();
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to read time of use schedules", e);
+            } catch (FroniusUnauthorizedException e) {
+                logger.warn("Failed to read time of use schedules: Invalid username or password");
+            }
+        }
+        return new TimeOfUseRecord[0];
     }
 
     @Override
