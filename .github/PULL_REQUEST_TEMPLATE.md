@@ -49,9 +49,6 @@ Please keep the following in mind:
 
 # Testing
 
-Your pull request will automatically be built and available under the following folder:
-https://openhab.jfrog.io/ui/native/libs-pullrequest-local/org/openhab/addons/bundles/
-
 It is a good practice to add a URL to your built JAR in this pull request description,
 so it is easier for the community to test your Add-on.
 If your pull request contains a new binding, it will likely take some time
