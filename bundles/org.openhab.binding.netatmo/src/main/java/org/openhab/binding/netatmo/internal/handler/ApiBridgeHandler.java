@@ -94,12 +94,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 /**
  * {@link ApiBridgeHandler} is the handler for a Netatmo API and connects it to the framework.
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Jacob Laursen - Refactored to use standard OAuth2 implementation
+ * @author Martin Littkovsky - Keep HTTP status and raw error code for unclassified errors
  */
 @NonNullByDefault
 public class ApiBridgeHandler extends BaseBridgeHandler {
@@ -352,13 +356,30 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
             NetatmoException exception;
             try {
-                exception = new NetatmoException(deserializer.deserialize(ApiError.class, responseBody));
-            } catch (NetatmoException e) {
-                if (statusCode == Code.TOO_MANY_REQUESTS) {
-                    exception = new NetatmoException(statusCode.getMessage());
+                ApiError apiError = deserializer.deserialize(ApiError.class, responseBody);
+                if (ServiceError.UNKNOWN.equals(apiError.getCode())) {
+                    // HttpStatus.getCode() returns null for a non-standard status code (e.g. a CDN/gateway
+                    // response such as 520-527), so the raw int from the response is used here, never statusCode
+                    // itself.
+                    if (!logger.isTraceEnabled()) {
+                        // at TRACE, the line above (" -returned: code {} body {}") already logged this body
+                        logger.debug("Error response body: {}", truncate(responseBody, 500));
+                    }
+                    exception = new NetatmoException(apiError, response.getStatus(), extractRawErrorCode(responseBody));
                 } else {
-                    exception = new NetatmoException(
-                            "Error deserializing error: %s".formatted(statusCode.getMessage()));
+                    exception = new NetatmoException(apiError);
+                }
+            } catch (NetatmoException e) {
+                // Always append the numeric HTTP status, with Jetty's reason phrase (if it recognizes the status)
+                // in front of it - a status Jetty doesn't recognize (e.g. 520-527) must not fall back to a
+                // wording-only message that then carries no status at all.
+                String statusText = statusCode == null ? null : statusCode.getMessage();
+                String statusMessage = "%s(HTTP %s)".formatted(statusText == null ? "" : statusText + " ",
+                        Integer.toString(response.getStatus()));
+                if (statusCode == Code.TOO_MANY_REQUESTS) {
+                    exception = new NetatmoException(statusMessage);
+                } else {
+                    exception = new NetatmoException("Error deserializing error: %s".formatted(statusMessage));
                 }
             }
             if (statusCode == Code.TOO_MANY_REQUESTS) {
@@ -392,6 +413,46 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             prepareReconnection("@text/request-time-out", null, e.getMessage());
             throw new NetatmoException("%s: \"%s\"".formatted(e.getClass().getName(), e.getMessage()));
         }
+    }
+
+    /**
+     * {@link ApiError} only exposes the {@link ServiceError} that its code was classified into, defaulting to
+     * {@code UNKNOWN} for a code outside that fixed enum - the raw code itself is discarded during that
+     * classification. This re-reads the already validated JSON body to recover it for diagnostics.
+     * Package-private (instead of private) so it can be unit-tested directly.
+     * <p>
+     * Every step is checked structurally ({@code isJsonObject()}/{@code isJsonPrimitive()}) rather than relying
+     * on a broad catch: a non-object root or {@code error}, {@code error} being absent or JSON {@code null}, and
+     * {@code code} being absent, JSON {@code null}, or itself an object/array, are all real shapes a body can
+     * take and must resolve to {@code null} here, not throw.
+     *
+     * @return the raw error code, or {@code null} if the body carries none
+     */
+    static @Nullable String extractRawErrorCode(String responseBody) {
+        try {
+            JsonElement root = JsonParser.parseString(responseBody);
+            if (!root.isJsonObject()) {
+                return null;
+            }
+            JsonElement errorElement = root.getAsJsonObject().get("error");
+            if (errorElement == null || !errorElement.isJsonObject()) {
+                return null;
+            }
+            JsonElement code = errorElement.getAsJsonObject().get("code");
+            if (code == null || !code.isJsonPrimitive()) {
+                return null;
+            }
+            return code.getAsString();
+        } catch (JsonParseException e) {
+            // malformed JSON, e.g. truncated by a proxy - responseBody was already deserialized into ApiError
+            // successfully at the call site, so this is not expected to trigger in practice; kept as a
+            // defensive fallback rather than an assumption.
+            return null;
+        }
+    }
+
+    private static String truncate(String text, int maxLength) {
+        return text.length() > maxLength ? text.substring(0, maxLength) + "..." : text;
     }
 
     private void handleRequestCounter() {
