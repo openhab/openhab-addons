@@ -73,6 +73,14 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
      * Maps the MELCloud Home API's word-based operation mode onto the same numeric codes the legacy binding's
      * {@code operationMode-channel} already uses for the A.C. Device (1 = Heat, 2 = Dry, 3 = Cool, 7 = Fan,
      * 8 = Auto/Automatic), so both Thing families expose the same Number channel contract.
+     *
+     * <p>
+     * Only {@code 1} (Heat) and {@code 3} (Cool) are independently confirmed against a real wire-format integer the
+     * MELCloud Home API itself sends/accepts (the Schedule and Scene write endpoints, per the community
+     * {@code andrew-blake/melcloudhome} project's API reference) — {@code 2}/{@code 7}/{@code 8} remain an invented,
+     * legacy-mirroring convention with no such confirmation. This class never sends a raw integer to the API either
+     * way (control commands always go out as the word value), so the distinction is evidence bookkeeping only, not a
+     * behavioral concern. See ADR-006's 2026-08-17 update for the full trace.
      */
     private static final Map<String, Integer> OPERATION_MODE_WORD_TO_CODE = Map.of("Heat", 1, "Dry", 2, "Cool", 3,
             "Fan", 7, "Automatic", 8);

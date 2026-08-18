@@ -16,15 +16,25 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwCapabilities;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleEntry;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleWriteRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 import org.openhab.binding.melcloud.internal.home.config.MelCloudHomeUnitConfig;
 import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
@@ -41,6 +51,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -69,6 +80,24 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     private static final String ENERGY_CONSUMED_MEASURE = "interval_energy_consumed";
     private static final String ENERGY_PRODUCED_MEASURE = "interval_energy_produced";
 
+    /**
+     * Maps a schedule entry's {@code operationModeZone1}/{@code operationModeZone2} word (matched
+     * case-insensitively, to absorb the unconfirmed casing difference between the read shape's lowercase words and
+     * the live control API's PascalCase words — see ADR-012) onto the integer code the write endpoint expects.
+     * Deliberately covers only the three heating modes: cooling modes have no confirmed integer code at all, so
+     * {@link #createSchedule} / {@link #updateSchedule} reject them (per {@code spec.md}'s "cooling-mode schedule
+     * entry is rejected" scenario) rather than guess.
+     */
+    private static final Map<String, Integer> SCHEDULE_OPERATION_MODE_TO_CODE = Map.of("heatroomtemperature", 0,
+            "heatflowtemperature", 1, "heatcurve", 2);
+
+    /**
+     * Day-name-to-number mapping for schedule writes, per the {@code melcloudhome} project's documented convention
+     * (0=Sunday..6=Saturday) — unconfirmed against real ATW traffic, see ADR-012.
+     */
+    private static final Map<String, Integer> DAY_NAME_TO_NUMBER = Map.of("sunday", 0, "monday", 1, "tuesday", 2,
+            "wednesday", 3, "thursday", 4, "friday", 5, "saturday", 6);
+
     private final Logger logger = LoggerFactory.getLogger(MelCloudHomeAtwUnitHandler.class);
 
     private MelCloudHomeUnitConfig config = new MelCloudHomeUnitConfig();
@@ -79,6 +108,15 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
 
     public MelCloudHomeAtwUnitHandler(Thing thing) {
         super(thing);
+    }
+
+    /**
+     * Registers {@link MelCloudHomeAtwScheduleActions} so its {@code @RuleAction} methods are available on this
+     * Thing, per ADR-011 (schedule management is exposed via {@code ThingActions}, not Channels/Items).
+     */
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(MelCloudHomeAtwScheduleActions.class);
     }
 
     @Override
@@ -282,6 +320,242 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             updateState(CHANNEL_RSSI, new DecimalType(mapRssiToSignalStrength(rssi)));
         } else {
             updateState(CHANNEL_RSSI, UnDefType.UNDEF);
+        }
+    }
+
+    // --- Schedule management (ADR-011/ADR-012, called from MelCloudHomeAtwScheduleActions) ---
+    //
+    // Every method here is PROVISIONAL: field shapes, endpoint paths, and the integer/day-name mappings used below
+    // are not independently confirmed against real ATW traffic (see docs/changes/add-melcloud-home-schedule-
+    // management/proposal.md's Open Questions and ADR-012's Status section). None of these methods throw
+    // MelCloudCommException to their ThingActions caller — like handleCommand, failures are logged and reported
+    // back as an empty/false result, since openHAB ThingActions are not expected to propagate checked exceptions
+    // to rule scripts.
+
+    /**
+     * Lists this unit's currently known cloud schedule entries, as last reported by the bridge's {@code /context}
+     * poll. Returns an empty list (not an error) if no unit state has been received yet.
+     *
+     * <p>
+     * <b>Provisional:</b> assumes {@code schedule} arrives embedded in the regular unit state — see
+     * {@link MelCloudHomeAtwUnit#schedule}'s Javadoc.
+     */
+    public List<Map<String, Object>> listSchedules() {
+        MelCloudHomeAtwUnit unit = lastKnownUnit;
+        if (unit == null) {
+            return List.of();
+        }
+        return unit.schedule.stream().map(MelCloudHomeAtwUnitHandler::scheduleEntryToMap).collect(Collectors.toList());
+    }
+
+    /**
+     * Creates a new cloud schedule entry. See the class-level note above on provisional field mappings and error
+     * handling.
+     *
+     * @return the newly generated entry id, or {@code ""} if the call was rejected (unconfirmed cooling mode, no
+     *         bridge connection, invalid day name) or failed (communication error)
+     */
+    public String createSchedule(String days, String time, @Nullable Boolean power, @Nullable String operationModeZone1,
+            @Nullable Double setTemperatureZone1, @Nullable Double setTemperatureZone2,
+            @Nullable Double setTankWaterTemperature, @Nullable Boolean forcedHotWaterMode) {
+        MelCloudHomeAccountHandler handler = bridgeHandler;
+        if (handler == null) {
+            logger.warn("No connection to MELCloud Home available, ignoring createSchedule");
+            return "";
+        }
+        List<Integer> dayNumbers = parseDays(days);
+        if (dayNumbers == null) {
+            return "";
+        }
+        Integer modeCode = toScheduleOperationModeCode(operationModeZone1);
+        if (operationModeZone1 != null && modeCode == null) {
+            logger.warn(
+                    "Rejecting createSchedule: '{}' has no confirmed schedule integer code (cooling modes are not yet confirmed against the real API, see ADR-012)",
+                    operationModeZone1);
+            return "";
+        }
+        MelCloudHomeAtwScheduleWriteRequest request = new MelCloudHomeAtwScheduleWriteRequest();
+        String id = UUID.randomUUID().toString();
+        request.id = id;
+        request.days = dayNumbers;
+        request.time = time;
+        request.power = power;
+        request.operationModeZone1 = modeCode;
+        request.setTemperatureZone1 = setTemperatureZone1;
+        request.setTemperatureZone2 = setTemperatureZone2;
+        request.setTankWaterTemperature = setTankWaterTemperature;
+        request.forcedHotWaterMode = forcedHotWaterMode;
+        return submitScheduleWrite(handler, request) ? id : "";
+    }
+
+    /**
+     * Updates an existing cloud schedule entry by id. Fields left {@code null} are meant to be left unchanged — see
+     * {@link MelCloudHomeAtwScheduleWriteRequest#days}'s Javadoc for why this is unconfirmed, not a settled
+     * contract.
+     *
+     * @return {@code true} if the update request was submitted, {@code false} if it was rejected or failed
+     */
+    public boolean updateSchedule(String id, @Nullable String days, @Nullable String time, @Nullable Boolean power,
+            @Nullable String operationModeZone1, @Nullable Double setTemperatureZone1,
+            @Nullable Double setTemperatureZone2, @Nullable Double setTankWaterTemperature,
+            @Nullable Boolean forcedHotWaterMode) {
+        MelCloudHomeAccountHandler handler = bridgeHandler;
+        if (handler == null) {
+            logger.warn("No connection to MELCloud Home available, ignoring updateSchedule");
+            return false;
+        }
+        @Nullable
+        List<Integer> dayNumbers = null;
+        if (days != null) {
+            dayNumbers = parseDays(days);
+            if (dayNumbers == null) {
+                return false;
+            }
+        }
+        Integer modeCode = toScheduleOperationModeCode(operationModeZone1);
+        if (operationModeZone1 != null && modeCode == null) {
+            logger.warn(
+                    "Rejecting updateSchedule: '{}' has no confirmed schedule integer code (cooling modes are not yet confirmed against the real API, see ADR-012)",
+                    operationModeZone1);
+            return false;
+        }
+        MelCloudHomeAtwScheduleWriteRequest request = new MelCloudHomeAtwScheduleWriteRequest();
+        request.id = id;
+        request.days = dayNumbers;
+        request.time = time;
+        request.power = power;
+        request.operationModeZone1 = modeCode;
+        request.setTemperatureZone1 = setTemperatureZone1;
+        request.setTemperatureZone2 = setTemperatureZone2;
+        request.setTankWaterTemperature = setTankWaterTemperature;
+        request.forcedHotWaterMode = forcedHotWaterMode;
+        return submitScheduleWrite(handler, request);
+    }
+
+    /**
+     * Deletes a cloud schedule entry by id.
+     *
+     * @return {@code true} if the delete request was submitted, {@code false} if it failed or no bridge is
+     *         connected
+     */
+    public boolean deleteSchedule(String id) {
+        MelCloudHomeAccountHandler handler = bridgeHandler;
+        if (handler == null) {
+            logger.warn("No connection to MELCloud Home available, ignoring deleteSchedule");
+            return false;
+        }
+        try {
+            handler.getRequestPacer().<Boolean> scheduleBlocking(() -> {
+                handler.getApiClient().deleteAtwSchedule(handler.getAccessToken(), config.unitId, id);
+                return Boolean.TRUE;
+            });
+            return true;
+        } catch (MelCloudCommException e) {
+            logger.warn("deleteSchedule for id '{}' failed, reason {}. ", id, e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Enables or disables all of this unit's cloud schedules at once.
+     *
+     * @return {@code true} if the request was submitted, {@code false} if it failed or no bridge is connected
+     */
+    public boolean setSchedulesEnabled(boolean enabled) {
+        MelCloudHomeAccountHandler handler = bridgeHandler;
+        if (handler == null) {
+            logger.warn("No connection to MELCloud Home available, ignoring setSchedulesEnabled");
+            return false;
+        }
+        try {
+            handler.getRequestPacer().<Boolean> scheduleBlocking(() -> {
+                handler.getApiClient().setAtwScheduleEnabled(handler.getAccessToken(), config.unitId, enabled);
+                return Boolean.TRUE;
+            });
+            return true;
+        } catch (MelCloudCommException e) {
+            logger.warn("setSchedulesEnabled({}) failed, reason {}. ", enabled, e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean submitScheduleWrite(MelCloudHomeAccountHandler handler,
+            MelCloudHomeAtwScheduleWriteRequest request) {
+        try {
+            handler.getRequestPacer().<Boolean> scheduleBlocking(() -> {
+                handler.getApiClient().createOrUpdateAtwSchedule(handler.getAccessToken(), config.unitId, request);
+                return Boolean.TRUE;
+            });
+            return true;
+        } catch (MelCloudCommException e) {
+            logger.warn("Schedule write for id '{}' failed, reason {}. ", request.id, e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @param word a schedule entry's {@code operationModeZone1}/{@code operationModeZone2} word, matched
+     *            case-insensitively (see {@link #SCHEDULE_OPERATION_MODE_TO_CODE}'s Javadoc)
+     * @return the confirmed integer code, or {@code null} if {@code word} is {@code null} or has no confirmed code
+     *         (in particular, any cooling mode)
+     */
+    private static @Nullable Integer toScheduleOperationModeCode(@Nullable String word) {
+        if (word == null) {
+            return null;
+        }
+        return SCHEDULE_OPERATION_MODE_TO_CODE.get(word.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * @param days a comma-separated list of day names (e.g. {@code "monday,wednesday,friday"}), matched
+     *            case-insensitively
+     * @return the corresponding day numbers per {@link #DAY_NAME_TO_NUMBER}, or {@code null} (logging a warning) if
+     *         any name is unrecognized
+     */
+    private @Nullable List<Integer> parseDays(String days) {
+        List<Integer> result = new ArrayList<>();
+        for (String rawDay : days.split(",")) {
+            String day = rawDay.trim().toLowerCase(Locale.ROOT);
+            Integer number = DAY_NAME_TO_NUMBER.get(day);
+            if (number == null) {
+                logger.warn("Unknown day name '{}' in '{}', rejecting schedule call", rawDay, days);
+                return null;
+            }
+            result.add(number);
+        }
+        return result;
+    }
+
+    private static Map<String, Object> scheduleEntryToMap(MelCloudHomeAtwScheduleEntry entry) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", entry.id);
+        map.put("days", entry.days);
+        map.put("time", entry.time);
+        map.put("power", entry.power);
+        putIfPresent(map, "setTankWaterTemperature", entry.setTankWaterTemperature);
+        map.put("forcedHotWaterMode", entry.forcedHotWaterMode);
+        map.put("zone1Active", entry.zone1Active);
+        map.put("zone2Active", entry.zone2Active);
+        map.put("hotWaterActive", entry.hotWaterActive);
+        putIfPresent(map, "setTemperatureZone1", entry.setTemperatureZone1);
+        putIfPresent(map, "setTemperatureZone2", entry.setTemperatureZone2);
+        putIfPresent(map, "operationModeZone1", entry.operationModeZone1);
+        putIfPresent(map, "operationModeZone2", entry.operationModeZone2);
+        return map;
+    }
+
+    /**
+     * Puts {@code key}/{@code value} into {@code map} only if {@code value} is non-null, since
+     * {@code Map<String, Object>} does not accept null values — unset optional schedule fields are simply omitted
+     * from the resulting map rather than represented as a null entry.
+     *
+     * @param map the target map
+     * @param key the key to put
+     * @param value the value to put, or {@code null} to skip this entry
+     */
+    private static void putIfPresent(Map<String, Object> map, String key, @Nullable Object value) {
+        if (value != null) {
+            map.put(key, value);
         }
     }
 

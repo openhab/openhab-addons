@@ -14,10 +14,13 @@ package org.openhab.binding.melcloud.internal.home.api;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 
 /**
  * Enforces a minimum interval between the start of consecutive MELCloud Home API calls issued for one bridge, since
@@ -86,5 +89,54 @@ public class MelCloudHomeRequestPacer {
         } else {
             scheduler.schedule(apiCall, delayMillis, TimeUnit.MILLISECONDS);
         }
+    }
+
+    /**
+     * Like {@link #schedule(Runnable)}, but blocks the calling thread until {@code apiCall} has actually run and
+     * returns its result (or propagates its exception).
+     *
+     * <p>
+     * {@code ThingActions} methods (see {@code MelCloudHomeAtwScheduleActions}) are invoked synchronously by
+     * openHAB's rule engine/scripting layer and are expected to return a real result or throw, unlike
+     * {@link #handleCommand}'s existing fire-and-forget use of {@link #schedule(Runnable)}. This method still goes
+     * through the same pacing/serialization as every other call.
+     *
+     * @param <T> the call's result type
+     * @param apiCall the call to pace and run
+     * @return {@code apiCall}'s result
+     * @throws MelCloudCommException if {@code apiCall} throws it, or if waiting for it is interrupted
+     */
+    public <T> T scheduleBlocking(PacedCall<T> apiCall) throws MelCloudCommException {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        schedule(() -> {
+            try {
+                future.complete(apiCall.call());
+            } catch (MelCloudCommException e) {
+                future.completeExceptionally(e);
+            }
+        });
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MelCloudCommException("Interrupted while waiting for a paced call to complete", e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof MelCloudCommException melCloudCommException) {
+                throw melCloudCommException;
+            }
+            throw new MelCloudCommException("Paced call failed", cause != null ? cause : e);
+        }
+    }
+
+    /**
+     * A call routed through {@link #scheduleBlocking(PacedCall)}; unlike {@link Runnable}, it may return a value and
+     * throw the binding's own checked communication exception.
+     *
+     * @param <T> the call's result type
+     */
+    @FunctionalInterface
+    public interface PacedCall<T> {
+        T call() throws MelCloudCommException;
     }
 }

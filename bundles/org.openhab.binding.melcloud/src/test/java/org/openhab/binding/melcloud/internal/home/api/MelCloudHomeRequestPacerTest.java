@@ -14,6 +14,7 @@ package org.openhab.binding.melcloud.internal.home.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 
 /**
  * Unit tests for {@link MelCloudHomeRequestPacer}.
@@ -75,5 +77,53 @@ class MelCloudHomeRequestPacerTest {
 
         boolean completedEventually = secondDone.await(2, TimeUnit.SECONDS);
         assertTrue(completedEventually, "second call must still run, only delayed");
+    }
+
+    @Test
+    void whenScheduleBlockingCallSucceedsThenItReturnsTheResult() throws MelCloudCommException {
+        // Arrange
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MelCloudHomeRequestPacer pacer = new MelCloudHomeRequestPacer(scheduler);
+
+        // Act
+        String result = pacer.scheduleBlocking(() -> "ok");
+
+        // Assert
+        assertEquals("ok", result);
+    }
+
+    @Test
+    void whenScheduleBlockingCallThrowsThenTheOriginalExceptionPropagates() {
+        // Arrange
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MelCloudHomeRequestPacer pacer = new MelCloudHomeRequestPacer(scheduler);
+        MelCloudCommException failure = new MelCloudCommException("boom");
+
+        // Act & Assert
+        MelCloudCommException thrown = assertThrows(MelCloudCommException.class, () -> pacer.scheduleBlocking(() -> {
+            throw failure;
+        }));
+        assertEquals(failure, thrown);
+    }
+
+    @Test
+    void whenScheduleBlockingCallIsDelayedByPacingThenItStillBlocksUntilCompletion() throws MelCloudCommException {
+        // Arrange: same pacing setup as whenSecondCallArrivesWithinIntervalThenItIsDelayedNotDropped, but asserting
+        // that a blocking caller genuinely waits for the delayed result instead of racing it.
+        long intervalMillis = 200;
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MelCloudHomeRequestPacer pacer = new MelCloudHomeRequestPacer(scheduler, intervalMillis);
+
+        // Act
+        pacer.schedule(() -> {
+            // First call: reserves the next slot, nothing to assert.
+        });
+        long before = System.nanoTime();
+        String result = pacer.scheduleBlocking(() -> "delayed-ok");
+        long elapsedMillis = (System.nanoTime() - before) / 1_000_000;
+
+        // Assert
+        assertEquals("delayed-ok", result);
+        assertTrue(elapsedMillis >= intervalMillis / 2, "scheduleBlocking should have waited for its paced slot");
     }
 }

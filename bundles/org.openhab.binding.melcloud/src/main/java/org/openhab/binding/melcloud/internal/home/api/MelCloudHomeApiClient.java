@@ -24,6 +24,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -32,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleWriteRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeTelemetryResponse;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeTrendSummaryReport;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContext;
@@ -58,6 +60,12 @@ public class MelCloudHomeApiClient {
     private static final String CONTEXT_URL = BFF_BASE_URL + "/context";
     private static final String ATA_CONTROL_URL_TEMPLATE = BFF_BASE_URL + "/monitor/ataunit/%s";
     private static final String ATW_CONTROL_URL_TEMPLATE = BFF_BASE_URL + "/monitor/atwunit/%s";
+    // Provisional (ADR-012): path and single-endpoint-serves-create-and-update shape are not independently
+    // confirmed against real ATW traffic — see docs/changes/add-melcloud-home-schedule-management/proposal.md.
+    private static final String ATW_SCHEDULE_URL_TEMPLATE = BFF_BASE_URL + "/monitor/atwcloudschedule/%s";
+    private static final String ATW_SCHEDULE_ENABLED_URL_TEMPLATE = BFF_BASE_URL
+            + "/monitor/atwcloudschedule/%s/enabled";
+    private static final String ATW_SCHEDULE_DELETE_URL_TEMPLATE = BFF_BASE_URL + "/monitor/atwcloudschedule/%s/%s";
     private static final String TELEMETRY_ENERGY_URL_TEMPLATE = BFF_BASE_URL + "/telemetry/telemetry/energy/%s";
     private static final String TRENDSUMMARY_URL = BFF_BASE_URL + "/report/v1/trendsummary";
 
@@ -118,6 +126,40 @@ public class MelCloudHomeApiClient {
     public void controlAtwUnit(String accessToken, String unitId, MelCloudHomeAtwControlRequest request)
             throws MelCloudCommException {
         put(ATW_CONTROL_URL_TEMPLATE.formatted(unitId), accessToken, controlGson.toJson(request));
+    }
+
+    /**
+     * Creates a new ATW cloud schedule entry, or updates an existing one if {@code request.id} matches one already
+     * on the unit — the community {@code melcloudhome} reference documents a single shared endpoint for both.
+     *
+     * <p>
+     * <b>Provisional (ADR-012):</b> this endpoint's path, and the create-and-update-share-one-endpoint shape, are
+     * not independently confirmed for ATW; see this class's {@code ATW_SCHEDULE_URL_TEMPLATE} and ADR-012.
+     *
+     * @throws MelCloudCommException if the request fails
+     */
+    public void createOrUpdateAtwSchedule(String accessToken, String unitId,
+            MelCloudHomeAtwScheduleWriteRequest request) throws MelCloudCommException {
+        post(ATW_SCHEDULE_URL_TEMPLATE.formatted(unitId), accessToken, controlGson.toJson(request));
+    }
+
+    /**
+     * Deletes one ATW cloud schedule entry by id.
+     *
+     * @throws MelCloudCommException if the request fails
+     */
+    public void deleteAtwSchedule(String accessToken, String unitId, String scheduleId) throws MelCloudCommException {
+        delete(ATW_SCHEDULE_DELETE_URL_TEMPLATE.formatted(unitId, scheduleId), accessToken);
+    }
+
+    /**
+     * Enables or disables all of an ATW unit's cloud schedules at once, independent of any individual entry's own
+     * state.
+     *
+     * @throws MelCloudCommException if the request fails
+     */
+    public void setAtwScheduleEnabled(String accessToken, String unitId, boolean enabled) throws MelCloudCommException {
+        put(ATW_SCHEDULE_ENABLED_URL_TEMPLATE.formatted(unitId), accessToken, gson.toJson(Map.of("enabled", enabled)));
     }
 
     /**
@@ -218,6 +260,29 @@ public class MelCloudHomeApiClient {
             logger.trace("MELCloud Home BFF PUT {} body={}", SensitiveDataMasker.maskGuidsInUrl(url),
                     SensitiveDataMasker.maskJson(jsonBody));
             HttpUtil.executeUrl("PUT", url, headers, content, "application/json", TIMEOUT_MILLISECONDS);
+        } catch (IOException e) {
+            throw new MelCloudCommException("Error occurred while calling " + url, e);
+        }
+    }
+
+    private void post(String url, String accessToken, String jsonBody) throws MelCloudCommException {
+        Properties headers = new Properties();
+        headers.put("Authorization", "Bearer " + accessToken);
+        try (InputStream content = new ByteArrayInputStream(jsonBody.getBytes(StandardCharsets.UTF_8))) {
+            logger.trace("MELCloud Home BFF POST {} body={}", SensitiveDataMasker.maskGuidsInUrl(url),
+                    SensitiveDataMasker.maskJson(jsonBody));
+            HttpUtil.executeUrl("POST", url, headers, content, "application/json", TIMEOUT_MILLISECONDS);
+        } catch (IOException e) {
+            throw new MelCloudCommException("Error occurred while calling " + url, e);
+        }
+    }
+
+    private void delete(String url, String accessToken) throws MelCloudCommException {
+        Properties headers = new Properties();
+        headers.put("Authorization", "Bearer " + accessToken);
+        try {
+            logger.trace("MELCloud Home BFF DELETE {}", SensitiveDataMasker.maskGuidsInUrl(url));
+            HttpUtil.executeUrl("DELETE", url, headers, null, null, TIMEOUT_MILLISECONDS);
         } catch (IOException e) {
             throw new MelCloudCommException("Error occurred while calling " + url, e);
         }

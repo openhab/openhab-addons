@@ -186,6 +186,10 @@ since that indicates a binding gap rather than genuinely missing data. See ADR-0
 | error-code           | String              | The unit's current error code, if any.                                              | True      |
 | in-standby-mode      | Switch              | Whether the unit is currently in standby mode.                                      | True      |
 
+`operation-mode`'s codes `1` (Heat) and `3` (Cool) are confirmed against the MELCloud Home API's own integer
+encoding (observed on its Schedule/Scene write endpoints); `2` (Dry), `7` (Fan), and `8` (Automatic) are an invented
+convention chosen to match the legacy MELCloud binding's numbering and are not independently confirmed. See ADR-006.
+
 #### Air-to-Water (ATW)
 
 | Channel                        | Type                | Description                                                                          | Read Only |
@@ -211,6 +215,47 @@ since that indicates a binding gap rather than genuinely missing data. See ADR-0
 | in-standby-mode                 | Switch              | Whether the unit is currently in standby mode.                                     | True      |
 | holiday-mode                    | Switch              | Whether holiday mode is currently enabled.                                          | True      |
 | frost-protection                | Switch              | Whether frost protection is currently enabled.                                     | True      |
+
+## Actions
+
+### MELCloud Home Air-to-Water (ATW) Schedule Management
+
+`atw-unit` Things expose cloud schedule management as `ThingActions` rather than Channels/Items (ADR-011): a
+schedule is a variable-length list of multi-field entries, which doesn't fit the single-value Channel/Item model the
+rest of this binding uses.
+
+**This feature is provisional.** The endpoint paths, the day-of-week/operation-mode integer encodings, and even
+whether one write call genuinely serves both create and update are not independently confirmed against real ATW
+traffic — see ADR-012 and `docs/changes/add-melcloud-home-schedule-management/proposal.md` for the full evidence
+trail. Treat it as a starting point that may need adjustment once verified, not a guaranteed-working feature.
+
+```java
+import org.openhab.core.model.script.actions.Things;
+import org.openhab.binding.melcloud.internal.home.handler.MelCloudHomeAtwScheduleActions;
+
+var actions = Things.getActions("melcloud", "melcloud:atw-unit:myhomeaccount:attic");
+if (actions instanceof MelCloudHomeAtwScheduleActions scheduleActions) {
+    // List current schedule entries (each a Map<String, Object> — see the field names in MelCloudHomeAtwScheduleEntry)
+    var schedules = scheduleActions.listSchedules();
+
+    // Create a new entry: days is a comma-separated list of lowercase day names.
+    // operationModeZone1 accepts only the three confirmed heating words below — a cooling mode is rejected
+    // (returns "") rather than guessed, since no confirmed integer code exists for it yet.
+    String newId = scheduleActions.createSchedule("monday,wednesday,friday", "06:00:00", true,
+            "heatRoomTemperature", 21.0, null, null, null);
+
+    // Update an existing entry by id; null fields are meant to be left unchanged (unconfirmed, see ADR-012).
+    scheduleActions.updateSchedule(newId, null, null, null, null, 19.0, null, null, null);
+
+    // Delete an entry, or suspend/resume every schedule on the unit at once.
+    scheduleActions.deleteSchedule(newId);
+    scheduleActions.setSchedulesEnabled(false);
+}
+```
+
+Rules DSL scripts use the static delegate methods instead (e.g.
+`MelCloudHomeAtwScheduleActions.listSchedules(actions)`), following the same convention as other openHAB binding
+actions.
 
 ## Full Example for items configuration
 

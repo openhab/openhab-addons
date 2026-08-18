@@ -97,3 +97,41 @@ untouched, so existing legacy installations are unaffected.
   exists in the underlying API), so they cannot be cross-checked against a
   wire-format numeric value the way fan speed, vertical vane, and operation
   mode can.
+
+## Update (2026-08-17): operationMode evidence trace
+
+At the time of the original decision, none of the `ataOperationMode-channel`
+codes (`1`=Heat, `2`=Dry, `3`=Cool, `7`=Fan, `8`=Auto) were cross-checked
+against a real wire-format integer sent or received by the MELCloud Home API
+itself — they were chosen purely to match the legacy A.C. Device's option
+keys (see Context above).
+
+The community `andrew-blake/melcloudhome` project's API reference
+(`docs/api/ata-api-reference.md`, Schedules and Scenes sections) has since
+captured genuine int-encoded `operationMode` values on two independent
+write endpoints (`POST /monitor/cloudschedule/{unitId}` and
+`POST /api/scene`), both confirmed via live DevTools HAR captures:
+
+| Code | Meaning | Confirmed on |
+|------|---------|--------------|
+| `1`  | Heat    | Schedules |
+| `3`  | Cool    | Schedules + Scenes |
+
+This independently corroborates two of this ADR's five codes purely by
+coincidence of both APIs deriving from the same underlying MELCloud
+enumeration — `1` and `3` were not chosen _because_ of this evidence, since
+it postdates the original decision.
+
+**`2` (Dry), `7` (Fan), and `8` (Auto) remain unconfirmed.** No capture of
+either endpoint has exercised those three modes, on either the Schedule or
+Scene API. They stay in place as the same invented, legacy-mirroring
+convention described above; nothing here changes the channel's behavior,
+since `MelCloudHomeAtaUnitHandler` never sends a raw integer to the MELCloud
+Home API in the first place — it always converts to/from the control
+endpoint's word values (`Heat`/`Cool`/`Automatic`/`Dry`/`Fan`). This section
+exists only to record the evidence trail, not to signal a pending change.
+
+Should live confirmation of `2`/`7`/`8` (or contradicting values) ever
+surface — most plausibly via the `add-melcloud-home-schedule-management`
+change, if it starts sending raw schedule payloads — this ADR should be
+amended again rather than silently assumed correct.

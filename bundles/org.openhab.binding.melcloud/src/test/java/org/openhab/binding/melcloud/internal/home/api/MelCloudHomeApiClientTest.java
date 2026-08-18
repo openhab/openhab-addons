@@ -39,6 +39,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleWriteRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContext;
 import org.openhab.core.io.net.http.HttpUtil;
 
@@ -171,6 +172,67 @@ class MelCloudHomeApiClientTest {
         String body = new String(bodyCaptor.getValue().readAllBytes());
         assertTrue(body.contains("\"power\":true"));
         assertTrue(body.contains("\"operationMode\":null"));
+    }
+
+    @Test
+    void whenCreateOrUpdateAtwScheduleIsCalledThenPostIsSentToTheScheduleUrl()
+            throws MelCloudCommException, IOException {
+        // Arrange: provisional endpoint/shape, see ADR-012 — this only verifies the client sends what it's told to,
+        // not that the server actually accepts it.
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<InputStream> bodyCaptor = ArgumentCaptor.forClass(InputStream.class);
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(() -> HttpUtil.executeUrl(eq("POST"), urlCaptor.capture(), any(Properties.class),
+                bodyCaptor.capture(), eq("application/json"), anyInt())).thenReturn("");
+
+        MelCloudHomeAtwScheduleWriteRequest request = new MelCloudHomeAtwScheduleWriteRequest();
+        request.id = "schedule-1";
+        request.power = true;
+
+        // Act
+        client.createOrUpdateAtwSchedule(ACCESS_TOKEN, UNIT_ID, request);
+
+        // Assert
+        assertTrue(urlCaptor.getValue().endsWith("/monitor/atwcloudschedule/" + UNIT_ID));
+        String body = new String(bodyCaptor.getValue().readAllBytes());
+        assertTrue(body.contains("\"id\":\"schedule-1\""));
+        assertTrue(body.contains("\"power\":true"));
+    }
+
+    @Test
+    void whenDeleteAtwScheduleIsCalledThenDeleteIsSentToTheEntryUrl() throws MelCloudCommException {
+        // Arrange
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(() -> HttpUtil.executeUrl(eq("DELETE"), urlCaptor.capture(), any(Properties.class), isNull(),
+                isNull(), anyInt())).thenReturn("");
+
+        // Act
+        client.deleteAtwSchedule(ACCESS_TOKEN, UNIT_ID, "schedule-1");
+
+        // Assert
+        assertTrue(urlCaptor.getValue().endsWith("/monitor/atwcloudschedule/" + UNIT_ID + "/schedule-1"));
+    }
+
+    @Test
+    void whenSetAtwScheduleEnabledIsCalledThenPutIsSentWithEnabledBody() throws MelCloudCommException, IOException {
+        // Arrange
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<InputStream> bodyCaptor = ArgumentCaptor.forClass(InputStream.class);
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(() -> HttpUtil.executeUrl(eq("PUT"), urlCaptor.capture(), any(Properties.class), bodyCaptor.capture(),
+                eq("application/json"), anyInt())).thenReturn("");
+
+        // Act
+        client.setAtwScheduleEnabled(ACCESS_TOKEN, UNIT_ID, false);
+
+        // Assert
+        assertTrue(urlCaptor.getValue().endsWith("/monitor/atwcloudschedule/" + UNIT_ID + "/enabled"));
+        String body = new String(bodyCaptor.getValue().readAllBytes());
+        assertTrue(body.contains("\"enabled\":false"));
     }
 
     @Test

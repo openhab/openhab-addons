@@ -13,7 +13,9 @@
 package org.openhab.binding.melcloud.internal.home.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -57,6 +59,8 @@ import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeRequestPacer;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwCapabilities;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwControlRequest;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleEntry;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleWriteRequest;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeSetting;
 import org.openhab.binding.melcloud.internal.mock.CallbackMock;
@@ -391,5 +395,160 @@ class MelCloudHomeAtwUnitHandlerTest {
 
         // Assert
         assertEquals("5", handler.getThing().getProperties().get(PROPERTY_ATW_FTC_MODEL));
+    }
+
+    // --- Schedule management (ADR-011/ADR-012) ---
+    //
+    // These tests verify the handler's own field/mapping logic and its calls to the (mocked) apiClient — they do
+    // NOT verify that the real MELCloud Home API actually accepts these shapes, which is unconfirmed (see ADR-012).
+
+    @Test
+    void whenListSchedulesIsCalledBeforeAnyUpdateThenItReturnsEmptyList() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+
+        // Act & Assert
+        assertEquals(List.of(), handler.listSchedules());
+    }
+
+    @Test
+    void whenListSchedulesIsCalledAfterUpdateThenItReturnsMappedEntries() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+        MelCloudHomeAtwScheduleEntry entry = new MelCloudHomeAtwScheduleEntry();
+        entry.id = "schedule-1";
+        entry.days = List.of("monday", "tuesday");
+        entry.time = "06:00:00";
+        entry.power = true;
+        entry.zone1Active = true;
+        entry.operationModeZone1 = "heatRoomTemperature";
+        unit.schedule = List.of(entry);
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+        List<Map<String, Object>> schedules = handler.listSchedules();
+
+        // Assert
+        assertEquals(1, schedules.size());
+        Map<String, Object> mapped = schedules.get(0);
+        assertEquals("schedule-1", mapped.get("id"));
+        assertEquals(List.of("monday", "tuesday"), mapped.get("days"));
+        assertEquals(true, mapped.get("zone1Active"));
+        assertEquals("heatRoomTemperature", mapped.get("operationModeZone1"));
+    }
+
+    @Test
+    void whenCreateScheduleIsCalledWithConfirmedHeatingModeThenApiClientIsCalledWithTranslatedFields()
+            throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+
+        // Act
+        String id = handler.createSchedule("monday,wednesday", "06:00:00", true, "heatRoomTemperature", 21.0, null,
+                null, null);
+
+        // Assert
+        assertFalse(id.isBlank(), "createSchedule should return a generated, non-blank id on success");
+        ArgumentCaptor<MelCloudHomeAtwScheduleWriteRequest> captor = ArgumentCaptor
+                .forClass(MelCloudHomeAtwScheduleWriteRequest.class);
+        verify(apiClient).createOrUpdateAtwSchedule(eq(ACCESS_TOKEN), eq(UNIT_ID), captor.capture());
+        MelCloudHomeAtwScheduleWriteRequest sent = captor.getValue();
+        assertEquals(id, sent.id);
+        assertEquals(List.of(1, 3), sent.days); // 0=Sunday..6=Saturday: monday=1, wednesday=3
+        assertEquals(Integer.valueOf(0), sent.operationModeZone1); // heatRoomTemperature -> 0, per ADR-012
+        assertEquals(21.0, sent.setTemperatureZone1);
+    }
+
+    @Test
+    void whenCreateScheduleIsCalledWithCoolingModeThenItIsRejectedWithoutCallingApiClient() throws Exception {
+        // Arrange: cooling modes have no confirmed schedule integer code (ADR-012), so must be rejected, not guessed.
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+
+        // Act
+        String id = handler.createSchedule("monday", "06:00:00", true, "CoolRoomTemperature", 21.0, null, null, null);
+
+        // Assert
+        assertEquals("", id);
+        verify(apiClient, never()).createOrUpdateAtwSchedule(any(), any(), any());
+    }
+
+    @Test
+    void whenCreateScheduleIsCalledWithUnknownDayThenItIsRejectedWithoutCallingApiClient() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+
+        // Act
+        String id = handler.createSchedule("notaday", "06:00:00", true, null, null, null, null, null);
+
+        // Assert
+        assertEquals("", id);
+        verify(apiClient, never()).createOrUpdateAtwSchedule(any(), any(), any());
+    }
+
+    @Test
+    void whenUpdateScheduleIsCalledWithPartialFieldsThenOnlyThoseFieldsAreSent() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+
+        // Act
+        boolean result = handler.updateSchedule("schedule-1", null, null, null, null, 19.0, null, null, null);
+
+        // Assert
+        assertTrue(result);
+        ArgumentCaptor<MelCloudHomeAtwScheduleWriteRequest> captor = ArgumentCaptor
+                .forClass(MelCloudHomeAtwScheduleWriteRequest.class);
+        verify(apiClient).createOrUpdateAtwSchedule(eq(ACCESS_TOKEN), eq(UNIT_ID), captor.capture());
+        MelCloudHomeAtwScheduleWriteRequest sent = captor.getValue();
+        assertEquals("schedule-1", sent.id);
+        assertNull(sent.days);
+        assertEquals(19.0, sent.setTemperatureZone1);
+    }
+
+    @Test
+    void whenDeleteScheduleIsCalledThenApiClientDeleteIsCalledAndReturnsTrue() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+
+        // Act
+        boolean result = handler.deleteSchedule("schedule-1");
+
+        // Assert
+        assertTrue(result);
+        verify(apiClient).deleteAtwSchedule(ACCESS_TOKEN, UNIT_ID, "schedule-1");
+    }
+
+    @Test
+    void whenSetSchedulesEnabledIsCalledThenApiClientIsCalledWithValue() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+
+        // Act
+        boolean result = handler.setSchedulesEnabled(false);
+
+        // Assert
+        assertTrue(result);
+        verify(apiClient).setAtwScheduleEnabled(ACCESS_TOKEN, UNIT_ID, false);
+    }
+
+    @Test
+    void whenNoBridgeIsConnectedThenCreateScheduleReturnsEmptyStringWithoutCallingApiClient() throws Exception {
+        // Arrange: handler.initialize() is deliberately not called, so bridgeHandler stays null.
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+
+        // Act
+        String id = handler.createSchedule("monday", "06:00:00", true, null, null, null, null, null);
+
+        // Assert
+        assertEquals("", id);
+        verify(apiClient, never()).createOrUpdateAtwSchedule(any(), any(), any());
     }
 }
