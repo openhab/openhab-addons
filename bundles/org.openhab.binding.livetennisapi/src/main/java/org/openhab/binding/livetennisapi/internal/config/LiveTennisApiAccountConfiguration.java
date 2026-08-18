@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class LiveTennisApiAccountConfiguration {
 
     public String apiKey = "";
-    public int refreshInterval = 900;
+    public int refreshInterval = 1800;
 }

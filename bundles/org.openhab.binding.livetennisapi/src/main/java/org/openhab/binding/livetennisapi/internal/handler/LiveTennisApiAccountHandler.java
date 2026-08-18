@@ -61,6 +61,7 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
 
     private @Nullable LiveTennisApiClient apiClient;
     private @Nullable ScheduledFuture<?> pollingJob;
+    private volatile boolean disposed;
 
     private List<Match> lastLiveMatches = List.of();
     private @Nullable Usage lastUsage;
@@ -85,6 +86,7 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
             return;
         }
 
+        disposed = false;
         apiClient = new LiveTennisApiClient(httpClient, config.apiKey);
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -94,6 +96,7 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        disposed = true;
         ScheduledFuture<?> job = pollingJob;
         if (job != null) {
             job.cancel(true);
@@ -150,22 +153,37 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
         if (client == null) {
             return;
         }
+        List<Match> liveMatches;
         try {
-            List<Match> liveMatches = client.getLiveMatches();
-            Usage usage = client.getUsage();
-            lastLiveMatches = liveMatches;
-            lastUsage = usage;
-            updateUsageChannels(usage);
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-            notifyChildHandlers(liveMatches);
+            liveMatches = client.getLiveMatches();
         } catch (LiveTennisApiAuthenticationException e) {
             logger.debug("Authentication failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
         } catch (LiveTennisApiException e) {
             logger.debug("Polling failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return;
+        }
+        if (disposed) {
+            return;
+        }
+        lastLiveMatches = liveMatches;
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+        notifyChildHandlers(liveMatches);
+
+        // The usage read is optional telemetry: a failure here must never discard the live data published above.
+        try {
+            Usage usage = client.getUsage();
+            if (disposed) {
+                return;
+            }
+            lastUsage = usage;
+            updateUsageChannels(usage);
+        } catch (LiveTennisApiException e) {
+            logger.debug("Usage read failed; the live match data for this cycle was still published", e);
         }
     }
 

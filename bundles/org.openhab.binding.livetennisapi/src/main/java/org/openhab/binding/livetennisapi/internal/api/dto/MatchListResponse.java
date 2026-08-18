@@ -24,4 +24,18 @@ import org.eclipse.jdt.annotation.Nullable;
 public class MatchListResponse {
 
     public @Nullable List<Match> data;
+    public @Nullable Meta meta;
+
+    /**
+     * Pagination metadata. {@code has_more} is authoritative for whether further pages exist and must be read rather
+     * than comparing {@code count} to the requested {@code limit}.
+     */
+    public static class Meta {
+
+        public @Nullable Integer limit;
+        public @Nullable Integer offset;
+        public @Nullable Integer count;
+        public @Nullable Integer total;
+        public @Nullable Boolean hasMore;
+    }
 }

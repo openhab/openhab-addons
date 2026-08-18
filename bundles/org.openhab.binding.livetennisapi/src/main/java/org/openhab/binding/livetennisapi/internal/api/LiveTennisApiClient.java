@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.livetennisapi.internal.api;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -50,7 +51,10 @@ public class LiveTennisApiClient {
     private static final String API_BASE = "https://api.livetennisapi.com/api/public/v1";
     private static final String API_KEY_HEADER = "X-API-Key";
     private static final int TIMEOUT_S = 20;
-    private static final int LIVE_MATCH_LIMIT = 200;
+    private static final int LIVE_MATCH_PAGE_SIZE = 200;
+    // Cap the live snapshot at a handful of pages: real concurrent live-match counts are far below this, so in
+    // practice a single request is made, but a pathological page count can never fan out unbounded requests.
+    private static final int MAX_LIVE_PAGES = 5;
     private static final int UPCOMING_MATCH_LIMIT = 10;
 
     private final Logger logger = LoggerFactory.getLogger(LiveTennisApiClient.class);
@@ -73,18 +77,50 @@ public class LiveTennisApiClient {
         return get("/usage", Usage.class);
     }
 
-    /** Returns all matches currently in progress, with their latest score. */
+    /**
+     * Returns all matches currently in progress, with their latest score. The endpoint is paginated: this reads the
+     * {@code meta.has_more} flag and pages forward until the snapshot is complete (or the page cap is reached), so
+     * matches beyond the first page are not silently dropped.
+     */
     public List<Match> getLiveMatches() throws LiveTennisApiException {
-        MatchListResponse response = get("/matches?status=live&limit=" + LIVE_MATCH_LIMIT, MatchListResponse.class);
-        List<Match> matches = response.data;
-        if (matches == null) {
-            return List.of();
+        return collectLiveMatches(offset -> get(
+                "/matches?status=live&limit=" + LIVE_MATCH_PAGE_SIZE + "&offset=" + offset, MatchListResponse.class));
+    }
+
+    /**
+     * A single page fetch of the live-match list, keyed by offset. Extracted so the paging loop can be exercised in a
+     * unit test without a live HTTP endpoint.
+     */
+    @FunctionalInterface
+    interface LiveMatchPageFetcher {
+        MatchListResponse fetch(int offset) throws LiveTennisApiException;
+    }
+
+    /**
+     * Pages forward through the live-match list, honouring {@code meta.has_more} rather than guessing from page size,
+     * and stops at {@link #MAX_LIVE_PAGES}. When the API still reports more matches at the cap the snapshot is
+     * truncated deliberately and that truncation is logged, never hidden.
+     */
+    List<Match> collectLiveMatches(LiveMatchPageFetcher fetcher) throws LiveTennisApiException {
+        List<Match> all = new ArrayList<>();
+        for (int page = 0; page < MAX_LIVE_PAGES; page++) {
+            MatchListResponse response = fetcher.fetch(all.size());
+            List<Match> data = response.data;
+            if (data == null || data.isEmpty()) {
+                return all;
+            }
+            all.addAll(data);
+            MatchListResponse.Meta meta = response.meta;
+            // has_more is authoritative; only when it is absent do we fall back to the page-fill heuristic.
+            boolean hasMore = meta != null ? Boolean.TRUE.equals(meta.hasMore) : data.size() >= LIVE_MATCH_PAGE_SIZE;
+            if (!hasMore) {
+                return all;
+            }
         }
-        if (matches.size() >= LIVE_MATCH_LIMIT) {
-            logger.warn("The live match snapshot hit the page limit of {}; any matches beyond it are not tracked",
-                    LIVE_MATCH_LIMIT);
-        }
-        return matches;
+        logger.warn(
+                "The live match snapshot still reports more results after {} pages of {}; matches beyond {} are not tracked this cycle",
+                MAX_LIVE_PAGES, LIVE_MATCH_PAGE_SIZE, MAX_LIVE_PAGES * LIVE_MATCH_PAGE_SIZE);
+        return all;
     }
 
     /** Returns the given player's next upcoming match, or null if none is scheduled. */

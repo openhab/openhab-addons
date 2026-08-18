@@ -104,11 +104,18 @@ public class MatchStateMapperTest {
     }
 
     @Test
-    public void noBreakPointAtDeuceOrWithServerAhead() {
-        assertEquals(Boolean.FALSE, MatchStateMapper.isBreakPoint(score(1, points("40", "40"), false)));
+    public void noBreakPointWithServerAheadOrOutOfReach() {
         assertEquals(Boolean.FALSE, MatchStateMapper.isBreakPoint(score(1, points("AD", "40"), false)));
         assertEquals(Boolean.FALSE, MatchStateMapper.isBreakPoint(score(1, points("40", "30"), false)));
         assertEquals(Boolean.FALSE, MatchStateMapper.isBreakPoint(score(1, points("15", "30"), false)));
+    }
+
+    @Test
+    public void breakPointUnknownAt40All() {
+        // 40-40 is a break point under no-advantage scoring but merely deuce under advantage scoring, and the API
+        // does not expose which format is in use, so the honest answer is UNDEF rather than an assertion either way.
+        assertNull(MatchStateMapper.isBreakPoint(score(1, points("40", "40"), false)));
+        assertNull(MatchStateMapper.isBreakPoint(score(2, points("40", "40"), false)));
     }
 
     @Test

@@ -25,9 +25,9 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="60" unit="s">
 				<label>Refresh Interval</label>
-				<description>How often to poll the live match snapshot in seconds. The default of 900 s stays within the free tier's
-					daily quota; lower values need a paid tier.</description>
-				<default>900</default>
+				<description>How often to poll the live match snapshot in seconds. The default of 1800 s keeps the bridge plus one
+					player thing within the free tier's daily quota; lower values need a paid tier.</description>
+				<default>1800</default>
 				<unitLabel>seconds</unitLabel>
 			</parameter>
 		</config-description>
@@ -57,11 +57,21 @@
 				<label>Player ID</label>
 				<description>The player's id in the Live Tennis API. Look it up with GET /players?search=name.</description>
 			</parameter>
+			<parameter name="detailRefreshEnabled" type="boolean">
+				<label>Refresh Player Detail</label>
+				<description>Whether to refresh the next match and ranking for this player. Turn it off to track only the live
+					match
+					state (pushed by the bridge at no extra cost) and spend no quota of this thing's own, lowering the
+					chance of hitting
+					the daily limit.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="detailRefreshInterval" type="integer" min="300" unit="s">
 				<label>Detail Refresh Interval</label>
-				<description>How often to refresh the next match and the ranking in seconds. Each cycle costs two API requests per
-					player thing.</description>
-				<default>3600</default>
+				<description>How often to refresh the next match and the ranking in seconds when detail refresh is enabled. Each
+					cycle costs two API requests per player thing.</description>
+				<default>7200</default>
 				<unitLabel>seconds</unitLabel>
 				<advanced>true</advanced>
 			</parameter>

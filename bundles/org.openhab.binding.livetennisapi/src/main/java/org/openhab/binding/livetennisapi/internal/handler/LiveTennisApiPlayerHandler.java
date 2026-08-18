@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,8 +66,11 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
     private final Logger logger = LoggerFactory.getLogger(LiveTennisApiPlayerHandler.class);
 
     private long playerId = -1;
+    private boolean detailRefreshEnabled = true;
     private @Nullable ScheduledFuture<?> detailJob;
     private @Nullable ScheduledFuture<?> retryJob;
+    private volatile boolean disposed;
+    private final AtomicBoolean refreshInProgress = new AtomicBoolean();
 
     private @Nullable Match liveMatch;
     private @Nullable Match nextMatch;
@@ -91,14 +95,21 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
             return;
         }
         playerId = config.playerId;
+        detailRefreshEnabled = config.detailRefreshEnabled;
+        disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
 
-        detailJob = scheduler.scheduleWithFixedDelay(this::refreshDetails, DETAIL_INITIAL_DELAY_S,
-                config.detailRefreshInterval, TimeUnit.SECONDS);
+        // The ranking and next-match refresh is the only quota this thing spends on its own; when it is switched off
+        // the thing still tracks live match state pushed by the bridge poll at no extra cost.
+        if (detailRefreshEnabled) {
+            detailJob = scheduler.scheduleWithFixedDelay(this::refreshDetails, DETAIL_INITIAL_DELAY_S,
+                    config.detailRefreshInterval, TimeUnit.SECONDS);
+        }
     }
 
     @Override
     public void dispose() {
+        disposed = true;
         ScheduledFuture<?> job = detailJob;
         if (job != null) {
             job.cancel(true);
@@ -127,13 +138,16 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+        if (detailRefreshEnabled && bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             scheduler.execute(this::refreshDetails);
         }
     }
 
     @Override
     public void onLiveMatches(List<Match> liveMatches) {
+        if (disposed) {
+            return;
+        }
         Match match = liveMatches.stream().filter(candidate -> sideOf(candidate) > 0).findFirst().orElse(null);
         liveMatch = match;
         updateLiveChannels(match);
@@ -148,23 +162,37 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
             // Do not spend quota while the bridge is not known to be up; bridgeStatusChanged retriggers on recovery
             return;
         }
+        // The periodic job, the ONLINE-triggered refresh and the transient retry can all fire close together;
+        // let only one detail refresh run at a time so a startup or reconnect burst does not waste quota.
+        if (!refreshInProgress.compareAndSet(false, true)) {
+            return;
+        }
         try {
             Player refreshedPlayer = bridge.fetchPlayer(playerId);
+            Match refreshedNextMatch = bridge.fetchNextMatch(playerId);
+            if (disposed) {
+                return;
+            }
             player = refreshedPlayer;
             updateProfileChannels(refreshedPlayer);
-            Match refreshedNextMatch = bridge.fetchNextMatch(playerId);
             nextMatch = refreshedNextMatch;
             updateNextMatchChannels(refreshedNextMatch);
         } catch (LiveTennisApiNotFoundException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-player-not-found");
+            if (!disposed) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error-player-not-found");
+            }
         } catch (LiveTennisApiAuthenticationException e) {
             logger.debug("Authentication failed, the bridge poll will report it", e);
         } catch (LiveTennisApiTransientException e) {
-            logger.debug("Detail refresh hit a transient error, scheduling a retry", e);
-            scheduleDetailRetry();
+            if (!disposed) {
+                logger.debug("Detail refresh hit a transient error, scheduling a retry", e);
+                scheduleDetailRetry();
+            }
         } catch (LiveTennisApiException e) {
             logger.debug("Detail refresh failed", e);
+        } finally {
+            refreshInProgress.set(false);
         }
     }
 

@@ -109,9 +109,14 @@ public final class MatchStateMapper {
     }
 
     /**
-     * Derives whether the current game stands at break point: the receiver holds AD, or the receiver holds 40 while
-     * the server holds 0, 15 or 30. There are no break points in a tiebreak. Returns null (unknown) when the server
-     * or the points are not stated.
+     * Derives whether the current game stands at break point, only in the cases the data determines unambiguously:
+     * the receiver holds AD, or the receiver holds 40 while the server holds 0, 15 or 30. There are no break points in
+     * a tiebreak.
+     *
+     * Returns null (unknown) when the server or points are not stated, and — importantly — at 40-40: the API does not
+     * expose the scoring format, so 40-40 is a break point under no-advantage scoring (a deciding point) but merely
+     * deuce under advantage scoring. That is genuinely undeterminable from the data, so it is reported as unknown
+     * rather than asserted either way.
      */
     public static @Nullable Boolean isBreakPoint(@Nullable Score score) {
         if (score == null) {
@@ -128,6 +133,10 @@ public final class MatchStateMapper {
         String serverPoints = points.get(server - 1);
         String receiverPoints = points.get(server == SIDE_P1 ? 1 : 0);
         if (serverPoints == null || receiverPoints == null) {
+            return null;
+        }
+        if ("40".equals(serverPoints) && "40".equals(receiverPoints)) {
+            // 40-40: no-advantage vs advantage scoring diverge here and the API does not state which is in use.
             return null;
         }
         return "AD".equals(receiverPoints) || ("40".equals(receiverPoints)
