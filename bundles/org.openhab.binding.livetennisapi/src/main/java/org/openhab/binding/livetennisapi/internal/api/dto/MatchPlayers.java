@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.livetennisapi.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * The two participants of a match.
+ * The two participants of a match. Each side ({@link #p1}, {@link #p2}) is a {@link Player}, which for a doubles
+ * match is a doubles team rather than an individual — so singles and doubles share this same two-sided shape.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 public class MatchPlayers {
 
-    public Player p1;
-    public Player p2;
+    public @Nullable Player p1;
+    public @Nullable Player p2;
 }

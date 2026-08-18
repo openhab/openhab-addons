@@ -137,13 +137,60 @@
         "timestamp": "2026-08-15T20:01:40Z"
       },
       "winner": null
+    },
+    {
+      "id": 910004,
+      "tournament": "Cincinnati Open",
+      "tournament_id": "atp-cincinnati",
+      "tour": "atp",
+      "surface": "hard",
+      "indoor": false,
+      "format": "BO3",
+      "round": "Quarterfinal",
+      "round_code": "QF",
+      "status": "live",
+      "event_status": null,
+      "is_doubles": true,
+      "draw": "doubles",
+      "scheduled_time": "2026-08-15T21:00:00Z",
+      "players": {
+        "p1": {
+          "id": 20001,
+          "name": "Bopanna / Ebden",
+          "tour": "ATP",
+          "country": null,
+          "ranking": 3,
+          "ranking_points": null,
+          "ranking_movement": null,
+          "is_doubles_team": true
+        },
+        "p2": {
+          "id": 20002,
+          "name": "Arevalo / Pavic",
+          "tour": "ATP",
+          "country": null,
+          "ranking": 1,
+          "ranking_points": null,
+          "ranking_movement": null,
+          "is_doubles_team": true
+        }
+      },
+      "score": {
+        "sets": [0, 1],
+        "games": [[4], [6, 2]],
+        "points": ["30", "15"],
+        "server": 1,
+        "is_tiebreak": false,
+        "timestamp": "2026-08-15T21:33:07Z"
+      },
+      "winner": null
     }
   ],
   "meta": {
     "limit": 200,
     "offset": 0,
-    "count": 3,
-    "total": 3,
+    "count": 4,
+    "total": 4,
     "has_more": false
   }
 }

@@ -12,18 +12,27 @@
  */
 package org.openhab.binding.livetennisapi.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * A player (or doubles team) as returned by the Live Tennis API.
+ * A participant as returned by the Live Tennis API: either an individual player or, when
+ * {@link #isDoublesTeam} is {@code true}, a doubles team.
  *
- * @author Ben - Initial contribution
+ * A doubles team is a single participant, not two merged players: {@link #name} is the pairing
+ * (for example {@code "Bopanna / Ebden"}) and the per-individual biography fields ({@link #country},
+ * {@link #ranking}, {@link #rankingPoints}, {@link #rankingMovement}) carry the team's values where the
+ * feed states them and are {@code null} otherwise — the API does not attempt to reconcile the two
+ * individuals' countries or rankings into one record.
+ *
+ * @author Ben Synapse - Initial contribution
  */
 public class Player {
 
-    public Long id;
-    public String name;
-    public String country;
-    public Integer ranking;
-    public Integer rankingPoints;
-    public String rankingMovement;
-    public Boolean isDoublesTeam;
+    public @Nullable Long id;
+    public @Nullable String name;
+    public @Nullable String country;
+    public @Nullable Integer ranking;
+    public @Nullable Integer rankingPoints;
+    public @Nullable String rankingMovement;
+    public @Nullable Boolean isDoublesTeam;
 }

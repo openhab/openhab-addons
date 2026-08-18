@@ -32,10 +32,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Tests that the API's documented JSON shapes — including the documented null states — deserialize into the DTOs and
- * map to the expected channel values.
+ * Tests that the API's documented JSON shapes — including the documented null states and doubles matches —
+ * deserialize into the DTOs and map to the expected channel values.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public class DeserializationTest {
@@ -53,12 +53,15 @@ public class DeserializationTest {
         }
     }
 
+    private List<Match> matches() throws IOException {
+        MatchListResponse response = fromResource("matches-live.json", MatchListResponse.class);
+        return Objects.requireNonNull(response.data);
+    }
+
     @Test
     public void deserializesLiveMatchWithScore() throws IOException {
-        MatchListResponse response = fromResource("matches-live.json", MatchListResponse.class);
-        List<Match> matches = response.data;
-        assertNotNull(matches);
-        assertEquals(3, matches.size());
+        List<Match> matches = matches();
+        assertEquals(4, matches.size());
 
         Match match = matches.get(0);
         assertEquals(910001L, match.id);
@@ -68,16 +71,15 @@ public class DeserializationTest {
         assertEquals("live", match.status);
         assertNull(match.eventStatus);
 
-        MatchPlayers players = match.players;
-        assertNotNull(players);
-        assertEquals(3333L, players.p1.id);
-        assertEquals("Player One", players.p1.name);
-        assertEquals(5, players.p1.ranking);
-        assertEquals(4980, players.p1.rankingPoints);
-        assertEquals("Player Two", players.p2.name);
+        MatchPlayers players = Objects.requireNonNull(match.players);
+        Player p1 = Objects.requireNonNull(players.p1);
+        assertEquals(3333L, p1.id);
+        assertEquals("Player One", p1.name);
+        assertEquals(5, p1.ranking);
+        assertEquals(4980, p1.rankingPoints);
+        assertEquals("Player Two", Objects.requireNonNull(players.p2).name);
 
-        Score score = match.score;
-        assertNotNull(score);
+        Score score = Objects.requireNonNull(match.score);
         assertEquals(List.of(1, 0), score.sets);
         assertEquals(1, score.server);
         assertEquals(Boolean.FALSE, score.isTiebreak);
@@ -90,11 +92,9 @@ public class DeserializationTest {
 
     @Test
     public void deserializesTiebreakScore() throws IOException {
-        MatchListResponse response = fromResource("matches-live.json", MatchListResponse.class);
-        Match match = response.data.get(1);
+        Match match = matches().get(1);
 
-        Score score = match.score;
-        assertNotNull(score);
+        Score score = Objects.requireNonNull(match.score);
         assertEquals(Boolean.TRUE, score.isTiebreak);
         assertEquals(2, score.server);
         assertEquals("6-6", MatchStateMapper.scoreLine(score, 1));
@@ -104,21 +104,20 @@ public class DeserializationTest {
 
     @Test
     public void deserializesDocumentedNullStates() throws IOException {
-        MatchListResponse response = fromResource("matches-live.json", MatchListResponse.class);
-        Match match = response.data.get(2);
+        Match match = matches().get(2);
 
         assertNull(match.tournamentId);
         assertNull(match.scheduledTime);
         assertEquals("Interrupted", match.eventStatus);
-        assertNull(match.players.p1.ranking);
+        MatchPlayers players = Objects.requireNonNull(match.players);
+        assertNull(Objects.requireNonNull(players.p1).ranking);
 
-        Score score = match.score;
-        assertNotNull(score);
+        Score score = Objects.requireNonNull(match.score);
         assertNull(score.server);
-        assertNotNull(score.points);
-        assertEquals(2, score.points.size());
-        assertNull(score.points.get(0));
-        assertNull(score.points.get(1));
+        List<@Nullable String> points = Objects.requireNonNull(score.points);
+        assertEquals(2, points.size());
+        assertNull(points.get(0));
+        assertNull(points.get(1));
         assertNull(MatchStateMapper.scoreLine(score, 1));
         assertNull(MatchStateMapper.pointsLine(score, 1));
         assertNull(MatchStateMapper.isBreakPoint(score));
@@ -127,16 +126,35 @@ public class DeserializationTest {
     }
 
     @Test
+    public void deserializesDoublesMatch() throws IOException {
+        Match match = matches().get(3);
+
+        assertEquals(Boolean.TRUE, match.isDoubles);
+        assertEquals("doubles", match.draw);
+        assertEquals("doubles", MatchStateMapper.discipline(match));
+
+        MatchPlayers players = Objects.requireNonNull(match.players);
+        Player team1 = Objects.requireNonNull(players.p1);
+        // A doubles team is one participant: the pairing is the name, and per-individual biography is not applicable
+        assertEquals("Bopanna / Ebden", team1.name);
+        assertEquals(Boolean.TRUE, team1.isDoublesTeam);
+        assertNull(team1.country);
+
+        Score score = Objects.requireNonNull(match.score);
+        assertEquals("0-1", MatchStateMapper.setsLine(score, 1));
+    }
+
+    @Test
     public void deserializesUsage() throws IOException {
         Usage usage = fromResource("usage.json", Usage.class);
 
         assertEquals("free", usage.tier);
-        assertNotNull(usage.limits);
-        assertEquals(30, usage.limits.perMinute);
-        assertEquals(100, usage.limits.perDay);
-        assertNotNull(usage.today);
-        assertEquals(42, usage.today.calls);
-        assertEquals(58, usage.today.remainingDay);
+        Usage.Limits limits = Objects.requireNonNull(usage.limits);
+        assertEquals(30, limits.perMinute);
+        assertEquals(100, limits.perDay);
+        Usage.Today today = Objects.requireNonNull(usage.today);
+        assertEquals(42, today.calls);
+        assertEquals(58, today.remainingDay);
         assertEquals("2026-08-15T20:02:11Z", usage.asOf);
     }
 }

@@ -12,22 +12,7 @@
  */
 package org.openhab.binding.livetennisapi.internal.handler;
 
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_BREAK_POINT;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_OPPONENT;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_POINTS;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_ROUND;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_SCORE_LINE;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_SERVING;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_SETS;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_STATUS;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_TIEBREAK;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_LIVE_TOURNAMENT;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_NEXT_OPPONENT;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_NEXT_ROUND;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_NEXT_START_TIME;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_NEXT_TOURNAMENT;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_PROFILE_RANKING;
-import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.CHANNEL_PROFILE_RANKING_POINTS;
+import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingConstants.*;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
@@ -39,12 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.livetennisapi.internal.MatchStateMapper;
 import org.openhab.binding.livetennisapi.internal.api.LiveTennisApiAuthenticationException;
-import org.openhab.binding.livetennisapi.internal.api.LiveTennisApiClient;
 import org.openhab.binding.livetennisapi.internal.api.LiveTennisApiException;
 import org.openhab.binding.livetennisapi.internal.api.LiveTennisApiNotFoundException;
+import org.openhab.binding.livetennisapi.internal.api.LiveTennisApiTransientException;
 import org.openhab.binding.livetennisapi.internal.api.dto.Match;
 import org.openhab.binding.livetennisapi.internal.api.dto.MatchPlayers;
 import org.openhab.binding.livetennisapi.internal.api.dto.Player;
+import org.openhab.binding.livetennisapi.internal.api.dto.Score;
 import org.openhab.binding.livetennisapi.internal.config.LiveTennisApiPlayerConfiguration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -68,17 +54,19 @@ import org.slf4j.LoggerFactory;
  * Tracks one player: the state of their live match (pushed by the bridge poll), their next scheduled match and their
  * current ranking (fetched on a slower cycle).
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiPlayerHandler extends BaseThingHandler implements LiveMatchesListener {
 
     private static final long DETAIL_INITIAL_DELAY_S = 5;
+    private static final long TRANSIENT_RETRY_DELAY_S = 60;
 
     private final Logger logger = LoggerFactory.getLogger(LiveTennisApiPlayerHandler.class);
 
     private long playerId = -1;
     private @Nullable ScheduledFuture<?> detailJob;
+    private @Nullable ScheduledFuture<?> retryJob;
 
     private @Nullable Match liveMatch;
     private @Nullable Match nextMatch;
@@ -116,6 +104,11 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
             job.cancel(true);
             detailJob = null;
         }
+        ScheduledFuture<?> retry = retryJob;
+        if (retry != null) {
+            retry.cancel(true);
+            retryJob = null;
+        }
         liveMatch = null;
         nextMatch = null;
         player = null;
@@ -144,36 +137,50 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
         Match match = liveMatches.stream().filter(candidate -> sideOf(candidate) > 0).findFirst().orElse(null);
         liveMatch = match;
         updateLiveChannels(match);
+        // The bridge poll succeeded, so the player is reachable; the detail fetch never drives the ONLINE transition
         setOnlineUnlessMisconfigured();
     }
 
     private void refreshDetails() {
-        LiveTennisApiClient client = apiClient();
-        if (client == null) {
+        LiveTennisApiAccountHandler bridge = accountHandler();
+        Bridge bridgeThing = getBridge();
+        if (bridge == null || bridgeThing == null || bridgeThing.getStatus() != ThingStatus.ONLINE) {
+            // Do not spend quota while the bridge is not known to be up; bridgeStatusChanged retriggers on recovery
             return;
         }
         try {
-            Player refreshedPlayer = client.getPlayer(playerId);
+            Player refreshedPlayer = bridge.fetchPlayer(playerId);
             player = refreshedPlayer;
             updateProfileChannels(refreshedPlayer);
-            Match refreshedNextMatch = client.getNextMatch(playerId);
+            Match refreshedNextMatch = bridge.fetchNextMatch(playerId);
             nextMatch = refreshedNextMatch;
             updateNextMatchChannels(refreshedNextMatch);
-            setOnlineUnlessMisconfigured();
         } catch (LiveTennisApiNotFoundException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-player-not-found");
         } catch (LiveTennisApiAuthenticationException e) {
             logger.debug("Authentication failed, the bridge poll will report it", e);
+        } catch (LiveTennisApiTransientException e) {
+            logger.debug("Detail refresh hit a transient error, scheduling a retry", e);
+            scheduleDetailRetry();
         } catch (LiveTennisApiException e) {
             logger.debug("Detail refresh failed", e);
         }
+    }
+
+    private void scheduleDetailRetry() {
+        ScheduledFuture<?> retry = retryJob;
+        if (retry != null && !retry.isDone()) {
+            return;
+        }
+        retryJob = scheduler.schedule(this::refreshDetails, TRANSIENT_RETRY_DELAY_S, TimeUnit.SECONDS);
     }
 
     private void updateLiveChannels(@Nullable Match match) {
         int side = match == null ? -1 : sideOf(match);
         if (match == null || side < 1) {
             updateState(CHANNEL_LIVE_STATUS, UnDefType.UNDEF);
+            updateState(CHANNEL_LIVE_DISCIPLINE, UnDefType.UNDEF);
             updateState(CHANNEL_LIVE_TOURNAMENT, UnDefType.UNDEF);
             updateState(CHANNEL_LIVE_ROUND, UnDefType.UNDEF);
             updateState(CHANNEL_LIVE_OPPONENT, UnDefType.UNDEF);
@@ -185,18 +192,20 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
             updateState(CHANNEL_LIVE_TIEBREAK, UnDefType.UNDEF);
             return;
         }
-        Integer server = MatchStateMapper.server(match.score);
-        Boolean tiebreak = match.score == null ? null : match.score.isTiebreak;
+        Score score = match.score;
+        Integer server = MatchStateMapper.server(score);
+        Boolean tiebreak = score == null ? null : score.isTiebreak;
 
         updateState(CHANNEL_LIVE_STATUS, string(match.status));
+        updateState(CHANNEL_LIVE_DISCIPLINE, string(MatchStateMapper.discipline(match)));
         updateState(CHANNEL_LIVE_TOURNAMENT, string(match.tournament));
         updateState(CHANNEL_LIVE_ROUND, string(match.round));
         updateState(CHANNEL_LIVE_OPPONENT, string(opponentName(match, side)));
-        updateState(CHANNEL_LIVE_SCORE_LINE, string(MatchStateMapper.scoreLine(match.score, side)));
-        updateState(CHANNEL_LIVE_SETS, string(MatchStateMapper.setsLine(match.score, side)));
-        updateState(CHANNEL_LIVE_POINTS, string(MatchStateMapper.pointsLine(match.score, side)));
+        updateState(CHANNEL_LIVE_SCORE_LINE, string(MatchStateMapper.scoreLine(score, side)));
+        updateState(CHANNEL_LIVE_SETS, string(MatchStateMapper.setsLine(score, side)));
+        updateState(CHANNEL_LIVE_POINTS, string(MatchStateMapper.pointsLine(score, side)));
         updateState(CHANNEL_LIVE_SERVING, server == null ? UnDefType.UNDEF : OnOffType.from(server == side));
-        updateState(CHANNEL_LIVE_BREAK_POINT, onOff(MatchStateMapper.isBreakPoint(match.score)));
+        updateState(CHANNEL_LIVE_BREAK_POINT, onOff(MatchStateMapper.isBreakPoint(score)));
         updateState(CHANNEL_LIVE_TIEBREAK, onOff(tiebreak));
     }
 
@@ -249,10 +258,10 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
         }
     }
 
-    private @Nullable LiveTennisApiClient apiClient() {
+    private @Nullable LiveTennisApiAccountHandler accountHandler() {
         Bridge bridge = getBridge();
         return bridge != null && bridge.getHandler() instanceof LiveTennisApiAccountHandler accountHandler
-                ? accountHandler.getApiClient()
+                ? accountHandler
                 : null;
     }
 

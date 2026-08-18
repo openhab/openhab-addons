@@ -14,28 +14,30 @@ package org.openhab.binding.livetennisapi.internal.api.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The current score snapshot of a match as returned by the Live Tennis API.
  *
  * All fields are nullable: the API documents that {@code points} entries can be null, {@code games} can be empty
  * (observed on completed matches) and {@code server} is null when no game is in progress.
  *
- * @author Ben - Initial contribution
+ * @author Ben Synapse - Initial contribution
  */
 public class Score {
 
     /** Sets won so far: {@code [sets_p1, sets_p2]}. */
-    public List<Integer> sets;
+    public @Nullable List<@Nullable Integer> sets;
 
     /** Games per set: {@code [games_p1, games_p2]}, each a per-set list. */
-    public List<List<Integer>> games;
+    public @Nullable List<@Nullable List<@Nullable Integer>> games;
 
     /** In-game points as tennis strings ("0", "15", "30", "40", "AD"); entries can be null. */
-    public List<String> points;
+    public @Nullable List<@Nullable String> points;
 
     /** Which side serves (1 or 2), null when no game is in progress. */
-    public Integer server;
+    public @Nullable Integer server;
 
-    public Boolean isTiebreak;
-    public String timestamp;
+    public @Nullable Boolean isTiebreak;
+    public @Nullable String timestamp;
 }
