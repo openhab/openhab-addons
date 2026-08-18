@@ -100,7 +100,8 @@ import com.google.gson.JsonSyntaxException;
  * Handles the connection to the amazon server.
  *
  * @author Michael Geramb - Initial Contribution
- * @author Martin Littkovsky - Backoff for failed notification polls
+ * @author Martin Littkovsky - Backoff for failed notification polls, skip polls while no notification channel is
+ *         linked
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements PushConnection.Listener {
@@ -132,8 +133,11 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private int lastMessageId = 1000;
     private long nextDataRefresh = 0;
     private long nextLoginCheck = 0;
-    private long nextRefreshNotifications = 0;
+    // volatile: armed to 0 by notificationChannelLinked() from the thread that created the link
+    private volatile long nextRefreshNotifications = 0;
     private final NotificationPollBackoff notificationPollBackoff = new NotificationPollBackoff();
+    // set while polls are skipped for lack of linked channels, so the transition is logged once per suspension
+    private volatile boolean notificationPollSuspended = false;
 
     private final LinkedBlockingQueue<String> requestedDeviceUpdates = new LinkedBlockingQueue<>();
     private @Nullable SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator;
@@ -407,11 +411,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         nextDataRefresh = now + CHECK_DATA_INTERVAL * 1000;
                         refreshData();
                     }
-                    // the shouldSkip check keeps a pending backoff from logging a skip on every tick
-                    if (notificationPollBackoff.isDue(now)
-                            || (now > nextRefreshNotifications && !notificationPollBackoff.shouldSkip(now))) {
-                        refreshNotifications();
-                    }
+                    refreshNotificationsIfDue(now);
                 }
             } catch (RuntimeException e) { // this handler can be removed later, if we know that nothing else can fail.
                 logger.warn("checkData fails with unexpected error", e);
@@ -419,9 +419,32 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         }
     }
 
-    private void refreshNotifications() {
+    void refreshNotificationsIfDue(long now) {
+        // the shouldSkip check keeps a pending backoff from logging a skip on every tick
+        if (notificationPollBackoff.isDue(now)
+                || (now > nextRefreshNotifications && !notificationPollBackoff.shouldSkip(now))) {
+            refreshNotifications();
+        }
+    }
+
+    void refreshNotifications() {
         if (!connection.isLoggedIn()) {
             return;
+        }
+        if (!hasLinkedNotificationTargets()) {
+            // re-evaluated on every attempt, so echo handlers registering after the account handler
+            // started - the normal boot order - open the gate on the next attempt
+            if (!notificationPollSuspended) {
+                notificationPollSuspended = true;
+                logger.debug("Skipping notification polls for {}: no echo thing has a notification channel linked",
+                        getThing().getUID().getAsString());
+            }
+            return;
+        }
+        if (notificationPollSuspended) {
+            notificationPollSuspended = false;
+            logger.debug("Resuming notification polls for {}: a notification channel is linked",
+                    getThing().getUID().getAsString());
         }
         if (notificationPollBackoff.shouldSkip(System.currentTimeMillis())) {
             // push messages call in here directly, bypassing the interval check in checkLoginAndData()
@@ -464,6 +487,25 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             nextRefreshNotifications = first.toEpochSecond() * 1000;
         } else {
             nextRefreshNotifications = Long.MAX_VALUE;
+        }
+    }
+
+    /**
+     * @return {@code true} if at least one echo thing of this account has one of the channels fed by the
+     *         notification poll linked
+     */
+    private boolean hasLinkedNotificationTargets() {
+        return echoHandlers.values().stream().anyMatch(EchoHandler::hasLinkedNotificationChannel);
+    }
+
+    /**
+     * Called by an echo handler when one of its notification channels got linked. Only arms the deadline
+     * for the next scheduler tick instead of polling: the core delivers channelLinked() synchronously on
+     * the thread that created the link, so no I/O may happen here.
+     */
+    void notificationChannelLinked() {
+        if (notificationPollSuspended) {
+            nextRefreshNotifications = 0;
         }
     }
 
