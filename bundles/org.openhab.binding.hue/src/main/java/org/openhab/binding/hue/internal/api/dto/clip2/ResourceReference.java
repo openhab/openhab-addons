@@ -53,6 +53,10 @@ public class ResourceReference {
         return ResourceType.of(rtype);
     }
 
+    public String getTypeAsString() {
+        return getType().toString();
+    }
+
     public ResourceReference setId(String id) {
         rid = id;
         return this;

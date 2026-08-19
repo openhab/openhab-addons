@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * DTO that contains an x and y pair of doubles.
  *
@@ -21,6 +23,8 @@ public class PairXy {
     private double x;
     private double y;
 
+    private static final double DELTA = 0.0001;
+
     public double[] getXY() {
         return new double[] { x, y };
     }
@@ -29,5 +33,11 @@ public class PairXy {
         x = xy.length > 0 ? xy[0] : 0f;
         y = xy.length > 1 ? xy[1] : 0f;
         return this;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return (this == obj)
+                || ((obj instanceof PairXy p) ? Math.abs(p.x - x) < DELTA && Math.abs(p.y - y) < DELTA : false);
     }
 }

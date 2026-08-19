@@ -10,26 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hue.internal.api.dto.clip2;
+package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * DTO for 'on' state of a light.
+ * Enum for 'has errors' field.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class OnState {
-    private @Nullable Boolean on;
+public enum ErrorType {
+    COMMUNICATION_ERROR,
+    ATTRIBUTE_MAY_HAVE_NO_EFFECT,
+    CLIENT_ERROR,
+    INTERNAL_ERROR;
 
-    public @Nullable Boolean getOn() {
-        return on;
-    }
-
-    public OnState setOn(boolean on) {
-        this.on = on;
-        return this;
+    public static ErrorType of(@Nullable String value) {
+        if (value != null) {
+            try {
+                return valueOf(value.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // fall through
+            }
+        }
+        return INTERNAL_ERROR;
     }
 }
