@@ -68,7 +68,6 @@ public class HttpRequestBuilder {
             + DI_OS_VERSION + "/iPhone";
     private static final String AMZN_ERROR_TYPE_HEADER = "x-amzn-ErrorType";
     private static final String THROTTLING_EXCEPTION = "ThrottlingException";
-    private static final int MAX_LOGGED_CONTENT_LENGTH = 512;
     private static final String NO_REASON_GIVEN = "no reason given";
 
     private final Logger logger = LoggerFactory.getLogger(HttpRequestBuilder.class);
@@ -399,12 +398,8 @@ public class HttpRequestBuilder {
                 // line only carries a generic reason like "Bad Request"
                 String amznErrorType = headers.get(AMZN_ERROR_TYPE_HEADER);
                 if (amznErrorType != null && !amznErrorType.isBlank() && !logger.isTraceEnabled()) {
-                    // below TRACE (which also dumps cookies) this is the only place the failure body is logged
-                    logger.debug("< {} to {} failed: {}, x-amzn-ErrorType = {}, content = {}", params.method(),
-                            requestUri, responseStatus, amznErrorType,
-                            content.length() > MAX_LOGGED_CONTENT_LENGTH
-                                    ? content.substring(0, MAX_LOGGED_CONTENT_LENGTH) + "..."
-                                    : content);
+                    logger.debug("< {} to {} failed: {}, x-amzn-ErrorType = {}", params.method(), requestUri,
+                            responseStatus, amznErrorType);
                 }
                 boolean throttled = isThrottled(responseStatus, amznErrorType);
                 // a throttled request is not retried: every retry is itself a counted request
