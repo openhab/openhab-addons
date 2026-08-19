@@ -131,7 +131,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
     }
 
     @Override
-    public synchronized void initialize() {
+    public void initialize() {
         this.config = getConfigAs(IPBridgeConfig.class);
 
         if (validConfiguration(this.config)) {

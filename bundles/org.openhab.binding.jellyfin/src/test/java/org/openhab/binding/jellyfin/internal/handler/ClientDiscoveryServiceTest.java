@@ -71,7 +71,7 @@ class ClientDiscoveryServiceTest {
         when(serverHandler.getThing()).thenReturn(bridge);
 
         // All categories enabled by default so existing tests are unaffected
-        when(serverHandler.getBindingConfig()).thenReturn(allCategoriesEnabled());
+        when(serverHandler.getBridgeConfig()).thenReturn(allCategoriesEnabled());
 
         // Return empty collection by default so existing tests are unaffected
         when(thingRegistry.getAll()).thenReturn(Collections.emptyList());
@@ -394,7 +394,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testWebClientSkippedWhenDiscoverWebClientsIsFalse() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(false, true, true, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(false, true, true, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("web-1", "Jellyfin Web")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -406,7 +406,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testWebClientDiscoveredWhenDiscoverWebClientsIsTrue() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, true, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("web-1", "Jellyfin Web")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -418,7 +418,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testAndroidClientSkippedWhenDiscoverAndroidClientsIsFalse() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, false, true, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, false, true, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("android-1", "Jellyfin for Android")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -431,7 +431,7 @@ class ClientDiscoveryServiceTest {
     @Test
     void testAndroidTvClientSkippedWhenDiscoverAndroidTvClientsIsFalse() {
         // Android TV disabled, plain Android enabled — TV client must be skipped
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, false, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, false, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("atv-1", "Jellyfin for Android TV")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -444,7 +444,7 @@ class ClientDiscoveryServiceTest {
     @Test
     void testAndroidTvClientNotMatchedByAndroidFilter() {
         // Android TV enabled, plain Android disabled — TV client must still be discovered
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, false, true, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, false, true, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("atv-1", "Jellyfin for Android TV")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -456,7 +456,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testIosClientSkippedWhenDiscoverIosClientsIsFalse() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("ios-1", "Jellyfin iOS")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -468,7 +468,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testSwiftfinMatchedAsIosCategory() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("swiftfin-1", "Swiftfin")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -480,7 +480,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testInfuseMatchedAsIosCategory() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("infuse-1", "Infuse")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -492,7 +492,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testKodiClientSkippedWhenDiscoverKodiClientsIsFalse() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, true, true, false, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, false, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("kodi-1", "JellyCon")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -504,7 +504,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testRokuClientSkippedWhenDiscoverRokuClientsIsFalse() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, true, true, true, false, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, true, false, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("roku-1", "Jellyfin for Roku")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -516,7 +516,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testUnknownClientSkippedWhenDiscoverOtherClientsIsFalse() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, true, true, true, true, false));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, true, true, false));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("other-1", "Some Unknown App")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -528,7 +528,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testNullClientNameFallsIntoOtherCategory() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(true, true, true, true, true, true, false));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, true, true, false));
         SessionInfoDto session = new SessionInfoDto();
         session.setDeviceId("null-client-1");
         session.setDeviceName("Unknown Device");
@@ -544,7 +544,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testAllFiltersDisabledResultsInNoDiscovery() {
-        when(serverHandler.getBindingConfig()).thenReturn(buildConfig(false, false, false, false, false, false, false));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(false, false, false, false, false, false, false));
 
         Map<String, SessionInfoDto> clients = new HashMap<>();
         clients.put("s1", sessionWith("web-1", "Jellyfin Web"));

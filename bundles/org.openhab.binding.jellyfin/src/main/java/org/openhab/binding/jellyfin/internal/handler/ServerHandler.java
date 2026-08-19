@@ -673,7 +673,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         }
     }
 
-    public Configuration getBindingConfig() {
+    public Configuration getBridgeConfig() {
         return getConfigAs(Configuration.class);
     }
 

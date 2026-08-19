@@ -306,10 +306,8 @@ public class NeeoDeviceHandler extends BaseThingHandler {
     @Nullable
     private String getRoomKey() {
         final Bridge bridge = getBridge();
-        if (bridge != null) {
-            if (bridge.getHandler() instanceof NeeoRoomHandler neeoRoomHandler) {
-                return neeoRoomHandler.getBindingConfig().getRoomKey();
-            }
+        if (bridge != null && bridge.getHandler() instanceof NeeoRoomHandler neeoRoomHandler) {
+            return neeoRoomHandler.getBridgeConfig().getRoomKey();
         }
         return null;
     }
