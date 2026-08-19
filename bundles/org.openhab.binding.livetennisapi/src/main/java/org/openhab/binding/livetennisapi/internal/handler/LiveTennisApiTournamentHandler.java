@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * Tracks one tournament of the catalogue: its curated metadata and the state of its featured (first listed) live
  * match, pushed by the bridge poll.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiTournamentHandler extends BaseThingHandler implements LiveMatchesListener {
@@ -68,6 +69,9 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
     private @Nullable ScheduledFuture<?> retryJob;
     private volatile boolean disposed;
     private final AtomicBoolean refreshInProgress = new AtomicBoolean();
+    // Bumped on every initialize() and dispose(); an in-flight info refresh captures it and only publishes while it
+    // still matches, so it cannot publish data or status for a disposed or reconfigured lifecycle.
+    private final AtomicInteger lifecycle = new AtomicInteger();
     private @Nullable Tournament tournament;
     private List<Match> tournamentMatches = List.of();
 
@@ -85,6 +89,7 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
             return;
         }
         tournamentId = config.tournamentId;
+        lifecycle.incrementAndGet();
         disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -93,6 +98,7 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
 
     @Override
     public void dispose() {
+        lifecycle.incrementAndGet();
         disposed = true;
         ScheduledFuture<?> job = infoJob;
         if (job != null) {
@@ -169,22 +175,23 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
         if (!refreshInProgress.compareAndSet(false, true)) {
             return;
         }
+        final int lifecycleAtStart = lifecycle.get();
         try {
             Tournament refreshedTournament = bridge.fetchTournament(tournamentId);
-            if (disposed) {
+            if (isStale(lifecycleAtStart)) {
                 return;
             }
             tournament = refreshedTournament;
             updateInfoChannels(refreshedTournament);
         } catch (LiveTennisApiNotFoundException e) {
-            if (!disposed) {
+            if (!isStale(lifecycleAtStart)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-tournament-not-found");
             }
         } catch (LiveTennisApiAuthenticationException e) {
             logger.debug("Authentication failed, the bridge poll will report it", e);
         } catch (LiveTennisApiTransientException e) {
-            if (!disposed) {
+            if (!isStale(lifecycleAtStart)) {
                 logger.debug("Tournament info refresh hit a transient error, scheduling a retry", e);
                 scheduleInfoRetry();
             }
@@ -193,6 +200,11 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
         } finally {
             refreshInProgress.set(false);
         }
+    }
+
+    /** Whether the lifecycle has been disposed or re-initialized since the given value was captured. */
+    private boolean isStale(int lifecycleAtStart) {
+        return disposed || lifecycle.get() != lifecycleAtStart;
     }
 
     private void updateInfoChannels(@Nullable Tournament tournament) {
