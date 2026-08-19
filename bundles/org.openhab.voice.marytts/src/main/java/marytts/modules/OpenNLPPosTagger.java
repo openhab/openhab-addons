@@ -87,7 +87,11 @@ public class OpenNLPPosTagger extends InternalModule {
             while ((line = reader.readLine()) != null) {
                 if (!line.startsWith("#") && !line.isBlank()) {
                     StringTokenizer tokenizer = new StringTokenizer(line);
-                    mapper.put(tokenizer.nextToken(), tokenizer.nextToken());
+                    if (tokenizer.countTokens() >= 2) {
+                        mapper.put(tokenizer.nextToken(), tokenizer.nextToken());
+                    } else {
+                        LOGGER.warn("Invalid POS map line (expected 2 tokens): '{}'", line);
+                    }
                 }
             }
         }
