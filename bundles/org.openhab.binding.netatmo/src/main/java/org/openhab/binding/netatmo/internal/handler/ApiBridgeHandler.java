@@ -358,10 +358,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 ApiError apiError = deserializer.deserialize(ApiError.class, responseBody);
                 if (ServiceError.UNKNOWN.equals(apiError.getCode())) {
-                    if (!logger.isTraceEnabled()) {
-                        // at TRACE the response body was already logged above
-                        logger.debug("Error response body: {}", truncate(responseBody, 500));
-                    }
                     // HttpStatus.getCode() returns null for non-standard status codes (e.g. 520-527), so pass
                     // response.getStatus() rather than statusCode
                     exception = new NetatmoException(apiError, response.getStatus(), extractRawErrorCode(responseBody));
@@ -432,10 +428,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         } catch (JsonParseException e) {
             return null;
         }
-    }
-
-    private static String truncate(String text, int maxLength) {
-        return text.length() > maxLength ? text.substring(0, maxLength) + "..." : text;
     }
 
     private void handleRequestCounter() {
