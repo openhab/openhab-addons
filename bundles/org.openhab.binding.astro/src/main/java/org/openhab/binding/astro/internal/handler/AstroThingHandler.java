@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.astro.internal.handler;
 
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.type.ChannelKind.TRIGGER;
 import static org.openhab.core.types.RefreshType.REFRESH;
@@ -49,6 +50,7 @@ import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.job.PositionalJob;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.model.Zodiac;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -275,6 +277,27 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * @throws IllegalArgumentException If the channel has a state of an unsupported type.
      */
     protected abstract State getState(Channel channel);
+
+    protected State getState(Channel channel, ChannelUID channelUID) {
+        if (channelUID.getGroupId() instanceof String groupId && getPlanet() instanceof Planet planet) {
+            String channelId = channelUID.getIdWithoutGroup();
+            switch (groupId) {
+                case GROUP_ZODIAC:
+                    if (planet.getZodiac() instanceof Zodiac zodiac) {
+                        return switch (channelId) {
+                            case CHANNEL_START -> toState(zodiac.getStart(), channel);
+                            case CHANNEL_SIGN -> toState(zodiac.sign(), channel);
+                            case CHANNEL_END -> toState(zodiac.getEnd(), channel);
+                            default -> throw new IllegalArgumentException("Unexpected channelId: " + channelUID);
+                        };
+                    }
+                    return UnDefType.UNDEF;
+                default:
+                    logger.warn("Unsupported channel: {}#{}", channel, channelUID);
+            }
+        }
+        return UnDefType.UNDEF;
+    }
 
     /**
      * Schedules a positional and a daily job at midnight for Astro calculation and starts it immediately too. Removes

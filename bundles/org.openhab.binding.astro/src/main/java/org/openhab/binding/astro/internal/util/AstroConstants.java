@@ -26,7 +26,17 @@ public class AstroConstants {
     public static final double TROPICAL_YEAR_DAYS = 365.242189;
     public static final double TROPICAL_YEAR_SECONDS = TROPICAL_YEAR_DAYS * SECONDS_PER_DAY;
     public static final double SOLAR_MEAN_MOTION_PER_SECOND = MathUtils.TWO_PI / TROPICAL_YEAR_SECONDS;
+
+    /** Lunar synodic month (new moon to new moon) in days */
     public static final double LUNAR_SYNODIC_MONTH_DAYS = 29.530588853;
+    /** Lunar sidereal month (relative to the stars) in days - used for mean lunar motion. */
+    public static final double LUNAR_SIDEREAL_MONTH_DAYS = 27.321661;
+    /** Mean lunar motion in degrees per day (approx). */
+    public static final double LUNAR_MEAN_MOTION_DEG_PER_DAY = 360.0 / LUNAR_SIDEREAL_MONTH_DAYS;
+    /** Mean lunar motion in radians per second. Use for converting angle->duration for the Moon. */
+    public static final double LUNAR_MEAN_MOTION_PER_SECOND = MathUtils.TWO_PI
+            / (LUNAR_SIDEREAL_MONTH_DAYS * SECONDS_PER_DAY);
+
     public static final double EARTH_EQUATORIAL_RADIUS = 6378.137; // WGS-84 reference in km
 
     /** Constant term of the E5 angle. */

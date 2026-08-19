@@ -16,13 +16,10 @@ import java.time.Duration;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Zodiac;
 import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.MathUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Calculates the zodiac sign from the current ecliptic longitude of the object (sun/moon).
@@ -31,36 +28,32 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ZodiacCalc {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZodiacCalc.class);
-
-    /**
-     * Returns a {@link Zodiac} built from the calculated sign for the given instant. The start and end instants are
-     * estimated using the mean motion along the ecliptic.
-     */
-    public static Zodiac calculate(double eclipticLongitude, @Nullable Instant referenceInstant) {
-        double normalizedLongitude = MathUtils.mod2Pi(eclipticLongitude);
-        int index = (int) (normalizedLongitude / ZodiacSign.getRadiansPerSign());
-
-        Instant start = null;
-        Instant end = null;
-        if (referenceInstant != null) {
-            double radiansIntoSign = normalizedLongitude - index * ZodiacSign.getRadiansPerSign();
-            start = referenceInstant.minus(angleToDuration(radiansIntoSign));
-            end = referenceInstant.plus(angleToDuration(ZodiacSign.getRadiansPerSign() - radiansIntoSign));
-        }
-        try {
-            return new Zodiac(index, start, end);
-        } catch (IllegalArgumentException e) {
-            LOGGER.warn("Error defining Zodiac: {}", e.getMessage());
-            return Zodiac.NONE;
-        }
+    public static Zodiac calculateSun(double eclipticLongitude, Instant referenceInstant) {
+        return calculate(eclipticLongitude, referenceInstant, AstroConstants.SOLAR_MEAN_MOTION_PER_SECOND);
     }
 
-    private static Duration angleToDuration(double angle) {
-        long millis = Math.round((angle / AstroConstants.SOLAR_MEAN_MOTION_PER_SECOND) * 1000);
-        if (millis < 0) {
-            millis = 0;
-        }
-        return Duration.ofMillis(millis);
+    public static Zodiac calculateMoon(double eclipticLongitude, Instant referenceInstant) {
+        return calculate(eclipticLongitude, referenceInstant, AstroConstants.LUNAR_MEAN_MOTION_PER_SECOND);
+    }
+
+    /**
+     * Body-specific calculation: uses the provided mean motion (radians per second)
+     * to estimate start/end instants for the sign range.
+     */
+    private static Zodiac calculate(double eclipticLongitude, Instant referenceInstant, double meanMotionPerSecond) {
+        double normalizedLongitude = MathUtils.mod2Pi(eclipticLongitude);
+        double radiansPerSign = ZodiacSign.getRadiansPerSign();
+        int index = (int) (normalizedLongitude / radiansPerSign);
+
+        double radiansIntoSign = normalizedLongitude - index * radiansPerSign;
+        Instant start = referenceInstant.minus(angleToDuration(radiansIntoSign, meanMotionPerSecond));
+        Instant end = referenceInstant.plus(angleToDuration(radiansPerSign - radiansIntoSign, meanMotionPerSecond));
+        return new Zodiac(index, start, end);
+    }
+
+    private static Duration angleToDuration(double angle, double meanMotionPerSecond) {
+        long seconds = Math.round(angle / meanMotionPerSecond);
+        seconds = Math.max(0, seconds);
+        return Duration.ofSeconds(seconds);
     }
 }
