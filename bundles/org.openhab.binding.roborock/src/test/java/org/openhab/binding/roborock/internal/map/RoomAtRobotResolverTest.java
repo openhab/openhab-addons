@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.roborock.internal.map;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -195,6 +196,49 @@ class RoomAtRobotResolverTest {
         assertFalse(segmentId.isPresent());
     }
 
+    /**
+     * The image dimensions are unvalidated uint32 values from the map payload. 65536 x 65536 is a
+     * product that wraps to exactly 0 in int arithmetic, so a guard multiplying in int would let
+     * this payload through and the lookup would index far past the actual image data.
+     */
+    @Test
+    void returnsEmptyWhenTheHeaderDimensionsOverflowIntArithmetic() {
+        RRMapData mapData = mapDataWithLyingHeader(65536, 65536, new byte[100]);
+
+        Optional<Integer> segmentId = assertDoesNotThrow(() -> RoomAtRobotResolver.resolveSegmentId(mapData, 250, 250));
+
+        assertFalse(segmentId.isPresent());
+    }
+
+    /**
+     * The same lying header, but with enough image data behind it that the bogus index lands inside
+     * the array instead of throwing - on a segmented-floor pixel that belongs to a completely
+     * different part of the map. Silently reporting that segment as the robot's room is the worse
+     * of the two outcomes, because nothing about it looks like a failure.
+     */
+    @Test
+    void returnsEmptyRatherThanAForeignPixelWhenTheHeaderDimensionsOverflow() {
+        int declaredWidth = 65536;
+        byte[] imageData = new byte[300000];
+        // Where "pixel (4, 4)" lands when the declared width is believed: 4 * 65536 + 4.
+        imageData[4 * declaredWidth + 4] = (byte) ((5 << 3) | 0x07);
+
+        RRMapData mapData = mapDataWithLyingHeader(declaredWidth, 65536, imageData);
+
+        Optional<Integer> segmentId = assertDoesNotThrow(() -> RoomAtRobotResolver.resolveSegmentId(mapData, 250, 250));
+
+        assertFalse(segmentId.isPresent());
+    }
+
+    @Test
+    void returnsEmptyWhenTheHeaderDimensionsOverflowToANegativeProduct() {
+        RRMapData mapData = mapDataWithLyingHeader(65536, 65535, new byte[100]);
+
+        Optional<Integer> segmentId = assertDoesNotThrow(() -> RoomAtRobotResolver.resolveSegmentId(mapData, 250, 250));
+
+        assertFalse(segmentId.isPresent());
+    }
+
     @Test
     void returnsEmptyWhenImageDataIsShorterThanWidthTimesHeight() {
         RRMapData mapData = mapDataWithImage(10, 10, 0, 0, new byte[4]);
@@ -202,6 +246,16 @@ class RoomAtRobotResolverTest {
         Optional<Integer> segmentId = RoomAtRobotResolver.resolveSegmentId(mapData, 250, 250);
 
         assertFalse(segmentId.isPresent());
+    }
+
+    /**
+     * A map whose header claims dimensions the actual image data does not cover. The auxiliary
+     * masks stay empty on purpose - they are sized from the real payload, not from the header.
+     */
+    private RRMapData mapDataWithLyingHeader(int declaredWidth, int declaredHeight, byte[] imageData) {
+        return new RRMapData(declaredWidth, declaredHeight, 0, 0, imageData, null, null, null, null, null, null, null,
+                List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(), new byte[0]);
     }
 
     private RRMapData mapDataWithImage(int width, int height, int top, int left, byte[] imageData) {

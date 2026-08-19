@@ -82,7 +82,13 @@ public final class RoomAtRobotResolver {
         int width = mapData.imageWidth();
         int height = mapData.imageHeight();
         byte[] imageData = mapData.imageData();
-        if (width <= 0 || height <= 0 || imageData.length < width * height) {
+        // The dimensions are unvalidated uint32 values from the map payload, so their product is
+        // computed as a long: 65536 x 65536 wraps to 0 in int arithmetic and would pass a guard
+        // that multiplies in int, after which the pixel lookups below - which only compare against
+        // width and height - would index far outside imageData. Comparing the long product also
+        // makes every in-bounds pixel index fit into an int, because a passing check implies
+        // width * height <= imageData.length <= Integer.MAX_VALUE.
+        if (width <= 0 || height <= 0 || imageData.length < (long) width * height) {
             return Optional.empty();
         }
 

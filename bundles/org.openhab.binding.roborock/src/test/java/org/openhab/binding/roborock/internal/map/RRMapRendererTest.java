@@ -14,6 +14,7 @@ package org.openhab.binding.roborock.internal.map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
@@ -26,12 +27,29 @@ import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.roborock.internal.RoborockException;
 
 @NonNullByDefault({})
 class RRMapRendererTest {
 
     private static final int UPSCALE_TARGET_MAX_DIMENSION = 1024;
     private static final int DOWNSCALE_TARGET_MAX_DIMENSION = 2048;
+
+    /**
+     * Same lying header as in {@code RoomAtRobotResolverTest}: this guard is the twin of the one in
+     * {@link RoomAtRobotResolver} and multiplied in int arithmetic until the same fix, so a payload
+     * claiming 65536 x 65536 passed it and reached the image allocation behind it.
+     */
+    @Test
+    void renderAsPngRejectsHeaderDimensionsThatOverflowIntArithmetic() {
+        RRMapRenderer renderer = new RRMapRenderer();
+
+        RRMapData mapData = new RRMapData(65536, 65536, 0, 0, new byte[100], null, null, null, null, null, null, null,
+                List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(), new byte[0]);
+
+        assertThrows(RoborockException.class, () -> renderer.renderAsPng(mapData));
+    }
 
     @Test
     void renderAsPngProducesColorizedImageWithOverlays() throws Exception {

@@ -81,7 +81,10 @@ public final class RRMapRenderer {
         int width = mapData.imageWidth();
         int height = mapData.imageHeight();
         byte[] imageData = mapData.imageData();
-        if (width <= 0 || height <= 0 || imageData.length < width * height) {
+        // Multiplied as a long: the dimensions are unvalidated uint32 values from the map payload,
+        // and a product that wraps in int arithmetic would let a payload with a lying header past
+        // this guard.
+        if (width <= 0 || height <= 0 || imageData.length < (long) width * height) {
             throw new RoborockException("Cannot render map image due to invalid dimensions or data length.");
         }
 
