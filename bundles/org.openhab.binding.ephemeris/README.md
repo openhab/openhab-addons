@@ -34,47 +34,56 @@ The file has to use the syntax described here: <https://www.openhab.org/docs/con
 
 ### `dayset` Thing Configuration
 
-| Name            | Type    | Description               | Default | Required | Advanced |
-|-----------------|---------|---------------------------|---------|----------|----------|
-| name            | text    | Name of the dayset used   | N/A     | yes      | no       |
+| Name            | Type    | Description                                              | Default | Required | Advanced |
+|-----------------|---------|----------------------------------------------------------|---------|----------|----------|
+| days            | integer | Number of days to include after today in the time series | 1       | no       | no       |
+| name            | text    | Name of the dayset used                                  | N/A     | yes      | no       |
+
+### `weekend` Thing Configuration
+
+| Name            | Type    | Description                                              | Default | Required | Advanced |
+|-----------------|---------|----------------------------------------------------------|---------|----------|----------|
+| days            | integer | Number of days to include after today in the time series | 1       | no       | no       |
 
 ## Channels
 
 ### `weekend` Channels
 
-| Name     | Type   | Description                                                   |
-|----------|--------|---------------------------------------------------------------|
-| today    | Switch | Set to ON if today is a weekend day, OFF in the other case    |
-| tomorrow | Switch | Set to ON if tomorrow is a weekend day, OFF in the other case |
+| Name         | Type   | Description                                                   |
+|--------------|--------|---------------------------------------------------------------|
+| today    (*) | Switch | Set to ON if today is a weekend day, OFF in the other case    |
+| tomorrow     | Switch | Set to ON if tomorrow is a weekend day, OFF in the other case |
 
 ### `dayset` Channels
 
-| Name     | Type   | Description                                                         |
-|----------|--------|---------------------------------------------------------------------|
-| today    | Switch | Set to ON if today is in the given dayset, OFF in the other case    |
-| tomorrow | Switch | Set to ON if tomorrow is in the given dayset, OFF in the other case |
+| Name         | Type   | Description                                                         |
+|--------------|--------|---------------------------------------------------------------------|
+| today    (*) | Switch | Set to ON if today is in the given dayset, OFF in the other case    |
+| tomorrow     | Switch | Set to ON if tomorrow is in the given dayset, OFF in the other case |
 
 ### `holiday` Channels
 
-| Name             | Type        | Description                                    |
-|------------------|-------------|------------------------------------------------|
-| title-today      | String      | Name of today's holiday if any, NULL otherwise |
-| holiday-today    | Switch      | Set to ON if today is a holiday                |
-| holiday-tomorrow | Switch      | Set to ON if tomorrow is a holiday             |
-| next-title       | String      | Name of the next coming holiday                |
-| next-start       | DateTime    | Start date of the next coming holiday          |
-| days-remaining   | Number:Time | Remaining days until next holiday              |
+| Name                 | Type        | Description                                            |
+|----------------------|-------------|--------------------------------------------------------|
+| title-today      (*) | String      | Name of today's holiday if any, empty string otherwise |
+| holiday-today    (*) | Switch      | Set to ON if today is a holiday                        |
+| holiday-tomorrow     | Switch      | Set to ON if tomorrow is a holiday                     |
+| next-title           | String      | Name of the next coming holiday                        |
+| next-start           | DateTime    | Start date of the next coming holiday                  |
+| days-remaining       | Number:Time | Remaining days until next holiday                      |
 
 ### `custom` Channels
 
-| Name           | Type        | Description                            |
-|----------------|-------------|----------------------------------------|
-| title-today    | String      | Title of the currently present event   |
-| event-today    | Switch      | Set to ON if an event exists today     |
-| event-tomorrow | Switch      | Set to ON if an event exists tomorrow  |
-| next-title     | String      | Title of the next starting event       |
-| next-start     | DateTime    | Start date of the next coming event    |
-| days-remaining | Number:Time | Remaining days until next event        |
+| Name               | Type        | Description                            |
+|--------------------|-------------|----------------------------------------|
+| title-today    (*) | String      | Title of the currently present event   |
+| event-today    (*) | Switch      | Set to ON if an event exists today     |
+| event-tomorrow     | Switch      | Set to ON if an event exists tomorrow  |
+| next-title         | String      | Title of the next starting event       |
+| next-start         | DateTime    | Start date of the next coming event    |
+| days-remaining     | Number:Time | Remaining days until next event        |
+
+(*) These channels are available as time series
 
 ## Full Example
 
