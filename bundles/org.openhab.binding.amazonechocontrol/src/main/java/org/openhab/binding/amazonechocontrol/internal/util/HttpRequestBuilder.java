@@ -309,26 +309,11 @@ public class HttpRequestBuilder {
         }
     }
 
-    /**
-     * Determines whether a failed response is the result of rate limiting.
-     *
-     * @param responseStatus the HTTP status of the response
-     * @param amznErrorType the value of the {@code x-amzn-ErrorType} header, {@code null} if absent
-     * @return {@code true} if the request was throttled
-     */
     static boolean isThrottled(int responseStatus, @Nullable String amznErrorType) {
         return responseStatus == TOO_MANY_REQUESTS_429
                 || (amznErrorType != null && amznErrorType.startsWith(THROTTLING_EXCEPTION));
     }
 
-    /**
-     * Builds the reason part of the exception message for a failed response.
-     *
-     * @param reason the reason from the status line, generic for Amazon API errors and {@code null} for
-     *            responses that carry no reason phrase at all
-     * @param amznErrorType the value of the {@code x-amzn-ErrorType} header, {@code null} if absent
-     * @return the reason, extended by the error type if the header carried one
-     */
     static String buildFailureReason(@Nullable String reason, @Nullable String amznErrorType) {
         String statusReason = reason == null || reason.isBlank() ? NO_REASON_GIVEN : reason;
         return amznErrorType == null || amznErrorType.isBlank() ? statusReason
@@ -410,15 +395,11 @@ public class HttpRequestBuilder {
                 // handle queue expired
                 httpResponse.completeExceptionally(new ConnectionException("Queue expired"));
             } else {
-                // Amazon reports the real failure cause in the x-amzn-ErrorType header (e.g.
-                // "ThrottlingException:..." with a body of {"message":"Rate exceeded"}), while
-                // the status line only carries a generic reason like "Bad Request". Surface it,
-                // otherwise a rate limit is indistinguishable from a malformed request. The
-                // lookup is case-insensitive, HttpFields#get compares header names that way.
+                // Amazon reports the real failure cause in the x-amzn-ErrorType header, the status
+                // line only carries a generic reason like "Bad Request"
                 String amznErrorType = headers.get(AMZN_ERROR_TYPE_HEADER);
                 if (amznErrorType != null && !amznErrorType.isBlank() && !logger.isTraceEnabled()) {
-                    // The response body of a failed call is not logged anywhere below TRACE
-                    // (which also dumps cookies) - log body and error type here, cookie-free.
+                    // below TRACE (which also dumps cookies) this is the only place the failure body is logged
                     logger.debug("< {} to {} failed: {}, x-amzn-ErrorType = {}, content = {}", params.method(),
                             requestUri, responseStatus, amznErrorType,
                             content.length() > MAX_LOGGED_CONTENT_LENGTH
@@ -426,10 +407,7 @@ public class HttpRequestBuilder {
                                     : content);
                 }
                 boolean throttled = isThrottled(responseStatus, amznErrorType);
-                // A throttled request must not burn its retries after fixed 2 s pauses: the
-                // limit window is longer than that, and every retry is itself a counted request
-                // that keeps the window open. Fail fast; the caller's next regular cycle is the
-                // retry. FailMode.NORMAL is not affected, it never retries in the first place.
+                // a throttled request is not retried: every retry is itself a counted request
                 if (failMode == EXCEPTION || retryCounter == 0 || (throttled && failMode != NORMAL)) {
                     if (responseStatus == 0) {
                         httpResponse.completeExceptionally(new ConnectionException("Request aborted."));

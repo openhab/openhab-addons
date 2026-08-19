@@ -104,7 +104,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements PushConnection.Listener {
-    // package-private: NotificationPollBackoff caps its retry delay at this interval
     static final int CHECK_DATA_INTERVAL = 3600; // in seconds (always refresh every hour)
     private static final int CHECK_LOGIN_INTERVAL = 60; // in seconds (always check every minute)
 
@@ -385,10 +384,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         // force data check
         nextLoginCheck = 0;
         nextDataRefresh = 0;
-        // A new session invalidates the reason for the current backoff: failures caused by the
-        // expired one must not keep the poll silent for up to an hour after the fix. This is the
-        // only place a live handler regains a connection after the stored session died, so
-        // resetConnection() - which logs out and goes OFFLINE - does not need the reset.
+        // failures of the expired session must not delay polls on the new one
         notificationPollBackoff.reset();
         nextRefreshNotifications = 0;
     }
@@ -411,10 +407,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         nextDataRefresh = now + CHECK_DATA_INTERVAL * 1000;
                         refreshData();
                     }
-                    // Either deadline may wake the poll, but not while the backoff is still
-                    // waiting: on an account that has never polled successfully
-                    // nextRefreshNotifications stays 0, so without the second condition this
-                    // gate would be true on every tick and log a skip once per second.
+                    // the shouldSkip check keeps a pending backoff from logging a skip on every tick
                     if (notificationPollBackoff.isDue(now)
                             || (now > nextRefreshNotifications && !notificationPollBackoff.shouldSkip(now))) {
                         refreshNotifications();
@@ -431,10 +424,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             return;
         }
         if (notificationPollBackoff.shouldSkip(System.currentTimeMillis())) {
-            // Push messages call in here directly and bypass the interval check in
-            // checkLoginAndData(), so the backoff has to be honoured here as well - otherwise
-            // a device that keeps sending PUSH_NOTIFICATION_CHANGE would poll a throttled
-            // endpoint as fast as the messages arrive.
+            // push messages call in here directly, bypassing the interval check in checkLoginAndData()
             logger.debug("notification poll for {} is backing off, skipping refresh",
                     getThing().getUID().getAsString());
             return;
@@ -446,17 +436,6 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             notifications = connection.getNotifications().stream().map(n -> map(n, requestTime, ZonedDateTime.now()))
                     .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
         } catch (ConnectionException e) {
-            // A single failed request is not an empty notification list: wiping the next*
-            // channels on every throttled poll claimed "no alarm set" while the truth was
-            // "Amazon did not answer", and it left nextRefreshNotifications at
-            // Long.MAX_VALUE, silently disabling the event-driven refresh. Keep the last
-            // known state through short outages - but once the outage is sustained, the
-            // binding genuinely does not know the state anymore and says so with UNDEF.
-            // The retry deadline belongs to the backoff, not to nextRefreshNotifications: that
-            // field keeps the wake-up time of the success path (the next alarm, or never), and
-            // mixing both into it let a concurrent success overwrite the retry deadline with
-            // Long.MAX_VALUE while the failure count still said "backing off" - a poll that
-            // would never have become due again.
             NotificationPollBackoff.Failure failure = notificationPollBackoff.onFailure(System.currentTimeMillis());
             if (failure.firstOfStreak()) {
                 logger.warn("Failed to get notifications for {}, next attempt in {} s: {}",
@@ -470,9 +449,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         getThing().getUID().getAsString(), NotificationPollBackoff.FAILURES_BEFORE_UNDEF);
             }
             if (failure.publishUndef()) {
-                // Repeated on every further failure, not only on the one that crossed the
-                // threshold: the call is idempotent, and an echo handler that registers during
-                // the outage would otherwise never learn that the state is unknown.
+                // repeated on every failure so that a handler registering during the outage is told as well
                 echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(List.of()));
             }
             return;

@@ -60,7 +60,6 @@ public class NotificationPollBackoffTest {
 
         assertThat(backoff.onFailure(NOW).publishUndef(), is(false));
         assertThat(backoff.onFailure(NOW).publishUndef(), is(false));
-        // every further failure repeats it, so that a handler registering during the outage is told as well
         assertThat(backoff.onFailure(NOW).publishUndef(), is(true));
         assertThat(backoff.onFailure(NOW).publishUndef(), is(true));
         assertThat(backoff.onFailure(NOW).publishUndef(), is(true));
@@ -97,12 +96,6 @@ public class NotificationPollBackoffTest {
     public void testEveryFailureSchedulesAFiniteRetry() {
         NotificationPollBackoff backoff = new NotificationPollBackoff();
 
-        // Guards the starvation this class was extracted for: the retry deadline used to live in a
-        // separate, unsynchronized field of the caller, so a poll succeeding on the push thread could
-        // overwrite it with Long.MAX_VALUE while a poll failing on the timer thread had just raised the
-        // failure count - the poll then reported "backing off" forever and never became due again.
-        // Count and deadline are now decided in one guarded step, so neither arrival order can produce
-        // a backoff without a reachable deadline.
         for (int attempt = 0; attempt < 8; attempt++) {
             Failure failure = backoff.onFailure(NOW);
             assertThat(failure.delaySeconds(), lessThanOrEqualTo(NotificationPollBackoff.MAX_INTERVAL));
@@ -110,7 +103,6 @@ public class NotificationPollBackoffTest {
             assertThat(backoff.isDue(NOW + failure.delaySeconds() * 1000L), is(true));
         }
 
-        // and after a success there is no deadline left to wait for, however far the clock is ahead
         assertThat(backoff.onSuccess(), is(true));
         assertThat(backoff.shouldSkip(NOW), is(false));
         assertThat(backoff.isDue(Long.MAX_VALUE), is(false));
@@ -152,7 +144,6 @@ public class NotificationPollBackoffTest {
 
         assertThat(backoff.shouldSkip(NOW), is(false));
         assertThat(backoff.isDue(NOW), is(false));
-        // a reset is not a recovery, so the next success has nothing to report
         assertThat(backoff.onSuccess(), is(false));
         assertThat(backoff.onFailure(NOW).delaySeconds(), is(300));
     }

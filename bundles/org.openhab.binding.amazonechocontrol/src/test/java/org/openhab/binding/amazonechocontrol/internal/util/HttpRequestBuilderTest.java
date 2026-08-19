@@ -99,8 +99,7 @@ public class HttpRequestBuilderTest {
     @Test
     public void testThrottledResponseFailsFastInsteadOfRetrying() {
         HttpClient httpClient = mock(HttpClient.class);
-        // a retry would build a new request from the client, so hand out one that does not fail the test
-        // with a NullPointerException before the assertion below can report the actual regression
+        // stubbed so that a regression retries instead of failing with a NullPointerException
         when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
 
@@ -112,7 +111,6 @@ public class HttpRequestBuilderTest {
         requestBuilder.new HttpResponseListener(httpResponse, params, false, FailMode.RETRY)
                 .onComplete(throttledResult(headers));
 
-        // the point of the fail-fast: no second request against an endpoint that just rejected us
         verify(httpClient, never()).newRequest(any(URI.class));
         assertThat(httpResponse.isCompletedExceptionally(), is(true));
         ExecutionException failure = assertThrows(ExecutionException.class, httpResponse::get);

@@ -15,19 +15,10 @@ package org.openhab.binding.amazonechocontrol.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link NotificationPollBackoff} tracks consecutive failures of the notification poll and derives the
- * reaction to each of them: when the next attempt is due, whether the failure is worth a warning and whether
- * the notification channels still describe reality.
- * <p>
- * Amazon throttles the notification endpoint aggressively and a flat retry interval keeps a throttled account
- * throttled, because every retry is itself a counted request. The delay therefore doubles from
- * {@link #MIN_INTERVAL} up to {@link #MAX_INTERVAL}, which is the regular refresh interval.
- * <p>
- * The failure count, the current delay and the resulting deadline are one state, so they live in one object
- * behind one lock: the poll is triggered both from the polling job and from push messages arriving on an HTTP
- * client thread. Keeping the deadline in a separate field of the caller allowed an interleaving in which a
- * successful poll and a failing one each wrote one half of the state, leaving a backoff that was never due.
- * The lock is deliberately not held across the network call - it only guards these fields.
+ * The {@link NotificationPollBackoff} tracks consecutive failures of the notification poll: when the next
+ * attempt is due, whether the failure is worth a warning and whether the channels shall be set to UNDEF. The
+ * retry delay doubles from {@link #MIN_INTERVAL} up to {@link #MAX_INTERVAL}. Failure count, delay and
+ * deadline are one state behind one lock, which is deliberately not held across the network call.
  *
  * @author Martin Littkovsky - Initial contribution
  */
@@ -35,9 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 class NotificationPollBackoff {
     /** Delay before the first retry, in seconds. */
     static final int MIN_INTERVAL = 300;
-    /** Upper bound of the retry delay, in seconds. Backing off further than the regular poll is pointless. */
+    /** Upper bound of the retry delay, in seconds. */
     static final int MAX_INTERVAL = AccountHandler.CHECK_DATA_INTERVAL;
-    /** Number of consecutive failures after which the notification channels are set to UNDEF. */
     static final int FAILURES_BEFORE_UNDEF = 3;
 
     private int interval = MIN_INTERVAL;
@@ -55,12 +45,6 @@ class NotificationPollBackoff {
     record Failure(boolean firstOfStreak, boolean crossedUndefThreshold, boolean publishUndef, int delaySeconds) {
     }
 
-    /**
-     * Records a failed poll and schedules the next attempt.
-     *
-     * @param now the current time in milliseconds
-     * @return the reaction to this failure
-     */
     synchronized Failure onFailure(long now) {
         failures++;
         int delaySeconds = interval;
@@ -91,18 +75,10 @@ class NotificationPollBackoff {
         nextAttempt = 0;
     }
 
-    /**
-     * @param now the current time in milliseconds
-     * @return {@code true} if a poll has to wait, because the previous one failed and the delay has not elapsed
-     */
     synchronized boolean shouldSkip(long now) {
         return failures > 0 && now < nextAttempt;
     }
 
-    /**
-     * @param now the current time in milliseconds
-     * @return {@code true} if a failed poll is due to be retried
-     */
     synchronized boolean isDue(long now) {
         return failures > 0 && now >= nextAttempt;
     }
