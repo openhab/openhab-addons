@@ -52,8 +52,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link ShellyLightHandler} handles light (Bulb, Duo and RGBW2) specific commands and status. All other commands
- * will be routed of the ShellyBaseHandler.
+ * The {@link ShellyLightHandler} handles light (Bulb, Duo and RGBW2) specific commands and status.
+ * All other commands will be routed to the ShellyBaseHandler.
  *
  * @author Markus Michels - Initial contribution
  * @author Andrew Fiddian-Green - Migrate to LightModel
@@ -78,6 +78,12 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         super.initialize();
     }
 
+    private enum UpdateTarget {
+        NONE,
+        LIGHT_MODEL,
+        OTHER
+    }
+
     @Override
     public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws IllegalArgumentException {
         logger.trace("{}: handleDeviceCommand() channel {}, command {}", thingName, channelUID, command);
@@ -95,9 +101,16 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                     model.acquire();
                     lightModels.put(lightId, model);
                 }
-                updateLightModelFromChannelCommand(model, channelUID, command);
-                updateRemoteDeviceFromLightModel(model);
-                return true;
+                UpdateTarget target = updateLightModelFromChannelCommand(model, channelUID, command);
+                switch (target) {
+                    case LIGHT_MODEL:
+                        updateRemoteDeviceFromLightModel(model);
+                        return true;
+                    case OTHER:
+                        return true;
+                    default:
+                }
+                return false;
             } finally {
                 releaseLock();
             }
@@ -186,74 +199,83 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @param model the light model to update
      * @param channelUID the channel UID of the command
      * @param command the command to handle
-     * @return true if the command was processed, false otherwise
+     * @return the target of the update (LIGHT_MODEL, OTHER, or NONE)
+     * @throws ShellyApiException
      */
-    private boolean updateLightModelFromChannelCommand(ShellyLightModel model, ChannelUID channelUID, Command command) {
+    private UpdateTarget updateLightModelFromChannelCommand(ShellyLightModel model, ChannelUID channelUID,
+            Command command) throws ShellyApiException {
         logger.trace("{}: updateLightModelFromChannelCommand() channel {}, command {})", thingName, channelUID,
                 command);
         switch (channelUID.getIdWithoutGroup()) {
-            default: // non-bulb commands will be handled by the generic handler
-                return false;
-
             case CHANNEL_PRIMARY_COLOR:
             case CHANNEL_PRIMARY_BRIGHTNESS:
                 model.handleCommand(command);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_PRIMARY_COLOR_TEMP:
             case CHANNEL_PRIMARY_COLOR_TEMP_ABS:
                 model.handleColorTemperatureCommand(command);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_LIGHT_POWER:
                 model.handleCommand(command);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_LIGHT_COLOR_MODE:
                 model.setMode(OnOffType.ON == command ? Mode.COLOR : Mode.WHITE);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_PICKER:
                 model.handleCommand(command);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_FULL:
                 model.setRGBX(command);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_RED:
                 model.setColor(R, setColor(command, SHELLY_MIN_COLOR, SHELLY_MAX_COLOR));
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_GREEN:
                 model.setColor(G, setColor(command, SHELLY_MIN_COLOR, SHELLY_MAX_COLOR));
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_BLUE:
                 model.setColor(B, setColor(command, SHELLY_MIN_COLOR, SHELLY_MAX_COLOR));
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_WHITE:
                 model.setColor(CW, setColor(command, SHELLY_MIN_COLOR, SHELLY_MAX_COLOR));
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_GAIN:
                 model.setGain(command);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_BRIGHTNESS:
                 model.setBrightness(command);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_TEMP:
                 model.handleColorTemperatureCommand(command);
-                break;
+                return UpdateTarget.LIGHT_MODEL;
 
             case CHANNEL_COLOR_EFFECT:
                 model.setEffect(setColor(command, SHELLY_MIN_EFFECT, SHELLY_MAX_EFFECT));
-                break;
+                return UpdateTarget.LIGHT_MODEL;
+
+            case CHANNEL_TIMER_AUTOON:
+                api.setAutoTimer(model.getLightId(), SHELLY_TIMER_AUTOON, getNumber(command).doubleValue());
+                return UpdateTarget.OTHER;
+
+            case CHANNEL_TIMER_AUTOOFF:
+                api.setAutoTimer(model.getLightId(), SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
+                return UpdateTarget.OTHER;
+
+            default: // non- light commands will be handled by the generic handler
+                return UpdateTarget.NONE;
         }
-        return true;
     }
 
     /**
@@ -264,26 +286,15 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      */
     public void updateRemoteDeviceFromLightModel(ShellyLightModel model) throws ShellyApiException {
         logger.trace("{}: updateRemoteDeviceFromLightModel() with [{}]", thingName, model);
-        // POWER:
-        /**
-         *
-         * TODO: INFORMATION FOR CODE REVIEWER RELATING TO THE PRIOR IMPLEMENTATION OF POWER ON/OFF COMMANDS
-         *
-         * The prior code used three different API power on/off commands in response to different channel commands
-         * as follows:
-         *
-         * - CHANNEL_LIGHT_POWER sends api.setLightTurn(lightId, ..)
-         * - CHANNEL_BRIGHTNESS sends api.setLightParm(lightId, SHELLY_LIGHT_TURN, ..)
-         * - CHANNEL_COLOR_PICKER sends parms.put(SHELLY_LIGHT_TURN, ..)
-         * - and .. probably CHANNEL_COLOR_GAIN _should_ send api.setLightParm(lightId, SHELLY_LIGHT_TURN, ..)
-         *
-         * By contrast the new LightModel allows any channel input (primary, power, brightness, gain, color picker,
-         * etc.) to change the model's power on/off state in a consistent manner regardless of which channel was used.
-         * So therefore we use a single API call to set the power state based on the model's final state.
-         */
         boolean apiCommandSent = false;
 
-        // MODE:
+        // POWER: send this first as it may affect the processing of subsequent parameters
+        if (model.supportsOnOffChannel() && model.isOnOffDirty()) { // config.getBrightnessAutoOn() not used
+            api.setLightTurn(model.getLightId(), OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF);
+            apiCommandSent = true;
+        }
+
+        // MODE: send this next as it also may affect the processing of subsequent parameters
         if (model.isModeDirty()) {
             api.setLightMode(Mode.COLOR == model.getMode() ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE);
             apiCommandSent = true;
@@ -291,13 +302,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // map of changed light parameters to send to the device
         Map<String, String> parms = new TreeMap<>();
-
-        // POWER:
-        if (model.supportsOnOffChannel() && model.isOnOffDirty()) { // config.getBrightnessAutoOn() not needed
-            // common code to set the power state regardless of which channel caused it to change
-            String onOffString = OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF;
-            parms.put(SHELLY_LIGHT_TURN, onOffString);
-        }
 
         // COLOR:
         if (model.supportsColorChannel() && model.isColorDirty()) {
@@ -369,7 +373,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         // OVERPOWER:
         // this will be handled in PHASE 2 updateChannelsFromModel()
 
-        // COLOR: (setter may change model's mode)
+        // COLOR: this may change model's mode
         if (light.red != null && light.green != null && light.blue != null) {
             if (light.white != null) {
                 model.setRGBX(new int[] { light.red, light.green, light.blue, light.white });
@@ -378,7 +382,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             }
         }
 
-        // GAIN: (setter may change model's mode)
+        // GAIN: this may change model's mode
         if (light.gain != null) {
             model.setGain(getInteger(light.gain));
         }
@@ -388,23 +392,18 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             model.setEffect(getInteger(light.effect));
         }
 
-        // BRIGHTNESS: (setter may change model's mode)
+        // BRIGHTNESS: this may change model's mode
         if (light.brightness != null) {
             model.setBrightness(getInteger(light.brightness));
         }
 
-        // COLOR TEMP: (setter may change model's mode)
+        // COLOR TEMP: this may change model's mode
         if (light.temp != null) {
             model.setColorTemp(getInteger(light.temp));
         }
 
-        // MODE: setters change model's mode, so check to confirm they are in synch
-        Mode remoteMode = profile.inColor ? Mode.COLOR : Mode.WHITE;
-        Mode localMode = model.getMode();
-        if (remoteMode != localMode) {
-            logger.debug("{}: lightId {} local mode {} and remote mode {} not same", thingName, model.getLightId(),
-                    localMode, remoteMode);
-        }
+        // MODE: setters may have updated the light model's mode
+        // i.e. do nothing
     }
 
     /**
@@ -424,7 +423,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // TIMERS:
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
-        if (lights != null && lights.get(lightId) instanceof ShellySettingsRgbwLight ls) {
+        if (lights != null && lightId < lights.size() && lights.get(lightId) instanceof ShellySettingsRgbwLight ls) {
             String group = buildControlGroupName(profile, channelId);
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOON, toQuantityType(getDouble(ls.autoOn), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOOFF, toQuantityType(getDouble(ls.autoOff), Units.SECOND));

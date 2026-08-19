@@ -739,7 +739,7 @@ public class ShellyLightModel extends LightModel {
             (isRGBW2 && Mode.COLOR == operatingMode) ||
             (isG3DuoBulb) ||
             (isG3ColorBulb) ||
-            (isProfileCCTX2 && lightId == 0) ||
+            // TODO isProfileCCTX2 ??
             (isProfileRGB) ||
             (isProfileRGBW) ||
             (isProfileRGBCCT && lightId == 0) || 

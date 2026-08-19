@@ -488,7 +488,7 @@ class ShellyLightModelTest {
             Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, SHELLY2_PROFILE_LIGHT, false, false, false, true),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBCCT, true, true, false, false),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBCCT, false, false, true, true),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_CCTX2, true, false, true, true),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_CCTX2, false, false, true, true),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_CCTX2, false, false, true, true),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, true, true, false, false),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, false, false, false, true),
