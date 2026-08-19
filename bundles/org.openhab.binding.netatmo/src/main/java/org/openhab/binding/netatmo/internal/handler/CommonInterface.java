@@ -122,9 +122,7 @@ public interface CommonInterface {
         return getThingConfigAs(NAThingConfiguration.class).getId();
     }
 
-    default <T> T getThingConfigAs(Class<T> configurationClass) {
-        return getThing().getConfiguration().as(configurationClass);
-    }
+    <T> T getThingConfigAs(Class<T> configurationClass);
 
     default Stream<Channel> getActiveChannels() {
         return getThing().getChannels().stream()
