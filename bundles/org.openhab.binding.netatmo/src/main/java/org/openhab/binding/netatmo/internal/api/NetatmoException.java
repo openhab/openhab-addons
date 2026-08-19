@@ -49,15 +49,8 @@ public class NetatmoException extends IOException {
     }
 
     /**
-     * Same as {@link #NetatmoException(ApiError)}, additionally keeping the raw HTTP status and, if it could be
-     * recovered, the raw (unparsed) Netatmo error code. Used when {@code error} could not be classified into a
-     * known {@link ServiceError}, so that information is not silently dropped from {@link #getMessage()}.
-     * <p>
-     * If {@code error} does classify into a known {@link ServiceError}, {@code httpStatus} and
-     * {@code rawErrorCode} are ignored by {@link #getMessage()} - the message for that case is unchanged.
-     *
-     * @param httpStatus HTTP status of the failed call; values <= 0 mean "no HTTP context"
-     * @param rawErrorCode the raw error code as sent by Netatmo, or {@code null} if it could not be recovered
+     * Additionally keeps the HTTP status and raw error code, used by {@link #getMessage()} only when {@code error}
+     * does not classify into a known {@link ServiceError}.
      */
     public NetatmoException(ApiError error, int httpStatus, @Nullable String rawErrorCode) {
         this(error);

@@ -52,9 +52,6 @@ public class ApiBridgeHandlerTest {
 
     @Test
     public void testRawErrorCodeWithEmptyBodyReturnsNull() {
-        // {} is the one shape of these edge cases that is actually live-reachable: deserializer.deserialize()
-        // happily turns it into an ApiError with all defaults (code == UNKNOWN), so this body does reach
-        // extractRawErrorCode() in the real call path.
         String body = "{}";
 
         assertNull(ApiBridgeHandler.extractRawErrorCode(body));
@@ -62,9 +59,6 @@ public class ApiBridgeHandlerTest {
 
     @Test
     public void testRawErrorCodeWithNullErrorReturnsNull() {
-        // {"error": null} - "error" present but not an object; deserializing this into ApiError itself NPEs
-        // elsewhere (a separate, pre-existing issue, see the PR's Notes for review) - extractRawErrorCode() must
-        // not add a second failure mode of its own for the same shape.
         String body = "{\"error\":null}";
 
         assertNull(ApiBridgeHandler.extractRawErrorCode(body));
@@ -107,8 +101,6 @@ public class ApiBridgeHandlerTest {
 
     @Test
     public void testRawErrorCodeWithArrayRootReturnsNull() {
-        // an array root is valid JSON, so this goes through the !root.isJsonObject() guard, not the catch -
-        // sabotaging that guard (e.g. by removing it) must not slip past a catch-only test suite.
         String body = "[]";
 
         assertNull(ApiBridgeHandler.extractRawErrorCode(body));
@@ -116,8 +108,7 @@ public class ApiBridgeHandlerTest {
 
     @Test
     public void testRawErrorCodeWithPrimitiveRootReturnsNull() {
-        // a single unquoted token is lenient-valid JSON (a bare string primitive as the whole document), so this
-        // also goes through !root.isJsonObject(), not the catch.
+        // a single bare token is lenient-valid JSON, so this hits the isJsonObject() guard, not the catch
         String body = "ServiceUnavailable";
 
         assertNull(ApiBridgeHandler.extractRawErrorCode(body));

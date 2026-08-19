@@ -358,21 +358,17 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 ApiError apiError = deserializer.deserialize(ApiError.class, responseBody);
                 if (ServiceError.UNKNOWN.equals(apiError.getCode())) {
-                    // HttpStatus.getCode() returns null for a non-standard status code (e.g. a CDN/gateway
-                    // response such as 520-527), so the raw int from the response is used here, never statusCode
-                    // itself.
                     if (!logger.isTraceEnabled()) {
-                        // at TRACE, the line above (" -returned: code {} body {}") already logged this body
+                        // at TRACE the response body was already logged above
                         logger.debug("Error response body: {}", truncate(responseBody, 500));
                     }
+                    // HttpStatus.getCode() returns null for non-standard status codes (e.g. 520-527), so pass
+                    // response.getStatus() rather than statusCode
                     exception = new NetatmoException(apiError, response.getStatus(), extractRawErrorCode(responseBody));
                 } else {
                     exception = new NetatmoException(apiError);
                 }
             } catch (NetatmoException e) {
-                // Always append the numeric HTTP status, with Jetty's reason phrase (if it recognizes the status)
-                // in front of it - a status Jetty doesn't recognize (e.g. 520-527) must not fall back to a
-                // wording-only message that then carries no status at all.
                 String statusText = statusCode == null ? null : statusCode.getMessage();
                 String statusMessage = "%s(HTTP %s)".formatted(statusText == null ? "" : statusText + " ",
                         Integer.toString(response.getStatus()));
@@ -416,17 +412,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * {@link ApiError} only exposes the {@link ServiceError} that its code was classified into, defaulting to
-     * {@code UNKNOWN} for a code outside that fixed enum - the raw code itself is discarded during that
-     * classification. This re-reads the already validated JSON body to recover it for diagnostics.
-     * Package-private (instead of private) so it can be unit-tested directly.
-     * <p>
-     * Every step is checked structurally ({@code isJsonObject()}/{@code isJsonPrimitive()}) rather than relying
-     * on a broad catch: a non-object root or {@code error}, {@code error} being absent or JSON {@code null}, and
-     * {@code code} being absent, JSON {@code null}, or itself an object/array, are all real shapes a body can
-     * take and must resolve to {@code null} here, not throw.
-     *
-     * @return the raw error code, or {@code null} if the body carries none
+     * Recovers the raw error code that {@link ApiError} discards when classifying it into a {@link ServiceError}.
      */
     static @Nullable String extractRawErrorCode(String responseBody) {
         try {
@@ -444,9 +430,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             }
             return code.getAsString();
         } catch (JsonParseException e) {
-            // malformed JSON, e.g. truncated by a proxy - responseBody was already deserialized into ApiError
-            // successfully at the call site, so this is not expected to trigger in practice; kept as a
-            // defensive fallback rather than an assumption.
             return null;
         }
     }

@@ -56,9 +56,6 @@ public class NetatmoExceptionTest {
 
     @Test
     public void testKnownServiceErrorIgnoresHttpContextEvenIfProvided() throws NetatmoException {
-        // (httpStatus, rawErrorCode) are only used by getMessage() for the UNKNOWN case - a caller that passes
-        // them for an ApiError that DOES classify (e.g. by mistake, or via a generic call site) must not see
-        // them leak into the message; the classified format takes precedence silently.
         String body = """
                 {\
                   "error": {\
@@ -77,9 +74,7 @@ public class NetatmoExceptionTest {
 
     @Test
     public void testUnclassifiedErrorKeepsHttpStatusAndRawCode() throws NetatmoException {
-        // code 50 is not one of the 24 classified ServiceError values (the 25-value enum includes the UNKNOWN
-        // sentinel itself, mapped to code 99), so it is classified as UNKNOWN - this is the case that used to
-        // lose the HTTP status and the raw code entirely.
+        // code 50 does not map to any ServiceError value, so it classifies as UNKNOWN
         String body = """
                 {\
                   "error": {\
@@ -97,9 +92,6 @@ public class NetatmoExceptionTest {
 
     @Test
     public void testUnclassifiedErrorWithoutRawCodeOmitsCodeSuffix() throws NetatmoException {
-        // extractRawErrorCode() in ApiBridgeHandler returns null when the body carries no code at all - the
-        // ", error code ..." clause must then disappear entirely rather than print a placeholder that could be
-        // confused with the ServiceError.UNKNOWN enum name.
         String body = """
                 {\
                   "error": {\
@@ -117,7 +109,6 @@ public class NetatmoExceptionTest {
 
     @Test
     public void testUnclassifiedErrorWithEmptyMessageAvoidsLeadingSpace() throws NetatmoException {
-        // an explicit empty "message" - the "<message> (HTTP ...)" join must not leave a stray leading space.
         String body = """
                 {\
                   "error": {\
@@ -135,8 +126,6 @@ public class NetatmoExceptionTest {
 
     @Test
     public void testUnclassifiedErrorWithoutHttpContextKeepsPlainMessage() throws NetatmoException {
-        // the plain ApiError-only constructor (no HTTP status/raw code supplied) must keep behaving exactly
-        // as before this change for any caller that does not go through ApiBridgeHandler.executeUri().
         String body = """
                 {\
                   "error": {\
