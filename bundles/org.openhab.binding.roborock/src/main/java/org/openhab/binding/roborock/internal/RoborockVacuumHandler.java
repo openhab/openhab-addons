@@ -414,6 +414,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         vacuumChannelOn = false;
         lastKnownStateId = null;
         lastParsedMapData = null;
+        // A configuration change does not create a new handler: BaseThingHandler.thingUpdated()
+        // disposes this instance, replaces the Thing it holds and calls initialize() on it again,
+        // so the field initializers do not run a second time. The segment-to-room-name table has to
+        // be dropped here explicitly - pointed at a different robot, the overlapping segment ids of
+        // the previous one would otherwise name the rooms of the first map cycles.
+        clearSegmentRoomNames();
         cloudMapRefreshDisabledLogged = false;
         cloudMetadataRefreshDisabledLogged = false;
         mapUpdateDeduplicator.reset();
