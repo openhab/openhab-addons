@@ -49,7 +49,8 @@ import opennlp.tools.postag.POSTaggerME;
  * uses the current array API and explicitly retains Penn Treebank output, on which MaryTTS's English prosody rules
  * depend.
  *
- * @author Leo Siepel - Initial contribution
+ * @author Marc Schröder - Initial contribution
+ * @author Leo Siepel - Refactored for use with openHAB's MaryTTS runtime
  */
 @NonNullByDefault
 public class OpenNLPPosTagger extends InternalModule {
