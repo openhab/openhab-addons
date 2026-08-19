@@ -132,7 +132,7 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
         }
     }
 
-    public NeeoRoomConfig getBindingConfig() {
+    public NeeoRoomConfig getBridgeHandler() {
         return getConfigAs(NeeoRoomConfig.class);
     }
 
