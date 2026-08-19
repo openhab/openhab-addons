@@ -383,6 +383,14 @@ public class ShellyDeviceProfile {
         return ShellyApiLightUtil.isCctComponent(tagAt(settings.lights, idx));
     }
 
+    /**
+     * Converts a settings.lights index into the actual Shelly RPC component id - non-color components are
+     * shifted down by the leading color slot(s) (e.g. rgbcct's CCT:0 is at settings.lights index 1).
+     */
+    public int getLightComponentId(int idx) {
+        return hasColorTag(idx) ? idx : idx - getColorComponentCount();
+    }
+
     public String getInputGroup(int i) {
         int idx = i + 1; // group names are 1-based
         if (isRGBW2) {

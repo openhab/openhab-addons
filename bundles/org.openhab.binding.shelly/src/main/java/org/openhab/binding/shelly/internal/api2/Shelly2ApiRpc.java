@@ -849,9 +849,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         int numLights = settingLights != null ? settingLights.size() : 1;
         for (int i = 0; i < numLights; i++) {
             LightRpcMethods methods = lightRpcMethods(profile, i);
+            int componentId = profile.getLightComponentId(i);
             ShellyStatusLightChannel lightChannel;
             if (profile.hasColorTag(i)) {
-                Shelly2RGBWStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(methods.getStatus()).withId(i),
+                Shelly2RGBWStatus ls = apiRequest(
+                        new Shelly2RpcRequest().withMethod(methods.getStatus()).withId(componentId),
                         Shelly2RGBWStatus.class);
                 lightChannel = new ShellyStatusLightChannel();
                 if (ls.rgb != null && ls.rgb.length >= 3) {
@@ -867,7 +869,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 lightChannel.ison = ls.output;
             } else {
                 Shelly2DeviceStatusLight ls = apiRequest(
-                        new Shelly2RpcRequest().withMethod(methods.getStatus()).withId(i),
+                        new Shelly2RpcRequest().withMethod(methods.getStatus()).withId(componentId),
                         Shelly2DeviceStatusLight.class);
                 lightChannel = new ShellyStatusLightChannel();
                 lightChannel.ison = ls.output;
@@ -890,7 +892,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         ShellyDeviceProfile profile = getProfile();
         String method = lightRpcMethods(profile, index).getStatus();
         ShellyShortLightStatus status = new ShellyShortLightStatus();
-        Shelly2DeviceStatusLight ls = apiRequest(new Shelly2RpcRequest().withMethod(method).withId(index),
+        Shelly2DeviceStatusLight ls = apiRequest(
+                new Shelly2RpcRequest().withMethod(method).withId(profile.getLightComponentId(index)),
                 Shelly2DeviceStatusLight.class);
         status.ison = ls.output;
         status.hasTimer = ls.timerStartedAt != null;
@@ -906,7 +909,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        params.id = id;
+        params.id = profile.getLightComponentId(id);
         if (brightness > 0) {
             params.brightness = brightness;
             if (autoOn) {
@@ -923,7 +926,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        params.id = id;
+        params.id = profile.getLightComponentId(id);
         params.on = turnMode.equals(SHELLY_API_ON);
         apiRequest(lightRpcMethods(profile, id).set(), params, String.class);
         return getLightStatus(id);
@@ -950,7 +953,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             method = SHELLYRPC_METHOD_SWITCH_SETCONFIG;
             component = "Switch";
         }
-        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(index);
+        int componentId = profile.isRGBW2 ? profile.getLightComponentId(index) : index;
+        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(componentId);
         req.params.withConfig();
         req.params.config.name = component + index;
         if (timerName.equals(SHELLY_TIMER_AUTOON)) {
@@ -1113,7 +1117,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             throw new ShellyApiException("API call not implemented");
         }
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        params.id = lightIndex;
+        params.id = profile.getLightComponentId(lightIndex);
 
         if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
             params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));

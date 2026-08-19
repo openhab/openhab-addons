@@ -53,7 +53,9 @@ import org.openhab.core.thing.ThingTypeUID;
  * {@code Light.GetStatus} per channel. Also covers the brightness=0 turn-off fix (Gen2 firmware clamps 0 to 1%, so
  * {@code on=false} is sent instead of {@code brightness=0}), {@code setLightParm} delegating to
  * {@code setLightParms} for the primary on/off channel, and {@code setAutoTimer} picking
- * {@code RGBW.SetConfig}/{@code RGB.SetConfig}/{@code Light.SetConfig} the same way.
+ * {@code RGBW.SetConfig}/{@code RGB.SetConfig}/{@code Light.SetConfig} the same way. Also covers
+ * {@link ShellyDeviceProfile#getLightComponentId} on hybrid profiles (rgbcct, rgbx2light), where a
+ * settings.lights index doesn't equal the on-device RPC component id.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -180,6 +182,31 @@ public class Shelly2ApiRpcLightDispatchTest {
         for (int i = 0; i < numChannels; i++) {
             lights.add(taggedLight(ShellyLightApiComponent.CCT));
         }
+        profile.settings.lights = lights;
+        return profile;
+    }
+
+    private ShellyDeviceProfile rgbcctProfile() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyprorgbwwpm"));
+        profile.isRGBW2 = true;
+        profile.inColor = true;
+        profile.device.profile = SHELLY2_PROFILE_RGBCCT;
+        ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
+        lights.add(taggedLight(ShellyLightApiComponent.RGB)); // settings.lights[0] = RGB:0
+        lights.add(taggedLight(ShellyLightApiComponent.CCT)); // settings.lights[1] = CCT:0
+        profile.settings.lights = lights;
+        return profile;
+    }
+
+    private ShellyDeviceProfile rgbx2lightProfile() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyprorgbwwpm"));
+        profile.isRGBW2 = true;
+        profile.inColor = true;
+        profile.device.profile = SHELLY2_PROFILE_RGBX2LIGHT;
+        ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
+        lights.add(taggedLight(ShellyLightApiComponent.RGB)); // settings.lights[0] = RGB:0
+        lights.add(taggedLight(ShellyLightApiComponent.LIGHT)); // settings.lights[1] = Light:0
+        lights.add(taggedLight(ShellyLightApiComponent.LIGHT)); // settings.lights[2] = Light:1
         profile.settings.lights = lights;
         return profile;
     }
@@ -390,5 +417,59 @@ public class Shelly2ApiRpcLightDispatchTest {
 
         assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_CCT_STATUS));
         assertThat(rpc.lastParams().id, is(1));
+    }
+
+    @Test
+    void getLightStatusRgbcctProfilePollsRgbAndCctWithComponentLocalIds() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(rgbcctProfile());
+        rpc.getLightStatus();
+
+        assertThat(rpc.calledMethods, is(List.of(SHELLYRPC_METHOD_RGB_STATUS, SHELLYRPC_METHOD_CCT_STATUS)));
+        assertThat(rpc.calledParams.get(0).id, is(0)); // settings.lights[0] -> RGB:0
+        assertThat(rpc.calledParams.get(1).id, is(0)); // settings.lights[1] -> CCT:0, not CCT:1
+    }
+
+    @Test
+    void getLightStatusIndexedRgbcctSecondaryChannelCallsCctGetStatusWithComponentLocalId() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(rgbcctProfile());
+        rpc.getLightStatus(1);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_CCT_STATUS));
+        assertThat(rpc.lastParams().id, is(0)); // settings.lights[1] -> CCT:0
+    }
+
+    @Test
+    void setBrightnessRgbcctSecondaryChannelSendsCctSetWithComponentLocalId() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(rgbcctProfile());
+        rpc.setBrightness(1, 42, true); // settings.lights[1] -> CCT:0
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_CCT_SET));
+        assertThat(rpc.lastParams().id, is(0));
+    }
+
+    @Test
+    void setLightParmsRgbx2lightSecondaryChannelsSendLightSetWithComponentLocalIds() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(rgbx2lightProfile());
+
+        rpc.setLightParms(1, Map.of(SHELLY_COLOR_BRIGHTNESS, "50")); // settings.lights[1] -> Light:0
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_LIGHT_SET));
+        assertThat(rpc.lastParams().id, is(0));
+
+        rpc.setLightParms(2, Map.of(SHELLY_COLOR_BRIGHTNESS, "50")); // settings.lights[2] -> Light:1
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_LIGHT_SET));
+        assertThat(rpc.lastParams().id, is(1));
+    }
+
+    @Test
+    void getLightStatusRgbx2lightProfilePollsRgbAndBothLightComponentsWithComponentLocalIds()
+            throws ShellyApiException {
+        StubApiRpc rpc = newRpc(rgbx2lightProfile());
+        rpc.getLightStatus();
+
+        assertThat(rpc.calledMethods,
+                is(List.of(SHELLYRPC_METHOD_RGB_STATUS, SHELLYRPC_METHOD_LIGHT_STATUS, SHELLYRPC_METHOD_LIGHT_STATUS)));
+        assertThat(rpc.calledParams.get(0).id, is(0)); // settings.lights[0] -> RGB:0
+        assertThat(rpc.calledParams.get(1).id, is(0)); // settings.lights[1] -> Light:0
+        assertThat(rpc.calledParams.get(2).id, is(1)); // settings.lights[2] -> Light:1, not Light:2
     }
 }
