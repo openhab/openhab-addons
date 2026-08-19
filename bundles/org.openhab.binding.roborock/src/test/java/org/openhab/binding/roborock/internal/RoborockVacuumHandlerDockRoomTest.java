@@ -44,9 +44,7 @@ class RoborockVacuumHandlerDockRoomTest {
     private static final int WIDTH = 20;
     private static final int HEIGHT = 20;
 
-    /** Segment id of the room the robot was cleaning, "Flur" in the capture this reproduces. */
     private static final int HALLWAY_SEGMENT = 4;
-    /** Segment id of the room holding the dock, "Abstellraum" in the same capture. */
     private static final int DOCK_ROOM_SEGMENT = 7;
 
     private static final Map<Integer, String> ROOM_NAMES = Map.of(HALLWAY_SEGMENT, "Flur", DOCK_ROOM_SEGMENT,
@@ -57,12 +55,6 @@ class RoborockVacuumHandlerDockRoomTest {
     private static final int DOCK_PIXEL_X = 15;
     private static final int DOCK_PIXEL_Y = 15;
 
-    /**
-     * The capture from 2026-08-18: the robot was carried from the hallway onto its dock, and the map
-     * cycle that followed still reported the hallway position it had while cleaning. The dock is in
-     * a different room, does not move, and is in that very same map - so it, not the lagging robot
-     * position, decides the room while the robot is docked.
-     */
     @Test
     void docksResolveToTheDockRoomEvenWhenTheCachedMapStillPlacesTheRobotElsewhere() {
         RRMapData mapData = twoRoomMap(true, true);
@@ -72,10 +64,6 @@ class RoborockVacuumHandlerDockRoomTest {
         assertEquals(new StringType("Abstellraum"), dockRoomState);
     }
 
-    /**
-     * The same map, taken through the map-cycle path instead of the docking transition: a map that
-     * arrives while the robot is already docked must not push the stale cleaning room back out.
-     */
     @Test
     void mapCycleWhileDockedResolvesFromTheDockPosition() {
         RRMapData mapData = twoRoomMap(true, true);
@@ -85,7 +73,6 @@ class RoborockVacuumHandlerDockRoomTest {
         assertEquals(new StringType("Abstellraum"), roomState);
     }
 
-    /** A robot that is not docked keeps being placed by its own position, unchanged. */
     @Test
     void mapCycleWhileNotDockedResolvesFromTheRobotPosition() {
         RRMapData mapData = twoRoomMap(true, true);
@@ -95,17 +82,11 @@ class RoborockVacuumHandlerDockRoomTest {
         assertEquals(new StringType("Flur"), roomState);
     }
 
-    /**
-     * Right after a handler restart on the dock nothing has been parsed yet. There is no dock
-     * evidence at all then, so the channel is left as it is instead of being guessed, and no extra
-     * map fetch is triggered to obtain one.
-     */
     @Test
     void dockingWithoutACachedMapLeavesTheChannelUntouched() {
         assertNull(RoborockVacuumHandler.resolveDockRoomState(null, ROOM_NAMES));
     }
 
-    /** Same for a map that carries no charger block: no dock position, no dock room. */
     @Test
     void dockingWithoutAChargerPositionInTheCachedMapLeavesTheChannelUntouched() {
         RRMapData mapData = twoRoomMap(true, false);
@@ -113,10 +94,6 @@ class RoborockVacuumHandlerDockRoomTest {
         assertNull(RoborockVacuumHandler.resolveDockRoomState(mapData, ROOM_NAMES));
     }
 
-    /**
-     * The map-cycle path still has the robot position to fall back on when the map carries no
-     * charger block, so a missing dock never costs a room that used to resolve.
-     */
     @Test
     void mapCycleWhileDockedFallsBackToTheRobotPositionWithoutAChargerPosition() {
         RRMapData mapData = twoRoomMap(true, false);
@@ -134,11 +111,6 @@ class RoborockVacuumHandlerDockRoomTest {
         assertEquals(UnDefType.UNDEF, RoborockVacuumHandler.resolveRoomStateFromMap(mapData, true, ROOM_NAMES));
     }
 
-    /**
-     * The dock resolves to a segment, but room metadata is gone (see
-     * {@code clearSegmentRoomNames()}). The docked robot is demonstrably no longer where the last
-     * cleaning cycle put it, so the honest answer is UNDEF rather than the room it was cleaning.
-     */
     @Test
     void dockingWithoutRoomMetadataReportsUndefInsteadOfTheStaleCleaningRoom() {
         RRMapData mapData = twoRoomMap(true, true);
@@ -148,7 +120,6 @@ class RoborockVacuumHandlerDockRoomTest {
         assertEquals(UnDefType.UNDEF, dockRoomState);
     }
 
-    /** An unnamed dock segment is the same case, reached through the map-cycle path. */
     @Test
     void mapCycleWhileDockedReportsUndefForAnUnnamedDockSegment() {
         RRMapData mapData = twoRoomMap(true, true);
@@ -201,13 +172,7 @@ class RoborockVacuumHandlerDockRoomTest {
         assertFalse(StatusType.UNKNOWN.isAtDock(), "an unmapped state id must not be taken for a docked robot");
     }
 
-    /**
-     * A map with two segmented rooms: the robot standing in the hallway segment and the charging
-     * dock parked in the other one.
-     *
-     * @param withRobotPosition whether the map carries a robot position
-     * @param withChargerPosition whether the map carries a charger position
-     */
+    /** A map with two segmented rooms: the robot in the hallway segment, the charging dock in the other. */
     private static RRMapData twoRoomMap(boolean withRobotPosition, boolean withChargerPosition) {
         byte[] imageData = new byte[WIDTH * HEIGHT];
         fillSegment(imageData, 0, 0, 9, HEIGHT - 1, HALLWAY_SEGMENT);
@@ -224,8 +189,7 @@ class RoborockVacuumHandlerDockRoomTest {
     }
 
     private static void fillSegment(byte[] imageData, int fromX, int fromY, int toX, int toY, int segmentId) {
-        // Classifier 7 in the low three bits marks a segmented-floor pixel, the segment id sits in
-        // the high five bits - the same layout RRMapRenderer.decodeSegmentId reads.
+        // Classifier 7 in the low 3 bits, segment id in the high 5 bits.
         byte pixel = (byte) ((segmentId << 3) | 0x07);
         for (int y = fromY; y <= toY; y++) {
             for (int x = fromX; x <= toX; x++) {

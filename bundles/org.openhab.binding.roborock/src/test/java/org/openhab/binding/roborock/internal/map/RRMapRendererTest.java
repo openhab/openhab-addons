@@ -35,11 +35,6 @@ class RRMapRendererTest {
     private static final int UPSCALE_TARGET_MAX_DIMENSION = 1024;
     private static final int DOWNSCALE_TARGET_MAX_DIMENSION = 2048;
 
-    /**
-     * Same lying header as in {@code RoomAtRobotResolverTest}: this guard is the twin of the one in
-     * {@link RoomAtRobotResolver} and multiplied in int arithmetic until the same fix, so a payload
-     * claiming 65536 x 65536 passed it and reached the image allocation behind it.
-     */
     @Test
     void renderAsPngRejectsHeaderDimensionsThatOverflowIntArithmetic() {
         RRMapRenderer renderer = new RRMapRenderer();
@@ -143,8 +138,6 @@ class RRMapRendererTest {
 
     @Test
     void decodeSegmentIdExcludesReservedMapScanAndMapInsideValues() {
-        // 0x07 (MAP_SCAN) and 0xFF (MAP_INSIDE) both satisfy "low 3 bits == 7" but are reserved,
-        // non-segment pixel values handled by exact-value cases in resolveMapPixelColor.
         assertEquals(-1, RRMapRenderer.decodeSegmentId(0x07));
         assertEquals(-1, RRMapRenderer.decodeSegmentId(0xFF));
     }

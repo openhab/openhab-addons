@@ -93,23 +93,9 @@ public enum StatusType {
     }
 
     /**
-     * Tells whether the robot physically sits on its charging dock while in this state.
-     * <p>
-     * Included are the states that report the robot on the dock without further assumptions:
-     * charging, charging error and completed charge ({@link #FULL}, a full battery rather than a
-     * full bin), plus emptying the bin and washing the mop, both of which the dock performs on a
-     * robot parked in it. States in which the robot is on its way there ({@link #RETURNING},
-     * {@link #DOCKING}, {@link #GOING_WASH_MOP}, {@link #BACK_TO_DOCK_WASHING_DUSTER}) are
-     * excluded - its position is not the dock's yet.
-     * <p>
-     * {@link #ATTACH_MOP}, {@link #DETACH_MOP} and {@link #AIR_DRYING_STOPPED} are dock chores on
-     * the models that report them, but they are model-specific and this binding has no capture of
-     * them, so they are left out rather than assumed. The two directions are not symmetric: a state
-     * wrongly counted as docked publishes a wrong room that then stays, because no map is polled
-     * while the robot is docked, whereas a docked state left out only keeps the behaviour this
-     * channel had before.
-     *
-     * @return {@code true} if the robot is docked in this state
+     * Tells whether the robot physically sits on its charging dock while in this state; states in
+     * which it is only on its way there, and model-specific dock chores this binding has no capture
+     * of, are excluded.
      */
     public boolean isAtDock() {
         return switch (this) {

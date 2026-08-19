@@ -50,8 +50,6 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
         assertTrue(updateCurrentRoomIndex >= 0, "handleGetMap should call updateCurrentRoomState");
         assertTrue(dedupIfIndex >= 0, "handleGetMap should still gate the PNG update on the deduplicator");
 
-        // The room comes from the parsed map alone, so it must be published between the parse and
-        // the rendering: that way neither a duplicate PNG nor a rendering failure can hold it back.
         assertTrue(updateCurrentRoomIndex > parseIndex && updateCurrentRoomIndex < renderIndex,
                 "updateCurrentRoomState must run after the parse and before renderAsPng, so that rendering "
                         + "outcomes cannot leave a stale room reported");

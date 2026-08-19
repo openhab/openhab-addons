@@ -81,9 +81,7 @@ public final class RRMapRenderer {
         int width = mapData.imageWidth();
         int height = mapData.imageHeight();
         byte[] imageData = mapData.imageData();
-        // Multiplied as a long: the dimensions are unvalidated uint32 values from the map payload,
-        // and a product that wraps in int arithmetic would let a payload with a lying header past
-        // this guard.
+        // The dimensions are unvalidated uint32 values whose product can wrap in int arithmetic.
         if (width <= 0 || height <= 0 || imageData.length < (long) width * height) {
             throw new RoborockException("Cannot render map image due to invalid dimensions or data length.");
         }
@@ -218,19 +216,9 @@ public final class RRMapRenderer {
     }
 
     /**
-     * Decodes the segment/room id encoded in a base-map pixel byte, using the same bit layout this
-     * renderer uses for pixel coloring: the low 3 bits classify the pixel, and a classifier of 7
-     * ("segmented floor") leaves the segment id in the high 5 bits. {@link #MAP_SCAN} (0x07) and
-     * {@link #MAP_INSIDE} (0xFF) both happen to satisfy that same low-3-bits-equal-7 test but are
-     * reserved, non-segment pixel values (see the exact-value cases in
-     * {@link #resolveMapPixelColor(int)}), so they are excluded explicitly here to keep this method
-     * a correct standalone decoder rather than relying on an enclosing switch's case order.
-     * <p>
-     * Shared by pixel coloring here and by {@code RoomAtRobotResolver}, which locates the robot's
-     * own pixel in the same retained {@code imageData} to answer "which room is the robot in".
-     *
-     * @param pixelValue the raw unsigned byte value (0-255) from {@link RRMapData#imageData()}
-     * @return the segment id (1-30) if this pixel belongs to a segmented floor area, or -1 otherwise
+     * Decodes the segment/room id from a base-map pixel byte (low 3 bits equal to 7 mark a
+     * segmented-floor pixel, the id sits in the high 5 bits), or -1 for non-segment pixels;
+     * {@link #MAP_SCAN} and {@link #MAP_INSIDE} satisfy the same bit test but are reserved values.
      */
     static int decodeSegmentId(int pixelValue) {
         if (pixelValue == MAP_SCAN || pixelValue == MAP_INSIDE) {

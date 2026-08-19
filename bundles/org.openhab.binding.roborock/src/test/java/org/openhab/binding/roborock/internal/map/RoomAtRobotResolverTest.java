@@ -82,7 +82,6 @@ class RoomAtRobotResolverTest {
         byte[] imageData = new byte[width * height];
         int px = 5;
         int py = 5;
-        // Exact pixel is a wall (classifier 0), but a pixel two rings out is a segmented-floor pixel.
         imageData[py * width + px] = 0x01; // MAP_WALL
         imageData[(py + 2) * width + (px + 1)] = (byte) ((3 << 3) | 0x07);
 
@@ -103,8 +102,8 @@ class RoomAtRobotResolverTest {
         byte[] imageData = new byte[width * height];
         int px = 5;
         int py = 5;
-        imageData[py * width + px] = 0x01; // not a segment pixel
-        // Segment pixel three rings out: outside the radius-2 fallback search.
+        imageData[py * width + px] = 0x01; // MAP_WALL
+        // Segment pixel three rings out.
         imageData[(py + 3) * width + px] = (byte) ((3 << 3) | 0x07);
 
         RRMapData mapData = mapDataWithImage(width, height, 0, 0, imageData);
@@ -123,7 +122,6 @@ class RoomAtRobotResolverTest {
         byte[] imageData = new byte[width * height];
 
         RRMapData mapData = mapDataWithImage(width, height, 0, 0, imageData);
-        // Far outside the small 4x4 grid.
         int robotX = 5000;
         int robotY = 5000;
 
@@ -139,7 +137,7 @@ class RoomAtRobotResolverTest {
         byte[] imageData = new byte[width * height];
         int px = 5;
         int py = 5;
-        imageData[py * width + px] = (byte) 0xFF; // MAP_INSIDE, not a segment pixel, and no neighbors are either
+        imageData[py * width + px] = (byte) 0xFF; // MAP_INSIDE
 
         RRMapData mapData = mapDataWithImage(width, height, 0, 0, imageData);
         int robotX = (px + 1) * MM;
@@ -157,9 +155,8 @@ class RoomAtRobotResolverTest {
         byte[] imageData = new byte[width * height];
         int px = 5;
         int py = 5;
-        imageData[py * width + px] = 0x01; // MAP_WALL: the robot sits on the doorway itself
-        // Ring of radius 1 straddles two rooms: segment 4 owns a single diagonal pixel, which a
-        // scan-order-dependent search would hit first, while segment 3 owns the majority.
+        imageData[py * width + px] = 0x01; // MAP_WALL
+        // Segment 4 owns one diagonal pixel of the ring, segment 3 the majority.
         imageData[(py - 1) * width + (px - 1)] = (byte) ((4 << 3) | 0x07);
         imageData[(py - 1) * width + px] = (byte) ((3 << 3) | 0x07);
         imageData[py * width + (px + 1)] = (byte) ((3 << 3) | 0x07);
@@ -181,12 +178,11 @@ class RoomAtRobotResolverTest {
         int px = 5;
         int py = 5;
         imageData[py * width + px] = 0x01; // MAP_WALL
-        // Two pixels each: the position is genuinely ambiguous, so no room may be reported ...
+        // Two pixels per segment on the nearest ring; the unambiguous farther ring must not decide it.
         imageData[(py - 1) * width + px] = (byte) ((3 << 3) | 0x07);
         imageData[(py + 1) * width + px] = (byte) ((3 << 3) | 0x07);
         imageData[py * width + (px - 1)] = (byte) ((4 << 3) | 0x07);
         imageData[py * width + (px + 1)] = (byte) ((4 << 3) | 0x07);
-        // ... not even from the unambiguous but more distant ring behind it.
         imageData[(py + 2) * width + (px + 2)] = (byte) ((7 << 3) | 0x07);
 
         RRMapData mapData = mapDataWithImage(width, height, 0, 0, imageData);
@@ -196,11 +192,7 @@ class RoomAtRobotResolverTest {
         assertFalse(segmentId.isPresent());
     }
 
-    /**
-     * The image dimensions are unvalidated uint32 values from the map payload. 65536 x 65536 is a
-     * product that wraps to exactly 0 in int arithmetic, so a guard multiplying in int would let
-     * this payload through and the lookup would index far past the actual image data.
-     */
+    /** 65536 x 65536 wraps to exactly 0 in int arithmetic and would pass a guard multiplying in int. */
     @Test
     void returnsEmptyWhenTheHeaderDimensionsOverflowIntArithmetic() {
         RRMapData mapData = mapDataWithLyingHeader(65536, 65536, new byte[100]);
@@ -212,15 +204,13 @@ class RoomAtRobotResolverTest {
 
     /**
      * The same lying header, but with enough image data behind it that the bogus index lands inside
-     * the array instead of throwing - on a segmented-floor pixel that belongs to a completely
-     * different part of the map. Silently reporting that segment as the robot's room is the worse
-     * of the two outcomes, because nothing about it looks like a failure.
+     * the array - on a segmented-floor pixel of an unrelated part of the map.
      */
     @Test
     void returnsEmptyRatherThanAForeignPixelWhenTheHeaderDimensionsOverflow() {
         int declaredWidth = 65536;
         byte[] imageData = new byte[300000];
-        // Where "pixel (4, 4)" lands when the declared width is believed: 4 * 65536 + 4.
+        // Where "pixel (4, 4)" lands when the declared width is believed.
         imageData[4 * declaredWidth + 4] = (byte) ((5 << 3) | 0x07);
 
         RRMapData mapData = mapDataWithLyingHeader(declaredWidth, 65536, imageData);
@@ -248,10 +238,7 @@ class RoomAtRobotResolverTest {
         assertFalse(segmentId.isPresent());
     }
 
-    /**
-     * A map whose header claims dimensions the actual image data does not cover. The auxiliary
-     * masks stay empty on purpose - they are sized from the real payload, not from the header.
-     */
+    /** A map whose header claims dimensions the actual image data does not cover. */
     private RRMapData mapDataWithLyingHeader(int declaredWidth, int declaredHeight, byte[] imageData) {
         return new RRMapData(declaredWidth, declaredHeight, 0, 0, imageData, null, null, null, null, null, null, null,
                 List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),

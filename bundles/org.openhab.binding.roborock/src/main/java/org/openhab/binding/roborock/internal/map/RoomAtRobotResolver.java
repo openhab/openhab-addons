@@ -19,25 +19,9 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Resolves the map segment (room) id at a position on the map, primarily the robot's own.
- * <p>
- * The RR map format already retains a per-pixel segment id in {@link RRMapData#imageData()} (see
- * {@link RRMapRenderer#decodeSegmentId(int)}) - it is decoded there only to pick a fill color and
- * otherwise discarded. This class locates a given map position's pixel in that same retained image
- * data and decodes it the same way, so "which room is the robot in" is answered from data the
- * binding already keeps, without changing the map wire format or {@link RRMapData}'s shape.
- * <p>
- * The lookup itself is position-agnostic: the same map coordinate space holds the robot position,
- * the charger position and the path points, so the caller decides which of them to ask about. The
- * handler asks for the robot's position while it drives and for the charging dock's position while
- * it is docked, where the robot's own position in a map may lag behind reality.
- * <p>
- * Coordinates: {@code positionX}/{@code positionY} are in the RR map's raw coordinate units (as
- * parsed by {@code RRMapParser}, the same units as {@code robotX}/{@code robotY},
- * {@code chargerX}/{@code chargerY} and path points). They are converted to a pixel index using the
- * same fixed divisor and {@code top}/{@code left} offsets as
- * {@code RRMapRenderer.toXCoord}/{@code toYCoord}, inverted to land on the pixel grid backing
- * {@link RRMapData#imageData()} rather than the rendered/flipped canvas.
+ * Resolves the map segment (room) id at a map position (in raw RR map coordinate units) from the
+ * per-pixel segment ids in {@link RRMapData#imageData()}, using the same coordinate transform and
+ * pixel decoding as {@link RRMapRenderer}.
  *
  * @author Martin Littkovsky - Initial contribution
  */
@@ -48,11 +32,8 @@ public final class RoomAtRobotResolver {
     private static final int MM = 50;
 
     /**
-     * Maximum Chebyshev-distance ring searched outward from the queried pixel when that pixel is
-     * not itself a segmented-floor pixel (for example the robot is on a wall/scan boundary pixel,
-     * or the charging dock sits at the edge of a segment). Two rings is a small, cheap search that
-     * still covers the robot's immediate footprint without risking a false match from a distant
-     * room.
+     * Maximum Chebyshev-distance ring searched outward when the queried pixel is not itself a
+     * segmented-floor pixel; kept small to avoid matching a distant room.
      */
     private static final int FALLBACK_SEARCH_RADIUS = 2;
 
@@ -60,34 +41,17 @@ public final class RoomAtRobotResolver {
     }
 
     /**
-     * Resolves the segment id of the map pixel at the given position, falling back to a small
-     * outward search if that exact pixel is not a segmented-floor pixel.
-     * <p>
-     * The fallback is decided by the nearest ring that contains any segmented-floor pixel at all:
-     * all of that ring's pixels are collected and the segment holding the strict majority wins. A
-     * ring is deliberately never resolved by "first pixel encountered", because at a doorway or
-     * room boundary one ring can hold pixels of two different rooms and the answer would then
-     * depend on the scan order. If the nearest populated ring is a tie between segments, the
-     * position is genuinely ambiguous and this resolves to empty rather than guessing; wider rings
-     * are not consulted, since they are weaker evidence than the tied one.
-     *
-     * @param mapData parsed map data; {@code imageData()}/{@code imageWidth()}/{@code imageHeight()}
-     *            /{@code top()}/{@code left()} are used to locate and decode the pixel
-     * @param positionX X position in raw RR map coordinate units
-     * @param positionY Y position in raw RR map coordinate units
-     * @return the segment id (1-30, the range {@link RRMapRenderer#decodeSegmentId(int)} can yield)
-     *         if one was unambiguously found at or near the given position, empty otherwise
+     * Resolves the segment id of the map pixel at the given position, falling back to the nearest
+     * ring within {@link #FALLBACK_SEARCH_RADIUS} that holds any segmented-floor pixels; the
+     * segment with the strict majority on that ring wins, and a tie resolves to empty rather than
+     * depending on scan order.
      */
     public static Optional<Integer> resolveSegmentId(RRMapData mapData, int positionX, int positionY) {
         int width = mapData.imageWidth();
         int height = mapData.imageHeight();
         byte[] imageData = mapData.imageData();
-        // The dimensions are unvalidated uint32 values from the map payload, so their product is
-        // computed as a long: 65536 x 65536 wraps to 0 in int arithmetic and would pass a guard
-        // that multiplies in int, after which the pixel lookups below - which only compare against
-        // width and height - would index far outside imageData. Comparing the long product also
-        // makes every in-bounds pixel index fit into an int, because a passing check implies
-        // width * height <= imageData.length <= Integer.MAX_VALUE.
+        // The dimensions are unvalidated uint32 values whose product can wrap in int arithmetic; a
+        // passing long comparison also keeps every in-bounds pixel index within int range.
         if (width <= 0 || height <= 0 || imageData.length < (long) width * height) {
             return Optional.empty();
         }
@@ -108,10 +72,6 @@ public final class RoomAtRobotResolver {
         return Optional.empty();
     }
 
-    /**
-     * Counts the segmented-floor pixels per segment id on the outer ring of the given radius.
-     * Pixels of smaller radii belong to rings already evaluated and are skipped.
-     */
     private static Map<Integer, Integer> collectRing(byte[] imageData, int width, int height, int centerX, int centerY,
             int radius) {
         Map<Integer, Integer> segmentCounts = new HashMap<>();
@@ -127,10 +87,6 @@ public final class RoomAtRobotResolver {
         return segmentCounts;
     }
 
-    /**
-     * Returns the segment id with the strictly highest pixel count, or empty when the highest count
-     * is shared by more than one segment.
-     */
     private static Optional<Integer> dominantSegment(Map<Integer, Integer> segmentCounts) {
         int dominantId = -1;
         int highestCount = 0;

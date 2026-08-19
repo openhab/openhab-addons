@@ -31,11 +31,9 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.UnDefType;
 
 /**
- * A Thing configuration change does not create a new handler instance:
- * {@code BaseThingHandler.thingUpdated(Thing)} disposes the handler that is already there, replaces
- * the {@link Thing} it holds and calls {@code initialize()} on it again, so field initializers do
- * not run a second time. Everything the room resolution is decided from therefore has to be reset
- * in {@code initialize()} explicitly.
+ * A Thing configuration change re-initializes the existing handler instance, so field initializers
+ * do not run a second time and everything the room resolution is decided from has to be reset in
+ * {@code initialize()} explicitly.
  *
  * @author Martin Littkovsky - Initial contribution
  */
@@ -44,9 +42,7 @@ class RoborockVacuumHandlerReinitializationTest {
 
     /**
      * Pointing the Thing at a different robot must not leave the previous robot's room names in
-     * place: segment ids are small integers that overlap between maps, so the first map cycles of
-     * the new robot would otherwise resolve against the old table and publish a room name from a
-     * different home until the next {@code get_room_mapping} response arrives.
+     * place, because segment ids overlap between maps.
      */
     @Test
     void initializeDropsTheRoomStateOfThePreviousConfiguration() {
@@ -58,8 +54,7 @@ class RoborockVacuumHandlerReinitializationTest {
         when(thing.getUID()).thenReturn(thingUID);
         when(thing.getConfiguration()).thenReturn(new Configuration());
         when(thing.getChannel(RobotCapabilities.CURRENT_ROOM.getChannel())).thenReturn(currentRoomChannel);
-        // No bridge: initialize() reports the missing bridge and returns right after resetting its
-        // state, which is exactly the part under test here.
+        // No bridge: initialize() returns right after resetting its state, the part under test.
         when(thing.getBridgeUID()).thenReturn(null);
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -70,8 +65,7 @@ class RoborockVacuumHandlerReinitializationTest {
 
         handler.initialize();
 
-        // clearSegmentRoomNames() drops the table and reports UNDEF in the same guarded section, so
-        // the channel update is the observable half of the reset.
+        // The UNDEF update is the observable half of the segment-name table reset.
         verify(callback, atLeastOnce()).stateUpdated(currentRoomUID, UnDefType.UNDEF);
     }
 }
