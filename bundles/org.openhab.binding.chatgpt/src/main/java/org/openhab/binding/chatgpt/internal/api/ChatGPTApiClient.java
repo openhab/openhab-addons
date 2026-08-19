@@ -323,39 +323,57 @@ public class ChatGPTApiClient {
             request.header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
         }
 
-        if (logger.isDebugEnabled()) {
+        logger.debug("Request to {} (POST): payload size = {} bytes", baseUrl + PATH_CHAT_COMPLETIONS,
+                queryJson.getBytes(StandardCharsets.UTF_8).length);
+        if (logger.isTraceEnabled()) {
             try {
                 String prettyRequest = objectMapper.writerWithDefaultPrettyPrinter()
                         .writeValueAsString(objectMapper.readTree(queryJson));
-                logger.debug("Request to {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, prettyRequest);
+                logger.trace("Request payload to {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, prettyRequest);
             } catch (IOException e) {
-                logger.debug("Request to {} (POST): {}", baseUrl + PATH_CHAT_COMPLETIONS, queryJson);
+                logger.trace("Request payload to {} (POST): {}", baseUrl + PATH_CHAT_COMPLETIONS, queryJson);
             }
         }
         try {
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
                 String body = response.getContentAsString();
-                if (logger.isDebugEnabled()) {
+                ChatResponse chatResponse = objectMapper.readValue(body, ChatResponse.class);
+                ChatResponse.Usage usage = chatResponse.getUsage();
+                if (usage != null) {
+                    logger.debug(
+                            "Response from {} (POST): payload size = {} bytes, prompt tokens = {}, completion tokens = {}, total tokens = {}",
+                            baseUrl + PATH_CHAT_COMPLETIONS, body.getBytes(StandardCharsets.UTF_8).length,
+                            usage.getPromptTokens(), usage.getCompletionTokens(), usage.getTotalTokens());
+                } else {
+                    logger.debug("Response from {} (POST): payload size = {} bytes", baseUrl + PATH_CHAT_COMPLETIONS,
+                            body.getBytes(StandardCharsets.UTF_8).length);
+                }
+                if (logger.isTraceEnabled()) {
                     try {
                         String prettyResponse = objectMapper.writerWithDefaultPrettyPrinter()
                                 .writeValueAsString(objectMapper.readTree(body));
-                        logger.debug("Response from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, prettyResponse);
+                        logger.trace("Response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
+                                prettyResponse);
                     } catch (IOException e) {
-                        logger.debug("Response from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, body);
+                        logger.trace("Response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, body);
                     }
                 }
-                return objectMapper.readValue(body, ChatResponse.class);
+                return chatResponse;
             } else {
                 String errorBody = response.getContentAsString();
-                if (logger.isDebugEnabled()) {
+                logger.debug("Error response from {} (POST): HTTP {} {}, payload size = {} bytes",
+                        baseUrl + PATH_CHAT_COMPLETIONS, response.getStatus(), response.getReason(),
+                        errorBody.getBytes(StandardCharsets.UTF_8).length);
+                if (logger.isTraceEnabled()) {
                     try {
                         String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
                                 .writeValueAsString(objectMapper.readTree(errorBody));
-                        logger.debug("Error response from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
+                        logger.trace("Error response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
                                 prettyError);
                     } catch (IOException e) {
-                        logger.debug("Error response from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, errorBody);
+                        logger.trace("Error response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
+                                errorBody);
                     }
                 }
                 throw new ChatGPTApiException(
@@ -387,8 +405,10 @@ public class ChatGPTApiClient {
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
                 String body = response.getContentAsString();
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Response from {} (GET):\n{}", baseUrl + PATH_MODELS, body);
+                logger.debug("Response from {} (GET): payload size = {} bytes", baseUrl + PATH_MODELS,
+                        body.getBytes(StandardCharsets.UTF_8).length);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Response payload from {} (GET):\n{}", baseUrl + PATH_MODELS, body);
                 }
                 JsonNode modelsNode = objectMapper.readTree(body);
                 JsonNode data = modelsNode.get("data");
