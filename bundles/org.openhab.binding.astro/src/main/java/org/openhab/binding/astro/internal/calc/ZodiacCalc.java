@@ -28,23 +28,31 @@ import org.openhab.binding.astro.internal.util.MathUtils;
  */
 @NonNullByDefault
 public class ZodiacCalc {
+    public static Zodiac calculateSun(double eclipticLongitude, Instant referenceInstant) {
+        return calculate(eclipticLongitude, referenceInstant, AstroConstants.SOLAR_MEAN_MOTION_PER_SECOND);
+    }
+
+    public static Zodiac calculateMoon(double eclipticLongitude, Instant referenceInstant) {
+        return calculate(eclipticLongitude, referenceInstant, AstroConstants.LUNAR_MEAN_MOTION_PER_SECOND);
+    }
+
     /**
-     * Returns a {@link Zodiac} built from the calculated sign for the given instant. The start and end instants are
-     * estimated using the mean motion along the ecliptic.
+     * Body-specific calculation: uses the provided mean motion (radians per second)
+     * to estimate start/end instants for the sign range.
      */
-    public static Zodiac calculate(double eclipticLongitude, Instant referenceInstant) {
+    private static Zodiac calculate(double eclipticLongitude, Instant referenceInstant, double meanMotionPerSecond) {
         double normalizedLongitude = MathUtils.mod2Pi(eclipticLongitude);
         double radiansPerSign = ZodiacSign.getRadiansPerSign();
         int index = (int) (normalizedLongitude / radiansPerSign);
 
         double radiansIntoSign = normalizedLongitude - index * radiansPerSign;
-        Instant start = referenceInstant.minus(angleToDuration(radiansIntoSign));
-        Instant end = referenceInstant.plus(angleToDuration(radiansPerSign - radiansIntoSign));
+        Instant start = referenceInstant.minus(angleToDuration(radiansIntoSign, meanMotionPerSecond));
+        Instant end = referenceInstant.plus(angleToDuration(radiansPerSign - radiansIntoSign, meanMotionPerSecond));
         return new Zodiac(index, start, end);
     }
 
-    private static Duration angleToDuration(double angle) {
-        long seconds = Math.round(angle / AstroConstants.SOLAR_MEAN_MOTION_PER_SECOND);
+    private static Duration angleToDuration(double angle, double meanMotionPerSecond) {
+        long seconds = Math.round(angle / meanMotionPerSecond);
         seconds = Math.max(0, seconds);
         return Duration.ofSeconds(seconds);
     }
