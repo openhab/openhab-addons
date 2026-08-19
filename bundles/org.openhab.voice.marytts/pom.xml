@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Voice :: Mary Text-to-Speech</name>
 
   <properties>
-    <bnd.importpackage>com.twmacinta.util;resolution:=optional;gnu.trove;resolution:=optional;Jampack;resolution:=optional;com.sun.*;resolution:=optional;jdk.javadoc.doclet;resolution:=optional;org.apache.http*;resolution:=optional;org.hsqldb;resolution:=optional;org.jdesktop.layout*;resolution:=optional;org.apache.xerces.impl*;resolution:=optional;sun.nio.ch.*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>com.twmacinta.util;resolution:=optional,gnu.trove;resolution:=optional,Jampack;resolution:=optional,com.sun.*;resolution:=optional,jdk.javadoc.doclet;resolution:=optional,org.apache.http*;resolution:=optional,org.hsqldb;resolution:=optional,org.jdesktop.layout*;resolution:=optional,org.apache.xerces.impl*;resolution:=optional,sun.nio.ch.*;resolution:=optional</bnd.importpackage>
     <dfkimarytts.version>5.2.1</dfkimarytts.version>
   </properties>
 
