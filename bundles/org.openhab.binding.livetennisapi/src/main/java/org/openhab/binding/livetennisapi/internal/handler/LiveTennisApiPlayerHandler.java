@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,13 +56,17 @@ import org.slf4j.LoggerFactory;
  * Tracks one player: the state of their live match (pushed by the bridge poll), their next scheduled match and their
  * current ranking (fetched on a slower cycle).
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiPlayerHandler extends BaseThingHandler implements LiveMatchesListener {
 
     private static final long DETAIL_INITIAL_DELAY_S = 5;
     private static final long TRANSIENT_RETRY_DELAY_S = 60;
+    // Collapse detail refreshes that fire within this window of the previous one into a single request. The periodic
+    // job (interval >= 60 s) and the 60 s transient retry are never suppressed by it, but the near-simultaneous
+    // startup/reconnect triggers (initial-delay job + bridge-ONLINE refresh) are.
+    private static final long MIN_DETAIL_REFRESH_SPACING_S = 30;
 
     private final Logger logger = LoggerFactory.getLogger(LiveTennisApiPlayerHandler.class);
 
@@ -71,6 +76,11 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
     private @Nullable ScheduledFuture<?> retryJob;
     private volatile boolean disposed;
     private final AtomicBoolean refreshInProgress = new AtomicBoolean();
+    // Bumped on every initialize() and dispose(); a detail refresh captures it and only publishes while it still
+    // matches, so an in-flight request cannot publish data or status for a disposed or reconfigured lifecycle.
+    private final AtomicInteger lifecycle = new AtomicInteger();
+    // System.nanoTime() of the last refresh that actually issued requests, for the near-sequential duplicate guard.
+    private volatile long lastDetailRefreshNanos;
 
     private @Nullable Match liveMatch;
     private @Nullable Match nextMatch;
@@ -96,7 +106,10 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
         }
         playerId = config.playerId;
         detailRefreshEnabled = config.detailRefreshEnabled;
+        lifecycle.incrementAndGet();
         disposed = false;
+        // Pre-date the last-refresh mark by the spacing window so the first refresh of this lifecycle always proceeds.
+        lastDetailRefreshNanos = System.nanoTime() - TimeUnit.SECONDS.toNanos(MIN_DETAIL_REFRESH_SPACING_S);
         updateStatus(ThingStatus.UNKNOWN);
 
         // The ranking and next-match refresh is the only quota this thing spends on its own; when it is switched off
@@ -109,6 +122,7 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
 
     @Override
     public void dispose() {
+        lifecycle.incrementAndGet();
         disposed = true;
         ScheduledFuture<?> job = detailJob;
         if (job != null) {
@@ -167,10 +181,19 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
         if (!refreshInProgress.compareAndSet(false, true)) {
             return;
         }
+        final int lifecycleAtStart = lifecycle.get();
         try {
+            // Collapse near-sequential duplicates: if a refresh issued requests within the spacing window, this trigger
+            // (an initial-delay job racing a bridge-ONLINE refresh, or a still-pending retry) adds no fresh data.
+            long now = System.nanoTime();
+            if (now - lastDetailRefreshNanos < TimeUnit.SECONDS.toNanos(MIN_DETAIL_REFRESH_SPACING_S)) {
+                return;
+            }
+            lastDetailRefreshNanos = now;
+
             Player refreshedPlayer = bridge.fetchPlayer(playerId);
             Match refreshedNextMatch = bridge.fetchNextMatch(playerId);
-            if (disposed) {
+            if (isStale(lifecycleAtStart)) {
                 return;
             }
             player = refreshedPlayer;
@@ -178,14 +201,14 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
             nextMatch = refreshedNextMatch;
             updateNextMatchChannels(refreshedNextMatch);
         } catch (LiveTennisApiNotFoundException e) {
-            if (!disposed) {
+            if (!isStale(lifecycleAtStart)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-player-not-found");
             }
         } catch (LiveTennisApiAuthenticationException e) {
             logger.debug("Authentication failed, the bridge poll will report it", e);
         } catch (LiveTennisApiTransientException e) {
-            if (!disposed) {
+            if (!isStale(lifecycleAtStart)) {
                 logger.debug("Detail refresh hit a transient error, scheduling a retry", e);
                 scheduleDetailRetry();
             }
@@ -194,6 +217,11 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
         } finally {
             refreshInProgress.set(false);
         }
+    }
+
+    /** Whether the lifecycle has been disposed or re-initialized since the given value was captured. */
+    private boolean isStale(int lifecycleAtStart) {
+        return disposed || lifecycle.get() != lifecycleAtStart;
     }
 
     private void scheduleDetailRetry() {

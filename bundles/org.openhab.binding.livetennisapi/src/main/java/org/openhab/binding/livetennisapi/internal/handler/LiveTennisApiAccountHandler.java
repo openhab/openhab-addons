@@ -17,6 +17,7 @@ import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingCon
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * Bridge handler for one Live Tennis API key. Polls the current live match snapshot once per cycle and pushes it to
  * all child things, so the request budget does not grow with the number of tracked players or tournaments.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
@@ -62,6 +63,10 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
     private @Nullable LiveTennisApiClient apiClient;
     private @Nullable ScheduledFuture<?> pollingJob;
     private volatile boolean disposed;
+    // Bumped on every initialize() and dispose(). A poll captures the value at its start and only publishes while it
+    // still matches, so an in-flight request cannot publish data or status for a disposed or reconfigured lifecycle
+    // even after a later initialize() has cleared the disposed flag.
+    private final AtomicInteger lifecycle = new AtomicInteger();
 
     private List<Match> lastLiveMatches = List.of();
     private @Nullable Usage lastUsage;
@@ -86,6 +91,7 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
             return;
         }
 
+        lifecycle.incrementAndGet();
         disposed = false;
         apiClient = new LiveTennisApiClient(httpClient, config.apiKey);
         updateStatus(ThingStatus.UNKNOWN);
@@ -96,6 +102,7 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        lifecycle.incrementAndGet();
         disposed = true;
         ScheduledFuture<?> job = pollingJob;
         if (job != null) {
@@ -153,19 +160,29 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
         if (client == null) {
             return;
         }
+        // Capture the lifecycle this request belongs to; if dispose()/initialize() runs while the request is in flight
+        // (a cancel(true) interruption is wrapped as LiveTennisApiException), the captured value no longer matches and
+        // nothing below publishes state for the obsolete lifecycle.
+        final int lifecycleAtStart = lifecycle.get();
         List<Match> liveMatches;
         try {
             liveMatches = client.getLiveMatches();
         } catch (LiveTennisApiAuthenticationException e) {
+            if (isStale(lifecycleAtStart)) {
+                return;
+            }
             logger.debug("Authentication failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         } catch (LiveTennisApiException e) {
+            if (isStale(lifecycleAtStart)) {
+                return;
+            }
             logger.debug("Polling failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
-        if (disposed) {
+        if (isStale(lifecycleAtStart)) {
             return;
         }
         lastLiveMatches = liveMatches;
@@ -177,7 +194,7 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
         // The usage read is optional telemetry: a failure here must never discard the live data published above.
         try {
             Usage usage = client.getUsage();
-            if (disposed) {
+            if (isStale(lifecycleAtStart)) {
                 return;
             }
             lastUsage = usage;
@@ -185,6 +202,11 @@ public class LiveTennisApiAccountHandler extends BaseBridgeHandler {
         } catch (LiveTennisApiException e) {
             logger.debug("Usage read failed; the live match data for this cycle was still published", e);
         }
+    }
+
+    /** Whether the lifecycle has been disposed or re-initialized since the given value was captured. */
+    private boolean isStale(int lifecycleAtStart) {
+        return disposed || lifecycle.get() != lifecycleAtStart;
     }
 
     private void notifyChildHandlers(List<Match> liveMatches) {
