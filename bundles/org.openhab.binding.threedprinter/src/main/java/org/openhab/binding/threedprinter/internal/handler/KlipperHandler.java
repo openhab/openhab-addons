@@ -16,10 +16,16 @@ import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingCon
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
@@ -32,6 +38,8 @@ import org.openhab.binding.threedprinter.internal.config.KlipperConfiguration;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse.KlipperMetadataResult;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse.KlipperThumbnail;
+import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsListResponse;
+import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsListResponse.KlipperObjectsListResult;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperFan;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperGcodeMove;
@@ -51,9 +59,17 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Handler for Klipper printers accessed via the Moonraker REST API.
@@ -69,9 +85,25 @@ public class KlipperHandler extends AbstractPrinterHandler {
 
     private static final String QUERY_URL_SUFFIX = "/printer/objects/query?extruder&heater_bed&print_stats&virtual_sdcard&webhooks&fan&gcode_move";
 
+    /**
+     * Matches Klipper's own extruder section naming: {@code extruder} for the first toolhead, {@code extruder1},
+     * {@code extruder2}, ... for additional ones (Klipper itself allows up to 99; see
+     * {@code kinematics/extruder.py add_printer_objects}).
+     */
+    private static final Pattern EXTRUDER_OBJECT_PATTERN = Pattern.compile("^extruder([1-9][0-9]*)?$");
+
     private @Nullable KlipperConfiguration config;
     private String lastPreviewFilename = "";
     private @Nullable RawType lastPreviewState;
+
+    /** Whether {@link #discoverExtraExtruders} has completed at least once. */
+    private boolean extrudersDiscovered = false;
+    /** Klipper object names (e.g. {@code extruder1}) for toolheads beyond the primary {@code extruder}. */
+    private List<String> extraExtruders = List.of();
+    /** The object-query URL suffix, extended with any discovered extra extruders. */
+    private String queryUrlSuffix = QUERY_URL_SUFFIX;
+    /** Maps a dynamically added per-tool setpoint channel ID to the Klipper heater object name it controls. */
+    private Map<String, String> extraSetpointHeaterByChannel = new LinkedHashMap<>();
 
     public KlipperHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -102,7 +134,12 @@ public class KlipperHandler extends AbstractPrinterHandler {
             return;
         }
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
-        HttpGetResult getResult = httpGet(baseUrl + QUERY_URL_SUFFIX, cfg.apiKey);
+
+        if (!extrudersDiscovered && !discoverExtraExtruders(baseUrl, cfg.apiKey)) {
+            return;
+        }
+
+        HttpGetResult getResult = httpGet(baseUrl + queryUrlSuffix, cfg.apiKey);
         String json = getResult.body;
         if (json == null) {
             markHttpFailure(getResult.status);
@@ -141,6 +178,20 @@ public class KlipperHandler extends AbstractPrinterHandler {
                     new QuantityType<Temperature>(extruder.temperature, SIUnits.CELSIUS));
             updateState(CHANNEL_NOZZLE_TEMPERATURE_SETPOINT,
                     new QuantityType<Temperature>(extruder.target, SIUnits.CELSIUS));
+        }
+
+        if (!extraExtruders.isEmpty()) {
+            Map<String, KlipperHeater> extraHeaters = parseExtraExtruderHeaters(json, extraExtruders);
+            for (String extruderId : extraExtruders) {
+                KlipperHeater extraHeater = extraHeaters.get(extruderId);
+                if (extraHeater != null) {
+                    int toolNumber = extruderToolNumber(extruderId);
+                    updateState(nozzleTemperatureChannelId(toolNumber),
+                            new QuantityType<Temperature>(extraHeater.temperature, SIUnits.CELSIUS));
+                    updateState(nozzleSetpointChannelId(toolNumber),
+                            new QuantityType<Temperature>(extraHeater.target, SIUnits.CELSIUS));
+                }
+            }
         }
 
         KlipperHeater bed = status.heaterBed;
@@ -196,6 +247,128 @@ public class KlipperHandler extends AbstractPrinterHandler {
         if (gcodeMove != null) {
             updateState(CHANNEL_PRINT_SPEED, new QuantityType<>(gcodeMove.speedFactor * 100.0, Units.PERCENT));
         }
+    }
+
+    /**
+     * Queries Moonraker once for the set of all available printer objects to discover which additional extruders
+     * (beyond the primary {@code extruder}) this machine has, then adds the corresponding dynamic channels to the
+     * Thing. Klipper names them {@code extruder1}, {@code extruder2}, ... with no fixed upper bound, so the
+     * printer's own object list - not a hardcoded count - determines how many toolheads are added.
+     *
+     * @return false if the discovery request itself failed, in which case the Thing status has already been
+     *         updated to reflect the failure and the caller should abort this refresh cycle and retry on the next
+     *         one.
+     */
+    private boolean discoverExtraExtruders(String baseUrl, String apiKey) {
+        HttpGetResult listResult = httpGet(baseUrl + "/printer/objects/list", apiKey);
+        String json = listResult.body;
+        if (json == null) {
+            markHttpFailure(listResult.status);
+            return false;
+        }
+
+        KlipperObjectsListResponse listResponse = fromJson(json, KlipperObjectsListResponse.class);
+        KlipperObjectsListResult listBody = listResponse != null ? listResponse.result : null;
+        List<String> objects = listBody != null ? listBody.objects : null;
+        if (objects == null) {
+            markOffline("@text/offline.comm-error-json");
+            return false;
+        }
+
+        List<Integer> extraIndexes = new ArrayList<>();
+        for (String object : objects) {
+            Matcher matcher = EXTRUDER_OBJECT_PATTERN.matcher(object);
+            if (matcher.matches() && matcher.group(1) != null) {
+                extraIndexes.add(Integer.parseInt(matcher.group(1)));
+            }
+        }
+        Collections.sort(extraIndexes);
+
+        List<String> found = new ArrayList<>();
+        StringBuilder suffix = new StringBuilder(QUERY_URL_SUFFIX);
+        for (Integer index : extraIndexes) {
+            String objectId = "extruder" + index;
+            found.add(objectId);
+            suffix.append('&').append(objectId);
+        }
+
+        extraExtruders = found;
+        queryUrlSuffix = suffix.toString();
+        if (!found.isEmpty()) {
+            logger.debug("Discovered {} additional extruder(s): {}", found.size(), found);
+            addExtraExtruderChannels(found);
+        }
+        extrudersDiscovered = true;
+        return true;
+    }
+
+    /**
+     * Adds a temperature/setpoint channel pair for each discovered extra extruder, reusing the same channel types
+     * as the primary nozzle channels. Tool numbering follows Klipper's own convention: {@code extruder} is tool 1,
+     * {@code extruder1} is tool 2, {@code extruder2} is tool 3, and so on.
+     */
+    private void addExtraExtruderChannels(List<String> extruderIds) {
+        ThingBuilder builder = editThing();
+        Map<String, String> heaterByChannel = new LinkedHashMap<>();
+        for (String extruderId : extruderIds) {
+            int toolNumber = extruderToolNumber(extruderId);
+            String tempChannelId = nozzleTemperatureChannelId(toolNumber);
+            String setpointChannelId = nozzleSetpointChannelId(toolNumber);
+
+            builder.withChannel(
+                    ChannelBuilder.create(new ChannelUID(thing.getUID(), tempChannelId), "Number:Temperature")
+                            .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature"))
+                            .withLabel("Nozzle " + toolNumber + " Temperature").build());
+            builder.withChannel(
+                    ChannelBuilder.create(new ChannelUID(thing.getUID(), setpointChannelId), "Number:Temperature")
+                            .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature-setpoint"))
+                            .withLabel("Nozzle " + toolNumber + " Setpoint").build());
+            heaterByChannel.put(setpointChannelId, extruderId);
+        }
+        extraSetpointHeaterByChannel = heaterByChannel;
+        updateThing(builder.build());
+    }
+
+    /**
+     * Parses only the requested extruder objects out of the raw object-query response, since they are not part of
+     * the fixed {@link KlipperObjectsResponse} shape (their names/count vary per machine).
+     */
+    private Map<String, KlipperHeater> parseExtraExtruderHeaters(String json, List<String> extruderIds) {
+        Map<String, KlipperHeater> heaters = new LinkedHashMap<>();
+        try {
+            JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+            JsonObject result = root.getAsJsonObject("result");
+            JsonObject status = result != null ? result.getAsJsonObject("status") : null;
+            if (status == null) {
+                return heaters;
+            }
+            for (String extruderId : extruderIds) {
+                JsonElement element = status.get(extruderId);
+                if (element != null && element.isJsonObject()) {
+                    KlipperHeater heater = gson.fromJson(element, KlipperHeater.class);
+                    if (heater != null) {
+                        heaters.put(extruderId, heater);
+                    }
+                }
+            }
+        } catch (JsonSyntaxException | IllegalStateException e) {
+            logger.debug("Failed to parse additional extruder objects: {}", e.getMessage());
+        }
+        return heaters;
+    }
+
+    private int extruderToolNumber(String extruderId) {
+        String suffix = extruderId.substring("extruder".length());
+        int index = suffix.isEmpty() ? 0 : Integer.parseInt(suffix);
+        return index + 1;
+    }
+
+    private String nozzleTemperatureChannelId(int toolNumber) {
+        return CHANNEL_NOZZLE_TEMPERATURE + "-" + toolNumber;
+    }
+
+    private String nozzleSetpointChannelId(int toolNumber) {
+        return CHANNEL_NOZZLE_TEMPERATURE_SETPOINT + "-" + toolNumber;
     }
 
     private void fetchAndUpdatePreview(String baseUrl, String apiKey, String filename) {
@@ -276,8 +449,20 @@ public class KlipperHandler extends AbstractPrinterHandler {
 
     private void handleCommandAsync(ChannelUID channelUID, Command command, KlipperConfiguration cfg) {
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
+        String channelId = channelUID.getId();
 
-        switch (channelUID.getId()) {
+        String extraHeaterName = extraSetpointHeaterByChannel.get(channelId);
+        if (extraHeaterName != null) {
+            Integer temp = toCelsius(command);
+            if (temp != null) {
+                sendGcode(baseUrl, cfg.apiKey, "SET_HEATER_TEMPERATURE HEATER=" + extraHeaterName + " TARGET=" + temp);
+            } else {
+                logger.warn("Unsupported command type {} for channel {}", command, channelUID);
+            }
+            return;
+        }
+
+        switch (channelId) {
             case CHANNEL_PAUSE_RESUME:
                 if (command instanceof OnOffType onOff) {
                     String script = OnOffType.ON.equals(onOff) ? "PAUSE" : "RESUME";
