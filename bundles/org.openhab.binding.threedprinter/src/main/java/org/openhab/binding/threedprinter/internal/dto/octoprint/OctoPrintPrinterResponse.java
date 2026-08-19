@@ -61,6 +61,9 @@ public class OctoPrintPrinterResponse {
             @SerializedName("paused")
             public boolean paused;
 
+            @SerializedName("pausing")
+            public boolean pausing;
+
             @SerializedName("cancelling")
             public boolean cancelling;
 

@@ -290,7 +290,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
                     int status = httpPost(baseUrl + "/printer/print/cancel", cfg.apiKey, "");
                     if (!HttpStatus.isSuccess(status)) {
                         logger.debug("Failed to cancel print: HTTP {}", status);
-                        markHttpFailure(status);
+                        markCommandFailure(status);
                     }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);
                 }
@@ -342,7 +342,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
         int status = httpPost(baseUrl + "/printer/gcode/script", apiKey, "{\"script\":\"" + script + "\"}");
         if (!HttpStatus.isSuccess(status)) {
             logger.debug("G-code script '{}' failed: HTTP {}", script, status);
-            markHttpFailure(status);
+            markCommandFailure(status);
         }
     }
 

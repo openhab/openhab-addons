@@ -276,7 +276,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                             "{\"command\":\"pause\",\"action\":\"" + action + "\"}");
                     if (!HttpStatus.isSuccess(status)) {
                         logger.debug("Failed to {} print: HTTP {}", action, status);
-                        markHttpFailure(status);
+                        markCommandFailure(status);
                     }
                 }
                 break;
@@ -286,7 +286,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                     int status = httpPost(baseUrl + "/api/job", cfg.apiKey, "{\"command\":\"cancel\"}");
                     if (!HttpStatus.isSuccess(status)) {
                         logger.debug("Failed to cancel print: HTTP {}", status);
-                        markHttpFailure(status);
+                        markCommandFailure(status);
                     }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);
                 }
@@ -338,24 +338,27 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         int status = httpPost(baseUrl + "/api/printer/command", apiKey, "{\"command\":\"" + gcode + "\"}");
         if (!HttpStatus.isSuccess(status)) {
             logger.debug("G-code command '{}' failed: HTTP {}", gcode, status);
-            markHttpFailure(status);
+            markCommandFailure(status);
         }
     }
 
     private String mapOctoPrintState(OctoPrintState state) {
         OctoPrintState.OctoPrintStateFlags flags = state.flags;
         if (flags != null) {
-            if (flags.printing) {
-                return STATE_PRINTING;
+            // cancelling/pausing must be checked before the general printing/paused flags: OctoPrint keeps
+            // printing=true while a print is cancelling, and printing=true/paused=false while it is pausing, so
+            // checking printing/paused first would make these transition states unreachable.
+            if (flags.error) {
+                return STATE_ERROR;
+            }
+            if (flags.cancelling || flags.pausing) {
+                return STATE_BUSY;
             }
             if (flags.paused) {
                 return STATE_PAUSED;
             }
-            if (flags.error) {
-                return STATE_ERROR;
-            }
-            if (flags.cancelling) {
-                return STATE_BUSY;
+            if (flags.printing) {
+                return STATE_PRINTING;
             }
         }
         String text = state.text.toUpperCase(Locale.ROOT);

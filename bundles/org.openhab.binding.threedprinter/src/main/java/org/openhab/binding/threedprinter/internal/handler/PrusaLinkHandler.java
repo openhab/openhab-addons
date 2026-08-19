@@ -59,6 +59,15 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
     private String lastPreviewFilename = "";
     private @Nullable RawType lastPreviewState;
     private int lastJobId = -1;
+    /**
+     * The job ID whose file metadata (name/preview) is currently reflected by the corresponding channels. Used to
+     * tell an unresolvable {@code /api/v1/job} request apart from a genuine "no job" response: if the job ID hasn't
+     * changed since this was last updated, a transient failure leaves the existing metadata in place instead of
+     * replacing it with {@code UNDEF}. Starts at a sentinel distinct from the "no job" value of {@code -1}, so the
+     * very first failure (before any metadata has ever been fetched) still results in {@code UNDEF} rather than
+     * silently doing nothing.
+     */
+    private int lastKnownJobFileId = -2;
 
     public PrusaLinkHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -137,23 +146,41 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
         }
 
         // /api/v1/status does not include file name or thumbnail info; fetch /api/v1/job for that
-        updateJobFile(baseUrl, cfg.apiKey);
+        updateJobFile(baseUrl, cfg.apiKey, lastJobId);
     }
 
-    private void updateJobFile(String baseUrl, String apiKey) {
+    private void updateJobFile(String baseUrl, String apiKey, int currentJobId) {
         HttpGetResult jobResult = httpGet(baseUrl + "/api/v1/job", apiKey);
+        if (jobResult.status == HttpStatus.NO_CONTENT_204) {
+            // PrusaLink's documented signal for "no active job"; the metadata is genuinely absent.
+            updateState(CHANNEL_JOB_NAME, new StringType(""));
+            clearPreview();
+            lastKnownJobFileId = currentJobId;
+            return;
+        }
+
         String jobJson = jobResult.body;
         PrusaJobResponse jobResponse = jobJson != null ? fromJson(jobJson, PrusaJobResponse.class) : null;
         PrusaJobFile file = jobResponse != null ? jobResponse.file : null;
 
         if (file == null) {
-            updateState(CHANNEL_JOB_NAME, new StringType(""));
-            clearPreview();
+            // The auxiliary request itself failed (transport error, auth failure, unexpected HTTP status, or
+            // malformed JSON) rather than PrusaLink reporting "no job"; the primary /api/v1/status request
+            // already succeeded, so this alone must not take the Thing OFFLINE. The metadata is unknown, not
+            // absent: if it still belongs to the job we last successfully fetched, leave the existing
+            // name/preview in place rather than overwriting known-good data with a transient failure.
+            logger.debug("Failed to fetch PrusaLink job file metadata: HTTP {}", jobResult.status);
+            if (currentJobId != lastKnownJobFileId) {
+                updateState(CHANNEL_JOB_NAME, UnDefType.UNDEF);
+                clearPreview();
+                lastKnownJobFileId = currentJobId;
+            }
             return;
         }
 
         String name = file.displayName.isBlank() ? file.name : file.displayName;
         updateState(CHANNEL_JOB_NAME, new StringType(name));
+        lastKnownJobFileId = currentJobId;
 
         var refs = file.refs;
         String thumbnailRef = refs != null ? refs.thumbnail : "";
@@ -219,7 +246,7 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
                         // The Thing status now reflects the failure, so this stays at debug to avoid warn-level
                         // spam for what is typically a temporary communication problem.
                         logger.debug("Failed to {} job {}: HTTP {}", action, jobId, status);
-                        markHttpFailure(status);
+                        markCommandFailure(status);
                     }
                 }
                 break;
@@ -233,7 +260,7 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
                         int status = httpDelete(baseUrl + "/api/v1/job/" + jobId, cfg.apiKey);
                         if (!HttpStatus.isSuccess(status)) {
                             logger.debug("Failed to cancel job {}: HTTP {}", jobId, status);
-                            markHttpFailure(status);
+                            markCommandFailure(status);
                         }
                     }
                     updateState(CHANNEL_CANCEL, OnOffType.OFF);

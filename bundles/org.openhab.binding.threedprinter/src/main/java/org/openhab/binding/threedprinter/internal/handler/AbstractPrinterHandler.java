@@ -239,6 +239,24 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
     }
 
     /**
+     * Updates the Thing status in response to a failed command (pause/resume/cancel/setpoint/etc.), distinguishing
+     * an application-level rejection of the command from an actual communication failure. PrusaLink and OctoPrint
+     * both return {@code 404}/{@code 409} when a command doesn't match the printer's current job state - e.g. a
+     * stale job ID, or a cancel racing a job that already finished - meaning the API was reached and responded
+     * normally, so the Thing should stay {@code ONLINE}; a refresh is triggered instead so the channels reconcile
+     * with the printer's actual state. Transport failures and {@code 401}/{@code 403} still behave like
+     * {@link #markHttpFailure(int)}.
+     */
+    protected void markCommandFailure(int status) {
+        if (status == HttpStatus.NOT_FOUND_404 || status == HttpStatus.CONFLICT_409) {
+            logger.debug("Command rejected by printer due to its current state: HTTP {}", status);
+            scheduler.execute(this::refresh);
+        } else {
+            markHttpFailure(status);
+        }
+    }
+
+    /**
      * Parses a JSON string into the given type, returning null on malformed input instead of throwing. This prevents a
      * {@link JsonSyntaxException} from propagating out of the scheduled refresh task and silently stopping all future
      * polling.
