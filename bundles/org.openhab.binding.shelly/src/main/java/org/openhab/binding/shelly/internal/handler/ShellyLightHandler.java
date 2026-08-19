@@ -531,7 +531,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         for (ShellyLightModel model : lightModels.values()) {
             model.acquire();
         }
-        logger.debug("{}: light models acquired", thingName);
+        logger.debug("{}: all light models acquired", thingName);
     }
 
     @Override
@@ -540,7 +540,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         for (ShellyLightModel model : lightModels.values()) {
             result |= model.release();
         }
-        logger.debug("{}: light models released", thingName);
+        logger.debug("{}: all light models released", thingName);
         return result;
     }
 }

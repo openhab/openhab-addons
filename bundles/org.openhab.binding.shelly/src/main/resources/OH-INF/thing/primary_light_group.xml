@@ -6,7 +6,7 @@
 
 	<channel-group-type id="primary-group-color">
 		<label>Primary</label>
-		<description>OpenHAB standard light control</description>
+		<description>Primary control group</description>
 		<channels>
 			<channel id="primary-color" typeId="system.color"/>
 		</channels>
@@ -14,7 +14,7 @@
 
 	<channel-group-type id="primary-group-white">
 		<label>Primary</label>
-		<description>OpenHAB standard light control</description>
+		<description>Primary control group</description>
 		<channels>
 			<channel id="primary-brightness" typeId="system.brightness"/>
 		</channels>
@@ -22,7 +22,7 @@
 
 	<channel-group-type id="primary-group-cct">
 		<label>Primary</label>
-		<description>OpenHAB standard light controls</description>
+		<description>Primary control group</description>
 		<channels>
 			<channel id="primary-brightness" typeId="system.brightness"/>
 			<channel id="primary-color-temp" typeId="system.color-temperature"/>
@@ -32,7 +32,7 @@
 
 	<channel-group-type id="primary-group-color-cct">
 		<label>Primary</label>
-		<description>OpenHAB standard light controls</description>
+		<description>Primary control group</description>
 		<channels>
 			<channel id="primary-color" typeId="system.color"/>
 			<channel id="primary-color-temp" typeId="system.color-temperature"/>

@@ -148,7 +148,7 @@ public class Shelly1CoIoTProtocol {
                     case "blue":
                     case "white":
                     case "gain":
-                        // TODO case "effect" ??
+                    case "effect":
                         if (lightModelHandler != null && lightModelHandler
                                 .getLightModel(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {
@@ -167,7 +167,9 @@ public class Shelly1CoIoTProtocol {
                                 case "gain":
                                     model.setGain((int) s.value);
                                     break;
-                                // TODO case "effect" ??
+                                case "effect":
+                                    model.setEffect((int) s.value);
+                                    break;
                             }
                         } else {
                             logger.debug("{}: Unable to update color channel {} for sensor {}", thingName, sen.desc,
