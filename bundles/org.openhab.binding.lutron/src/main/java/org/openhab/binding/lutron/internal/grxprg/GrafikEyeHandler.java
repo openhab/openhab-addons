@@ -262,7 +262,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
      * starts a status refresh job
      */
     private void internalInitialize() {
-        config = getThing().getConfiguration().as(GrafikEyeConfig.class);
+        config = getConfigAs(GrafikEyeConfig.class);
 
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
