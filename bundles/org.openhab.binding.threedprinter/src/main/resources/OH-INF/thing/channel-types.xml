@@ -173,7 +173,7 @@
 		<description>Part-cooling fan speed in RPM. Read-only: PrusaLink does not support changing the fan speed, and the
 			maximum RPM varies by printer model, so a percentage cannot be derived reliably.</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" min="0" pattern="%d %unit%"/>
 	</channel-type>
