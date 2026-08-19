@@ -542,7 +542,7 @@ public class ShellyChannelDefinitions {
             ShellySettingsRgbwLight light = lights.get(idx);
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
             // Create power channel in color mode and brightness channel in white mode
-            addChannel(thing, add, profile.inColor, group, CHANNEL_LIGHT_POWER);
+            addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
