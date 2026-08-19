@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.shelly.internal.util;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
