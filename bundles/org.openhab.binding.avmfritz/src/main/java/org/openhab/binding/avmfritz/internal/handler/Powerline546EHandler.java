@@ -22,7 +22,6 @@ import java.util.function.Predicate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
@@ -233,7 +232,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
 
     /**
      * Builds a {@link ThingUID} from a device model. The UID is build from the
-     * {@link AVMFritzBindingConstants#BINDING_ID} and value of
+     * {@link org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants#BINDING_ID} and value of
      * {@link AVMFritzBaseModel#getProductName()} in which all characters NOT matching
      * the regex [^a-zA-Z0-9_] are replaced by "_".
      *
