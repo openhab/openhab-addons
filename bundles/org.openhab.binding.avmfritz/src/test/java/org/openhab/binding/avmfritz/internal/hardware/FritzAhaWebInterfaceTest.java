@@ -13,8 +13,11 @@
 package org.openhab.binding.avmfritz.internal.hardware;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,6 +30,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -113,6 +118,25 @@ public class FritzAhaWebInterfaceTest {
         }
     }
 
+    @Test
+    public void authenticationRemainsCurrentUntilStatusUpdateCompletes() {
+        AVMFritzBoxConfiguration config = new AVMFritzBoxConfiguration();
+        FritzAhaWebInterface webInterface = new FritzAhaWebInterface(config, handler, new HttpClient());
+        AtomicBoolean firstStatusUpdate = new AtomicBoolean(true);
+        AtomicReference<CompletableFuture<Boolean>> authenticationDuringStatusUpdate = new AtomicReference<>();
+        doAnswer(invocation -> {
+            if (firstStatusUpdate.getAndSet(false)) {
+                authenticationDuringStatusUpdate.set(webInterface.authenticate());
+            }
+            return null;
+        }).when(handler).setStatusInfo(any(), any(), any());
+
+        CompletableFuture<Boolean> authentication = webInterface.authenticate();
+
+        assertSame(authentication, authenticationDuringStatusUpdate.get());
+        webInterface.dispose();
+    }
+
     private void acceptWithoutResponding(ServerSocket serverSocket, CountDownLatch requestAccepted,
             CountDownLatch releaseServer) {
         try (Socket ignored = serverSocket.accept()) {
@@ -131,9 +155,9 @@ public class FritzAhaWebInterfaceTest {
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
-            while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                // Read the complete request header before responding.
-            }
+            do {
+                line = reader.readLine();
+            } while (line != null && !line.isEmpty());
             String response = "HTTP/1.1 200 OK\r\nContent-Length: " + content.getBytes(StandardCharsets.UTF_8).length
                     + "\r\nConnection: close\r\n\r\n" + content;
             socket.getOutputStream().write(response.getBytes(StandardCharsets.UTF_8));

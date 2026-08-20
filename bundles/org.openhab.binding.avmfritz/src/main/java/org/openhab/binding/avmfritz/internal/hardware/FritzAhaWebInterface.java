@@ -210,21 +210,17 @@ public class FritzAhaWebInterface {
 
     private void completeAuthentication(CompletableFuture<Boolean> currentAuthentication, @Nullable String newSid,
             ThingStatusDetail statusDetail, @Nullable String description) {
-        boolean currentAttempt;
         synchronized (authenticationLock) {
-            currentAttempt = currentAuthentication.equals(authentication) && !disposed;
-            if (currentAttempt) {
-                sid = newSid;
-                authentication = null;
+            if (currentAuthentication != authentication || disposed) {
+                currentAuthentication.complete(false);
+                return;
             }
+            sid = newSid;
+            boolean authenticated = newSid != null;
+            handler.setStatusInfo(authenticated ? ThingStatus.ONLINE : ThingStatus.OFFLINE, statusDetail, description);
+            currentAuthentication.complete(authenticated);
+            authentication = null;
         }
-        if (!currentAttempt) {
-            currentAuthentication.complete(false);
-            return;
-        }
-        boolean authenticated = newSid != null;
-        handler.setStatusInfo(authenticated ? ThingStatus.ONLINE : ThingStatus.OFFLINE, statusDetail, description);
-        currentAuthentication.complete(authenticated);
     }
 
     /**
