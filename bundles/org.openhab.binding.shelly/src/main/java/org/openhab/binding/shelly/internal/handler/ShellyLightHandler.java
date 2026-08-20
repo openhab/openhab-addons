@@ -288,7 +288,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         logger.trace("{}: updateRemoteDeviceFromLightModel() with [{}]", thingName, model);
         boolean apiCommandSent = false;
 
-        // POWER: send this first as it may affect the processing of subsequent parameters
+        // ON-OFF (via own channel): send first as it may affect the processing of subsequent parameters
         if (model.supportsOnOffChannel() && model.isOnOffDirty()) { // config.getBrightnessAutoOn() not used
             api.setLightTurn(model.getLightId(), OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF);
             apiCommandSent = true;
@@ -302,6 +302,11 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // map of changed light parameters to send to the device
         Map<String, String> parms = new TreeMap<>();
+
+        // ON-OFF (via white channel):
+        if (model.supportsOnOffViaBrightnessChannel() && model.isOnOffDirty()) {
+            parms.put(SHELLY_LIGHT_TURN, OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF);
+        }
 
         // COLOR:
         if (model.supportsColorChannel() && model.isColorDirty()) {
@@ -362,16 +367,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         if (logger.isTraceEnabled()) {
             logger.trace("{}: updateLightModelFromStatus() with {}", thingName, new Gson().toJson(light));
         }
-        // ON/OFF:
-        if (light.ison != null) {
-            model.setOnOff(light.ison);
-        }
-
-        // TIMERS & POWER:
-        // this will be handled in PHASE 2 updateChannelsFromModel()
-
-        // OVERPOWER:
-        // this will be handled in PHASE 2 updateChannelsFromModel()
 
         // COLOR: this may change model's mode
         if (light.red != null && light.green != null && light.blue != null) {
@@ -382,7 +377,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             }
         }
 
-        // GAIN: this may change model's mode
+        // GAIN: this may change model's mode and on-off state
         if (light.gain != null) {
             model.setGain(getInteger(light.gain));
         }
@@ -392,7 +387,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             model.setEffect(getInteger(light.effect));
         }
 
-        // BRIGHTNESS: this may change model's mode
+        // BRIGHTNESS: this may change model's mode and on-off state
         if (light.brightness != null) {
             model.setBrightness(getInteger(light.brightness));
         }
@@ -404,6 +399,11 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // MODE: setters may have updated the light model's mode
         // i.e. do nothing
+
+        // ON-OFF: setters may have updated the light model's state so do this last
+        if (light.ison != null) {
+            model.setOnOff(light.ison);
+        }
     }
 
     /**
@@ -452,7 +452,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         int channelId = lightId + 1; // one based
         String group = null;
 
-        // POWER:
+        // ON-OFF:
         if (model.supportsOnOffChannel() && model.isOnOffDirty()) {
             group = buildControlGroupName(profile, channelId);
             updated |= updateChannel(group, CHANNEL_LIGHT_POWER, model.getOnOffState());

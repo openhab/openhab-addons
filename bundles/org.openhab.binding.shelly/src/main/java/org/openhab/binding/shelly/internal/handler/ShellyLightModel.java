@@ -747,4 +747,23 @@ public class ShellyLightModel extends LightModel {
         // @formatter:on
         ;
     }
+
+    /**
+     * Returns true if the light model supports on/off via its brightness channel, false
+     * otherwise. This is a special case for devices operating in light mode, which do not
+     * support an own switch channel.
+     *
+     * @return true if such channels are supported, false otherwise.
+     */
+    public boolean supportsOnOffViaBrightnessChannel() {
+        return
+        // @formatter:off
+            (isRGBW2 && Mode.WHITE == operatingMode) ||
+            // TODO isProfileCCTX2 ??
+            // TODO isProfileRGBCCT && lightId == 0 ?? 
+            (isProfileLIGHT) ||
+            (isProfileRGBX2LIGHT && lightId > 0)
+        // @formatter:on
+        ;
+    }
 }
