@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
@@ -116,24 +117,28 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     // Pro/Plus RGBW(W) PM: RPC method family per settings.lights[i].apiComponent tag - replaces per-call-site
     // profile-string checks (SHELLY2_PROFILE_CCTX2.equals(...)) with a single lookup, correct for hybrid profiles.
-    private record LightRpcMethods(String getStatus, String set, String setConfig) {
+    private record LightRpcMethods(String getStatus, String set, String setConfig, String displayName) {
     }
 
     private static final LightRpcMethods LIGHT_RPC_METHODS_LIGHT = new LightRpcMethods(SHELLYRPC_METHOD_LIGHT_STATUS,
-            SHELLYRPC_METHOD_LIGHT_SET, SHELLYRPC_METHOD_LIGHT_SETCONFIG);
-    private static final Map<String, LightRpcMethods> LIGHT_RPC_METHODS = Map.of(API_COMPONENT_RGB,
-            new LightRpcMethods(SHELLYRPC_METHOD_RGB_STATUS, SHELLYRPC_METHOD_RGB_SET, SHELLYRPC_METHOD_RGB_SETCONFIG),
-            API_COMPONENT_RGBW,
+            SHELLYRPC_METHOD_LIGHT_SET, SHELLYRPC_METHOD_LIGHT_SETCONFIG, "Light");
+    private static final Map<ShellyLightApiComponent, LightRpcMethods> LIGHT_RPC_METHODS = Map.of(
+            ShellyLightApiComponent.RGB,
+            new LightRpcMethods(
+                    SHELLYRPC_METHOD_RGB_STATUS, SHELLYRPC_METHOD_RGB_SET, SHELLYRPC_METHOD_RGB_SETCONFIG, "RGB"),
+            ShellyLightApiComponent.RGBW,
             new LightRpcMethods(SHELLYRPC_METHOD_RGBW_STATUS, SHELLYRPC_METHOD_RGBW_SET,
-                    SHELLYRPC_METHOD_RGBW_SETCONFIG),
-            API_COMPONENT_CCT,
-            new LightRpcMethods(SHELLYRPC_METHOD_CCT_STATUS, SHELLYRPC_METHOD_CCT_SET, SHELLYRPC_METHOD_CCT_SETCONFIG),
-            API_COMPONENT_LIGHT, LIGHT_RPC_METHODS_LIGHT);
+                    SHELLYRPC_METHOD_RGBW_SETCONFIG, "RGBW"),
+            ShellyLightApiComponent.CCT, new LightRpcMethods(SHELLYRPC_METHOD_CCT_STATUS, SHELLYRPC_METHOD_CCT_SET,
+                    SHELLYRPC_METHOD_CCT_SETCONFIG, "CCT"),
+            ShellyLightApiComponent.LIGHT, LIGHT_RPC_METHODS_LIGHT);
+
+    private ShellyLightApiComponent lightComponentTag(ShellyDeviceProfile profile, int index) {
+        return tagAt(profile.settings.lights, index);
+    }
 
     private LightRpcMethods lightRpcMethods(ShellyDeviceProfile profile, int index) {
-        List<@Nullable ShellySettingsRgbwLight> lights = profile.settings.lights;
-        String tag = lights != null && index >= 0 && index < lights.size() ? lights.get(index).apiComponent : null;
-        LightRpcMethods methods = tag != null ? LIGHT_RPC_METHODS.get(tag) : null;
+        LightRpcMethods methods = LIGHT_RPC_METHODS.get(lightComponentTag(profile, index));
         return methods != null ? methods : LIGHT_RPC_METHODS_LIGHT;
     }
 
@@ -845,8 +850,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         for (int i = 0; i < numLights; i++) {
             LightRpcMethods methods = lightRpcMethods(profile, i);
             ShellyStatusLightChannel lightChannel;
-            if (methods.getStatus().equals(SHELLYRPC_METHOD_RGB_STATUS)
-                    || methods.getStatus().equals(SHELLYRPC_METHOD_RGBW_STATUS)) {
+            if (profile.hasColorTag(i)) {
                 Shelly2RGBWStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(methods.getStatus()).withId(i),
                         Shelly2RGBWStatus.class);
                 lightChannel = new ShellyStatusLightChannel();
@@ -936,8 +940,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         String method;
         String component;
         if (profile.isRGBW2) {
-            method = lightRpcMethods(profile, index).setConfig();
-            component = method.substring(0, method.indexOf('.')); // "RGB"/"RGBW"/"CCT"/"Light"
+            LightRpcMethods methods = lightRpcMethods(profile, index);
+            method = methods.setConfig();
+            component = methods.displayName();
         } else if (profile.isLight || profile.isDimmer) {
             method = SHELLYRPC_METHOD_LIGHT_SETCONFIG;
             component = "Light";
@@ -1096,11 +1101,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return ""; // Gen2 uses WS to publish debug log
     }
 
-    /*
-     * The following API calls are not yet relevant, because currently there a no Plus/Pro (Gen2) devices of those
-     * categories (e.g. bulbs)
-     */
-
     @Override
     public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
         setLightParms(lightIndex, Map.of(parm, value));
@@ -1109,6 +1109,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
+        if (!profile.isRGBW2) {
+            throw new ShellyApiException("API call not implemented");
+        }
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = lightIndex;
 
@@ -1125,8 +1128,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             params.on = b > 0;
         }
 
-        String rawProfile = getString(profile.device.profile);
-        if (SHELLY2_PROFILE_RGBW.equals(rawProfile)) {
+        ShellyLightApiComponent tag = lightComponentTag(profile, lightIndex);
+        if (isRgbwComponent(tag)) {
             String red = parameters.get(SHELLY_COLOR_RED);
             String green = parameters.get(SHELLY_COLOR_GREEN);
             String blue = parameters.get(SHELLY_COLOR_BLUE);
@@ -1137,25 +1140,26 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (white != null) {
                 params.white = Integer.parseInt(white);
             }
-            apiRequest(SHELLYRPC_METHOD_RGBW_SET, params, String.class);
-        } else if (profile.inColor) {
+        } else if (isRgbComponent(tag)) {
             String red = parameters.get(SHELLY_COLOR_RED);
             String green = parameters.get(SHELLY_COLOR_GREEN);
             String blue = parameters.get(SHELLY_COLOR_BLUE);
             if (red != null && green != null && blue != null) {
                 params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
             }
-            apiRequest(SHELLYRPC_METHOD_RGB_SET, params, String.class);
-        } else if (SHELLY2_PROFILE_CCTX2.equals(rawProfile)) {
+        } else if (isCctComponent(tag)) {
             String ct = parameters.get(SHELLY_COLOR_TEMP);
             if (ct != null) {
                 params.ct = Integer.parseInt(ct);
             }
-            apiRequest(SHELLYRPC_METHOD_CCT_SET, params, String.class);
-        } else {
-            apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
         }
+        apiRequest(lightRpcMethods(profile, lightIndex).set(), params, String.class);
     }
+
+    /*
+     * The following API calls are not yet relevant, because currently there a no Plus/Pro (Gen2) devices of those
+     * categories (e.g. bulbs)
+     */
 
     @Override
     public void setLightMode(String mode) throws ShellyApiException {

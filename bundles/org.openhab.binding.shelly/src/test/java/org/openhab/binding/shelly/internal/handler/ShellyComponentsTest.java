@@ -19,8 +19,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
-import static org.openhab.binding.shelly.internal.api.ShellyLightApiComponentDTO.API_COMPONENT_CCT;
-import static org.openhab.binding.shelly.internal.api.ShellyLightApiComponentDTO.API_COMPONENT_RGB;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_CLOSE;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_OPEN;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
@@ -36,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
@@ -961,9 +960,9 @@ public class ShellyComponentsTest {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
         profile.inColor = true;
         ShellySettingsRgbwLight colorComponent = new ShellySettingsRgbwLight();
-        colorComponent.apiComponent = API_COMPONENT_RGB;
+        colorComponent.apiComponent = ShellyLightApiComponent.RGB;
         ShellySettingsRgbwLight cctComponent = new ShellySettingsRgbwLight();
-        cctComponent.apiComponent = API_COMPONENT_CCT;
+        cctComponent.apiComponent = ShellyLightApiComponent.CCT;
         profile.settings.lights = new ArrayList<>(List.of(colorComponent, cctComponent));
         return profile;
     }

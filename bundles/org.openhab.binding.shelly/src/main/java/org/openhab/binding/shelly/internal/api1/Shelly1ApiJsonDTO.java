@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.core.thing.CommonTriggerEvents;
@@ -522,8 +523,8 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("out_off_url")
         public String outOffUrl; // output is deactivated
 
-        // Gen2 (Pro RGBWW PM) only: which RPC component this entry maps to, see Shelly2ApiRpc.API_COMPONENT_*
-        public transient String apiComponent = "";
+        // Gen2 (Pro RGBWW PM) only: which RPC component this entry maps to, see ShellyApiLightUtil
+        public transient ShellyLightApiComponent apiComponent = ShellyLightApiComponent.NONE;
     }
 
     public static class ShellyFavPos { // FW 1.9.2+ in roller mode

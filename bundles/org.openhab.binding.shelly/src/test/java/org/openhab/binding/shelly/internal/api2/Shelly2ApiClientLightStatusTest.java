@@ -147,7 +147,8 @@ public class Shelly2ApiClientLightStatusTest {
     private ShellyDeviceProfile proRgbwwPmProfile(String rawProfile, int numLights, int numMeters) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyprorgbwwpm"));
         profile.isRGBW2 = true;
-        profile.inColor = !SHELLY2_PROFILE_CCTX2.equals(rawProfile);
+        profile.inColor = SHELLY2_PROFILE_RGB.equals(rawProfile) || SHELLY2_PROFILE_RGBW.equals(rawProfile)
+                || SHELLY2_PROFILE_RGBCCT.equals(rawProfile) || SHELLY2_PROFILE_RGBX2LIGHT.equals(rawProfile);
         profile.device.profile = rawProfile;
         profile.numMeters = numMeters;
         ShellySettingsStatus status = profile.status;
@@ -340,6 +341,40 @@ public class Shelly2ApiClientLightStatusTest {
         assertThat(emeters.get(2).total, is(60.0));
         assertThat(profile.status.lights.get(1).ison, is(true));
         assertThat(profile.status.lights.get(2).ison, is(true));
+    }
+
+    @Test
+    void lightProfilePopulatesMeterSlotForEachComponent() throws ShellyApiException {
+        // plain "light" profile (no color component): every settings.lights entry starts at slot 0
+        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_LIGHT, 2, 2);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.light0 = lightStatusWithMeter(0, 5.0, 50.0, 228.0, 0.02);
+        result.light1 = lightStatusWithMeter(1, 6.0, 60.0, 227.0, 0.03);
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        List<ShellySettingsEMeter> emeters = profile.status.emeters;
+        assertThat(emeters.get(0).power, is(5.0));
+        assertThat(emeters.get(0).total, is(50.0));
+        assertThat(emeters.get(1).power, is(6.0));
+        assertThat(emeters.get(1).total, is(60.0));
+    }
+
+    @Test
+    void rgbProfilePopulatesMeterSlotForColorComponent() throws ShellyApiException {
+        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_RGB, 1, 1);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.rgb0 = rgbwStatusWithMeter(20.0, 200.0, 230.0, 0.1);
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        List<ShellySettingsEMeter> emeters = profile.status.emeters;
+        assertThat(emeters.get(0).power, is(20.0));
+        assertThat(emeters.get(0).total, is(200.0));
     }
 
     @Test

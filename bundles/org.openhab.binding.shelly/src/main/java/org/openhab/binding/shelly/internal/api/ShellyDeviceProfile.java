@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -95,6 +96,8 @@ public class ShellyDeviceProfile {
     public boolean isBulb; // true only if it is a Bulb
     public boolean isDuo; // true only if it is a Duo
     public boolean isRGBW2; // true only if it a RGBW2
+    public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
+                                 // from a Plus RGBW PM running the same rgb/rgbw/light profile)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
     public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
 
@@ -214,6 +217,7 @@ public class ShellyDeviceProfile {
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
+        isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
@@ -366,13 +370,17 @@ public class ShellyDeviceProfile {
      * because a hybrid profile's (rgbcct, rgbx2light) secondary component(s) are not color even though the
      * whole-profile inColor flag is true. Untagged (Gen1 RGBW2) entries fall back to that whole-profile flag.
      */
-    public boolean isColorComponent(int idx) {
-        List<ShellySettingsRgbwLight> lights = settings.lights;
-        if (lights == null || idx < 0 || idx >= lights.size()) {
-            return inColor;
-        }
-        String tag = lights.get(idx).apiComponent;
-        return tag.isEmpty() ? inColor : ("rgb".equals(tag) || "rgbw".equals(tag));
+    public boolean hasColorTag(int idx) {
+        ShellyLightApiComponent tag = tagAt(settings.lights, idx);
+        return tag == ShellyLightApiComponent.NONE ? inColor : ShellyApiLightUtil.isColorComponent(tag);
+    }
+
+    /**
+     * True when settings.lights[idx] is a CCT (color temperature) component - Gen2 only, untagged Gen1 entries are
+     * never CCT.
+     */
+    public boolean isCctComponent(int idx) {
+        return ShellyApiLightUtil.isCctComponent(tagAt(settings.lights, idx));
     }
 
     public String getInputGroup(int i) {

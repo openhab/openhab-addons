@@ -887,7 +887,7 @@ public class ShellyComponents {
             }
             List<ShellySettingsLight> lights = orgStatus.lights;
             for (int i = 0; i < lights.size(); i++) {
-                if (profile.isColorComponent(i)) {
+                if (profile.hasColorTag(i)) {
                     // color component is handled by updateRGBW(); this loop only covers CCT/Light components
                     // (a hybrid profile's secondary component(s), or all of them for a plain white-mode RGBW2)
                     continue;

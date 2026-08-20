@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 
@@ -138,7 +139,7 @@ public class Shelly2ApiRpcLightDispatchTest {
         };
     }
 
-    private static ShellySettingsRgbwLight taggedLight(String apiComponent) {
+    private static ShellySettingsRgbwLight taggedLight(ShellyLightApiComponent apiComponent) {
         ShellySettingsRgbwLight light = new ShellySettingsRgbwLight();
         light.apiComponent = apiComponent;
         return light;
@@ -149,7 +150,8 @@ public class Shelly2ApiRpcLightDispatchTest {
         profile.isRGBW2 = true;
         profile.inColor = true;
         profile.device.profile = rawProfile;
-        String tag = SHELLY2_PROFILE_RGB.equals(rawProfile) ? "rgb" : "rgbw";
+        ShellyLightApiComponent tag = SHELLY2_PROFILE_RGB.equals(rawProfile) ? ShellyLightApiComponent.RGB
+                : ShellyLightApiComponent.RGBW;
         ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
         lights.add(taggedLight(tag));
         profile.settings.lights = lights;
@@ -163,7 +165,7 @@ public class Shelly2ApiRpcLightDispatchTest {
         profile.device.profile = SHELLY2_PROFILE_LIGHT;
         ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
         for (int i = 0; i < numChannels; i++) {
-            lights.add(taggedLight("light"));
+            lights.add(taggedLight(ShellyLightApiComponent.LIGHT));
         }
         profile.settings.lights = lights;
         return profile;
@@ -176,7 +178,7 @@ public class Shelly2ApiRpcLightDispatchTest {
         profile.device.profile = SHELLY2_PROFILE_CCTX2;
         ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
         for (int i = 0; i < numChannels; i++) {
-            lights.add(taggedLight("cct"));
+            lights.add(taggedLight(ShellyLightApiComponent.CCT));
         }
         profile.settings.lights = lights;
         return profile;

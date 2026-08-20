@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
@@ -854,12 +855,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateMeter(status, meterIdx, emeter, channelUpdate);
     }
 
-    private boolean isProRgbwwPmProfile(ShellyDeviceProfile profile) {
-        String p = profile.device.profile;
-        return SHELLY2_PROFILE_RGBCCT.equals(p) || SHELLY2_PROFILE_CCTX2.equals(p)
-                || SHELLY2_PROFILE_RGBX2LIGHT.equals(p);
-    }
-
     /**
      * Convert aenergy.by_minute (mWh per complete minute, up to 3 slots) to Wh.
      * Returns null when the device did not report a usable slot 0 (e.g. clock not synced).
@@ -1222,13 +1217,17 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return;
         }
 
-        record Candidate(String apiComponent, @Nullable Shelly2GetConfigLight config) {
+        record Candidate(ShellyLightApiComponent apiComponent, @Nullable Shelly2GetConfigLight config) {
         }
-        List<Candidate> candidates = List.of(new Candidate(API_COMPONENT_RGBW, dc.rgbw0),
-                new Candidate(API_COMPONENT_RGB, dc.rgb0), new Candidate(API_COMPONENT_CCT, dc.cct0),
-                new Candidate(API_COMPONENT_CCT, dc.cct1), new Candidate(API_COMPONENT_LIGHT, dc.light0),
-                new Candidate(API_COMPONENT_LIGHT, dc.light1), new Candidate(API_COMPONENT_LIGHT, dc.light2),
-                new Candidate(API_COMPONENT_LIGHT, dc.light3), new Candidate(API_COMPONENT_LIGHT, dc.light4));
+        List<Candidate> candidates = List.of(new Candidate(ShellyLightApiComponent.RGBW, dc.rgbw0),
+                new Candidate(ShellyLightApiComponent.RGB, dc.rgb0),
+                new Candidate(ShellyLightApiComponent.CCT, dc.cct0),
+                new Candidate(ShellyLightApiComponent.CCT, dc.cct1),
+                new Candidate(ShellyLightApiComponent.LIGHT, dc.light0),
+                new Candidate(ShellyLightApiComponent.LIGHT, dc.light1),
+                new Candidate(ShellyLightApiComponent.LIGHT, dc.light2),
+                new Candidate(ShellyLightApiComponent.LIGHT, dc.light3),
+                new Candidate(ShellyLightApiComponent.LIGHT, dc.light4));
 
         ArrayList<ShellySettingsRgbwLight> lights = new ArrayList<>();
         for (Candidate c : candidates) {
@@ -1240,12 +1239,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (lights.isEmpty()) {
             lights.add(new ShellySettingsRgbwLight());
         }
-        profile.inColor = lights.stream()
-                .anyMatch(l -> API_COMPONENT_RGB.equals(l.apiComponent) || API_COMPONENT_RGBW.equals(l.apiComponent));
+        profile.inColor = hasColorComponent(lights);
         profile.settings.lights = lights;
     }
 
-    private ShellySettingsRgbwLight createRgbwLightSetting(Shelly2GetConfigLight src, String apiComponent) {
+    private ShellySettingsRgbwLight createRgbwLightSetting(Shelly2GetConfigLight src,
+            ShellyLightApiComponent apiComponent) {
         ShellySettingsRgbwLight ls = new ShellySettingsRgbwLight();
         ls.autoOn = src.autoOnDelay;
         ls.autoOff = src.autoOffDelay;
@@ -1304,7 +1303,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ds.ison = value.output;
 
         status.lights.set(rgbwId, ds);
-        if (isProRgbwwPmProfile(profile)) {
+        if (profile.isProRgbwwPm) {
             // the color component always sits at settings.lights[0]
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
@@ -1344,7 +1343,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.temp = ct;
         }
         lights.set(lightId, ds);
-        if (isProRgbwwPmProfile(profile)) {
+        if (profile.isProRgbwwPm) {
             // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
             updateComponentMeter(status, lightId, value.apower, value.aenergy, value.voltage, value.current,
                     channelUpdate);

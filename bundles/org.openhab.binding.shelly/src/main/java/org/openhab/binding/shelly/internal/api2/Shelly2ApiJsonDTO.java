@@ -114,13 +114,6 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1
     public static final String SHELLY2_PROFILE_RGBX2LIGHT = "rgbx2light"; // Pro RGBWW PM: RGB:0 + Light:0/1
 
-    // Pro RGBWW PM: settings.lights[i].apiComponent tag, selects which RPC component family (and thus which
-    // Light.*/RGB.*/RGBW.*/CCT.* method) an index maps to - see Shelly2ApiRpc.LIGHT_RPC_METHODS
-    public static final String API_COMPONENT_RGB = "rgb";
-    public static final String API_COMPONENT_RGBW = "rgbw";
-    public static final String API_COMPONENT_CCT = "cct";
-    public static final String API_COMPONENT_LIGHT = "light";
-
     // Button types/modes
     public static final String SHELLY2_BTNT_MOMENTARY = "momentary";
     public static final String SHELLY2_BTNT_FLIP = "flip";
