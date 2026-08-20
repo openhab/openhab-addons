@@ -24,10 +24,9 @@ let LVL_TRACE = 4;
 let LOG_LEVEL = LVL_INFO;
 
 // LOG_LEVEL persisted in KVS survives the binding's script re-sync
-Shelly.call("KVS.GetMany", { match: "oh-blu-scanner.*" }, function (res) {
-  if (!res || !res.items) return;
-  let name = res.items["oh-blu-scanner.log_level"];
-  if (typeof name !== "string") return;
+Shelly.call("KVS.Get", { key: "oh-blu-scanner.log_level" }, function (res) {
+  if (!res || typeof res.value !== "string") return;
+  let name = res.value;
   let levels = { "ERROR": LVL_ERROR, "WARN": LVL_WARN, "INFO": LVL_INFO, "DEBUG": LVL_DEBUG, "TRACE": LVL_TRACE };
   let level = levels[name.toUpperCase()];
   if (typeof level !== "undefined") LOG_LEVEL = level;
@@ -37,21 +36,22 @@ Shelly.call("KVS.GetMany", { match: "oh-blu-scanner.*" }, function (res) {
 let SHELLY_BLU_CACHE = {};
 let LAST_PID = {};
 
-// Bounds SHELLY_BLU_CACHE/LAST_PID so an infinite scan seeing many rotating/random
-// BLE addresses over time can't grow memory usage without limit.
-let CACHE_ORDER = [];
+// Bounds only the negative entries (non-Shelly addresses) so an infinite scan seeing many
+// rotating/random BLE addresses over time can't grow memory usage without limit. Recognized
+// Shelly BLU devices are never evicted.
+let NEGATIVE_CACHE_ORDER = [];
 let MAX_CACHE_SIZE = 128;
 
 function cacheSet(addr, value) {
-  if (typeof SHELLY_BLU_CACHE[addr] === 'undefined') {
-    CACHE_ORDER.push(addr);
-    if (CACHE_ORDER.length > MAX_CACHE_SIZE) {
-      let evictAddr = CACHE_ORDER.shift();
-      delete SHELLY_BLU_CACHE[evictAddr];
-      delete LAST_PID[evictAddr];
-    }
-  }
   SHELLY_BLU_CACHE[addr] = value;
+  if (value !== false) return;
+
+  NEGATIVE_CACHE_ORDER.push(addr);
+  if (NEGATIVE_CACHE_ORDER.length > MAX_CACHE_SIZE) {
+    let evictAddr = NEGATIVE_CACHE_ORDER.shift();
+    delete SHELLY_BLU_CACHE[evictAddr];
+    delete LAST_PID[evictAddr];
+  }
 }
 
 // No separators - also used as the raw payload sent to the binding
