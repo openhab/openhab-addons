@@ -417,7 +417,9 @@ public class ShellyDeviceProfile {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {
-            if (dimmers != null && !dimmers.isEmpty()) {
+            if (isGen2 && inputs != null && idx < inputs.size()) {
+                btnType = getString(inputs.get(idx).btnType);
+            } else if (dimmers != null && !dimmers.isEmpty()) {
                 ShellySettingsDimmer dimmer = dimmers.get(Math.min(idx, dimmers.size() - 1));
                 btnType = getString(dimmer.btnType);
             }
