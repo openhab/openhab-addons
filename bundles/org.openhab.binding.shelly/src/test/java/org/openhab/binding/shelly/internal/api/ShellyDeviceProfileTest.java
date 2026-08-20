@@ -186,7 +186,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, "", 0, 0, 0, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, "", 0, 0, 0, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, "", 0, 0, 1, 3, CHANNEL_GROUP_LIGHT_CONTROL),
-                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CHANNEL + "4"),
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_INDEX + "4"),
                 Arguments.of(THING_TYPE_SHELLYBULB, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),

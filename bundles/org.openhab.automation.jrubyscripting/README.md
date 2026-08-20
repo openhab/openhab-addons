@@ -269,7 +269,7 @@ Using the openHAB UI, first create a new rule and set a trigger condition.
 #### Adding Actions
 
 Select "Add Action" and then select "Run Script" with "Ruby".
-This will bring up an empty script editor where you can enter your JavaScript.
+This will bring up an empty script editor where you can enter your script.
 
 ![openHAB Rule Engines](doc/rule-engines.png)
 
@@ -293,7 +293,7 @@ Notification.send("romeo@montague.org", "Balcony door is open")
 Querying the status of a thing:
 
 ```ruby
-logger.info("Thing status: #{things["zwave:serial_zstick:512"].status}")"
+logger.info("Thing status: #{things["zwave:serial_zstick:512"].status}")
 ```
 
 Theoretically you could even use a system start trigger with a UI rule, and then use the [syntax](#file-based-rules) mostly developed for file based rules to create multiple rules.
@@ -309,11 +309,11 @@ See [File Based Rules](#file-based-rules) for examples of creating rules within 
 
 When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
 
-This tables gives an overview of the `event` object for most common trigger types.
+This table gives an overview of the `event` object for most common trigger types.
 For full details, explore [OpenHAB::Core::Events](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Events.html).
 
-| Property Name | Type                                                                                         | Trigger Types                                                                                        | Description                                          | Rules DSL Equivalent   |
-|---------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|------------------------------------------------------|------------------------|
+| Property Name | Type                                         | Trigger Types                                                                                        | Description                                          | Rules DSL Equivalent   |
+|---------------|----------------------------------------------|------------------------------------------------------------------------------------------------------|------------------------------------------------------|------------------------|
 | `state`       | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`, `[item] was updated`                                                               | State that triggered event                           | `triggeringItem.state` |
 | `was`         | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`                                                                                     | Previous state of Item or Group that triggered event | `previousState`        |
 | `command`     | [Command](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/Command.html)      | `[item] received a command`                                                                          | Command that triggered event                         | `receivedCommand`      |
@@ -439,7 +439,7 @@ Groups are regular items, but can also contain other items.
 # direct members
 gTest.members
 
-# direct members and all their descendents
+# direct members and all their descendants
 gTest.all_members
 ```
 
@@ -463,7 +463,7 @@ gTest.all_members.each do |item|
 end
 ```
 
-Group members are also [Enumerable](https://docs.ruby-lang.org/en/master/Enumerable.html), so can use any of tthose included methods:
+Because group members are [Enumerable](https://docs.ruby-lang.org/en/master/Enumerable.html), all Enumerable methods are available:
 
 ```ruby
 members_that_are_on = gTest.members.select(&:on?)
@@ -712,7 +712,7 @@ items.build do
   end
   # passing `thing` to a group item will automatically use it as the base
   # for item channels
-  group_item Equipment, tags: Semantics::HVAC, thing: "binding:thing"
+  group_item Equipment, tags: Semantics::HVAC, thing: "binding:thing" do
     string_item Mode, tags: Semantics::Control, channel: "mode"
   end
 
@@ -908,7 +908,7 @@ Note: Variables can be mutated (changed) after the timer has been created.
 Be aware that this can lead to unintentional side effects, e.g. when you change the variable after timer creation, which can make debugging quite difficult!
 
 ```ruby
-my_var = "Hello world!";
+my_var = "Hello world!"
 
 # Schedule a timer that expires in ten seconds
 after(10.seconds) do
@@ -1630,7 +1630,7 @@ Traditional cron trigger:
 
 ```ruby
 rule "cron rule" do
-  cron "0 0,15 15-19 L * ?""
+  cron "0 0,15 15-19 L * ?"
   run { logger.info "Cron run" }
 end
 ```
@@ -1801,7 +1801,7 @@ end
 
 #### Delay Execution Block
 
-A delay exection block is useful for adding a delay inbetween rule executions or even at the beginning of the trigger event without having to manually create a timer.
+A delay execution block is useful for adding a delay inbetween rule executions or even at the beginning of the trigger event without having to manually create a timer.
 Unlike `sleep`, a delay block does not block the current executing thread.
 It actually sets a timer for you behind the scenes.
 

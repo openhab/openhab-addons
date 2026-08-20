@@ -23,8 +23,6 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.Value;
-import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.ValueAndPercent;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi.MeterTelemetry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -154,18 +152,6 @@ abstract class AbstractDataResponseTransformer {
     }
 
     /**
-     * converts the value to {@code QuantityType<Energy>} and puts it into the targetMap. If no value or unit is
-     * provided, UnDefType.UNDEF will be used
-     *
-     * @param targetMap result will be put into this map
-     * @param channel channel to assign the value
-     * @param value the value to convert
-     */
-    protected final void putEnergyType(Map<Channel, State> targetMap, @Nullable Channel channel, Value value) {
-        putEnergyType(targetMap, channel, value.value, value.unit);
-    }
-
-    /**
      * converts the meter value to {@code QuantityType<Energy>} and puts it into the targetMap. If multiple meter value
      * are provided a sum will be calculated. If no
      * unit can be determined UnDefType.UNDEF will be used
@@ -242,18 +228,6 @@ abstract class AbstractDataResponseTransformer {
     protected final void putPercentType(Map<Channel, State> targetMap, @Nullable Channel channel,
             @Nullable Double value) {
         putPercentType(targetMap, channel, value, 1);
-    }
-
-    /**
-     * put value as PercentType into targetMap.
-     *
-     * @param targetMap result will be put into this map
-     * @param channel channel to assign the value
-     * @param value the value to convert
-     */
-    protected final void putPercentType(Map<Channel, State> targetMap, @Nullable Channel channel,
-            ValueAndPercent value) {
-        putPercentType(targetMap, channel, value.percentage, 100);
     }
 
     /**

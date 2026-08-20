@@ -17,6 +17,7 @@ import static org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridge
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -97,7 +98,19 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 // try reconnect
                 adbConnection.connect();
             }
-            handleCommandInternal(channelUID, command);
+            try {
+                handleCommandInternal(channelUID, command);
+            } catch (AndroidDebugBridgeDeviceStreamRejectedException e) {
+                // A failed stream open does not prove the device never got the request, so only
+                // repeat commands that stay correct when they run twice.
+                if (!isSafeToRepeat(channelUID.getId(), command)) {
+                    throw e;
+                }
+                logger.debug("{} - shell stream rejected, reconnecting and retrying command: {}", currentConfig.ip,
+                        e.getMessage());
+                adbConnection.reconnectForRetry();
+                handleCommandInternal(channelUID, command);
+            }
         } catch (InterruptedException ignored) {
         } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
             if (!(e.getCause() instanceof InterruptedException)) {
@@ -110,6 +123,30 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             logger.warn("{} - timeout error", currentConfig.ip);
             disconnectOnMaxADBTimeouts();
         }
+    }
+
+    /**
+     * Channels that treat {@link RefreshType} as a read. Elsewhere REFRESH is not special cased and
+     * ends up as a value, so {@code text} would type "REFRESH".
+     */
+    private static final Set<String> REFRESH_READS_STATE = Set.of(CURRENT_PACKAGE_CHANNEL, WAKE_LOCK_CHANNEL,
+            AWAKE_STATE_CHANNEL, SCREEN_STATE_CHANNEL, MEDIA_VOLUME_CHANNEL, MEDIA_CONTROL_CHANNEL,
+            START_INTENT_CHANNEL);
+
+    /**
+     * Whether running {@code command} twice cannot change what the device ends up doing: a read, or
+     * the wake-up key event, which does nothing to an already awake device.
+     */
+    private static boolean isSafeToRepeat(String channelId, Command command) {
+        if (command instanceof RefreshType) {
+            return REFRESH_READS_STATE.contains(channelId);
+        }
+        if (!KEY_EVENT_CHANNEL.equals(channelId)) {
+            return false;
+        }
+        // "input keyevent" takes either the symbolic name or the numeric code.
+        String keyEvent = command.toFullString().trim();
+        return KEY_EVENT_WAKEUP_NAME.equalsIgnoreCase(keyEvent) || KEY_EVENT_WAKEUP_CODE.equals(keyEvent);
     }
 
     private void handleCommandInternal(ChannelUID channelUID, Command command)

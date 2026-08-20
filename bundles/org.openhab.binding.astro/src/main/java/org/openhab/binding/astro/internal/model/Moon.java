@@ -14,6 +14,7 @@ package org.openhab.binding.astro.internal.model;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,13 +25,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public class Moon extends RiseSet implements Planet {
-    private final EnumMap<DistanceType, MoonDistance> distances = new EnumMap<>(DistanceType.class);
+public class Moon extends Planet {
+    private final Map<DistanceType, MoonDistance> distances = new EnumMap<>(DistanceType.class);
 
     private EclipseSet eclipseSet = EclipseSet.NONE;
     private MoonPhaseSet phaseSet = MoonPhaseSet.NONE;
     private Position position = MoonPosition.NONE;
-    private Zodiac zodiac = Zodiac.NONE;
 
     public Moon() {
         EnumSet.allOf(DistanceType.class).forEach(d -> distances.put(d, MoonDistance.NONE));
@@ -81,19 +81,5 @@ public class Moon extends RiseSet implements Planet {
      */
     public void setPosition(Position position) {
         this.position = position;
-    }
-
-    /**
-     * Returns the zodiac.
-     */
-    public Zodiac getZodiac() {
-        return zodiac;
-    }
-
-    /**
-     * Sets the zodiac.
-     */
-    public void setZodiac(Zodiac zodiac) {
-        this.zodiac = zodiac;
     }
 }

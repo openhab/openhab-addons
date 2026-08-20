@@ -333,6 +333,12 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
                             new StringType(detailedInformation.driveState.shiftState));
                     updateState(TeslascopeBindingConstants.CHANNEL_SPEED,
                             new QuantityType<>(detailedInformation.driveState.speed, ImperialUnits.MILES_PER_HOUR));
+                    updateState(TeslascopeBindingConstants.CHANNEL_SELF_DRIVING_MILES_SINCE_RESET, new QuantityType<>(
+                            detailedInformation.driveState.selfDrivingMilesSinceReset, ImperialUnits.MILE));
+                    updateState(TeslascopeBindingConstants.CHANNEL_MILES_SINCE_RESET,
+                            new QuantityType<>(detailedInformation.driveState.milesSinceReset, ImperialUnits.MILE));
+                    updateState(TeslascopeBindingConstants.CHANNEL_SELF_DRIVING_PERCENTAGE,
+                            new DecimalType(detailedInformation.driveState.selfDrivingPercentage));
                 }
 
                 // vehicle state

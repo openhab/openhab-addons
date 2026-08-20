@@ -79,7 +79,6 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	org.openhab.core.transform;version='[5.3.0,5.3.1)',\
 	stax2-api;version='[4.2.2,4.2.3)',\
 	biz.aQute.tester.junit-platform;version='[7.3.0,7.3.1)',\
-	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	org.openhab.core.semantics;version='[5.3.0,5.3.1)',\
 	de.focus_shift.jollyday-core;version='[1.9.3,1.9.4)',\

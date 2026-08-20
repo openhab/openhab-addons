@@ -139,8 +139,8 @@ Either put the Doorbird and openHAB on the same subnet/VLAN, or set up your netw
 
 Alternatively to UDP broadcast, you can configure the following webhooks in your doorbell:
 
-- Doorbell (pressed) wbehook: `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/doorbell`
-- Motion Webhook: `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/motion`
+- Doorbell webhook (when pressed): `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/doorbell`
+- Motion webhook: `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/motion`
 
 ## Example
 

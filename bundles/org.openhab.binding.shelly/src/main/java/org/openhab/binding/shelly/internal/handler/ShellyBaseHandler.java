@@ -127,6 +127,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private volatile boolean stopping = false;
     private int vibrationFilter = 0;
     private String lastWakeupReason = "";
+    private volatile boolean updateMarkerSet;
 
     // Scheduler
     private volatile double watchdog = now();
@@ -367,6 +368,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
         tmpPrf.initFromThingType(thing.getThingTypeUID());
+        if (tmpPrf.isRGBW2 && !tmpPrf.isGen2) {
+            tmpPrf.hasLegacyLightChannels = thing.getChannels().stream()
+                    .anyMatch(c -> c.getUID().getId().startsWith(CHANNEL_GROUP_LIGHT_CHANNEL));
+        }
         String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, mode);
@@ -422,12 +427,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // All initialization done, so keep the profile and set Thing to ONLINE
         profile = tmpPrf;
-        ShellyChannelMigration.migrateChannels(this);
         showThingConfig(profile);
 
         // Push the full channel state now rather than waiting for the next background poll,
         // so a disable/enable cycle doesn't show stale/default channel values in the meantime.
         updateAllChannels(profile.status);
+
+        // Must run after updateAllChannels(): dynamic per-device channels (e.g. RGBW2's
+        // channel1..4) don't exist yet before that call, so migration rules matching them
+        // would find nothing and the schema version would get stamped as up-to-date anyway.
+        ShellyChannelMigration.migrateChannels(this);
         postEvent(ALARM_TYPE_NONE, false);
 
         logger.debug("{}: Thing successfully initialized.", thingName);
@@ -645,6 +654,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 // but not while firmware update is in progress
                 if (getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
                     setThingOnline();
+
+                    // set or clear the update available marker
+                    boolean updateAvailable = getBool(status.update.hasUpdate);
+                    if (updateAvailable && !updateMarkerSet) {
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                messages.get("manager.action.checkupd.new", getString(status.update.newVersion)));
+                        updateMarkerSet = true; // specifically set update marker flag only in this case
+                    } else if (!updateAvailable && updateMarkerSet) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 }
 
                 // map status to channels
@@ -665,6 +684,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 cache.enable();
             }
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
+        updateMarkerSet = false;
+        super.updateStatus(status, statusDetail, description);
     }
 
     /**
@@ -1386,7 +1412,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public void publishState(String channelId, State value) {
-        String id = channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
+        String id = stripDeprecatedSuffix(channelId);
         if (!stopping && isLinked(id)) {
             updateState(id, value);
             logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, value, value.getClass());
@@ -1403,18 +1429,26 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (stopping) {
             return false;
         }
+        boolean updated = cache.updateChannel(channelId, value, force);
+
         String replacementChannelId = ShellyChannelDefinitions.getReplacementChannelId(channelId);
         if (replacementChannelId != null) {
             warnDeprecatedChannel(channelId, replacementChannelId);
-            boolean updated = cache.updateChannel(channelId, value, force);
             updated |= cache.updateChannel(replacementChannelId, value, force);
-            return updated;
         }
-        return cache.updateChannel(channelId, value, force);
+
+        String replacementGroupId = ShellyChannelDefinitions.getReplacementGroupId(channelId);
+        if (replacementGroupId != null) {
+            warnDeprecatedChannel(channelId, replacementGroupId);
+            updated |= cache.updateChannel(replacementGroupId, value, force);
+        }
+
+        return updated;
     }
 
     private synchronized void warnDeprecatedChannel(String channelId, String replacementChannelId) {
-        if (!isLinked(channelId)) {
+        String id = stripDeprecatedSuffix(channelId);
+        if (!isLinked(id)) {
             return;
         }
         long now = System.currentTimeMillis();
