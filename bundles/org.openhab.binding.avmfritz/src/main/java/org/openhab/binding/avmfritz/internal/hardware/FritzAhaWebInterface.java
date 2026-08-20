@@ -211,7 +211,7 @@ public class FritzAhaWebInterface {
     private void completeAuthentication(CompletableFuture<Boolean> currentAuthentication, @Nullable String newSid,
             ThingStatusDetail statusDetail, @Nullable String description) {
         synchronized (authenticationLock) {
-            if (currentAuthentication != authentication || disposed) {
+            if (!currentAuthentication.equals(authentication) || disposed) {
                 currentAuthentication.complete(false);
                 return;
             }
