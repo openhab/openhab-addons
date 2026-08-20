@@ -137,8 +137,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             SHELLY2_BTNT_MOMENTARY, SHELLY_BTNT_MOMENTARY, //
             SHELLY2_BTNT_FLIP, SHELLY_BTNT_TOGGLE, //
             SHELLY2_BTNT_FOLLOW, SHELLY_BTNT_EDGE, //
-            SHELLY2_BTNT_DETACHED, SHELLY_BTNT_MOMENTARY, //
-            SHELLY2_BTNT_ACTIVATE, SHELLY_BTNT_ACTIVATE);
+            SHELLY2_BTNT_DETACHED, SHELLY_BTNT_DETACHED, //
+            SHELLY2_BTNT_ACTIVATE, SHELLY_BTNT_ACTIVATE, //
+            SHELLY2_BTNT_CYCLE, SHELLY_BTNT_CYCLE, //
+            SHELLY2_BTNT_DIM, SHELLY_BTNT_DIM, //
+            SHELLY2_BTNT_DUAL_DIM, SHELLY_BTNT_DUAL_DIM);
 
     protected static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.ofEntries(//
             Map.entry(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH),
@@ -1213,7 +1216,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         fillDimmerSettings(dimmers, 1, dc.light1);
     }
 
-    private static void fillDimmerSettings(List<ShellySettingsDimmer> dimmers, int idx,
+    private void fillDimmerSettings(List<ShellySettingsDimmer> dimmers, int idx,
             @Nullable Shelly2GetConfigLight light) {
         if (light == null || idx >= dimmers.size()) {
             return;
@@ -1222,6 +1225,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ds.autoOn = light.autoOnDelay;
         ds.autoOff = light.autoOffDelay;
         ds.name = light.name;
+        String inMode = light.inMode;
+        if (inMode != null) {
+            ds.btnType = mapValue(MAP_INMODE_BTNTYPE, inMode.toLowerCase(Locale.ROOT));
+        }
         dimmers.set(idx, ds);
     }
 
@@ -1284,6 +1291,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (ctRange != null && ctRange.length == 2) {
             ls.minTemp = ctRange[0];
             ls.maxTemp = ctRange[1];
+        }
+        String inMode = src.inMode;
+        if (inMode != null) {
+            ls.btnType = mapValue(MAP_INMODE_BTNTYPE, inMode.toLowerCase(Locale.ROOT));
         }
         return ls;
     }

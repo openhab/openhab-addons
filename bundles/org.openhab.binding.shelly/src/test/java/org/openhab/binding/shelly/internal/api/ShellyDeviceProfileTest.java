@@ -18,8 +18,12 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_ACTIVATE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_CYCLE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DIM;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DUAL_DIM;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_EDGE;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_TOGGLE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
@@ -707,18 +710,43 @@ public class ShellyDeviceProfileTest {
     }
 
     @Test
-    void inButtonModeForDualDimmerReadsCorrectIndex() throws Exception {
+    void inButtonModeForDualDimmerFallsBackToInputsWhenDimmerBtnTypeUnset() throws Exception {
         ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODIMMER2PM);
         ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
         ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
         settingsGlobal.relays = new ArrayList<>();
 
-        // Deliberately conflicting with settings.inputs below: for a Gen2 dimmer inButtonMode() must read
-        // settings.inputs, not settings.dimmers, so these values must be ignored.
+        ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
+        dimmers.add(new ShellySettingsDimmer());
+        dimmers.add(new ShellySettingsDimmer());
+        settingsGlobal.dimmers = dimmers;
+
+        ShellySettingsInput i0 = new ShellySettingsInput();
+        i0.btnType = SHELLY_BTNT_EDGE;
+        ShellySettingsInput i1 = new ShellySettingsInput();
+        i1.btnType = SHELLY_BTNT_MOMENTARY;
+        ArrayList<ShellySettingsInput> inputs = new ArrayList<>();
+        inputs.add(i0);
+        inputs.add(i1);
+        settingsGlobal.inputs = inputs;
+
+        deviceProfile.initialize(THING_TYPE_SHELLYPRODIMMER2PM, gson.toJson(settingsGlobal), settingsDevice);
+
+        assertThat("input 0 (edge) must not be button mode", deviceProfile.inButtonMode(0), is(false));
+        assertThat("input 1 (momentary) must be button mode", deviceProfile.inButtonMode(1), is(true));
+    }
+
+    @Test
+    void inButtonModeForDualDimmerPrefersDimmerBtnTypeOverInputs() throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODIMMER2PM);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+
         ShellySettingsDimmer d0 = new ShellySettingsDimmer();
-        d0.btnType = Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
+        d0.btnType = SHELLY_BTNT_MOMENTARY;
         ShellySettingsDimmer d1 = new ShellySettingsDimmer();
-        d1.btnType = "toggle";
+        d1.btnType = SHELLY_BTNT_TOGGLE;
         ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
         dimmers.add(d0);
         dimmers.add(d1);
@@ -735,7 +763,61 @@ public class ShellyDeviceProfileTest {
 
         deviceProfile.initialize(THING_TYPE_SHELLYPRODIMMER2PM, gson.toJson(settingsGlobal), settingsDevice);
 
-        assertThat("input 0 (edge) must not be button mode", deviceProfile.inButtonMode(0), is(false));
-        assertThat("input 1 (momentary) must be button mode", deviceProfile.inButtonMode(1), is(true));
+        assertThat("dimmer 0 (momentary) must be button mode", deviceProfile.inButtonMode(0), is(true));
+        assertThat("dimmer 1 (toggle) must not be button mode", deviceProfile.inButtonMode(1), is(false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForInButtonModeWithDimModes")
+    void inButtonModeRecognizesDimAndDualDim(String btnType) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER);
+        profile.settings.dimmers = new ArrayList<>();
+        ShellySettingsDimmer dimmer = new ShellySettingsDimmer();
+        dimmer.btnType = btnType;
+        profile.settings.dimmers.add(dimmer);
+
+        assertThat(profile.inButtonMode(0), is(true));
+    }
+
+    private static Stream<Arguments> provideTestCasesForInButtonModeWithDimModes() {
+        return Stream.of(Arguments.of(SHELLY_BTNT_DIM), Arguments.of(SHELLY_BTNT_DUAL_DIM));
+    }
+
+    @Test
+    void inButtonModeRecognizesSwitchInModeCycle() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1);
+        ShellySettingsRelay relay = new ShellySettingsRelay();
+        relay.btnType = SHELLY_BTNT_CYCLE;
+        profile.settings.relays = new ArrayList<>(List.of(relay));
+
+        assertThat(profile.inButtonMode(0), is(true));
+    }
+
+    @Test
+    void getButtonTypeAddressesEachIndependentDimmerChannelByIndex() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER);
+        profile.settings.dimmers = new ArrayList<>();
+        ShellySettingsDimmer dimmer0 = new ShellySettingsDimmer();
+        dimmer0.btnType = SHELLY_BTNT_DIM;
+        ShellySettingsDimmer dimmer1 = new ShellySettingsDimmer();
+        dimmer1.btnType = SHELLY_BTNT_DUAL_DIM;
+        profile.settings.dimmers.add(dimmer0);
+        profile.settings.dimmers.add(dimmer1);
+
+        assertThat(profile.getButtonType(0), is(equalTo(SHELLY_BTNT_DIM)));
+        assertThat(profile.getButtonType(1), is(equalTo(SHELLY_BTNT_DUAL_DIM)));
+    }
+
+    @Test
+    void getButtonTypeFallsBackToLegacyBtnType1And2ForSingleChannelGen1Dimmer() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYDIMMER2);
+        profile.settings.dimmers = new ArrayList<>();
+        ShellySettingsDimmer dimmer = new ShellySettingsDimmer();
+        dimmer.btnType1 = SHELLY_BTNT_MOMENTARY;
+        dimmer.btnType2 = SHELLY_BTNT_EDGE;
+        profile.settings.dimmers.add(dimmer);
+
+        assertThat(profile.getButtonType(0), is(equalTo(SHELLY_BTNT_MOMENTARY)));
+        assertThat(profile.getButtonType(1), is(equalTo(SHELLY_BTNT_EDGE)));
     }
 }

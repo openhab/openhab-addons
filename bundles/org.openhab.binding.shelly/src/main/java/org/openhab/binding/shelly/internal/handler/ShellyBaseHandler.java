@@ -1376,6 +1376,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 String group = profile.getInputGroup(idx);
                 String suffix = multiInput ? profile.getInputSuffix(idx) : "";
                 updated |= updateChannel(group, CHANNEL_INPUT + suffix, getOnOff(input.input));
+                String btnType = profile.getButtonType(idx);
+                if (!btnType.isEmpty()) {
+                    updated |= updateChannel(group, CHANNEL_BTN_TYPE + suffix, getStringType(btnType));
+                }
                 if (input.event != null) {
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTTYPE + suffix, getStringType(input.event));
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + suffix, getDecimal(input.eventCount));

@@ -269,6 +269,9 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_STATUS_EVENTCOUNT = "eventCount";
     public static final String CHANNEL_STATUS_EVENTCOUNT1 = CHANNEL_STATUS_EVENTCOUNT + "1";
     public static final String CHANNEL_STATUS_EVENTCOUNT2 = CHANNEL_STATUS_EVENTCOUNT + "2";
+    public static final String CHANNEL_BTN_TYPE = "btnType";
+    public static final String CHANNEL_BTN_TYPE1 = CHANNEL_BTN_TYPE + "1";
+    public static final String CHANNEL_BTN_TYPE2 = CHANNEL_BTN_TYPE + "2";
 
     // LoRa
     public static final String CHANNEL_GROUP_LORA = "lora";

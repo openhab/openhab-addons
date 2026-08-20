@@ -127,6 +127,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_BTNT_FOLLOW = "follow";
     public static final String SHELLY2_BTNT_DETACHED = "detached";
     public static final String SHELLY2_BTNT_ACTIVATE = "activate";
+    public static final String SHELLY2_BTNT_CYCLE = "cycle"; // Switch component in_mode: button cycles the output
+    public static final String SHELLY2_BTNT_DIM = "dim"; // Light component in_mode: single button toggles+dims
+    public static final String SHELLY2_BTNT_DUAL_DIM = "dual_dim"; // Light component in_mode: two buttons toggle+dim
 
     // Input types
     public static final String SHELLY2_INPUTT_SWITCH = "switch";
