@@ -317,7 +317,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         ShellyColorUtils col = channelColors.get(lightId);
         if (col == null) {
             col = new ShellyColorUtils(); // create a new entry
-            col.setMinMaxTemp(profile.minTemp, profile.maxTemp);
+            col.setMinMaxTemp(profile.getMinTemp(lightId), profile.getMaxTemp(lightId));
             channelColors.put(lightId, col);
             logger.trace("{}: Colors entry created for lightId {}", thingName, lightId);
         } else {

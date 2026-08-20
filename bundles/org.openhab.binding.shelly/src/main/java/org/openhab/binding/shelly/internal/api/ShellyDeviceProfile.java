@@ -391,6 +391,29 @@ public class ShellyDeviceProfile {
         return hasColorTag(idx) ? idx : idx - getColorComponentCount();
     }
 
+    /**
+     * The color-temperature range to use for settings.lights[idx]: a CCT component's own ct_range when the
+     * device reported one, otherwise the profile-wide default (see initFromThingType()).
+     */
+    public int getMinTemp(int idx) {
+        Integer componentMin = componentTemp(idx, true);
+        return componentMin != null ? componentMin : minTemp;
+    }
+
+    public int getMaxTemp(int idx) {
+        Integer componentMax = componentTemp(idx, false);
+        return componentMax != null ? componentMax : maxTemp;
+    }
+
+    private @Nullable Integer componentTemp(int idx, boolean min) {
+        List<ShellySettingsRgbwLight> lights = settings.lights;
+        if (lights == null || idx < 0 || idx >= lights.size()) {
+            return null;
+        }
+        ShellySettingsRgbwLight light = lights.get(idx);
+        return min ? light.minTemp : light.maxTemp;
+    }
+
     public String getInputGroup(int i) {
         int idx = i + 1; // group names are 1-based
         if (isRGBW2) {

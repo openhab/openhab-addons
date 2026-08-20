@@ -612,4 +612,31 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.getMeterGroup(1), is(CHANNEL_GROUP_METER + "2"));
         assertThat(profile.getMeterGroup(2), is(CHANNEL_GROUP_METER + "3"));
     }
+
+    @Test
+    void proRgbwwPmCctx2ProfileUsesPerComponentCtRangeWhenDeviceReportsOne() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"cct:0\":{\"id\":0,\"ct_range\":[2200,4000]},\"cct:1\":{\"id\":1,\"ct_range\":[4000,6000]}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        var lightsCct = profile.settings.lights;
+        assertNotNull(lightsCct);
+        assertThat(lightsCct.size(), is(2));
+        assertThat(profile.getMinTemp(0), is(2200));
+        assertThat(profile.getMaxTemp(0), is(4000));
+        assertThat(profile.getMinTemp(1), is(4000));
+        assertThat(profile.getMaxTemp(1), is(6000));
+    }
+
+    @Test
+    void proRgbwwPmCctx2ProfileFallsBackToProfileWideRangeWithoutCtRange() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"cct:0\":{\"id\":0},\"cct:1\":{\"id\":1}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.getMinTemp(0), is(profile.minTemp));
+        assertThat(profile.getMaxTemp(0), is(profile.maxTemp));
+    }
 }

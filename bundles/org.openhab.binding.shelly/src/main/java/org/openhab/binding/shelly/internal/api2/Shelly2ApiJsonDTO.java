@@ -449,6 +449,8 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Shelly2GetConfigLightNightMode nightMode;
             @SerializedName("range_map")
             public @Nullable Double[] rangeMap;
+            @SerializedName("ct_range")
+            public @Nullable Integer[] ctRange; // CCT component only: [min, max] color temperature in Kelvin
         }
 
         public class Shelly2DeviceConfigLed {

@@ -1250,6 +1250,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ls.autoOff = src.autoOffDelay;
         ls.name = src.name;
         ls.apiComponent = apiComponent;
+        Integer[] ctRange = src.ctRange;
+        if (ctRange != null && ctRange.length == 2) {
+            ls.minTemp = ctRange[0];
+            ls.maxTemp = ctRange[1];
+        }
         return ls;
     }
 

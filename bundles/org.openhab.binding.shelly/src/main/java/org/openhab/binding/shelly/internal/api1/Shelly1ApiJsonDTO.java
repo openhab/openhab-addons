@@ -525,6 +525,11 @@ public class Shelly1ApiJsonDTO {
 
         // Gen2 (Pro RGBWW PM) only: which RPC component this entry maps to, see ShellyApiLightUtil
         public transient ShellyLightApiComponent apiComponent = ShellyLightApiComponent.NONE;
+
+        // Gen2 CCT component only: per-component color-temperature range from ct_range; null falls back to the
+        // profile-wide default (see ShellyDeviceProfile.getMinTemp()/getMaxTemp())
+        public transient @Nullable Integer minTemp;
+        public transient @Nullable Integer maxTemp;
     }
 
     public static class ShellyFavPos { // FW 1.9.2+ in roller mode
