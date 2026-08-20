@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -350,6 +350,23 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             fromDeviceConfig = 2; // em1:0 + em1:1 → 2 clamps (Pro EM-50)
         } else if (dc.em10 != null) {
             fromDeviceConfig = 1; // em1:0 alone → single clamp (EM Mini)
+        } else if (THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
+            // No dedicated PM/EM component: count the metered RGB/CCT components instead.
+            // rgbcct/rgbx2light: rgb0/rgbw0 is the only component currently wired for metering (its secondary
+            // component - cct0, or light0/light1 - isn't processed yet, see updateLightModeStatus()'s inColor
+            // guard). cctx2 has no color component; both cct0 and cct1 are metered independently.
+            if (dc.rgb0 != null || dc.rgbw0 != null) {
+                fromDeviceConfig = 1;
+            } else {
+                int n = 0;
+                if (dc.cct0 != null) {
+                    n++;
+                }
+                if (dc.cct1 != null) {
+                    n++;
+                }
+                fromDeviceConfig = n > 0 ? n : -1;
+            }
         } else {
             fromDeviceConfig = -1; // not detectable from config → relay count fallback
         }
@@ -820,6 +837,41 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     /**
+     * Pro RGBWW PM reports power/energy directly on its RGB/Light/CCT components (no dedicated PM/EM
+     * component) - extract those fields into the numbered meter slot the same way updateRelayStatus() does.
+     */
+    private void updateComponentMeter(ShellySettingsStatus status, int meterIdx, @Nullable Double apower,
+            @Nullable Shelly2Energy aenergy, @Nullable Double voltage, @Nullable Double current, boolean channelUpdate)
+            throws ShellyApiException {
+        ShellySettingsEMeter emeter = (status.emeters != null && meterIdx >= 0 && meterIdx < status.emeters.size())
+                ? status.emeters.get(meterIdx)
+                : new ShellySettingsEMeter();
+        if (apower != null) {
+            emeter.power = apower;
+        }
+        if (aenergy != null) {
+            Double accumulatedEnergyWh = aenergy.total;
+            if (accumulatedEnergyWh != null) {
+                emeter.total = accumulatedEnergyWh;
+            }
+            emeter.energyByMinute = byMinuteToWh(aenergy.byMinute);
+        }
+        if (voltage != null) {
+            emeter.voltage = voltage;
+        }
+        if (current != null) {
+            emeter.current = current;
+        }
+        updateMeter(status, meterIdx, emeter, channelUpdate);
+    }
+
+    private boolean isProRgbwwPmProfile(ShellyDeviceProfile profile) {
+        String p = profile.device.profile;
+        return SHELLY2_PROFILE_RGBCCT.equals(p) || SHELLY2_PROFILE_CCTX2.equals(p)
+                || SHELLY2_PROFILE_RGBX2LIGHT.equals(p);
+    }
+
+    /**
      * Convert aenergy.by_minute (mWh per complete minute, up to 3 slots) to Wh.
      * Returns null when the device did not report a usable slot 0 (e.g. clock not synced).
      * Package-private for unit testing.
@@ -1254,10 +1306,17 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.green = value.rgb[1];
             ds.blue = value.rgb[2];
         }
-        ds.white = Objects.requireNonNullElse(value.white, ds.white);
+        if (value.white != null) {
+            ds.white = value.white;
+        }
         ds.ison = value.output;
 
         status.lights.set(rgbwId, ds);
+        if (isProRgbwwPmProfile(profile)) {
+            // rgb0 is the only metered component currently wired for rgbcct/rgbx2light (their secondary
+            // component - cct0, or light0/light1 - isn't processed yet, see updateLightModeStatus())
+            updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
+        }
         return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
     }
 
@@ -1287,7 +1346,18 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (output != null) {
             ds.ison = output;
         }
+        Integer ct = value.ct;
+        if (ct != null) {
+            ds.temp = ct;
+        }
         lights.set(lightId, ds);
+        if (SHELLY2_PROFILE_CCTX2.equals(profile.device.profile)) {
+            // the only Pro RGBWW PM profile that reaches this point (rgbcct/rgbx2light are blocked above by the
+            // inColor check, since their light entry - cct0/light0/light1 - isn't processed yet); Plus RGBW PM's
+            // white-mode light0..3 channels also reach this point but must not be metered here - out of scope
+            updateComponentMeter(status, lightId, value.apower, value.aenergy, value.voltage, value.current,
+                    channelUpdate);
+        }
         if (channelUpdate) {
             ShellyComponents.updateLightMode(getThing(), status);
         }

@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_GROUP_METER;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_GETCONFIG;
 
@@ -546,7 +547,7 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
-    void proRgbwwPmIsRGBW2True() throws ShellyApiException {
+    void proRgbwwPmRgbcctProfileIsRGBW2InColorWithSingleRgb0MeterIgnoringCct0Meter() throws ShellyApiException {
         Gson gson = new Gson();
         String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
                 + "\"rgb:0\":{\"id\":0,\"name\":\"rgb\"}}";
@@ -554,6 +555,8 @@ public class Shelly2GetDeviceProfileTest {
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
+        assertThat(profile.numMeters, is(1));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER));
     }
 
     @Test
@@ -572,7 +575,7 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
-    void proRgbwwPmCctx2ProfileInColorFalseAndTwoChannels() throws ShellyApiException {
+    void proRgbwwPmCctx2ProfileInColorFalseWithTwoIndependentlyMeteredCctChannels() throws ShellyApiException {
         Gson gson = new Gson();
         String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
                 + "\"cct:0\":{\"id\":0},\"cct:1\":{\"id\":1}}";
@@ -583,10 +586,13 @@ public class Shelly2GetDeviceProfileTest {
         var lightsCct = profile.settings.lights;
         assertNotNull(lightsCct);
         assertThat(lightsCct.size(), is(2));
+        assertThat(profile.numMeters, is(2));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER + "1"));
+        assertThat(profile.getMeterGroup(1), is(CHANNEL_GROUP_METER + "2"));
     }
 
     @Test
-    void proRgbwwPmRgbx2lightProfileInColorTrue() throws ShellyApiException {
+    void proRgbwwPmRgbx2lightProfileInColorTrueWithSingleRgb0MeterIgnoringLight0And1Meters() throws ShellyApiException {
         Gson gson = new Gson();
         String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
                 + "\"rgb:0\":{\"id\":0},\"light:0\":{\"id\":0},\"light:1\":{\"id\":1}}";
@@ -597,5 +603,7 @@ public class Shelly2GetDeviceProfileTest {
         var lightsRgbx2 = profile.settings.lights;
         assertNotNull(lightsRgbx2);
         assertThat(lightsRgbx2.size(), is(1));
+        assertThat(profile.numMeters, is(1));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER));
     }
 }

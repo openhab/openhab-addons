@@ -12,16 +12,16 @@
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
-			<channel-group id="light1" typeId="rgbwpmChannel">
+			<channel-group id="light1" typeId="rgbwChannel">
 				<label>LED Channel 1</label>
 			</channel-group>
-			<channel-group id="light2" typeId="rgbwpmChannel">
+			<channel-group id="light2" typeId="rgbwChannel">
 				<label>LED Channel 2</label>
 			</channel-group>
-			<channel-group id="light3" typeId="rgbwpmChannel">
+			<channel-group id="light3" typeId="rgbwChannel">
 				<label>LED Channel 3</label>
 			</channel-group>
-			<channel-group id="light4" typeId="rgbwpmChannel">
+			<channel-group id="light4" typeId="rgbwChannel">
 				<label>LED Channel 4</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
@@ -40,22 +40,24 @@
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
-			<channel-group id="light1" typeId="rgbwpmChannel">
+			<channel-group id="light1" typeId="rgbwChannel">
 				<label>LED Channel 1</label>
 			</channel-group>
-			<channel-group id="light2" typeId="rgbwpmChannel">
+			<channel-group id="light2" typeId="rgbwChannel">
 				<label>LED Channel 2</label>
 			</channel-group>
-			<channel-group id="light3" typeId="rgbwpmChannel">
+			<channel-group id="light3" typeId="rgbwChannel">
 				<label>LED Channel 3</label>
 			</channel-group>
-			<channel-group id="light4" typeId="rgbwpmChannel">
+			<channel-group id="light4" typeId="rgbwChannel">
 				<label>LED Channel 4</label>
 			</channel-group>
-			<channel-group id="light5" typeId="rgbwpmChannel">
+			<channel-group id="light5" typeId="rgbwChannel">
 				<label>LED Channel 5</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="meter1" typeId="meter"/>
+			<channel-group id="meter2" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -81,7 +83,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="rgbwpmChannel">
+	<channel-group-type id="rgbwChannel">
 		<label>LED Channel</label>
 		<description>Control individual LED channel (light profile)</description>
 	</channel-group-type>
