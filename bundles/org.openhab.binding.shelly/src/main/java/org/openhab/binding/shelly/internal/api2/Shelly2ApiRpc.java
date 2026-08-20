@@ -185,9 +185,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     boolean restart = false;
                     ShellyVersionComparator versionComparator = new ShellyVersionComparator();
                     if (versionComparator.compare(profile.fwVersion, SHELLY2_API_FW_BLEAUTOSCAN) >= 0) {
-                        // FW 2.0 removed BLE.SetConfig's enable flag, but still call it to make sure Bluetooth
-                        // is enabled and any conflicting Shelly Cloud BLE observer gets disabled
-                        restart = setBluetooth(true);
+                        // FW 2.0 removed the BLE enable/observer config; scanning auto-activates when the
+                        // script starts, so calling setBluetooth() here would only get rejected by the device
                         installScript(SHELLY2_BLU_GWSCRIPT, true);
                     } else {
                         boolean bluetooth = getBool(dc.ble.enable);
