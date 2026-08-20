@@ -1,14 +1,21 @@
-/*
- * Copyright (c) 2010-2026 Contributors to the openHAB project
+/**
+ * Copyright 2007 DFKI GmbH.
+ * All Rights Reserved.  Use is subject to license terms.
  *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
+ * This file is part of MARY TTS.
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
+ * MARY TTS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
  *
- * SPDX-License-Identifier: EPL-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package marytts.modules;
 
