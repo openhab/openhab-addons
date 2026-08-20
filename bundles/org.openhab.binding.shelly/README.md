@@ -619,6 +619,22 @@ Old channel IDs stay active as deprecated, advanced channels and keep receiving 
 `meterN#powerFactor` additionally changed type from `Number:Dimensionless` to plain `Number` (range −1.0 to +1.0).
 This is an in-place type change on the same channel ID, not a rename, so there is no dual-write; items statically linked as `Number:Dimensionless` need relinking.
 
+### openHAB Lighting Standard Channel Group and Channels (thing-type: all Shelly light types)
+
+The Shelly lighting ecosytem exposes different mixes of channel groups, channel types and channel names for different light models according to their different capabilities.
+And these Shelly specific light models are not completely aligned with the openHAB standard light model, so users whose home automation system contains a mix of lights from Shelly and other manufacturers may find it confusing.
+Therefore in addition to the Shelly specific channel groups, channel types and channel names, this binding exposes also one "primary" group containing openHAB lighting standard conform channels for all lights.
+This "primary" group has the identical format across all Shelly light models.
+This group contains one or three openHAB lighting standard conform channels, depending on the capabilities of the respective light, as shown in the table below.
+
+| Group   | Channel                | Light Capability (incl.)  | Channel Type  | Description and Accepted Item Types                                                                                                                     |
+| ------- | ---------------------- | ------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| primary |                        |                           |               | Primary group exposing openHAB lighting standard channels                                                                                               |
+|         | primary-color          | Full Color (+ Color Temp) | HSBType       | Standard channel accepting Color (Hue,Saturation,Brightness), Dimmer (Brightness percent), RollerShutter (Brightness up/down) and Switch (on/off) Items |
+|         | primary-brightness     | White Only (+ Color Temp) | PercentType   | Standard channel accepting Dimmer (Brightness percent), RollerShutter (Brightness up/down) and Switch (on/off) Items                                    |
+|         | primary-color-temp     | Color Temp                | PercentType   | Standard channel accepting Dimmer (Cool-Warm light color percent) and RollerShutter (Cool-Warm light color up/down) Items                               |
+|         | primary-color-temp-abs | Color Temp                | QuantityType  | Standard channel accepting Number:Temperature (Kelvin) absolute color temperature Items                                                                 |
+
 ### Shelly 1 (thing-type: shelly1)
 
 | Group   | Channel      | Type     | read-only | Description                                                                       |

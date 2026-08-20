@@ -856,7 +856,7 @@ public class ShellyComponents {
         return updated;
     }
 
-    public static boolean updateRGBW(ShellyThingInterface thingHandler, int rgbwId, ShellySettingsStatus orgStatus)
+    public static boolean updateRGBW(ShellyThingInterface thingHandler, int lightId, ShellySettingsStatus orgStatus)
             throws ShellyApiException {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
@@ -864,18 +864,17 @@ public class ShellyComponents {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
-            ShellySettingsLight light = orgStatus.lights.get(rgbwId);
+            ShellySettingsLight light = orgStatus.lights.get(lightId);
             if (light == null) {
-                throw new ShellyApiException("Shelly RGBW2 update failed: light " + rgbwId + " not found");
+                throw new ShellyApiException("updateRGBW() failed: light_%d not found".formatted(lightId));
             }
             if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
                 try {
                     lightModelHandler.acquireLock();
-                    if (lightModelHandler.getLightModel(rgbwId) instanceof ShellyLightModel model) {
+                    if (lightModelHandler.getLightModel(lightId) instanceof ShellyLightModel model) {
                         model.setRGBX(light.red, light.green, light.blue, light.white);
                     } else {
-                        throw new ShellyApiException(
-                                "Shelly RGBW2 update failed: light model " + rgbwId + " not found");
+                        throw new ShellyApiException("updateRGBW() failed: missing light_%d model".formatted(lightId));
                     }
                 } finally {
                     lightModelHandler.releaseLock();
@@ -901,7 +900,8 @@ public class ShellyComponents {
                         ShellySettingsLight light = lights.get(i);
                         ShellyLightModel model = lightHandler.getLightModel(i);
                         if (model == null) {
-                            throw new ShellyApiException("Shelly light model update failed; missing light model " + i);
+                            throw new ShellyApiException(
+                                    "updateLightMode() failed: missing light_%d model".formatted(i));
                         }
                         if (light.ison != null) {
                             model.setOnOff(light.ison);
