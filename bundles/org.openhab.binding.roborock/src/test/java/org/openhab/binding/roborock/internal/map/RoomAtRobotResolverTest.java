@@ -171,6 +171,27 @@ class RoomAtRobotResolverTest {
     }
 
     @Test
+    void returnsEmptyWhenTheLargestSegmentOnTheRingHoldsOnlyHalfOfItsPixels() {
+        int width = 10;
+        int height = 10;
+        byte[] imageData = new byte[width * height];
+        int px = 5;
+        int py = 5;
+        imageData[py * width + px] = 0x01; // MAP_WALL
+        // A 2/1/1 split: segment 3 leads but owns exactly half of the ring, not a majority.
+        imageData[(py - 1) * width + px] = (byte) ((3 << 3) | 0x07);
+        imageData[(py + 1) * width + px] = (byte) ((3 << 3) | 0x07);
+        imageData[py * width + (px - 1)] = (byte) ((4 << 3) | 0x07);
+        imageData[py * width + (px + 1)] = (byte) ((5 << 3) | 0x07);
+
+        RRMapData mapData = mapDataWithImage(width, height, 0, 0, imageData);
+
+        Optional<Integer> segmentId = RoomAtRobotResolver.resolveSegmentId(mapData, (px + 1) * MM, (py + 1) * MM);
+
+        assertFalse(segmentId.isPresent());
+    }
+
+    @Test
     void returnsEmptyWhenTheNearestFallbackRingIsTiedBetweenTwoRooms() {
         int width = 10;
         int height = 10;

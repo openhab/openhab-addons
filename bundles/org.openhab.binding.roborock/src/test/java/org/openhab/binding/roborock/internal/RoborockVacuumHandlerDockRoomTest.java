@@ -83,24 +83,41 @@ class RoborockVacuumHandlerDockRoomTest {
     }
 
     @Test
-    void dockingWithoutACachedMapLeavesTheChannelUntouched() {
-        assertNull(RoborockVacuumHandler.resolveDockRoomState(null, ROOM_NAMES));
+    void dockingWithoutACachedMapReportsUndef() {
+        assertEquals(UnDefType.UNDEF, RoborockVacuumHandler.resolveDockRoomState(null, ROOM_NAMES));
     }
 
     @Test
-    void dockingWithoutAChargerPositionInTheCachedMapLeavesTheChannelUntouched() {
+    void dockingWithoutAChargerPositionInTheCachedMapReportsUndef() {
         RRMapData mapData = twoRoomMap(true, false);
 
-        assertNull(RoborockVacuumHandler.resolveDockRoomState(mapData, ROOM_NAMES));
+        assertEquals(UnDefType.UNDEF, RoborockVacuumHandler.resolveDockRoomState(mapData, ROOM_NAMES));
     }
 
     @Test
-    void mapCycleWhileDockedFallsBackToTheRobotPositionWithoutAChargerPosition() {
+    void mapCycleWhileDockedWithoutAChargerPositionReportsUndefInsteadOfTheRobotPosition() {
         RRMapData mapData = twoRoomMap(true, false);
 
         State roomState = RoborockVacuumHandler.resolveRoomStateFromMap(mapData, true, ROOM_NAMES);
 
-        assertEquals(new StringType("Flur"), roomState);
+        assertEquals(UnDefType.UNDEF, roomState);
+    }
+
+    @Test
+    void anUnresolvablePositionWhileCleaningLeavesTheChannelUntouched() {
+        RRMapData mapData = unsegmentedFloorMap(true, false);
+
+        assertNull(RoborockVacuumHandler.resolveRoomStateFromMap(mapData, false, ROOM_NAMES),
+                "the next map cycle corrects the room on its own, so a transient resolver miss must not "
+                        + "drag the channel to UNDEF");
+    }
+
+    @Test
+    void anUnresolvableDockPositionReportsUndefBecauseNothingSelfCorrectsOnTheDock() {
+        RRMapData mapData = unsegmentedFloorMap(false, true);
+
+        assertEquals(UnDefType.UNDEF, RoborockVacuumHandler.resolveRoomStateFromMap(mapData, true, ROOM_NAMES));
+        assertEquals(UnDefType.UNDEF, RoborockVacuumHandler.resolveDockRoomState(mapData, ROOM_NAMES));
     }
 
     @Test
@@ -177,6 +194,20 @@ class RoborockVacuumHandlerDockRoomTest {
         byte[] imageData = new byte[WIDTH * HEIGHT];
         fillSegment(imageData, 0, 0, 9, HEIGHT - 1, HALLWAY_SEGMENT);
         fillSegment(imageData, 10, 0, WIDTH - 1, HEIGHT - 1, DOCK_ROOM_SEGMENT);
+
+        Integer robotX = withRobotPosition ? Integer.valueOf(toMapCoordinate(ROBOT_PIXEL_X)) : null;
+        Integer robotY = withRobotPosition ? Integer.valueOf(toMapCoordinate(ROBOT_PIXEL_Y)) : null;
+        Integer chargerX = withChargerPosition ? Integer.valueOf(toMapCoordinate(DOCK_PIXEL_X)) : null;
+        Integer chargerY = withChargerPosition ? Integer.valueOf(toMapCoordinate(DOCK_PIXEL_Y)) : null;
+
+        return new RRMapData(WIDTH, HEIGHT, 0, 0, imageData, robotX, robotY, null, chargerX, chargerY, null, null,
+                List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(), new byte[WIDTH * HEIGHT]);
+    }
+
+    /** A map without any segmented-floor pixels, so no position on it resolves to a room. */
+    private static RRMapData unsegmentedFloorMap(boolean withRobotPosition, boolean withChargerPosition) {
+        byte[] imageData = new byte[WIDTH * HEIGHT];
 
         Integer robotX = withRobotPosition ? Integer.valueOf(toMapCoordinate(ROBOT_PIXEL_X)) : null;
         Integer robotY = withRobotPosition ? Integer.valueOf(toMapCoordinate(ROBOT_PIXEL_Y)) : null;

@@ -41,6 +41,10 @@
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>duid</representation-property>
 
 		<config-description>

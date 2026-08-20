@@ -42,9 +42,9 @@ public final class RoomAtRobotResolver {
 
     /**
      * Resolves the segment id of the map pixel at the given position, falling back to the nearest
-     * ring within {@link #FALLBACK_SEARCH_RADIUS} that holds any segmented-floor pixels; the
-     * segment with the strict majority on that ring wins, and a tie resolves to empty rather than
-     * depending on scan order.
+     * ring within {@link #FALLBACK_SEARCH_RADIUS} that holds any segmented-floor pixels; a segment
+     * wins only by holding more than half of that ring's segmented pixels, so ties and mere
+     * pluralities resolve to empty rather than depending on scan order.
      */
     public static Optional<Integer> resolveSegmentId(RRMapData mapData, int positionX, int positionY) {
         int width = mapData.imageWidth();
@@ -90,18 +90,18 @@ public final class RoomAtRobotResolver {
     private static Optional<Integer> dominantSegment(Map<Integer, Integer> segmentCounts) {
         int dominantId = -1;
         int highestCount = 0;
-        boolean tied = false;
+        int totalCount = 0;
         for (Map.Entry<Integer, Integer> candidate : segmentCounts.entrySet()) {
             int count = candidate.getValue();
+            totalCount += count;
             if (count > highestCount) {
                 highestCount = count;
                 dominantId = candidate.getKey();
-                tied = false;
-            } else if (count == highestCount) {
-                tied = true;
             }
         }
-        return tied || dominantId < 0 ? Optional.empty() : Optional.of(dominantId);
+        // The winner must hold more than half of all counted ring pixels, so a mere plurality like
+        // 2/1/1 stays unresolved instead of deciding the room with only half the evidence.
+        return highestCount * 2 > totalCount ? Optional.of(dominantId) : Optional.empty();
     }
 
     private static Optional<Integer> segmentAt(byte[] imageData, int width, int height, int x, int y) {

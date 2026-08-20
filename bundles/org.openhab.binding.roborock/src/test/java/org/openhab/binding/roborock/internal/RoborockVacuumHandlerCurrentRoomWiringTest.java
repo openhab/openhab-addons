@@ -122,7 +122,7 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
         String updateCurrentRoomStateBody = extractMethodBody(source,
                 "private void updateCurrentRoomState(RRMapData mapData)");
         String roomStateAtBody = extractMethodBody(source,
-                "private static State roomStateAt(RRMapData mapData, MapPoint position,");
+                "private static @Nullable State roomStateAt(RRMapData mapData, MapPoint position,");
 
         assertTrue(updateCurrentRoomStateBody.contains("segmentRoomNames"),
                 "updateCurrentRoomState should resolve the room name via the segmentRoomNames table");

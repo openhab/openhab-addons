@@ -1184,51 +1184,59 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void updateCurrentRoomState(RRMapData mapData) {
-        updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(),
-                resolveRoomStateFromMap(mapData, isAtDock(), segmentRoomNames));
+        State roomState = resolveRoomStateFromMap(mapData, isAtDock(), segmentRoomNames);
+        if (roomState != null) {
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), roomState);
+        }
     }
 
     /**
      * Republishes {@code status#current-room} from the charging dock's position in the most
-     * recently parsed map, since no map is polled while the robot sits on the dock. When the cached
-     * map holds no dock position the channel is left untouched.
+     * recently parsed map, since no map is polled while the robot sits on the dock. When no dock
+     * room can be resolved the channel goes {@code UNDEF} rather than keeping the room of the
+     * interrupted cleaning run.
      */
     private void updateCurrentRoomStateFromDock() {
-        State dockRoomState = resolveDockRoomState(lastParsedMapData, segmentRoomNames);
-        if (dockRoomState != null) {
-            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), dockRoomState);
-        }
+        updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(),
+                resolveDockRoomState(lastParsedMapData, segmentRoomNames));
     }
 
     /**
-     * Resolves the {@code status#current-room} state for a freshly parsed map, preferring the
-     * charging dock's position over the possibly lagging robot position while the robot is docked.
+     * Resolves the {@code status#current-room} state for a freshly parsed map: from the charging
+     * dock's position while the robot is docked ({@code UNDEF} when no dock room can be resolved),
+     * from the robot position otherwise, where {@code null} means the channel must be left as it is
+     * because no segment could be resolved at the robot position.
      */
-    static State resolveRoomStateFromMap(RRMapData mapData, boolean atDock, Map<Integer, String> segmentRoomNames) {
-        MapPoint position = atDock ? dockPosition(mapData) : null;
-        if (position == null) {
-            position = robotPosition(mapData);
+    static @Nullable State resolveRoomStateFromMap(RRMapData mapData, boolean atDock,
+            Map<Integer, String> segmentRoomNames) {
+        if (atDock) {
+            // No map is polled while the robot sits docked, so an unknown dock room must go UNDEF
+            // instead of borrowing the possibly stale robot position.
+            MapPoint dockPosition = dockPosition(mapData);
+            State dockRoomState = dockPosition == null ? null : roomStateAt(mapData, dockPosition, segmentRoomNames);
+            return dockRoomState == null ? UnDefType.UNDEF : dockRoomState;
         }
+        MapPoint position = robotPosition(mapData);
         if (position == null) {
             return UnDefType.UNDEF;
         }
+        // While cleaning, an unresolvable position keeps the previous room because the next map
+        // cycle corrects the channel on its own.
         return roomStateAt(mapData, position, segmentRoomNames);
     }
 
     /**
      * Resolves the {@code status#current-room} state from the charging dock's position in the given
-     * cached map, or {@code null} when that map holds no dock position and the channel must be left
-     * as it is.
+     * cached map, going {@code UNDEF} whenever no dock room can be resolved, since nothing
+     * self-corrects the channel while the robot sits on the dock.
      */
-    static @Nullable State resolveDockRoomState(@Nullable RRMapData mapData, Map<Integer, String> segmentRoomNames) {
+    static State resolveDockRoomState(@Nullable RRMapData mapData, Map<Integer, String> segmentRoomNames) {
         if (mapData == null) {
-            return null;
+            return UnDefType.UNDEF;
         }
         MapPoint dockPosition = dockPosition(mapData);
-        if (dockPosition == null) {
-            return null;
-        }
-        return roomStateAt(mapData, dockPosition, segmentRoomNames);
+        State dockRoomState = dockPosition == null ? null : roomStateAt(mapData, dockPosition, segmentRoomNames);
+        return dockRoomState == null ? UnDefType.UNDEF : dockRoomState;
     }
 
     /**
@@ -1242,9 +1250,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         return previousStateId == null || !StatusType.getType(previousStateId.intValue()).isAtDock();
     }
 
-    private static State roomStateAt(RRMapData mapData, MapPoint position, Map<Integer, String> segmentRoomNames) {
+    /**
+     * Resolves the room state at the given map position, returning {@code null} when no segment
+     * can be resolved there at all and {@code UNDEF} when the resolved segment has no name in the
+     * table.
+     */
+    private static @Nullable State roomStateAt(RRMapData mapData, MapPoint position,
+            Map<Integer, String> segmentRoomNames) {
         Optional<Integer> segmentId = RoomAtRobotResolver.resolveSegmentId(mapData, position.x(), position.y());
-        String roomName = segmentId.map(segmentRoomNames::get).orElse(null);
+        if (segmentId.isEmpty()) {
+            return null;
+        }
+        String roomName = segmentRoomNames.get(segmentId.get());
         return roomName != null ? new StringType(roomName) : UnDefType.UNDEF;
     }
 
