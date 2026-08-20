@@ -1790,18 +1790,18 @@ In `light` profile (white mode), each of the 5 LED output channels is exposed as
 | meter4 |             |        |           | Meter for LED channel 4 (if configured)                                 |
 | meter5 |             |        |           | Meter for LED channel 5 (if configured)                                 |
 
-In `cctx2` profile (dual color-temperature white mode), the warm-white and cool-white channels are each exposed as their own group, each with its own independent meter:
+In `cctx2` profile (dual color-temperature mode), the device exposes two independent CCT components (`CCT:0` and `CCT:1`), each controlling its own warm/cold white pair; they are each exposed as their own channel group, with its own independent meter:
 
 | Group  | Channel     | Type   | read-only | Description                                                             |
 | ------ | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
-| light1 | brightness  | Dimmer | r/w       | Warm-white channel: Brightness: 0..100, control power state with ON/OFF |
-|        | colorTemp   | Dimmer | r/w       | Warm-white channel: Color temperature: 0..100% (2700K..6500K)           |
+| light1 | brightness  | Dimmer | r/w       | CCT channel 1: Brightness: 0..100, control power state with ON/OFF      |
+|        | colorTemp   | Dimmer | r/w       | CCT channel 1: Color temperature: 0..100% (2700K..6500K)                |
 |        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
 |        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
-| light2 |             |        |           | Same for the cool-white channel                                         |
-| meter1 |             |        |           | Meter for the warm-white channel (light1), see meter group above        |
-| meter2 |             |        |           | Meter for the cool-white channel (light2), see meter group above        |
+| light2 |             |        |           | Same for CCT channel 2                                                  |
+| meter1 |             |        |           | Meter for CCT channel 1 (light1), see meter group above                 |
+| meter2 |             |        |           | Meter for CCT channel 2 (light2), see meter group above                 |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
