@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.threedprinter.internal.dto.octoprint;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -20,31 +22,29 @@ import com.google.gson.annotations.SerializedName;
 /**
  * DTO for the OctoPrint GET /api/printer response.
  *
+ * <p>
+ * The {@code temperature} object is a flat map keyed by {@code tool0}, {@code tool1}, ... (one entry per
+ * extruder/toolhead the printer profile defines) plus {@code bed} and optionally {@code chamber}, all sharing the
+ * same actual/target shape. A plain map is used instead of fixed fields because the number of tools varies per
+ * printer.
+ *
  * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class OctoPrintPrinterResponse {
 
     @SerializedName("temperature")
-    public @Nullable OctoPrintTemperature temperature;
+    public @Nullable Map<String, OctoPrintTempReading> temperature;
 
     @SerializedName("state")
     public @Nullable OctoPrintState state;
 
-    public static class OctoPrintTemperature {
-        @SerializedName("tool0")
-        public @Nullable OctoPrintTempReading tool0;
+    public static class OctoPrintTempReading {
+        @SerializedName("actual")
+        public double actual;
 
-        @SerializedName("bed")
-        public @Nullable OctoPrintTempReading bed;
-
-        public static class OctoPrintTempReading {
-            @SerializedName("actual")
-            public double actual;
-
-            @SerializedName("target")
-            public @Nullable Double target;
-        }
+        @SerializedName("target")
+        public @Nullable Double target;
     }
 
     public static class OctoPrintState {

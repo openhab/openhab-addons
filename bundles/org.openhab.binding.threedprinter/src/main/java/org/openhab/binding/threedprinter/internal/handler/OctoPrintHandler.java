@@ -16,8 +16,14 @@ import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingCon
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
@@ -32,7 +38,7 @@ import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintJobResp
 import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintJobResponse.OctoPrintProgress;
 import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintPrinterResponse;
 import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintPrinterResponse.OctoPrintState;
-import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintPrinterResponse.OctoPrintTemperature;
+import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintPrinterResponse.OctoPrintTempReading;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
@@ -43,6 +49,9 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -61,9 +70,18 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class OctoPrintHandler extends AbstractPrinterHandler {
 
+    /**
+     * Matches OctoPrint's own tool key naming in the {@code temperature} object: {@code tool0} is always the
+     * primary extruder; {@code tool1}, {@code tool2}, ... appear for additional ones, per the printer profile's
+     * configured extruder count.
+     */
+    private static final Pattern EXTRA_TOOL_PATTERN = Pattern.compile("^tool([1-9][0-9]*)$");
+
     private @Nullable OctoPrintConfiguration config;
     private String lastPreviewFilename = "";
     private @Nullable RawType lastPreviewState;
+    /** Maps a dynamically added per-tool setpoint channel ID to the OctoPrint tool index (0-based) it controls. */
+    private Map<String, Integer> extraSetpointToolIndexByChannel = new LinkedHashMap<>();
 
     public OctoPrintHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -116,18 +134,19 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
 
         updateStatus(ThingStatus.ONLINE);
 
-        OctoPrintTemperature temps = printerResponse.temperature;
+        Map<String, OctoPrintTempReading> temps = printerResponse.temperature;
         if (temps != null) {
-            OctoPrintTemperature.OctoPrintTempReading tool0 = temps.tool0;
+            OctoPrintTempReading tool0 = temps.get("tool0");
             if (tool0 != null) {
                 updateState(CHANNEL_NOZZLE_TEMPERATURE, new QuantityType<Temperature>(tool0.actual, SIUnits.CELSIUS));
                 updateState(CHANNEL_NOZZLE_TEMPERATURE_SETPOINT, toTemperatureState(tool0.target));
             }
-            OctoPrintTemperature.OctoPrintTempReading bed = temps.bed;
+            OctoPrintTempReading bed = temps.get("bed");
             if (bed != null) {
                 updateState(CHANNEL_BED_TEMPERATURE, new QuantityType<Temperature>(bed.actual, SIUnits.CELSIUS));
                 updateState(CHANNEL_BED_TEMPERATURE_SETPOINT, toTemperatureState(bed.target));
             }
+            updateExtraToolChannels(temps);
         }
 
         OctoPrintState stateObj = printerResponse.state;
@@ -245,6 +264,73 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         return value != null ? new QuantityType<>(value, Units.SECOND) : UnDefType.UNDEF;
     }
 
+    /**
+     * Adds a temperature/setpoint channel pair for each {@code toolN} (N &gt; 0) key present in this poll's
+     * temperature map that doesn't already have one, then updates their state. Unlike Klipper, no separate
+     * discovery request is needed: OctoPrint's printer profile already determines how many tools exist, and every
+     * {@code /api/printer} response reports all of them. Tool numbering follows the same convention as Klipper:
+     * {@code tool0} is tool 1 (the existing primary nozzle channels), {@code tool1} is tool 2, and so on.
+     */
+    private void updateExtraToolChannels(Map<String, OctoPrintTempReading> temps) {
+        List<String> extraToolKeys = new ArrayList<>();
+        for (String key : temps.keySet()) {
+            if (EXTRA_TOOL_PATTERN.matcher(key).matches()) {
+                extraToolKeys.add(key);
+            }
+        }
+        if (extraToolKeys.isEmpty()) {
+            return;
+        }
+        extraToolKeys.sort(Comparator.comparingInt(this::toolIndex));
+
+        ThingBuilder builder = null;
+        for (String toolKey : extraToolKeys) {
+            int toolNumber = toolIndex(toolKey) + 1;
+            String tempChannelId = nozzleTemperatureChannelId(toolNumber);
+            String setpointChannelId = nozzleSetpointChannelId(toolNumber);
+            if (thing.getChannel(tempChannelId) == null) {
+                builder = builder != null ? builder : editThing();
+                builder.withChannel(
+                        ChannelBuilder.create(new ChannelUID(thing.getUID(), tempChannelId), "Number:Temperature")
+                                .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature"))
+                                .withLabel("Nozzle " + toolNumber + " Temperature").build());
+            }
+            if (thing.getChannel(setpointChannelId) == null) {
+                builder = builder != null ? builder : editThing();
+                builder.withChannel(
+                        ChannelBuilder.create(new ChannelUID(thing.getUID(), setpointChannelId), "Number:Temperature")
+                                .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature-setpoint"))
+                                .withLabel("Nozzle " + toolNumber + " Setpoint").build());
+            }
+            extraSetpointToolIndexByChannel.put(setpointChannelId, toolIndex(toolKey));
+        }
+        if (builder != null) {
+            updateThing(builder.build());
+        }
+
+        for (String toolKey : extraToolKeys) {
+            OctoPrintTempReading reading = temps.get(toolKey);
+            if (reading != null) {
+                int toolNumber = toolIndex(toolKey) + 1;
+                updateState(nozzleTemperatureChannelId(toolNumber),
+                        new QuantityType<Temperature>(reading.actual, SIUnits.CELSIUS));
+                updateState(nozzleSetpointChannelId(toolNumber), toTemperatureState(reading.target));
+            }
+        }
+    }
+
+    private int toolIndex(String toolKey) {
+        return Integer.parseInt(toolKey.substring("tool".length()));
+    }
+
+    private String nozzleTemperatureChannelId(int toolNumber) {
+        return CHANNEL_NOZZLE_TEMPERATURE + "-" + toolNumber;
+    }
+
+    private String nozzleSetpointChannelId(int toolNumber) {
+        return CHANNEL_NOZZLE_TEMPERATURE_SETPOINT + "-" + toolNumber;
+    }
+
     private void clearPreview() {
         updateState(CHANNEL_JOB_PREVIEW, UnDefType.UNDEF);
         lastPreviewFilename = "";
@@ -267,8 +353,20 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
 
     private void handleCommandAsync(ChannelUID channelUID, Command command, OctoPrintConfiguration cfg) {
         String baseUrl = "http://" + cfg.hostname + ":" + cfg.port;
+        String channelId = channelUID.getId();
 
-        switch (channelUID.getId()) {
+        Integer extraToolIndex = extraSetpointToolIndexByChannel.get(channelId);
+        if (extraToolIndex != null) {
+            Integer temp = toCelsius(command);
+            if (temp != null) {
+                sendGcode(baseUrl, cfg.apiKey, "M104 T" + extraToolIndex + " S" + temp);
+            } else {
+                logger.warn("Unsupported command type {} for channel {}", command, channelUID);
+            }
+            return;
+        }
+
+        switch (channelId) {
             case CHANNEL_PAUSE_RESUME:
                 if (command instanceof OnOffType onOff) {
                     String action = OnOffType.ON.equals(onOff) ? "pause" : "resume";

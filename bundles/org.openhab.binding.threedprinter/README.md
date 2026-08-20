@@ -14,7 +14,7 @@ This binding has been tested against:
 
 - **Prusa MK4** running PrusaLink server 2.1.2 / Buddy firmware 6.5.7+12836 (`prusa-link` thing type)
 - **Prusa Core One** running PrusaLink server 2.1.2 / Buddy firmware 6.5.7+12836 (`prusa-link` thing type)
-- **Snapmaker U1** running Klipper via Moonraker 1.4.1.6 (`klipper` thing type)
+- **Snapmaker U1** running Klipper via Moonraker 1.4.1.6 (`klipper` thing type), including its 4 toolheads (see [Multi-toolhead printers](#multi-toolhead-printers))
 
 Other Buddy-firmware Prusa printers (MK3.5, MINI+, XL) and other Klipper/Moonraker printers are expected to work the same way, since they expose the same PrusaLink v1 and Moonraker APIs respectively, but have not been verified by the author. The `octoprint` thing type has not been tested against a live OctoPrint server; it is expected to work against any standard OctoPrint installation (the print preview additionally requires the [PrusaSlicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) plugin).
 
@@ -79,6 +79,15 @@ All three thing types expose the same set of channel IDs, but `nozzle-temperatur
 | `pause-resume`                | Switch               | RW  | `ON` when the print is paused. Send `ON` to pause, `OFF` to resume.                                 |
 | `cancel`                      | Switch               | W   | Send `ON` to cancel the current print. Resets to `OFF` automatically.                               |
 | `job-preview`                 | Image                | R   | Thumbnail image of the object being printed. Only populated when the sliced file contains embedded thumbnails. For OctoPrint, requires the [PrusaSlicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) plugin. |
+
+### Multi-toolhead printers
+
+Both `klipper` and `octoprint` things automatically detect additional toolheads and add extra channels for them; `prusa-link` does not, since PrusaLink's status API only ever reports one active nozzle even on tool-changer machines like the Prusa XL.
+
+The added channels follow the same pattern on both platforms: `nozzle-temperature-N` / `nozzle-temperature-setpoint-N`, where `N` is the tool number. The primary toolhead is tool 1 and is exposed as the regular `nozzle-temperature`/`nozzle-temperature-setpoint` channels; the second toolhead is tool 2, the third is tool 3, and so on, with no fixed upper limit. These extra channels are not listed in the table above since they only appear on things with more than one toolhead; add them to your `.items` file the same way as the primary nozzle channels, substituting the tool number, e.g. `threedprinter:klipper:voron:nozzle-temperature-2`.
+
+- **Klipper**: additional toolheads are configured as `extruder1`, `extruder2`, ... alongside the primary `extruder`. The binding queries Moonraker once at startup to discover how many the printer actually reports.
+- **OctoPrint**: additional toolheads appear as `tool1`, `tool2`, ... in the same `temperature` object already polled every cycle (per the printer profile's configured extruder count), so no extra discovery request is needed.
 
 ## Full Example
 
