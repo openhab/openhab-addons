@@ -26,6 +26,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -45,25 +46,60 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        var job = refreshJob;
-        if (job != null) {
-            job.cancel(true);
+        TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
+        if (config.tripSearchKey == null || config.tripSearchKey.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip Search Key is missing");
+            return;
         }
-        var config = getConfigAs(TransitAppTripConfiguration.class);
-        long refreshInterval = Math.max(30L, config.refreshInterval);
-        refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
+
         updateStatus(ThingStatus.UNKNOWN);
+
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            startPolling();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            logger.debug("Bridge is ONLINE, starting polling for {}", getThing().getUID());
+            updateStatus(ThingStatus.UNKNOWN);
+            startPolling();
+        } else {
+            logger.debug("Bridge is {}, stopping polling for {}", bridgeStatusInfo.getStatus(), getThing().getUID());
+            stopPolling();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    private void startPolling() {
+        if (refreshJob == null || refreshJob.isCancelled()) {
+            TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
+            long refreshInterval = Math.max(30L, config.refreshInterval);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopPolling() {
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+            refreshJob = null;
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            scheduler.submit(this::pollTransitApi);
+            scheduler.execute(this::pollTransitApi);
         }
     }
 
     private synchronized void pollTransitApi() {
-        var config = getConfigAs(TransitAppTripConfiguration.class);
+        TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
         String tripSearchKey = config.tripSearchKey;
         if (tripSearchKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip Search Key is missing");
@@ -71,15 +107,14 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         }
 
         Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
+        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Bridge is not ONLINE. Skipping poll for {}", getThing().getUID());
             return;
         }
 
         try {
             var bridgeHandler = getTransitBridgeHandler();
             if (bridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
                 return;
             }
             var result = bridgeHandler.getTripDetails(tripSearchKey);
@@ -163,12 +198,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         return null;
     }
 
-    @Override
     public void dispose() {
-        var job = refreshJob;
-        if (job != null) {
-            job.cancel(true);
-        }
+        stopPolling();
         super.dispose();
     }
 }

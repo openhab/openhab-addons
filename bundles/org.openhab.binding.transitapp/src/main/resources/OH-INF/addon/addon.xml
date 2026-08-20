@@ -4,5 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 	<type>binding</type>
 	<name>TransitApp Binding</name>
-	<description>Bridge to connect to Transit API. Powered by Transit.</description>
+	<description>This binding integrates public transit information and real-time departure details from the Transit API
+		(v4).</description>
+	<connection>cloud</connection>
 </addon:addon>

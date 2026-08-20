@@ -95,28 +95,32 @@ public class TransitApiClient {
         cache.entrySet().removeIf(entry -> (now - entry.getValue().timestamp) >= cacheTimeMs);
     }
 
-    public String fetchStopDepartures(String apiKey, String globalStopId) throws Exception {
+    public String fetchStopDepartures(String apiKey, String globalStopId, int maxDepartures) throws Exception {
         long now = System.currentTimeMillis();
         cleanupCache(now);
 
+        // Cache key includes maxDepartures to avoid incorrect cache hits
+        String cacheKey = globalStopId + ":" + maxDepartures;
         @Nullable
-        CachedResponse cached = cache.get(globalStopId);
+        CachedResponse cached = cache.get(cacheKey);
         if (cached != null && (now - cached.timestamp) < cacheTimeMs) {
             return cached.payload;
         }
 
         checkRateLimit();
 
+        // Passed explicitly as global_stop_id and max_num_departures
         String url = "https://external.transitapp.com/v4/public/stop_departures?global_stop_id="
-                + URLEncoder.encode(globalStopId, StandardCharsets.UTF_8);
+                + URLEncoder.encode(globalStopId, StandardCharsets.UTF_8) + "&max_num_departures=" + maxDepartures;
+
         ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).header("apiKey", apiKey)
                 .timeout(10, TimeUnit.SECONDS).send();
 
         handleResponseStatus(response);
 
         String body = response.getContentAsString();
-        logger.trace("Raw JSON response for stop_departures ({}): {}", globalStopId, body);
-        cache.put(globalStopId, new CachedResponse(body, System.currentTimeMillis()));
+        logger.trace("Raw JSON response for stop_departures ({}, max={}): {}", globalStopId, maxDepartures, body);
+        cache.put(cacheKey, new CachedResponse(body, System.currentTimeMillis()));
         return body;
     }
 
@@ -158,8 +162,9 @@ public class TransitApiClient {
         return body;
     }
 
-    public StopDeparturesResult getStopDepartures(String apiKey, String globalStopId) throws Exception {
-        String json = fetchStopDepartures(apiKey, globalStopId);
+    public StopDeparturesResult getStopDepartures(String apiKey, String globalStopId, int maxDepartures)
+            throws Exception {
+        String json = fetchStopDepartures(apiKey, globalStopId, maxDepartures);
         @Nullable
         StopDeparturesResult result = gson.fromJson(json, StopDeparturesResult.class);
         if (result == null) {

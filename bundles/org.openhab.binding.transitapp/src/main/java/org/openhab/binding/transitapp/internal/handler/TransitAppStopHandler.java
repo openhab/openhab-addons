@@ -16,6 +16,10 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.transitapp.internal.TransitAppBindingConstants;
+import org.openhab.binding.transitapp.internal.action.TransitActions;
 import org.openhab.binding.transitapp.internal.config.TransitAppStopConfiguration;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.Itinerary;
@@ -40,7 +45,9 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -61,174 +68,214 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        ScheduledFuture<?> job = refreshJob;
-        if (job != null) {
-            job.cancel(true);
-        }
         TransitAppStopConfiguration config = getConfigAs(TransitAppStopConfiguration.class);
-        long refreshInterval = Math.max(30L, config.refreshInterval);
-        refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
+        if (config.globalStopId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Stop ID is missing");
+            return;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
-        logger.debug("Initialized Transit Stop with refresh interval: {} seconds", refreshInterval);
+
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            startPolling();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.UNKNOWN);
+            startPolling();
+        } else {
+            stopPolling();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    private void startPolling() {
+        if (refreshJob == null || refreshJob.isCancelled()) {
+            TransitAppStopConfiguration config = getConfigAs(TransitAppStopConfiguration.class);
+            long refreshInterval = Math.max(30L, config.refreshInterval);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopPolling() {
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+            refreshJob = null;
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            scheduler.submit(this::pollTransitApi);
+            scheduler.execute(this::pollTransitApi);
         }
     }
 
     private synchronized void pollTransitApi() {
         Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
+        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
             return;
         }
 
         TransitAppStopConfiguration config = getConfigAs(TransitAppStopConfiguration.class);
         String globalStopId = config.globalStopId;
-        if (globalStopId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Stop ID is missing");
-            return;
-        }
 
         try {
             TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
             if (bridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
                 return;
             }
-            logger.debug("Polling transit API for stop ID: {}", globalStopId);
+
             StopDeparturesResult result = bridgeHandler.getStopDepartures(globalStopId);
             updateStatus(ThingStatus.ONLINE);
 
-            long now = System.currentTimeMillis() / 1000;
+            long nowSeconds = System.currentTimeMillis() / 1000;
             latestLineDepartures.clear();
 
-            int groupIdx = processDepartures(result.routeDepartures, now);
+            int groupIdx = processDepartures(result.getRouteDepartures(), nowSeconds);
             clearRemainingDepartures(groupIdx);
+
         } catch (InterruptedException e) {
-            // Preserve interrupt status for proper task cancellation
             Thread.currentThread().interrupt();
-            logger.debug("Stop polling task interrupted");
         } catch (Exception e) {
             latestLineDepartures.clear();
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
-            logger.error("Communication issue while polling stop: {}", errorMessage, e);
+            logger.error("Communication issue: {}", errorMessage);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            clearRemainingDepartures(1);
         }
     }
 
-    private int processDepartures(@Nullable List<RouteDeparture> routeDepartures, long currentTimeSeconds) {
-        int groupIdx = 1;
+    private int processDepartures(List<RouteDeparture> routeDepartures, long currentTimeSeconds) {
         TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
         int maxDepartures = bridgeHandler != null ? bridgeHandler.getMaxDepartures()
                 : TransitAppBindingConstants.DEFAULT_MAX_DEPARTURES;
 
-        // Cap maxDepartures to 10, matching the number of channel groups in the thing-type
         if (maxDepartures > 10) {
             maxDepartures = 10;
         }
 
-        if (routeDepartures == null) {
-            return groupIdx;
+        if (routeDepartures.isEmpty()) {
+            return 1;
         }
 
+        List<FlattenedDeparture> allDepartures = new ArrayList<>();
+
         for (RouteDeparture routeDep : routeDepartures) {
+            // Extract to explicit variables to satisfy the Eclipse JDT @NonNull compiler
+            String sName = routeDep.getRouteShortName();
+            final String shortName = sName != null ? sName : "";
+
+            String lName = routeDep.getRouteLongName();
+            final String longName = lName != null ? lName : "";
+
+            for (Itinerary itinerary : routeDep.getItineraries()) {
+                for (ScheduleItem schedule : itinerary.getScheduleItems()) {
+                    Instant depTime = schedule.getDepartureTime();
+                    if (depTime == null || depTime.getEpochSecond() <= currentTimeSeconds) {
+                        continue;
+                    }
+
+                    allDepartures.add(new FlattenedDeparture(depTime, shortName, longName, schedule));
+                }
+            }
+        }
+
+        allDepartures.sort(Comparator.comparing(a -> a.departureTime));
+
+        int groupIdx = 1;
+        for (FlattenedDeparture dep : allDepartures) {
             if (groupIdx > maxDepartures) {
                 break;
             }
 
-            // Normalize to non-null strings for JDT analysis
-            final String shortName = routeDep.routeShortName != null ? routeDep.routeShortName : "";
-            final String longName = routeDep.routeLongName != null ? routeDep.routeLongName : "";
-            List<Itinerary> itineraries = routeDep.itineraries;
-
-            if (itineraries == null) {
-                continue;
-            }
-
-            for (Itinerary itinerary : itineraries) {
-                if (groupIdx > maxDepartures) {
-                    break;
-                }
-
-                List<ScheduleItem> schedules = itinerary.scheduleItems;
-                if (schedules == null) {
-                    continue;
-                }
-
-                for (ScheduleItem schedule : schedules) {
-                    if (groupIdx > maxDepartures) {
-                        break;
-                    }
-
-                    Long depTime = schedule.departureTime;
-                    if (depTime == null || depTime < currentTimeSeconds) {
-                        continue;
-                    }
-
-                    long minutesUntilDeparture = (depTime - currentTimeSeconds) / 60;
-                    if (minutesUntilDeparture < 0) {
-                        continue;
-                    }
-
-                    updateDepartureState(groupIdx, shortName, longName, depTime, minutesUntilDeparture, schedule);
-                    groupIdx++;
-                }
-            }
+            long minutesUntilDeparture = (dep.departureTime.getEpochSecond() - currentTimeSeconds) / 60;
+            updateDepartureState(groupIdx, dep.routeShortName, dep.routeLongName, dep.departureTime,
+                    minutesUntilDeparture, dep.schedule);
+            groupIdx++;
         }
 
         return groupIdx;
     }
 
-    private void updateDepartureState(int groupIdx, @Nullable String shortName, @Nullable String longName, long depTime,
+    private static class FlattenedDeparture {
+        final Instant departureTime;
+        final String routeShortName;
+        final String routeLongName;
+        final ScheduleItem schedule;
+
+        FlattenedDeparture(Instant departureTime, String routeShortName, String routeLongName, ScheduleItem schedule) {
+            this.departureTime = departureTime;
+            this.routeShortName = routeShortName;
+            this.routeLongName = routeLongName;
+            this.schedule = schedule;
+        }
+    }
+
+    private void updateDepartureState(int groupIdx, String shortName, String longName, Instant depTime,
             long minutesUntilDeparture, ScheduleItem schedule) {
         String prefix = "depart" + groupIdx + "#";
 
-        // Normalize null values to empty string
-        String safeShortName = shortName != null ? shortName : "";
-        String safeLongName = longName != null ? longName : "";
-
-        updateState(prefix + "route-short-name",
-                safeShortName.isEmpty() ? UnDefType.UNDEF : new StringType(safeShortName));
-        updateState(prefix + "route-long-name",
-                safeLongName.isEmpty() ? UnDefType.UNDEF : new StringType(safeLongName));
+        updateState(prefix + "route-short-name", shortName.isEmpty() ? UnDefType.UNDEF : new StringType(shortName));
+        updateState(prefix + "route-long-name", longName.isEmpty() ? UnDefType.UNDEF : new StringType(longName));
         updateState(prefix + "minutes-until-departure", new QuantityType<>(minutesUntilDeparture, Units.MINUTE));
         updateState(prefix + "departure-time",
-                new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(depTime), ZoneId.systemDefault())));
+                new DateTimeType(ZonedDateTime.ofInstant(depTime, ZoneId.systemDefault())));
 
-        if (!safeShortName.isEmpty() && !latestLineDepartures.containsKey(safeShortName)) {
-            latestLineDepartures.put(safeShortName,
-                    LocalTime.ofInstant(Instant.ofEpochSecond(depTime), ZoneId.systemDefault()).toString());
+        if (!shortName.isEmpty() && !latestLineDepartures.containsKey(shortName)) {
+            latestLineDepartures.put(shortName, LocalTime.ofInstant(depTime, ZoneId.systemDefault()).toString());
         }
 
-        Long delay = schedule.delay;
-        updateState(prefix + "delay-minutes",
-                delay != null ? new QuantityType<>(delay / 60, Units.MINUTE) : UnDefType.UNDEF);
+        Instant scheduledDepTime = schedule.getScheduledDepartureTime();
+        long delayMinutes = 0;
+        if (scheduledDepTime != null) {
+            long delaySeconds = depTime.getEpochSecond() - scheduledDepTime.getEpochSecond();
+            delayMinutes = delaySeconds / 60;
+        }
 
-        String track = schedule.track;
-        updateState(prefix + "platform", track != null ? new StringType(track) : UnDefType.UNDEF);
+        if (delayMinutes != 0) {
+            updateState(prefix + "delay-minutes", new QuantityType<>(delayMinutes, Units.MINUTE));
+        } else {
+            updateState(prefix + "delay-minutes", UnDefType.UNDEF);
+        }
 
-        Boolean wheelchair = schedule.wheelchairAccessible;
-        updateState(prefix + "wheelchair-accessible",
-                wheelchair != null ? (wheelchair ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
+        Integer wheelchair = schedule.getWheelchairAccessible();
+        if (wheelchair != null && wheelchair == 1) {
+            updateState(prefix + "wheelchair-accessible", OnOffType.ON);
+        } else if (wheelchair != null && wheelchair == 2) {
+            updateState(prefix + "wheelchair-accessible", OnOffType.OFF);
+        } else {
+            updateState(prefix + "wheelchair-accessible", UnDefType.UNDEF);
+        }
 
-        String occupancy = schedule.occupancyStatus;
-        updateState(prefix + "occupancy", occupancy != null ? new StringType(occupancy) : UnDefType.UNDEF);
+        updateState(prefix + "is-cancelled", schedule.isCancelled() ? OnOffType.ON : OnOffType.OFF);
 
-        Boolean isCancelled = schedule.isCancelled;
-        updateState(prefix + "is-cancelled",
-                isCancelled != null ? (isCancelled ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
+        String platform = schedule.getTrack();
+        if (platform != null && !platform.isBlank()) {
+            updateState(prefix + "platform", new StringType(platform));
+        } else {
+            updateState(prefix + "platform", UnDefType.UNDEF);
+        }
+
+        String occupancy = schedule.getOccupancyStatus();
+        if (occupancy != null && !occupancy.isBlank()) {
+            updateState(prefix + "occupancy", new StringType(occupancy));
+        } else {
+            updateState(prefix + "occupancy", UnDefType.UNDEF);
+        }
     }
 
     private void clearRemainingDepartures(int startIdx) {
-        // Always clear up to depart10 to ensure stale values are removed
-        // even if maxDepartures was reduced or fewer departures are returned
-        final int TOTAL_DEPARTURE_GROUPS = 10;
+        final int totalDepartureGroups = 10;
 
-        for (int i = startIdx; i <= TOTAL_DEPARTURE_GROUPS; i++) {
+        for (int i = startIdx; i <= totalDepartureGroups; i++) {
             String prefix = "depart" + i + "#";
             updateState(prefix + "route-short-name", UnDefType.UNDEF);
             updateState(prefix + "route-long-name", UnDefType.UNDEF);
@@ -246,6 +293,11 @@ public class TransitAppStopHandler extends BaseThingHandler {
         return latestLineDepartures.getOrDefault(lineName, "N/A");
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.<Class<? extends ThingHandlerService>> singleton(TransitActions.class);
+    }
+
     public @Nullable TransitAppBridgeHandler getTransitBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof TransitAppBridgeHandler bridgeHandler) {
@@ -256,10 +308,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = refreshJob;
-        if (job != null) {
-            job.cancel(true);
-        }
+        stopPolling();
         super.dispose();
     }
 }

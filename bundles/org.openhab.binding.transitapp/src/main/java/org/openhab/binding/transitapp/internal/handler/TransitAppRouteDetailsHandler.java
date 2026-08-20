@@ -27,6 +27,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -46,20 +47,55 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        ScheduledFuture<?> job = refreshJob;
-        if (job != null) {
-            job.cancel(true);
-        }
         TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
-        long refreshInterval = Math.max(30L, config.refreshInterval);
-        refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
+        if (config.routeId == null || config.routeId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Route ID is missing");
+            return;
+        }
+
         updateStatus(ThingStatus.UNKNOWN);
+
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            startPolling();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            logger.debug("Bridge is ONLINE, starting polling for {}", getThing().getUID());
+            updateStatus(ThingStatus.UNKNOWN);
+            startPolling();
+        } else {
+            logger.debug("Bridge is {}, stopping polling for {}", bridgeStatusInfo.getStatus(), getThing().getUID());
+            stopPolling();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    private void startPolling() {
+        if (refreshJob == null || refreshJob.isCancelled()) {
+            TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
+            long refreshInterval = Math.max(30L, config.refreshInterval);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopPolling() {
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+            refreshJob = null;
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            scheduler.submit(this::pollTransitApi);
+            scheduler.execute(this::pollTransitApi);
         }
     }
 
@@ -72,15 +108,14 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
         }
 
         Bridge bridge = getBridge();
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not found");
+        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Bridge is not ONLINE. Skipping poll for {}", getThing().getUID());
             return;
         }
 
         try {
             TransitAppBridgeHandler bridgeHandler = getTransitBridgeHandler();
             if (bridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge handler not initialized");
                 return;
             }
             RouteDetailsResult result = bridgeHandler.getRouteDetails(routeId);
@@ -145,10 +180,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = refreshJob;
-        if (job != null) {
-            job.cancel(true);
-        }
+        stopPolling();
         super.dispose();
     }
 }
