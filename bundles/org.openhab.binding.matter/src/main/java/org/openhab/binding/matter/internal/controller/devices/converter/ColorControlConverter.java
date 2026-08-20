@@ -256,7 +256,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 logger.debug("enhancedCurrentHue not supported yet");
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
-                updateBrightness(ValueUtils.levelToPercent(numberValue));
+                updateBrightness(ValueUtils.levelToPercentWhenOn(numberValue));
                 break;
             case OnOffCluster.ATTRIBUTE_ON_OFF:
                 updateOnOff((Boolean) message.value);
@@ -285,7 +285,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 levelControlOptionsBitmap = levelControlCluster.options;
             }
         }
-        lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), ValueUtils.levelToPercent(brightness));
+        lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), ValueUtils.levelToPercentWhenOn(brightness));
         EnhancedColorModeEnum enhancedColorMode = initializingCluster.enhancedColorMode;
         ColorControlCluster.ColorModeEnum colorMode = initializingCluster.colorMode;
         if (enhancedColorMode != null) {
@@ -382,9 +382,8 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
 
     private void updateColorHSB() {
         float hueValue = lastHue * 360.0f / 254.0f;
-        float saturationValue = lastSaturation * 100.0f / 254.0f;
         DecimalType hue = new DecimalType(Float.valueOf(hueValue).toString());
-        PercentType saturation = new PercentType(Float.valueOf(saturationValue).toString());
+        PercentType saturation = ValueUtils.saturationToPercent(lastSaturation);
         updateColorHSB(hue, saturation);
         hueSaturationState = ColorUpdateState.READY;
     }
@@ -432,7 +431,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
 
     private void changeColorHueSaturation(HSBType color) {
         int hue = (int) (color.getHue().floatValue() * 254.0f / 360.0f + 0.5f);
-        int saturation = ValueUtils.percentToLevel(color.getSaturation());
+        int saturation = ValueUtils.percentToSaturation(color.getSaturation());
         handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, ColorControlCluster
                 .moveToHueAndSaturation(hue, saturation, 0, initializingCluster.options, initializingCluster.options));
     }

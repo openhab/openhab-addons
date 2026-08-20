@@ -42,12 +42,9 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class DimmableLightDevice extends BaseDevice {
 
-    // Level Control treats a move to MinLevel as turning off, so that is what an off light reports
+    // Level 0 is not permitted with the Lighting feature, so an off light reports the minimum instead
     private static final int MIN_LEVEL = 1;
     private int lastLevel = MIN_LEVEL;
-    // The level last sent, so a ramp does not resend the same value. onOff is always sent: matter.js couples it
-    // to the level itself and never tells us, so a cached value here would go stale with no way to notice.
-    private int reportedLevel;
 
     public DimmableLightDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);
@@ -65,8 +62,7 @@ public class DimmableLightDevice extends BaseDevice {
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
         PercentType level = Optional.ofNullable(primaryItem.getStateAs(PercentType.class))
                 .orElseGet(() -> new PercentType(0));
-        lastLevel = Math.max(MIN_LEVEL, ValueUtils.percentToLevel(level));
-        reportedLevel = lastLevel;
+        lastLevel = ValueUtils.percentToLevel(level);
         attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
                 lastLevel);
         attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, level.intValue() > 0);
@@ -85,7 +81,7 @@ public class DimmableLightDevice extends BaseDevice {
                 updateOnOff(OnOffType.from(Boolean.valueOf(data.toString())));
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
-                updateLevel(ValueUtils.levelToPercent(((Double) data).intValue()));
+                updateLevel(ValueUtils.levelToPercentWhenOn(((Double) data).intValue()));
                 break;
             default:
                 break;
@@ -98,29 +94,18 @@ public class DimmableLightDevice extends BaseDevice {
         if (brightness == null) {
             return;
         }
-        List<AttributeState> states = lightStates(brightness);
-        if (!states.isEmpty()) {
-            setEndpointStates(states);
-        }
+        setEndpointStates(lightStates(brightness));
     }
 
-    /**
-     * An off light reports {@link #MIN_LEVEL}, since Level Control treats that as off and the level a client keeps
-     * for it should not be wherever the dimmer happened to be sampled on the way down.
-     */
     private List<AttributeState> lightStates(PercentType brightness) {
         boolean on = brightness.intValue() > 0;
         if (on) {
-            lastLevel = Math.max(MIN_LEVEL, ValueUtils.percentToLevel(brightness));
+            lastLevel = ValueUtils.percentToLevel(brightness);
         }
-        int level = on ? lastLevel : MIN_LEVEL;
         List<AttributeState> states = new ArrayList<>();
+        states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX, LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
+                on ? lastLevel : MIN_LEVEL));
         states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
-        if (level != reportedLevel) {
-            reportedLevel = level;
-            states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, level));
-        }
         return states;
     }
 
