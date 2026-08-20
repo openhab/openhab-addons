@@ -324,6 +324,10 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     logger.trace("Private API WebSocket update: action={}, model={}", update.action, update.modelType);
                     routePrivateApiUpdate(update, sequence);
                 });
+            }, () -> {
+                // The socket must not reopen until the sync has finished writing.
+                logger.debug("Private API WebSocket reconnected, syncing devices from refreshed bootstrap");
+                syncDevices();
             }).whenComplete((result, ex) -> {
                 if (ex != null) {
                     logger.debug("Failed to enable Private API WebSocket", ex);
