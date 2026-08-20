@@ -496,6 +496,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DevConfigInput input2;
             @SerializedName("input:3")
             public Shelly2DevConfigInput input3;
+            @SerializedName("input:4")
+            public Shelly2DevConfigInput input4;
 
             @SerializedName("switch:0")
             public Shelly2DevConfigSwitch switch0;
@@ -839,6 +841,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2InputStatus input2;
             @SerializedName("input:3")
             public Shelly2InputStatus input3;
+            @SerializedName("input:4")
+            public Shelly2InputStatus input4;
             @SerializedName("input:100")
             public Shelly2InputStatus input100; // Digital Input from Add-On
 

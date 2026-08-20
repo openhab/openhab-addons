@@ -639,4 +639,15 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.getMinTemp(0), is(profile.minTemp));
         assertThat(profile.getMaxTemp(0), is(profile.maxTemp));
     }
+
+    @Test
+    void proRgbwwPmFiveInputsAreAllCounted() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"rgb:0\":{\"id\":0},\"input:0\":{\"id\":0},\"input:1\":{\"id\":1},\"input:2\":{\"id\":2},"
+                + "\"input:3\":{\"id\":3},\"input:4\":{\"id\":4}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.numInputs, is(5));
+    }
 }

@@ -1568,6 +1568,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         addInputSettings(inputs, dc.input1);
         addInputSettings(inputs, dc.input2);
         addInputSettings(inputs, dc.input3);
+        addInputSettings(inputs, dc.input4);
 
         return inputs;
     }
@@ -1590,6 +1591,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= addInputStatus(1, status, ds.input1, updateChannels);
         updated |= addInputStatus(2, status, ds.input2, updateChannels);
         updated |= addInputStatus(3, status, ds.input3, updateChannels);
+        updated |= addInputStatus(4, status, ds.input4, updateChannels);
         status.inputs = relayStatus.inputs;
         return updated;
     }
