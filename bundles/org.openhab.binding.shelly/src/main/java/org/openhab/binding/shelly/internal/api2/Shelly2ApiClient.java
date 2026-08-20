@@ -255,7 +255,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.sntp.server = dc.sys.sntp.server;
         }
 
-        profile.initFromThingType(thingTypeUID);
         profile.isRoller = dc.cover0 != null;
         profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;
         profile.settings.relays = !profile.isCB ? fillRelaySettings(profile, dc) : fillBreakerSettings(profile, dc);
