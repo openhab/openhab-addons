@@ -453,7 +453,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         String group = null;
 
         // ON-OFF:
-        if (model.supportsOnOffChannel() && model.isOnOffDirty()) {
+        // New supportsOnOffViaBrightnessChannel() devices don't have an own on-off channel to be updated, but
+        // maybe legacy devices did, in which case this ensures non breaking of items linked to such channels
+        if ((model.supportsOnOffChannel() || model.supportsOnOffViaBrightnessChannel()) && model.isOnOffDirty()) {
             group = buildControlGroupName(profile, channelId);
             updated |= updateChannel(group, CHANNEL_LIGHT_POWER, model.getOnOffState());
         }
