@@ -42,7 +42,7 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class BTHomeDecoder {
     // Bump together with EVENT_DATA_VERSION in oh-blu-scanner.js whenever the wire format changes
-    public static final int SCRIPT_DATA_VERSION = 2;
+    static final int SCRIPT_DATA_VERSION = 2;
 
     private static final int DIMMER_STEPS_ID = 0x3c;
     private static final int TEXT_ID = 0x53;
@@ -235,7 +235,7 @@ public class BTHomeDecoder {
      * @return decoded fields; includes {@code "code": "BTH_UNKNOWN_TYPE"} if decoding stopped on an
      *         unrecognized object id (matching what the on-device decoder used to report)
      */
-    public static JsonObject decode(String hex) {
+    static JsonObject decode(String hex) {
         JsonObject result = new JsonObject();
         byte[] buffer = hexToBytes(hex);
         if (buffer == null) {
