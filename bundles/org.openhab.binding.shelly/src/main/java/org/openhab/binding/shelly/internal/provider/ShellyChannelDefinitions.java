@@ -533,7 +533,7 @@ public class ShellyChannelDefinitions {
             }
         }
         if (idx == 0) {
-            addChannel(thing, add, dstatus.daliCgCount != null, group, CHANNEL_DALI_DEVICES);
+            addChannel(thing, add, dstatus.daliScanActive != null, group, CHANNEL_DALI_DEVICES);
             addChannel(thing, add, dstatus.daliScanActive != null, group, CHANNEL_DALI_SCAN_ACTIVE);
         }
         return add;
