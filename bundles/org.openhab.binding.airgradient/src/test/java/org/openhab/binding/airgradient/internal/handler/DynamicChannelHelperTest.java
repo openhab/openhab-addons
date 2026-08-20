@@ -68,8 +68,6 @@ public class DynamicChannelHelperTest {
         measure.pm50Count = 29d;
         measure.pm10Count = 31d;
         measure.pm02Compensated = 11d;
-        measure.atmpCompensated = 20d;
-        measure.rhumCompensated = 50d;
         measure.tvocIndex = 1d;
         measure.tvocRaw = 2d;
         measure.noxIndex = 2d;
@@ -80,12 +78,12 @@ public class DynamicChannelHelperTest {
 
         assertThat(Objects.requireNonNull(returnedBuilder), is(builder));
         ArgumentCaptor<Channel> captor = ArgumentCaptor.forClass(Channel.class);
-        verify(builder, Mockito.times(15)).withChannel(captor.capture());
+        verify(builder, Mockito.times(13)).withChannel(captor.capture());
         List<String> channelIds = captor.getAllValues().stream().map((channel) -> channel.getUID().getId()).toList();
         assertThat(channelIds,
                 containsInAnyOrder("pm01-standard", "pm02-standard", "pm10-standard", "pm005-count", "pm01-count",
-                        "pm02-count", "pm50-count", "pm10-count", "pm02-compensated", "atmp-compensated",
-                        "rhum-compensated", "tvoc-index", "tvoc-raw", "nox-index", "nox-raw"));
+                        "pm02-count", "pm50-count", "pm10-count", "pm02-compensated", "tvoc-index", "tvoc-raw",
+                        "nox-index", "nox-raw"));
 
         Map<String, String> channelTypes = captor.getAllValues().stream()
                 .collect(Collectors.toMap((channel) -> channel.getUID().getId(),
@@ -97,8 +95,6 @@ public class DynamicChannelHelperTest {
                 Map.entry("pm02-count", "airgradient:particle-count"),
                 Map.entry("pm50-count", "airgradient:particle-count"),
                 Map.entry("pm10-count", "airgradient:particle-count"), Map.entry("pm02-compensated", "airgradient:pm2"),
-                Map.entry("atmp-compensated", "system:outdoor-temperature"),
-                Map.entry("rhum-compensated", "system:atmospheric-humidity"),
                 Map.entry("tvoc-index", "airgradient:tvoc"), Map.entry("tvoc-raw", "airgradient:tvoc"),
                 Map.entry("nox-index", "airgradient:nox"), Map.entry("nox-raw", "airgradient:nox"))));
 
@@ -110,10 +106,8 @@ public class DynamicChannelHelperTest {
                 Map.entry("pm005-count", "Number:Dimensionless"), Map.entry("pm01-count", "Number:Dimensionless"),
                 Map.entry("pm02-count", "Number:Dimensionless"), Map.entry("pm50-count", "Number:Dimensionless"),
                 Map.entry("pm10-count", "Number:Dimensionless"), Map.entry("pm02-compensated", "Number:Density"),
-                Map.entry("atmp-compensated", "Number:Temperature"),
-                Map.entry("rhum-compensated", "Number:Dimensionless"), Map.entry("tvoc-index", "Number:Dimensionless"),
-                Map.entry("tvoc-raw", "Number:Dimensionless"), Map.entry("nox-index", "Number:Dimensionless"),
-                Map.entry("nox-raw", "Number:Dimensionless"))));
+                Map.entry("tvoc-index", "Number:Dimensionless"), Map.entry("tvoc-raw", "Number:Dimensionless"),
+                Map.entry("nox-index", "Number:Dimensionless"), Map.entry("nox-raw", "Number:Dimensionless"))));
     }
 
     @Test

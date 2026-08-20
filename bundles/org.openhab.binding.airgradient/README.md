@@ -114,8 +114,6 @@ The following additional measurement channels are added dynamically, depending o
 | pm50-count       | Number:Dimensionless | Read       | Particle count for particles >= 5.0 microns per deciliter air |
 | pm10-count       | Number:Dimensionless | Read       | Particle count for particles >= 10 microns per deciliter air  |
 | pm02-compensated | Number:Density       | Read       | PM2.5 concentration with correction applied                   |
-| atmp-compensated | Number:Temperature   | Read       | Ambient temperature with compensation                         |
-| rhum-compensated | Number:Dimensionless | Read       | Relative humidity with compensation                           |
 | tvoc-index       | Number:Dimensionless | Read       | TVOC index value                                              |
 | tvoc-raw         | Number:Dimensionless | Read       | Raw TVOC value                                                |
 | nox-index        | Number:Dimensionless | Read       | NOx index value                                               |

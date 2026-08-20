@@ -27,7 +27,6 @@ import org.openhab.binding.airgradient.internal.model.LocalConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
 public class DynamicChannelHelper {
     private static final String NUMBER_DIMENSIONLESS = NUMBER + ":Dimensionless";
     private static final String NUMBER_DENSITY = NUMBER + ":Density";
-    private static final String NUMBER_TEMPERATURE = NUMBER + ":Temperature";
 
     private record DynamicChannel<T> (String id, ChannelTypeUID channelTypeUID, String itemType,
             Predicate<T> isSupported) {
@@ -98,12 +96,6 @@ public class DynamicChannelHelper {
                     (measure) -> measure.pm10Count != null),
             new DynamicChannel<>(CHANNEL_PM02_COMPENSATED, "pm2", NUMBER_DENSITY,
                     (measure) -> measure.pm02Compensated != null),
-            new DynamicChannel<>(CHANNEL_ATMP_COMPENSATED,
-                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_OUTDOOR_TEMPERATURE, NUMBER_TEMPERATURE,
-                    (measure) -> measure.atmpCompensated != null),
-            new DynamicChannel<>(CHANNEL_RHUM_COMPENSATED,
-                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_ATMOSPHERIC_HUMIDITY, NUMBER_DIMENSIONLESS,
-                    (measure) -> measure.rhumCompensated != null),
             new DynamicChannel<>(CHANNEL_TVOC_INDEX, "tvoc", NUMBER_DIMENSIONLESS,
                     (measure) -> measure.tvocIndex != null),
             new DynamicChannel<>(CHANNEL_TVOC_RAW, "tvoc", NUMBER_DIMENSIONLESS, (measure) -> measure.tvocRaw != null),

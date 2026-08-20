@@ -68,8 +68,6 @@ public class AirGradientBindingConstants {
     public static final String CHANNEL_PM50_COUNT = "pm50-count";
     public static final String CHANNEL_PM10_COUNT = "pm10-count";
     public static final String CHANNEL_PM02_COMPENSATED = "pm02-compensated";
-    public static final String CHANNEL_ATMP_COMPENSATED = "atmp-compensated";
-    public static final String CHANNEL_RHUM_COMPENSATED = "rhum-compensated";
     public static final String CHANNEL_TVOC_INDEX = "tvoc-index";
     public static final String CHANNEL_TVOC_RAW = "tvoc-raw";
     public static final String CHANNEL_NOX_INDEX = "nox-index";
