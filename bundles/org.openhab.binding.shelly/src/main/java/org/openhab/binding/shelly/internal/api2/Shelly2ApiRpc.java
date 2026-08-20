@@ -209,35 +209,41 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                         enableBluGateway ? "enabled" : "disabled");
                 if (enableBluGateway) {
-                    boolean restart = false;
-                    ShellyVersionComparator versionComparator = new ShellyVersionComparator();
-                    if (versionComparator.compare(profile.fwVersion, SHELLY2_API_FW_BLEAUTOSCAN) >= 0) {
-                        // FW 2.0 removed the BLE enable/observer config; scanning auto-activates when the
-                        // script starts, so calling setBluetooth() here would only get rejected by the device
-                        installScript(SHELLY2_BLU_GWSCRIPT, true);
+                    if (profile.fwVersion.isEmpty()) {
+                        // fw version not resolved yet (e.g. transient during device boot); skip for now rather
+                        // than risk taking the legacy BLE.SetConfig branch on an actual FW 2.0+ device
+                        logger.debug("{}: Firmware version unknown, skipping BLU Gateway setup for now", thingName);
                     } else {
-                        boolean bluetooth = getBool(dc.ble.enable);
-                        boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
-                        if (!bluetooth) {
-                            logger.debug("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
-                        }
-                        if (observer) {
-                            logger.debug("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
-                                    thingName);
-                        }
-                        if (!bluetooth || observer) {
-                            logger.info("{}: Setup openHAB BLU Gateway", thingName);
-                            restart = setBluetooth(true);
-                            bluetooth = true; // setBluetooth() didn't throw, so BLE.SetConfig succeeded
+                        boolean restart = false;
+                        ShellyVersionComparator versionComparator = new ShellyVersionComparator();
+                        if (versionComparator.compare(profile.fwVersion, SHELLY2_API_FW_BLEAUTOSCAN) >= 0) {
+                            // FW 2.0 removed the BLE enable/observer config; scanning auto-activates when the
+                            // script starts, so calling setBluetooth() here would only get rejected by the device
+                            installScript(SHELLY2_BLU_GWSCRIPT, true);
+                        } else {
+                            boolean bluetooth = getBool(dc.ble.enable);
+                            boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
+                            if (!bluetooth) {
+                                logger.debug("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
+                            }
+                            if (observer) {
+                                logger.debug("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
+                                        thingName);
+                            }
+                            if (!bluetooth || observer) {
+                                logger.info("{}: Setup openHAB BLU Gateway", thingName);
+                                restart = setBluetooth(true);
+                                bluetooth = true; // setBluetooth() didn't throw, so BLE.SetConfig succeeded
+                            }
+
+                            installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
                         }
 
-                        installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
-                    }
-
-                    if (restart) {
-                        logger.info("{}: Restart device to activate BLU Gateway", thingName);
-                        deviceReboot();
-                        getThing().reinitializeThing();
+                        if (restart) {
+                            logger.info("{}: Restart device to activate BLU Gateway", thingName);
+                            deviceReboot();
+                            getThing().reinitializeThing();
+                        }
                     }
                 }
             }
