@@ -17,18 +17,28 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_GROUP_METER;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_CYCLE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DETACHED;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DIM;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DUAL_DIM;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_EDGE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_TOGGLE;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_GETCONFIG;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -708,6 +718,54 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.getMaxTemp(0), is(4000));
         assertThat(profile.getMinTemp(1), is(4000));
         assertThat(profile.getMaxTemp(1), is(6000));
+    }
+
+    @Test
+    void dimmerLightInModeDimAndDualDimAreMappedToBtnType() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"light:0\":{\"id\":0,\"in_mode\":\"dim\"},\"light:1\":{\"id\":1,\"in_mode\":\"dual_dim\"}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER, deviceInfo());
+        var dimmers = profile.settings.dimmers;
+        assertNotNull(dimmers);
+        assertThat(dimmers.size(), is(2));
+        assertThat(profile.getButtonType(0), is(SHELLY_BTNT_DIM));
+        assertThat(profile.getButtonType(1), is(SHELLY_BTNT_DUAL_DIM));
+        assertThat(profile.inButtonMode(0), is(true));
+        assertThat(profile.inButtonMode(1), is(true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForSwitchInMode")
+    void switchInModeIsMappedToBtnType(String inMode, String expectedBtnType, boolean expectedButtonMode)
+            throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},\"switch:0\":{\"id\":0,\"in_mode\":\""
+                + inMode + "\"}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUS1, deviceInfo());
+        assertThat(profile.getButtonType(0), is(expectedBtnType));
+        assertThat(profile.inButtonMode(0), is(expectedButtonMode));
+    }
+
+    private static Stream<Arguments> provideTestCasesForSwitchInMode() {
+        return Stream.of( //
+                Arguments.of("momentary", SHELLY_BTNT_MOMENTARY, true), //
+                Arguments.of("follow", SHELLY_BTNT_EDGE, false), //
+                Arguments.of("flip", SHELLY_BTNT_TOGGLE, false), //
+                Arguments.of("cycle", SHELLY_BTNT_CYCLE, true), //
+                Arguments.of("detached", SHELLY_BTNT_DETACHED, true));
+    }
+
+    @Test
+    void proRgbwwPmCctInModeDimIsMappedToBtnType() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"cct:0\":{\"id\":0,\"in_mode\":\"dim\"}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.getButtonType(0), is(SHELLY_BTNT_DIM));
     }
 
     @Test

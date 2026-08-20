@@ -316,6 +316,27 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="btnType" advanced="true">
+		<item-type>String</item-type>
+		<label>Button Mode</label>
+		<description>Resolved button/input mode for this input (see device documentation for details)</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="momentary">Momentary</option>
+				<option value="momentary_on_release">Momentary On Release</option>
+				<option value="one_button">One Button</option>
+				<option value="dual_button">Dual Button</option>
+				<option value="toggle">Toggle</option>
+				<option value="edge">Edge</option>
+				<option value="detached">Detached</option>
+				<option value="activate">Activate</option>
+				<option value="cycle">Cycle</option>
+				<option value="dim">Dim</option>
+				<option value="dual_dim">Dual Dim</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="sensorTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
