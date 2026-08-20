@@ -427,8 +427,11 @@ public class ShellyChannelDefinitions {
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
-        // Any multi-meter device (relay or pure meter like ProEM50) gets device-level accumulated channels
-        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
+        // Any multi-meter device (relay, pure meter like ProEM50, or the Pro RGBWW PM light profile with
+        // more than one independently metered component) gets device-level accumulated channels.
+        // Other RGBW2 devices are excluded: their aggregation already lands in the single "meter" group
+        // via updateAggregatedMeter(), so a separate device-level total would be redundant.
+        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && (!profile.isRGBW2 || profile.isProRgbwwPm);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         // Gate returned/apparent totals on the device actually being a dedicated EMeter (3EM or EM50).

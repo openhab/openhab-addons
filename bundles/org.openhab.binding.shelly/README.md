@@ -1770,6 +1770,7 @@ In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color c
 `rgbcct` and `rgbx2light` combine the RGB component above with additional CCT (`rgbcct`) or Light
 (`rgbx2light`) components. Each additional component is exposed as its own `light1`/`light2` group
 (same layout as the `light` profile below) with its own independent meter (`meter2`/`meter3`).
+Since every profile has more than one meter, the device also gets the aggregated `device#accumulatedPower`/`device#totalEnergy` channels described in the general notes on channels above.
 
 In `light` profile (white mode), each of the 5 LED output channels is exposed as its own group:
 
