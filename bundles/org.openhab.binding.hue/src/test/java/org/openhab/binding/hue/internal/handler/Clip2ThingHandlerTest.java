@@ -194,6 +194,16 @@ class Clip2ThingHandlerTest {
     }
 
     @Test
+    void testPendingDiscoveryIsNotAConnectivityIssue() {
+        Fixture fixture = fixture();
+
+        // documented for 'zgp_connectivity' resources, which are routed through the same handling
+        fixture.handler.updateChannels(zigbeeResource("pending_discovery"));
+
+        assertEquals(ThingStatus.ONLINE, fixture.statusInfo.get().getStatus());
+    }
+
+    @Test
     void testUnchangedStatusIsPublishedOnlyOnce() {
         Fixture fixture = fixture();
         fixture.handler.updateChannels(devicePowerResource());
