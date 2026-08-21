@@ -171,7 +171,7 @@ public class Java223Rule extends SimpleRule {
     public Java223Rule(Object script, Field fieldMember) throws RuleParserException {
         Class<?> fieldType = fieldMember.getType();
         this.debounce = fieldMember.getAnnotation(Debounce.class);
-        if (ACCEPTABLE_FIELD_MEMBER_CLASSES.stream().noneMatch(fieldType::isAssignableFrom)) {
+        if (ACCEPTABLE_FIELD_MEMBER_CLASSES.stream().noneMatch(type -> type.isAssignableFrom(fieldType))) {
             throw new RuleParserException("Field member " + fieldMember.getName() + " cannot be of class " + fieldType
                     + ". Must be " + ACCEPTABLE_FIELD_MEMBER_CLASSES.stream().map(Class::getSimpleName)
                     .collect(Collectors.joining(" or ")));
