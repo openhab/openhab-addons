@@ -17,8 +17,15 @@ You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](ht
 
 ## Supported Things
 
-There is exactly one supported Thing type, which represents the player.
-It has the `player` id.
+The supported Thing types are:
+
+- `player` Represents any supported Oppo player; Deprecated.
+- `bdp-83` BDP-83 Blu-ray player
+- `bdp-93` BDP-93 or BDP-95 Blu-ray player
+- `bdp-103` BDP-103 or BDP-103D Blu-ray player
+- `bdp-105` BDP-105 or BDP-105D Blu-ray player
+- `udp-203` UDP-203 UHD Blu-ray player
+- `udp-205` UDP-205 UHD Blu-ray player
 
 ## Discovery
 
@@ -34,20 +41,22 @@ All settings are through Thing configuration parameters.
 
 The Thing has the following configuration parameters:
 
-| Parameter Label  | Parameter ID | Description                                                                                                                      | Accepted values           |
-|------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------|
-| Player Model     | model        | Specifies what model of player is to be controlled by the binding (required).                                                    | 83, 103, 105, 203, or 205 |
-| Address          | host         | Host name or IP address of the Oppo player or serial over IP device.                                                             | host name or IP           |
-| Port             | port         | Communication port for using serial over IP. Leave blank if using direct IP connection to the player.                            | IP port number            |
-| Serial Port      | serialPort   | Serial port to use for directly connecting to the Oppo player                                                                    | a comm port name          |
-| Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 10 seconds. | Boolean; default false    |
+| Parameter Label  | Parameter ID | Description                                                                                                                      | Accepted values               |
+|------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| Player Model     | model        | Deprecated. For the `player` thing type only, specifies what model of player is to be controlled by the binding (required).      | 83, 93, 103, 105, 203, or 205 |
+| Address          | host         | Host name or IP address of the Oppo player or serial over IP device.                                                             | host name or IP               |
+| Port             | port         | Communication port for using serial over IP. Leave blank if using direct IP connection to the player.                            | IP port number                |
+| Serial Port      | serialPort   | Serial port to use for directly connecting to the Oppo player                                                                    | a comm port name              |
+| Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 10 seconds. | Boolean; default false        |
 
 Some notes:
 
+- The UDP-20x series is fully functional over the direct IP connection but has a known issue where the player can become completely unresponsive to IP control commands.
+- To restore IP control, you need to physically disconnect the power cable, then power the player back on (the network stack only starts when the player is powered on).
+- All player models can only support one direct IP connection at a time.
 - Using the direct IP connection on the BDP series (83/93/95/103/105) is not recommended; use of serial or serial over IP connections is preferred.
-- If using the direct IP connection on the BDP series any channels besides `remote_button` that sends a parameter (Volume, Source Input, all mode channels, etc.) only works as read-only.
+- If using the direct IP connection on the BDP series the following control channels only work as read-only: Volume, Mute, Time Mode, Repeat Mode, Zoom Mode, OSD Position, Subtitle Shift, HDMI Mode
 - Verbose mode is also not supported while using the direct IP connection on the BDP series.
-- The UDP-20x series is fully functional over the direct IP connection.
 - As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
 - In non-verbose (the default), the binding will poll the player every 10 seconds to update play time, track and chapter information instead.
 - In order for the direct IP connection to work while the player is turned off, the Device Setup → Standby Mode setting must be set to "Quick Start" or "Network Standby" in the Device Setup menu.
@@ -111,8 +120,8 @@ The following channels are available:
 | source_resolution | String      | The video resolution of the content being played (Read-only)                                                                          |
 | output_resolution | String      | The video resolution of the player output (Read-only)                                                                                 |
 | 3d_indicator      | String      | Indicates if the content playing is 2D or 3D (Read-only)                                                                              |
-| osd_position      | Number      | Sets the OSD position (0 to 5) [10x models and up]                                                                                    |
-| sub_shift         | Number      | Sets the subtitle shift (-10 to 10) [10x models and up] (note more than 5 from 0 throws an error on the BDP103)                       |
+| osd_position      | Number      | Sets the OSD position (0 to 5)                                                                                                        |
+| sub_shift         | Number      | Sets the subtitle shift (-10 to 10)(note more than 5 from 0 throws an error on the BDP-103)                                           |
 | hdmi_mode         | String      | Sets the current HDMI output mode (options vary by model; see notes above for allowed values)                                         |
 | hdr_mode          | String      | Sets current HDR output mode (Auto, On, Off) [UDP-203/205 only]                                                                       |
 | remote_button     | String      | Simulate pressing a button on the remote control [3 letter code; codes can be found in Appendix A below] (Write-only)                 |
@@ -122,13 +131,13 @@ The following channels are available:
 ### `oppo.things` Example
 
 ```java
-// direct IP connection
-oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.10", model=203, verboseMode=true ]
+// UDP-203 direct IP connection
+oppo:udp-203:myoppo "Oppo UDP-203" [ host="192.168.0.10", verboseMode=true ]
 
-// direct serial connection
-oppo:player:myoppo "Oppo Blu-ray" [ serialPort="COM5", model=103, verboseMode=true ]
+// BDP-103 direct serial connection
+oppo:bdp-103:myoppo "Oppo BDP-103" [ serialPort="COM5", verboseMode=true ]
 
-// serial over IP connection
+// Generic serial over IP connection
 oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, verboseMode=true ]
 
 ```
@@ -136,6 +145,8 @@ oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, ve
 ### `oppo.items` Example
 
 ```java
+// Note: replace `player` with the appropriate Thing type
+
 Switch oppo_power "Power" { channel="oppo:player:myoppo:power" }
 Dimmer oppo_volume "Volume [%d %%]" { channel="oppo:player:myoppo:volume" }
 Switch oppo_mute "Mute" { channel="oppo:player:myoppo:mute" }
@@ -212,78 +223,73 @@ sitemap oppo label="Oppo Blu-ray" {
 
 ### Appendix A - 'remote_button' codes
 
-| Command | Function                                                                    |
-|---------|-----------------------------------------------------------------------------|
-| POW     | Toggle power ON and OFF                                                     |
-| SRC     | Select input source                                                         |
-| EJT     | Open/close the disc tray                                                    |
-| PON     | Discrete on                                                                 |
-| POF     | Discrete off                                                                |
-| SYS     | Switch output TV system (PAL/NTSC/MULTI)                                    |
-| DIM     | Dim front panel display                                                     |
-| PUR     | Pure audio mode (no video)                                                  |
-| VUP     | Increase volume                                                             |
-| VDN     | Decrease volume                                                             |
-| MUT     | Mute/Unmute audio                                                           |
-| NU1     | Numeric key 1                                                               |
-| NU2     | Numeric key 2                                                               |
-| NU3     | Numeric key 3                                                               |
-| NU4     | Numeric key 4                                                               |
-| NU5     | Numeric key 5                                                               |
-| NU6     | Numeric key 6                                                               |
-| NU7     | Numeric key 7                                                               |
-| NU8     | Numeric key 8                                                               |
-| NU9     | Numeric key 9                                                               |
-| NU0     | Numeric key 0                                                               |
-| CLR     | Clear numeric input                                                         |
-| GOT     | Play from a specified location                                              |
-| HOM     | Go to Home Menu to select media source                                      |
-| PUP     | Show previous page                                                          |
-| PDN     | Show next page                                                              |
-| OSD     | Show/hide on-screen display                                                 |
-| TTL     | Show BD top menu or DVD title menu                                          |
-| MNU     | Show BD pop-up menu or DVD menu                                             |
-| NUP     | Up Arrow Navigation                                                         |
-| NLT     | Left Arrow Navigation                                                       |
-| NRT     | Right Arrow Navigation                                                      |
-| NDN     | Down Arrow Navigation                                                       |
-| SEL     | ENTER Navigation                                                            |
-| SET     | Enter the player setup menu                                                 |
-| RET     | Return to the previous menu or mode                                         |
-| RED     | RED Function varies by content                                              |
-| GRN     | GREEN Function varies by content                                            |
-| BLU     | BLUE Function varies by content                                             |
-| YLW     | YELLOW Function varies by content                                           |
-| STP     | Stop playback                                                               |
-| PLA     | Start playback                                                              |
-| PAU     | Pause playback                                                              |
-| PRE     | Skip to previous                                                            |
-| REV     | Fast reverse play                                                           |
-| FWD     | Fast forward play                                                           |
-| NXT     | Skip to next                                                                |
-| AUD     | Change audio language or channel                                            |
-| SUB     | Change subtitle language                                                    |
-| ANG     | Change camera angle                                                         |
-| ZOM     | Zoom in/out and adjust aspect ratio                                         |
-| SAP     | Turn on/off Secondary Audio Program                                         |
-| ATB     | AB Repeat play the selected section                                         |
-| RPT     | Repeat play                                                                 |
-| PIP     | Show/hide Picture-in-Picture                                                |
-| HDM     | Switch output resolution                                                    |
-| SUH     | Press and hold the SUBTITLE key. This activates the subtitle shift feature. |
-| NFX     | Stop current playback and start the Netflix application (N/A on UDP models) |
-| VDU     | Stop current playback and start the VUDU application (N/A on UDP models)    |
-| OPT     | Show/hide the Option menu                                                   |
-| M3D     | 3D Show/hide the 2D-to-3D Conversion or 3D adjustment menu                  |
-| SEH     | Display the Picture Adjustment menu                                         |
-| DRB     | Display the Darbee Adjustment menu (BDP-103D/105D models only)              |
-
-#### Extra buttons on UDP models
-
-| Command | Function                                                                            |
-|---------|-------------------------------------------------------------------------------------|
-| HDR     | Display the HDR selection menu                                                      |
-| INH     | Show on-screen detailed information                                                 |
-| RLH     | Set resolution to Auto                                                              |
-| AVS     | Display the A/V Sync adjustment menu                                                |
-| GPA     | Gapless Play. This functions the same as selecting Gapless Play in the Option Menu. |
+| Command | Function                                                                              |
+|---------|---------------------------------------------------------------------------------------|
+| POW     | Toggle power ON and OFF                                                               |
+| SRC     | Select input source                                                                   |
+| EJT     | Open/close the disc tray                                                              |
+| PON     | Discrete on                                                                           |
+| POF     | Discrete off                                                                          |
+| SYS     | Switch output TV system (PAL/NTSC/MULTI)                                              |
+| DIM     | Dim front panel display                                                               |
+| PUR     | Pure audio mode (no video)                                                            |
+| VUP     | Increase volume                                                                       |
+| VDN     | Decrease volume                                                                       |
+| MUT     | Mute/Unmute audio                                                                     |
+| NU1     | Numeric key 1                                                                         |
+| NU2     | Numeric key 2                                                                         |
+| NU3     | Numeric key 3                                                                         |
+| NU4     | Numeric key 4                                                                         |
+| NU5     | Numeric key 5                                                                         |
+| NU6     | Numeric key 6                                                                         |
+| NU7     | Numeric key 7                                                                         |
+| NU8     | Numeric key 8                                                                         |
+| NU9     | Numeric key 9                                                                         |
+| NU0     | Numeric key 0                                                                         |
+| CLR     | Clear numeric input                                                                   |
+| GOT     | Play from a specified location                                                        |
+| HOM     | Go to Home Menu to select media source                                                |
+| PUP     | Show previous page                                                                    |
+| PDN     | Show next page                                                                        |
+| OSD     | Show/hide on-screen display                                                           |
+| TTL     | Show BD top menu or DVD title menu                                                    |
+| MNU     | Show BD pop-up menu or DVD menu                                                       |
+| NUP     | Up Arrow Navigation                                                                   |
+| NLT     | Left Arrow Navigation                                                                 |
+| NRT     | Right Arrow Navigation                                                                |
+| NDN     | Down Arrow Navigation                                                                 |
+| SEL     | ENTER Navigation                                                                      |
+| SET     | Enter the player setup menu                                                           |
+| RET     | Return to the previous menu or mode                                                   |
+| RED     | RED Function varies by content                                                        |
+| GRN     | GREEN Function varies by content                                                      |
+| BLU     | BLUE Function varies by content                                                       |
+| YLW     | YELLOW Function varies by content                                                     |
+| STP     | Stop playback                                                                         |
+| PLA     | Start playback                                                                        |
+| PAU     | Pause playback                                                                        |
+| PRE     | Skip to previous                                                                      |
+| REV     | Fast reverse play                                                                     |
+| FWD     | Fast forward play                                                                     |
+| NXT     | Skip to next                                                                          |
+| AUD     | Change audio language or channel                                                      |
+| SUB     | Change subtitle language                                                              |
+| ANG     | Change camera angle                                                                   |
+| ZOM     | Zoom in/out and adjust aspect ratio                                                   |
+| SAP     | Turn on/off Secondary Audio Program                                                   |
+| ATB     | AB Repeat play the selected section                                                   |
+| RPT     | Repeat play                                                                           |
+| PIP     | Show/hide Picture-in-Picture                                                          |
+| HDM     | Switch output resolution                                                              |
+| SUH     | Press and hold the SUBTITLE key. This activates the subtitle shift feature.           |
+| NFX     | Stop current playback and start the Netflix application (BDP-10x models only)         |
+| VDU     | Stop current playback and start the VUDU application (BDP-10x models only)            |
+| OPT     | Show/hide the Option menu (BDP-10x & UDP-20x models)                                  |
+| M3D     | 3D Show/hide the 2D-to-3D Conversion or 3D adjustment menu (BDP-10x & UDP-20x models) |
+| SEH     | Display the Picture Adjustment menu (BDP-10x & UDP-20x models)                        |
+| DRB     | Display the Darbee Adjustment menu (BDP-103D/105D models only)                        |
+| HDR     | Display the HDR selection menu (UDP-20x models only)                                  |
+| INH     | Show on-screen detailed information (UDP-20x models only)                             |
+| RLH     | Set resolution to Auto (UDP-20x models only)                                          |
+| AVS     | Display the A/V Sync adjustment menu (UDP-20x models only)                            |
+| GPA     | Gapless Play (UDP-20x models only)                                                    |

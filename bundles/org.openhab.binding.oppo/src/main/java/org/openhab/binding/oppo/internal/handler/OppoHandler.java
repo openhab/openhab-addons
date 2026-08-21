@@ -20,6 +20,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -50,7 +52,6 @@ import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -97,6 +98,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
     private List<StateOption> inputSourceOptions = new ArrayList<>();
     private List<StateOption> hdmiModeOptions = new ArrayList<>();
+    private Set<OppoCommand> queryCommands = OppoCommand.QUERY_COMMANDS_20X;
 
     private long lastEventReceived = System.currentTimeMillis();
     private String verboseMode = VERBOSE_2;
@@ -109,6 +111,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private int titleLength = -1;
     private volatile boolean isPowerOn = false;
     private volatile boolean powerCmdDebounce = false;
+    private volatile boolean srcCmdDebounce = false;
     private volatile boolean isStopped = true;
     private boolean isUDP20X = false;
     private boolean isBdpIP = false;
@@ -135,14 +138,17 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     public void initialize() {
         final OppoThingConfiguration config = getConfigAs(OppoThingConfiguration.class);
 
-        final int model = config.model;
-        this.isUDP20X = (model == MODEL203 || model == MODEL205);
-
-        // Check configuration settings
-        if (model == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.player-model");
-            return;
+        final int model;
+        if (THING_TYPE_PLAYER.equals(thing.getThingTypeUID())) {
+            if (config.model == 0) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.player-model");
+                return;
+            }
+            model = config.model;
+        } else {
+            model = Integer.parseInt(thing.getThingTypeUID().getAsString().replaceAll("[^\\d.]", ""));
         }
+        this.isUDP20X = (model == MODEL203 || model == MODEL205);
 
         final String serialPort = config.serialPort;
         final String host = config.host;
@@ -152,7 +158,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
             configError = "@text/error.port-select";
         } else if (serialPort != null && (host == null || host.isEmpty())) {
-            if (serialPort.toLowerCase().startsWith("rfc2217")) {
+            if (serialPort.toLowerCase(Locale.ENGLISH).startsWith("rfc2217")) {
                 configError = "@text/error.rfc2217";
             }
         } else {
@@ -160,7 +166,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             if (port == null) {
                 port = switch (model) {
                     case MODEL83 -> BDP83_PORT;
-                    case MODEL103, MODEL105 -> BDP10X_PORT;
+                    case MODEL93, MODEL103, MODEL105 -> BDP10X_PORT;
                     default -> UDP20X_PORT;
                 };
                 isBdpIP = port != UDP20X_PORT;
@@ -168,6 +174,12 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 configError = "@text/error.invalid-port";
             }
         }
+
+        queryCommands = switch (model) {
+            case MODEL83, MODEL93 -> OppoCommand.QUERY_COMMANDS_83;
+            case MODEL103, MODEL105 -> OppoCommand.QUERY_COMMANDS_10X;
+            default -> OppoCommand.QUERY_COMMANDS_20X;
+        };
 
         this.verboseMode = config.verboseMode && !isBdpIP ? VERBOSE_3 : VERBOSE_2;
 
@@ -185,25 +197,13 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             return;
         }
 
-        this.buildOptionDropdowns(model);
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SOURCE),
-                inputSourceOptions);
+        buildStateOptionLists(model);
+        if (!inputSourceOptions.isEmpty()) {
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SOURCE),
+                    inputSourceOptions);
+        }
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_HDMI_MODE),
                 hdmiModeOptions);
-
-        // remove channels not needed for this model
-        List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
-
-        if (model == MODEL83) {
-            channels.removeIf(c -> (c.getUID().getId().equals(CHANNEL_SUB_SHIFT)
-                    || c.getUID().getId().equals(CHANNEL_OSD_POSITION)));
-        }
-
-        if (model == MODEL83 || model == MODEL103 || model == MODEL105) {
-            channels.removeIf(c -> (c.getUID().getId().equals(CHANNEL_ASPECT_RATIO)
-                    || c.getUID().getId().equals(CHANNEL_HDR_MODE)));
-        }
-        updateThing(editThing().withChannels(channels).build());
 
         scheduleReconnectJob();
         schedulePollingJob();
@@ -231,7 +231,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String channel = channelUID.getId();
+        final String channel = channelUID.getId();
 
         if (getThing().getStatus() != ThingStatus.ONLINE || !connector.isConnected()) {
             logger.debug("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
@@ -272,7 +272,21 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case CHANNEL_SOURCE:
                         if (command instanceof DecimalType) {
-                            connector.sendCommand(OppoCommand.SET_INPUT_SOURCE, commandStr);
+                            if (!isBdpIP) {
+                                connector.sendCommand(OppoCommand.SET_INPUT_SOURCE, commandStr);
+                            } else {
+                                // Workaround for BdpIP, send SRC + NU# commands
+                                connector.sendCommand("SRC");
+                                // Delay sending number command; if movie is playing, more delay is necessary
+                                scheduler.schedule(() -> {
+                                    try {
+                                        connector.sendCommand("NU" + (Integer.parseInt(commandStr) + 1));
+                                    } catch (OppoException | NumberFormatException e) {
+                                        logger.debug("Setting input failed: {}", e.getMessage(), e);
+                                    }
+                                }, (isStopped ? 500 : 1000), TimeUnit.MILLISECONDS);
+                            }
+                            srcCmdDebounce = true;
                         }
                         break;
                     case CHANNEL_CONTROL:
@@ -525,8 +539,12 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case QIS:
                     case UIS:
-                        // example: 0 BD-PLAYER, split off just the number
-                        updateChannelState(CHANNEL_SOURCE, updateData.split(SPACE)[0]);
+                        // After source is commanded, ignore the first QIS polling update to prevent bouncing
+                        if (UIS.equals(key) || !srcCmdDebounce) {
+                            // example: 0 BD-PLAYER, split off just the number
+                            updateChannelState(CHANNEL_SOURCE, updateData.split(SPACE)[0]);
+                        }
+                        srcCmdDebounce = false;
                         break;
                     case QTK:
                         if (!isStopped) {
@@ -824,7 +842,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 }
 
                                 isInitialQuery = true;
-                                OppoCommand.QUERY_COMMANDS.forEach(cmd -> {
+                                queryCommands.forEach(cmd -> {
                                     try {
                                         connector.sendCommand(cmd);
                                         Thread.sleep(SLEEP_BETWEEN_CMD_MS);
@@ -1000,14 +1018,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         }
     }
 
-    private void buildOptionDropdowns(int model) {
+    private void buildStateOptionLists(int model) {
         hdmiModeOptions.clear();
         inputSourceOptions.clear();
 
-        if (model == MODEL83 || model == MODEL103 || model == MODEL105) {
+        if (!isUDP20X) {
             hdmiModeOptions.add(new StateOption("AUTO", getString("auto", "Auto")));
             hdmiModeOptions.add(new StateOption("SRC", getString("direct", "Source Direct")));
-            if (model != MODEL83) {
+            if (model == MODEL103 || model == MODEL105) {
                 hdmiModeOptions.add(new StateOption("4K2K", "4K*2K"));
             }
             hdmiModeOptions.add(new StateOption("1080P", "1080P"));
@@ -1021,8 +1039,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             inputSourceOptions.add(new StateOption("0", getString("blu_ray", "Blu-ray Player")));
             inputSourceOptions.add(new StateOption("1", getString("hdmi_in_front", "HDMI/MHL In-Front")));
             inputSourceOptions.add(new StateOption("2", getString("hdmi_in_back", "HDMI In-Back")));
-            inputSourceOptions.add(new StateOption("3", getString("arc1", "ARC 1")));
-            inputSourceOptions.add(new StateOption("4", getString("arc2", "ARC 2")));
+            inputSourceOptions.add(new StateOption("3", getString("arc1", "ARC on HDMI Out 1")));
+            inputSourceOptions.add(new StateOption("4", getString("arc2", "ARC on HDMI Out 2")));
 
             if (model == MODEL105) {
                 inputSourceOptions.add(new StateOption("5", getString("optical", "Optical In")));
@@ -1031,7 +1049,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             }
         }
 
-        if (model == MODEL203 || model == MODEL205) {
+        if (isUDP20X) {
             hdmiModeOptions.add(new StateOption("AUTO", getString("auto", "Auto")));
             hdmiModeOptions.add(new StateOption("SRC", getString("direct", "Source Direct")));
             hdmiModeOptions.add(new StateOption("UHD_AUTO", getString("auto_uhd", "UHD Auto")));

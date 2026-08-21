@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Oppo Blu-ray player Thing -->
+	<!-- Generic Oppo Blu-ray player Thing (deprecated) -->
 	<thing-type id="player">
 		<label>Oppo Blu-ray Player</label>
 		<description>
@@ -64,7 +64,8 @@
 				<description>Choose Model of Oppo Player</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
-					<option value="83">BDP-83 or BDP-93/95</option>
+					<option value="83">BDP-83</option>
+					<option value="93">BDP-93/95</option>
 					<option value="103">BDP-103/103D</option>
 					<option value="105">BDP-105/105D</option>
 					<option value="203">UDP-203</option>
