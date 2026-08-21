@@ -109,6 +109,53 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
             }
 
             @Nested
+            @DisplayName("Disambiguating Comments with Hashes")
+            class DisambiguatingComments {
+
+                @Test
+                @DisplayName("Should support trailing comments when !if expression contains hashes inside single quotes")
+                void testDisambiguatingCommentsWithSingleQuoteHashes() throws IOException {
+                    String yaml = """
+                            test:
+                              !if "'a#b' == 'a#b' # check string equality":
+                                result: "match"
+                            """;
+
+                    Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+                    assertThat(getNestedValue(data, "test", "result"), is("match"));
+                }
+
+                @Test
+                @DisplayName("Should support trailing comments when !if expression contains hashes inside double quotes")
+                void testDisambiguatingCommentsWithDoubleQuoteHashes() throws IOException {
+                    String yaml = """
+                            test:
+                              !if '"a#b" == "a#b" # check string equality':
+                                result: "match"
+                            """;
+
+                    Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+                    assertThat(getNestedValue(data, "test", "result"), is("match"));
+                }
+
+                @Test
+                @DisplayName("Should support trailing comments when !if expression contains hashes inside brackets/lists")
+                void testDisambiguatingCommentsWithBracketHashes() throws IOException {
+                    String yaml = """
+                            test:
+                              !if "'a#b' in ['a#b', 'c'] # check list containment":
+                                result: "match"
+                            """;
+
+                    Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+                    assertThat(getNestedValue(data, "test", "result"), is("match"));
+                }
+            }
+
+            @Nested
             @DisplayName("Block-Level Adjacency and Variants (!elif, !elseif, !elsif, !else)")
             class BlockLevelAdjacencyTests {
 

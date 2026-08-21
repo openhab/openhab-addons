@@ -370,6 +370,89 @@ class YamlComposerForTagTest extends AbstractYamlComposerTest {
             assertThat(getNestedValue(result, "active_sensors", "s3"), is("active"));
             assertThat(getNestedValue(result, "active_sensors", "s2"), is(nullValue()));
         }
+
+        @Test
+        @DisplayName("Should ignore 'if' inside quotes within the expression list (before structural 'if')")
+        void testIgnoresIfInsideQuotesBeforeStructuralIf() throws IOException {
+            String yaml = """
+                    filtered:
+                      !for "item in ['if_item', 'normal_item'] if item == 'if_item'":
+                        "${item}": "matched"
+                    """;
+
+            Map<Object, @Nullable Object> result = loadYaml(yaml);
+
+            assertThat(getNestedValue(result, "filtered", "if_item"), is("matched"));
+            assertThat(getNestedValue(result, "filtered", "normal_item"), is(nullValue()));
+        }
+
+        @Test
+        @DisplayName("Should ignore 'if' inside double quotes within the expression list (before structural 'if')")
+        void testIgnoresIfInsideDoubleQuotesBeforeStructuralIf() throws IOException {
+            String yaml = """
+                    filtered:
+                      !for 'item in ["if_item", "normal_item"] if item == "if_item"':
+                        "${item}": "matched"
+                    """;
+
+            Map<Object, @Nullable Object> result = loadYaml(yaml);
+
+            assertThat(getNestedValue(result, "filtered", "if_item"), is("matched"));
+            assertThat(getNestedValue(result, "filtered", "normal_item"), is(nullValue()));
+        }
+
+        @Test
+        @DisplayName("Should ignore 'if' inside quotes within the condition check (after structural 'if')")
+        void testIgnoresIfInsideQuotesInCondition() throws IOException {
+            String yaml = """
+                    variables:
+                      my_list:
+                        - "if status"
+                        - "standard"
+                    filtered:
+                      !for "item in my_list if item == 'if status'":
+                        "${item}": "matched"
+                    """;
+
+            Map<Object, @Nullable Object> result = loadYaml(yaml);
+
+            assertThat(getNestedValue(result, "filtered", "if status"), is("matched"));
+            assertThat(getNestedValue(result, "filtered", "standard"), is(nullValue()));
+        }
+
+        @Test
+        @DisplayName("Should ignore 'if' inside double quotes within the condition check (after structural 'if')")
+        void testIgnoresIfInsideDoubleQuotesInCondition() throws IOException {
+            String yaml = """
+                    variables:
+                      my_list:
+                        - "if status"
+                        - "standard"
+                    filtered:
+                      !for 'item in my_list if item == "if status"':
+                        "${item}": "matched"
+                    """;
+
+            Map<Object, @Nullable Object> result = loadYaml(yaml);
+
+            assertThat(getNestedValue(result, "filtered", "if status"), is("matched"));
+            assertThat(getNestedValue(result, "filtered", "standard"), is(nullValue()));
+        }
+
+        @Test
+        @DisplayName("Should ignore ' if ' when it appears inside a literal string within the expression itself")
+        void testIgnoresSpacedIfInsideExpressionLiteral() throws IOException {
+            String yaml = """
+                    items:
+                      !for "item in ['a if b', 'c'] if item == 'a if b'":
+                        "${item}": "matched"
+                    """;
+
+            Map<Object, @Nullable Object> result = loadYaml(yaml);
+
+            assertThat(getNestedValue(result, "items", "a if b"), is("matched"));
+            assertThat(getNestedValue(result, "items", "c"), is(nullValue()));
+        }
     }
 
     @Nested
@@ -394,6 +477,38 @@ class YamlComposerForTagTest extends AbstractYamlComposerTest {
 
             assertThat(getNestedValue(result, "items", "Item_eq1_pass1"), is("Pump"));
             assertThat(getNestedValue(result, "items", "Item_eq1_pass2"), is("Pump"));
+        }
+
+        @Test
+        @DisplayName("Should support trailing comments when !for expression contains hashes inside quotes/brackets")
+        void testDisambiguatingCommentsWithHashesInExpression() throws IOException {
+            String yaml = """
+                    items:
+                      !for "item in ['a#b', 'c'] # pass 1":
+                        "Item_${item}": "active"
+                    """;
+
+            Map<Object, @Nullable Object> result = loadYaml(yaml);
+
+            // Verify that the hash inside the list was ignored, but the trailing comment was stripped successfully
+            assertThat(getNestedValue(result, "items", "Item_a#b"), is("active"));
+            assertThat(getNestedValue(result, "items", "Item_c"), is("active"));
+        }
+
+        @Test
+        @DisplayName("Should support trailing comments when !for expression contains hashes inside double quotes")
+        void testDisambiguatingCommentsWithDoubleQuotesHashesInExpression() throws IOException {
+            // Note: Java will unescape the \\ so the raw string/YAML will see \" and not \\"
+            String yaml = """
+                    items:
+                      !for "item in [\\"a#b\\", \\"c\\"] # pass 2":
+                        "Item_${item}": "active"
+                    """;
+
+            Map<Object, @Nullable Object> result = loadYaml(yaml);
+
+            assertThat(getNestedValue(result, "items", "Item_a#b"), is("active"));
+            assertThat(getNestedValue(result, "items", "Item_c"), is("active"));
         }
     }
 

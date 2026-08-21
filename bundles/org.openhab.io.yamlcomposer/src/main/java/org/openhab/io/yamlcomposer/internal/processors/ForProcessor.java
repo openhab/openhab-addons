@@ -52,14 +52,15 @@ public class ForProcessor implements PlaceholderProcessor<ForPlaceholder> {
         }
 
         // 2. Strip trailing YAML disambiguation comments (# comment)
-        String expr = raw.replaceAll("#.*$", "").trim();
+        Integer commentIndex = ExpressionUtils.findTopLevelIndex(raw, "#");
+        String expr = commentIndex != null ? raw.substring(0, commentIndex).trim() : raw;
 
         // 3. Extract optional 'if <condition>' clause from the end
         @Nullable
         String filterCondition = null;
-        int ifIndex = expr.lastIndexOf(" if ");
-        if (ifIndex != -1) {
-            filterCondition = expr.substring(ifIndex + 4).trim();
+        Integer ifIndex = ExpressionUtils.findTopLevelIndex(expr, "if");
+        if (ifIndex != null) {
+            filterCondition = expr.substring(ifIndex + 2).trim();
             expr = expr.substring(0, ifIndex).trim();
         }
 
