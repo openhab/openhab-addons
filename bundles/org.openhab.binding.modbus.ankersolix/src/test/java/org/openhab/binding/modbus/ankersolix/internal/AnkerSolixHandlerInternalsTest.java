@@ -14,6 +14,7 @@ package org.openhab.binding.modbus.ankersolix.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.measure.MetricPrefix;
 
@@ -29,12 +31,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
 
 /**
@@ -292,6 +297,66 @@ class AnkerSolixHandlerInternalsTest {
         assertEquals(true, optional);
     }
 
+    @Test
+    void capabilityMaskReadFailureShouldBackOffRegularPolling() throws Exception {
+        List<?> pollRanges = invoke(handler, "getPollRanges");
+        Object capabilityRange = nonNull(pollRanges.get(pollRanges.size() - 1));
+        AsyncModbusFailure<ModbusReadRequestBlueprint> failure = new AsyncModbusFailure<>(
+                mock(ModbusReadRequestBlueprint.class), new RuntimeException("Illegal Data Address"));
+
+        invokeVoid(handler, "handleReadFailure", capabilityRange, failure);
+
+        Set<Object> backedOffRanges = getField(handler, "backedOffRanges");
+        assertTrue(backedOffRanges.contains(capabilityRange));
+
+        // a repeated failure must stay idempotent (no duplicate bookkeeping)
+        invokeVoid(handler, "handleReadFailure", capabilityRange, failure);
+        assertEquals(1, backedOffRanges.size());
+    }
+
+    @Test
+    void capabilityMaskReadFailureShouldNotBackOffWhileThingIsNotOnline() throws Exception {
+        Thing offlineThing = mock(Thing.class);
+        when(offlineThing.getStatus()).thenReturn(ThingStatus.OFFLINE);
+        AbstractAnkerSolixHandler offlineHandler = new AnkerSolixSolarbankHandler(offlineThing);
+
+        List<?> pollRanges = invoke(offlineHandler, "getPollRanges");
+        Object capabilityRange = nonNull(pollRanges.get(pollRanges.size() - 1));
+        AsyncModbusFailure<ModbusReadRequestBlueprint> failure = new AsyncModbusFailure<>(
+                mock(ModbusReadRequestBlueprint.class), new RuntimeException("connection timed out"));
+
+        // a general communication failure (bridge/network down) must not be mistaken for register rejection
+        invokeVoid(offlineHandler, "handleReadFailure", capabilityRange, failure);
+
+        Set<Object> backedOffRanges = getField(offlineHandler, "backedOffRanges");
+        assertTrue(backedOffRanges.isEmpty());
+    }
+
+    @Test
+    void firmwareVersionChangeShouldNotResumeAnUnbackedOffRange() throws Exception {
+        invokeVoid(handler, "checkFirmwareVersionChange", "1.0.0.0");
+
+        // changing the version afterwards must not throw when the range was never backed off
+        invokeVoid(handler, "checkFirmwareVersionChange", "1.1.0.0");
+
+        Set<Object> backedOffRanges = getField(handler, "backedOffRanges");
+        assertTrue(backedOffRanges.isEmpty());
+    }
+
+    @Test
+    void firmwareVersionChangeShouldKeepRangeBackedOffWithoutModbusConfig() throws Exception {
+        List<?> pollRanges = invoke(handler, "getPollRanges");
+        Object capabilityRange = nonNull(pollRanges.get(pollRanges.size() - 1));
+        Set<Object> backedOffRanges = getField(handler, "backedOffRanges");
+        backedOffRanges.add(capabilityRange);
+
+        invokeVoid(handler, "checkFirmwareVersionChange", "1.0.0.0");
+        invokeVoid(handler, "checkFirmwareVersionChange", "1.1.0.0");
+
+        // without a Modbus configuration, resumePolling() must be a no-op and keep the range backed off
+        assertTrue(backedOffRanges.contains(capabilityRange));
+    }
+
     @SuppressWarnings("unchecked")
     private static <T> T getField(Object target, String fieldName) throws Exception {
         Field field = findField(target.getClass(), fieldName);
@@ -346,6 +411,8 @@ class AnkerSolixHandlerInternalsTest {
     }
 
     private static AbstractAnkerSolixHandler newHandler() {
-        return new AnkerSolixSolarbankHandler(mock(Thing.class));
+        Thing thing = mock(Thing.class);
+        when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        return new AnkerSolixSolarbankHandler(thing);
     }
 }

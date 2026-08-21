@@ -22,6 +22,13 @@ When manually side-loading a jar from `addons/`, make sure a matching Modbus bin
 The thing is attached to an existing Modbus `tcp` or `serial` bridge.
 Only devices with officially published Modbus profiles are supported; reserved and undocumented endpoints are intentionally excluded.
 
+> **Known behavior on older Solarbank firmware:** Some Solarbank units do not implement the optional capability mask
+> register used to detect support for `backup-soc-enable`, `charging-limit-soc`, `discharge-limit-soc`, and
+> `backup-reserve-soc`. On first connection this causes a handful of expected `WARN`/`ERROR` log entries from
+> openHAB's Modbus transport for that one register. This is not a fault: the binding detects the rejection, stops
+> polling that register, and all channels keep working normally. See
+> [Troubleshooting](#troubleshooting) for details.
+
 ## Discovery
 
 Discovery is available for all supported Anker SOLIX thing types.
@@ -84,7 +91,9 @@ In other words, connection parameters are bridge-level and can still be unique p
 The `ankersolix-solarbank4` and `ankersolix-solarbank-ac` things expose the following channels:
 
 When available, the optional capability mask is checked during polling and unsupported backup SOC channels are
-reported as `UNDEF`. Devices that do not provide this register continue to be handled as before.
+reported as `UNDEF`. Devices that do not provide this register continue to be handled as before; see the note under
+[Supported Things](#supported-things) and [Troubleshooting](#troubleshooting) about the expected log entries on
+devices without this register.
 
 | Channel ID | Item Type | Access | Description |
 | ------------ | ----------- | -------- | ------------- |
@@ -245,3 +254,4 @@ Number:Power Solarbank_Setpoint "Battery Setpoint [%.0f %unit%]" { channel="modb
 1. Setpoint direction seems wrong: Set `battery-power-direction` first, then write `battery-power-setpoint`.
 1. Setpoint or direction writes are ignored: Solarbank requires `third_party_control` operating mode. Keep `autoThirdPartyControl` enabled, or set `operating-mode` to `third_party_control` manually before writing.
 1. Temporary UI value jumps: Tune `writeProtectionDurationSeconds` to keep write shadow values long enough until the next stable readback.
+1. Log shows `ModbusManagerImpl` WARN/ERROR entries for the capability mask register once, then nothing: This is expected, not an error. The device (or its firmware) does not implement the optional capability mask register, openHAB Core logs the rejected read attempt, and the binding then stops polling that register regularly (all channels keep working normally with fail-open defaults). Polling resumes automatically if the device firmware version changes. A general communication problem (e.g. network outage) does not trigger this, since the binding only stops polling the register while the Thing is otherwise ONLINE and reachable.
