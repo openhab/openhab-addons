@@ -109,7 +109,6 @@ public final class MeterValueMapper {
                         continue;
                     }
                     if (phase == null || PER_PHASE_CHANNELS.contains(channelId)) {
-                        // A charger-reported total, or a channel that carries exactly one phase.
                         direct.put(channelId, state);
                     } else if (basePhase(phase) != null && SUMMABLE_MEASURANDS.contains(measurand)) {
                         summed.merge(channelId, state, MeterValueMapper::sum);

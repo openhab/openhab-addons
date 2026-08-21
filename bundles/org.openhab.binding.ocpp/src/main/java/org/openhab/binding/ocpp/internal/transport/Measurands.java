@@ -47,7 +47,7 @@ public final class Measurands {
         }
         int finalSeparator = list.lastIndexOf(SEPARATOR);
         if (finalSeparator < 0) {
-            return ""; // zero or one entry — nothing remains once the last is dropped
+            return "";
         }
         String retained = list.substring(0, finalSeparator);
         return Arrays.stream(retained.split(SEPARATOR)) //

@@ -406,9 +406,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (isReadyToSend()) {
             coalesceProfile(paused ? 0.0 : currentLimitAmps);
         } else {
-            // Charger not ready yet (just connected, before boot). Hold the intent — the values are
-            // stored — and send it once the charger is ready, rather than transmit before it can
-            // accept the profile or drop the setting.
+            // Charger not ready yet (just connected, before boot). Hold the intent and send it once
+            // the charger is ready, rather than transmit before it can accept the profile.
             limitDeferred = true;
         }
     }
@@ -434,7 +433,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         return true;
     }
 
-    /** Called when the charge point becomes ready; sends a limit/pause that was set while it was not. */
+    /** Sends a limit/pause that was deferred while the charge point was not ready. */
     public void onChargePointReady() {
         if (limitDeferred) {
             limitDeferred = false;
@@ -901,8 +900,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     public void onTransactionStarted(StartTransactionRequest request, int transactionId) {
-        // The charging channel is status-driven (see onStatusNotification); record only the
-        // transaction id (needed for RemoteStop / TxProfile) and start metadata.
+        // The charging channel is status-driven (see onStatusNotification); the transaction id is
+        // kept for RemoteStop / TxProfile.
         this.transactionId = transactionId;
         updateState(CHANNEL_TRANSACTION_ID, new DecimalType(transactionId));
         String idTag = request.getIdTag();
@@ -920,7 +919,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     public void onTransactionStopped(StopTransactionRequest request) {
-        // charging channel is status-driven; clear only the id and record stop metadata.
+        // charging channel is status-driven, not set here.
         this.transactionId = null;
         updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         Integer meterStop = request.getMeterStop();

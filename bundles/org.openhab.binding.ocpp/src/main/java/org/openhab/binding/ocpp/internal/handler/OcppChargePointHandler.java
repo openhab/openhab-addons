@@ -100,11 +100,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     // status after the BootNotification has been accepted and the boot configuration has run.
     private static final long STATUS_FALLBACK_SECONDS = 25;
     private static final int MAX_BOOT_CONFIG_ATTEMPTS = 3;
-    // Delay before treating the charger as ready. The library sends the boot confirmation right after
-    // the event handler returns and this binding cannot hook that write, so readiness is flipped on a
-    // scheduled task that runs comfortably after it. Usually it flips sooner and provably in order: the
-    // charger's first post-boot message marks it ready via touch(), and OCPP-J's one-outstanding-call-
-    // per-direction rule means it cannot have sent that before receiving the confirmation.
+    // Fallback delay before treating the charger as ready: the library sends the boot confirmation
+    // right after the event handler returns and this binding cannot hook that write, so a scheduled
+    // task flips readiness comfortably after it. The charger's first post-boot message normally flips
+    // it sooner via touch() — safe by OCPP-J's one-call-per-direction ordering (see touch()).
     private static final long BOOT_READY_GRACE_MILLIS = 1000;
     private static final int PENDING_SEND_LIMIT = 32;
     // Backstop bound on the operational (post-readiness) dispatcher queue, mirroring PENDING_SEND_LIMIT
@@ -577,8 +576,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
 
     /**
      * Gated status refresh, used after a boot (and its configuration burst): held behind the
-     * BootNotification response rather than racing it. With the default configuration and no boot
-     * steps, this keeps the post-boot refresh from preceding the boot acceptance.
+     * BootNotification response rather than racing it, so even with no boot steps the refresh cannot
+     * precede boot acceptance.
      */
     private void requestConnectorStatuses() {
         for (OcppConnectorHandler connector : connectors.values()) {
@@ -810,7 +809,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         publishCapabilities(capabilities);
     }
 
-    /** Logs the discovered configuration and records the most useful values as Thing properties. */
     private void publishCapabilities(ChargerCapabilities caps) {
         if (caps.isEmpty()) {
             logger.debug("Charge point {} reported no configuration", chargePointId);
