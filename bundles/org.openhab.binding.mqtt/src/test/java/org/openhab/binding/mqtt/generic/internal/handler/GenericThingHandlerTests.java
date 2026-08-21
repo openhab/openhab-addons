@@ -19,6 +19,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,12 +44,15 @@ import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 
@@ -123,6 +128,55 @@ public class GenericThingHandlerTests {
 
         verify(callbackMock).statusUpdated(eq(thingMock), argThat(arg -> ThingStatus.ONLINE.equals(arg.getStatus())
                 && ThingStatusDetail.NONE.equals(arg.getStatusDetail())));
+    }
+
+    @Test
+    public void initializeWithStateOnlyChannel() {
+        Channel channel = cb("stateOnly", "String", new Configuration(Map.of("stateTopic", "test/state")),
+                TEXT_CHANNEL);
+        when(thingMock.getChannels()).thenReturn(List.of(channel));
+
+        thingHandler.initialize();
+
+        assertThat(thingHandler.channelStateByChannelUID.containsKey(channel.getUID()), is(true));
+        verify(connectionMock).subscribe(eq("test/state"), any());
+    }
+
+    @Test
+    public void initializeWithCommandOnlyChannel() {
+        Channel channel = cb("commandOnly", "String", new Configuration(Map.of("commandTopic", "test/command")),
+                TEXT_CHANNEL);
+        when(thingMock.getChannels()).thenReturn(List.of(channel));
+
+        thingHandler.initialize();
+
+        assertThat(thingHandler.channelStateByChannelUID.containsKey(channel.getUID()), is(true));
+        verify(connectionMock, never()).subscribe(any(), any());
+    }
+
+    @Test
+    public void initializeRejectsChannelWithUnknownPropertiesInsteadOfTopics() {
+        Channel channel = cb("invalid", "String",
+                new Configuration(Map.of("status", "test/state", "trans", "JSONPATH:$.value")), TEXT_CHANNEL);
+
+        assertConfigurationError(channel);
+    }
+
+    @Test
+    public void initializeRejectsTypedTriggerWithoutStateTopic() {
+        Channel channel = cb("invalidTypedTrigger", "String",
+                new Configuration(Map.of("commandTopic", "test/command", "trigger", true)), TEXT_CHANNEL);
+
+        assertConfigurationError(channel);
+    }
+
+    @Test
+    public void initializeRejectsTriggerWithoutStateTopic() {
+        ChannelUID channelUID = new ChannelUID(TEST_GENERIC_THING, "invalidTrigger");
+        Channel channel = ChannelBuilder.create(channelUID).withType(TRIGGER_CHANNEL).withKind(ChannelKind.TRIGGER)
+                .withConfiguration(new Configuration(Map.of("commandTopic", "test/command"))).build();
+
+        assertConfigurationError(channel);
     }
 
     @Test
@@ -205,5 +259,18 @@ public class GenericThingHandlerTests {
                 .bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null));
         thingHandler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
         verify(connectionMock, times(2)).subscribe(eq("test/LWT"), any());
+    }
+
+    private void assertConfigurationError(Channel channel) {
+        when(thingMock.getChannels()).thenReturn(List.of(channel));
+
+        thingHandler.initialize();
+
+        assertThat(thingHandler.channelStateByChannelUID.containsKey(channel.getUID()), is(false));
+        verify(thingHandler, never()).start(any());
+        verify(callbackMock).statusUpdated(eq(thingMock),
+                argThat(arg -> ThingStatus.OFFLINE.equals(arg.getStatus())
+                        && ThingStatusDetail.CONFIGURATION_ERROR.equals(arg.getStatusDetail())
+                        && ("Invalid channel configuration: " + channel.getUID()).equals(arg.getDescription())));
     }
 }
