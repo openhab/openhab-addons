@@ -241,7 +241,7 @@ public class Java223Rule extends SimpleRule {
                     // purpose of this is to debounce, so we assume the user doesn't want blocking behavior.
                     CompletableFuture.runAsync(() -> codeToExecute.apply(module, bindings), scheduler);
                 } else {
-                    logger.debug("Debounced action (first only");
+                    logger.debug("Debounced action (first only)");
                 }
             }
             case LAST_ONLY -> {

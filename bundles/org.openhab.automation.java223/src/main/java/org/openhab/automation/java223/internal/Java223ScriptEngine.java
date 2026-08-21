@@ -20,7 +20,6 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,6 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,7 +43,6 @@ import ch.obermuhlner.scriptengine.java.compilation.ScriptInterceptorStrategy;
 import ch.obermuhlner.scriptengine.java.name.DefaultNameStrategy;
 import ch.obermuhlner.scriptengine.java.name.NameStrategy;
 import ch.obermuhlner.scriptengine.java.packagelisting.PackageResourceListingStrategy;
-import standalone.com.sun.tools.javac.api.JavacTool;
 
 /**
  * This class adds the Invocable aspect to the JavaScriptEngine. The Invocable aspect adds the ability to be called
@@ -66,15 +63,17 @@ public class Java223ScriptEngine extends JavaScriptEngine implements Invocable {
     private final List<String> compilationOptions;
     private final NameStrategy nameStrategy = new DefaultNameStrategy();
 
-    private final JavaCompiler compiler = getJavaCompiler();
+    private final JavaCompiler compiler;
 
     public Java223ScriptEngine(Java223Strategy java223Strategy,
             PackageResourceListingStrategy osgiPackageResourceListingStrategy,
-            ScriptInterceptorStrategy scriptInterceptorStrategy, List<String> compilationOptions) {
+            ScriptInterceptorStrategy scriptInterceptorStrategy, List<String> compilationOptions,
+            JavaCompiler javaCompiler) {
         this.java223Strategy = java223Strategy;
         this.osgiPackageResourceListingStrategy = osgiPackageResourceListingStrategy;
         this.scriptInterceptorStrategy = scriptInterceptorStrategy;
         this.compilationOptions = compilationOptions;
+        this.compiler = javaCompiler;
     }
 
     @Override
@@ -87,8 +86,8 @@ public class Java223ScriptEngine extends JavaScriptEngine implements Invocable {
             String script = scriptInterceptorStrategy.intercept(originalScript);
 
             DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-            JavaFileManager fileManager = java223Strategy.getJavaFileManager(
-                    ToolProvider.getSystemJavaCompiler().getStandardFileManager(diagnostics, null, null));
+            JavaFileManager fileManager = java223Strategy
+                    .getJavaFileManager(compiler.getStandardFileManager(diagnostics, null, null));
             ClassLoader parentClassLoader = fileManager.getClassLoader(StandardLocation.CLASS_PATH);
             MemoryFileManager memoryFileManager = new MemoryFileManager(fileManager, parentClassLoader);
             memoryFileManager.setPackageResourceListingStrategy(osgiPackageResourceListingStrategy);
@@ -138,11 +137,6 @@ public class Java223ScriptEngine extends JavaScriptEngine implements Invocable {
         } catch (NoClassDefFoundError e) {
             throw new ScriptException("NoClassDefFoundError: " + e.getMessage());
         }
-    }
-
-    private static JavaCompiler getJavaCompiler() {
-        JavaCompiler systemJavaCompiler = ToolProvider.getSystemJavaCompiler();
-        return Objects.requireNonNullElseGet(systemJavaCompiler, JavacTool::create);
     }
 
     @Override

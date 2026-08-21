@@ -167,14 +167,13 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
         public void rebuildLibPackages() {
             FILEMANAGER_LOCK.lock();
 
-            jarPaths.clear();
             try (Stream<Path> libFileStream = Files.list(libDirectory)) {
                 List<Path> libFiles = libFileStream.filter(JAR_FILTER) //
                         .filter((path) -> !path.getFileName().toString() // exclude convenience lib
                                 .equals(DependencyGenerator.CONVENIENCE_DEPENDENCIES_JAR)) //
                         .toList();
 
-                // first check if it's really needed, in case we overwrite a file with the same content
+                // first check if it's really necessary, in case we overwrite a file with the same content
                 for (Path path : libFiles) {
                     md5Digest.update(Files.readAllBytes(path));
                 }
@@ -183,12 +182,13 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
                     LOGGER.debug("No change and no need to rebuild lib package classloader");
                     return;
                 }
-
                 LOGGER.info("Full rebuild of java223 classpath");
                 LOGGER.debug("Libraries to load from '{}' to memory: {}", libDirectory, libFiles);
 
+                jarPaths.clear();
                 JarClassLoader newClassLoader = new JarClassLoader(parentClassLoader);
                 Map<String, List<JavaFileObject>> additionalPackages = new HashMap<>();
+                jarPaths.addAll(libFiles);
                 libFiles.forEach(libFile -> processLibrary(libFile, newClassLoader, additionalPackages));
 
                 upToDateClassLoader = newClassLoader;
