@@ -81,7 +81,7 @@ public class Java223CompiledScript extends JavaCompiledScript {
 
     @Override
     public @Nullable Object eval(@Nullable ScriptContext context) throws ScriptException {
-        // prepare bindings data
+        // prepare binding data
         if (context == null) {
             throw new IllegalArgumentException("ScriptContext must not be null");
         }

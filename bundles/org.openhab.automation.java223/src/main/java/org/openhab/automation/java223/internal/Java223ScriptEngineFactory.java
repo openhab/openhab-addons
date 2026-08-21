@@ -25,11 +25,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,6 +72,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.obermuhlner.scriptengine.java.JavaScriptEngineFactory;
 import ch.obermuhlner.scriptengine.java.packagelisting.PackageResourceListingStrategy;
+import standalone.com.sun.tools.javac.api.JavacTool;
 
 /**
  * This is an implementation of a {@link ScriptEngineFactory} for Java
@@ -266,8 +270,11 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
     @Override
     public @Nullable ScriptEngine createScriptEngine(String scriptType) {
         if (getScriptTypes().contains(scriptType)) {
+            JavaCompiler systemJavaCompiler = ToolProvider.getSystemJavaCompiler();
+            // fallback if javac not available on this execution environment :
+            systemJavaCompiler = Objects.requireNonNullElseGet(systemJavaCompiler, JavacTool::create);
             return new Java223ScriptEngine(java223Strategy, osgiPackageResourceListingStrategy, scriptWrappingStrategy,
-                    Arrays.asList("-g", "-parameters"));
+                    Arrays.asList("-g", "-parameters"), systemJavaCompiler);
         }
         return null;
     }
