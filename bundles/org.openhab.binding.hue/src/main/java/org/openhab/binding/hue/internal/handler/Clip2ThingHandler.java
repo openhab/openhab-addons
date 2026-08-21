@@ -87,6 +87,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -1025,7 +1026,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource the Resource containing the new channel state.
      * @return true if the channel was found and updated.
      */
-    private boolean updateChannels(Resource resource) {
+    boolean updateChannels(Resource resource) {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
@@ -1200,9 +1201,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     thing.getStatus(), zigbeeStatus);
             hasConnectivityIssue = zigbeeStatus.isConnectivityIssue();
             if (hasConnectivityIssue) {
-                if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/offline.api2.comm-error.zigbee-connectivity-issue");
+                // unknown values also parse to DISCONNECTED, so only a literal 'disconnected' gets its own text
+                String description = ZigbeeStatus.DISCONNECTED.name().equalsIgnoreCase(resource.getZigbeeStatusValue())
+                        ? TEXT_OFFLINE_ZIGBEE_DISCONNECTED
+                        : TEXT_OFFLINE_ZIGBEE_CONNECTIVITY_ISSUE;
+                // publish unless the thing already shows exactly this, so that a status set by anybody else heals
+                ThingStatusInfo statusInfo = thing.getStatusInfo();
+                if (statusInfo.getStatus() != ThingStatus.OFFLINE
+                        || statusInfo.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR
+                        || !description.equals(statusInfo.getDescription())) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
                     supportedChannelIdSet.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
                 return;

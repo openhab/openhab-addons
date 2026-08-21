@@ -833,11 +833,18 @@ public class Resource {
     }
 
     public @Nullable ZigbeeStatus getZigbeeStatus() {
+        String value = getZigbeeStatusValue();
+        return Objects.nonNull(value) ? ZigbeeStatus.of(value) : null;
+    }
+
+    /**
+     * Get the Zigbee status value exactly as the bridge reported it, or null if the resource does not contain one.
+     * Note that {@link ZigbeeStatus#of(String)} maps any unrecognised value to {@link ZigbeeStatus#DISCONNECTED}, so
+     * a caller that must not confuse an unrecognised value with a genuine disconnect has to consult this method.
+     */
+    public @Nullable String getZigbeeStatusValue() {
         JsonElement status = this.status;
-        if (Objects.nonNull(status) && status.isJsonPrimitive()) {
-            return ZigbeeStatus.of(status.getAsString());
-        }
-        return null;
+        return Objects.nonNull(status) && status.isJsonPrimitive() ? status.getAsString() : null;
     }
 
     public boolean hasFullState() {
