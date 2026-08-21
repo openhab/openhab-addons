@@ -53,8 +53,10 @@ class AnkerSolixHandlerInternalsTest {
     private AbstractAnkerSolixHandler handler = newHandler();
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         handler = newHandler();
+        Set<Object> activeHandlers = getField(handler, "ACTIVE_HANDLERS");
+        activeHandlers.clear();
     }
 
     @Test
@@ -355,6 +357,38 @@ class AnkerSolixHandlerInternalsTest {
 
         // without a Modbus configuration, resumePolling() must be a no-op and keep the range backed off
         assertTrue(backedOffRanges.contains(capabilityRange));
+    }
+
+    @Test
+    void resumeAllBackedOffRangesShouldBeNoOpWithoutModbusConfig() throws Exception {
+        List<?> pollRanges = invoke(handler, "getPollRanges");
+        Object capabilityRange = nonNull(pollRanges.get(pollRanges.size() - 1));
+        Set<Object> backedOffRanges = getField(handler, "backedOffRanges");
+        backedOffRanges.add(capabilityRange);
+
+        invokeVoid(handler, "resumeAllBackedOffRanges");
+
+        assertTrue(backedOffRanges.contains(capabilityRange));
+    }
+
+    @Test
+    void notifyOtherHandlersOfNewDeviceShouldRegisterAndPromptSiblingsToRetry() throws Exception {
+        AbstractAnkerSolixHandler existingHandler = newHandler();
+        List<?> pollRanges = invoke(existingHandler, "getPollRanges");
+        Object capabilityRange = nonNull(pollRanges.get(pollRanges.size() - 1));
+        Set<Object> existingBackedOffRanges = getField(existingHandler, "backedOffRanges");
+        existingBackedOffRanges.add(capabilityRange);
+
+        Set<Object> activeHandlers = getField(handler, "ACTIVE_HANDLERS");
+        activeHandlers.add(existingHandler);
+
+        // adding a new device (this handler initializing) must prompt the already-active sibling to retry,
+        // since a parallel-machine capability register may only start answering once another unit is paired
+        invokeVoid(handler, "notifyOtherHandlersOfNewDevice");
+
+        assertTrue(activeHandlers.contains(handler));
+        // without a Modbus configuration on the sibling, the retry is a safe no-op and keeps it backed off
+        assertTrue(existingBackedOffRanges.contains(capabilityRange));
     }
 
     @SuppressWarnings("unchecked")
