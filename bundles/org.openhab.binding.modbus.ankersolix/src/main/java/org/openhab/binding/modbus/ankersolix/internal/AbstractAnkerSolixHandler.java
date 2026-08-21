@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +30,7 @@ import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
+import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -63,6 +65,9 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     private final Map<Integer, Integer> registerCache = new ConcurrentHashMap<>();
     private final Map<String, State> shadowStates = new ConcurrentHashMap<>();
     private final Map<String, Instant> shadowStateExpiry = new ConcurrentHashMap<>();
+    private final Map<PollRange, PollTask> activePollTasks = new ConcurrentHashMap<>();
+    // ranges whose regular polling was stopped after the device rejected the register once
+    private final Set<PollRange> backedOffRanges = ConcurrentHashMap.newKeySet();
 
     protected @Nullable AnkerSolixConfiguration config;
 
@@ -118,11 +123,28 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         for (PollRange range : getPollRanges()) {
-            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), range.functionCode,
-                    range.startAddress, range.length, localConfig.maxTries);
-            registerRegularPoll(request, localConfig.pollInterval, 0, result -> handleReadSuccess(range, result),
-                    failure -> handleReadFailure(range, failure));
+            registerPoll(range, localConfig);
         }
+    }
+
+    private void registerPoll(PollRange range, AnkerSolixConfiguration localConfig) {
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), range.functionCode,
+                range.startAddress, range.length, localConfig.maxTries);
+        PollTask task = registerRegularPoll(request, localConfig.pollInterval, 0,
+                result -> handleReadSuccess(range, result), failure -> handleReadFailure(range, failure));
+        activePollTasks.put(range, task);
+    }
+
+    /**
+     * Re-registers regular polling for a range that was previously backed off, e.g. after detecting
+     * that the device firmware changed and might now support a register it rejected before.
+     */
+    protected void resumePolling(PollRange range) {
+        AnkerSolixConfiguration localConfig = config;
+        if (localConfig == null || !backedOffRanges.remove(range)) {
+            return;
+        }
+        registerPoll(range, localConfig);
     }
 
     private void triggerImmediateRefresh() {
@@ -131,6 +153,9 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
             return;
         }
         for (PollRange range : getPollRanges()) {
+            if (backedOffRanges.contains(range)) {
+                continue;
+            }
             ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), range.functionCode,
                     range.startAddress, range.length, localConfig.maxTries);
             submitOneTimePoll(request, result -> handleReadSuccess(range, result),
@@ -158,10 +183,24 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     private void handleReadFailure(PollRange range, AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
         String message = String.valueOf(failure.getCause().getMessage());
         logger.debug("Failed to read Anker SOLIX registers: {}", message);
-        if (range.optional()) {
+        if (!range.optional()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             return;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        // only back off while ONLINE: a device that is reachable enough to reject this one register (rather than
+        // failing to respond at all) has genuinely rejected it, whereas a network/bridge outage fails every range
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+        if (backedOffRanges.add(range)) {
+            PollTask task = activePollTasks.remove(range);
+            if (task != null) {
+                unregisterRegularPoll(task);
+            }
+            logger.info(
+                    "Register {} is not supported by this device (or firmware) - this is not an error, all channels keep working normally; regular polling of this register is now paused and resumes automatically if the device firmware version changes",
+                    range.startAddress());
+        }
     }
 
     protected void writeInt16Holding(int registerAddress, int value) {
