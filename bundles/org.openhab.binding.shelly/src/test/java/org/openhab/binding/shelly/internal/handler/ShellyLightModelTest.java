@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
@@ -36,10 +36,11 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * Tests for {@link ShellyLightModel}
+ * Tests for {@link ShellyLightModel} basic functionality.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -47,25 +48,33 @@ import org.openhab.core.thing.ThingTypeUID;
 class ShellyLightModelTest {
 
     private static final double STEP = 10.0;
-    private static final ShellyLightHandler LIGHT_HANDLER = mock(ShellyLightHandler.class);
+
+    private static ShellyLightHandler mockHandler(ThingTypeUID thingTypeUID) {
+        ShellyLightHandler handler = mock(ShellyLightHandler.class);
+        Thing thing = mock(Thing.class);
+        when(thing.getLabel()).thenReturn("Test Thing");
+        when(thing.getThingTypeUID()).thenReturn(thingTypeUID);
+        when(handler.getThing()).thenReturn(thing);
+        return handler;
+    }
 
     @Test
     void duoStartsInWhiteOnlyMode() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYDUO), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
         assertEquals(Mode.WHITE, model.getMode());
     }
 
     @Test
     void bulbStartsInColorMode() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
         assertEquals(Mode.COLOR, model.getMode());
     }
 
     @Test
     void setModeMarksDirtyWhenChanged() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setMode(Mode.WHITE);
@@ -85,7 +94,7 @@ class ShellyLightModelTest {
 
     @Test
     void acquireLockResetsAllFlags() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.acquire();
@@ -112,7 +121,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleColorUpdatesSelectedComponentAndMarksDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.acquire();
@@ -131,7 +140,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleRgbwStringParsesCsvAndMarksDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.acquire();
@@ -147,14 +156,14 @@ class ShellyLightModelTest {
 
     @Test
     void handleRgbwStringRejectsInvalidCsv() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
         assertThrows(NumberFormatException.class, () -> model.setRGBX("red,green,blue,white"));
     }
 
     @Test
     void modeSynchronizesToColor() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setMode(Mode.WHITE);
@@ -168,7 +177,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleGainUpdatesGainAndMarksDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setGain(77);
@@ -180,7 +189,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleEffectUpdatesEffectAndMarksDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setEffect(5);
@@ -192,7 +201,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleBrightnessUpdatesBrightnessAndMarksDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYDUO), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
         model.setBrightness(42);
@@ -205,7 +214,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleColorTempUpdatesKelvinAndMarksDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYDUO), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
         model.setColorTemp(4000);
@@ -223,7 +232,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleOnOffMarksDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYDUO), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
         model.setBrightness(50);
@@ -235,7 +244,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleCommandOnSetsOnlyOnOffDirtyAndBrightnessDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYDUO), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
         // Set initial brightness
@@ -257,7 +266,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleCommandPercentMarksGainAndOnOffDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYDUO), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
         model.acquire();
@@ -271,7 +280,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleCommandIncreaseMarksGainAndOnOffDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYDUO,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYDUO), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
         model.acquire();
@@ -285,7 +294,7 @@ class ShellyLightModelTest {
 
     @Test
     void handleCommandHsbMarksColorGainAndOnOffDirty() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.acquire();
@@ -299,7 +308,7 @@ class ShellyLightModelTest {
 
     @Test
     void gainAndBrightnessAreSynonyms() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
         model.setBrightness(100);
         model.setGain(20);
@@ -315,7 +324,7 @@ class ShellyLightModelTest {
 
     @Test
     void toStringContainsUsefulFields() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
         model.setRGBX(255, 0, 0, 0);
         model.setBrightness(100);
@@ -333,7 +342,7 @@ class ShellyLightModelTest {
 
     @Test
     void testHSB() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
         model.setGain(100);
 
@@ -362,7 +371,7 @@ class ShellyLightModelTest {
 
     @Test
     void testColorTemp() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
         model.setBrightness(100);
 
@@ -383,7 +392,7 @@ class ShellyLightModelTest {
 
     @Test
     void setRgbxCommandRedMapsToExpectedRgbw() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setRGBX(new StringType("red"));
@@ -396,7 +405,7 @@ class ShellyLightModelTest {
 
     @Test
     void setRgbxCommandGreenMapsToExpectedRgbw() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setRGBX(new StringType("green"));
@@ -409,7 +418,7 @@ class ShellyLightModelTest {
 
     @Test
     void setRgbxCommandBlueMapsToExpectedRgbw() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setRGBX(new StringType("blue"));
@@ -422,7 +431,7 @@ class ShellyLightModelTest {
 
     @Test
     void setRgbxCommandYellowMapsToExpectedRgbw() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setRGBX(new StringType("yellow"));
@@ -435,7 +444,7 @@ class ShellyLightModelTest {
 
     @Test
     void setRgbxCommandWhiteMapsToExpectedRgbw() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         model.setRGBX(new StringType("white"));
@@ -448,7 +457,7 @@ class ShellyLightModelTest {
 
     @Test
     void setRgbxCommandRejectsUnknownColorName() {
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, 0, THING_TYPE_SHELLYBULB,
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYBULB), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYBULB), STEP);
 
         assertThrows(IllegalArgumentException.class, () -> model.setRGBX(new StringType("magenta-ish")));
@@ -456,14 +465,14 @@ class ShellyLightModelTest {
 
     @ParameterizedTest
     @MethodSource("thingTypeProvider")
-    void testCapabilitiesForEachThingType(ThingTypeUID thingTypeUID, int lightId, @Nullable String profileOverride,
-            boolean expectSupportsOnOff, boolean expectSupportsColor, boolean expectSupportsColorTemperature,
-            boolean expectSupportsBrightness) {
+    void testCapabilitiesForEachThingType(ThingTypeUID thingTypeUID, int componentIndex,
+            @Nullable String profileOverride, boolean expectSupportsOnOff, boolean expectSupportsColor,
+            boolean expectSupportsColorTemperature, boolean expectSupportsBrightness) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
         profile.maxTemp = 6500;
         profile.minTemp = 2700;
         profile.device.profile = profileOverride;
-        ShellyLightModel model = ShellyLightModel.create(LIGHT_HANDLER, lightId, thingTypeUID, profile, STEP);
+        ShellyLightModel model = ShellyLightModel.create(mockHandler(thingTypeUID), componentIndex, profile, STEP);
 
         String uid = thingTypeUID.toString() + " ";
         assertEquals(expectSupportsOnOff, model.supportsOnOffChannel(), uid + "on/off");

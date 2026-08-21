@@ -27,11 +27,11 @@ public interface ShellyLightModelHandler {
     /**
      * Get the light model for the given modelId
      * 
-     * @param modelId the model id.
+     * @param componentIndex the component index of the light within the device.
      * @return the light model, or null if not found.
      */
     @Nullable
-    ShellyLightModel getLightModel(int modelId);
+    ShellyLightModel getLightModel(int componentIndex);
 
     /**
      * Acquire the lock for the light models. This means that other callers cannot modify the light

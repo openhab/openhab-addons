@@ -156,7 +156,7 @@ public class ShellyTestLightHandler extends ShellyLightHandler {
     }
 
     public void addLightModel(int id, ThingTypeUID thingTypeUID, ShellyDeviceProfile profile, double stepSize) {
-        ShellyLightModel model = ShellyLightModel.create(this, id, thingTypeUID, profile, stepSize);
+        ShellyLightModel model = ShellyLightModel.create(this, id, profile, stepSize);
         Objects.requireNonNull(lightModels).put(id, model);
     }
 

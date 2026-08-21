@@ -42,6 +42,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyTestLightHandler;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
@@ -183,7 +184,7 @@ public class Shelly2ApiClientLightStatusTest {
         assertThat(thing.getChannelUpdates().get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_BRIGHTNESS),
                 is(new PercentType(55)));
         assertThat(thing.getChannelUpdates().get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_LIGHT_POWER),
-                is(nullValue()));
+                is(OnOffType.ON));
     }
 
     @Test

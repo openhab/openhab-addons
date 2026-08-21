@@ -147,17 +147,17 @@ public class ShellyUtilsTest {
 
     @Test
     void getLightIdFromGroupParsesCurrentLightPrefix() {
-        assertEquals(2, ShellyUtils.getLightIdFromGroup(CHANNEL_GROUP_LIGHT_INDEX + "3"));
+        assertEquals(2, ShellyUtils.getComponentIndexFromGroup(CHANNEL_GROUP_LIGHT_INDEX + "3"));
     }
 
     @Test
     void getLightIdFromGroupParsesDeprecatedChannelPrefix() {
-        assertEquals(1, ShellyUtils.getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CHANNEL + "2"));
+        assertEquals(1, ShellyUtils.getComponentIndexFromGroup(CHANNEL_GROUP_LIGHT_CHANNEL + "2"));
     }
 
     @Test
     void getLightIdFromGroupReturnsZeroForUnrelatedGroup() {
-        assertEquals(0, ShellyUtils.getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CONTROL));
+        assertEquals(0, ShellyUtils.getComponentIndexFromGroup(CHANNEL_GROUP_LIGHT_CONTROL));
     }
 
     @Test

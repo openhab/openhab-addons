@@ -631,7 +631,7 @@ class ShellyLightHandlerLightModelTest {
         ChannelUID channelUID = new ChannelUID(new ChannelGroupUID(new ThingUID(thingTypeUID, "test"), actualGroup),
                 commandChannel);
 
-        ShellyLightModel model = ShellyLightModel.create(handler, lightId, thingTypeUID, handler.profile, DIM_STEPSIZE);
+        ShellyLightModel model = ShellyLightModel.create(handler, lightId, handler.profile, DIM_STEPSIZE);
         model.acquire();
         try {
             if (CHANNEL_COLOR_GAIN.equals(commandChannel)) {
@@ -758,7 +758,7 @@ class ShellyLightHandlerLightModelTest {
                 CHANNEL_LIGHT_POWER);
 
         // Seed initial model state
-        ShellyLightModel model = ShellyLightModel.create(handler, lightId, thingTypeUID, handler.profile, DIM_STEPSIZE);
+        ShellyLightModel model = ShellyLightModel.create(handler, lightId, handler.profile, DIM_STEPSIZE);
         model.acquire();
         try {
             model.setOnOff(true);

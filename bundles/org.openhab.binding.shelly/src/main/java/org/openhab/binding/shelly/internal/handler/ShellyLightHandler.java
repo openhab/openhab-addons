@@ -62,26 +62,28 @@ import com.google.gson.Gson;
 public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLightModelHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
 
-    // map of ShellyLightModels keyed on their light Id
-    protected final Map<Integer, ShellyLightModel> lightModels;
+    // map of ShellyLightModels keyed on their component index within the device
+    protected final Map<Integer, ShellyLightModel> lightModels = new ConcurrentHashMap<>();
+
+    /**
+     * Enum to indicate what was updated by a channel command.
+     */
+    private enum WhatUpdated {
+        NOTHING,
+        LIGHT_MODEL,
+        OTHER
+    }
 
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, final ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
         super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
-        lightModels = new ConcurrentHashMap<>();
     }
 
     @Override
     public void initialize() {
-        logger.debug("Thing is using  {}", this.getClass());
+        logger.debug("Thing is using {}", this.getClass());
         super.initialize();
-    }
-
-    private enum UpdateTarget {
-        NONE,
-        LIGHT_MODEL,
-        OTHER
     }
 
     @Override
@@ -94,23 +96,22 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         try {
             acquireLock();
             try {
-                int lightId = getLightIdFromGroup(groupName);
-                ShellyLightModel model = lightModels.get(lightId);
+                int componentIndex = getComponentIndexFromGroup(groupName); // TODO we will need to fix this
+                ShellyLightModel model = lightModels.get(componentIndex);
                 if (model == null) {
-                    model = ShellyLightModel.create(this, lightId, thing.getThingTypeUID(), profile, DIM_STEPSIZE);
+                    model = ShellyLightModel.create(this, componentIndex, profile, DIM_STEPSIZE);
                     model.acquire();
-                    lightModels.put(lightId, model);
+                    lightModels.put(componentIndex, model);
                 }
-                UpdateTarget target = updateLightModelFromChannelCommand(model, channelUID, command);
-                switch (target) {
+                WhatUpdated whatUpdated = updateLightModelFromChannelCommand(model, channelUID, command);
+                switch (whatUpdated) {
                     case LIGHT_MODEL:
                         updateRemoteDeviceFromLightModel(model);
-                        return true;
                     case OTHER:
                         return true;
                     default:
+                        return false;
                 }
-                return false;
             } finally {
                 releaseLock();
             }
@@ -127,7 +128,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             return false;
         }
         if (!profile.isLight) {
-            logger.debug("{}: ERROR: Device is not a light. but class ShellyHandlerLight is called!", thingName);
+            logger.debug("{}: ERROR: Device is not a light but class ShellyHandlerLight is called!", thingName);
         }
         ShellyStatusLight status = api.getLightStatus();
         if (logger.isTraceEnabled()) {
@@ -136,17 +137,17 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         boolean updated = false;
         try {
             acquireLock();
-            int lightId = 0;
+            int componentIndex = 0;
             for (ShellyStatusLightChannel light : status.lights) {
-                ShellyLightModel model = lightModels.get(lightId);
+                ShellyLightModel model = lightModels.get(componentIndex);
                 if (model == null) {
-                    model = ShellyLightModel.create(this, lightId, thing.getThingTypeUID(), profile, DIM_STEPSIZE);
+                    model = ShellyLightModel.create(this, componentIndex, profile, DIM_STEPSIZE);
                     model.acquire();
-                    lightModels.put(lightId, model);
+                    lightModels.put(componentIndex, model);
                 }
                 updateLightModelFromStatus(model, light);
-                updated |= updateChannelsFromLightStatusDTO(light, lightId);
-                lightId++;
+                updated |= updateChannelsFromLightStatusDTO(light, componentIndex);
+                componentIndex++;
             }
         } finally {
             updated |= releaseLock();
@@ -202,7 +203,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @return the target of the update (LIGHT_MODEL, OTHER, or NONE)
      * @throws ShellyApiException
      */
-    private UpdateTarget updateLightModelFromChannelCommand(ShellyLightModel model, ChannelUID channelUID,
+    private WhatUpdated updateLightModelFromChannelCommand(ShellyLightModel model, ChannelUID channelUID,
             Command command) throws ShellyApiException {
         logger.trace("{}: updateLightModelFromChannelCommand() channel {}, command {})", thingName, channelUID,
                 command);
@@ -210,71 +211,71 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             case CHANNEL_PRIMARY_COLOR:
             case CHANNEL_PRIMARY_BRIGHTNESS:
                 model.handleCommand(command);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_PRIMARY_COLOR_TEMP:
             case CHANNEL_PRIMARY_COLOR_TEMP_ABS:
                 model.handleColorTemperatureCommand(command);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_LIGHT_POWER:
                 model.handleCommand(command);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_LIGHT_COLOR_MODE:
                 model.setMode(OnOffType.ON == command ? Mode.COLOR : Mode.WHITE);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_PICKER:
                 model.handleCommand(command);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_FULL:
                 model.setRGBX(command);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_RED:
                 model.setColor(R, setColor(command, SHELLY_MIN_COLOR, SHELLY_MAX_COLOR));
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_GREEN:
                 model.setColor(G, setColor(command, SHELLY_MIN_COLOR, SHELLY_MAX_COLOR));
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_BLUE:
                 model.setColor(B, setColor(command, SHELLY_MIN_COLOR, SHELLY_MAX_COLOR));
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_WHITE:
                 model.setColor(CW, setColor(command, SHELLY_MIN_COLOR, SHELLY_MAX_COLOR));
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_GAIN:
                 model.setGain(command);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_BRIGHTNESS:
                 model.setBrightness(command);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_TEMP:
                 model.handleColorTemperatureCommand(command);
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_EFFECT:
                 model.setEffect(setColor(command, SHELLY_MIN_EFFECT, SHELLY_MAX_EFFECT));
-                return UpdateTarget.LIGHT_MODEL;
+                return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_TIMER_AUTOON:
-                api.setAutoTimer(model.getLightId(), SHELLY_TIMER_AUTOON, getNumber(command).doubleValue());
-                return UpdateTarget.OTHER;
+                api.setAutoTimer(model.getComponentIndex(), SHELLY_TIMER_AUTOON, getNumber(command).doubleValue());
+                return WhatUpdated.OTHER;
 
             case CHANNEL_TIMER_AUTOOFF:
-                api.setAutoTimer(model.getLightId(), SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
-                return UpdateTarget.OTHER;
+                api.setAutoTimer(model.getComponentIndex(), SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
+                return WhatUpdated.OTHER;
 
             default: // non- light commands will be handled by the generic handler
-                return UpdateTarget.NONE;
+                return WhatUpdated.NOTHING;
         }
     }
 
@@ -290,7 +291,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // ON-OFF (via own channel): send first as it may affect the processing of subsequent parameters
         if (model.supportsOnOffChannel() && model.isOnOffDirty()) { // config.getBrightnessAutoOn() not used
-            api.setLightTurn(model.getLightId(), OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF);
+            api.setLightTurn(model.getComponentIndex(),
+                    OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF);
             apiCommandSent = true;
         }
 
@@ -343,8 +345,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
 
         if (!parms.isEmpty()) {
-            logger.debug("{}: lightId {} set new light parameters {}", thingName, model.getLightId(), parms);
-            api.setLightParms(model.getLightId(), parms);
+            logger.debug("{}: lightId {} set new light parameters {}", thingName, model.getComponentIndex(), parms);
+            api.setLightParms(model.getComponentIndex(), parms);
             apiCommandSent = true;
         }
 
@@ -448,7 +450,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     public boolean updateChannelsFromLightModel(ShellyLightModel model) {
         logger.trace("{}: updateDirtyChannelsForLightModel() with [{}]", thingName, model);
         boolean updated = false;
-        int lightId = model.getLightId(); // zero based
+        int lightId = model.getComponentIndex(); // zero based
         int channelId = lightId + 1; // one based
         String group = null;
 
@@ -522,9 +524,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     }
 
     @Override
-    public @Nullable ShellyLightModel getLightModel(int lightId) {
-        ShellyLightModel model = lightModels.get(lightId);
-        logger.debug("{}: getLightModel({}) returns {}", thingName, lightId, model);
+    public @Nullable ShellyLightModel getLightModel(int componentIndex) {
+        ShellyLightModel model = lightModels.get(componentIndex);
+        logger.debug("{}: getLightModel({}) returns {}", thingName, componentIndex, model);
         return model;
     }
 
