@@ -36,7 +36,7 @@
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type unitHint="mm">Number:Length</item-type>
+		<item-type unitHint="mm,in">Number:Length</item-type>
 		<label>Rain</label>
 		<category>Rain</category>
 		<tags>
@@ -47,7 +47,7 @@
 	</channel-type>
 
 	<channel-type id="pressure">
-		<item-type unitHint="hPa">Number:Pressure</item-type>
+		<item-type unitHint="hPa,inHg">Number:Pressure</item-type>
 		<label>Pressure</label>
 		<category>Pressure</category>
 		<tags>
@@ -113,7 +113,7 @@
 	</channel-type>
 
 	<channel-type id="rain-rate">
-		<item-type unitHint="mm/h">Number:Speed</item-type>
+		<item-type unitHint="mm/h,in/h">Number:Speed</item-type>
 		<label>Rain Rate</label>
 		<category>Rain</category>
 		<tags>
@@ -205,7 +205,7 @@
 	</channel-type>
 
 	<channel-type id="lightning-distance">
-		<item-type unitHint="km">Number:Length</item-type>
+		<item-type unitHint="km,mi">Number:Length</item-type>
 		<label>Lightning Distance</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
