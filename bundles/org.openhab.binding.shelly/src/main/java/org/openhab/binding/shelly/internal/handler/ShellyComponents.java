@@ -901,7 +901,7 @@ public class ShellyComponents {
                                 Units.PERCENT));
                 if (light.temp != null) {
                     ShellyColorUtils col = new ShellyColorUtils();
-                    col.setMinMaxTemp(profile.minTemp, profile.maxTemp);
+                    col.setMinMaxTemp(profile.getMinTemp(i), profile.getMaxTemp(i));
                     col.setTemp(getInteger(light.temp));
                     updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
                 }
