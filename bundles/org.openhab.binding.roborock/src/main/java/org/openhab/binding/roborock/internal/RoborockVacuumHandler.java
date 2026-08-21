@@ -873,15 +873,29 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         }
                         mappedRoom.add(room);
                     }
-                    synchronized (currentRoomLock) {
-                        segmentRoomNames = Map.copyOf(resolvedSegmentNames);
-                    }
+                    installSegmentRoomNames(resolvedSegmentNames);
                     updateState(cmd.getChannel(), new StringType(mappedRoom.toString()));
                 } else {
                     clearSegmentRoomNames();
                     updateState(cmd.getChannel(), new StringType(response));
                 }
                 break;
+            }
+        }
+    }
+
+    /**
+     * Installs the segment-id to room-name table and re-evaluates the most recently parsed map
+     * with it: getMap and getRoomMapping are independent requests, so the map may have been cached
+     * while the names were still missing, and while docked no further map response is due that
+     * would self-correct the channel.
+     */
+    void installSegmentRoomNames(Map<Integer, String> resolvedSegmentNames) {
+        synchronized (currentRoomLock) {
+            segmentRoomNames = Map.copyOf(resolvedSegmentNames);
+            RRMapData mapData = lastParsedMapData;
+            if (mapData != null) {
+                updateCurrentRoomState(mapData);
             }
         }
     }
@@ -1141,7 +1155,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void handleGetMap(int requestId, byte[] mapPayload) {
+    void handleGetMap(int requestId, byte[] mapPayload) {
         String methodName = requestCorrelationTracker.findMethodByRequestId(requestId);
         CompletableFuture<byte[]> pendingDownload = pendingRrMapDownloads.remove(Integer.valueOf(requestId));
         if (pendingDownload != null) {
@@ -1403,7 +1417,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void registerRequest(String methodName, int requestId) {
+    void registerRequest(String methodName, int requestId) {
         if (requestId == REQUEST_ID_SYNC_DIRECT_COMPLETED) {
             if (logger.isTraceEnabled()) {
                 logger.trace(

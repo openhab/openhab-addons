@@ -38,8 +38,7 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
     @Test
     void handleGetMapResolvesCurrentRoomStraightAfterParsingAndBeforeRendering() throws IOException {
         String source = Files.readString(HANDLER_PATH);
-        String handleGetMapBody = extractMethodBody(source,
-                "private void handleGetMap(int requestId, byte[] mapPayload)");
+        String handleGetMapBody = extractMethodBody(source, "void handleGetMap(int requestId, byte[] mapPayload)");
 
         int parseIndex = handleGetMapBody.indexOf("rrMapParser.parse(mapPayload);");
         int updateCurrentRoomIndex = handleGetMapBody.indexOf("updateCurrentRoomState(mapData);");
@@ -58,8 +57,7 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
     @Test
     void handleGetMapInvalidatesMapDerivedStateWhenParsingFails() throws IOException {
         String source = Files.readString(HANDLER_PATH);
-        String handleGetMapBody = extractMethodBody(source,
-                "private void handleGetMap(int requestId, byte[] mapPayload)");
+        String handleGetMapBody = extractMethodBody(source, "void handleGetMap(int requestId, byte[] mapPayload)");
 
         int parseFailureLogIndex = handleGetMapBody.indexOf("Failed to parse map payload");
         int invalidateIndex = handleGetMapBody.indexOf("invalidateMapDerivedState();");
@@ -150,8 +148,8 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
         String handleGetRoomMappingBody = extractMethodBody(source,
                 "private void handleGetRoomMapping(String response)");
 
-        assertTrue(handleGetRoomMappingBody.contains("segmentRoomNames = "),
-                "handleGetRoomMapping should populate segmentRoomNames while building the room-mapping JSON");
+        assertTrue(handleGetRoomMappingBody.contains("installSegmentRoomNames("),
+                "handleGetRoomMapping should install the segment room names it builds");
         assertFalse(handleGetRoomMappingBody.contains("JsonParser.parseString(mappedRoom"),
                 "segmentRoomNames should be filled while building the JSON, not by re-parsing the published string");
     }
@@ -159,8 +157,7 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
     @Test
     void handleGetMapCachesTheParsedMapForTheDockingTransition() throws IOException {
         String source = Files.readString(HANDLER_PATH);
-        String handleGetMapBody = extractMethodBody(source,
-                "private void handleGetMap(int requestId, byte[] mapPayload)");
+        String handleGetMapBody = extractMethodBody(source, "void handleGetMap(int requestId, byte[] mapPayload)");
 
         int parseIndex = handleGetMapBody.indexOf("rrMapParser.parse(mapPayload);");
         int cacheIndex = handleGetMapBody.indexOf("lastParsedMapData = mapData;");
@@ -220,7 +217,7 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
         String source = Files.readString(HANDLER_PATH);
 
         String mapGuarded = extractGuardedBlock(
-                extractMethodBody(source, "private void handleGetMap(int requestId, byte[] mapPayload)"));
+                extractMethodBody(source, "void handleGetMap(int requestId, byte[] mapPayload)"));
         assertTrue(
                 mapGuarded.contains("lastParsedMapData = mapData;") && mapGuarded.contains("updateCurrentRoomState("),
                 "retaining the map and resolving the room from it must happen under the lock: the docked check "
@@ -243,6 +240,14 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
         String clearGuarded = extractGuardedBlock(extractMethodBody(source, "private void clearSegmentRoomNames()"));
         assertTrue(clearGuarded.contains("segmentRoomNames = Map.of()"),
                 "losing the room metadata must not interleave with a room publication either");
+
+        String installGuarded = extractGuardedBlock(
+                extractMethodBody(source, "void installSegmentRoomNames(Map<Integer, String> resolvedSegmentNames)"));
+        assertTrue(
+                installGuarded.contains("segmentRoomNames = Map.copyOf(")
+                        && installGuarded.contains("updateCurrentRoomState("),
+                "installing the names and re-evaluating the cached map must happen under the same lock, "
+                        + "so a concurrent map response cannot interleave with the re-publication");
     }
 
     private static String extractGuardedBlock(String methodBody) {
