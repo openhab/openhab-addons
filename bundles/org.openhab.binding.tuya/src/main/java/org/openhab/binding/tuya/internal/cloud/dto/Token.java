@@ -31,23 +31,25 @@ public class Token {
     public final String uid;
     @SerializedName(value = "expire_time", alternate = { "expireTime" })
     public final long expire;
+    public final String endpoint;
 
     public long expireTimestamp = 0;
 
     public Token() {
-        this("", "", "", 0);
+        this("", "", "", 0, "");
     }
 
-    public Token(String accessToken, String refreshToken, String uid, long expire) {
+    public Token(String accessToken, String refreshToken, String uid, long expire, String endpoint) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.uid = uid;
         this.expire = expire;
+        this.endpoint = endpoint;
     }
 
     @Override
     public String toString() {
         return "Token{accessToken='" + accessToken + "', refreshToken='" + refreshToken + "', uid='" + uid
-                + "', expire=" + expire + "', expireTimestamp=" + expireTimestamp + "'}";
+                + "', expire=" + expire + "', expireTimestamp=" + expireTimestamp + "', endpoint='" + endpoint + "'}";
     }
 }

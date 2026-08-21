@@ -87,18 +87,20 @@
 			</parameter>
 			<parameter name="dataCenter" type="text" required="true">
 				<label>Data Center</label>
-				<description>The data center for your Tuya account</description>
+				<description>The data center for your Tuya account. This will be set automatically
+					when you log in.</description>
 				<options>
-					<option value="https://openapi.tuyacn.com">China</option>
-					<option value="https://openapi.tuyaus.com">Western America</option>
-					<option value="https://openapi-ueaz.tuyaus.com">Eastern America (Azure/MS)</option>
-					<option value="https://openapi.tuyaeu.com">Central Europe</option>
-					<option value="https://openapi-weaz.tuyaeu.com">Western Europe (Azure/MS)</option>
-					<option value="https://openapi.tuyain.com">India</option>
-					<option value="https://openapi-sg.iotbing.com">Singapore</option>
+					<option value="https://apigw.tuyacn.com">China</option>
+					<option value="https://apigw.tuyaus.com">Western America</option>
+					<option value="https://apigw-ueaz.tuyaus.com">Eastern America (Azure/MS)</option>
+					<option value="https://apigw.tuyaeu.com">Central Europe</option>
+					<option value="https://apigw-weaz.tuyaeu.com">Western Europe (Azure/MS)</option>
+					<option value="https://apigw.tuyain.com">India</option>
+					<option value="https://apigw-sg.iotbing.com">Singapore</option>
 				</options>
-				<limitToOptions>true</limitToOptions>
-				<default>https://openapi.tuyaeu.com</default>
+				<limitToOptions>false</limitToOptions>
+				<default>https://apigw.tuyaeu.com</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

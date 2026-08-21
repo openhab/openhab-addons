@@ -206,9 +206,9 @@ public class TuyaSmartLifeAPI extends TuyaOpenAPI {
 
     @Override
     protected void refreshToken() {
-        if (System.currentTimeMillis() > token.expireTimestamp) {
+        if (System.currentTimeMillis() > token.expireTimestamp || token.refreshToken.isEmpty()) {
             stopRefreshTokenJob();
-            logger.warn("The token has expired and cannot be refreshed. Try to re-login.");
+            logger.warn("The token can no longer be refreshed. Try to re-login.");
             callback.tuyaOpenApiStatus(false);
         } else {
             request(HttpMethod.GET, "/v1.0/m/token/" + token.refreshToken, Map.of(), null) //
@@ -229,8 +229,11 @@ public class TuyaSmartLifeAPI extends TuyaOpenAPI {
 
             synchronized (this) {
                 stopRefreshTokenJob();
-                refreshTokenJob = scheduler.schedule(this::refreshToken, //
-                        (token.expire - 60) * 1000 - (CLOUD_RETRY_DELAY * CLOUD_RETRY_MAX), TimeUnit.MILLISECONDS);
+
+                if (!Thread.interrupted()) {
+                    refreshTokenJob = scheduler.schedule(this::refreshToken, //
+                            (token.expire - 60) * 1000 - (CLOUD_RETRY_DELAY * CLOUD_RETRY_MAX), TimeUnit.MILLISECONDS);
+                }
             }
 
             callback.tuyaOpenApiStatus(true);
@@ -351,6 +354,8 @@ public class TuyaSmartLifeAPI extends TuyaOpenAPI {
     protected CompletableFuture<String> apiRequest(HttpMethod method, String path, Map<String, String> params,
             @Nullable Object body) {
         try {
+            var token = this.token;
+
             var rid = UUID.randomUUID().toString();
             var sid = "";
             var hash_key = CryptoUtil.md5(rid + token.refreshToken);
@@ -431,7 +436,7 @@ public class TuyaSmartLifeAPI extends TuyaOpenAPI {
                                     CryptoUtil.decryptAesGcm( //
                                             Base64.getDecoder().decode(ret.result), //
                                             secret, null, null) //
-                            ));
+                            ), StandardCharsets.UTF_8);
 
                             logger.trace("response after decrypt ret = {}", result);
 

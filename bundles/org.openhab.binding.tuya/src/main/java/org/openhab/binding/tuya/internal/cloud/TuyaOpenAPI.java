@@ -182,6 +182,11 @@ public class TuyaOpenAPI {
 
                 this.token = token;
 
+                if (!token.endpoint.isEmpty() && !config.dataCenter.equals(token.endpoint)) {
+                    callback.setDataCenter(token.endpoint);
+                    config.dataCenter = token.endpoint;
+                }
+
                 synchronized (this) {
                     stopRefreshTokenJob();
 

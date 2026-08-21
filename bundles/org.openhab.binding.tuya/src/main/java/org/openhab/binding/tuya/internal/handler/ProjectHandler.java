@@ -90,6 +90,13 @@ public class ProjectHandler extends BaseThingHandler implements ApiStatusCallbac
         }
     }
 
+    @Override
+    public void setDataCenter(String dataCenter) {
+        var newConfig = editConfiguration();
+        newConfig.put("dataCenter", dataCenter);
+        updateConfiguration(newConfig);
+    }
+
     public TuyaOpenAPI getApi() {
         return api;
     }
