@@ -60,7 +60,7 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 @SuppressWarnings("null") // Mockito is not designed with null type annotations in mind
-class Clip2ThingHandlerTest {
+class Clip2ThingHandlerConnectivityTest {
 
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .create();
