@@ -48,6 +48,9 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
     private static final int CAPABILITY_BACKUP_RESERVE_SOC = 2;
     private static final int CAPABILITY_BACKUP_SOC_ENABLE = 3;
 
+    private static final PollRange CAPABILITY_MASK_POLL_RANGE = new PollRange(
+            ModbusReadFunctionCode.READ_INPUT_REGISTERS, PARALLEL_CAPABILITY_MASK_REGISTER, 1, true);
+
     private static final List<PollRange> POLL_RANGES = Arrays.asList(
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 10000, 51),
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 10090, 67),
@@ -55,8 +58,7 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
             new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, 32768, 7),
             new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 10060, 13),
             new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 10074, 8),
-            new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 60000, 4),
-            new PollRange(ModbusReadFunctionCode.READ_INPUT_REGISTERS, PARALLEL_CAPABILITY_MASK_REGISTER, 1, true));
+            new PollRange(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 60000, 4), CAPABILITY_MASK_POLL_RANGE);
 
     private static final Map<String, Integer> OPERATING_MODE_VALUES = Map.ofEntries(Map.entry("self_consumption", 0),
             Map.entry("tou_mode", 1), Map.entry("third_party_control", 3), Map.entry("custom_mode", 4),
@@ -73,6 +75,7 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
 
     private volatile String directionSelection = "discharge";
     private volatile boolean autoModeApplied = false;
+    private volatile @Nullable String lastKnownFirmwareVersion;
 
     public AnkerSolixSolarbankHandler(Thing thing) {
         super(thing);
@@ -216,7 +219,9 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
         String rawModel = readString(32768, 5);
         updateStringChannel(CHANNEL_DEVICE_MODEL, resolveModelName(rawModel, serialNumber));
         updateStringChannel(CHANNEL_DEVICE_SERIAL_NUMBER, serialNumber);
-        updateStringChannel(CHANNEL_DEVICE_SW_VERSION, readString(10112, 6));
+        String firmwareVersion = readString(10112, 6);
+        updateStringChannel(CHANNEL_DEVICE_SW_VERSION, firmwareVersion);
+        checkFirmwareVersionChange(firmwareVersion);
 
         Integer batterySoc = readUInt16(10014);
         if (batterySoc != null) {
@@ -327,6 +332,18 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
 
     private int toSignedSetpoint(int setpointValue) {
         return "charge".equals(directionSelection) ? -Math.abs(setpointValue) : Math.abs(setpointValue);
+    }
+
+    // re-probes the capability mask after a firmware update, since a formerly rejected register may now answer
+    private void checkFirmwareVersionChange(@Nullable String firmwareVersion) {
+        String previousVersion = lastKnownFirmwareVersion;
+        if (firmwareVersion == null) {
+            return;
+        }
+        if (previousVersion != null && !previousVersion.equals(firmwareVersion)) {
+            resumePolling(CAPABILITY_MASK_POLL_RANGE);
+        }
+        lastKnownFirmwareVersion = firmwareVersion;
     }
 
     private @Nullable Integer parseSetpointCommand(Command command) {
