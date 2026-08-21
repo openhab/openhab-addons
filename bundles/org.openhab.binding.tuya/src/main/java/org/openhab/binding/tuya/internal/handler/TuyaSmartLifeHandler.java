@@ -60,14 +60,15 @@ public class TuyaSmartLifeHandler extends ProjectHandler implements ApiStatusCal
             return;
         }
 
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/cloud.status.not-logged-in");
+
         api.setConfiguration(config);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Not logged in");
     }
 
     @Override
     public void tuyaOpenApiStatus(boolean status) {
         if (!status) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Not logged in");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/cloud.status.not-logged-in");
         } else {
             stopApiConnectFuture();
 
