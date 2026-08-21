@@ -135,7 +135,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             SHELLY2_BTNT_MOMENTARY, SHELLY_BTNT_MOMENTARY, //
             SHELLY2_BTNT_FLIP, SHELLY_BTNT_TOGGLE, //
             SHELLY2_BTNT_FOLLOW, SHELLY_BTNT_EDGE, //
-            SHELLY2_BTNT_DETACHED, SHELLY_BTNT_MOMENTARY);
+            SHELLY2_BTNT_DETACHED, SHELLY_BTNT_MOMENTARY, //
+            SHELLY2_BTNT_ACTIVATE, SHELLY_BTNT_ACTIVATE);
 
     protected static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.ofEntries(//
             Map.entry(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH),

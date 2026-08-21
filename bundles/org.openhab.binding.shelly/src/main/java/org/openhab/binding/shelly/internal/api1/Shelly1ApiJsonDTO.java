@@ -136,6 +136,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_BTNT_TOGGLE = "toggle";
     public static final String SHELLY_BTNT_EDGE = "edge";
     public static final String SHELLY_BTNT_DETACHED = "detached";
+    public static final String SHELLY_BTNT_ACTIVATE = "activate"; // Gen2+ input: one-shot trigger, no local state
 
     public static final String SHELLY_STATE_LAST = "last";
     public static final String SHELLY_STATE_STOP = "stop";
