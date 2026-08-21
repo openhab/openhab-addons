@@ -1,6 +1,5 @@
 ---
 children:
-  - ["doc/CHANGELOG", "Changelog"]
   - ["doc/basics", "YAML Basics"]
   - ["doc/variables", "Variables"]
   - ["doc/conditionals", "Conditionals"]
