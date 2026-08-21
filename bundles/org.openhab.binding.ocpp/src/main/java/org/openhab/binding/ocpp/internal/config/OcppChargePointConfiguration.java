@@ -22,28 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OcppChargePointConfiguration {
 
-    /**
-     * The OCPP charge point identity — the path of the WebSocket URL the charger dials, without the
-     * leading slash (e.g. {@code ws://host:8887/<chargePointId>}, so {@code charger} or
-     * {@code site/charger}). Immutable per charger.
-     */
     public String chargePointId = "";
-
-    /**
-     * Seconds to wait after BootNotification before sending the configuration burst. Some chargers
-     * are not ready to answer ChangeConfiguration immediately after announcing themselves.
-     */
     public int configSettleSeconds = 0;
-
-    /**
-     * The charger has no internal meter: the periodic clock-aligned emission is disabled and the meter
-     * measurand configuration is skipped.
-     */
     public boolean meterless = false;
-
-    /**
-     * Per-charger heartbeat interval (seconds) returned in the BootNotification response, overriding
-     * the server default. Also sizes this charger's liveness window. 0 uses the server default.
-     */
     public int heartbeat = 0;
 }

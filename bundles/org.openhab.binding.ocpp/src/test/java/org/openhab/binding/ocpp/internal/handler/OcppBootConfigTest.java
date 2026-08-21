@@ -351,7 +351,7 @@ class OcppBootConfigTest {
         // reconnected as session B (a timeout resolves this way too). The old sequence must stop:
         // advancing it would transmit its remaining stale steps through B, interleaved with the
         // sequence B's own boot runs, and could latch its fingerprint as applied.
-        serverConfig.vendorConfig = List.of("VendorKey=42"); // steps: AuthorizeRemoteTxRequests, VendorKey
+        serverConfig.extraConfig = List.of("VendorKey=42"); // steps: AuthorizeRemoteTxRequests, VendorKey
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstStep = new CompletableFuture<>();
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request request = invocation.getArgument(1);
@@ -413,7 +413,7 @@ class OcppBootConfigTest {
 
         // Changed configuration: the applied latch is keyed on the effective settings, so the next
         // boot must send the new value — and the rest of the burst with it.
-        serverConfig.vendorConfig = List.of("VendorKey=42");
+        serverConfig.extraConfig = List.of("VendorKey=42");
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
         verify(transport, timeout(3000)).send(any(), eq(new ChangeConfigurationRequest("VendorKey", "42")));
         verify(transport, timeout(3000).times(2)).send(any(),

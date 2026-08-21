@@ -153,7 +153,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile int profileMinIntervalMs;
     private volatile String hardwareMaxCurrentKey = "";
     private volatile String remoteStartTag = "openhab";
-    private volatile int meterValuesPollSeconds;
+    private volatile int refreshInterval;
     private volatile boolean stuckStateRecovery;
     private volatile double nominalVoltage = 230.0;
     private volatile int phases = 1;
@@ -218,7 +218,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         profileMinIntervalMs = config.profileMinIntervalMs;
         hardwareMaxCurrentKey = config.hardwareMaxCurrentKey;
         remoteStartTag = config.remoteStartTag;
-        meterValuesPollSeconds = config.meterValuesPollSeconds;
+        refreshInterval = config.refreshInterval;
         stuckStateRecovery = config.stuckStateRecovery;
         nominalVoltage = config.nominalVoltage;
         phases = config.phases;
@@ -260,9 +260,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private void startPolling() {
         cancel(pollTask);
         pollTask = null;
-        if (meterValuesPollSeconds > 0) {
-            pollTask = scheduler.scheduleWithFixedDelay(this::pollMeterValues, meterValuesPollSeconds,
-                    meterValuesPollSeconds, TimeUnit.SECONDS);
+        if (refreshInterval > 0) {
+            pollTask = scheduler.scheduleWithFixedDelay(this::pollMeterValues, refreshInterval, refreshInterval,
+                    TimeUnit.SECONDS);
         }
     }
 

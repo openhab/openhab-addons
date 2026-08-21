@@ -396,7 +396,7 @@ class OcppConnectorReadinessTest {
             polls.incrementAndGet();
             return new CompletableFuture<>(); // never completes — the charger is not answering
         });
-        OcppConnectorHandler polling = newConnector(Map.of("connectorId", 1, "meterValuesPollSeconds", 1));
+        OcppConnectorHandler polling = newConnector(Map.of("connectorId", 1, "refreshInterval", 1));
 
         Thread.sleep(3200); // three 1-second poll ticks elapse
 

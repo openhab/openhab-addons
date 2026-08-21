@@ -30,35 +30,16 @@ public class OcppServerConfiguration {
     public int port = 8887;
     public int heartbeatInterval = 300;
 
-    /** MeterValues measurand list to configure on the charger (empty = leave as is). */
     public String meterValuesData = "";
-    /** MeterValueSampleInterval seconds (negative = leave as is). */
     public int meterValueSampleInterval = -1;
-    /** ClockAlignedDataInterval seconds (negative = leave as is). */
     public int clockAlignedDataInterval = -1;
-    /** When true, configure the charger with AuthorizeRemoteTxRequests=false. */
     public boolean disableRemoteTxAuthorization = false;
-    /** Extra ChangeConfiguration entries as "key=value" strings, sent verbatim on boot. */
-    public List<String> vendorConfig = List.of();
-    /** WebSocket ping interval (seconds); 0 disables ping-based connection-loss detection. */
+    public List<String> extraConfig = List.of();
     public int pingInterval = 0;
-    /** Seconds before an unanswered outbound request fails; the embedded OCPP library never times out itself. */
     public int requestTimeoutSeconds = 30;
-    /**
-     * HTTP Basic password chargers must present (username = their charge point id). Empty disables it —
-     * OCPP security profile 0, trusted-LAN operation.
-     */
     public String authPassword = "";
-    /**
-     * Path to a PKCS12 keystore with the server's TLS cert and key. When set, the endpoint runs over
-     * {@code wss://} instead of {@code ws://} — OCPP security profile 2 with {@code authPassword}, else
-     * an encrypted profile 0. Empty leaves the endpoint plain.
-     */
-    public String tlsKeystore = "";
-    /** Password for the {@link #tlsKeystore} (store and key password). */
+    public String tlsKeystorePath = "";
     public String tlsKeystorePassword = "";
-    /** idTag whitelist for Authorize / StartTransaction. Empty accepts every tag. */
-    public List<String> tags = List.of();
-    /** Charge point id allow-list. Empty accepts any charger; otherwise unlisted chargers are closed. */
-    public List<String> chargers = List.of();
+    public List<String> whitelistTagIds = List.of();
+    public List<String> chargerIds = List.of();
 }

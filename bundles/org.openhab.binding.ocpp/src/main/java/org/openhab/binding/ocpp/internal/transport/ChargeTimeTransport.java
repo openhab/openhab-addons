@@ -101,7 +101,7 @@ public class ChargeTimeTransport implements OcppTransport {
     private final AtomicBoolean closed = new AtomicBoolean();
 
     public ChargeTimeTransport(OcppServerListener ocppListener, int pingIntervalSeconds, int requestTimeoutSeconds,
-            String authPassword, String tlsKeystore, String tlsKeystorePassword) {
+            String authPassword, String tlsKeystorePath, String tlsKeystorePassword) {
         this.ocppListener = ocppListener;
         this.authPassword = authPassword;
         FeatureRepository featureRepository = new FeatureRepository();
@@ -147,12 +147,12 @@ public class ChargeTimeTransport implements OcppTransport {
         this.listener = new WebSocketListener(
                 new TrackingSessionFactory(new SessionFactory(featureRepository), requestSessions), configuration,
                 draft);
-        if (!tlsKeystore.isBlank()) {
+        if (!tlsKeystorePath.isBlank()) {
             // Serve OCPP over TLS (wss://): hand the keystore's SSLContext to the library's WSS factory,
             // which must happen before the listener opens its socket. With authPassword this is OCPP
             // security profile 2; without it, an encrypted profile 0.
             WssListenerSupport.enableWss(listener,
-                    BaseWssFactoryBuilder.builder().sslContext(sslContext(tlsKeystore, tlsKeystorePassword)));
+                    BaseWssFactoryBuilder.builder().sslContext(sslContext(tlsKeystorePath, tlsKeystorePassword)));
         }
         this.server = new Server(listener, new TimingOutPromiseRepository(ThreadPoolManager.getScheduledPool("ocpp"),
                 requestTimeoutSeconds, requestSessions));

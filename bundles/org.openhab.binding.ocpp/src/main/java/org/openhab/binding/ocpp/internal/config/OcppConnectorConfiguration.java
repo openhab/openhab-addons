@@ -23,47 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class OcppConnectorConfiguration {
 
     public int connectorId = 1;
-
-    /**
-     * Always send a TxDefaultProfile for the charge-limit channel, even while a transaction is
-     * active. Needed for chargers that reject a TxProfile outside a transaction (e.g. Phoenix CHARX).
-     */
     public boolean forceTxDefaultProfile = false;
-
-    /**
-     * Minimum spacing (ms) between SetChargingProfile sends to this connector. Rapid limit changes
-     * within the window are coalesced into a single send. 0 disables coalescing.
-     */
     public int profileMinIntervalMs = 0;
-
-    /**
-     * Vendor ChangeConfiguration key backing the hardware maximum current channel. Empty means the
-     * charger has no such key and the channel is inert.
-     */
     public String hardwareMaxCurrentKey = "";
-
-    /** idTag used when starting a transaction remotely (the charging channel). */
     public String remoteStartTag = "openhab";
-
-    /**
-     * Nominal line voltage used to convert an Amperes charge-limit into Watts for a charger that only
-     * accepts a power limit ({@code ChargingScheduleAllowedChargingRateUnit} = Power). W = A x V x phases.
-     */
     public double nominalVoltage = 230.0;
-
-    /**
-     * Number of phases assumed when converting the Amperes charge-limit into Watts for a power-only
-     * charger. 1 for single-phase, 3 for three-phase.
-     */
     public int phases = 1;
-
-    /** If &gt; 0, poll this connector for MeterValues every N seconds via TriggerMessage. */
-    public int meterValuesPollSeconds = 0;
-
-    /**
-     * Opt-in: after this connector sits in a transient state (Preparing/Finishing) too long, send an
-     * UnlockConnector to try to clear it. Off by default because those are normal states and
-     * unlocking is a physical side effect; enable only for a charger known to wedge there.
-     */
+    public int refreshInterval = 0;
     public boolean stuckStateRecovery = false;
 }
