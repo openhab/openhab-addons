@@ -15,6 +15,8 @@ package org.openhab.io.yamlcomposer.internal.expression;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -67,13 +69,16 @@ public class ExpressionEvaluator {
      *
      * @param expression the expression content without delimiters (e.g., "user.profile")
      * @param variables the variable context
+     * @param envVarCallback callback for environment variable access
+     * @param logSession the logging session
+     * @param sourceLocation description of the source location for logging
      * @return the evaluated object in its native type
      */
     public static @Nullable Object renderObject(String expression, Map<String, @Nullable Object> variables,
-            LogSession logSession, String sourceLocation) {
+            Consumer<String> envVarCallback, LogSession logSession, String sourceLocation) {
         @SuppressWarnings("null")
         Context context = new Context(JINJAVA.getGlobalContext(), variables);
-        context.setDynamicVariableResolver(varName -> dynamicVariableResolver(varName, variables));
+        context.setDynamicVariableResolver(varName -> dynamicVariableResolver(varName, variables, envVarCallback));
         JinjavaInterpreter interpreter = new JinjavaInterpreter(JINJAVA, context, CONFIG);
 
         Object result = interpreter.resolveELExpression(expression, 0);
@@ -128,18 +133,47 @@ public class ExpressionEvaluator {
      *
      * @param varName the name of the variable being resolved
      * @param context the current variable context
+     * @param envVarCallback callback for environment variable access
      * @return the value of the special variable, or null if it's not a special variable
      */
     private static @Nullable Object dynamicVariableResolver(@Nullable String varName,
-            Map<String, @Nullable Object> context) {
+            Map<String, @Nullable Object> context, Consumer<String> envVarCallback) {
         if ("VARS".equals(varName)) {
             return context;
         }
 
         if ("ENV".equals(varName)) {
-            return System.getenv();
+            return new TrackingEnvMap(envVarCallback);
         }
         return null;
+    }
+
+    /**
+     * A custom Map wrapper around System.getenv() that intercepts key lookups
+     * to record which environment variables are accessed by expressions.
+     */
+    private static class TrackingEnvMap extends java.util.AbstractMap<String, @Nullable String> {
+        private final Consumer<String> callback;
+
+        public TrackingEnvMap(Consumer<String> callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public @Nullable String get(@Nullable Object key) {
+            if (key instanceof String varName) {
+                callback.accept(varName);
+                return System.getenv(varName);
+            }
+            return null;
+        }
+
+        @Override
+        public Set<Entry<String, @Nullable String>> entrySet() {
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            Set<Entry<String, @Nullable String>> entrySet = (Set) System.getenv().entrySet();
+            return entrySet;
+        }
     }
 
     /**

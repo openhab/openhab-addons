@@ -18,6 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -117,16 +119,20 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
         }
 
         try {
+            Set<String> trackedEnvVars = new HashSet<>();
+
             Object yamlObject = YamlComposer.load(sourcePath,
-                    includePath -> includeRegistry.registerInclude(sourcePath, includePath));
+                    includePath -> includeRegistry.registerInclude(sourcePath, includePath), trackedEnvVars::add);
+
             if (yamlObject == null) {
                 logger.warn("YAML Composer produced no output when processing '{}'", relativeSourcePath);
                 return;
             }
 
             Set<Path> includePaths = includeRegistry.getIncludesForMain(sourcePath);
-            if (!isOutputUpToDate(sourcePath, includePaths, outputPath)) {
-                ComposerUtils.writeCompiledOutput(yamlObject, sourcePath, outputPath);
+            if (isSourceModified(sourcePath, includePaths, outputPath)
+                    || ComposerUtils.isEnvironmentChanged(outputPath)) {
+                ComposerUtils.writeCompiledOutput(yamlObject, sourcePath, outputPath, trackedEnvVars);
                 logger.info("YAML Composer: {} -> {}", relativeSourcePath, relativeOutputPath);
             }
         } catch (IOException e) {
@@ -134,29 +140,29 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
         }
     }
 
-    private boolean isOutputUpToDate(Path sourcePath, Set<Path> includePaths, Path outputPath) {
+    private boolean isSourceModified(Path sourcePath, Set<Path> includePaths, Path outputPath) {
         if (!Files.exists(outputPath)) {
-            return false;
+            return true;
         }
 
         try {
-            long outputMtime = Files.getLastModifiedTime(outputPath).toMillis();
-            long sourceMtime = Files.getLastModifiedTime(sourcePath).toMillis();
-            if (outputMtime <= sourceMtime) {
-                return false;
+            FileTime outputMtime = Files.getLastModifiedTime(outputPath);
+            FileTime sourceMtime = Files.getLastModifiedTime(sourcePath);
+            if (outputMtime.compareTo(sourceMtime) <= 0) {
+                return true;
             }
 
             for (Path includePath : includePaths) {
-                long includeMtime = Files.getLastModifiedTime(includePath).toMillis();
-                if (outputMtime <= includeMtime) {
-                    return false;
+                FileTime includeMtime = Files.getLastModifiedTime(includePath);
+                if (outputMtime.compareTo(includeMtime) <= 0) {
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         } catch (IOException e) {
             logger.debug("Failed to compare mtime for '{}' and '{}': {}", outputPath, sourcePath, e.getMessage());
-            return false;
+            return true;
         }
     }
 
