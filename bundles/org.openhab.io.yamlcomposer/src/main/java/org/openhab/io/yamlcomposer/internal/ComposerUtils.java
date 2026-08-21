@@ -39,7 +39,7 @@ import org.snakeyaml.engine.v2.schema.CoreSchema;
 import org.snakeyaml.engine.v2.schema.Schema;
 
 /**
- * Pure utility functions for YAML preprocessing.
+ * Pure utility functions for YAML loading and output.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
@@ -131,13 +131,42 @@ final class ComposerUtils {
      * @throws IOException if an I/O error occurs
      */
     static @Nullable Object loadYaml(byte[] fileBytes, Path sourcePath) throws IOException {
-        // Automatically normalize tag-only keys like !else: and !var: to satisfy SnakeYAML's scanner
-        // This is a workaround for the fact that SnakeYAML does not allow tag-only keys without a value
-        // Converts `!else:` to `!else ~:` and `!var:` to `!var ~:`
         String yamlContent = new String(fileBytes, StandardCharsets.UTF_8);
-        yamlContent = yamlContent.replaceAll("(?m)^(\\s*!(?:else|var)):([ \\t]*)(.*)?$", "$1 ~:$2$3");
+        yamlContent = normalizeTagOnlyKeys(yamlContent);
         Load loader = createYamlLoader(sourcePath.toString());
         return loader.loadFromString(yamlContent);
+    }
+
+    private static String normalizeTagOnlyKeys(String yamlContent) {
+        StringBuilder normalized = new StringBuilder(yamlContent.length());
+        boolean inBlockScalar = false;
+        int blockScalarIndent = -1;
+        for (String line : yamlContent.split("(?<=\\n)|(?<=\\r\\n)", -1)) {
+            String normalizedLine = line;
+            String content = line.replaceFirst("[\\r\\n]+$", "");
+            if (inBlockScalar && !content.isBlank() && indentation(content) <= blockScalarIndent) {
+                inBlockScalar = false;
+                blockScalarIndent = -1;
+            }
+            if (!inBlockScalar) {
+                normalizedLine = content.replaceFirst("^(\\s*!(?:else|var)):(\\s*)(.*)$", "$1 ~:$2$3")
+                        + line.substring(content.length());
+                if (normalizedLine.matches("^\\s*.+?:\\s*[|>][0-9+-]*\\s*(?:#.*)?(?:\\r?\\n)?$")) {
+                    inBlockScalar = true;
+                    blockScalarIndent = indentation(content);
+                }
+            }
+            normalized.append(normalizedLine);
+        }
+        return normalized.toString();
+    }
+
+    private static int indentation(String line) {
+        int result = 0;
+        while (result < line.length() && (line.charAt(result) == ' ' || line.charAt(result) == '\t')) {
+            result++;
+        }
+        return result;
     }
 
     /**
