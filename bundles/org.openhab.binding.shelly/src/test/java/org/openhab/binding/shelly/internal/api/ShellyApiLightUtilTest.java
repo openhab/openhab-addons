@@ -101,17 +101,40 @@ public class ShellyApiLightUtilTest {
 
     @Test
     void getLightIdFromGroupParsesCurrentLightPrefix() {
-        assertEquals(2, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_INDEX + "3"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
+        assertEquals(2, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_INDEX + "3", profile));
     }
 
     @Test
     void getLightIdFromGroupParsesDeprecatedChannelPrefix() {
-        assertEquals(1, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CHANNEL + "2"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
+        assertEquals(1, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CHANNEL + "2", profile));
     }
 
     @Test
     void getLightIdFromGroupReturnsZeroForUnrelatedGroup() {
-        assertEquals(0, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CONTROL));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
+        assertEquals(0, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CONTROL, profile));
+    }
+
+    @Test
+    void getLightIdFromGroupShiftsByColorComponentCountOnHybridRgbcctProfile() {
+        // rgbcct: settings.lights[0] is the RGB color component (bare "control"), settings.lights[1] is CCT:0
+        // (indexed "light1") - the group number alone is one short of the flat index.
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        profile.inColor = true;
+
+        assertEquals(1, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_INDEX + "1", profile));
+    }
+
+    @Test
+    void getLightIdFromGroupShiftsByColorComponentCountOnHybridRgbx2lightProfile() {
+        // rgbx2light: settings.lights[0] is RGB, [1] is Light:0 ("light1"), [2] is Light:1 ("light2").
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        profile.inColor = true;
+
+        assertEquals(1, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_INDEX + "1", profile));
+        assertEquals(2, getLightIdFromGroup(CHANNEL_GROUP_LIGHT_INDEX + "2", profile));
     }
 
     @Test

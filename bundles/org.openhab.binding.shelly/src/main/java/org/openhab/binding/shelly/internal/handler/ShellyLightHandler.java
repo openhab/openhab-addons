@@ -81,7 +81,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             throw new IllegalArgumentException("Empty groupName");
         }
 
-        int lightId = getLightIdFromGroup(groupName);
+        int lightId = getLightIdFromGroup(groupName, profile);
         logger.trace("{}: Execute command {} on channel {}, lightId={}", thingName, command, channelUID.getAsString(),
                 lightId);
 

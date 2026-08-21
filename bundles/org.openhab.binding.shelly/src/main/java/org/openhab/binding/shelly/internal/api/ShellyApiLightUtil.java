@@ -90,12 +90,20 @@ public class ShellyApiLightUtil {
         return lights.stream().map(l -> l.apiComponent).anyMatch(ShellyApiLightUtil::isColorComponent);
     }
 
-    public static Integer getLightIdFromGroup(String groupName) {
+    /**
+     * Reverses {@link ShellyDeviceProfile#getControlGroup(int)}: converts a channel group name back into its
+     * {@code settings.lights} index. On a hybrid profile (e.g. {@code rgbcct}, {@code rgbx2light}) the indexed
+     * groups (light1, light2, ...) start after the leading color component slot(s), so the group number alone
+     * is not the flat index - {@code profile.getColorComponentCount()} must be added back in.
+     */
+    public static Integer getLightIdFromGroup(String groupName, ShellyDeviceProfile profile) {
         if (groupName.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
-            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_INDEX)) - 1;
+            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_INDEX)) - 1
+                    + profile.getColorComponentCount();
         }
         if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
+            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1
+                    + profile.getColorComponentCount();
         }
         return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
     }
