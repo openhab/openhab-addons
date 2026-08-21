@@ -146,7 +146,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             }
             model = config.model;
         } else {
-            model = Integer.parseInt(thing.getThingTypeUID().getAsString().replaceAll("[^\\d.]", ""));
+            model = Integer.parseInt(thing.getThingTypeUID().getId().replaceAll("\\D", ""));
         }
         this.isUDP20X = (model == MODEL203 || model == MODEL205);
 
@@ -1037,10 +1037,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
         if (model == MODEL103 || model == MODEL105) {
             inputSourceOptions.add(new StateOption("0", getString("blu_ray", "Blu-ray Player")));
-            inputSourceOptions.add(new StateOption("1", getString("hdmi_in_front", "HDMI/MHL In-Front")));
+            inputSourceOptions.add(new StateOption("1", getString("hdmi_in_front", "HDMI In-Front")));
             inputSourceOptions.add(new StateOption("2", getString("hdmi_in_back", "HDMI In-Back")));
-            inputSourceOptions.add(new StateOption("3", getString("arc1", "ARC on HDMI Out 1")));
-            inputSourceOptions.add(new StateOption("4", getString("arc2", "ARC on HDMI Out 2")));
+            inputSourceOptions.add(new StateOption("3", getString("arc1", "ARC HDMI Out 1")));
+            inputSourceOptions.add(new StateOption("4", getString("arc2", "ARC HDMI Out 2")));
 
             if (model == MODEL105) {
                 inputSourceOptions.add(new StateOption("5", getString("optical", "Optical In")));
@@ -1071,7 +1071,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
             inputSourceOptions.add(new StateOption("0", getString("blu_ray", "Blu-ray Player")));
             inputSourceOptions.add(new StateOption("1", getString("hdmi_in", "HDMI In")));
-            inputSourceOptions.add(new StateOption("2", getString("arc", "ARC")));
+            inputSourceOptions.add(new StateOption("2", getString("arc", "ARC HDMI Out")));
 
             if (model == MODEL205) {
                 inputSourceOptions.add(new StateOption("3", getString("optical", "Optical In")));

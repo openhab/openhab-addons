@@ -150,7 +150,8 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                             try {
                                 multiSocket.receive(packet);
 
-                                final String message = new String(packet.getData(), StandardCharsets.US_ASCII).trim();
+                                final String message = new String(packet.getData(), 0, packet.getLength(),
+                                        StandardCharsets.US_ASCII).trim();
                                 if (message.length() > 0) {
                                     messageReceive(message);
                                 }
@@ -195,7 +196,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
         String displayName = null;
 
         for (final String msg : message.split("\n")) {
-            final String[] line = msg.split(":");
+            final String[] line = msg.split(":", 2);
 
             if (line.length == 2) {
                 if (line[0].contains("Server IP")) {
@@ -225,7 +226,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 // The older models do not have the "Server Name" in the discovery packet
                 // for the 10x we need to get the DLNA service list page and find modelNumber there
                 // in order to determine if this is a BDP-103 or BDP-105
-                // It is not known if the BDP-9x has this page so a failure to will default to THING_TYPE_BDP93
+                // It is not known if the BDP-9x has this page so a failure will default to THING_TYPE_BDP93
                 try {
                     final String result = HttpUtil.executeUrl("GET", "http://" + host + ":2870/dmr.xml", 5000);
 
