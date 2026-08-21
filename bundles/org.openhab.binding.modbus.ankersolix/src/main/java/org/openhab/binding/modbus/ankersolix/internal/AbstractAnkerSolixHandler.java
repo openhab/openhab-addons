@@ -31,6 +31,7 @@ import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.core.io.transport.modbus.PollTask;
+import org.openhab.core.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -151,8 +152,11 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     }
 
     private void registerPoll(PollRange range, AnkerSolixConfiguration localConfig) {
+        // optional registers are never worth retrying: a permanently absent register won't start existing on a
+        // retry, so maxTries=1 keeps the one-time log footprint (from openHAB Core) to a single ERROR line
+        int maxTries = range.optional() ? 1 : localConfig.maxTries;
         ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), range.functionCode,
-                range.startAddress, range.length, localConfig.maxTries);
+                range.startAddress, range.length, maxTries);
         PollTask task = registerRegularPoll(request, localConfig.pollInterval, 0,
                 result -> handleReadSuccess(range, result), failure -> handleReadFailure(range, failure));
         activePollTasks.put(range, task);
@@ -204,15 +208,16 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     }
 
     private void handleReadFailure(PollRange range, AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
-        String message = String.valueOf(failure.getCause().getMessage());
-        logger.debug("Failed to read Anker SOLIX registers: {}", message);
+        Exception cause = failure.getCause();
+        logger.debug("Failed to read Anker SOLIX registers: {}", cause.getMessage());
         if (!range.optional()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause.getMessage());
             return;
         }
-        // only back off while ONLINE: a device that is reachable enough to reject this one register (rather than
-        // failing to respond at all) has genuinely rejected it, whereas a network/bridge outage fails every range
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
+        // only back off on an explicit "illegal data address" protocol response: the device answered and rejected
+        // this exact register, as opposed to a connection/IO failure where no response was received at all
+        if (!(cause instanceof ModbusSlaveErrorResponseException responseException)
+                || responseException.getExceptionCode() != ModbusSlaveErrorResponseException.ILLEGAL_DATA_ACCESS) {
             return;
         }
         if (backedOffRanges.add(range)) {
