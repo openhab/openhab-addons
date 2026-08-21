@@ -56,12 +56,20 @@ public abstract class AbstractConditionalProcessor {
      * We'll let RecursiveTransformer promote the value to the parent mapping
      * if the condition is true, and remove it if false.
      */
-    protected @Nullable Boolean processSimpleSyntax(@Nullable Object value,
-
-            String sourceLocation, RecursiveTransformer recursiveTransformer) {
+    protected @Nullable Boolean processSimpleSyntax(@Nullable Object value, String sourceLocation,
+            RecursiveTransformer recursiveTransformer) {
 
         if (value instanceof Boolean || value instanceof Number || value instanceof String) {
-            Object result = StringInterpolator.evaluateExpression(value.toString(), recursiveTransformer.getVariables(),
+            String exprStr = value.toString();
+            if (value instanceof String) {
+                // Strip trailing YAML disambiguation comments (# comment)
+                Integer commentIndex = ExpressionUtils.findTopLevelIndex(exprStr, "#");
+                if (commentIndex != null) {
+                    exprStr = exprStr.substring(0, commentIndex).trim();
+                }
+            }
+
+            Object result = StringInterpolator.evaluateExpression(exprStr, recursiveTransformer.getVariables(),
                     logger.getLogSession(), sourceLocation);
             return ExpressionEvaluator.isTruthy(result);
         }
