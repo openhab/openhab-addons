@@ -18,17 +18,19 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Tests for {@link VarProcessor} and {@link VarDirective} handling in {@link DirectiveProcessor}.
@@ -611,6 +613,65 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
 
             assertNotEquals("active_feature", result.get("outer_check"));
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("branch_secret")));
+        }
+    }
+
+    @Nested
+    @DisplayName("Block Scalar Safety")
+    class BlockScalarSafetyTests {
+
+        @ParameterizedTest
+        @MethodSource("provideBlockScalarYamlSamples")
+        void testBlockScalarsWithVarKeyword(String yamlContent) throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml(yamlContent);
+
+            assertNotNull(result);
+
+            // Retrieve the scalar value from the map
+            Object scriptValue = result.get("script");
+            assertNotNull(scriptValue);
+
+            // Verify that the block scalar content remained intact as raw text
+            // and wasn't altered or corrupted by control-flow parsing.
+            String textContent = scriptValue.toString();
+            assertTrue(textContent.contains("!var:"),
+                    "Expected block scalar content to preserve '!var:' literally, but got: " + textContent);
+        }
+
+        static Stream<String> provideBlockScalarYamlSamples() {
+            return Stream.of("""
+                    script: |
+                        - task: do_something
+                          !var:
+                            name: "value"
+                    """, """
+                    script: |-
+                        - task: do_something
+                          !var:
+                            name: "value"
+                    """, """
+                    script: |+
+                        - task: do_something
+                          !var:
+                            name: "value"
+                    """, """
+                    script: >
+                        This is a folded line containing
+                        !var:
+                          name: "value"
+                        and should not be corrupted.
+                    """, """
+                    script: >-
+                        Another folded line with
+                        !var:
+                          name: "value"
+                        that strips trailing newlines.
+                    """, """
+                    script: |2
+                          - task: indented
+                            !var:
+                              name: "value"
+                    """);
         }
     }
 }

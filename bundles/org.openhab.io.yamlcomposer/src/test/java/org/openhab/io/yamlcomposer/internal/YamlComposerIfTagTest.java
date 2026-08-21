@@ -17,11 +17,14 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +32,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -315,6 +319,63 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
 
                     assertThat(getNestedValue(data, "test", "first_result"), is("one"));
                     assertThat(getNestedValue(data, "test", "second_result"), is("two"));
+                }
+            }
+
+            @Nested
+            @DisplayName("Block Scalar Safety")
+            class BlockScalarSafetyTests {
+
+                @ParameterizedTest
+                @MethodSource("provideBlockScalarYamlSamples")
+                void testBlockScalarsWithElseKeyword(String yamlContent) throws IOException {
+                    Map<Object, @Nullable Object> result = loadYaml(yamlContent);
+
+                    assertNotNull(result);
+
+                    // Retrieve the scalar value from the map
+                    Object scriptValue = result.get("script");
+                    assertNotNull(scriptValue);
+
+                    // Verify that the block scalar content remained intact as raw text
+                    // and wasn't altered or corrupted by control-flow parsing.
+                    String textContent = scriptValue.toString();
+                    assertTrue(textContent.contains("!else:"),
+                            "Expected block scalar content to preserve '!else:' literally, but got: " + textContent);
+                }
+
+                static Stream<String> provideBlockScalarYamlSamples() {
+                    return Stream.of("""
+                            script: |
+                                - task: do_something
+                                  !else:
+                                    - task: fallback
+                            """, """
+                            script: |-
+                                - task: do_something
+                                  !else:
+                                    - task: fallback
+                            """, """
+                            script: |+
+                                - task: do_something
+                                  !else:
+                                    - task: fallback
+                            """, """
+                            script: >
+                                This is a folded line containing
+                                !else:
+                                and should not be corrupted.
+                            """, """
+                            script: >-
+                                Another folded line with
+                                !else:
+                                that strips trailing newlines.
+                            """, """
+                            script: |2
+                                  - task: indented
+                                    !else:
+                                      - task: fallback
+                            """);
                 }
             }
         }
