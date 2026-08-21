@@ -117,20 +117,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     // Pro/Plus RGBW(W) PM: RPC method family per settings.lights[i].apiComponent tag - replaces per-call-site
     // profile-string checks (SHELLY2_PROFILE_CCTX2.equals(...)) with a single lookup, correct for hybrid profiles.
-    private record LightRpcMethods(String getStatus, String set, String setConfig, String displayName) {
+    private record LightRpcMethods(String getStatus, String set, String setConfig) {
     }
 
     private static final LightRpcMethods LIGHT_RPC_METHODS_LIGHT = new LightRpcMethods(SHELLYRPC_METHOD_LIGHT_STATUS,
-            SHELLYRPC_METHOD_LIGHT_SET, SHELLYRPC_METHOD_LIGHT_SETCONFIG, "Light");
+            SHELLYRPC_METHOD_LIGHT_SET, SHELLYRPC_METHOD_LIGHT_SETCONFIG);
     private static final Map<ShellyLightApiComponent, LightRpcMethods> LIGHT_RPC_METHODS = Map.of(
             ShellyLightApiComponent.RGB,
-            new LightRpcMethods(
-                    SHELLYRPC_METHOD_RGB_STATUS, SHELLYRPC_METHOD_RGB_SET, SHELLYRPC_METHOD_RGB_SETCONFIG, "RGB"),
+            new LightRpcMethods(SHELLYRPC_METHOD_RGB_STATUS, SHELLYRPC_METHOD_RGB_SET, SHELLYRPC_METHOD_RGB_SETCONFIG),
             ShellyLightApiComponent.RGBW,
             new LightRpcMethods(SHELLYRPC_METHOD_RGBW_STATUS, SHELLYRPC_METHOD_RGBW_SET,
-                    SHELLYRPC_METHOD_RGBW_SETCONFIG, "RGBW"),
-            ShellyLightApiComponent.CCT, new LightRpcMethods(SHELLYRPC_METHOD_CCT_STATUS, SHELLYRPC_METHOD_CCT_SET,
-                    SHELLYRPC_METHOD_CCT_SETCONFIG, "CCT"),
+                    SHELLYRPC_METHOD_RGBW_SETCONFIG),
+            ShellyLightApiComponent.CCT,
+            new LightRpcMethods(SHELLYRPC_METHOD_CCT_STATUS, SHELLYRPC_METHOD_CCT_SET, SHELLYRPC_METHOD_CCT_SETCONFIG),
             ShellyLightApiComponent.LIGHT, LIGHT_RPC_METHODS_LIGHT);
 
     private ShellyLightApiComponent lightComponentTag(ShellyDeviceProfile profile, int index) {
@@ -941,22 +940,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         String method;
-        String component;
         if (profile.isRGBW2) {
-            LightRpcMethods methods = lightRpcMethods(profile, index);
-            method = methods.setConfig();
-            component = methods.displayName();
+            method = lightRpcMethods(profile, index).setConfig();
         } else if (profile.isLight || profile.isDimmer) {
             method = SHELLYRPC_METHOD_LIGHT_SETCONFIG;
-            component = "Light";
         } else {
             method = SHELLYRPC_METHOD_SWITCH_SETCONFIG;
-            component = "Switch";
         }
         int componentId = profile.isRGBW2 ? profile.getLightComponentId(index) : index;
         Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(componentId);
         req.params.withConfig();
-        req.params.config.name = component + index;
+        // name is intentionally left unset - this call only changes the auto-timer, and the flat
+        // settings.lights index used elsewhere in this method does not match the on-device component id
         if (timerName.equals(SHELLY_TIMER_AUTOON)) {
             req.params.config.autoOn = value > 0;
             req.params.config.autoOnDelay = value;
