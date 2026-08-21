@@ -52,6 +52,7 @@ import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,7 +156,7 @@ public class SourceGenerator {
      */
     private synchronized void delayWhenStable(InternalGenerator generator, int writeGuardTime) {
         ScheduledFuture<?> scheduledFuture = futureGeneration.remove(generator);
-        if (scheduledFuture != null) {
+        if (scheduledFuture != null && !scheduledFuture.isDone()) {
             if (scheduledFuture.getDelay(TimeUnit.MILLISECONDS) < writeGuardTime) {
                 scheduledFuture.cancel(false);
             } else {
@@ -168,7 +169,6 @@ public class SourceGenerator {
         Runnable command = () -> {
             try {
                 generator.generate();
-                futureGeneration.remove(generator);
             } catch (IOException | TemplateException e) {
                 logger.warn("Cannot create helper class file in library directory", e);
             }
@@ -246,12 +246,12 @@ public class SourceGenerator {
             return null;
         }
         logger.debug("Generating actions");
-        List<ThingActions> thingActions;
-        Collection<ActionType> actions = moduleTypeRegistry.getActions();
+        Set<? extends Class<?>> thingActionsClasses;
+        Collection<ServiceReference<ThingActions>> serviceReferences = null;
         try {
-            Set<Class<?>> classes = new HashSet<>();
-            thingActions = bundleContext.getServiceReferences(ThingActions.class, null).stream()
-                    .map(bundleContext::getService).filter(sr -> classes.add(sr.getClass())).toList();
+            serviceReferences = bundleContext.getServiceReferences(ThingActions.class, null);
+            thingActionsClasses = serviceReferences.stream().map(bundleContext::getService).map(Object::getClass)
+                    .collect(Collectors.toSet());
         } catch (InvalidSyntaxException e) {
             logger.warn("Failed to get thing actions: {}", e.getMessage());
             return null;
@@ -260,8 +260,13 @@ public class SourceGenerator {
                     "Failed to get bundle reference: {}. May happen when openHAB is stopping. Abort generating actions",
                     e.getMessage());
             return null;
+        } finally {
+            if (serviceReferences != null) {
+                serviceReferences.forEach(bundleContext::ungetService);
+            }
         }
 
+        Collection<ActionType> actions = moduleTypeRegistry.getActions();
         Template templateAction = cfg.getTemplate(TPL_LOCATION + "ThingAction.ftl");
         Map<String, Set<String>> actionsByScope = new HashMap<>();
         Set<String> allClassesToImport = new HashSet<>();
@@ -269,8 +274,7 @@ public class SourceGenerator {
         // keep track of newly generated actions files
         Set<Path> newlyGeneratedThingActionsFiles = new HashSet<>();
 
-        for (ThingActions thingAction : thingActions) {
-            Class<? extends ThingActions> clazz = thingAction.getClass();
+        for (Class<?> clazz : thingActionsClasses) {
 
             ThingActionsScope scopeAnnotation = clazz.getAnnotation(ThingActionsScope.class);
             if (scopeAnnotation == null) {
@@ -578,10 +582,10 @@ public class SourceGenerator {
         return lastDotIndex == -1 ? Optional.empty() : Optional.of(fullName.substring(lastDotIndex + 1));
     }
 
-    public void deactivate() {
+    public synchronized void deactivate() {
+        this.deactivated = true;
         futureGeneration.values().forEach(scheduledFuture -> scheduledFuture.cancel(false));
         futureGeneration.clear();
-        this.deactivated = true;
     }
 
     public record MethodDTO(String returnValueType, List<Output> outputs, String name, String description,
