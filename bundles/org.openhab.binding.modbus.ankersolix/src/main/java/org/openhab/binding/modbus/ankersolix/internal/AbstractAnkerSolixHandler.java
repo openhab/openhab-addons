@@ -68,6 +68,9 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     private final Map<PollRange, PollTask> activePollTasks = new ConcurrentHashMap<>();
     // ranges whose regular polling was stopped after the device rejected the register once
     private final Set<PollRange> backedOffRanges = ConcurrentHashMap.newKeySet();
+    // every currently initialized handler, so a newly added device can prompt siblings to retry a rejected
+    // register - e.g. a parallel-machine capability mask that only starts answering once a unit is paired
+    private static final Set<AbstractAnkerSolixHandler> ACTIVE_HANDLERS = ConcurrentHashMap.newKeySet();
 
     protected @Nullable AnkerSolixConfiguration config;
 
@@ -120,11 +123,31 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
         }
 
         config = localConfig;
+        notifyOtherHandlersOfNewDevice();
 
         updateStatus(ThingStatus.UNKNOWN);
         for (PollRange range : getPollRanges()) {
             registerPoll(range, localConfig);
         }
+    }
+
+    private void notifyOtherHandlersOfNewDevice() {
+        for (AbstractAnkerSolixHandler other : ACTIVE_HANDLERS) {
+            other.resumeAllBackedOffRanges();
+        }
+        ACTIVE_HANDLERS.add(this);
+    }
+
+    private void resumeAllBackedOffRanges() {
+        for (PollRange range : Set.copyOf(backedOffRanges)) {
+            resumePolling(range);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        ACTIVE_HANDLERS.remove(this);
+        super.dispose();
     }
 
     private void registerPoll(PollRange range, AnkerSolixConfiguration localConfig) {
