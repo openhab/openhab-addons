@@ -92,6 +92,25 @@ public class SolarEdgeBindingConstants {
     public static final String PUBLIC_DATA_API_END_TIME_FIELD = "endTime";
     public static final String PUBLIC_DATA_API_TIME_UNIT_FIELD = "timeUnit";
 
+    // PUBLIC API V2 CONSTANTS
+    public static final String PUBLIC_DATA_API_V2_URL = "https://monitoringapi.solaredge.com/v2/sites/";
+    public static final String PUBLIC_DATA_API_V2_POWER_SUFFIX = "/power";
+    public static final String PUBLIC_DATA_API_V2_ENERGY_SUFFIX = "/energy";
+    public static final String PUBLIC_DATA_API_V2_METER_TELEMETRY_SUFFIX = "/meters/telemetry";
+    public static final String PUBLIC_DATA_API_V2_STORAGE_TELEMETRY_SUFFIX = "/storage/telemetry";
+    public static final String PUBLIC_DATA_API_V2_KEY_HEADER = "X-API-Key";
+    public static final String PUBLIC_DATA_API_V2_AUTHORIZE_URL = "https://connect.solaredge.com/authorize";
+    public static final String PUBLIC_DATA_API_V2_TOKEN_URL = "https://monitoringapi.solaredge.com/v2/oauth2/token";
+    public static final String PROPERTY_OAUTH_AUTHORIZATION_URL = "oauthAuthorizationUrl";
+    public static final String PROPERTY_API_CALLS_LAST_30_DAYS = "apiCallsLast30Days";
+    public static final String PROPERTY_API_RATE_LIMIT_MINUTE = "apiRateLimitMinute";
+    public static final String PROPERTY_API_RATE_LIMIT_REMAINING_MINUTE = "apiRateLimitRemainingMinute";
+    public static final String PROPERTY_API_RATE_LIMIT_RETRY_AFTER = "apiRateLimitRetryAfter";
+    public static final String PUBLIC_DATA_API_V2_FROM_FIELD = "from";
+    public static final String PUBLIC_DATA_API_V2_TO_FIELD = "to";
+    public static final String PUBLIC_DATA_API_V2_RESOLUTION_FIELD = "resolution";
+    public static final String PUBLIC_DATA_API_V2_UNIT_FIELD = "unit";
+
     // constants
     public static final String BEGIN_OF_DAY_TIME = "00:00:00";
     public static final String END_OF_DAY_TIME = "23:59:59";
@@ -100,7 +119,7 @@ public class SolarEdgeBindingConstants {
     // web request constants
     public static final long WEB_REQUEST_PUBLIC_API_DAY_LIMIT = 300;
     public static final long WEB_REQUEST_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
-    public static final long WEB_REQUEST_INTERVAL = TimeUnit.SECONDS.toMillis(5);
+    public static final long WEB_REQUEST_INTERVAL = TimeUnit.SECONDS.toMillis(7);
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
 
     // Status Keys
