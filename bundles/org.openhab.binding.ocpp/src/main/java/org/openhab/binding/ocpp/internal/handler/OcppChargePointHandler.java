@@ -892,7 +892,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         if (config.disableRemoteTxAuthorization) {
             steps.add(() -> sendConfig("AuthorizeRemoteTxRequests", "false"));
         }
-        for (String pair : config.vendorConfig) {
+        for (String pair : config.extraConfig) {
             int equals = pair.indexOf('=');
             if (equals > 0) {
                 String key = pair.substring(0, equals).trim();
@@ -912,7 +912,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private String configFingerprint(OcppServerConfiguration config) {
         return chargePointId + "|" + meterless + "|" + config.meterValueSampleInterval + "|"
                 + config.clockAlignedDataInterval + "|" + config.meterValuesData + "|"
-                + config.disableRemoteTxAuthorization + "|" + String.join(",", config.vendorConfig);
+                + config.disableRemoteTxAuthorization + "|" + String.join(",", config.extraConfig);
     }
 
     /**

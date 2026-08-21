@@ -38,14 +38,14 @@ The id is whatever path the charger appends to its backend URL — often its ser
 | meterValueSampleInterval    | integer | MeterValueSampleInterval to configure (-1 = leave unchanged)                | -1      | no       | yes      |
 | clockAlignedDataInterval    | integer | ClockAlignedDataInterval to configure (-1 = leave unchanged)                | -1      | no       | yes      |
 | disableRemoteTxAuthorization| boolean | Configure AuthorizeRemoteTxRequests=false                                    | false   | no       | yes      |
-| vendorConfig                | text[]  | Extra ChangeConfiguration entries as key=value, applied on boot             | (empty) | no       | yes      |
+| extraConfig                | text[]  | Extra ChangeConfiguration entries as key=value, applied on boot             | (empty) | no       | yes      |
 | pingInterval                | integer | WebSocket ping interval (s). A charger that does not answer a ping is disconnected, and many never do — leave at 0 unless yours is known to reply | 0 | no | yes |
 | requestTimeoutSeconds       | integer | Seconds before an unanswered request to a charger fails                     | 30      | no       | yes      |
 | authPassword                | text    | HTTP Basic password chargers must present (username = charge point id), 16–20 visible ASCII characters. Empty disables authentication | (empty) | no | yes |
-| tlsKeystore                 | text    | Path to a PKCS12 keystore with the server's TLS certificate and key. When set, the endpoint runs `wss://` (TLS) instead of `ws://` | (empty) | no | yes |
+| tlsKeystorePath                 | text    | Path to a PKCS12 keystore with the server's TLS certificate and key. When set, the endpoint runs `wss://` (TLS) instead of `ws://` | (empty) | no | yes |
 | tlsKeystorePassword         | text    | Password for the TLS keystore (store and key)                               | (empty) | no       | yes      |
-| tags                        | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected | (empty) | no     | yes      |
-| chargers                    | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected | (empty) | no | yes |
+| whitelistTagIds                        | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected | (empty) | no     | yes      |
+| chargerIds                    | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected | (empty) | no | yes |
 
 These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once for the configured values — a changed configuration is sent again on the charger's next boot, an unchanged one is not repeated on every reconnect.
 A request a charger leaves unanswered fails after `requestTimeoutSeconds`; the OCPP library itself would wait on it forever.
@@ -70,7 +70,7 @@ The binding also runs a heartbeat-derived liveness watchdog and self-heals when 
 | profileMinIntervalMs | integer | Minimum spacing (ms) between SetChargingProfile sends; rapid changes are coalesced. 0 disables | 0 | no | yes |
 | hardwareMaxCurrentKey | text | Vendor ChangeConfiguration key backing the `hardware-max-current` channel. Empty disables that channel | (empty) | no | yes |
 | remoteStartTag | text | idTag used when starting a transaction via the `charging` channel | openhab | no | yes |
-| meterValuesPollSeconds | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling | 0 | no | yes |
+| refreshInterval | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling | 0 | no | yes |
 | nominalVoltage | decimal | Line voltage for converting an amps charge-limit to watts on a charger that only accepts a power limit (W = A×V×phases) | 230 | no | yes |
 | phases | integer | Phases assumed in that amps→watts conversion — 1 single-phase, 3 three-phase | 1 | no | yes |
 | stuckStateRecovery | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long. Off by default; enable only for a charger known to wedge there | false | no | yes |
@@ -79,7 +79,7 @@ Most connectors need no configuration beyond `connectorId`.
 The rest cover specific charger behaviors.
 `forceTxDefaultProfile` is for chargers that reject a `TxProfile` when no transaction is active — a Phoenix CHARX does: the charge limit is then sent as a `TxDefaultProfile`, which such chargers accept and apply through their own load management.
 `profileMinIntervalMs` coalesces rapid limit changes into at most one `SetChargingProfile` per interval, which keeps a solar-tracking rule that adjusts the limit every few seconds from flooding the charger.
-`meterValuesPollSeconds` actively polls a connector for `MeterValues` for chargers that do not push them on their own; a poll is skipped while the previous one is still outstanding, so a charger that stops answering cannot build a backlog.
+`refreshInterval` actively polls a connector for `MeterValues` for chargers that do not push them on their own; a poll is skipped while the previous one is still outstanding, so a charger that stops answering cannot build a backlog.
 `hardwareMaxCurrentKey` binds the `hardware-max-current` channel to a vendor `ChangeConfiguration` key, since the hardware ceiling is not a standard OCPP setting.
 `stuckStateRecovery` is left off because auto-unlocking a connector is a physical side effect, and `Preparing` and `Finishing` are normal states a charger can dwell in.
 
@@ -252,4 +252,4 @@ Without `authPassword` the endpoint runs OCPP security profile 0: a plain-text W
 Anyone who can reach the port can connect under any charge point id, so restrict exposure by binding a specific interface (`host`) or with firewall rules.
 Setting `authPassword` enables HTTP Basic authentication (security profile 1): a charger must present the password with its charge point id as the username, and other connections are rejected before a session opens.
 The `authPassword` must be 16–20 visible ASCII characters (the OCPP profile-1 rule). A charger that sends a Basic-auth header when no `authPassword` is set is accepted whatever its password length, so chargers that always send one still connect.
-Setting `tlsKeystore` (a PKCS12 keystore holding the server's certificate and key) serves the endpoint over `wss://` — OCPP security profile 2 together with `authPassword`, or an encrypted profile 0 without. Client-certificate authentication (profile 3) is not supported.
+Setting `tlsKeystorePath` (a PKCS12 keystore holding the server's certificate and key) serves the endpoint over `wss://` — OCPP security profile 2 together with `authPassword`, or an encrypted profile 0 without. Client-certificate authentication (profile 3) is not supported.

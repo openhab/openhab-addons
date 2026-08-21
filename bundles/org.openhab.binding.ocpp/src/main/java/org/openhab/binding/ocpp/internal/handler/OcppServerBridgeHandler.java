@@ -210,7 +210,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     /** The transport backing this server. A seam so a test can supply one without binding a socket. */
     protected OcppTransport createTransport(OcppServerConfiguration serverConfig) {
         return new ChargeTimeTransport(this, serverConfig.pingInterval, serverConfig.requestTimeoutSeconds,
-                serverConfig.authPassword, serverConfig.tlsKeystore, serverConfig.tlsKeystorePassword);
+                serverConfig.authPassword, serverConfig.tlsKeystorePath, serverConfig.tlsKeystorePassword);
     }
 
     // --- charge point registration (called by OcppChargePointHandler) ---
@@ -258,7 +258,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             return;
         }
         // Connection allow-list: if configured, only listed charge points may connect.
-        List<String> allowed = config.chargers;
+        List<String> allowed = config.chargerIds;
         if (!allowed.isEmpty() && !allowed.contains(chargePointId)) {
             logger.warn("Rejecting charger '{}' — not in the permitted chargers list", chargePointId);
             OcppTransport localTransport = transport;
@@ -383,7 +383,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
 
     @Override
     public boolean isTagAuthorized(@Nullable String idTag) {
-        List<String> whitelist = config.tags;
+        List<String> whitelist = config.whitelistTagIds;
         return whitelist.isEmpty() || (idTag != null && whitelist.contains(idTag));
     }
 

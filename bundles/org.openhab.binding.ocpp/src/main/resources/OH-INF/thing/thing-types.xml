@@ -53,8 +53,8 @@
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="vendorConfig" type="text" multiple="true">
-				<label>Vendor Configuration</label>
+			<parameter name="extraConfig" type="text" multiple="true">
+				<label>Extra Configuration</label>
 				<description>Extra ChangeConfiguration entries as key=value, applied on boot.</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -85,8 +85,8 @@
 					LAN only.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="tlsKeystore" type="text">
-				<label>TLS Keystore</label>
+			<parameter name="tlsKeystorePath" type="text">
+				<label>TLS Keystore Path</label>
 				<description>Path to a PKCS12 keystore holding the server's TLS certificate and key. When set, the OCPP
 					endpoint runs
 					over wss:// (TLS) instead of ws:// — OCPP security profile 2 with a Charger Password, or
@@ -100,13 +100,13 @@
 				<description>Password for the TLS keystore (store and key password).</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="tags" type="text" multiple="true">
-				<label>Authorized Tags</label>
+			<parameter name="whitelistTagIds" type="text" multiple="true">
+				<label>Authorized Tag IDs</label>
 				<description>idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="chargers" type="text" multiple="true">
-				<label>Permitted Chargers</label>
+			<parameter name="chargerIds" type="text" multiple="true">
+				<label>Permitted Charger IDs</label>
 				<description>Charge point id allow-list. Empty accepts any charger; otherwise unlisted chargers are rejected and
 					closed.</description>
 				<advanced>true</advanced>
@@ -276,8 +276,8 @@
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="meterValuesPollSeconds" type="integer" min="0" unit="s">
-				<label>Meter Values Poll Interval</label>
+			<parameter name="refreshInterval" type="integer" min="0" unit="s">
+				<label>Refresh Interval</label>
 				<description>Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling.</description>
 				<default>0</default>
 				<advanced>true</advanced>
