@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -304,7 +305,7 @@ class AnkerSolixHandlerInternalsTest {
         List<?> pollRanges = invoke(handler, "getPollRanges");
         Object capabilityRange = nonNull(pollRanges.get(pollRanges.size() - 1));
         AsyncModbusFailure<ModbusReadRequestBlueprint> failure = new AsyncModbusFailure<>(
-                mock(ModbusReadRequestBlueprint.class), new RuntimeException("Illegal Data Address"));
+                mock(ModbusReadRequestBlueprint.class), illegalDataAccessException());
 
         invokeVoid(handler, "handleReadFailure", capabilityRange, failure);
 
@@ -317,20 +318,17 @@ class AnkerSolixHandlerInternalsTest {
     }
 
     @Test
-    void capabilityMaskReadFailureShouldNotBackOffWhileThingIsNotOnline() throws Exception {
-        Thing offlineThing = mock(Thing.class);
-        when(offlineThing.getStatus()).thenReturn(ThingStatus.OFFLINE);
-        AbstractAnkerSolixHandler offlineHandler = new AnkerSolixSolarbankHandler(offlineThing);
-
-        List<?> pollRanges = invoke(offlineHandler, "getPollRanges");
+    void capabilityMaskReadFailureShouldNotBackOffOnGeneralCommunicationFailure() throws Exception {
+        List<?> pollRanges = invoke(handler, "getPollRanges");
         Object capabilityRange = nonNull(pollRanges.get(pollRanges.size() - 1));
         AsyncModbusFailure<ModbusReadRequestBlueprint> failure = new AsyncModbusFailure<>(
                 mock(ModbusReadRequestBlueprint.class), new RuntimeException("connection timed out"));
 
-        // a general communication failure (bridge/network down) must not be mistaken for register rejection
-        invokeVoid(offlineHandler, "handleReadFailure", capabilityRange, failure);
+        // a general communication failure (bridge/network down, timeout, ...) must not be mistaken for an
+        // explicit register rejection, since no response was ever received from the device
+        invokeVoid(handler, "handleReadFailure", capabilityRange, failure);
 
-        Set<Object> backedOffRanges = getField(offlineHandler, "backedOffRanges");
+        Set<Object> backedOffRanges = getField(handler, "backedOffRanges");
         assertTrue(backedOffRanges.isEmpty());
     }
 
@@ -448,5 +446,14 @@ class AnkerSolixHandlerInternalsTest {
         Thing thing = mock(Thing.class);
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
         return new AnkerSolixSolarbankHandler(thing);
+    }
+
+    private static ModbusSlaveErrorResponseException illegalDataAccessException() {
+        return new ModbusSlaveErrorResponseException() {
+            @Override
+            public int getExceptionCode() {
+                return ModbusSlaveErrorResponseException.ILLEGAL_DATA_ACCESS;
+            }
+        };
     }
 }
