@@ -59,6 +59,7 @@ import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -858,6 +859,27 @@ public class ShellyComponentsTest {
         verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_INDEX + "1"), eq(CHANNEL_COLOR_TEMP), any());
     }
 
+    @Test
+    void updateLightModeUsesPerComponentCtRangeOnHybridProfile() throws Exception {
+        ShellyDeviceProfile profile = proRgbwwPmHybridProfile();
+        ShellySettingsRgbwLight cctComponent = profile.settings.lights.get(1);
+        cctComponent.minTemp = 3000;
+        cctComponent.maxTemp = 6000;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight colorLight = new ShellySettingsLight();
+        ShellySettingsLight cctLight = new ShellySettingsLight();
+        cctLight.ison = true;
+        cctLight.brightness = 42;
+        cctLight.temp = 4500;
+        status.lights = new ArrayList<>(List.of(colorLight, cctLight));
+
+        ShellyComponents.updateLightMode(handler, status);
+
+        assertEquals(new PercentType(50), lastState(handler, CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_COLOR_TEMP));
+    }
+
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.isSensor = false;
@@ -1404,10 +1426,14 @@ public class ShellyComponentsTest {
     }
 
     private static QuantityType<?> lastQuantity(ShellyThingInterface handler, String group, String channel) {
+        return (QuantityType<?>) lastState(handler, group, channel);
+    }
+
+    private static State lastState(ShellyThingInterface handler, String group, String channel) {
         ArgumentCaptor<State> captor = ArgumentCaptor.forClass(State.class);
         verify(handler, atLeastOnce()).updateChannel(eq(group), eq(channel), captor.capture());
         List<State> vals = captor.getAllValues();
-        return (QuantityType<?>) vals.get(vals.size() - 1);
+        return vals.get(vals.size() - 1);
     }
 
     private static ShellyDeviceProfile pro3emProfile() {
