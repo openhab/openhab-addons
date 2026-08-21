@@ -232,7 +232,8 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        store(item, ZonedDateTime.now(), item.getState(), alias);
+        ZonedDateTime lastStateUpdate = item.getLastStateUpdate();
+        store(item, (lastStateUpdate != null ? lastStateUpdate : ZonedDateTime.now()), item.getState(), alias);
     }
 
     // -------------------------------------------------------------------------

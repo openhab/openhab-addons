@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +50,11 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
     @SuppressWarnings("null")
     @BeforeAll
     public static void populateData() {
-        storeStart = ZonedDateTime.now();
+        storeStart = ZonedDateTime.now().truncatedTo(ChronoUnit.MILLIS);
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+        }
 
         NumberItem item = (NumberItem) ITEMS.get(NAME);
         for (int i = 0; i < STATE_COUNT; i++) {

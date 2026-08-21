@@ -110,12 +110,12 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
         }
 
         assertStateEquals(getFirstItemState(), storedFirst.getState());
-        assertTrue(storedFirst.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
-        assertTrue(storedFirst.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+        assertTrue(!storedFirst.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+        assertTrue(!storedFirst.getTimestamp().toInstant().isBefore(beforeStore.toInstant()));
 
         assertStateEquals(getSecondItemState(), storedSecond.getState());
-        assertTrue(storedSecond.getTimestamp().toInstant().isBefore(afterStore2.toInstant()));
-        assertTrue(storedSecond.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+        assertTrue(!storedSecond.getTimestamp().toInstant().isAfter(afterStore2.toInstant()));
+        assertTrue(!storedSecond.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
     }
 
     @Test
@@ -225,8 +225,8 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
             HistoricItem actual1 = iterator.next();
             assertFalse(iterator.hasNext());
             assertStateEquals(getFirstItemState(), actual1.getState());
-            assertTrue(actual1.getInstant().isBefore(afterStore1.toInstant()));
-            assertTrue(actual1.getInstant().isAfter(beforeStore.toInstant()));
+            assertTrue(!actual1.getInstant().isAfter(afterStore1.toInstant()));
+            assertTrue(!actual1.getInstant().isBefore(beforeStore.toInstant()));
         });
     }
 
@@ -246,8 +246,8 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
             HistoricItem actual1 = iterator.next();
             assertFalse(iterator.hasNext());
             assertStateEquals(getFirstItemState(), actual1.getState());
-            assertTrue(actual1.getInstant().isBefore(afterStore1.toInstant()));
-            assertTrue(actual1.getInstant().isAfter(beforeStore.toInstant()));
+            assertTrue(!actual1.getInstant().isAfter(afterStore1.toInstant()));
+            assertTrue(!actual1.getInstant().isBefore(beforeStore.toInstant()));
         });
     }
 
@@ -267,8 +267,8 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
             HistoricItem actual1 = iterator.next();
             assertFalse(iterator.hasNext());
             assertStateEquals(getFirstItemState(), actual1.getState());
-            assertTrue(actual1.getInstant().isBefore(afterStore1.toInstant()));
-            assertTrue(actual1.getInstant().isAfter(beforeStore.toInstant()));
+            assertTrue(!actual1.getInstant().isAfter(afterStore1.toInstant()));
+            assertTrue(!actual1.getInstant().isBefore(beforeStore.toInstant()));
         });
     }
 
@@ -304,8 +304,8 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
             HistoricItem actual1 = iterator.next();
             assertFalse(iterator.hasNext());
             assertStateEquals(getFirstItemState(), actual1.getState());
-            assertTrue(actual1.getInstant().isBefore(afterStore1.toInstant()));
-            assertTrue(actual1.getInstant().isAfter(beforeStore.toInstant()));
+            assertTrue(!actual1.getInstant().isAfter(afterStore1.toInstant()));
+            assertTrue(!actual1.getInstant().isBefore(beforeStore.toInstant()));
         });
     }
 
@@ -331,8 +331,8 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
             HistoricItem actual1 = iterator.next();
             assertFalse(iterator.hasNext());
             assertStateEquals(getSecondItemState(), actual1.getState());
-            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore2.toInstant()));
-            assertTrue(actual1.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+            assertTrue(!actual1.getTimestamp().toInstant().isAfter(afterStore2.toInstant()));
+            assertTrue(!actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
         });
     }
 
@@ -368,8 +368,8 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
             HistoricItem actual1 = iterator.next();
             assertFalse(iterator.hasNext());
             assertStateEquals(getSecondItemState(), actual1.getState());
-            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore2.toInstant()));
-            assertTrue(actual1.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+            assertTrue(!actual1.getTimestamp().toInstant().isAfter(afterStore2.toInstant()));
+            assertTrue(!actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
         });
     }
 
@@ -389,8 +389,8 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
             HistoricItem actual1 = iterator.next();
             assertFalse(iterator.hasNext());
             assertStateEquals(getFirstItemState(), actual1.getState());
-            assertTrue(actual1.getTimestamp().toInstant().isBefore(afterStore1.toInstant()));
-            assertTrue(actual1.getTimestamp().toInstant().isAfter(beforeStore.toInstant()));
+            assertTrue(!actual1.getTimestamp().toInstant().isAfter(afterStore1.toInstant()));
+            assertTrue(!actual1.getTimestamp().toInstant().isBefore(beforeStore.toInstant()));
         });
     }
 
