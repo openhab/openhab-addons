@@ -263,7 +263,10 @@ public class RecursiveTransformer {
         // Register in visited before transforming entries to handle self-references
         visited.put(rawMap, result);
 
-        // Fork variables map to ensure local !var directives inside nested blocks do not leak to parent/sibling scopes
+        DirectiveProcessor.IfChainState ifChainState = new DirectiveProcessor.IfChainState();
+
+        // Fork variables map to ensure local !var directives inside nested blocks
+        // do not leak to parent/sibling scopes
         RecursiveTransformer scopeTransformer = new RecursiveTransformer(new LinkedHashMap<>(variables), absolutePath,
                 logger, directiveProcessor);
         scopeTransformer.handlers.putAll(this.handlers);
@@ -278,23 +281,22 @@ public class RecursiveTransformer {
 
             // Dispatch map-level directives via DirectiveProcessor
             if (newKey instanceof Directive directive) {
-                Object directiveResult = directiveProcessor.processMapDirective(directive, oldVal, result,
+                Object directiveResult = directiveProcessor.processMapDirective(directive, oldVal, result, ifChainState,
                         scopeTransformer, allowedTypes, visited);
                 mergeUnrolledMap(directiveResult, result);
                 continue;
             }
 
             // Regular keys are not directives and break any active conditional chain (!if / !else)
-            directiveProcessor.resetConditionalChain(result);
+            ifChainState.breakChain();
 
             Object newVal = scopeTransformer.transformInternal(oldVal, allowedTypes, visited);
 
-            // Dropping null keys or removal signals
             if (shouldRemoveEntry(newKey, newVal, oldVal)) {
                 continue;
             }
 
-            newKey = Objects.requireNonNull(newKey); // null keys should have been filtered out in shouldRemoveEntry
+            newKey = Objects.requireNonNull(newKey);
 
             if (newKey instanceof MergeKeyPlaceholder mkp) {
                 mergeEntries.add(new AbstractMap.SimpleEntry<>(mkp, newVal));
@@ -401,13 +403,16 @@ public class RecursiveTransformer {
         List<@Nullable Object> result = new ArrayList<>(list.size());
         visited.put(list, result);
 
+        DirectiveProcessor.IfChainState ifChainState = new DirectiveProcessor.IfChainState();
+
         for (Object oldItem : list) {
             Object processedItem = oldItem;
             boolean isDirectiveMap = false;
             boolean handled = false;
 
             if (oldItem instanceof Map<?, ?> map) {
-                Object directiveResult = directiveProcessor.processListMap(map, this, allowedTypes, visited);
+                Object directiveResult = directiveProcessor.processListMap(map, ifChainState, this, allowedTypes,
+                        visited);
                 if (directiveResult != null) {
                     processedItem = directiveResult;
                     isDirectiveMap = true;
@@ -417,7 +422,7 @@ public class RecursiveTransformer {
 
             // Standard scalars, plain maps, or maps without control directives
             if (!handled) {
-                directiveProcessor.breakIfChain(result);
+                ifChainState.breakChain();
                 processedItem = transformInternal(oldItem, allowedTypes, visited);
             }
 

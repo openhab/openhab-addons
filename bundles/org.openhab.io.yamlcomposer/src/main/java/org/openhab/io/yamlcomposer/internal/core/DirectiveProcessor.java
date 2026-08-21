@@ -45,88 +45,67 @@ public class DirectiveProcessor {
 
     private final BufferedLogger logger;
 
-    private static class IfChainState {
+    public static class IfChainState {
         boolean matched = false;
-    }
+        boolean active = false;
 
-    private static final ThreadLocal<IdentityHashMap<Object, IfChainState>> CONTAINER_ACTIVE_IF_CHAIN = ThreadLocal
-            .withInitial(IdentityHashMap::new);
+        public void startChain() {
+            active = true;
+            matched = false;
+        }
 
-    public DirectiveProcessor(BufferedLogger logger) {
-        this.logger = logger;
-    }
-
-    private IfChainState getOrCreateIfChain(Object container) {
-        IdentityHashMap<Object, IfChainState> map = CONTAINER_ACTIVE_IF_CHAIN.get();
-        IfChainState state = new IfChainState();
-        map.put(container, state);
-        return state;
-    }
-
-    private @Nullable IfChainState getExistingIfChain(Object container) {
-        IdentityHashMap<Object, IfChainState> map = CONTAINER_ACTIVE_IF_CHAIN.get();
-        return map.get(container);
-    }
-
-    public void breakIfChain(Object container) {
-        IdentityHashMap<Object, IfChainState> map = CONTAINER_ACTIVE_IF_CHAIN.get();
-        map.remove(container);
-        if (map.isEmpty()) {
-            CONTAINER_ACTIVE_IF_CHAIN.remove();
+        public void breakChain() {
+            active = false;
+            matched = false;
         }
     }
 
-    /**
-     * Notifies the processor that a non-conditional entry has been processed in the container,
-     * which breaks any active conditional chain (e.g., an unrelated key or !for loop).
-     */
-    public void resetConditionalChain(Object container) {
-        breakIfChain(container);
+    public DirectiveProcessor(BufferedLogger logger) {
+        this.logger = logger;
     }
 
     /**
      * Executes a directive within a Map context, returning the resulting object to be merged or processed.
      */
     public @Nullable Object processMapDirective(Directive directive, @Nullable Object oldVal,
-            Map<Object, @Nullable Object> targetMap, RecursiveTransformer transformer,
+            Map<Object, @Nullable Object> targetMap, IfChainState ifChainState, RecursiveTransformer transformer,
             Set<Class<? extends Placeholder>> allowedTypes, IdentityHashMap<Object, Object> visited) {
         switch (directive) {
             case IfDirective ifDirective -> {
-                IfChainState state = getOrCreateIfChain(targetMap);
+                ifChainState.startChain();
                 if (ifDirective.truthy()) {
-                    state.matched = true;
+                    ifChainState.matched = true;
                     return transformer.transform(oldVal, allowedTypes, visited);
                 }
             }
             case ElseIfDirective elseIfDirective -> {
-                IfChainState state = getExistingIfChain(targetMap);
-                if (state == null) {
+                if (!ifChainState.active) {
                     logger.warn("{} {} without preceding !if.", elseIfDirective.sourceLocation(),
                             elseIfDirective.tag());
                     return null;
                 }
-                if (state.matched) {
+                if (ifChainState.matched) {
                     return null; // A previous branch in this chain already matched
                 }
                 if (elseIfDirective.truthy()) {
-                    state.matched = true;
+                    ifChainState.matched = true;
                     return transformer.transform(oldVal, allowedTypes, visited);
                 }
             }
             case ElseDirective elseDirective -> {
-                IfChainState state = getExistingIfChain(targetMap);
-                if (state == null) {
+                if (!ifChainState.active) {
                     logger.warn("{} !else without preceding !if.", elseDirective.sourceLocation());
                     return null;
                 }
-                breakIfChain(targetMap); // Terminate chain
-                if (state.matched) {
+                boolean wasMatched = ifChainState.matched;
+                ifChainState.breakChain(); // Terminate chain
+                if (wasMatched) {
                     return null; // A previous branch in this chain already matched
                 }
                 return transformer.transform(oldVal, allowedTypes, visited);
             }
             case ForDirective forDirective -> {
-                breakIfChain(targetMap); // Intervening loop breaks any active if-chain
+                ifChainState.breakChain(); // Intervening loop breaks any active if-chain
                 List<@Nullable Object> loopResults = new ArrayList<>();
                 processForDirective(forDirective, oldVal, transformer, (loopVars, rawBlock) -> {
                     RecursiveTransformer loopTransformer = transformer.withOverrideVariables(loopVars);
@@ -138,7 +117,7 @@ public class DirectiveProcessor {
                 return loopResults;
             }
             case VarDirective varDirective -> {
-                breakIfChain(targetMap); // Intervening variable declaration breaks any active if-chain
+                ifChainState.breakChain(); // Intervening variable declaration breaks any active if-chain
                 processVarDirective(varDirective, oldVal, transformer, allowedTypes, visited);
             }
         }
@@ -150,7 +129,7 @@ public class DirectiveProcessor {
      * it is evaluated and this method returns the resulting object/list.
      * Otherwise, returns {@code null} to indicate it is a plain data map.
      */
-    public @Nullable Object processListMap(Map<?, ?> map, RecursiveTransformer transformer,
+    public @Nullable Object processListMap(Map<?, ?> map, IfChainState ifChainState, RecursiveTransformer transformer,
             Set<Class<? extends Placeholder>> allowedTypes, IdentityHashMap<Object, Object> visited) {
         boolean hasControlDirective = false;
         for (Object k : map.keySet()) {
@@ -170,7 +149,7 @@ public class DirectiveProcessor {
             Object newKey = transformer.transform(entry.getKey(), allowedTypes, visited);
 
             if (newKey instanceof Directive directive) {
-                Object directiveResult = processListDirective(directive, entry.getValue(), listResults, transformer,
+                Object directiveResult = processListDirective(directive, entry.getValue(), ifChainState, transformer,
                         allowedTypes, visited);
                 if (directiveResult != null) {
                     if (directiveResult instanceof List<?> listVal) {
@@ -180,7 +159,7 @@ public class DirectiveProcessor {
                     }
                 }
             } else {
-                breakIfChain(listResults);
+                ifChainState.breakChain();
                 Object newVal = transformer.transform(entry.getValue(), allowedTypes, visited);
                 if (newVal != RemovalSignal.REMOVE && newVal != null && newKey != null) {
                     listResults.add(Map.of(Objects.requireNonNull(newKey), newVal));
@@ -193,46 +172,45 @@ public class DirectiveProcessor {
     /**
      * Executes a directive within a List context, returning the resulting object.
      */
-    public @Nullable Object processListDirective(Directive directive, @Nullable Object oldVal, Object containerKey,
-            RecursiveTransformer transformer, Set<Class<? extends Placeholder>> allowedTypes,
+    public @Nullable Object processListDirective(Directive directive, @Nullable Object oldVal,
+            IfChainState ifChainState, RecursiveTransformer transformer, Set<Class<? extends Placeholder>> allowedTypes,
             IdentityHashMap<Object, Object> visited) {
         switch (directive) {
             case IfDirective ifDirective -> {
-                IfChainState state = getOrCreateIfChain(containerKey);
+                ifChainState.startChain();
                 if (ifDirective.truthy()) {
-                    state.matched = true;
+                    ifChainState.matched = true;
                     return transformer.transform(oldVal, allowedTypes, visited);
                 }
             }
             case ElseIfDirective elseIfDirective -> {
-                IfChainState state = getExistingIfChain(containerKey);
-                if (state == null) {
+                if (!ifChainState.active) {
                     logger.warn("{} {} without preceding !if.", elseIfDirective.sourceLocation(),
                             elseIfDirective.tag());
                     return null;
                 }
-                if (state.matched) {
+                if (ifChainState.matched) {
                     return null;
                 }
                 if (elseIfDirective.truthy()) {
-                    state.matched = true;
+                    ifChainState.matched = true;
                     return transformer.transform(oldVal, allowedTypes, visited);
                 }
             }
             case ElseDirective elseDirective -> {
-                IfChainState state = getExistingIfChain(containerKey);
-                if (state == null) {
+                if (!ifChainState.active) {
                     logger.warn("{} !else without preceding !if.", elseDirective.sourceLocation());
                     return null;
                 }
-                breakIfChain(containerKey);
-                if (state.matched) {
+                boolean wasMatched = ifChainState.matched;
+                ifChainState.breakChain();
+                if (wasMatched) {
                     return null;
                 }
                 return transformer.transform(oldVal, allowedTypes, visited);
             }
             case ForDirective forDirective -> {
-                breakIfChain(containerKey);
+                ifChainState.breakChain();
                 List<@Nullable Object> loopResults = new ArrayList<>();
                 processForDirective(forDirective, oldVal, transformer, (loopVars, rawBlock) -> {
                     RecursiveTransformer loopTransformer = transformer.withOverrideVariables(loopVars);
@@ -250,7 +228,7 @@ public class DirectiveProcessor {
                 return loopResults;
             }
             case VarDirective varDirective -> {
-                breakIfChain(containerKey);
+                ifChainState.breakChain();
                 processVarDirective(varDirective, oldVal, transformer, allowedTypes, visited);
             }
         }
@@ -327,10 +305,8 @@ public class DirectiveProcessor {
             List<@Nullable Object> extractedValues = new ArrayList<>();
 
             if (item instanceof Map.Entry<?, ?> entry) {
-                Object entryKey = entry.getKey();
-                Object entryVal = entry.getValue();
-                extractedValues.add(entryKey);
-                extractedValues.add(entryVal);
+                extractedValues.add(entry.getKey());
+                extractedValues.add(entry.getValue());
             } else if (item instanceof List<?> list) {
                 extractedValues.addAll(list);
             } else {
