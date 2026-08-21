@@ -159,8 +159,7 @@ public class ChargeTimeTransport implements OcppTransport {
     }
 
     /**
-     * Builds an {@link SSLContext} from a PKCS12 keystore holding the server's certificate and key, for
-     * serving OCPP over {@code wss://}.
+     * Builds an {@link SSLContext} from a PKCS12 keystore for serving OCPP over {@code wss://}.
      */
     private static SSLContext sslContext(String keystorePath, String keystorePassword) {
         try {
