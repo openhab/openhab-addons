@@ -497,35 +497,6 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
         }
 
         @Test
-        @DisplayName("Verify parent !var is inherited downstream by child !include and !insert template")
-        void testParentVarInheritedByChildAndTemplate() throws IOException {
-            writeFixture("child.yaml", """
-                    child_prop: "${prefix}_child"
-                    """);
-
-            Path mainPath = writeFixture("main.yaml", """
-                    !var prefix: global_scope
-
-                    templates:
-                      tpl:
-                        tpl_prop: "${prefix}_tpl"
-
-                    imported:
-                      !var prefix: include_scope
-                      foo: !include "child.yaml"
-                    inserted:
-                      !var prefix: insert_scope
-                      foo: !insert
-                        template: tpl
-                    """);
-
-            Map<Object, @Nullable Object> result = loadFixture(mainPath);
-
-            assertThat(getNestedValue(result, "imported", "foo", "child_prop"), equalTo("include_scope_child"));
-            assertThat(getNestedValue(result, "inserted", "foo", "tpl_prop"), equalTo("insert_scope_tpl"));
-        }
-
-        @Test
         @DisplayName("Verify !var declared inside a package does not leak to root composition scope")
         void testVarInsidePackageDoesNotLeak() throws IOException {
             String yaml = """
@@ -593,6 +564,75 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
 
             assertNotEquals("active_feature", result.get("outer_check"));
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("branch_secret")));
+        }
+
+        @Test
+        @DisplayName("Verify parent !var is inherited downstream by child !include and !insert template")
+        void testParentVarInheritedByChildAndTemplate() throws IOException {
+            writeFixture("child.yaml", """
+                    child_prop: "${prefix}_child"
+                    """);
+
+            Path mainPath = writeFixture("main.yaml", """
+                    !var prefix: global_scope
+
+                    templates:
+                      tpl:
+                        tpl_prop: "${prefix}_tpl"
+
+                    imported:
+                      !var prefix: include_scope
+                      foo: !include "child.yaml"
+                    inserted:
+                      !var prefix: insert_scope
+                      foo: !insert
+                        template: tpl
+                    """);
+
+            Map<Object, @Nullable Object> result = loadFixture(mainPath);
+
+            assertThat(getNestedValue(result, "imported", "foo", "child_prop"), equalTo("include_scope_child"));
+            assertThat(getNestedValue(result, "inserted", "foo", "tpl_prop"), equalTo("insert_scope_tpl"));
+        }
+
+        @Test
+        @DisplayName("Verify !var inside included file overwrites 'vars' argument passed via !include")
+        void testVarInIncludeOverwritesIncludeVarsArgument() throws IOException {
+            writeFixture("child.yaml", """
+                    !var arg_var: "overridden_by_var"
+                    result: "${arg_var}"
+                    """);
+
+            Path mainPath = writeFixture("main.yaml", """
+                    imported: !include
+                      file: "child.yaml"
+                      vars:
+                        arg_var: "passed_via_vars"
+                    """);
+
+            Map<Object, @Nullable Object> result = loadFixture(mainPath);
+
+            assertThat(getNestedValue(result, "imported", "result"), equalTo("overridden_by_var"));
+        }
+
+        @Test
+        @DisplayName("Verify !var inside template overwrites 'vars' argument passed via !insert")
+        void testVarInTemplateOverwritesInsertVarsArgument() throws IOException {
+            String yaml = """
+                    templates:
+                      component:
+                        !var arg_var: "overridden_by_var"
+                        result: "${arg_var}"
+
+                    component_instance: !insert
+                      template: component
+                      vars:
+                        arg_var: "passed_via_vars"
+                    """;
+
+            Map<Object, @Nullable Object> result = loadYaml(yaml);
+
+            assertThat(getNestedValue(result, "component_instance", "result"), equalTo("overridden_by_var"));
         }
     }
 }
