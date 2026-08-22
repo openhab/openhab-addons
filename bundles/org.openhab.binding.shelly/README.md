@@ -655,7 +655,7 @@ The add-on firmware version is shown in the Thing property `addonFirmware`; the 
 |         | errorsTx     | Number            | yes       | Number of failed transmissions to the LoRa network.                               |
 |         | snr          | Number:Dimensionless | yes   | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
 |         | rssi         | Number:Power      | yes       | RSSI (received signal strength in dBm) of the last received packet.               |
-|         | airtime      | Number:Time       | yes       | Cumulative transmission air time in milliseconds.                                 |
+|         | airtime      | Number:Time       | yes       | Transmission air time of the LoRa Add-On during the last 60 minutes.              |
 
 ### Shelly 1 (thing-type: shelly1)
 

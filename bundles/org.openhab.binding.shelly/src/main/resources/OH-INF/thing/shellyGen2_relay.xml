@@ -785,7 +785,7 @@
 	<channel-type id="loraAirtime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Airtime</label>
-		<description>Cumulative on-air time of the LoRa Add-On</description>
+		<description>Transmission air time of the LoRa Add-On during the last 60 minutes</description>
 		<category>Time</category>
 		<tags>
 			<tag>Measurement</tag>
