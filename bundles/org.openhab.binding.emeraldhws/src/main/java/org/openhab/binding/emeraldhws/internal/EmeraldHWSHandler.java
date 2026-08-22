@@ -32,6 +32,9 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 /**
  * The {@link EmeraldHWSHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -146,6 +149,36 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Called by the Bridge when a real-time MQTT packet arrives for this specific Thing's UUID
+     */
+    public void updateFromMqtt(String jsonPayload) {
+        logger.debug("Updating Thing {} from MQTT real-time data", thing.getUID().getId());
+
+        try {
+            Gson gson = new Gson();
+            JsonObject payload = gson.fromJson(jsonPayload, JsonObject.class);
+
+            // Example extraction (adapt the keys based on the actual Emerald AWS IoT payload)
+            if (payload.has("temp_current")) {
+                int currentTemp = payload.get("temp_current").getAsInt();
+                updateState(EmeraldHWSBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
+                        new QuantityType<>(currentTemp, SIUnits.CELSIUS));
+            }
+
+            if (payload.has("temp_set")) {
+                int setTemp = payload.get("temp_set").getAsInt();
+                updateState(EmeraldHWSBindingConstants.CHANNEL_SET_TEMPERATURE,
+                        new QuantityType<>(setTemp, SIUnits.CELSIUS));
+            }
+
+            // Add additional channel updates as discovered in the MQTT payload...
+
+        } catch (Exception e) {
+            logger.warn("Error parsing incoming MQTT message for Thing {}: {}", thing.getUID().getId(), e.getMessage());
         }
     }
 }

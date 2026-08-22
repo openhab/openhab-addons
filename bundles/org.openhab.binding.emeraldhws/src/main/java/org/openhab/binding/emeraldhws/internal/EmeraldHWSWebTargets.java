@@ -42,6 +42,12 @@ import com.google.gson.JsonObject;
 public class EmeraldHWSWebTargets {
     private static final int TIMEOUT_MS = 30000;
 
+    // AWS Cognito Constants (Obtain exact IDs from the emerald_hws_py script)
+    private static final String AWS_REGION = "ap-southeast-2"; // Assuming Australian region
+    private static final String IDENTITY_POOL_ID = "ap-southeast-2:f5bbb02c-c00e-4f10-acb3-e7d1b05268e8";
+    private static final String COGNITO_PROVIDER = "cognito-idp." + AWS_REGION
+            + ".amazonaws.com/ap-southeast-2_xxxxxxxxx";
+
     private String getTokenUri = "https://api.emerald-ems.com.au/api/v1/customer/sign-in";
     private String getListUri = "https://api.emerald-ems.com.au/api/v1/customer/property/list";
     private final Logger logger = LoggerFactory.getLogger(EmeraldHWSWebTargets.class);
@@ -74,6 +80,58 @@ public class EmeraldHWSWebTargets {
             throws EmeraldHWSCommunicationException, EmeraldHWSAuthenticationException {
         String response = invoke(getListUri, email, password);
         return gson.fromJson(response, List.class);
+    }
+
+    // --- NEW AWS COGNITO METHODS ---
+
+    /**
+     * Step 1: Exchange Emerald Login Token for AWS Identity ID
+     */
+    public String getAwsIdentityId(String emeraldToken) throws Exception {
+        String uri = "https://cognito-identity." + AWS_REGION + ".amazonaws.com/";
+
+        JsonObject logins = new JsonObject();
+        logins.addProperty(COGNITO_PROVIDER, emeraldToken);
+
+        JsonObject payload = new JsonObject();
+        payload.addProperty("IdentityPoolId", IDENTITY_POOL_ID);
+        payload.add("Logins", logins);
+
+        String response = invokeAws(uri, "AWSCognitoIdentityService.GetId", payload.toString());
+        JsonObject jsonResponse = gson.fromJson(response, JsonObject.class);
+        return jsonResponse.get("IdentityId").getAsString();
+    }
+
+    /**
+     * Step 2: Exchange AWS Identity ID for temporary STS Credentials
+     */
+    public JsonObject getAwsCredentials(String identityId, String emeraldToken) throws Exception {
+        String uri = "https://cognito-identity." + AWS_REGION + ".amazonaws.com/";
+
+        JsonObject logins = new JsonObject();
+        logins.addProperty(COGNITO_PROVIDER, emeraldToken);
+
+        JsonObject payload = new JsonObject();
+        payload.addProperty("IdentityId", identityId);
+        payload.add("Logins", logins);
+
+        String response = invokeAws(uri, "AWSCognitoIdentityService.GetCredentialsForIdentity", payload.toString());
+        JsonObject jsonResponse = gson.fromJson(response, JsonObject.class);
+        return jsonResponse.getAsJsonObject("Credentials");
+        // Returns object with: AccessKeyId, SecretKey, SessionToken
+    }
+
+    private String invokeAws(String uri, String amzTarget, String payload) throws Exception {
+        Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
+                .header("content-type", "application/x-amz-json-1.1").header("x-amz-target", amzTarget)
+                .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .content(new StringContentProvider(payload), "application/json");
+
+        ContentResponse response = request.send();
+        if (!HttpStatus.isSuccess(response.getStatus())) {
+            throw new Exception("AWS returned error: " + response.getStatus() + " - " + response.getContentAsString());
+        }
+        return response.getContentAsString();
     }
 
     private String invoke(String uri, String email, String password)

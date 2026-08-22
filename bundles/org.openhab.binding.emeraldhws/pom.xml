@@ -13,5 +13,12 @@
   <artifactId>org.openhab.binding.emeraldhws</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: EmeraldHWS Binding</name>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.io.transport.mqtt</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>
