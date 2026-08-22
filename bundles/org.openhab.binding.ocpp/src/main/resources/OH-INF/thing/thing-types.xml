@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ocpp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Server: the OCPP JSON WebSocket endpoint that chargers dial in to -->
+	<bridge-type id="server">
+		<label>OCPP Server</label>
+		<description>OCPP 1.6-J central system endpoint. Chargers connect to
+			ws://&lt;host&gt;:&lt;port&gt;/&lt;chargePointId&gt;.</description>
+
+		<config-description>
+			<parameter name="host" type="text">
+				<context>network-address</context>
+				<label>Bind Address</label>
+				<description>Local address to bind the WebSocket server to.</description>
+				<default>0.0.0.0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>TCP port the OCPP server listens on.</description>
+				<default>8887</default>
+			</parameter>
+			<parameter name="heartbeatInterval" type="integer" unit="s" min="0">
+				<label>Heartbeat Interval</label>
+				<description>Heartbeat interval returned to chargers in the BootNotification response.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="meterValuesData" type="text">
+				<label>Meter Values Data</label>
+				<description>Comma-separated OCPP measurands to configure on chargers (MeterValuesSampledData/AlignedData). Empty
+					leaves the charger unchanged.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="meterValueSampleInterval" type="integer" min="-1" unit="s">
+				<label>Meter Value Sample Interval</label>
+				<description>MeterValueSampleInterval to configure. -1 leaves the charger unchanged.</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="clockAlignedDataInterval" type="integer" min="-1" unit="s">
+				<label>Clock Aligned Data Interval</label>
+				<description>ClockAlignedDataInterval to configure. -1 leaves the charger unchanged.</description>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="disableRemoteTxAuthorization" type="boolean">
+				<label>Disable Remote Tx Authorization</label>
+				<description>Configure chargers with AuthorizeRemoteTxRequests=false so a RemoteStart needs no extra Authorize.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="extraConfig" type="text" multiple="true">
+				<label>Extra Configuration</label>
+				<description>Extra ChangeConfiguration entries as key=value, applied on boot.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pingInterval" type="integer" min="0" unit="s">
+				<label>Ping Interval</label>
+				<description>Seconds between server-driven WebSocket pings. A connection that does not answer with a pong within the
+					interval is CLOSED — many chargers never answer pings, so leave this at 0 (disabled) unless you know yours does.
+					Liveness is tracked via OCPP heartbeats regardless.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="requestTimeoutSeconds" type="integer" min="5" unit="s">
+				<label>Request Timeout</label>
+				<description>Seconds before an unanswered request to a charger fails. The OCPP library itself never times a
+					request
+					out, so this bound is what keeps callers from waiting forever.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="authPassword" type="text" pattern="^$|^[\x21-\x7E]{16,20}$">
+				<context>password</context>
+				<label>Charger Password</label>
+				<description>HTTP Basic authentication password chargers must present, with their charge point id as the
+					username
+					(OCPP security profile 1). Must be 16–20 visible ASCII characters — the OCPP library rejects
+					other lengths before
+					authentication even runs. Empty disables authentication — profile 0, for a trusted
+					LAN only.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tlsKeystorePath" type="text">
+				<label>TLS Keystore Path</label>
+				<description>Path to a PKCS12 keystore holding the server's TLS certificate and key. When set, the OCPP
+					endpoint runs
+					over wss:// (TLS) instead of ws:// — OCPP security profile 2 with a Charger Password, or
+					an encrypted profile 0
+					without. Empty leaves the endpoint plain.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tlsKeystorePassword" type="text">
+				<context>password</context>
+				<label>TLS Keystore Password</label>
+				<description>Password for the TLS keystore (store and key password).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="whitelistTagIds" type="text" multiple="true">
+				<label>Authorized Tag IDs</label>
+				<description>idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="chargerIds" type="text" multiple="true">
+				<label>Permitted Charger IDs</label>
+				<description>Charge point id allow-list. Empty accepts any charger; otherwise unlisted chargers are rejected and
+					closed.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Charge point: one physical charger -->
+	<bridge-type id="chargepoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>OCPP Charge Point</label>
+		<description>A single charger identified by its OCPP charge point id.</description>
+
+		<channels>
+			<channel id="connected" typeId="connected"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="reset" typeId="reset"/>
+		</channels>
+
+		<representation-property>chargePointId</representation-property>
+
+		<config-description>
+			<parameter name="chargePointId" type="text" required="true">
+				<label>Charge Point Id</label>
+				<description>The charger's OCPP identity — the path of the WebSocket URL it dials, without the leading
+					slash (e.g.
+					charger, or site/charger).</description>
+			</parameter>
+			<parameter name="configSettleSeconds" type="integer" min="0" unit="s">
+				<label>Config Settle Seconds</label>
+				<description>Delay after BootNotification before sending the configuration burst. Some chargers are not ready to
+					answer ChangeConfiguration immediately.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="meterless" type="boolean">
+				<label>Meter-less Charger</label>
+				<description>The charger has no internal meter; only the periodic clock-aligned emission is disabled and meter
+					measurand configuration is skipped.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="heartbeat" type="integer" min="0" unit="s">
+				<label>Heartbeat Interval</label>
+				<description>Per-charger heartbeat interval returned on boot, overriding the server default. Also sizes the liveness
+					window. 0 uses the server default.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Connector: one outlet of a charger -->
+	<thing-type id="connector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="chargepoint"/>
+		</supported-bridge-type-refs>
+
+		<label>OCPP Connector</label>
+		<description>A single connector (outlet) of a charger.</description>
+
+		<channels>
+			<channel id="charge-point-status" typeId="charge-point-status"/>
+			<channel id="cable-connected" typeId="cable-connected"/>
+			<channel id="charging" typeId="charging"/>
+			<channel id="charge-limit" typeId="charge-limit"/>
+			<channel id="power-limit" typeId="power-limit"/>
+			<channel id="number-phases" typeId="number-phases"/>
+			<channel id="pause" typeId="pause"/>
+			<channel id="availability" typeId="availability"/>
+			<channel id="unlock" typeId="unlock"/>
+			<channel id="hardware-max-current" typeId="hardware-max-current"/>
+			<channel id="current-import-l1" typeId="current-phase">
+				<label>Current L1</label>
+			</channel>
+			<channel id="current-import-l2" typeId="current-phase">
+				<label>Current L2</label>
+			</channel>
+			<channel id="current-import-l3" typeId="current-phase">
+				<label>Current L3</label>
+			</channel>
+			<channel id="voltage-l1" typeId="voltage-phase">
+				<label>Voltage L1</label>
+			</channel>
+			<channel id="voltage-l2" typeId="voltage-phase">
+				<label>Voltage L2</label>
+			</channel>
+			<channel id="voltage-l3" typeId="voltage-phase">
+				<label>Voltage L3</label>
+			</channel>
+			<channel id="current-offered" typeId="current-offered"/>
+			<channel id="power-active-import" typeId="power-active-import"/>
+			<channel id="power-offered" typeId="power-offered"/>
+			<channel id="energy-active-import" typeId="energy-active-import"/>
+			<!-- Extra OCPP telemetry measurands — aggregate current/voltage, export direction,
+				reactive/apparent power, power factor, frequency, interval energy, soc, rpm,
+				temperature — are NOT declared here. OcppConnectorHandler creates them dynamically
+				(against the channel-types below) only if the charger actually reports them. -->
+			<channel id="id-tag" typeId="id-tag"/>
+			<channel id="transaction-id" typeId="transaction-id"/>
+			<channel id="meter-start" typeId="energy">
+				<label>Meter Start</label>
+			</channel>
+			<channel id="meter-stop" typeId="energy">
+				<label>Meter Stop</label>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Meter Timestamp</label>
+			</channel>
+			<channel id="timestamp-start" typeId="timestamp">
+				<label>Transaction Start Time</label>
+			</channel>
+			<channel id="timestamp-stop" typeId="timestamp">
+				<label>Transaction Stop Time</label>
+			</channel>
+		</channels>
+
+		<representation-property>uniqueId</representation-property>
+
+		<config-description>
+			<parameter name="connectorId" type="integer" min="1">
+				<label>Connector Id</label>
+				<description>OCPP connector number (1..N).</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="forceTxDefaultProfile" type="boolean">
+				<label>Force TxDefaultProfile</label>
+				<description>Always send a TxDefaultProfile for the charge limit, even during a transaction. Needed for chargers
+					that reject a TxProfile outside a transaction (e.g. Phoenix CHARX).</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="profileMinIntervalMs" type="integer" min="0" unit="ms">
+				<label>Charging Profile Min Interval</label>
+				<description>Minimum spacing between SetChargingProfile sends. Rapid changes are coalesced. 0 disables.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="hardwareMaxCurrentKey" type="text">
+				<label>Hardware Max Current Key</label>
+				<description>Vendor ChangeConfiguration key backing the hardware maximum current channel. Empty disables that
+					channel.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="remoteStartTag" type="text">
+				<label>Remote Start Tag</label>
+				<description>idTag used when starting a transaction via the charging channel.</description>
+				<default>openhab</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="nominalVoltage" type="decimal" min="1" unit="V">
+				<label>Nominal Voltage</label>
+				<description>Line voltage used to convert an amperes charge limit to watts for a charger that only accepts
+					a power
+					limit. W = A x V x phases.</description>
+				<default>230</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="phases" type="integer" min="1" max="3">
+				<label>Phases</label>
+				<description>Phases assumed when converting the amperes charge limit to watts for a power-only charger: 1
+					for
+					single-phase, 3 for three-phase.</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" unit="s">
+				<label>Refresh Interval</label>
+				<description>Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="stuckStateRecovery" type="boolean">
+				<label>Stuck State Recovery</label>
+				<description>Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long.
+					Off
+					by default: those are normal states and unlocking is a physical side effect, so enable it only for a
+					charger known
+					to wedge there.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel types -->
+	<channel-type id="connected">
+		<item-type>Switch</item-type>
+		<label>Connected</label>
+		<description>Whether the charger currently has an open session.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-seen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Timestamp of the last contact from the charger (a message, or the session opening).</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charge-point-status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>OCPP connector status (Available, Preparing, Charging, SuspendedEV, ...).</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cable-connected">
+		<item-type>Switch</item-type>
+		<label>Cable Connected</label>
+		<description>Whether a vehicle cable is plugged in.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging">
+		<item-type>Switch</item-type>
+		<label>Charging Session</label>
+		<description>ON while a transaction is active; command to start/stop remotely.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="charge-limit">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charge Current Limit</label>
+		<description>Maximum charging current applied via SetChargingProfile.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state min="0" step="1" pattern="%.0f A"/>
+	</channel-type>
+
+	<channel-type id="power-limit">
+		<item-type>Number:Power</item-type>
+		<label>Charge Power Limit</label>
+		<description>Maximum charging power. Used for a charger that only accepts a power limit; when set it overrides
+			the
+			current limit. Leave unset to use the charge current limit.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<state min="0" step="100" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="number-phases">
+		<item-type>Number</item-type>
+		<label>Charging Phases</label>
+		<description>Number of phases to charge on, sent in the charging profile; 0 clears the request so the charger
+			uses its
+			default. Only a charger that supports phase switching acts on it.</description>
+		<category>Energy</category>
+		<state pattern="%d">
+			<options>
+				<option value="0">Charger default</option>
+				<option value="1">1 phase</option>
+				<option value="3">3 phases</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="pause">
+		<item-type>Switch</item-type>
+		<label>Pause</label>
+		<description>Pause charging (charging profile limit 0) without ending the transaction.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="availability">
+		<item-type>Switch</item-type>
+		<label>Available</label>
+		<description>OCPP availability (Operative/Inoperative) via ChangeAvailability.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="unlock">
+		<item-type>Switch</item-type>
+		<label>Unlock Connector</label>
+		<description>Momentary — unlock the connector (UnlockConnector).</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="reset">
+		<item-type>Switch</item-type>
+		<label>Reset</label>
+		<description>Momentary — soft reset the charge point (Reset).</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="hardware-max-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Hardware Max Current</label>
+		<description>Charger hardware current ceiling, written via a vendor ChangeConfiguration key.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state min="0" step="1" pattern="%.0f A"/>
+	</channel-type>
+
+	<channel-type id="current-phase">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Imported current on one phase (MeterValues Current.Import).</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f A"/>
+	</channel-type>
+
+	<channel-type id="voltage-phase">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage on one phase (MeterValues Voltage).</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f V"/>
+	</channel-type>
+
+	<channel-type id="current-offered">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current Offered</label>
+		<description>Current offered to the vehicle (MeterValues Current.Offered).</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f A"/>
+	</channel-type>
+
+	<channel-type id="power-active-import">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<description>Active power imported (MeterValues Power.Active.Import).</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="power-offered">
+		<item-type>Number:Power</item-type>
+		<label>Power Offered</label>
+		<description>Power offered to the vehicle (MeterValues Power.Offered).</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="energy-active-import">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy</label>
+		<description>Energy register (MeterValues Energy.Active.Import.Register).</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<!-- Reusable metering channel types (full OCPP measurand set) -->
+	<channel-type id="current-measure">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f A"/>
+	</channel-type>
+
+	<channel-type id="voltage-measure">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f V"/>
+	</channel-type>
+
+	<channel-type id="power-active">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="power-reactive">
+		<item-type>Number:Power</item-type>
+		<label>Reactive Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f var"/>
+	</channel-type>
+
+	<channel-type id="power-factor">
+		<item-type>Number</item-type>
+		<label>Power Factor</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+
+	<channel-type id="energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f Hz"/>
+	</channel-type>
+
+	<channel-type id="soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="rpm">
+		<item-type>Number</item-type>
+		<label>RPM</label>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="id-tag">
+		<item-type>String</item-type>
+		<label>Id Tag</label>
+		<description>The idTag of the active transaction.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="transaction-id">
+		<item-type>Number</item-type>
+		<label>Transaction Id</label>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
