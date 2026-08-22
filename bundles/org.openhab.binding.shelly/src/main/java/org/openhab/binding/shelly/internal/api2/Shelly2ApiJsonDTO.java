@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
@@ -22,7 +23,10 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBase
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -163,6 +167,11 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_FLOOD_ALARM = "flood.alarm";
     public static final String SHELLY2_EVENT_FLOOD_ALARM_OFF = "flood.alarm_off";
     public static final String SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED = "flood.cable_unplugged";
+
+    // Emitted by 3rd party BLE-proxy scripts (e.g. Home Assistant's), not the binding's own oh-blu.*
+    // scanner script; "data" is an array of raw scan results instead of an object, so it carries no
+    // usable BLU payload here and is only suppressed to avoid flooding the log.
+    public static final String SHELLY2_EVENT_BLE_SCAN_RESULT = "ble.scan_result";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -1236,12 +1245,32 @@ public class Shelly2ApiJsonDTO {
         public @Nullable Double ts;
         public @Nullable String component;
         public @Nullable String event;
+        // BLU gateway scripts emit an object here, but other scripts (e.g. Home Assistant's
+        // BLE-proxy script for ble.scan_result) emit an array. Keep the raw element and let
+        // getBluData() decide, rather than letting Gson fail the whole frame on a shape mismatch.
         @SerializedName("data")
-        public @Nullable Shelly2NotifyBluEventData blu;
+        public @Nullable JsonElement data;
         public @Nullable String msg;
         public @Nullable Integer reason;
         @SerializedName("cfg_rev")
         public @Nullable Integer cfgRev;
+
+        /**
+         * Returns the BLU payload, or null when {@code data} is absent or not an object at all.
+         * <p>
+         * A malformed object still raises {@link ShellyApiException}, the same checked exception the
+         * whole frame used to fail with while it was deserialized through
+         * {@link ShellyUtils#fromJson(Gson, String, Class)}: both call sites already handle it, and
+         * silently returning null instead would drop a BLU event that the device did send, without
+         * anything in the log to show for it.
+         */
+        public @Nullable Shelly2NotifyBluEventData getBluData(Gson gson) throws ShellyApiException {
+            JsonElement data = this.data;
+            if (data == null || !data.isJsonObject()) {
+                return null;
+            }
+            return ShellyUtils.fromJson(gson, data.toString(), Shelly2NotifyBluEventData.class);
+        }
     }
 
     public class Shelly2NotifyEventData {

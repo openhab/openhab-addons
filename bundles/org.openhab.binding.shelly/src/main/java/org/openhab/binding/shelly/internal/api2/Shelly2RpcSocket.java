@@ -361,9 +361,13 @@ public class Shelly2RpcSocket implements WriteCallback {
                         if (notifyEvents == null) {
                             logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
                         } else {
+                            // onNotifyEvent() walks the whole frame itself, so the frame is forwarded once
+                            // after this loop rather than per event: forwarding inside the loop would make
+                            // the hub process every regular event as often as the frame carries such events.
+                            boolean hasRegularEvent = false;
                             for (Shelly2NotifyEvent e : notifyEvents) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    Shelly2NotifyBluEventData blu = e.blu;
+                                    Shelly2NotifyBluEventData blu = e.getBluData(gson);
                                     String address = getString(blu != null ? blu.addr : "").replace(":", "");
                                     ShellyThingInterface bluThing = thingTable.findThing(address);
                                     if (bluThing != null) {
@@ -387,10 +391,18 @@ public class Shelly2RpcSocket implements WriteCallback {
                                                     message.src, e.event, blu.addr);
                                         }
                                     }
+                                } else if (SHELLY2_EVENT_BLE_SCAN_RESULT.equals(e.event)) {
+                                    // 3rd party BLE-proxy script (e.g. Home Assistant's), not our oh-blu.* scanner;
+                                    // "data" is an array here, not a BLU payload — skip without forwarding to avoid
+                                    // re-parsing the whole frame per event and flooding the log.
+                                    logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, e.event);
                                 } else {
-                                    // non-BLU event: always use the hub's handler, never the BLU one
-                                    handler.onNotifyEvent(receivedMessage);
+                                    // non-BLU event: always the hub's handler, never the BLU one
+                                    hasRegularEvent = true;
                                 }
+                            }
+                            if (hasRegularEvent) {
+                                handler.onNotifyEvent(receivedMessage);
                             }
                         }
                         break;
