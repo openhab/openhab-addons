@@ -28,7 +28,7 @@ public class ChatRequestBody {
     private Double temperature;
     @JsonProperty("top_p")
     private Double topP;
-    @JsonProperty("max_tokens")
+    @JsonProperty("max_completion_tokens")
     private Integer maxTokens;
     private String user;
     private List<ChatTools> tools;
