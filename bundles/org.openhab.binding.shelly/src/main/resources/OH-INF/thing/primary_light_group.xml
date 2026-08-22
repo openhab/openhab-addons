@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="primary-group-color">
+		<label>Primary</label>
+		<description>Primary control group</description>
+		<channels>
+			<channel id="primary-color" typeId="system.color"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="primary-group-white">
+		<label>Primary</label>
+		<description>Primary control group</description>
+		<channels>
+			<channel id="primary-brightness" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="primary-group-cct">
+		<label>Primary</label>
+		<description>Primary control group</description>
+		<channels>
+			<channel id="primary-brightness" typeId="system.brightness"/>
+			<channel id="primary-color-temp" typeId="system.color-temperature"/>
+			<channel id="primary-color-temp-abs" typeId="system.color-temperature-abs"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="primary-group-color-cct">
+		<label>Primary</label>
+		<description>Primary control group</description>
+		<channels>
+			<channel id="primary-color" typeId="system.color"/>
+			<channel id="primary-color-temp" typeId="system.color-temperature"/>
+			<channel id="primary-color-temp-abs" typeId="system.color-temperature-abs"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

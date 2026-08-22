@@ -21,10 +21,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModelHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -65,13 +67,12 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
      * @param serial
      * @param s
      * @param updates
-     * @param col
      */
     @Override
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
-            Map<String, State> updates, ShellyColorUtils col) {
+            Map<String, State> updates, @Nullable ShellyLightModelHandler lightModelHandler) {
         // first check the base implementation
-        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, col)) {
+        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, lightModelHandler)) {
             // process by the base class
             return true;
         }
@@ -203,10 +204,13 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
-                        updateChannel(updates,
-                                profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
-                                CHANNEL_COLOR_TEMP,
-                                ShellyColorUtils.toPercent((int) s.value, profile.minTemp, profile.maxTemp));
+                        if (lightModelHandler != null && lightModelHandler
+                                .getLightModel(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
+                            model.setColorTemp(s.value);
+                        } else {
+                            logger.debug("{}: Unable to update color temperature for {}: LightModel not found",
+                                    thingName, sen.desc);
+                        }
                         break;
                     case "sensor state": // Shelly Gas
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE, getStringType(s.valueStr));
