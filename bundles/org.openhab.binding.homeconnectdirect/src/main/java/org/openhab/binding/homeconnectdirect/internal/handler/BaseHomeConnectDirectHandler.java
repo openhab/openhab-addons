@@ -591,7 +591,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
             } else if (PROGRAM_PROGRESS_KEY.equals(deviceDescriptionChange.key())) {
                 getLinkedChannel(CHANNEL_PROGRAM_PROGRESS).ifPresent(
                         channel -> getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                            if (deviceDescriptionService.isOptionAvailableAndReadable(CHANNEL_PROGRAM_PROGRESS)) {
+                            if (!deviceDescriptionService.isOptionAvailableAndReadable(CHANNEL_PROGRAM_PROGRESS)) {
                                 updateState(channel.getUID(), new QuantityType<>(0, PERCENT));
                             }
                         }));
