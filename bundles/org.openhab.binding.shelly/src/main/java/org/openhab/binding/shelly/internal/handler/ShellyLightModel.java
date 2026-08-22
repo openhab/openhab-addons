@@ -32,6 +32,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -590,18 +591,42 @@ public class ShellyLightModel extends LightModel {
         if (color.contains(",")) {
             setRGBX(color);
         } else if (color.equals(SHELLY_COLOR_RED)) {
-            setRGBX(SHELLY_MAX_COLOR, 0, 0, 0);
+            setRGBX(rgbxLength == 4 ? new int[] { SHELLY_MAX_COLOR, 0, 0, 0 } : new int[] { SHELLY_MAX_COLOR, 0, 0 });
         } else if (color.equals(SHELLY_COLOR_GREEN)) {
-            setRGBX(0, SHELLY_MAX_COLOR, 0, 0);
+            setRGBX(rgbxLength == 4 ? new int[] { 0, SHELLY_MAX_COLOR, 0, 0 } : new int[] { 0, SHELLY_MAX_COLOR, 0 });
         } else if (color.equals(SHELLY_COLOR_BLUE)) {
-            setRGBX(0, 0, SHELLY_MAX_COLOR, 0);
+            setRGBX(rgbxLength == 4 ? new int[] { 0, 0, SHELLY_MAX_COLOR, 0 } : new int[] { 0, 0, SHELLY_MAX_COLOR });
         } else if (color.equals(SHELLY_COLOR_YELLOW)) {
-            setRGBX(SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, 0, 0);
+            setRGBX(rgbxLength == 4 ? new int[] { SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, 0, 0 }
+                    : new int[] { SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, 0 });
         } else if (color.equals(SHELLY_COLOR_WHITE)) {
-            setRGBX(0, 0, 0, SHELLY_MAX_COLOR);
+            setRGBX(rgbxLength == 4 ? new int[] { 0, 0, 0, SHELLY_MAX_COLOR }
+                    : new int[] { SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, SHELLY_MAX_COLOR });
         } else {
             throw new IllegalArgumentException("Invalid full color selection: " + color);
         }
+    }
+
+    /**
+     * Get the full color as a StringType. The color is returned as one of the predefined color names,
+     * or UNDEF if the color does not match any of the predefined colors.
+     */
+    public State getFullColorState() {
+        int[] rgbw = getRGBX();
+        if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == 0) {
+            new StringType(SHELLY_COLOR_YELLOW);
+        } else if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == 0 && rgbw[2] == 0) {
+            new StringType(SHELLY_COLOR_RED);
+        } else if (rgbw[0] == 0 && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == 0) {
+            new StringType(SHELLY_COLOR_GREEN);
+        } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == SHELLY_MAX_COLOR) {
+            new StringType(SHELLY_COLOR_BLUE);
+        } else if (rgbw.length == 4 && rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == 0 && rgbw[3] == SHELLY_MAX_COLOR) {
+            new StringType(SHELLY_COLOR_WHITE);
+        } else if (rgbw.length == 3 && rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR) {
+            new StringType(SHELLY_COLOR_WHITE);
+        }
+        return UnDefType.UNDEF;
     }
 
     @Override

@@ -339,7 +339,7 @@ public class ShellyUtils {
         return time.replace('T', ' ').replace('-', '/');
     }
 
-    public static Integer getComponentIndexFromGroup(String groupName) {
+    public static Integer getLightIdFromGroup(String groupName) {
         if (groupName.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
             return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_INDEX)) - 1;
         }

@@ -40,12 +40,10 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +94,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         try {
             acquireLock();
             try {
-                int componentIndex = getComponentIndexFromGroup(groupName); // TODO we will need to fix this
+                int componentIndex = getLightIdFromGroup(groupName);
                 ShellyLightModel model = lightModels.get(componentIndex);
                 if (model == null) {
                     model = ShellyLightModel.create(this, componentIndex, profile, DIM_STEPSIZE);
@@ -172,26 +170,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             return OnOffType.OFF == onOff ? min : max;
         }
         throw new IllegalArgumentException("Invalid command type: " + command.getClass().getName());
-    }
-
-    private boolean setFullColor(String colorGroup, ShellyLightModel model) {
-        String color = null;
-        int[] rgbw = model.getRGBX();
-        if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == 0) {
-            color = SHELLY_COLOR_YELLOW;
-        } else if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == 0 && rgbw[2] == 0) {
-            color = SHELLY_COLOR_RED;
-        } else if (rgbw[0] == 0 && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == 0) {
-            color = SHELLY_COLOR_GREEN;
-        } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == SHELLY_MAX_COLOR) {
-            color = SHELLY_COLOR_BLUE;
-        } else if ((rgbw.length == 4 && rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == 0 && rgbw[3] == SHELLY_MAX_COLOR)
-                || (rgbw.length == 3 && rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR
-                        && rgbw[2] == SHELLY_MAX_COLOR)) {
-            color = SHELLY_COLOR_WHITE;
-        }
-        updateChannel(colorGroup, CHANNEL_COLOR_FULL, color != null ? new StringType(color) : UnDefType.UNDEF);
-        return true;
     }
 
     /**
@@ -478,7 +456,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 updated |= updateChannel(group, CHANNEL_COLOR_WHITE, model.getColorState(CW));
             }
             updated |= updateChannel(group, CHANNEL_COLOR_PICKER, model.getColorState());
-            updated |= setFullColor(group, model);
+            updated |= updateChannel(group, CHANNEL_COLOR_FULL, model.getFullColorState());
+
         }
 
         // GAIN:
