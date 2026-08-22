@@ -200,6 +200,19 @@ public class ProtoConverter {
             cc.put("max_soc", soc.getValue());
             return cc;
         }
+        // DoorsLock/DoorsUnlock carry almost no fields of their own (DoorsLock has none set in
+        // practice, DoorsUnlock only "pin") - getAllFields() alone can't tell a test which of the two
+        // fired, so trace which oneof case was actually set.
+        if (cr.hasDoorsLock()) {
+            JSONObject dl = Utils.getJsonObject(cr.getDoorsLock().getAllFields());
+            dl.put("commandType", "doorsLock");
+            return dl;
+        }
+        if (cr.hasDoorsUnlock()) {
+            JSONObject du = Utils.getJsonObject(cr.getDoorsUnlock().getAllFields());
+            du.put("commandType", "doorsUnlock");
+            return du;
+        }
         return cmJson;
     }
 }
