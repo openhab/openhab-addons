@@ -73,6 +73,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventLoraInfo;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -90,6 +91,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
@@ -681,8 +683,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, event);
                     break;
                 case SHELLY2_EVENT_LORADATA:
-                    logger.debug("{}: LoRa data received, payload = {}", thingName, e.lora);
-                    String loraRaw = e.lora;
+                    Shelly2NotifyEventLoraInfo loraInfo = e.info;
+                    String loraRaw = loraInfo != null ? loraInfo.data : null;
+                    logger.debug("{}: LoRa data received, payload = {}", thingName, loraRaw);
                     if (loraRaw != null) {
                         updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(loraRaw));
                         try {
@@ -693,9 +696,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             logger.debug("{}: LoRa RX payload is not valid Base64: {}", thingName, ex.getMessage());
                         }
                     }
-                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI, getDecimal(e.rssi));
-                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR, getDecimal(e.snr));
-                    getThing().postEvent(SHELLY2_EVENT_LORADATA.toUpperCase(), false);
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI,
+                            toQuantityType(loraInfo != null ? loraInfo.rssi : null, Units.DECIBEL_MILLIWATTS));
+                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR,
+                            toQuantityType(loraInfo != null ? loraInfo.snr : null, Units.DECIBEL));
+                    // force the trigger: the alarm value stays LORA_RECEIVED across consecutive packets, so
+                    // postEvent's de-dup would otherwise swallow all but the first of a fast burst
+                    getThing().postEvent(ALARM_TYPE_LORA_RECEIVED, true);
                     break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);

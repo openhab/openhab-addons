@@ -180,7 +180,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_BLE_SCAN_RESULT = "ble.scan_result";
 
     // LoRa
-    public static final String SHELLY2_EVENT_LORADATA = "lora_received";
+    public static final String SHELLY2_EVENT_LORADATA = "lora";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -1369,8 +1369,12 @@ public class Shelly2ApiJsonDTO {
             return ShellyUtils.fromJson(gson, data.toString(), Shelly2NotifyBluEventData.class);
         }
 
-        // LoRa
-        public @Nullable String lora;
+        // LoRa: the "lora" event nests its payload under "info" rather than the generic "data" member
+        public @Nullable Shelly2NotifyEventLoraInfo info;
+    }
+
+    public static class Shelly2NotifyEventLoraInfo {
+        public @Nullable String data;
         public @Nullable Integer rssi;
         public @Nullable Integer snr;
         public @Nullable Long tsu;

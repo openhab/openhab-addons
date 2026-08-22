@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  *
  * <p>
  * The encode path (CHANNEL_LORA_TXDATA) produces standard padded base64.
- * The decode paths (CHANNEL_LORA_TXDATARAW and the lora_received event) must
+ * The decode paths (CHANNEL_LORA_TXDATARAW and the "lora" event) must
  * tolerate both padded and unpadded base64 by adding missing '=' chars before
  * passing the string to {@link Base64.Decoder}.
  */
@@ -45,7 +45,7 @@ class ShellyLoraBase64Test {
 
     /**
      * Mirrors the pad-then-decode pattern in ShellyRelayHandler (CHANNEL_LORA_TXDATARAW)
-     * and Shelly2ApiRpc (lora_received event), now delegating padding to ShellyUtils.
+     * and Shelly2ApiRpc ("lora" event), now delegating padding to ShellyUtils.
      */
     private static String decode(String b64) {
         return new String(Base64.getDecoder().decode(fixBase64Padding(b64)), StandardCharsets.UTF_8);
@@ -89,7 +89,7 @@ class ShellyLoraBase64Test {
 
     @ParameterizedTest(name = "decode padded ''{0}'' → ''{1}''")
     @CsvSource({ "QQ==,              A", "QUI=,              AB", "QUJD,              ABC", "SGVsbG8=,          Hello",
-            // API-docs example (LoRa.SendBytes / lora_received event)
+            // API-docs example (LoRa.SendBytes / "lora" event)
             "MDEyMzQ1Njc4OQ==,  0123456789", })
     void decodePaddedBase64ReturnsOriginalText(String b64, String expected) {
         assertThat(decode(b64.strip()), is(expected.strip()));
