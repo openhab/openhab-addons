@@ -89,12 +89,33 @@ Channels for `pool`
 | uvc                   | Switch                | RW         | Eliminate germs with Ultraviolet-C water cleaning    |
 | ozone                 | Switch                | RW         | Disinfect with Ozone water cleaning                  |
 | lock                  | Switch                | RW         | Lock physical panel for inputs                       |
+| fault                 | String                | R          | Fault code reported by the device                    |
 
 `bubble-level` options
 
 - 1 for Low
 - 2 for Medium
 - 3 for High
+
+`fault` reports the device's `fault` code as-is (e.g. `F1`).
+It does not affect Thing status - the device stays `ONLINE` while a fault is reported.
+When no fault is set, the channel reports `NONE`.
+The device's `warning` field is deliberately not reflected here, since it is also set during normal operation and is not a reliable fault indicator.
+
+`fault` known codes
+
+| Code      | Meaning                       |
+|-----------|--------------------------------|
+| F0 / E0   | Low ambient temperature        |
+| F1 / E1   | Water flow failure             |
+| F2 / E2   | Water level too low            |
+| F3 / E3   | Heater system failure          |
+| F4 / E4   | Temperature sensor fault       |
+| F5 / E5   | High limit overheating         |
+| CEF       | Control panel signal error     |
+| BBF       | Bubble blower failure          |
+
+Any other code is displayed as-is; the mapping above is used by the UI to show a readable label.
 
 ## Full Example
 
@@ -119,5 +140,6 @@ Switch                  MSPA_OSLO_Circulation               {channel="mspa:pool:
 Switch                  MSPA_OSLO_UVC                       {channel="mspa:pool:4711:4712:uvc" }
 Switch                  MSPA_OSLO_Ozone                     {channel="mspa:pool:4711:4712:ozone" }
 Switch                  MSPA_OSLO_Lock                      {channel="mspa:pool:4711:4712:lock" }
+String                  MSPA_OSLO_Fault                     {channel="mspa:pool:4711:4712:fault" }
 
 ```

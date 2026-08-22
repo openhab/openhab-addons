@@ -96,6 +96,10 @@ public class ScriptExtensionModuleProvider {
         this.globals.put(key, value);
     }
 
+    public Map<String, Object> getScope() {
+        return new HashMap<>(this.globals);
+    }
+
     public static interface ModuleLocator {
         Map<String, Object> locateModule(String name, List<String> fromlist);
     }

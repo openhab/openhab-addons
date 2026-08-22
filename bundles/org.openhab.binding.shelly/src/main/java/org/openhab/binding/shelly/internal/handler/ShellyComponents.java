@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.measure.MetricPrefix;
+import javax.measure.Unit;
+import javax.measure.quantity.Pressure;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -105,7 +107,8 @@ public class ShellyComponents {
         thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SLEEPTIME,
                 toQuantityType(getInteger(status.sleepTime), Units.SECOND));
 
-        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.hasUpdate));
+        // Use nested update.hasUpdate (stable-only signal) rather than top-level hasUpdate which can include betas
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.update.hasUpdate));
 
         if (profile.settings.calibrated != null) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CALIBRATED,
@@ -168,19 +171,12 @@ public class ShellyComponents {
 
             String state = getString(control.state);
             int pos = -1;
-            switch (state) {
-                case SHELLY_ALWD_ROLLER_TURN_OPEN:
-                    pos = SHELLY_MAX_ROLLER_POS;
-                    break;
-                case SHELLY_ALWD_ROLLER_TURN_CLOSE:
-                    pos = SHELLY_MIN_ROLLER_POS;
-                    break;
-                case SHELLY_ALWD_ROLLER_TURN_STOP:
-                    if (control.currentPos != null) {
-                        // only valid in stop state
-                        pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
-                    }
-                    break;
+            // The device can't report the live position while moving; only trust currentPos once the
+            // roller has stopped. Pushing a synthetic 0/100 for the "open"/"close" (moving) states here
+            // caused the position channels to flip to that endpoint and then flip again to the real
+            // stopped position, even when the roller was only moving to a partial position (#14189).
+            if (SHELLY_ALWD_ROLLER_TURN_STOP.equals(state) && control.currentPos != null) {
+                pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
             }
             if (pos != -1) {
                 thingHandler.logger.debug("{}: Update roller position to {}/{}, state={}", thingHandler.thingName, pos,
@@ -362,21 +358,21 @@ public class ShellyComponents {
                 meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                         getDecimal(pf != null ? pf : 0.0));
 
-                // energyByMinute[0] is Wh consumed during the previous complete minute
-                // (converted from aenergy.by_minute mWh in Shelly2ApiClient).
-                // OLD channel lastPower1 (CHANNEL_METER_LASTMIN1): average power = Wh * 60 → W, kept for
-                // backward compatibility. lastPower1 has no dual-write mapping (W is incompatible with
-                // the Wh channel), so both channels are written explicitly.
+                // by_minute[N] is the independent Wh sum for minute N+1 minutes ago, not a running average.
+                // lastPower1 (W, deprecated) has no dual-write mapping to energyHistMin1 (Wh incompatible
+                // unit), so both are written explicitly here.
                 @Nullable
                 Double @Nullable [] byMinute = emeter.energyByMinute;
                 if (byMinute != null && byMinute.length > 0) {
-                    Double lastMinuteWh = byMinute[0];
-                    if (lastMinuteWh != null) {
+                    Double minute1Wh = byMinute[0];
+                    if (minute1Wh != null) {
                         thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
-                                toQuantityType(lastMinuteWh * 60.0, DIGITS_WATT, Units.WATT));
-                        meterUpdated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVG1MIN,
-                                toQuantityType(lastMinuteWh, DIGITS_KWH, Units.WATT_HOUR));
+                                toQuantityType(minute1Wh * 60.0, DIGITS_WATT, Units.WATT));
                     }
+                    Double minute2Wh = byMinute.length > 1 ? byMinute[1] : null;
+                    Double minute3Wh = byMinute.length > 2 ? byMinute[2] : null;
+                    meterUpdated |= writeMinuteHistoryChannels(thingHandler, groupName, minute1Wh, minute2Wh,
+                            minute3Wh);
                 }
 
                 if (emeter.power != null) {
@@ -401,7 +397,8 @@ public class ShellyComponents {
         }
         double currentWatts = 0.0;
         double totalWatts = 0.0;
-        Double lastMin1 = null;
+        @Nullable
+        Double[] lastMinutes = new @Nullable Double[3];
         long timestamp = 0L;
         String groupName = CHANNEL_GROUP_METER;
         boolean updated = false;
@@ -421,8 +418,14 @@ public class ShellyComponents {
                 currentWatts += getDouble(meter.power);
                 totalWatts += getDouble(meter.total);
                 Double[] counters = meter.counters;
-                if (counters != null && counters.length > 0 && counters[0] != null) {
-                    lastMin1 = (lastMin1 != null ? lastMin1 : 0.0) + counters[0];
+                if (counters != null) {
+                    for (int i = 0; i < lastMinutes.length && i < counters.length; i++) {
+                        Double counter = counters[i];
+                        if (counter != null) {
+                            Double sum = lastMinutes[i];
+                            lastMinutes[i] = (sum != null ? sum : 0.0) + counter;
+                        }
+                    }
                 }
                 if (getLong(meter.timestamp) > timestamp) {
                     timestamp = getLong(meter.timestamp);
@@ -434,7 +437,7 @@ public class ShellyComponents {
             return false;
         }
 
-        updated |= updateMinuteCounters(thingHandler, groupName, new @Nullable Double[] { lastMin1 });
+        updated |= updateMinuteCounters(thingHandler, groupName, lastMinutes);
         totalWatts = totalWatts / (60.0 * 1000.0); // convert Watt/Min to kWh
         updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                 toQuantityType(currentWatts, DIGITS_WATT, Units.WATT));
@@ -481,10 +484,8 @@ public class ShellyComponents {
     }
 
     /**
-     * Write the Gen1 last-minute energy counter (Watt-minutes) to the minute-energy channels.
-     * counters[0] is the energy of the previous complete minute; a W-min value numerically
-     * equals the average power in W for that minute, so lastPower1 gets the raw value while
-     * energyAvg1Min gets value / 60 (Wh).
+     * Write Gen1 counters[] (W-min, independent per-minute sums like Gen2's by_minute[]) to
+     * lastPower1/energyHistMin1-3, plus their average once all three are present.
      */
     private static boolean updateMinuteCounters(ShellyThingInterface thingHandler, String groupName,
             @Nullable Double @Nullable [] counters) {
@@ -492,9 +493,39 @@ public class ShellyComponents {
             return false;
         }
         double wattMin = getDouble(counters[0]);
-        thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1, toQuantityType(wattMin, DIGITS_WATT, Units.WATT));
-        return thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVG1MIN,
-                toQuantityType(wattMin / 60.0, DIGITS_KWH, Units.WATT_HOUR));
+        Double wh1 = wattMin / 60.0;
+        boolean updated = thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
+                toQuantityType(wattMin, DIGITS_WATT, Units.WATT));
+        Double wh2 = counters.length > 1 && counters[1] != null ? getDouble(counters[1]) / 60.0 : null;
+        Double wh3 = counters.length > 2 && counters[2] != null ? getDouble(counters[2]) / 60.0 : null;
+        return updated | writeMinuteHistoryChannels(thingHandler, groupName, wh1, wh2, wh3);
+    }
+
+    /**
+     * Write up to 3 independent per-minute energy sums (Wh) to energyHistMin1-3, plus their
+     * average to energyAvgLast3Min once all three are present. Shared by Gen1's counters[] and
+     * Gen2's by_minute[] handling.
+     */
+    private static boolean writeMinuteHistoryChannels(ShellyThingInterface thingHandler, String groupName,
+            @Nullable Double wh1, @Nullable Double wh2, @Nullable Double wh3) {
+        boolean updated = false;
+        if (wh1 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN1,
+                    toQuantityType(wh1, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (wh2 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN2,
+                    toQuantityType(wh2, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (wh3 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYHISTMIN3,
+                    toQuantityType(wh3, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        if (wh1 != null && wh2 != null && wh3 != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_ENERGYAVGLAST3MIN,
+                    toQuantityType((wh1 + wh2 + wh3) / 3.0, DIGITS_KWH, Units.WATT_HOUR));
+        }
+        return updated;
     }
 
     private static @Nullable Double computePF(ShellySettingsEMeter emeter) {
@@ -562,8 +593,8 @@ public class ShellyComponents {
                             getOnOff(getInteger(t.boostMinutes) > 0));
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BTIMER,
                             toQuantityType((double) bminutes, DIGITS_NONE, Units.MINUTE));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE, getStringType(
-                            getBool(t.targetTemp.enabled) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MODE,
+                            getStringType(getBool(t.schedule) ? SHELLY_TRV_MODE_AUTO : SHELLY_TRV_MODE_MANUAL));
 
                     int pid = getBool(t.schedule) ? getInteger(t.profile) : 0;
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE,
@@ -616,7 +647,26 @@ public class ShellyComponents {
                         getOnOff(sdata.smoke));
             }
             if (sdata.mute != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE, getOnOff(sdata.mute));
+                if (profile.isSmoke) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE,
+                            getOnOff(sdata.mute));
+                } else if (profile.isFlood) {
+                    // Flood Gen4 has no mute channel; report mute/unmute via the device#alarm trigger instead
+                    thingHandler.postEvent(sdata.mute ? ALARM_TYPE_MUTED : ALARM_TYPE_NONE, false);
+                }
+            }
+            if (sdata.sensor == null && (sdata.sensorError != null || (profile.isFlood && profile.isGen2))) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
+                        getStringType(sdata.sensorError));
+            }
+
+            if (profile.isFlood && profile.isGen2) {
+                if (!profile.floodAlarmMode.isEmpty()) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_ALARM_MODE,
+                            getStringType(profile.floodAlarmMode));
+                }
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF,
+                        toQuantityType((double) profile.reportHoldoff, DIGITS_NONE, Units.SECOND));
             }
 
             if (sdata.gasSensor != null) {
@@ -664,6 +714,46 @@ public class ShellyComponents {
             if (sdata.sensor != null && sdata.sensor.vibration != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                         OnOffType.from(sdata.sensor.vibration));
+            }
+
+            // WS90
+            if (sdata.rain != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST,
+                        OnOffType.from(getBool(sdata.rain)));
+            }
+            if (sdata.windSpeed != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDSP,
+                        toQuantityType(getDouble(sdata.windSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
+            }
+            if (sdata.windDirection != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR,
+                        toQuantityType(getDouble(sdata.windDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
+            }
+            if (sdata.gustSpeed != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP,
+                        toQuantityType(getDouble(sdata.gustSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
+            }
+            if (sdata.gustDirection != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTDIR,
+                        toQuantityType(getDouble(sdata.gustDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
+            }
+            if (sdata.pressure != null) {
+                Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
+                        toQuantityType(getDouble(sdata.pressure), DIGITS_PRESSURE, hpa));
+            }
+            if (sdata.precipitation != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPITATION,
+                        toQuantityType(getDouble(sdata.precipitation), DIGITS_PRECIPITATION,
+                                MetricPrefix.MILLI(SIUnits.METRE)));
+            }
+            if (sdata.dewPoint != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT,
+                        toQuantityType(getDouble(sdata.dewPoint), DIGITS_TEMP, SIUnits.CELSIUS));
+            }
+            if (sdata.uvIndex != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV,
+                        getDecimal(sdata.uvIndex, DIGITS_UV));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
@@ -787,6 +877,28 @@ public class ShellyComponents {
         return updated;
     }
 
+    public static boolean updateLightMode(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+            throws ShellyApiException {
+        boolean updated = false;
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (profile.isRGBW2 && !profile.inColor) {
+            if (!thingHandler.areChannelsCreated()) {
+                return false;
+            }
+            List<ShellySettingsLight> lights = orgStatus.lights;
+            for (int i = 0; i < lights.size(); i++) {
+                ShellySettingsLight light = lights.get(i);
+                String groupName = profile.getControlGroup(i);
+                OnOffType power = getOnOff(light.ison);
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", power);
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                        toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
+                                Units.PERCENT));
+            }
+        }
+        return updated;
+    }
+
     public static boolean updateDimmers(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
             throws ShellyApiException {
         boolean updated = false;
@@ -830,6 +942,9 @@ public class ShellyComponents {
                         updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                                 toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
                     }
+                }
+                if (dimmer.hasTimer != null) {
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(dimmer.hasTimer));
                 }
 
                 if (dimmers != null) {

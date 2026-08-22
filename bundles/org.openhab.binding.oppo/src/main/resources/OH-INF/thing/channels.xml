@@ -13,9 +13,18 @@
 		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Turn the power for the player on or off</description>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<label>Volume</label>
+				<description>Control the volume for the player</description>
+			</channel>
+			<channel id="mute" typeId="system.mute">
+				<label>Mute</label>
+				<description>Mute or unmute the volume on the player</description>
+			</channel>
 			<channel id="source" typeId="source"/>
 			<channel id="play_mode" typeId="play_mode"/>
 			<channel id="control" typeId="control"/>
@@ -25,6 +34,10 @@
 			<channel id="total_title" typeId="total_title"/>
 			<channel id="current_chapter" typeId="current_chapter"/>
 			<channel id="total_chapter" typeId="total_chapter"/>
+			<channel id="title-elapsed" typeId="title-elapsed"/>
+			<channel id="title-length" typeId="title-length"/>
+			<channel id="title-end-time" typeId="title-end-time"/>
+			<channel id="title-progress" typeId="title-progress"/>
 			<channel id="repeat_mode" typeId="repeat_mode"/>
 			<channel id="zoom_mode" typeId="zoom_mode"/>
 			<channel id="disc_type" typeId="disc_type"/>
@@ -42,7 +55,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -139,7 +152,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="current_title">
@@ -168,6 +181,51 @@
 		<label>Total Number of Chapters</label>
 		<description>The Total Number of Chapters in the Current Title</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="title-elapsed">
+		<item-type>Number:Time</item-type>
+		<label>Title Elapsed</label>
+		<description>The total playback time elapsed of the currently playing title</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
+	</channel-type>
+
+	<channel-type id="title-length">
+		<item-type>Number:Time</item-type>
+		<label>Title Length</label>
+		<description>The total length of the currently playing title</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tT"/>
+	</channel-type>
+
+	<channel-type id="title-end-time">
+		<item-type>DateTime</item-type>
+		<label>Title End Time</label>
+		<description>The date/time when the currently playing title will end</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="title-progress">
+		<item-type>Dimmer</item-type>
+		<label>Title Progress</label>
+		<description>The percent complete progress of the currently playing title</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
+		<state pattern="%.0f%%"/>
 	</channel-type>
 
 	<channel-type id="repeat_mode">

@@ -1,3 +1,15 @@
+---
+children:
+  - ["doc/basics", "YAML Basics"]
+  - ["doc/variables", "Variables"]
+  - ["doc/conditionals", "Conditionals"]
+  - ["doc/include", "Include"]
+  - ["doc/templates", "Templates"]
+  - ["doc/packages", "Packages"]
+  - ["doc/anchors", "Anchors and Aliases"]
+  - ["doc/merge-keys", "Merge Keys"]
+---
+
 # YAML Composer
 
 YAML Composer introduces extended YAML features that make openHAB configuration more modular, reusable, and maintainable. These features let you structure configuration as composable building blocks rather than large, repetitive files.

@@ -118,6 +118,12 @@ public class ICloudService {
                 if (ex.getStatusCode() == 500) {
                     logger.debug("Authentication failed.", ex);
                     return false;
+                } else if (session.hasToken() && authenticateWithToken() && !requires2fa()) {
+                    // We already hold a trust token from a previous 2-FA approval (persisted across
+                    // restarts), and accountLogin confirms no further 2-FA challenge is pending.
+                    // Skip requesting a new SMS/iMessage code in this case.
+                    logger.debug("Trust token accepted by accountLogin, skipping SMS 2-FA request.");
+                    return true;
                 } else {
                     getMfaAuthOptions();
                     // Automatically request SMS code if trusted phone number is available

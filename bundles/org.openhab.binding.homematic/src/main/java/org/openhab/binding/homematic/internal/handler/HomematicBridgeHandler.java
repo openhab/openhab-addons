@@ -241,7 +241,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * Creates the configuration for the HomematicGateway.
      */
     private HomematicConfig createHomematicConfig() {
-        HomematicConfig homematicConfig = getThing().getConfiguration().as(HomematicConfig.class);
+        HomematicConfig homematicConfig = getHomematicConfig();
         if (homematicConfig.getCallbackHost() == null) {
             homematicConfig.setCallbackHost(this.ipv4Address);
         }
@@ -257,6 +257,10 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
         logger.debug("{}", homematicConfig);
         return homematicConfig;
+    }
+
+    public HomematicConfig getHomematicConfig() {
+        return getConfigAs(HomematicConfig.class);
     }
 
     @Override

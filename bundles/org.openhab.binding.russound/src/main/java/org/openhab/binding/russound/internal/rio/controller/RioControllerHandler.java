@@ -154,7 +154,7 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
             return;
         }
 
-        final RioControllerConfig config = getThing().getConfiguration().as(RioControllerConfig.class);
+        final RioControllerConfig config = getConfigAs(RioControllerConfig.class);
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
             return;

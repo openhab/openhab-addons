@@ -48,6 +48,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerSt
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
@@ -67,6 +68,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -82,7 +84,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptRe
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -436,6 +438,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void onConnect(InetSocketAddress deviceSocketAddr, boolean connected) {
         thing = thingTable.getThing(deviceSocketAddr);
         logger.debug("{}: Get thing from thingTable for {}", thingName, deviceSocketAddr);
+
+        if (profile.initialized && alwaysOn) {
+            // The periodic-status-push request is only sent once, during the initial getDeviceProfile() call, and
+            // is tied to that WebSocket session. A reconnect gets a new session, so the device stops pushing
+            // NotifyStatus updates until this is re-armed here; also nudge an immediate poll to close the gap.
+            try {
+                asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS);
+                getThing().requestUpdates(1, false);
+            } catch (ShellyApiException e) {
+                logger.debug("{}: Unable to re-arm status updates after reconnect", thingName, e);
+            }
+        }
     }
 
     @Override
@@ -514,14 +528,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         getThing().incProtMessages();
         getThing().restartWatchdog();
 
-        for (Shelly2NotifyEvent e : message.params.events) {
-            switch (e.event) {
+        Shelly2NotifyEventData params = message.params;
+        ArrayList<Shelly2NotifyEvent> events = params != null ? params.events : null;
+        if (events == null) {
+            logger.debug("{}: Malformed event data: {}", thingName, eventJSON);
+            return;
+        }
+        for (Shelly2NotifyEvent e : events) {
+            String event = getString(e.event);
+            int id = getInteger(e.id);
+            switch (event) {
                 case SHELLY2_EVENT_BTNUP:
                 case SHELLY2_EVENT_BTNDOWN:
-                    String bgroup = getProfile().getInputGroup(e.id);
-                    updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(e.id),
-                            getOnOff(SHELLY2_EVENT_BTNDOWN.equals(getString(e.event))));
-                    getThing().triggerButton(profile.getInputGroup(e.id), e.id, mapValue(MAP_INPUT_EVENT_ID, e.event));
+                    String bgroup = getProfile().getInputGroup(id);
+                    updateChannel(bgroup, CHANNEL_INPUT + profile.getInputSuffix(id),
+                            getOnOff(SHELLY2_EVENT_BTNDOWN.equals(event)));
+                    getThing().triggerButton(profile.getInputGroup(id), id, mapValue(MAP_INPUT_EVENT_ID, event));
                     break;
 
                 case SHELLY2_EVENT_1PUSH:
@@ -530,23 +552,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_LPUSH:
                 case SHELLY2_EVENT_SLPUSH:
                 case SHELLY2_EVENT_LSPUSH:
-                    if (e.id < profile.numInputs && e.id < relayStatus.inputs.size()) {
-                        ShellyInputState input = relayStatus.inputs.get(e.id);
-                        input.event = getString(MAP_INPUT_EVENT_TYPE.get(e.event));
+                    if (id < profile.numInputs && id < relayStatus.inputs.size()) {
+                        ShellyInputState input = relayStatus.inputs.get(id);
+                        input.event = getString(MAP_INPUT_EVENT_TYPE.get(event));
                         input.eventCount = getInteger(input.eventCount) + 1;
-                        relayStatus.inputs.set(e.id, input);
+                        relayStatus.inputs.set(id, input);
                         List<@Nullable ShellyInputState> statusInputs = profile.status.inputs;
-                        if (statusInputs != null && e.id < statusInputs.size()) {
-                            statusInputs.set(e.id, input);
+                        if (statusInputs != null && id < statusInputs.size()) {
+                            statusInputs.set(id, input);
                         }
 
-                        String group = getProfile().getInputGroup(e.id);
-                        updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(e.id),
+                        String group = getProfile().getInputGroup(id);
+                        updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(id),
                                 getStringType(input.event));
-                        updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(e.id),
+                        updateChannel(group, CHANNEL_STATUS_EVENTCOUNT + profile.getInputSuffix(id),
                                 getDecimal(input.eventCount));
-                        getThing().triggerButton(profile.getInputGroup(e.id), e.id,
-                                mapValue(MAP_INPUT_EVENT_ID, e.event));
+                        getThing().triggerButton(profile.getInputGroup(id), id, mapValue(MAP_INPUT_EVENT_ID, event));
                     }
                     break;
                 case SHELLY2_EVENT_CFGCHANGED:
@@ -578,11 +599,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     break;
                 case SHELLY2_EVENT_WIFICONNFAILED:
                     logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    getThing().postEvent(event, false);
                     break;
                 case SHELLY2_EVENT_WIFIDISCONNECTED:
                     logger.debug("{}: WiFi disconnected, reason {}", thingName, getInteger(e.reason));
-                    getThing().postEvent(e.event, false);
+                    getThing().postEvent(event, false);
+                    break;
+                case SHELLY2_EVENT_FLOOD_ALARM:
+                    logger.debug("{}: Flood alarm triggered", thingName);
+                    getThing().postEvent(ALARM_TYPE_FLOOD, true);
+                    break;
+                case SHELLY2_EVENT_FLOOD_ALARM_OFF:
+                    logger.debug("{}: Flood alarm cleared", thingName);
+                    getThing().postEvent(ALARM_TYPE_NONE, true);
+                    break;
+                case SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED:
+                    logger.debug("{}: Flood sensor cable unplugged", thingName);
+                    getThing().postEvent(ALARM_TYPE_SENSOR_ERROR, true);
                     break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
@@ -664,17 +697,26 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.sleepMode.period = ds.sys.wakeupPeriod / 60;
         }
 
-        if (ds.sys.availableUpdates != null) {
-            status.update.hasUpdate = ds.sys.availableUpdates.stable != null;
-            if (ds.sys.availableUpdates.stable != null) {
-                status.update.newVersion = ShellyDeviceProfile
-                        .extractFwVersion(getString(ds.sys.availableUpdates.stable.version));
-                status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.newVersion) < 0;
+        Shelly2DeviceStatusSysAvlUpdate avlUpdate = ds.sys.availableUpdates;
+        status.update.oldVersion = profile.fwVersion;
+        status.update.newVersion = "";
+        status.update.betaVersion = "";
+        status.update.hasUpdate = false;
+        status.hasUpdate = false;
+        if (avlUpdate != null) {
+            ShellyVersionComparator versionComparator = new ShellyVersionComparator();
+            Shelly2DeviceStatusSysAvlUpdate.Shelly2DeviceStatusSysUpdate stableUpdate = avlUpdate.stable;
+            if (stableUpdate != null) {
+                String stableVer = ShellyDeviceProfile.extractFwVersion(getString(stableUpdate.version));
+                status.update.newVersion = stableVer;
+                boolean newerStable = versionComparator.isNewer(stableVer, profile.fwVersion);
+                status.update.hasUpdate = newerStable;
+                status.hasUpdate = newerStable;
             }
-            if (ds.sys.availableUpdates.beta != null) {
-                status.update.betaVersion = ShellyDeviceProfile
-                        .extractFwVersion(getString(ds.sys.availableUpdates.beta.version));
-                status.hasUpdate = new ShellyVersionDTO().compare(profile.fwVersion, status.update.betaVersion) < 0;
+            Shelly2DeviceStatusSysAvlUpdate.Shelly2DeviceStatusSysUpdate betaUpdate = avlUpdate.beta;
+            if (betaUpdate != null) {
+                status.update.betaVersion = ShellyDeviceProfile.extractFwVersion(getString(betaUpdate.version));
+                // beta availability is recorded but never sets the main update channel
             }
         }
 
@@ -783,21 +825,48 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         if (profile.isRGBW2) {
-            Shelly2RGBWStatus ls = apiRequest(
-                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGBW_STATUS).withId(0),
-                    Shelly2RGBWStatus.class);
-            ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
-            lightChannel.red = ls.rgb[0];
-            lightChannel.green = ls.rgb[1];
-            lightChannel.blue = ls.rgb[2];
-            lightChannel.white = ls.white;
-            lightChannel.brightness = ls.brightness.intValue();
-
             ShellyStatusLight status = new ShellyStatusLight();
             status.lights = new ArrayList<>();
-            status.lights.add(lightChannel);
-            status.ison = ls.output;
-
+            if (profile.inColor) {
+                String method = SHELLY2_PROFILE_RGBW.equals(getString(profile.device.profile))
+                        ? SHELLYRPC_METHOD_RGBW_STATUS
+                        : SHELLYRPC_METHOD_RGB_STATUS;
+                Shelly2RGBWStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(method).withId(0),
+                        Shelly2RGBWStatus.class);
+                ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+                if (ls.rgb != null && ls.rgb.length >= 3) {
+                    lightChannel.red = ls.rgb[0];
+                    lightChannel.green = ls.rgb[1];
+                    lightChannel.blue = ls.rgb[2];
+                }
+                lightChannel.white = ls.white;
+                Double rgbBrightness = ls.brightness;
+                if (rgbBrightness != null) {
+                    lightChannel.brightness = rgbBrightness.intValue();
+                }
+                lightChannel.ison = ls.output;
+                status.lights.add(lightChannel);
+                status.ison = ls.output;
+            } else {
+                @Nullable
+                List<ShellySettingsRgbwLight> settingLights = profile.settings.lights;
+                int numLights = settingLights != null ? settingLights.size() : 1;
+                for (int i = 0; i < numLights; i++) {
+                    Shelly2DeviceStatusLight ls = apiRequest(
+                            new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_STATUS).withId(i),
+                            Shelly2DeviceStatusLight.class);
+                    ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+                    lightChannel.ison = ls.output;
+                    lightChannel.hasTimer = ls.timerStartedAt != null;
+                    lightChannel.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
+                    Double b = ls.brightness;
+                    if (b != null) {
+                        lightChannel.brightness = b.intValue();
+                    }
+                    status.lights.add(lightChannel);
+                }
+                status.ison = !status.lights.isEmpty() ? status.lights.get(0).ison : null;
+            }
             return status;
         }
 
@@ -813,8 +882,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.ison = ls.output;
         status.hasTimer = ls.timerStartedAt != null;
         status.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
-        if (ls.brightness != null) {
-            status.brightness = ls.brightness.intValue();
+        Double b = ls.brightness;
+        if (b != null) {
+            status.brightness = b.intValue();
         }
         return status;
     }
@@ -823,8 +893,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
-        params.brightness = brightness;
-        params.on = brightness > 0;
+        if (brightness > 0) {
+            params.brightness = brightness;
+            if (autoOn) {
+                params.on = true;
+            }
+        } else {
+            // Gen2 firmware rejects/clamps brightness=0; on=false is used to turn the light off instead
+            params.on = false;
+        }
         apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
     }
 
@@ -845,9 +922,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        boolean isLight = profile.isLight || profile.isDimmer;
-        String method = isLight ? SHELLYRPC_METHOD_LIGHT_SETCONFIG : SHELLYRPC_METHOD_SWITCH_SETCONFIG;
-        String component = isLight ? "Light" : "Switch";
+        String method;
+        String component;
+        if (profile.isRGBW2 && profile.inColor) {
+            boolean rgbw = SHELLY2_PROFILE_RGBW.equals(getString(profile.device.profile));
+            method = rgbw ? SHELLYRPC_METHOD_RGBW_SETCONFIG : SHELLYRPC_METHOD_RGB_SETCONFIG;
+            component = rgbw ? "RGBW" : "RGB";
+        } else if (profile.isLight || profile.isDimmer) {
+            method = SHELLYRPC_METHOD_LIGHT_SETCONFIG;
+            component = "Light";
+        } else {
+            method = SHELLYRPC_METHOD_SWITCH_SETCONFIG;
+            component = "Switch";
+        }
         Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(index);
         req.params.withConfig();
         req.params.config.name = component + index;
@@ -877,9 +964,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        apiRequest(new Shelly2RpcRequest()
-                .withMethod(getProfile().is3EM ? SHELLYRPC_METHOD_EMDATARESET : SHELLYRPC_METHOD_EM1DATARESET)
-                .withId(id));
+        apiRequest(new Shelly2RpcRequest().withMethod(resetCountersMethod(getProfile())).withId(id));
+    }
+
+    // Order matters: Pro EM-50 has isEM1 + hasRelays, and roller-mode 2PM has isRoller + hasRelays —
+    // both must be checked before the generic hasRelays fallback.
+    static String resetCountersMethod(ShellyDeviceProfile profile) {
+        return profile.is3EM ? SHELLYRPC_METHOD_EMDATARESET
+                : profile.isEM1 ? SHELLYRPC_METHOD_EM1DATARESET
+                        : profile.isRoller ? SHELLYRPC_METHOD_COVER_RESETCOUNTERS
+                                : profile.hasRelays ? SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS
+                                        : SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
     }
 
     @Override
@@ -998,17 +1093,33 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
-        throw new ShellyApiException("API call not implemented");
+        setLightParms(lightIndex, Map.of(parm, value));
     }
 
     @Override
     public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (!profile.isRGBW2) {
+            throw new ShellyApiException("API call not implemented");
+        }
+
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        if (getProfile().isRGBW2) {
-            String brightness = parameters.get(SHELLY_COLOR_BRIGHTNESS);
-            if (brightness != null) {
-                params.brightness = Integer.parseInt(brightness);
+        params.id = lightIndex;
+        if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
+            params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
+        }
+        String brightness = parameters.get(SHELLY_COLOR_BRIGHTNESS);
+        if (brightness != null) {
+            // Gen2 firmware rejects/clamps brightness=0; on=false is used to turn the light off instead
+            int b = Integer.parseInt(brightness);
+            if (b > 0) {
+                params.brightness = b;
             }
+            params.on = b > 0;
+        }
+
+        String rawProfile = getString(profile.device.profile);
+        if (SHELLY2_PROFILE_RGBW.equals(rawProfile)) {
             String red = parameters.get(SHELLY_COLOR_RED);
             String green = parameters.get(SHELLY_COLOR_GREEN);
             String blue = parameters.get(SHELLY_COLOR_BLUE);
@@ -1019,14 +1130,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (white != null) {
                 params.white = Integer.parseInt(white);
             }
-            if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
-                params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
-            }
-            params.id = lightIndex;
-
             apiRequest(SHELLYRPC_METHOD_RGBW_SET, params, String.class);
+        } else if (profile.inColor) {
+            String red = parameters.get(SHELLY_COLOR_RED);
+            String green = parameters.get(SHELLY_COLOR_GREEN);
+            String blue = parameters.get(SHELLY_COLOR_BLUE);
+            if (red != null && green != null && blue != null) {
+                params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
+            }
+            apiRequest(SHELLYRPC_METHOD_RGB_SET, params, String.class);
+        } else {
+            apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
         }
-        throw new ShellyApiException("API call not implemented");
     }
 
     @Override
