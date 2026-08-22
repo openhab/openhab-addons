@@ -218,6 +218,8 @@ public class KlipperHandler extends AbstractPrinterHandler {
                         double elapsed = stats.printDuration;
                         double remaining = progress < 1.0 ? (elapsed / progress - elapsed) : 0.0;
                         updateState(CHANNEL_TIME_REMAINING, new QuantityType<>(remaining, Units.SECOND));
+                    } else {
+                        updateState(CHANNEL_TIME_REMAINING, UnDefType.UNDEF);
                     }
                 }
 
@@ -308,25 +310,33 @@ public class KlipperHandler extends AbstractPrinterHandler {
      * {@code extruder1} is tool 2, {@code extruder2} is tool 3, and so on.
      */
     private void addExtraExtruderChannels(List<String> extruderIds) {
-        ThingBuilder builder = editThing();
+        ThingBuilder builder = null;
         Map<String, String> heaterByChannel = new LinkedHashMap<>();
         for (String extruderId : extruderIds) {
             int toolNumber = extruderToolNumber(extruderId);
             String tempChannelId = nozzleTemperatureChannelId(toolNumber);
             String setpointChannelId = nozzleSetpointChannelId(toolNumber);
 
-            builder.withChannel(
-                    ChannelBuilder.create(new ChannelUID(thing.getUID(), tempChannelId), "Number:Temperature")
-                            .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature"))
-                            .withLabel("Nozzle " + toolNumber + " Temperature").build());
-            builder.withChannel(
-                    ChannelBuilder.create(new ChannelUID(thing.getUID(), setpointChannelId), "Number:Temperature")
-                            .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature-setpoint"))
-                            .withLabel("Nozzle " + toolNumber + " Setpoint").build());
+            if (thing.getChannel(tempChannelId) == null) {
+                builder = builder != null ? builder : editThing();
+                builder.withChannel(
+                        ChannelBuilder.create(new ChannelUID(thing.getUID(), tempChannelId), "Number:Temperature")
+                                .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature"))
+                                .withLabel("Nozzle " + toolNumber + " Temperature").build());
+            }
+            if (thing.getChannel(setpointChannelId) == null) {
+                builder = builder != null ? builder : editThing();
+                builder.withChannel(
+                        ChannelBuilder.create(new ChannelUID(thing.getUID(), setpointChannelId), "Number:Temperature")
+                                .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature-setpoint"))
+                                .withLabel("Nozzle " + toolNumber + " Setpoint").build());
+            }
             heaterByChannel.put(setpointChannelId, extruderId);
         }
         extraSetpointHeaterByChannel = heaterByChannel;
-        updateThing(builder.build());
+        if (builder != null) {
+            updateThing(builder.build());
+        }
     }
 
     /**
