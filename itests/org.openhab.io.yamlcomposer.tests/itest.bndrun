@@ -67,7 +67,6 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	si-units;version='[2.2.3,2.2.4)',\
 	tech.units.indriya;version='[2.2.3,2.2.4)',\
 	uom-lib-common;version='[2.2.0,2.2.1)',\
-	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)',\
 	com.fasterxml.jackson.core.jackson-core;version='[2.22.2,2.22.3)',\
 	com.fasterxml.jackson.core.jackson-databind;version='[2.22.2,2.22.3)',\
 	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.22.2,2.22.3)',\
@@ -78,4 +77,5 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	javassist;version='[3.30.2,3.30.3)',\
 	org.apache.commons.commons-io;version='[2.22.0,2.22.1)',\
 	org.apache.commons.commons-net;version='[3.13.0,3.13.1)',\
-	org.apache.commons.lang3;version='[3.20.0,3.20.1)'
+	org.apache.commons.lang3;version='[3.20.0,3.20.1)',\
+	biz.aQute.tester.junit-platform;version='[7.3.0,7.3.1)'

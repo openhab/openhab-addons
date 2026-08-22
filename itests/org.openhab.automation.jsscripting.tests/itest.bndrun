@@ -19,7 +19,6 @@ Import-Package: \
 #
 
 -runbundles: \
-	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)',\
 	ch.qos.logback.classic;version='[1.5.32,1.5.33)',\
 	ch.qos.logback.core;version='[1.5.32,1.5.33)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.22.0,2.22.1)',\
@@ -107,4 +106,5 @@ Import-Package: \
 	stax2-api;version='[4.3.0,4.3.1)',\
 	tech.units.indriya;version='[2.2.3,2.2.4)',\
 	uom-lib-common;version='[2.2.0,2.2.1)',\
-	xstream;version='[1.4.21,1.4.22)'
+	xstream;version='[1.4.21,1.4.22)',\
+	biz.aQute.tester.junit-platform;version='[7.3.0,7.3.1)'
