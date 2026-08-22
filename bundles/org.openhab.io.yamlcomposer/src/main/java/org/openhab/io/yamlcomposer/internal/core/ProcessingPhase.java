@@ -15,6 +15,9 @@ package org.openhab.io.yamlcomposer.internal.core;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.io.yamlcomposer.internal.placeholders.ElseIfPlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.ElsePlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.ForPlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.IfPlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.IncludePlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.InsertPlaceholder;
@@ -22,6 +25,7 @@ import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.RemovePlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.ReplacePlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.VarPlaceholder;
 
 /**
  * Defines the different processing phases for the YAML composer.
@@ -34,9 +38,12 @@ public class ProcessingPhase {
             Set.of(SubstitutionPlaceholder.class);
     public static final Set<Class<? extends Placeholder>> INCLUDES = //
             Set.of(IncludePlaceholder.class);
+    public static final Set<Class<? extends Placeholder>> DIRECTIVES = //
+            Set.of(SubstitutionPlaceholder.class, IfPlaceholder.class, ElseIfPlaceholder.class, ElsePlaceholder.class,
+                    ForPlaceholder.class, VarPlaceholder.class);
     public static final Set<Class<? extends Placeholder>> STANDARD = //
-            Set.of(SubstitutionPlaceholder.class, IfPlaceholder.class, IncludePlaceholder.class,
-                    InsertPlaceholder.class);
+            Set.of(SubstitutionPlaceholder.class, IfPlaceholder.class, ElseIfPlaceholder.class, ElsePlaceholder.class,
+                    ForPlaceholder.class, VarPlaceholder.class, IncludePlaceholder.class, InsertPlaceholder.class);
     public static final Set<Class<? extends Placeholder>> PACKAGE_OVERRIDES = //
             Set.of(RemovePlaceholder.class, ReplacePlaceholder.class);
 

@@ -34,12 +34,16 @@ import org.openhab.io.yamlcomposer.internal.core.SourceLocator;
 import org.openhab.io.yamlcomposer.internal.core.TemplateLoader;
 import org.openhab.io.yamlcomposer.internal.core.VariableLoader;
 import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
+import org.openhab.io.yamlcomposer.internal.processors.ElseIfProcessor;
+import org.openhab.io.yamlcomposer.internal.processors.ElseProcessor;
+import org.openhab.io.yamlcomposer.internal.processors.ForProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.IfProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.IncludeProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.InsertProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.RemoveProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.ReplaceProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.SubstitutionProcessor;
+import org.openhab.io.yamlcomposer.internal.processors.VarProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snakeyaml.engine.v2.exceptions.Mark;
@@ -120,10 +124,14 @@ public class YamlComposer {
 
         this.includeStack = newIncludeStack;
 
-        this.recursiveTransformer = new RecursiveTransformer(this.variables);
+        this.recursiveTransformer = new RecursiveTransformer(this.variables, this.absolutePath, logger);
 
         this.recursiveTransformer.register(new SubstitutionProcessor(logger));
+        this.recursiveTransformer.register(new ForProcessor());
         this.recursiveTransformer.register(new IfProcessor(logger));
+        this.recursiveTransformer.register(new ElseIfProcessor(logger));
+        this.recursiveTransformer.register(new ElseProcessor());
+        this.recursiveTransformer.register(new VarProcessor(logger));
         this.recursiveTransformer.register(
                 new IncludeProcessor(absolutePath.getParent(), newIncludeStack, includeCallback, includeCache, logger));
         this.recursiveTransformer.register(new InsertProcessor(templates, logger));
