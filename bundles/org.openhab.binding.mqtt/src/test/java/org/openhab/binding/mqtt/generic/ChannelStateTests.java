@@ -49,6 +49,7 @@ import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
 import org.openhab.binding.mqtt.generic.values.LocationValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
+import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -201,6 +202,20 @@ public class ChannelStateTests {
 
         assertThat(textValue.getChannelState().toString(), is("A TEST"));
         verify(channelStateUpdateListenerMock).updateChannelState(eq(channelUIDMock), any());
+    }
+
+    @Test
+    public void typedTriggerOnlyEmitsEventsForValidValues() {
+        ChannelConfig triggerConfig = ChannelConfigBuilder.create("state", "").makeTrigger(true).build();
+        ChannelState channelState = new ChannelState(triggerConfig, channelUIDMock, new OnOffValue("ON", "OFF"),
+                channelStateUpdateListenerMock);
+
+        channelState.processMessage("state", "ON".getBytes());
+        channelState.processMessage("state", "INVALID".getBytes());
+
+        verify(channelStateUpdateListenerMock).triggerChannel(channelUIDMock, "ON");
+        verify(channelStateUpdateListenerMock, times(1)).triggerChannel(any(), any());
+        verify(channelStateUpdateListenerMock, never()).updateChannelState(any(), any());
     }
 
     @Test
