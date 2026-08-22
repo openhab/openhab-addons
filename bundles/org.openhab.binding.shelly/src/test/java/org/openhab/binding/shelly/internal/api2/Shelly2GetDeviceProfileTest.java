@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -543,5 +544,47 @@ public class Shelly2GetDeviceProfileTest {
         Shelly2DeviceStatusEmData emdata0 = result.emdata0;
         assertThat(emdata0, is(notNullValue()));
         assertThat(emdata0.totalActiveReturnedEnergySum, is(1.5));
+    }
+
+    /** Config with lora:100 component; rxEnabled controls the Rx-path flag */
+    private static Shelly2GetConfigResult withLora100(Gson gson, boolean rxEnabled) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"lora:100\":{\"id\":100,\"freq\":868000000,\"rx_enable\":" + rxEnabled + "}}");
+    }
+
+    @Test
+    void discoveryLoraComponentPresentLoraDetected() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, true));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraDetected, is(true));
+    }
+
+    @Test
+    void discoveryNoLoraComponentNotDetected() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraDetected, is(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void discoveryLoraRxEnabledFlagMatchesConfig(boolean rxEnabled) throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, rxEnabled));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraRxEnabled, is(rxEnabled));
+    }
+
+    @Test
+    void discoveryLoraBandPlanParsedFromConfig() {
+        Gson gson = new Gson();
+        Shelly2GetConfigResult config = parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"lora:100\":{\"id\":100,\"band_plan\":\"US915\",\"rx_enable\":false}}");
+        assertThat(config.lora100 != null, is(true));
+        if (config.lora100 != null) {
+            assertThat(config.lora100.bandPlan, is("US915"));
+        }
     }
 }

@@ -112,8 +112,8 @@ See section [Discovery](#discovery) for details.
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
 | shellyplusflood      | Shelly Flood Gen4 water leak sensor                      | S4SN-0071A                                                                |
-| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
-| shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
+| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US, S4DM-0A102US                                                 |
+| shellyplusdimmer     | Shelly Plus Wall Dimmer EU / Dimmer Gen 3                | SNDM-0011EU, S3DM-0A101WWL                                                |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
@@ -576,6 +576,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | VALVE_ERROR  | Device reported a problem with the valve.                                         |
 | VIBRATION    | Device reported vibration.                                                        |
 | LOW_BATTERY  | Device reported low battery.                                                      |
+| LORA_RECEIVED| A datagram has been received via LoRa protocol                                    |
 
 ### Sensors
 
@@ -618,6 +619,30 @@ Old channel IDs stay active as deprecated, advanced channels and keep receiving 
 
 `meterN#powerFactor` additionally changed type from `Number:Dimensionless` to plain `Number` (range −1.0 to +1.0).
 This is an in-place type change on the same channel ID, not a rename, so there is no dual-write; items statically linked as `Number:Dimensionless` need relinking.
+
+### LoRa Add-On (Channel Group: lora)
+
+Two LoRa add-on variants are supported:
+
+- **Shelly LoRa Add-On** (standard form factor): attaches to Gen3 and Gen4 Plus devices — Plus 1, Plus 1PM, Plus 2PM, Plus Shutter, Plus EM, and Dimmer 0/1-10V PM Gen3/Gen4. Gen2 Plus devices and the Shelly Wall Dimmer Gen3 do not support this add-on.
+- **Shelly Pro LoRa Add-On** (DIN-rail): attaches to Pro series devices — Pro 1, Pro 1PM, Pro 2, Pro 2PM, Pro 3EM, Pro EM-50, Pro Dimmer 1PM, Pro Dimmer 2PM, and Pro Dimmer 0/1-10V PM. EU868 band only. Requires firmware 2.0 or later.
+
+The binding detects the LoRa Add-On automatically: when the add-on is installed and enabled in the device configuration, the `lora` channel group is created on the next Thing initialization.
+No thing configuration is required.
+The add-on firmware version is shown in the Thing property `addonFirmware`; the device reports it asynchronously, so the property appears shortly after the Thing goes online.
+
+| Group   | Channel      | Type              | read-only | Description                                                                       |
+| ------- | ------------ | ----------------- | --------- | --------------------------------------------------------------------------------- |
+| lora    | dataRx       | String            | yes       | Received LoRa datagram decoded as UTF-8 text. Use the LORA_RECEIVED trigger event.|
+|         | dataRxRaw    | String            | yes       | Received LoRa datagram, BASE64-encoded raw payload.                               |
+|         | bytesRx      | Number:DataAmount | yes       | Number of bytes received from LoRa network so far.                                |
+|         | dataTx       | String            | r/w       | Send a UTF-8 text string; the binding encodes it as BASE64 before transmitting.   |
+|         | dataTxRaw    | String            | r/w       | Send a BASE64-encoded datagram directly to the LoRa network.                      |
+|         | bytesTx      | Number:DataAmount | yes       | Number of bytes sent to the LoRa network so far.                                  |
+|         | errorsTx     | Number            | yes       | Number of failed transmissions to the LoRa network.                               |
+|         | snr          | Number:Dimensionless | yes   | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
+|         | rssi         | Number:Power      | yes       | RSSI (received signal strength in dBm) of the last received packet.               |
+|         | airtime      | Number:Time       | yes       | Transmission air time of the LoRa Add-On during the last 60 minutes.              |
 
 ### Shelly 1 (thing-type: shelly1)
 
