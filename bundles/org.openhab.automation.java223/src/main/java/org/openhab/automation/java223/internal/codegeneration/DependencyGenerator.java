@@ -81,7 +81,7 @@ public class DependencyGenerator {
     // individual additional classes to export
     private String additionalClassesConfig;
     private final BundleContext bundleContext;
-
+    // resulting classes to export
     private final Set<String> additionalClassesToExport = new HashSet<>();
 
     /**
@@ -143,7 +143,11 @@ public class DependencyGenerator {
                     packagesSuccessfullyExported.stream().map(s -> s.replace("/", "."))
                             .forEach(packagesNotFound::remove);
                     for (String remainingPackage : packagesNotFound) {
-                        LOGGER.warn("Failed to found classes to export in package {}", remainingPackage);
+                        if (!remainingPackage.isBlank()) {
+                            LOGGER.warn(
+                                    "Failed to find classes to export from one of the packages listed in the additionalBundles parameter: {}",
+                                    remainingPackage);
+                        }
                     }
                 }
 
@@ -160,7 +164,7 @@ public class DependencyGenerator {
 
     private static void copyExportedClassesByClassLoader(Set<String> classesToExtract, JarOutputStream target) {
         for (String classToExtract : classesToExtract) {
-            if (classToExtract.isEmpty()) {
+            if (classToExtract.isBlank()) {
                 continue;
             }
             String path = classToExtract.replaceAll("\\.", "/") + ".class";
@@ -176,7 +180,9 @@ public class DependencyGenerator {
                     LOGGER.warn("InputStream {} from classpath is null", classToExtract);
                 }
             } catch (IOException e) {
-                LOGGER.warn("Failed to copy classes '{}' from classpath: {}", classToExtract, e.getMessage());
+                LOGGER.warn(
+                        "Failed to copy from classpath the classes listed in the additionalClasses parameter: '{}'. Error is: {}",
+                        classToExtract, e.getMessage());
             }
         }
     }
