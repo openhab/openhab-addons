@@ -484,7 +484,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
             case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT: {
                 Integer temp = toCelsius(command);
                 if (temp != null) {
-                    sendGcode(baseUrl, cfg.apiKey, "M104 S" + temp);
+                    sendGcode(baseUrl, cfg.apiKey, "SET_HEATER_TEMPERATURE HEATER=extruder TARGET=" + temp);
                 } else {
                     logger.warn("Unsupported command type {} for channel {}", command, channelUID);
                 }

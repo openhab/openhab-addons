@@ -359,7 +359,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         if (extraToolIndex != null) {
             Integer temp = toCelsius(command);
             if (temp != null) {
-                sendGcode(baseUrl, cfg.apiKey, "M104 T" + extraToolIndex + " S" + temp);
+                sendToolTemperatureTarget(baseUrl, cfg.apiKey, "tool" + extraToolIndex, temp);
             } else {
                 logger.warn("Unsupported command type {} for channel {}", command, channelUID);
             }
@@ -393,7 +393,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
             case CHANNEL_NOZZLE_TEMPERATURE_SETPOINT: {
                 Integer temp = toCelsius(command);
                 if (temp != null) {
-                    sendGcode(baseUrl, cfg.apiKey, "M104 S" + temp);
+                    sendToolTemperatureTarget(baseUrl, cfg.apiKey, "tool0", temp);
                 } else {
                     logger.warn("Unsupported command type {} for channel {}", command, channelUID);
                 }
@@ -436,6 +436,15 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         int status = httpPost(baseUrl + "/api/printer/command", apiKey, "{\"command\":\"" + gcode + "\"}");
         if (!HttpStatus.isSuccess(status)) {
             logger.debug("G-code command '{}' failed: HTTP {}", gcode, status);
+            markCommandFailure(status);
+        }
+    }
+
+    private void sendToolTemperatureTarget(String baseUrl, String apiKey, String toolId, int temp) {
+        int status = httpPost(baseUrl + "/api/printer/tool", apiKey,
+                "{\"command\":\"target\",\"targets\":{\"" + toolId + "\":" + temp + "}}");
+        if (!HttpStatus.isSuccess(status)) {
+            logger.debug("Failed to set {} target temperature: HTTP {}", toolId, status);
             markCommandFailure(status);
         }
     }
