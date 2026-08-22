@@ -35,22 +35,35 @@ variables:
 
 ### Inline `!var` Directives
 
-The `!var` directive allows you to declare or reassign variables **locally within a mapping node**, with visibility extending to all child nodes.
-Directives process sequentially and leave no output keys in the final composed data structure.
+The `!var` directive declares or reassigns variables **inline at the key level** within a mapping.
+Each directive updates the local variable scope immediately and produces **no output key** in the final composed structure.
 
-::: tip Scope & Propagation Overview
+Variables defined this way are **local to the current mapping node** and automatically propagate to all of its descendants.
 
-1. **Sequential Propagation:** A `!var` directive takes effect immediately for all subsequent entries—including keys, values, and nested child/descendant nodes—within the current mapping context.
-1. **Sub-Block Isolation:** Variables declared inside a nested child mapping remain confined to that specific branch. They propagate down to its descendants, but never leak upward to the parent or outward to adjacent sub-mappings.
+::: tip Scope & Propagation
+
+1. **Immediate Effect:**
+   Each `!var` directive is evaluated in order. Once declared, the variable is available to all subsequent keys, values, and nested mappings **within the same mapping node**.
+
+1. **Mapping‑Node Boundaries:**
+   Entering a nested mapping creates a new scope.
+   Variables declared in the parent mapping remain visible to the child, but variables declared inside the child mapping do **not** propagate back to the parent.
+
+1. **Sequential Evaluation:**
+   Variables only apply to entries that appear **after** their declaration.
+   Earlier entries in the same mapping cannot see variables declared later.
 
 :::
 
-`!var` supports single-property declarations (key-form), chained declarations, and block (map) declarations.
+#### `!var` Syntax
 
-#### Single-Form (Key-Form) Syntax
+Declare a variable using the key‑level form:
 
-Use `!var name: value` to declare a single local variable.
-Multiple sequential key-form `!var` directives evaluate progressively, allowing subsequent directives to reference previously declared variables.
+```yaml
+!var name: value
+```
+
+Multiple `!var` directives may appear sequentially. Later directives may reference variables defined earlier in the same mapping.
 
 ```yaml
 !var host: "localhost"
@@ -61,46 +74,36 @@ Multiple sequential key-form `!var` directives evaluate progressively, allowing 
 endpoint: "${api_url}/users"
 ```
 
-**Resulting Output:**
+**Result:**
 
 ```yaml
 endpoint: "http://localhost:8080/v1/users"
 ```
 
-#### Block/Map Form Syntax
+#### `!var` Scope Diagram
 
-Use `!var:` followed by a mapping block to declare multiple variables in a single declaration.
-
-```yaml
-!var:
-  host: "192.168.1.50"
-  port: 8080
-  protocol: "https"
-
-endpoint: "${protocol}://${host}:${port}/api"
-```
-
-#### Merge Keys Inside `!var` Blocks
-
-Block-form `!var` declarations support YAML merge keys (`<<:`). Merge keys are expanded first, populating default variables into scope before explicit map entries are evaluated. This allows explicit variable declarations to reference or override merged defaults:
-
-```yaml
-defaults: &defaults
-  base_url: "[http://10.0.0.1](http://10.0.0.1)"
-  timeout: 3000
-
-service:
-  !var:
-    <<: *defaults
-    timeout: 5000
-    endpoint: "${base_url}:${timeout}"
-  url: "${endpoint}"
-# Service URL resolves to: "[http://10.0.0.1:5000](http://10.0.0.1:5000)"
+```text
+parent-map:
+├─ !var a: 1              ← defines `a` in this mapping
+├─ key1: ${a}             ← sees `a`
+│
+├─ child-map:             ← new mapping node (inherits `a`)
+│   ├─ key2: ${a}         ← sees `a` but not `b`
+│   │                       (because `b` is declared *after* this entry)
+│   ├─ !var b: 2          ← defines `b` only in this child mapping
+│   └─ key3: ${b}         ← sees `b` (same mapping node, declared earlier)
+│
+└─ key4: ${a}             ← sees `a` but not `b`
+                           (because `b` was declared inside child-map)
 ```
 
 ::: tip List Context Restriction
-`!var` directives are supported only inside mapping contexts.
-Using `!var` inside a YAML list context (e.g., `- !var foo: bar`) logs a warning and is ignored.
+
+`!var` is valid **only inside mapping nodes**.
+
+If used inside a list item (e.g., `- !var foo: bar`), the list element becomes a mapping containing the directive.
+If your list item must remain a scalar, declare the variable in the parent mapping instead.
+
 :::
 
 ## Variable Scoping & Isolation
@@ -573,7 +576,6 @@ foo: !sub:jinja "Hello {{ username }}!"
 ## Common Pitfalls
 
 1. **Unquoted Operators**: Expressions containing YAML‑significant characters such as `:` or `?` must be quoted; otherwise YAML interprets those characters as structural syntax and rejects the value.
-1. **Sub-Block Scope Boundaries**: `!var` declarations inside child mapping blocks, templates, or `!for` loops remain confined to that branch and never leak upward or outward to adjacent sub-mappings.
 1. **Reserved Names & System Variables**: System variables (`OPENHAB_CONF`, `__FILE__`, etc.) and Jinja keywords (`true`, `false`, `null`, `in`, `if`) cannot be overwritten.
 1. **`+` vs `~`**: Use `~` for strings to avoid type mismatch errors and use `+` for numbers or lists.
 1. **Jinja Blocks**: Block‑level Jinja constructs (e.g., `{% for %}`) are not supported. Use YAMLComposer’s own control‑flow tags, such as `!if`/`!elseif`/`!else` and `!for`.

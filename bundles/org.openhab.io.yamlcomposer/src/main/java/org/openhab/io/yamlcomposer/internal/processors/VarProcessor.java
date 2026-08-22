@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal.processors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.directives.VarDirective;
 import org.openhab.io.yamlcomposer.internal.placeholders.VarPlaceholder;
@@ -26,6 +27,12 @@ import org.openhab.io.yamlcomposer.internal.placeholders.VarPlaceholder;
 @NonNullByDefault
 public class VarProcessor implements PlaceholderProcessor<VarPlaceholder> {
 
+    private final BufferedLogger logger;
+
+    public VarProcessor(BufferedLogger logger) {
+        this.logger = logger;
+    }
+
     @Override
     public Class<VarPlaceholder> getPlaceholderType() {
         return VarPlaceholder.class;
@@ -33,16 +40,17 @@ public class VarProcessor implements PlaceholderProcessor<VarPlaceholder> {
 
     @Override
     public @Nullable Object process(VarPlaceholder placeholder, RecursiveTransformer transformer) {
-        Object val = placeholder.value();
         String sourceLocation = placeholder.sourceLocation();
 
-        if (val != null) {
-            String variableName = String.valueOf(val).trim();
-            if (!variableName.isEmpty() && !"~".equals(variableName)) {
-                return new VarDirective.SingleForm(variableName, sourceLocation);
+        if (placeholder.value() instanceof String strVal) {
+            String variableName = strVal.trim();
+            if (!variableName.isEmpty() && !"null".equalsIgnoreCase(variableName)) {
+                return new VarDirective(variableName, sourceLocation);
             }
         }
 
-        return new VarDirective.MapForm(sourceLocation);
+        logger.warn("{} Invalid !var directive. Expected a variable name scalar (e.g., '!var name: value').",
+                sourceLocation);
+        return null;
     }
 }

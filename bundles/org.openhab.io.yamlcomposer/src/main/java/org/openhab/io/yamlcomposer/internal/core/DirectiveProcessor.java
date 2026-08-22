@@ -238,22 +238,14 @@ public class DirectiveProcessor {
     public void processVarDirective(VarDirective varDirective, @Nullable Object oldVal,
             RecursiveTransformer transformer, Set<Class<? extends Placeholder>> allowedTypes,
             IdentityHashMap<Object, Object> visited) {
-        switch (varDirective) {
-            case VarDirective.SingleForm single -> {
-                String varName = single.variableName();
-                if (VariableLoader.isSpecialVariable(varName)) {
-                    logger.warn("{} Cannot redefine special variable '{}'.", single.sourceLocation(), varName);
-                    return;
-                }
-                Object resolvedVal = transformer.transform(oldVal, allowedTypes, visited);
-                transformer.getVariables().put(varName, resolvedVal);
-            }
-            case VarDirective.MapForm mapForm -> {
-                VariableLoader varLoader = new VariableLoader(transformer.getVariables(), transformer.getAbsolutePath(),
-                        transformer, logger);
-                varLoader.extractVariables(oldVal, null, true);
-            }
+        String varName = varDirective.variableName();
+        if (VariableLoader.isSpecialVariable(varName)) {
+            logger.warn("{} Cannot redefine special variable '{}'.", varDirective.sourceLocation(), varName);
+            return;
         }
+
+        Object resolvedVal = transformer.transform(oldVal, allowedTypes, visited);
+        transformer.getVariables().put(varName, resolvedVal);
     }
 
     private void processForDirective(ForDirective forDirective, @Nullable Object oldVal,
