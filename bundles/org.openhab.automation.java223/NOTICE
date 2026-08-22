@@ -18,6 +18,11 @@ In the 3rd party directory you will find a copy of the JavaScript Engine used by
 the user eobermuhlner (source available at https://github.com/eobermuhlner/java-scriptengine). This work is distributed
 under the MIT licence.
 
+== External Java Compiler
+
+A fallback compiler is used if the Java 21 compiler is not available in the openHAB runtime.
+It is a GPL v2 work, from Christian Kohlschütter's Standalone JDK Compiler project (extracted from the JDK).
+
 == Source Code
 
 https://github.com/openhab/openhab-addons
