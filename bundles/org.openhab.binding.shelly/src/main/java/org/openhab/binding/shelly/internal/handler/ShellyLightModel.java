@@ -614,17 +614,17 @@ public class ShellyLightModel extends LightModel {
     public State getFullColorState() {
         int[] rgbw = getRGBX();
         if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == 0) {
-            new StringType(SHELLY_COLOR_YELLOW);
+            return new StringType(SHELLY_COLOR_YELLOW);
         } else if (rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == 0 && rgbw[2] == 0) {
-            new StringType(SHELLY_COLOR_RED);
+            return new StringType(SHELLY_COLOR_RED);
         } else if (rgbw[0] == 0 && rgbw[1] == SHELLY_MAX_COLOR && rgbw[2] == 0) {
-            new StringType(SHELLY_COLOR_GREEN);
+            return new StringType(SHELLY_COLOR_GREEN);
         } else if (rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == SHELLY_MAX_COLOR) {
-            new StringType(SHELLY_COLOR_BLUE);
+            return new StringType(SHELLY_COLOR_BLUE);
         } else if (rgbw.length == 4 && rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == 0 && rgbw[3] == SHELLY_MAX_COLOR) {
-            new StringType(SHELLY_COLOR_WHITE);
+            return new StringType(SHELLY_COLOR_WHITE);
         } else if (rgbw.length == 3 && rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR) {
-            new StringType(SHELLY_COLOR_WHITE);
+            return new StringType(SHELLY_COLOR_WHITE);
         }
         return UnDefType.UNDEF;
     }
