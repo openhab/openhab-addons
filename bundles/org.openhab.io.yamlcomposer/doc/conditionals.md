@@ -23,7 +23,7 @@ Conditional tags are useful for selecting configuration blocks, enabling optiona
 
 The conditional system supports three forms:
 
-- **Key‑Level Form**: uses `!if`, `!elseif` (and aliases `!elsif`, `!elif`), and `!else` as map keys.
+- **Key‑Level Form**: uses `!if`, `!elseif` (and aliases `!elsif`, `!elif`), and `!else ~:` as map keys.
 - **Mapping Form**: uses `if:`, `then:`, and `else:` keys inside a single mapping.
 - **Sequence Form**: uses `if:`, `elseif:`, and `else:` entries inside a list.
 
@@ -36,18 +36,18 @@ The table below summarizes the key differences so you can choose the right form 
 
 | Feature / Aspect       | **Key‑Level Form**                                                                 | **Mapping Form**                                                                            | **Sequence Form**                                                                                                                                                                                              |
 |:-----------------------|:-----------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Syntax**             | `!if <expr>:`<br>`!elseif <expr>:`<br>`!else:`                                     | `!if`<br>&nbsp;&nbsp;`if: <expr>`<br>&nbsp;&nbsp;`then: <val>`<br>&nbsp;&nbsp;`else: <val>` | `!if`<br>&nbsp;&nbsp;`- if: <expr>`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`then: <val>`<br>&nbsp;&nbsp;`- elseif: <expr>`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`then: <val>`<br>&nbsp;&nbsp;`- else: <val>` |
+| **Syntax**             | `!if <expr>:`<br>`!elseif <expr>:`<br>`!else ~:`                                   | `!if`<br>&nbsp;&nbsp;`if: <expr>`<br>&nbsp;&nbsp;`then: <val>`<br>&nbsp;&nbsp;`else: <val>` | `!if`<br>&nbsp;&nbsp;`- if: <expr>`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`then: <val>`<br>&nbsp;&nbsp;`- elseif: <expr>`<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`then: <val>`<br>&nbsp;&nbsp;`- else: <val>` |
 | **Behavior in Maps**   | Merges nested key‑value pairs directly into the parent map                         | Resolves to a single value                                                                  | Resolves to a single value                                                                                                                                                                                     |
 | **Behavior in Lists**  | Splices items directly into the parent list                                        | Returns a single list element (branch may itself be a list)                                 | Returns a single list element (branch may itself be a list)                                                                                                                                                    |
-| **Multi‑Branching**    | Supported via sibling keys (`!elseif`, `!else`)                                    | Single condition (`if` / `then` / `else`)                                                   | Multi‑branch entries (`if`, `elseif`, `else`)                                                                                                                                                                  |
+| **Multi‑Branching**    | Supported via sibling keys (`!elseif`, `!else ~`)                                  | Single condition (`if` / `then` / `else`)                                                   | Multi‑branch entries (`if`, `elseif`, `else`)                                                                                                                                                                  |
 | **Unmatched Fallback** | Inactive branches are omitted entirely                                             | Resolves to `null`                                                                          | Resolves to `null`                                                                                                                                                                                             |
 | **Primary Use Case**   | Conditionally merging groups of properties or inserting multiple inline list items | Simple ternary scalar/container assignment                                                  | Multi‑branch ternary scalar/container assignment                                                                                                                                                               |
 
 ## Key‑Level Form
 
 The key‑level form applies conditional tags directly as map keys.
-The tags `!if`, `!elseif` (and its aliases `!elsif`, `!elif`), and `!else` allow multi‑branch logic using separate map entries.
-Each tag evaluates its expression (except `!else`, which has no expression).
+The tags `!if`, `!elseif` (and its aliases `!elsif`, `!elif`), and `!else ~` allow multi‑branch logic using separate map entries.
+Each tag evaluates its expression (except `!else ~`, which has no expression).
 The nested map underneath the selected tag is merged into the parent map.
 
 Use this form when you want to conditionally merge map content into a parent structure.
@@ -100,7 +100,7 @@ mode:
     value: "staging"
   !elif "env == 'dev'": # !elseif, !elif, and !elsif can be used interchangeably
     value: "development"
-  !else:
+  !else ~:
     value: "unknown"
 ```
 
@@ -275,6 +275,6 @@ network_settings: !if
 1. **Invalid YAML**: Even inactive branches must be syntactically valid YAML.
 1. **Branch Ordering**: In the key‑level form, branches are evaluated in map order.
    The first truthy `!if` or `!elseif` wins.
-   The `!else` branch applies only when no earlier branch matches.
+   The `!else ~` branch applies only when no earlier branch matches.
 
 See [Expression Syntax](variables.md#expression-syntax) for more details.

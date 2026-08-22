@@ -17,20 +17,24 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.io.yamlcomposer.internal.core.DirectiveProcessor;
+import org.openhab.io.yamlcomposer.internal.directives.VarDirective;
+import org.openhab.io.yamlcomposer.internal.processors.VarProcessor;
 
 /**
  * Tests for {@link VarProcessor} and {@link VarDirective} handling in {@link DirectiveProcessor}.
@@ -40,8 +44,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
 
     @Test
-    @DisplayName("Verify single form !var declaration populates scope and leaves no output keys")
-    void testSingleFormVariableDeclaration() throws IOException {
+    @DisplayName("Verify scalar !var declaration populates scope and leaves no output keys")
+    void testScalarVarDeclaration() throws IOException {
         String yaml = """
                 !var prefix: "sensor_1"
                 sensor_id: "${prefix}_temp"
@@ -57,38 +61,50 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
     }
 
     @Test
-    @DisplayName("Verify block/map form !var populates multiple variables into local scope")
-    void testMapFormVariableDeclaration() throws IOException {
+    @DisplayName("Verify !var declaration with block mapping value populates scope")
+    void testMappingVarDeclaration() throws IOException {
         String yaml = """
-                !var:
-                  host: "192.168.1.50"
-                  port: 8080
-                  protocol: "https"
-                endpoint: "${protocol}://${host}:${port}/api"
+                !var mymap:
+                  foo: bar
+                  nested:
+                    key: value
+
+                map_ref: "${mymap.foo}"
+                nested_map_ref: "${mymap.nested.key}"
+                full_map: "${mymap}"
                 """;
 
         Map<Object, @Nullable Object> result = loadYaml(yaml);
 
-        assertEquals(1, result.size());
-        assertEquals("https://192.168.1.50:8080/api", result.get("endpoint"));
+        assertEquals("bar", result.get("map_ref"));
+        assertEquals("value", result.get("nested_map_ref"));
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> fullMap = (Map<String, Object>) result.get("full_map");
+        assertNotNull(fullMap);
+        assertEquals("bar", fullMap.get("foo"));
     }
 
     @Test
-    @DisplayName("Verify progressive evaluation allows variables to reference previously defined variables in the same block")
-    void testProgressiveVariableResolution() throws IOException {
+    @DisplayName("Verify !var declaration with block list value populates scope")
+    void testListVarDeclaration() throws IOException {
         String yaml = """
-                !var:
-                  base_port: 8000
-                  offset: 80
-                  port: "${base_port + offset}"
-                  endpoint: "http://localhost:${port}"
-                url: "${endpoint}/health"
+                !var mylist:
+                  - one
+                  - two
+
+                list_ref: "${mylist[0]}"
+                full_list: "${mylist}"
                 """;
 
         Map<Object, @Nullable Object> result = loadYaml(yaml);
 
-        assertEquals(1, result.size());
-        assertEquals("http://localhost:8080/health", result.get("url"));
+        assertEquals("one", result.get("list_ref"));
+
+        @SuppressWarnings("unchecked")
+        List<Object> fullList = (List<Object>) result.get("full_list");
+        assertNotNull(fullList);
+        assertEquals(List.of("one", "two"), fullList);
     }
 
     @Test
@@ -257,22 +273,6 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
     }
 
     @Test
-    @DisplayName("Verify block form normalization with tilde (!var ~:)")
-    void testVarWithTildeBlockForm() throws IOException {
-        String yaml = """
-                !var ~:
-                  prefix: "sys"
-                  id: 42
-                device_key: "${prefix}_${id}"
-                """;
-
-        Map<Object, @Nullable Object> result = loadYaml(yaml);
-
-        assertEquals(1, result.size());
-        assertEquals("sys_42", result.get("device_key"));
-    }
-
-    @Test
     @DisplayName("Verify sequential !var directives, forward-reference warnings, and retention")
     void testMultipleVarDirectivesAndForwardReferences() throws IOException {
         String yaml = """
@@ -360,7 +360,7 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
                       - !if "true":
                           - "first"
                         !var foo: "bar"
-                        !else:
+                        !else ~:
                           - "second"
                     """;
 
@@ -380,7 +380,7 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
                     !if "true":
                       first: "val1"
                     !var foo: "bar"
-                    !else:
+                    !else ~:
                       second: "val2"
                     """;
 
@@ -447,26 +447,6 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
             @SuppressWarnings("unchecked")
             Map<String, Object> item2 = (Map<String, Object>) items.get(1);
             assertEquals("prefix_2_node", item2.get("name"));
-        }
-
-        @Test
-        @DisplayName("Verify merge key expansion inside block form !var directives")
-        void testMergeKeysInsideVarBlockForm() throws IOException {
-            String yaml = """
-                    defaults: &defaults
-                      base_url: "http://10.0.0.1"
-                      timeout: 3000
-
-                    service:
-                      !var:
-                        <<: *defaults
-                        timeout: 5000
-                        endpoint: "${base_url}:${timeout}"
-                      url: "${endpoint}"
-                    """;
-
-            Map<Object, @Nullable Object> result = loadYaml(yaml);
-            assertThat(getNestedValue(result, "service", "url"), equalTo("http://10.0.0.1:5000"));
         }
 
         @Test
@@ -613,65 +593,6 @@ public class YamlComposerVarTagTest extends AbstractYamlComposerTest {
 
             assertNotEquals("active_feature", result.get("outer_check"));
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("branch_secret")));
-        }
-    }
-
-    @Nested
-    @DisplayName("Block Scalar Safety")
-    class BlockScalarSafetyTests {
-
-        @ParameterizedTest
-        @MethodSource("provideBlockScalarYamlSamples")
-        void testBlockScalarsWithVarKeyword(String yamlContent) throws IOException {
-            Map<Object, @Nullable Object> result = loadYaml(yamlContent);
-
-            assertNotNull(result);
-
-            // Retrieve the scalar value from the map
-            Object scriptValue = result.get("script");
-            assertNotNull(scriptValue);
-
-            // Verify that the block scalar content remained intact as raw text
-            // and wasn't altered or corrupted by control-flow parsing.
-            String textContent = scriptValue.toString();
-            assertTrue(textContent.contains("!var:"),
-                    "Expected block scalar content to preserve '!var:' literally, but got: " + textContent);
-        }
-
-        static Stream<String> provideBlockScalarYamlSamples() {
-            return Stream.of("""
-                    script: |
-                        - task: do_something
-                          !var:
-                            name: "value"
-                    """, """
-                    script: |-
-                        - task: do_something
-                          !var:
-                            name: "value"
-                    """, """
-                    script: |+
-                        - task: do_something
-                          !var:
-                            name: "value"
-                    """, """
-                    script: >
-                        This is a folded line containing
-                        !var:
-                          name: "value"
-                        and should not be corrupted.
-                    """, """
-                    script: >-
-                        Another folded line with
-                        !var:
-                          name: "value"
-                        that strips trailing newlines.
-                    """, """
-                    script: |2
-                          - task: indented
-                            !var:
-                              name: "value"
-                    """);
         }
     }
 }

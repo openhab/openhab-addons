@@ -17,14 +17,11 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +29,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -174,7 +170,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                                 result: "one"
                               !elseif val == 2:
                                 result: "two"
-                              !else:
+                              !else ~:
                                 result: "other"
                             """;
 
@@ -195,7 +191,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                                 result: "one"
                               %s val == 2:
                                 result: "match"
-                              !else:
+                              !else ~:
                                 result: "fallback"
                             """.formatted(keyword);
 
@@ -225,7 +221,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                 void warnsOnOrphanElse() throws IOException {
                     String yaml = """
                             test:
-                              !else:
+                              !else ~:
                                 result: "orphan"
                             """;
 
@@ -244,7 +240,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                                 result: "first"
                               !elseif true:
                                 result: "second"
-                              !else:
+                              !else ~:
                                 result: "third"
                             """;
 
@@ -266,7 +262,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                               !if false:
                                 result: "first"
                               unrelated_key: "interruption"
-                              !else:
+                              !else ~:
                                 result: "orphan"
                             """;
 
@@ -289,7 +285,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                                 result: "first"
                               !for i in [1]:
                                 item_${i}: value
-                              !else:
+                              !else ~:
                                 result: "orphan"
                             """;
 
@@ -307,11 +303,11 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                             test:
                               !if true:
                                 first_result: "one"
-                              !else:
+                              !else ~:
                                 first_result: "fallback-one"
                               !if true:
                                 second_result: "two"
-                              !else:
+                              !else ~:
                                 second_result: "fallback-two"
                             """;
 
@@ -319,63 +315,6 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
 
                     assertThat(getNestedValue(data, "test", "first_result"), is("one"));
                     assertThat(getNestedValue(data, "test", "second_result"), is("two"));
-                }
-            }
-
-            @Nested
-            @DisplayName("Block Scalar Safety")
-            class BlockScalarSafetyTests {
-
-                @ParameterizedTest
-                @MethodSource("provideBlockScalarYamlSamples")
-                void testBlockScalarsWithElseKeyword(String yamlContent) throws IOException {
-                    Map<Object, @Nullable Object> result = loadYaml(yamlContent);
-
-                    assertNotNull(result);
-
-                    // Retrieve the scalar value from the map
-                    Object scriptValue = result.get("script");
-                    assertNotNull(scriptValue);
-
-                    // Verify that the block scalar content remained intact as raw text
-                    // and wasn't altered or corrupted by control-flow parsing.
-                    String textContent = scriptValue.toString();
-                    assertTrue(textContent.contains("!else:"),
-                            "Expected block scalar content to preserve '!else:' literally, but got: " + textContent);
-                }
-
-                static Stream<String> provideBlockScalarYamlSamples() {
-                    return Stream.of("""
-                            script: |
-                                - task: do_something
-                                  !else:
-                                    - task: fallback
-                            """, """
-                            script: |-
-                                - task: do_something
-                                  !else:
-                                    - task: fallback
-                            """, """
-                            script: |+
-                                - task: do_something
-                                  !else:
-                                    - task: fallback
-                            """, """
-                            script: >
-                                This is a folded line containing
-                                !else:
-                                and should not be corrupted.
-                            """, """
-                            script: >-
-                                Another folded line with
-                                !else:
-                                that strips trailing newlines.
-                            """, """
-                            script: |2
-                                  - task: indented
-                                    !else:
-                                      - task: fallback
-                            """);
                 }
             }
         }
@@ -522,7 +461,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                     test:
                       !if true:
                         result: !include non_existent_file.yaml
-                      !else:
+                      !else ~:
                         result: "fallback"
                     """;
 
@@ -543,7 +482,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                         result: "true"
                       !elseif false:
                         result: !include non_existent_file.yaml
-                      !else:
+                      !else ~:
                         result: !include non_existent_file.yaml
                     """;
 
@@ -667,7 +606,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                       - !if true:
                           - "item2"
                           - "item3"
-                        !else:
+                        !else ~:
                           - "fallback"
                       - "item4"
                     """;
@@ -748,7 +687,7 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
                           items:
                             Switch_1:
                               label: "Enabled"
-                      !else:
+                      !else ~:
                         feature_pkg:
                           items:
                             Switch_1:

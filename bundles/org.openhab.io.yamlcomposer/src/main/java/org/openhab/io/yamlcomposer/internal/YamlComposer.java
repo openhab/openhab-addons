@@ -131,7 +131,7 @@ public class YamlComposer {
         this.recursiveTransformer.register(new IfProcessor(logger));
         this.recursiveTransformer.register(new ElseIfProcessor(logger));
         this.recursiveTransformer.register(new ElseProcessor());
-        this.recursiveTransformer.register(new VarProcessor());
+        this.recursiveTransformer.register(new VarProcessor(logger));
         this.recursiveTransformer.register(
                 new IncludeProcessor(absolutePath.getParent(), newIncludeStack, includeCallback, includeCache, logger));
         this.recursiveTransformer.register(new InsertProcessor(templates, logger));

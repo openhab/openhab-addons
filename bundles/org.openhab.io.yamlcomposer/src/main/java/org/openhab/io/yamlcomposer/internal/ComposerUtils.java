@@ -12,6 +12,7 @@
  */
 package org.openhab.io.yamlcomposer.internal;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -131,42 +132,8 @@ final class ComposerUtils {
      * @throws IOException if an I/O error occurs
      */
     static @Nullable Object loadYaml(byte[] fileBytes, Path sourcePath) throws IOException {
-        String yamlContent = new String(fileBytes, StandardCharsets.UTF_8);
-        yamlContent = normalizeTagOnlyKeys(yamlContent);
         Load loader = createYamlLoader(sourcePath.toString());
-        return loader.loadFromString(yamlContent);
-    }
-
-    private static String normalizeTagOnlyKeys(String yamlContent) {
-        StringBuilder normalized = new StringBuilder(yamlContent.length());
-        boolean inBlockScalar = false;
-        int blockScalarIndent = -1;
-        for (String line : yamlContent.split("(?<=\\n)|(?<=\\r\\n)", -1)) {
-            String normalizedLine = line;
-            String content = line.replaceFirst("[\\r\\n]+$", "");
-            if (inBlockScalar && !content.isBlank() && indentation(content) <= blockScalarIndent) {
-                inBlockScalar = false;
-                blockScalarIndent = -1;
-            }
-            if (!inBlockScalar) {
-                normalizedLine = content.replaceFirst("^(\\s*!(?:else|var)):(\\s*)(.*)$", "$1 ~:$2$3")
-                        + line.substring(content.length());
-                if (normalizedLine.matches("^\\s*.+?:\\s*[|>][0-9+-]*\\s*(?:#.*)?(?:\\r?\\n)?$")) {
-                    inBlockScalar = true;
-                    blockScalarIndent = indentation(content);
-                }
-            }
-            normalized.append(normalizedLine);
-        }
-        return normalized.toString();
-    }
-
-    private static int indentation(String line) {
-        int result = 0;
-        while (result < line.length() && (line.charAt(result) == ' ' || line.charAt(result) == '\t')) {
-            result++;
-        }
-        return result;
+        return loader.loadFromInputStream(new ByteArrayInputStream(fileBytes));
     }
 
     /**
