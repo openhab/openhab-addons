@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_GROUP_METER;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_GETCONFIG;
 
@@ -543,5 +544,110 @@ public class Shelly2GetDeviceProfileTest {
         Shelly2DeviceStatusEmData emdata0 = result.emdata0;
         assertThat(emdata0, is(notNullValue()));
         assertThat(emdata0.totalActiveReturnedEnergySum, is(1.5));
+    }
+
+    @Test
+    void proRgbwwPmRgbcctProfileIsRGBW2InColorWithBothRgb0AndCct0Metered() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"rgb:0\":{\"id\":0,\"name\":\"rgb\"},\"cct:0\":{\"id\":0}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.isRGBW2, is(true));
+        assertThat(profile.inColor, is(true));
+        var lightsRgbcct = profile.settings.lights;
+        assertNotNull(lightsRgbcct);
+        assertThat(lightsRgbcct.size(), is(2));
+        assertThat(profile.numMeters, is(2));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER + "1"));
+        assertThat(profile.getMeterGroup(1), is(CHANNEL_GROUP_METER + "2"));
+    }
+
+    @Test
+    void proRgbwwPmLightProfileFiveChannels() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"light:0\":{\"id\":0},\"light:1\":{\"id\":1},\"light:2\":{\"id\":2},"
+                + "\"light:3\":{\"id\":3},\"light:4\":{\"id\":4}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.isRGBW2, is(true));
+        assertThat(profile.inColor, is(false));
+        var lights5 = profile.settings.lights;
+        assertNotNull(lights5);
+        assertThat(lights5.size(), is(5));
+    }
+
+    @Test
+    void proRgbwwPmCctx2ProfileInColorFalseWithTwoIndependentlyMeteredCctChannels() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"cct:0\":{\"id\":0},\"cct:1\":{\"id\":1}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.isRGBW2, is(true));
+        assertThat(profile.inColor, is(false));
+        var lightsCct = profile.settings.lights;
+        assertNotNull(lightsCct);
+        assertThat(lightsCct.size(), is(2));
+        assertThat(profile.numMeters, is(2));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER + "1"));
+        assertThat(profile.getMeterGroup(1), is(CHANNEL_GROUP_METER + "2"));
+    }
+
+    @Test
+    void proRgbwwPmRgbx2lightProfileInColorTrueWithThreeIndependentlyMeteredComponents() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"rgb:0\":{\"id\":0},\"light:0\":{\"id\":0},\"light:1\":{\"id\":1}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.isRGBW2, is(true));
+        assertThat(profile.inColor, is(true));
+        var lightsRgbx2 = profile.settings.lights;
+        assertNotNull(lightsRgbx2);
+        assertThat(lightsRgbx2.size(), is(3));
+        assertThat(profile.numMeters, is(3));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER + "1"));
+        assertThat(profile.getMeterGroup(1), is(CHANNEL_GROUP_METER + "2"));
+        assertThat(profile.getMeterGroup(2), is(CHANNEL_GROUP_METER + "3"));
+    }
+
+    @Test
+    void proRgbwwPmCctx2ProfileUsesPerComponentCtRangeWhenDeviceReportsOne() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"cct:0\":{\"id\":0,\"ct_range\":[2200,4000]},\"cct:1\":{\"id\":1,\"ct_range\":[4000,6000]}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        var lightsCct = profile.settings.lights;
+        assertNotNull(lightsCct);
+        assertThat(lightsCct.size(), is(2));
+        assertThat(profile.getMinTemp(0), is(2200));
+        assertThat(profile.getMaxTemp(0), is(4000));
+        assertThat(profile.getMinTemp(1), is(4000));
+        assertThat(profile.getMaxTemp(1), is(6000));
+    }
+
+    @Test
+    void proRgbwwPmCctx2ProfileFallsBackToProfileWideRangeWithoutCtRange() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"cct:0\":{\"id\":0},\"cct:1\":{\"id\":1}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.getMinTemp(0), is(profile.minTemp));
+        assertThat(profile.getMaxTemp(0), is(profile.maxTemp));
+    }
+
+    @Test
+    void proRgbwwPmFiveInputsAreAllCounted() throws ShellyApiException {
+        Gson gson = new Gson();
+        String json = "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"rgb:0\":{\"id\":0},\"input:0\":{\"id\":0},\"input:1\":{\"id\":1},\"input:2\":{\"id\":2},"
+                + "\"input:3\":{\"id\":3},\"input:4\":{\"id\":4}}";
+        StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
+        assertThat(profile.numInputs, is(5));
     }
 }

@@ -16,8 +16,10 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -230,6 +232,136 @@ public class ShellyDeviceProfileTest {
                 // Multi-channel dimmers (e.g. Pro Dimmer 2PM) get numbered control groups
                 Arguments.of(2, 0, CHANNEL_GROUP_DIMMER_CONTROL + "1"), //
                 Arguments.of(2, 1, CHANNEL_GROUP_DIMMER_CONTROL + "2"));
+    }
+
+    private static ArrayList<ShellySettingsRgbwLight> taggedLights(List<ShellyLightApiComponent> apiComponents) {
+        return apiComponents.stream().map(c -> {
+            ShellySettingsRgbwLight light = new ShellySettingsRgbwLight();
+            light.apiComponent = c;
+            return light;
+        }).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForLegacyLightChannelPrefix")
+    void getControlGroupUsesLegacyPrefixWhenGen1Rgbw2ThingHasDeprecatedChannels(boolean hasLegacyLightChannels,
+            int index, String expectedControlGroup) throws ShellyApiException {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.lights = IntStream.range(0, 4).mapToObj(i -> new ShellySettingsRgbwLight())
+                .collect(Collectors.toCollection(ArrayList::new));
+        deviceProfile.initialize(THING_TYPE_SHELLYRGBW2_WHITE, gson.toJson(settingsGlobal), settingsDevice);
+        deviceProfile.hasLegacyLightChannels = hasLegacyLightChannels;
+
+        assertThat("hasLegacyLightChannels: " + hasLegacyLightChannels + ", index: " + index,
+                deviceProfile.getControlGroup(index), is(equalTo(expectedControlGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForLegacyLightChannelPrefix() {
+        return Stream.of( //
+                Arguments.of(true, 1, CHANNEL_GROUP_LIGHT_CHANNEL + "2"), //
+                Arguments.of(false, 1, CHANNEL_GROUP_LIGHT_INDEX + "2"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForHybridControlGroup")
+    void getControlGroupForHybridProRgbwwPmProfile(List<ShellyLightApiComponent> apiComponents, int index,
+            String expectedControlGroup) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        deviceProfile.isRGBW2 = true;
+        deviceProfile.inColor = apiComponents.stream().anyMatch(ShellyApiLightUtil::isColorComponent);
+        deviceProfile.settings.lights = taggedLights(apiComponents);
+
+        assertThat("apiComponents: " + apiComponents + ", index: " + index, deviceProfile.getControlGroup(index),
+                is(equalTo(expectedControlGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForHybridControlGroup() {
+        return Stream.of( //
+                // rgbcct: index 0 (rgb, color) -> control; index 1 (cct, secondary) -> light1
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), 0,
+                        CHANNEL_GROUP_LIGHT_CONTROL), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), 1,
+                        CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                // rgbx2light: index 0 (rgb) -> control; indexes 1/2 (light) -> light1/light2
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), 0, CHANNEL_GROUP_LIGHT_CONTROL), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), 1, CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), 2, CHANNEL_GROUP_LIGHT_INDEX + "2"), //
+                // cctx2: no color component at all -> both indexes numbered from 1
+                Arguments.of(List.of(ShellyLightApiComponent.CCT, ShellyLightApiComponent.CCT), 0,
+                        CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                Arguments.of(List.of(ShellyLightApiComponent.CCT, ShellyLightApiComponent.CCT), 1,
+                        CHANNEL_GROUP_LIGHT_INDEX + "2"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForHasColorTag")
+    void hasColorTag(List<ShellyLightApiComponent> apiComponents, boolean profileInColor, int idx, boolean expected) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        deviceProfile.inColor = profileInColor;
+        deviceProfile.settings.lights = taggedLights(apiComponents);
+
+        assertThat("apiComponents: " + apiComponents + ", idx: " + idx, deviceProfile.hasColorTag(idx),
+                is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForHasColorTag() {
+        return Stream.of( //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), true, 0, true), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), true, 1, false), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), true, 0, true), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), true, 2, false), //
+                Arguments.of(List.of(ShellyLightApiComponent.CCT, ShellyLightApiComponent.CCT), false, 0, false), //
+                // untagged Gen1 RGBW2 entry falls back to the whole-profile inColor flag
+                Arguments.of(List.of(ShellyLightApiComponent.NONE), true, 0, true), //
+                Arguments.of(List.of(ShellyLightApiComponent.NONE), false, 0, false), //
+                // out-of-range index also falls back to the whole-profile inColor flag
+                Arguments.of(List.of(ShellyLightApiComponent.RGB), true, 5, true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForIsCctComponent")
+    void isCctComponent(List<ShellyLightApiComponent> apiComponents, int idx, boolean expected) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        deviceProfile.settings.lights = taggedLights(apiComponents);
+
+        assertThat("apiComponents: " + apiComponents + ", idx: " + idx, deviceProfile.isCctComponent(idx),
+                is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForIsCctComponent() {
+        return Stream.of( //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), 1, true), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), 0, false), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), 1, false), //
+                // untagged Gen1 RGBW2 entry is never CCT
+                Arguments.of(List.of(ShellyLightApiComponent.NONE), 0, false), //
+                // out-of-range index is never CCT
+                Arguments.of(List.of(ShellyLightApiComponent.CCT), 5, false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForIsProRgbwwPm")
+    void isProRgbwwPm(ThingTypeUID thingTypeUID, boolean expected) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
+
+        assertThat("thingTypeUID: " + thingTypeUID, deviceProfile.isProRgbwwPm, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForIsProRgbwwPm() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, true), //
+                // Plus RGBW PM reports the same rgb/rgbw/light device.profile values - must not be mistaken for it
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, false), //
+                Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, false));
     }
 
     @Test
