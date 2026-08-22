@@ -91,7 +91,14 @@ public class ShellyDevicesTest {
                 Arguments.of(THING_TYPE_SHELLYPROEM50, 2), //
                 Arguments.of(THING_TYPE_SHELLY3EM, 3), //
                 Arguments.of(THING_TYPE_SHELLYPLUS3EM63, 3), //
-                Arguments.of(THING_TYPE_SHELLYPRO3EM, 3)); //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER1PM, 1), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER10V, 1), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, 1), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, 1), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, 1), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDALIDIMMER, 1)); //
     }
 
     @ParameterizedTest

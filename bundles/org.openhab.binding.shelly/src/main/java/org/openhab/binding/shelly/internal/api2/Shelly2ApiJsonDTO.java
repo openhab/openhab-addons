@@ -55,6 +55,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS = "Switch.ResetCounters";
     public static final String SHELLYRPC_METHOD_PM1_RESETCOUNTERS = "PM1.ResetCounters";
     public static final String SHELLYRPC_METHOD_COVER_RESETCOUNTERS = "Cover.ResetCounters";
+    public static final String SHELLYRPC_METHOD_LIGHT_RESETCOUNTERS = "Light.ResetCounters";
     public static final String SHELLYRPC_METHOD_CB_SET = "CB.Set";
     public static final String SHELLYRPC_METHOD_COVER_SETPOS = "Cover.GoToPosition";
     public static final String SHELLY2_COVER_CMD_OPEN = "Open";
@@ -601,6 +602,11 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Double timerStartedAt;
             @SerializedName("timer_duration")
             public @Nullable Double timerDuration;
+            public @Nullable Double apower;
+            public @Nullable Double voltage;
+            public @Nullable Double current;
+            public @Nullable Shelly2Energy aenergy;
+            public @Nullable Shelly2DeviceStatusTemp temperature;
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -764,6 +770,20 @@ public class Shelly2ApiJsonDTO {
                 public @Nullable String[] errors;
             }
 
+            public static class Shelly2DaliScanStatus {
+                @SerializedName("cg_count")
+                public @Nullable Integer cgCount;
+                @SerializedName("started_at")
+                public @Nullable Double startedAt;
+                public @Nullable ArrayList<String> errors;
+            }
+
+            public static class Shelly2DaliStatus {
+                @SerializedName("cg_count")
+                public @Nullable Integer cgCount;
+                public @Nullable Shelly2DaliScanStatus scan;
+            }
+
             public static class Shelly2RGBWStatus {
                 public @Nullable Integer id;
                 public @Nullable String source;
@@ -896,6 +916,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+
+            @SerializedName("dali")
+            public @Nullable Shelly2DaliStatus dali;
         }
 
         public class Shelly2DeviceStatusSys {

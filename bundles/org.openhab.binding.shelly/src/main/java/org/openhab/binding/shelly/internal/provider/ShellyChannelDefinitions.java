@@ -212,6 +212,10 @@ public class ShellyChannelDefinitions {
                 // Dimmer
                 .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_BRIGHTNESS, "dimmerBrightness",
                         ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_DEVICES, "daliDeviceCount",
+                        ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_SCAN_ACTIVE, "daliScanActive",
+                        ITEMT_SWITCH))
 
                 // Roller
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_CONTROL, "rollerShutter", ITEMT_ROLLER))
@@ -517,13 +521,20 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.isDimmer, group, CHANNEL_BRIGHTNESS);
 
         List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
-        if (dimmers != null) {
+        if (dimmers != null && idx < dimmers.size()) {
             ShellySettingsDimmer ds = dimmers.get(idx);
             addChannel(thing, add, ds.name != null, group, CHANNEL_OUTPUT_NAME);
             addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-            ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
-            addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            List<ShellyShortLightStatus> statusDimmers = dstatus.dimmers;
+            if (statusDimmers != null) {
+                ShellyShortLightStatus dss = statusDimmers.size() > idx ? statusDimmers.get(idx) : null;
+                addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            }
+        }
+        if (idx == 0) {
+            addChannel(thing, add, dstatus.daliScanActive != null, group, CHANNEL_DALI_DEVICES);
+            addChannel(thing, add, dstatus.daliScanActive != null, group, CHANNEL_DALI_SCAN_ACTIVE);
         }
         return add;
     }
