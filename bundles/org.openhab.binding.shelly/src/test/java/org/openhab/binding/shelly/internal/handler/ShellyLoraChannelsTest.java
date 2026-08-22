@@ -124,6 +124,29 @@ public class ShellyLoraChannelsTest {
     }
 
     @Test
+    void updateLoraStatusPartialUpdateDoesNotClobberOtherChannels() {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(loraProfile(true));
+        Shelly2DeviceStatusLora full = new Shelly2DeviceStatusLora();
+        full.rxBytes = 44L;
+        full.txBytes = 69280L;
+        full.txErrors = 2L;
+        full.airtime = 893342L;
+        ShellyComponents.updateLoraStatus(handler, full);
+
+        // NotifyStatus is a delta: only rxBytes changed, the other fields are omitted (null) and must be
+        // left alone rather than overwritten with UNDEF/0
+        Shelly2DeviceStatusLora delta = new Shelly2DeviceStatusLora();
+        delta.rxBytes = 50L;
+        ShellyComponents.updateLoraStatus(handler, delta);
+
+        verify(handler, times(2)).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_RXBYTES), any());
+        verify(handler, times(1)).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_TXBYTES), any());
+        verify(handler, times(1)).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_TXERRORS), any());
+        verify(handler, times(1)).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_AIRTIME), any());
+    }
+
+    @Test
     void updateLoraStatusSetsAddonFirmwareProperty() {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         when(handler.getProfile()).thenReturn(loraProfile(true));
