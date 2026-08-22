@@ -48,16 +48,16 @@ The table below summarizes the key differences so you can choose the right form 
 The key‑level form applies conditional tags directly as map keys.
 The tags `!if`, `!elseif` (and its aliases `!elsif`, `!elif`), and `!else ~` allow multi‑branch logic using separate map entries.
 Each tag evaluates its expression (except `!else ~`, which has no expression).
-The nested map underneath the selected tag is merged into the parent map.
+The nested content (map or list) underneath the selected tag is merged into the parent structure.
 
-Use this form when you want to conditionally merge map content into a parent structure.
+Use this form when you want to conditionally merge additional map entries or list items into the surrounding structure.
 
 ::: tip Hints
 
 - Expressions may be quoted or unquoted.
   Quote expressions when they contain characters YAML might misinterpret, such as `:` or `#`.
-- If the expression is truthy, the nested map is merged.
-- If the expression is falsy, the nested map is ignored.
+- If the expression is truthy, the nested content (map or list) is merged into the parent structure.
+- If the expression is falsy, the nested content is ignored.
 - Branches are evaluated in order from top to bottom.
   Only the first truthy branch is selected.
   Inactive branches are ignored.
@@ -90,6 +90,36 @@ test:
   other: baz
 ```
 
+### List Example
+
+```yaml
+variables:
+  add_extra: true
+
+items:
+  MyItem:
+    tags:
+      - alpha
+      - beta
+      - !if add_extra:
+          - gamma
+          - delta
+      - epsilon
+```
+
+Result:
+
+```yaml
+items:
+  MyItem:
+    tags:
+      - alpha
+      - beta
+      - gamma
+      - delta
+      - epsilon
+```
+
 ### Multi‑Branch Example
 
 ```yaml
@@ -110,6 +140,20 @@ Result:
 mode:
   value: "production"
 ```
+
+::: tip Important — `!else` Requires `~`
+
+A bare `!else:` is **invalid YAML** because it produces an empty mapping.
+
+You **must** write:
+
+```yaml
+!else ~:
+```
+
+The `~` is YAML's canonical `null` literal and exists only to satisfy YAML's requirement that every key has a value.
+
+:::
 
 ### Key Uniqueness
 
@@ -271,6 +315,9 @@ network_settings: !if
 
 1. **Expression vs String Literal**: `if: production` checks for a variable named `production`.
    Quote string literals: `if: env == 'production'`.
+1. **Incorrect `!else` syntax**:
+   A bare `!else:` is invalid.
+   Always write `!else ~:` when using the key‑level form.
 1. **Omitting `else`**: If no condition matches and there is no `else`, the result is `null`.
 1. **Invalid YAML**: Even inactive branches must be syntactically valid YAML.
 1. **Branch Ordering**: In the key‑level form, branches are evaluated in map order.
