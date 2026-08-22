@@ -167,7 +167,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED = "flood.cable_unplugged";
 
     // LoRa
-    public static final String SHELLY2_EVENT_LORADATA = "lora_received";
+    public static final String SHELLY2_EVENT_LORADATA = "lora";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -1294,8 +1294,12 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("cfg_rev")
         public @Nullable Integer cfgRev;
 
-        // LoRa
-        public @Nullable String lora;
+        // LoRa: the "lora" event nests its payload under "info" rather than the generic "data" member
+        public @Nullable Shelly2NotifyEventLoraInfo info;
+    }
+
+    public static class Shelly2NotifyEventLoraInfo {
+        public @Nullable String data;
         public @Nullable Integer rssi;
         public @Nullable Integer snr;
         public @Nullable Long tsu;

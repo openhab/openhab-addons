@@ -796,27 +796,27 @@
 	</channel-type>
 
 	<channel-type id="loraSignal">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>LoRa Signal Strength</label>
-		<description>Received Signal Strength (RSSI) of the last received LoRa packet, in dBm</description>
+		<description>Received Signal Strength (RSSI) of the last received LoRa packet</description>
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<tag>RSSI</tag>
 		</tags>
-		<state readOnly="true">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="loraSNR" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>SNR</label>
 		<description>LoRa Signal/Noise Ratio of the received packet</description>
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 
