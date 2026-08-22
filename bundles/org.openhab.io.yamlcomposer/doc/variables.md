@@ -40,21 +40,6 @@ Each directive updates the local variable scope immediately and produces **no ou
 
 Variables defined this way are **local to the current mapping node** and automatically propagate to all of its descendants.
 
-::: tip Scope & Propagation
-
-1. **Immediate Effect:**
-   Each `!var` directive is evaluated in order. Once declared, the variable is available to all subsequent keys, values, and nested mappings **within the same mapping node**.
-
-1. **Mapping‑Node Boundaries:**
-   Entering a nested mapping creates a new scope.
-   Variables declared in the parent mapping remain visible to the child, but variables declared inside the child mapping do **not** propagate back to the parent.
-
-1. **Sequential Evaluation:**
-   Variables only apply to entries that appear **after** their declaration.
-   Earlier entries in the same mapping cannot see variables declared later.
-
-:::
-
 #### `!var` Syntax
 
 Declare a variable using the key‑level form:
@@ -80,111 +65,12 @@ endpoint: "${api_url}/users"
 endpoint: "http://localhost:8080/v1/users"
 ```
 
-#### `!var` Scope Diagram
-
-```text
-parent-map:
-├─ !var a: 1              ← defines `a` in this mapping
-├─ key1: ${a}             ← sees `a`
-│
-├─ child-map:             ← new mapping node (inherits `a`)
-│   ├─ key2: ${a}         ← sees `a` but not `b`
-│   │                       (because `b` is declared *after* this entry)
-│   ├─ !var b: 2          ← defines `b` only in this child mapping
-│   └─ key3: ${b}         ← sees `b` (same mapping node, declared earlier)
-│
-└─ key4: ${a}             ← sees `a` but not `b`
-                           (because `b` was declared inside child-map)
-```
-
-::: tip List Context Restriction
-
-`!var` is valid **only inside mapping nodes**.
-
-If used inside a list item (e.g., `- !var foo: bar`), the list element becomes a mapping containing the directive.
-If your list item must remain a scalar, declare the variable in the parent mapping instead.
-
+::: tip Position dependence and usage
+The top‑level `variables:` block is position independent (its variables are visible everywhere).
+Inline `!var` directives are position dependent: they take effect where they appear and only affect subsequent entries in the same mapping node and its descendants.
+`!var` can be used to **define new local variables** or to **override** existing ones.
+See [Variable Scoping and Isolation](#variable-scoping-and-isolation) for more info.
 :::
-
-## Variable Scoping & Isolation
-
-Understanding how variable scope flows is critical when designing complex modular compositions.
-
-### Propagation & Isolation Rules
-
-Inline variables follow a combination of sequential evaluation and lexical block isolation:
-
-- **Sequential Propagation:** A `!var` directive applies to all subsequent entries (keys, values, and nested descendant blocks) evaluated after it within the same mapping context.
-- **Downstream Inheritance:** Nested maps, templates (`!insert`), included files (`!include`), conditional branches (`!if`), and loop iterations (`!for`) inherit all variables in scope at their point of declaration.
-- **Upward & Lateral Isolation:** Declarations made inside a child mapping block exist only within that branch and its descendants. They never leak upward to the parent mapping or laterally into adjacent sub-mappings.
-
-#### Example: Scope Propagation & Isolation
-
-```yaml
-# Parent Mapping
-!var prefix: "main"
-
-# 1. Applies to subsequent keys, values, and nested descendants:
-${prefix}_section:
-  device_name: "${prefix}_sensor"
-  config:
-    topic: "tele/${prefix}/state"  # Descendants inherit parent's !var
-
-# 2. Re-declaration updates subsequent entries below it:
-!var prefix: "sub"
-
-${prefix}_section:                # Key evaluates to: "sub_section"
-  !var local_val: "active"        # Local to this child block
-
-  device_name: "${prefix}_sensor" # Value evaluates to: "sub_sensor"
-  status: "${local_val}"          # Evaluates to: "active"
-
-# 3. Next block in parent mapping:
-another_section:
-  name: "${prefix}_node"          # Inherits parent's updated prefix ("sub")
-  state: "${local_val}"           # WARNING: local_val is undefined here
-```
-
-#### Example: Template, Package & Loop Isolation
-
-Because control structures and modular includes create their own child mapping contexts, local variables declared inside them remain isolated to that iteration or file execution:
-
-```yaml
-templates:
-  component:
-    !var internal_id: "tpl_123"
-    id: "${internal_id}"
-    name: "${component_name}"
-
-component_instance:
-  !insert
-    template: component
-    vars:
-      component_name: "sensor_main"
-
-outer_id: "${internal_id}"      # Warning: internal_id is undefined in outer scope
-```
-
-### Progressive Evaluation & Self-Referencing
-
-Within a mapping block or sequence of key-form `!var` directives, variables evaluate sequentially from top to bottom.
-
-- **Progressive Resolution:** A variable can reference previously defined variables within the same block or earlier single-form `!var` directives.
-- **Sequential Re-assignment & Self-Reference:** Re-declaring an existing variable name evaluates the expression against the **current scope value** before updating the variable for subsequent substitutions. Prior substitutions retain the value active at the time they were evaluated.
-
-```yaml
-!var mode: "dev"
-env_first: "${mode}"           # Resolves to "dev"
-
-!var mode: "prod"
-env_second: "${mode}"          # Resolves to "prod"
-
-!var count: 10
-!var count: "${count + 1}"     # Evaluates ${count + 1} using current scope (10) -> 11
-total_count: "${count}"        # Resolves to 11
-```
-
-> **Note:** Referencing an undefined variable in a self-assignment (e.g., `!var count: "${count}"` when `count` does not exist in scope) logs an unresolved variable warning and evaluates to `null`.
 
 ## Variable Substitution
 
@@ -500,7 +386,88 @@ enumerated_map: ${enumerate(mapping)}
 #   - Value access: ${enumerated_map[0][1].value} -> "one"
 ```
 
-## Advanced Usage
+## Advanced Topics
+
+### Variable Scoping and Isolation
+
+Variable scoping in YAML Composer follows a strict combination of **sequential evaluation**, **lexical mapping‑node boundaries**, and **downstream inheritance**. The two declaration mechanisms — the top‑level `variables:` block (global scope) and inline `!var` directives (local scope) — participate in the same unified scoping model. This section explains how they interact and lists the concrete rules you must follow.
+
+#### Global vs Local: how `variables:` and `!var` interact
+
+- **Global variables (`variables:` block)**
+  - Define the **initial scope** for the entire file.
+  - Are visible everywhere in the file, including included files, templates, and loops, regardless of where the `variables:` block appears in the document (i.e., `variables:` is position independent).
+  - Are evaluated as part of the file composition and act as the root values that inline `!var` directives may override locally.
+  - **Cannot** override system variables (e.g., `OPENHAB_CONF`, `__FILE__`, etc.).
+
+- **Inline variables (`!var` directives)**
+  - Declare or reassign variables **inline at the key level** within a mapping.
+  - Update the local variable scope immediately and produce **no output key** in the final composed structure.
+  - Are **local to the mapping node** in which they appear and automatically propagate to that node’s descendants.
+  - Override global variables for that mapping and its descendants but do **not** change the `variables:` block itself.
+  - Are **position dependent**: a `!var` only affects entries that appear **after** it in the same mapping node. A `!var` placed at the root mapping behaves like a global override **from the point it appears onward** but does not retroactively change values already evaluated earlier in the file.
+
+**Practical summary:** treat `variables:` as the file’s initial defaults (position independent) and `!var` as local, sequential declarations that take effect at the point they are evaluated (position dependent).
+A `!var` may either **define a new local variable** or **override** an existing one; when a `!var` appears at the root mapping it behaves like a global override only for entries processed after it appears and does not retroactively change values already evaluated earlier in the file.
+
+#### Core rules for `!var`
+
+##### 1. Sequential Evaluation (Order Matters)
+
+`!var` directives apply **immediately** and affect all subsequent keys, values, and nested mappings **within the same mapping node**.
+
+- Earlier entries cannot see variables declared later.
+- Reassigning a variable updates its value only for entries that appear after the reassignment.
+- Reassignments evaluate expressions using the **current** scope value.
+
+```yaml
+!var mode: "dev"
+first: "${mode}"     # "dev"
+
+!var mode: "prod"
+second: "${mode}"    # "prod"
+```
+
+##### 2. Mapping‑Node Boundaries (Lexical Scope)
+
+Each mapping node defines a scope.
+
+- Child mappings **inherit** all variables visible at the moment they are created.
+- Variables declared **inside** a child mapping:
+  - apply only to that child and its descendants,
+  - do **not** propagate back to the parent,
+  - do **not** leak sideways into sibling mappings.
+
+**Diagram:**
+
+```text
+parent-map:
+├─ !var a: 1              ← defines `a` in this mapping
+├─ key1: ${a}             ← sees `a`
+│
+├─ child-map:             ← new mapping node (inherits `a`)
+│   ├─ key2: ${a}         ← sees `a` but not `b`
+│   │                       (because `b` is declared *after* this entry)
+│   ├─ !var b: 2          ← defines `b` only in this child mapping
+│   └─ key3: ${b}         ← sees `b` (same mapping node, declared earlier)
+│
+└─ key4: ${a}             ← sees `a` but not `b`
+                           (because `b` was declared inside child-map)
+```
+
+##### 3. List Context Restriction
+
+`!var` is valid **only inside mapping nodes**.
+
+If used inside a list item:
+
+```yaml
+- !var foo: bar
+```
+
+the list item becomes a mapping containing the directive.
+
+If the list item must remain a scalar, declare the variable in the parent mapping instead.
 
 ### Predefined Variables
 
