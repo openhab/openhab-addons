@@ -1755,8 +1755,9 @@ In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color c
 |         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
 |         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |
 | color   | hsb           | HSB      | r/w       | Represents the color picker (HSBType)                                   |
-|         | full          | String   | r/w       | Set Red / Green / Blue / Yellow mode and switch mode                    |
-|         |               |          | r/w       | Valid settings: "red", "green", "blue", "yellow" or "r,g,b"             |
+|         | full          | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
+|         |               |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"    |
+|         |               |          | r/w       | "white" sets RGB to 255,255,255 (no separate white output)              |
 |         | red           | Dimmer   | r/w       | Red brightness: 0..100% (control only the red channel)                  |
 |         | green         | Dimmer   | r/w       | Green brightness: 0..100% (control only the green channel)              |
 |         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% (control only the blue channel)                |

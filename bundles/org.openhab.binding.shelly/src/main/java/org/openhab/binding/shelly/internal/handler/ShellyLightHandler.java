@@ -304,7 +304,11 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         } else if (color.equals(SHELLY_COLOR_YELLOW)) {
             col.setRGBW(SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, 0, 0);
         } else if (color.equals(SHELLY_COLOR_WHITE)) {
-            col.setRGBW(0, 0, 0, SHELLY_MAX_COLOR);
+            if (profile.isProRgbwwPm) { // RGB component has no white output, mix full RGB instead
+                col.setRGBW(SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, 0);
+            } else {
+                col.setRGBW(0, 0, 0, SHELLY_MAX_COLOR);
+            }
             col.setMode(SHELLY_MODE_WHITE);
         } else {
             throw new IllegalArgumentException("Invalid full color selection: " + color);
@@ -473,6 +477,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         } else if ((col.red == 0) && (col.green == 0) && (col.blue == SHELLY_MAX_COLOR)) {
             updateChannel(colorGroup, CHANNEL_COLOR_FULL, new StringType(SHELLY_COLOR_BLUE));
         } else if ((col.red == 0) && (col.green == 0) && (col.blue == 0) && (col.white == SHELLY_MAX_COLOR)) {
+            updateChannel(colorGroup, CHANNEL_COLOR_FULL, new StringType(SHELLY_COLOR_WHITE));
+        } else if ((col.red == SHELLY_MAX_COLOR) && (col.green == SHELLY_MAX_COLOR) && (col.blue == SHELLY_MAX_COLOR)) {
             updateChannel(colorGroup, CHANNEL_COLOR_FULL, new StringType(SHELLY_COLOR_WHITE));
         }
     }
