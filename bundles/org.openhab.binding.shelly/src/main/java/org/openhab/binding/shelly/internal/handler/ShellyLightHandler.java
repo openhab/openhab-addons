@@ -389,7 +389,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_RED, col.percentRed);
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_GREEN, col.percentGreen);
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_BLUE, col.percentBlue);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_WHITE, col.percentWhite);
+                if (!profile.isProRgbwwPm) { // RGB component has no white output
+                    updated |= updateChannel(colorGroup, CHANNEL_COLOR_WHITE, col.percentWhite);
+                }
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_GAIN, col.percentGain);
                 updated |= updateChannel(colorGroup, CHANNEL_COLOR_EFFECT, getDecimal(col.effect));
                 setFullColor(colorGroup, col);

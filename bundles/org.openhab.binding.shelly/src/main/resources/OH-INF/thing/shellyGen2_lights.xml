@@ -39,7 +39,7 @@
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
-			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
+			<channel-group id="color" typeId="colorSettingsRGB"/>
 			<channel-group id="light1" typeId="rgbwChannel">
 				<label>LED Channel 1</label>
 			</channel-group>
@@ -83,6 +83,18 @@
 			<channel id="green" typeId="colorGreen"/>
 			<channel id="blue" typeId="colorBlue"/>
 			<channel id="white" typeId="colorWhite"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="colorSettingsRGB">
+		<label>Colors</label>
+		<description>Light colors</description>
+		<channels>
+			<channel id="hsb" typeId="system.color"/>
+			<channel id="full" typeId="colorFull"/>
+			<channel id="red" typeId="colorRed"/>
+			<channel id="green" typeId="colorGreen"/>
+			<channel id="blue" typeId="colorBlue"/>
 		</channels>
 	</channel-group-type>
 
