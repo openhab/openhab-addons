@@ -1,5 +1,8 @@
-package ch.obermuhlner.scriptengine.java.construct;
+package ch.obermuhlner.scriptengine.java.constructor;
 
+import ch.obermuhlner.scriptengine.java.util.ReflectionUtil;
+
+import javax.script.ScriptException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -7,20 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.script.ScriptException;
-
-import ch.obermuhlner.scriptengine.java.util.ReflectionUtil;
-
 /**
  * The default {@link ConstructorStrategy} implementation.
  *
  * This implementation has three static constructor methods to define the constructor that should be called:
  * <ul>
- * <li>{@link #byDefaultConstructor()} to call the public default no-argument constructor.</li>
- * <li>{@link #byArgumentTypes(Class[], Object...)} to call the public constructor with the
- * specified argument types and pass it the specified arguments.</li>
- * <li>{@link #byMatchingArguments(Object...)} to call a public constructor that matches the
- * specified arguments.</li>
+ *      <li>{@link #byDefaultConstructor()} to call the public default no-argument constructor.</li>
+ *      <li>{@link #byArgumentTypes(Class[], Object...)} to call the public constructor with the
+ *      specified argument types and pass it the specified arguments.</li>
+ *      <li>{@link #byMatchingArguments(Object...)} to call a public constructor that matches the
+ *      specified arguments.</li>
  * </ul>
  */
 public class DefaultConstructorStrategy implements ConstructorStrategy {
@@ -38,8 +37,7 @@ public class DefaultConstructorStrategy implements ConstructorStrategy {
         try {
             Constructor<?> constructor = findConstructor(clazz, argumentTypes, arguments);
             return constructor.newInstance(arguments);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException
-                | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException |InvocationTargetException | NoSuchMethodException e) {
             throw new ScriptException(e);
         }
     }
@@ -84,16 +82,14 @@ public class DefaultConstructorStrategy implements ConstructorStrategy {
         return new DefaultConstructorStrategy(null, arguments);
     }
 
-    private Constructor<?> findConstructor(Class<?> clazz, Class<?>[] argumentTypes, Object[] arguments)
-            throws NoSuchMethodException, ScriptException {
+    private Constructor<?> findConstructor(Class<?> clazz, Class<?>[] argumentTypes, Object[] arguments) throws NoSuchMethodException, ScriptException {
         if (argumentTypes != null) {
             return clazz.getConstructor(argumentTypes);
         }
 
         List<Constructor<?>> matchingConstructors = new ArrayList<>();
         for (Constructor<?> constructor : clazz.getConstructors()) {
-            if (Modifier.isPublic(constructor.getModifiers())
-                    && ReflectionUtil.matchesArguments(constructor, arguments)) {
+            if (Modifier.isPublic(constructor.getModifiers()) && ReflectionUtil.matchesArguments(constructor, arguments)) {
                 matchingConstructors.add(constructor);
             }
         }
@@ -102,8 +98,8 @@ public class DefaultConstructorStrategy implements ConstructorStrategy {
         if (count == 0) {
             throw new ScriptException("No constructor with matching arguments found");
         } else if (count > 1) {
-            throw new ScriptException("Ambiguous constructors with matching arguments found:\n"
-                    + matchingConstructors.stream().map(Object::toString).collect(Collectors.joining("\n")));
+            throw new ScriptException("Ambiguous constructors with matching arguments found:\n" +
+                    matchingConstructors.stream().map(Object::toString).collect(Collectors.joining("\n")));
         }
 
         return matchingConstructors.get(0);

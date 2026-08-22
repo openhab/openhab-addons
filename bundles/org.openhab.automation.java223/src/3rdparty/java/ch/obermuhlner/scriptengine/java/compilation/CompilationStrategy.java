@@ -9,6 +9,7 @@ import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * This strategy is used to decide what to compile
+ * JAVA223 modification: NonNull annotation for null safety
  */
 public interface CompilationStrategy {
 
@@ -33,6 +34,7 @@ public interface CompilationStrategy {
 
     /**
      * Get a file manager to use, during compilation, as a parent of the in-memory file manager
+     * JAVA223 modification: new method
      *
      * @param parentJavaFileManager The parent javaFileManager of the returned file manager
      * @return a file manager. It will be the parent of the in-memory file manager managing the script.

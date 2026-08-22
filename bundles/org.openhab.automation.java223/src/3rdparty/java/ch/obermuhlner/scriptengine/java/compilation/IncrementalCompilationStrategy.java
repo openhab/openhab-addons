@@ -18,16 +18,17 @@ public class IncrementalCompilationStrategy implements CompilationStrategy {
 
     @Override
     public List<JavaFileObject> getJavaFileObjectsToCompile(String simpleClassName, String currentSource) {
-        currentJavaFileObject = MemoryFileManager.createSourceFileObject(null, simpleClassName, currentSource);
-        Stream<JavaFileObject> previousFileObjects = previousFileObject.entrySet().stream()
-                .filter(entry -> !entry.getKey().equals(simpleClassName)) // do no keep the old file
-                .map(Entry::getValue);
-        return Stream.concat(previousFileObjects, Stream.of(currentJavaFileObject)).toList();
+	currentJavaFileObject = MemoryFileManager.createSourceFileObject(null, simpleClassName,
+		currentSource);
+	Stream<JavaFileObject> previousFileObjects = previousFileObject.entrySet().stream()
+		.filter(entry -> !entry.getKey().equals(simpleClassName)) // do no keep the old file
+		.map(Entry::getValue);
+	return Stream.concat(previousFileObjects, Stream.of(currentJavaFileObject)).toList();
     }
 
     @Override
     public void compilationResult(Class<?> clazz) {
-        previousFileObject.put(clazz.getSimpleName(), currentJavaFileObject);
+	previousFileObject.put(clazz.getSimpleName(), currentJavaFileObject);
     }
 
 }

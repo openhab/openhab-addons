@@ -1,14 +1,14 @@
 package ch.obermuhlner.scriptengine.java.name;
 
+import javax.script.ScriptException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.script.ScriptException;
 
 /**
  * A {@link NameStrategy} that scans the Java script to determine the package name and class name defined in the script.
  */
 public class DefaultNameStrategy implements NameStrategy {
+    // JAVA223 modification: add interface and abstract qualifier
     public static final Pattern NAME_PATTERN = Pattern
             .compile("public\\s+(abstract )?(class|interface|@interface)\\s+([A-Za-z][A-Za-z0-9_$]*)");
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("package\\s+([A-Za-z][A-Za-z0-9_$.]*)");
@@ -23,6 +23,7 @@ public class DefaultNameStrategy implements NameStrategy {
 
         Matcher nameMatcher = NAME_PATTERN.matcher(script);
         if (nameMatcher.find()) {
+            // JAVA223 modification: 3 instead of 1, relative to pattern change
             String name = nameMatcher.group(3);
             if (fullPackage == null) {
                 return name;

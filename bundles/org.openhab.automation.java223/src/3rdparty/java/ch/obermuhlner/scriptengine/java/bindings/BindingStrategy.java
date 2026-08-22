@@ -6,6 +6,7 @@ import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * The strategy used to set/get the Bindings around invoke
+ * JAVA223 modification: @NonNull annotation
  */
 public interface BindingStrategy {
 

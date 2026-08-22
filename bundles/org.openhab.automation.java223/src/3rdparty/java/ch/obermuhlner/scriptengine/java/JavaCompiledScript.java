@@ -25,16 +25,16 @@ public class JavaCompiledScript extends CompiledScript {
 
     /**
      * Construct a {@link JavaCompiledScript}.
+     * JAVA223 modification: public constructor accessor
      *
      * @param engine the {@link JavaScriptEngine} that compiled this script
      * @param compiledClass the compiled {@link Class}
      * @param compiledInstance the instance of the compiled {@link Class} or {@code null}
-     *            if no instance was created and only static methods will be called
-     *            by the the {@link ExecutionStrategy}.
+     *                         if no instance was created and only static methods will be called
+     *                         by the the {@link ExecutionStrategy}.
      * @param executionStrategy the {@link ExecutionStrategy}
      */
-    public JavaCompiledScript(JavaScriptEngine engine, Class<?> compiledClass, Object compiledInstance,
-            ExecutionStrategy executionStrategy, BindingStrategy bindingStrategy) {
+    public JavaCompiledScript(JavaScriptEngine engine, Class<?> compiledClass, Object compiledInstance, ExecutionStrategy executionStrategy, BindingStrategy bindingStrategy) {
         this.engine = engine;
         this.compiledClass = compiledClass;
         this.compiledInstance = compiledInstance;
@@ -117,9 +117,10 @@ public class JavaCompiledScript extends CompiledScript {
     private void pushVariables(Bindings globalBindings, Bindings engineBindings) throws ScriptException {
         Map<String, Object> mergedBindings = mergeBindings(globalBindings, engineBindings);
 
-        if (bindingStrategy != null) {
-            bindingStrategy.associateBindings(compiledClass, compiledInstance, mergedBindings);
-            return;
+        if (bindingStrategy != null)
+        {
+        	bindingStrategy.associateBindings(compiledClass, compiledInstance, mergedBindings);
+        	return;
         }
 
         for (Map.Entry<String, Object> entry : mergedBindings.entrySet()) {
@@ -137,18 +138,20 @@ public class JavaCompiledScript extends CompiledScript {
 
     private void pullVariables(Bindings globalBindings, Bindings engineBindings) throws ScriptException {
 
-        if (bindingStrategy != null) {
-            Map<String, Object> retrievedBindings = bindingStrategy.retrieveBindings(compiledClass, compiledInstance);
+        if (bindingStrategy != null)
+        {
+        	Map<String, Object> retrievedBindings = bindingStrategy.retrieveBindings(compiledClass, compiledInstance);
 
-            for (Map.Entry<String, Object> entry : retrievedBindings.entrySet()) {
-                String name = entry.getKey();
-                Object value = entry.getValue();
+        	for (Map.Entry<String, Object> entry : retrievedBindings.entrySet()) {
+                  String name = entry.getKey();
+                  Object value = entry.getValue();
 
-                setBindingsValue(globalBindings, engineBindings, name, value);
-            }
+                  setBindingsValue(globalBindings, engineBindings, name, value);
+        	}
 
-            return;
+        	return;
         }
+
 
         for (Field field : compiledClass.getFields()) {
             try {
