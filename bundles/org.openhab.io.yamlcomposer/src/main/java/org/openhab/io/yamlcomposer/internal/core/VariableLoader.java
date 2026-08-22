@@ -93,14 +93,7 @@ public class VariableLoader {
      * @param locator the source locator for logging purposes
      * @see ComposerConfig#VARIABLES_KEY
      */
-    public void extractVariables(@Nullable Object variablesSection, @Nullable SourceLocator locator) {
-        extractVariables(variablesSection, locator, false);
-    }
-
-    public void extractVariables(@Nullable Object variablesSection, @Nullable SourceLocator locator,
-            boolean allowOverwrite) {
-        Map<String, @Nullable Object> existingVariables = variables;
-
+    public void extractVariables(@Nullable Object variablesSection, SourceLocator locator) {
         if (variablesSection instanceof Map<?, ?> variablesMap) {
             Map<Object, @Nullable Object> mergeKeyEntries = new LinkedHashMap<>();
             Map<Object, @Nullable Object> explicitEntries = new LinkedHashMap<>();
@@ -125,9 +118,9 @@ public class VariableLoader {
 
                 mergedDefaults.forEach((k, v) -> {
                     String kStr = String.valueOf(k);
-                    if (!isSpecialVariable(kStr) && (allowOverwrite || !existingVariables.containsKey(kStr))) {
+                    if (!isSpecialVariable(kStr) && !variables.containsKey(kStr)) {
                         Object resolvedValue = recursiveTransformer.transform(v);
-                        existingVariables.put(kStr, resolvedValue);
+                        variables.put(kStr, resolvedValue);
                     }
                 });
             }
@@ -146,15 +139,15 @@ public class VariableLoader {
                     return;
                 }
 
-                if (allowOverwrite || !existingVariables.containsKey(keyStr)) {
+                if (!variables.containsKey(keyStr)) {
                     Object resolvedValue = recursiveTransformer.transform(value);
-                    existingVariables.put(keyStr, resolvedValue);
+                    variables.put(keyStr, resolvedValue);
                 }
             });
         } else if (variablesSection instanceof IncludePlaceholder includePlaceholder) {
             Object includedData = recursiveTransformer.transform(includePlaceholder, ProcessingPhase.INCLUDES);
-            extractVariables(includedData, locator, allowOverwrite);
-        } else if (variablesSection != null && locator != null) {
+            extractVariables(includedData, locator);
+        } else if (variablesSection != null) {
             var position = locator.findPosition(ComposerConfig.VARIABLES_KEY);
             Path relativePath = ComposerConfig.configRoot().relativize(absolutePath);
             logger.warn("{}:{} 'variables' is not a map", relativePath, position);
