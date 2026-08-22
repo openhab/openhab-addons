@@ -4,7 +4,7 @@ Write openHAB scripts in Java as a JSR223 language.
 
 Features:
 
-- full JSR 223 support (use in files, in GUI, transformations, inline rule action, etc...)
+- full openHAB JSR 223 support (use in files, in GUI, transformations, inline rule action, etc...)
 - auto-injection of openHAB variable/preset for simplicity
 - use all OSGi services from the openHAB runtime
 - library support for sharing code (.jar and .java)
