@@ -15,17 +15,19 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
+import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -109,11 +111,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
 
-    // Plus devices support up to 3 scripts, Pro devices up to 10
-    // We need to find a free script id when uploading our script
-    // We want to limit script ids being checked, so define a max id
-    private static final int MAX_SCRIPT_ID = 15;
-
     /**
      * Regular constructor - called by Thing handler
      *
@@ -185,27 +182,41 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                         enableBluGateway ? "enabled" : "disabled");
                 if (enableBluGateway) {
-                    boolean bluetooth = getBool(dc.ble.enable);
-                    boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
-                    if (!bluetooth) {
-                        logger.warn("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
-                    }
-                    if (observer) {
-                        logger.warn("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
-                                thingName);
-                    }
-                    boolean restart = false;
-                    if (!bluetooth || observer) {
-                        logger.info("{}: Setup openHAB BLU Gateway", thingName);
-                        restart = setBluetooth(true);
-                    }
+                    if (profile.fwVersion.isEmpty()) {
+                        // fw version not resolved yet (e.g. transient during device boot); skip for now rather
+                        // than risk taking the legacy BLE.SetConfig branch on an actual FW 2.0+ device
+                        logger.debug("{}: Firmware version unknown, skipping BLU Gateway setup for now", thingName);
+                    } else {
+                        boolean restart = false;
+                        ShellyVersionComparator versionComparator = new ShellyVersionComparator();
+                        if (versionComparator.compare(profile.fwVersion, SHELLY2_API_FW_BLEAUTOSCAN) >= 0) {
+                            // FW 2.0 removed the BLE enable/observer config; scanning auto-activates when the
+                            // script starts, so calling setBluetooth() here would only get rejected by the device
+                            installScript(SHELLY2_BLU_GWSCRIPT, true);
+                        } else {
+                            boolean bluetooth = getBool(dc.ble.enable);
+                            boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
+                            if (!bluetooth) {
+                                logger.debug("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
+                            }
+                            if (observer) {
+                                logger.debug("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
+                                        thingName);
+                            }
+                            if (!bluetooth || observer) {
+                                logger.info("{}: Setup openHAB BLU Gateway", thingName);
+                                restart = setBluetooth(true);
+                                bluetooth = true; // setBluetooth() didn't throw, so BLE.SetConfig succeeded
+                            }
 
-                    installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
+                            installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
+                        }
 
-                    if (restart) {
-                        logger.info("{}: Restart device to activate BLU Gateway", thingName);
-                        deviceReboot();
-                        getThing().reinitializeThing();
+                        if (restart) {
+                            logger.info("{}: Restart device to activate BLU Gateway", thingName);
+                            deviceReboot();
+                            getThing().reinitializeThing();
+                        }
                     }
                 }
             }
@@ -267,18 +278,31 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 return;
             }
 
-            // get script code from bundle resources
-            String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
-            ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
-            if (cl != null) {
-                try (InputStream inputStream = cl.getResourceAsStream(file)) {
-                    if (inputStream != null) {
-                        code = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
-                                .collect(Collectors.joining("\n"));
+            // a user-supplied file overrides the version bundled in the JAR, e.g. to enable DEBUG/TRACE
+            File userFile = new File(USERDATA_SCRIPT_FOLDER, script);
+            if (userFile.isFile()) {
+                try {
+                    code = Files.readString(userFile.toPath(), StandardCharsets.UTF_8);
+                    logger.info("{}: Using custom script {} from {}", thingName, script, userFile);
+                } catch (IOException e) {
+                    logger.warn("{}: Unable to read custom script {}, falling back to bundled version", thingName,
+                            userFile, e);
+                }
+            }
+
+            if (code.isEmpty()) {
+                String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
+                ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
+                if (cl != null) {
+                    try (InputStream inputStream = cl.getResourceAsStream(file)) {
+                        if (inputStream != null) {
+                            code = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                                    .lines().collect(Collectors.joining("\n"));
+                        }
+                    } catch (IOException | UncheckedIOException e) {
+                        logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
+                                thingName, script, file, e);
                     }
-                } catch (IOException | UncheckedIOException e) {
-                    logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
-                            thingName, script, file, e);
                 }
             }
 
@@ -357,7 +381,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 parms.append = false;
                 int length = code.length(), processed = 0, chunk = 1;
                 do {
-                    int nextlen = Math.min(1024, length - processed);
+                    int nextlen = Math.min(SCRIPT_CHUNK_SIZE, length - processed);
                     parms.code = code.substring(processed, processed + nextlen);
                     logger.debug("{}: Uploading chunk {} of script (total {} chars, {} processed)", thingName, chunk,
                             length, processed);
