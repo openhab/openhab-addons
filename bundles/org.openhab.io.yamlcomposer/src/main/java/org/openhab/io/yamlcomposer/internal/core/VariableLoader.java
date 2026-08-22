@@ -13,6 +13,7 @@
 package org.openhab.io.yamlcomposer.internal.core;
 
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -109,7 +110,9 @@ public class VariableLoader {
                 }
             });
 
-            // Process merge keys first so defaults are available in scope for sibling expressions
+            Set<String> keysFromMergeDefaults = new HashSet<>();
+
+            // Process merge keys first so defaults are available in scope
             if (!mergeKeyEntries.isEmpty()) {
                 Map<Object, @Nullable Object> processedMergeKeys = (Map<Object, @Nullable Object>) recursiveTransformer
                         .transform(mergeKeyEntries);
@@ -121,11 +124,12 @@ public class VariableLoader {
                     if (!isSpecialVariable(kStr) && !variables.containsKey(kStr)) {
                         Object resolvedValue = recursiveTransformer.transform(v);
                         variables.put(kStr, resolvedValue);
+                        keysFromMergeDefaults.add(kStr);
                     }
                 });
             }
 
-            // Process explicit entries sequentially to allow variable overrides and progressive evaluation
+            // Process explicit entries sequentially
             explicitEntries.forEach((key, value) -> {
                 Object keyObj = recursiveTransformer.transform(key);
                 if (keyObj == null) {
@@ -139,7 +143,9 @@ public class VariableLoader {
                     return;
                 }
 
-                if (!variables.containsKey(keyStr)) {
+                // Explicit entries overwrite merge key defaults from this map, but do not clobber inherited
+                // parent/global scope
+                if (!variables.containsKey(keyStr) || keysFromMergeDefaults.contains(keyStr)) {
                     Object resolvedValue = recursiveTransformer.transform(value);
                     variables.put(keyStr, resolvedValue);
                 }

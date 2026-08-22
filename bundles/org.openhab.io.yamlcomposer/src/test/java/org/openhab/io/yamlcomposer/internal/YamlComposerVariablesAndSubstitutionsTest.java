@@ -224,6 +224,29 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
         }
 
         @Test
+        @DisplayName("Merge keys in variables block populate defaults before explicit variables evaluate")
+        void mergeKeysWithExplicitVariablesInVariablesBlock() throws IOException {
+            String yaml = """
+                    variables:
+                      <<:
+                        domain: "example.com"
+                        port: 8080
+                      port: 9090
+                      host_url: "https://${domain}:${port}"
+
+                    result_domain: "${domain}"
+                    result_port: "${port}"
+                    result_url: "${host_url}"
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat(data.get("result_domain"), is("example.com"));
+            assertThat(data.get("result_port"), is(9090));
+            assertThat(data.get("result_url"), is("https://example.com:9090"));
+        }
+
+        @Test
         @DisplayName("Supports substitution within variables block (Recursive resolution)")
         void supportsSubstitutionWithinVariablesBlock() throws IOException {
             String yaml = """
