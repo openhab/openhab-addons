@@ -81,7 +81,8 @@ public final class RRMapRenderer {
         int width = mapData.imageWidth();
         int height = mapData.imageHeight();
         byte[] imageData = mapData.imageData();
-        if (width <= 0 || height <= 0 || imageData.length < width * height) {
+        // The dimensions are unvalidated uint32 values whose product can wrap in int arithmetic.
+        if (width <= 0 || height <= 0 || imageData.length < (long) width * height) {
             throw new RoborockException("Cannot render map image due to invalid dimensions or data length.");
         }
 
@@ -204,13 +205,26 @@ public final class RRMapRenderer {
                     yield COLOR_MAP_GREY_WALL;
                 } else if (obstacle == 1) {
                     yield Color.BLACK;
-                } else if (obstacle == 7) {
-                    int roomId = value >>> 3;
-                    yield roomColor(roomId);
+                }
+                int segmentId = decodeSegmentId(value);
+                if (segmentId >= 0) {
+                    yield roomColor(segmentId);
                 }
                 yield COLOR_MAP_INSIDE;
             }
         };
+    }
+
+    /**
+     * Decodes the segment/room id from a base-map pixel byte (low 3 bits equal to 7 mark a
+     * segmented-floor pixel, the id sits in the high 5 bits), or -1 for non-segment pixels;
+     * {@link #MAP_SCAN} and {@link #MAP_INSIDE} satisfy the same bit test but are reserved values.
+     */
+    static int decodeSegmentId(int pixelValue) {
+        if (pixelValue == MAP_SCAN || pixelValue == MAP_INSIDE) {
+            return -1;
+        }
+        return (pixelValue & 0x07) == 7 ? pixelValue >>> 3 : -1;
     }
 
     private Color roomColor(int roomId) {

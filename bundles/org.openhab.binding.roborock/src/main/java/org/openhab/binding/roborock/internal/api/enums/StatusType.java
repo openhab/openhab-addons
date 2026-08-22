@@ -92,6 +92,18 @@ public enum StatusType {
         return description;
     }
 
+    /**
+     * Tells whether the robot physically sits on its charging dock while in this state; states in
+     * which it is only on its way there, and model-specific dock chores this binding has no capture
+     * of, are excluded.
+     */
+    public boolean isAtDock() {
+        return switch (this) {
+            case CHARGING, CHARGING_ERROR, FULL, EMPTYING_BIN, WASHING_MOP, WASHING_MOP2 -> true;
+            default -> false;
+        };
+    }
+
     @Override
     public String toString() {
         return "Status " + Integer.toString(id) + ": " + description;

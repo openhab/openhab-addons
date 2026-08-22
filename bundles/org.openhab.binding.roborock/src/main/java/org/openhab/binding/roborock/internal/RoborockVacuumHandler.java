@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,8 +60,10 @@ import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
 import org.openhab.binding.roborock.internal.map.RRMapData;
+import org.openhab.binding.roborock.internal.map.RRMapData.MapPoint;
 import org.openhab.binding.roborock.internal.map.RRMapParser;
 import org.openhab.binding.roborock.internal.map.RRMapRenderer;
+import org.openhab.binding.roborock.internal.map.RoomAtRobotResolver;
 import org.openhab.binding.roborock.internal.transport.CloudMqttTransport;
 import org.openhab.binding.roborock.internal.transport.LocalDirectTransport;
 import org.openhab.binding.roborock.internal.transport.RoborockCommandTransport;
@@ -121,6 +124,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RoborockVacuumHandler.class);
 
+    /** Placeholder the published room mapping carries for a segment without a home-room entry. */
+    private static final String ROOM_NAME_NOT_FOUND = "Not found";
+
     private @Nullable RoborockAccountHandler bridgeHandler;
     private final SchedulerTask initTask;
     private final SchedulerTask pollTask;
@@ -128,6 +134,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final RoborockStateDescriptionOptionProvider stateDescriptionProvider;
     private String token = "";
     private Rooms[] homeRooms = new Rooms[0];
+    private Map<Integer, String> segmentRoomNames = Map.of();
+    /**
+     * Guards the {@code status#current-room} decision and its publication against the map and
+     * status responses racing each other on different threads.
+     */
+    private final Object currentRoomLock = new Object();
     private String rrHomeId = "";
     private String localKey = "";
     private String localIP = "";
@@ -149,7 +161,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private boolean cloudMapRefreshDisabledLogged;
     private boolean cloudMetadataRefreshDisabledLogged;
     private volatile boolean vacuumChannelOn;
-    private @Nullable Integer lastKnownStateId;
+    private volatile @Nullable Integer lastKnownStateId;
+    /**
+     * The most recently parsed map, kept because maps are only polled while the robot cleans and
+     * the dock room has to be resolved from a map parsed earlier.
+     */
+    private volatile @Nullable RRMapData lastParsedMapData;
     private final Gson gson = new Gson();
     private final SecureRandom secureRandom = new SecureRandom();
     protected RoborockVacuumConfiguration config = new RoborockVacuumConfiguration();
@@ -385,6 +402,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         lastMapPollTimestamp = 0;
         vacuumChannelOn = false;
         lastKnownStateId = null;
+        lastParsedMapData = null;
+        // A configuration change re-initializes this same handler instance, so the previous
+        // configuration's segment-to-room-name table has to be dropped explicitly.
+        clearSegmentRoomNames();
         cloudMapRefreshDisabledLogged = false;
         cloudMetadataRefreshDisabledLogged = false;
         mapUpdateDeduplicator.reset();
@@ -868,14 +889,19 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
                 if (rooms.size() > 0) {
                     JsonArray mappedRoom = new JsonArray();
-                    String name = "Not found";
+                    Map<Integer, String> resolvedSegmentNames = new HashMap<>();
                     for (JsonElement roomE : rooms) {
                         JsonArray room = roomE.getAsJsonArray();
+                        String name = ROOM_NAME_NOT_FOUND;
                         for (int i = 0; i < homeRooms.length; i++) {
                             if (room.get(1).getAsString().equals(Integer.toString(homeRooms[i].id))) {
                                 name = homeRooms[i].name;
                                 break;
                             }
+                        }
+                        if (!ROOM_NAME_NOT_FOUND.equals(name)) {
+                            // Keep the sentinel out of the table so current-room reports UNDEF for such segments.
+                            putResolvedSegmentName(resolvedSegmentNames, room, name);
                         }
                         room.set(1, new JsonPrimitive(name));
                         if (room.size() == 3) {
@@ -883,12 +909,38 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         }
                         mappedRoom.add(room);
                     }
+                    installSegmentRoomNames(resolvedSegmentNames);
                     updateState(cmd.getChannel(), new StringType(mappedRoom.toString()));
                 } else {
+                    clearSegmentRoomNames();
                     updateState(cmd.getChannel(), new StringType(response));
                 }
                 break;
             }
+        }
+    }
+
+    /**
+     * Installs the segment-id to room-name table and re-evaluates the most recently parsed map
+     * with it: getMap and getRoomMapping are independent requests, so the map may have been cached
+     * while the names were still missing, and while docked no further map response is due that
+     * would self-correct the channel.
+     */
+    void installSegmentRoomNames(Map<Integer, String> resolvedSegmentNames) {
+        synchronized (currentRoomLock) {
+            segmentRoomNames = Map.copyOf(resolvedSegmentNames);
+            RRMapData mapData = lastParsedMapData;
+            if (mapData != null) {
+                updateCurrentRoomState(mapData);
+            }
+        }
+    }
+
+    private void putResolvedSegmentName(Map<Integer, String> target, JsonArray room, String name) {
+        try {
+            target.put(room.get(0).getAsInt(), name);
+        } catch (ClassCastException | IllegalStateException | NumberFormatException e) {
+            logger.debug("Could not parse room-mapping segment id from entry '{}': {}", room, e.getMessage());
         }
     }
 
@@ -1139,7 +1191,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void handleGetMap(int requestId, byte[] mapPayload) {
+    void handleGetMap(int requestId, byte[] mapPayload) {
         String methodName = requestCorrelationTracker.findMethodByRequestId(requestId);
         CompletableFuture<byte[]> pendingDownload = pendingRrMapDownloads.remove(Integer.valueOf(requestId));
         if (pendingDownload != null) {
@@ -1152,18 +1204,132 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         try {
-            RRMapData mapData = rrMapParser.parse(mapPayload);
-            byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
-            if (mapUpdateDeduplicator.shouldPublish(pngBytes)) {
-                updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
-            } else {
-                logger.trace("Suppressing duplicate map image update for request id {}", requestId);
+            RRMapData mapData;
+            try {
+                mapData = rrMapParser.parse(mapPayload);
+            } catch (RoborockException e) {
+                logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
+                invalidateMapDerivedState();
+                return;
             }
-        } catch (RoborockException e) {
-            logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
+            synchronized (currentRoomLock) {
+                lastParsedMapData = mapData;
+                // Published before rendering, so neither a duplicate PNG nor a rendering failure
+                // can hold the room back.
+                updateCurrentRoomState(mapData);
+            }
+            try {
+                byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
+                if (mapUpdateDeduplicator.shouldPublish(pngBytes)) {
+                    updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
+                } else {
+                    logger.trace("Suppressing duplicate map image update for request id {}", requestId);
+                }
+            } catch (RoborockException e) {
+                logger.debug("Failed to render map image for request id {}: {}", requestId, e.getMessage());
+            }
         } finally {
             requestCorrelationTracker.removeByRequestId(requestId);
         }
+    }
+
+    private void updateCurrentRoomState(RRMapData mapData) {
+        State roomState = resolveRoomStateFromMap(mapData, isAtDock(), segmentRoomNames);
+        if (roomState != null) {
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), roomState);
+        }
+    }
+
+    /**
+     * Republishes {@code status#current-room} from the charging dock's position in the most
+     * recently parsed map, since no map is polled while the robot sits on the dock. When no dock
+     * room can be resolved the channel goes {@code UNDEF} rather than keeping the room of the
+     * interrupted cleaning run.
+     */
+    private void updateCurrentRoomStateFromDock() {
+        updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(),
+                resolveDockRoomState(lastParsedMapData, segmentRoomNames));
+    }
+
+    /**
+     * Resolves the {@code status#current-room} state for a freshly parsed map: from the charging
+     * dock's position while the robot is docked ({@code UNDEF} when no dock room can be resolved),
+     * from the robot position otherwise, where {@code null} means the channel must be left as it is
+     * because no segment could be resolved at the robot position.
+     */
+    static @Nullable State resolveRoomStateFromMap(RRMapData mapData, boolean atDock,
+            Map<Integer, String> segmentRoomNames) {
+        if (atDock) {
+            // No map is polled while the robot sits docked, so an unknown dock room must go UNDEF
+            // instead of borrowing the possibly stale robot position.
+            MapPoint dockPosition = dockPosition(mapData);
+            State dockRoomState = dockPosition == null ? null : roomStateAt(mapData, dockPosition, segmentRoomNames);
+            return dockRoomState == null ? UnDefType.UNDEF : dockRoomState;
+        }
+        MapPoint position = robotPosition(mapData);
+        if (position == null) {
+            return UnDefType.UNDEF;
+        }
+        // While cleaning, an unresolvable position keeps the previous room because the next map
+        // cycle corrects the channel on its own.
+        return roomStateAt(mapData, position, segmentRoomNames);
+    }
+
+    /**
+     * Resolves the {@code status#current-room} state from the charging dock's position in the given
+     * cached map, going {@code UNDEF} whenever no dock room can be resolved, since nothing
+     * self-corrects the channel while the robot sits on the dock.
+     */
+    static State resolveDockRoomState(@Nullable RRMapData mapData, Map<Integer, String> segmentRoomNames) {
+        if (mapData == null) {
+            return UnDefType.UNDEF;
+        }
+        MapPoint dockPosition = dockPosition(mapData);
+        State dockRoomState = dockPosition == null ? null : roomStateAt(mapData, dockPosition, segmentRoomNames);
+        return dockRoomState == null ? UnDefType.UNDEF : dockRoomState;
+    }
+
+    /**
+     * Tells whether a state-id change moves the robot onto its charging dock; only the transition
+     * counts, so staying docked does not republish the same room on every status poll.
+     */
+    static boolean hasJustDocked(@Nullable Integer previousStateId, int newStateId) {
+        if (!StatusType.getType(newStateId).isAtDock()) {
+            return false;
+        }
+        return previousStateId == null || !StatusType.getType(previousStateId.intValue()).isAtDock();
+    }
+
+    /**
+     * Resolves the room state at the given map position, returning {@code null} when no segment
+     * can be resolved there at all and {@code UNDEF} when the resolved segment has no name in the
+     * table.
+     */
+    private static @Nullable State roomStateAt(RRMapData mapData, MapPoint position,
+            Map<Integer, String> segmentRoomNames) {
+        Optional<Integer> segmentId = RoomAtRobotResolver.resolveSegmentId(mapData, position.x(), position.y());
+        if (segmentId.isEmpty()) {
+            return null;
+        }
+        String roomName = segmentRoomNames.get(segmentId.get());
+        return roomName != null ? new StringType(roomName) : UnDefType.UNDEF;
+    }
+
+    private static @Nullable MapPoint dockPosition(RRMapData mapData) {
+        Integer chargerX = mapData.chargerX();
+        Integer chargerY = mapData.chargerY();
+        return chargerX == null || chargerY == null ? null : new MapPoint(chargerX.intValue(), chargerY.intValue());
+    }
+
+    private static @Nullable MapPoint robotPosition(RRMapData mapData) {
+        Integer robotX = mapData.robotX();
+        Integer robotY = mapData.robotY();
+        return robotX == null || robotY == null ? null : new MapPoint(robotX.intValue(), robotY.intValue());
+    }
+
+    private boolean isAtDock() {
+        Integer stateId = lastKnownStateId;
+        return stateId != null && StatusType.getType(stateId.intValue()).isAtDock();
     }
 
     public @Nullable String downloadRrMap(@Nullable String requestedDirectory) {
@@ -1287,7 +1453,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void registerRequest(String methodName, int requestId) {
+    void registerRequest(String methodName, int requestId) {
         if (requestId == REQUEST_ID_SYNC_DIRECT_COMPLETED) {
             if (logger.isTraceEnabled()) {
                 logger.trace(
@@ -1303,7 +1469,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         methodName);
             }
             if ("getMap".equals(methodName)) {
-                setMapStateUndefinedAndResetDeduplicator();
+                invalidateMapDerivedState();
             }
             return;
         }
@@ -1311,7 +1477,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             logger.debug("Skipping request registration for method '{}' due to invalid request id {}", methodName,
                     requestId);
             if ("getMap".equals(methodName)) {
-                setMapStateUndefinedAndResetDeduplicator();
+                invalidateMapDerivedState();
             }
             return;
         }
@@ -1544,12 +1710,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         // DP 121 — vacuum state ID
         if (dpsRoot.has("121")) {
             int stateInt = dpsRoot.get("121").getAsInt();
-            // On the Q10, status updates are provided automatically, so just update the channel.
-            if (q10) {
-                updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
-            } else {
-                updateStateIdAndRequestStatusIfChanged(stateInt, true);
-            }
+            // On the Q10, status updates are provided automatically, so no explicit status query is
+            // requested.
+            updateStateIdAndRequestStatusIfChanged(stateInt, !q10);
         }
 
         // DP 122 — battery %
@@ -2053,10 +2216,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void updateStateIdAndRequestStatusIfChanged(int stateId, boolean triggerImmediateStatusQuery) {
-        @Nullable
-        Integer previousStateId = lastKnownStateId;
         updateState(CHANNEL_STATE_ID, new DecimalType(stateId));
-        lastKnownStateId = stateId;
+        @Nullable
+        Integer previousStateId;
+        synchronized (currentRoomLock) {
+            previousStateId = lastKnownStateId;
+            lastKnownStateId = stateId;
+            if (hasJustDocked(previousStateId, stateId)) {
+                updateCurrentRoomStateFromDock();
+            }
+        }
         if (triggerImmediateStatusQuery && VacuumRefreshPolicy.shouldRequestImmediateStatus(previousStateId, stateId)) {
             requestImmediateStatusUpdate("state-id changed from " + previousStateId + " to " + stateId);
         }
@@ -2139,9 +2308,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void disableMapState(String reason) {
-        if (thing.getChannel(CHANNEL_VACUUM_MAP) != null) {
-            setMapStateUndefinedAndResetDeduplicator();
-        }
+        invalidateMapDerivedState();
         if (!cloudMapRefreshDisabledLogged) {
             logger.info("Cloud map refresh disabled for {}: {}. Channel '{}' is set to UNDEF.", config.duid, reason,
                     CHANNEL_VACUUM_MAP);
@@ -2161,6 +2328,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void disableRoomMappingState(String reason) {
         updateChannelStateIfExists(RobotCapabilities.ROOM_MAPPING.getChannel(), UnDefType.UNDEF);
+        clearSegmentRoomNames();
         if (!cloudMetadataRefreshDisabledLogged) {
             logger.info(
                     "Cloud metadata refresh disabled for {}: {}. Channels '{}' and '{}' are set to UNDEF when available.",
@@ -2175,9 +2343,24 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void setMapStateUndefinedAndResetDeduplicator() {
-        updateState(CHANNEL_VACUUM_MAP, UnDefType.UNDEF);
+    /**
+     * Invalidates every channel derived from a map fetch: {@code cleaning#map} and
+     * {@code status#current-room} come from the same response.
+     */
+    private void invalidateMapDerivedState() {
+        updateChannelStateIfExists(CHANNEL_VACUUM_MAP, UnDefType.UNDEF);
         mapUpdateDeduplicator.reset();
+        synchronized (currentRoomLock) {
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), UnDefType.UNDEF);
+            lastParsedMapData = null;
+        }
+    }
+
+    private void clearSegmentRoomNames() {
+        synchronized (currentRoomLock) {
+            segmentRoomNames = Map.of();
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), UnDefType.UNDEF);
+        }
     }
 
     private void refreshTransportContext() {
