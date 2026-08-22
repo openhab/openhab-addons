@@ -971,14 +971,24 @@ public class ShellyComponents {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
         if (profile.settings.loraDetected) {
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXBYTES,
-                    toQuantityType(status.rxBytes, Units.BYTE));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXBYTES,
-                    toQuantityType(status.txBytes, Units.BYTE));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXERRORS,
-                    getDecimal(status.txErrors));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_AIRTIME,
-                    toQuantityType(status.airtime, MetricPrefix.MILLI(Units.SECOND)));
+            // NotifyStatus is a delta: fields the device didn't change are omitted (null) and must be left alone
+            // rather than overwritten with UNDEF/0
+            if (status.rxBytes != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXBYTES,
+                        toQuantityType(status.rxBytes, Units.BYTE));
+            }
+            if (status.txBytes != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXBYTES,
+                        toQuantityType(status.txBytes, Units.BYTE));
+            }
+            if (status.txErrors != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXERRORS,
+                        getDecimal(status.txErrors));
+            }
+            if (status.airtime != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_AIRTIME,
+                        toQuantityType(status.airtime, MetricPrefix.MILLI(Units.SECOND)));
+            }
 
             // The add-on reports its firmware version asynchronously, usually not before the first status cycle
             String addOnFw = getString(status.fw);
