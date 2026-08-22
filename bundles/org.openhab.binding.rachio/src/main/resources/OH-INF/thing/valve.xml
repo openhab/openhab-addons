@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rachio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="valve">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud"/>
+		</supported-bridge-type-refs>
+
+		<label>Rachio Smart Hose Timer Valve</label>
+		<description>A Smart Hose Timer valve.</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
+
+		<channels>
+			<channel id="name" typeId="valve-name"/>
+			<channel id="online" typeId="valve-online"/>
+			<channel id="run" typeId="valve-run"/>
+			<channel id="runtime" typeId="valve-runtime"/>
+			<channel id="default-runtime" typeId="valve-default-runtime"/>
+			<channel id="state-matches" typeId="valve-state-matches"/>
+			<channel id="flow-detected" typeId="valve-flow-detected"/>
+			<channel id="battery-level" typeId="valve-battery-level"/>
+			<channel id="serial-number" typeId="valve-serial-number"/>
+			<channel id="last-run-type" typeId="valve-last-run-type"/>
+			<channel id="last-end-reason" typeId="valve-last-end-reason"/>
+			<channel id="next-planned-runtime" typeId="valve-next-planned-runtime"/>
+			<channel id="next-planned-run-duration" typeId="valve-next-planned-run-duration"/>
+			<channel id="next-planned-run-program-id" typeId="valve-next-planned-run-program-id"/>
+			<channel id="next-planned-run-skipped" typeId="valve-next-planned-run-skipped"/>
+			<channel id="last-completed-runtime" typeId="valve-last-completed-runtime"/>
+			<channel id="last-completed-run-duration" typeId="valve-last-completed-run-duration"/>
+			<channel id="last-run-status" typeId="valve-last-run-status"/>
+			<channel id="skip-next-planned-run" typeId="valve-skip-next-planned-run"/>
+			<channel id="cancel-next-planned-run-skip" typeId="valve-cancel-next-planned-run-skip"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="last-event" typeId="last-event"/>
+			<channel id="last-event-time" typeId="last-event-time"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>valveId</representation-property>
+
+		<config-description>
+			<parameter name="valveId" type="text" required="false">
+				<label>Valve ID</label>
+				<description>Rachio Smart Hose Timer Valve UUID. Required for manually created Valve Things.</description>
+			</parameter>
+			<parameter name="baseStationId" type="text" required="false">
+				<label>Base Station ID</label>
+				<description>Parent Smart Hose Timer Base Station UUID.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="valve-name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Smart Hose Timer valve name.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-online">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>ON when Rachio reports that the valve is online or connected.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-run">
+		<item-type>Switch</item-type>
+		<label>Run Valve</label>
+		<description>ON starts the valve. OFF stops the valve.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Water</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="valve-runtime">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Runtime</label>
+		<description>Runtime in seconds for the next manual valve start.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="valve-default-runtime">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Default Runtime</label>
+		<description>Valve default manual runtime in seconds. Commands update the Rachio cloud setting.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="valve-state-matches" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Matches</label>
+		<description>ON when the physical valve has synchronized with the desired cloud-side state.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-flow-detected">
+		<item-type>Switch</item-type>
+		<label>Flow Detected</label>
+		<description>ON when flow is detected for the valve run, if reported by Rachio.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-battery-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<description>Valve battery level when reported by Rachio.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-serial-number">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>Valve serial number when reported by Rachio.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-last-run-type">
+		<item-type>String</item-type>
+		<label>Last Run Type</label>
+		<description>Run type from the most recent valve webhook event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-last-end-reason">
+		<item-type>String</item-type>
+		<label>Last End Reason</label>
+		<description>End reason from the most recent valve stop webhook event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-next-planned-runtime">
+		<item-type>DateTime</item-type>
+		<label>Next Planned Runtime</label>
+		<description>Start time of the next planned valve run from Summary day views.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-next-planned-run-duration">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Next Planned Run Duration</label>
+		<description>Duration of the next planned valve run in seconds.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-next-planned-run-program-id" advanced="true">
+		<item-type>String</item-type>
+		<label>Next Planned Run Program ID</label>
+		<description>Program ID associated with the next planned valve run.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-next-planned-run-skipped">
+		<item-type>Switch</item-type>
+		<label>Next Planned Run Skipped</label>
+		<description>ON when the next planned valve run is currently skipped.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-last-completed-runtime">
+		<item-type>DateTime</item-type>
+		<label>Last Completed Runtime</label>
+		<description>Start time of the most recent completed valve run from Summary day views.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-last-completed-run-duration">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Last Completed Run Duration</label>
+		<description>Duration of the most recent completed valve run in seconds.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-last-run-status">
+		<item-type>String</item-type>
+		<label>Last Run Status</label>
+		<description>Status of the most recent completed valve run from Summary day views.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="valve-skip-next-planned-run">
+		<item-type>Switch</item-type>
+		<label>Skip Next Planned Run</label>
+		<description>ON skips the next upcoming valve planned run when Summary day-view identifiers are available.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="valve-cancel-next-planned-run-skip">
+		<item-type>Switch</item-type>
+		<label>Cancel Next Planned Run Skip</label>
+		<description>ON cancels the next skipped upcoming valve run when Summary day-view identifiers are available.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+</thing:thing-descriptions>
