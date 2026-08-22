@@ -301,7 +301,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         } else if (command instanceof PercentType percentTypeCommand) {
             zwaveCommand.value = handlePercentTypeCommand(channel, colorCap, channelConfig, percentTypeCommand);
         } else if (command instanceof DecimalType decimalCommand) {
-            zwaveCommand.value = decimalCommand.doubleValue();
+            zwaveCommand.value = decimalCommand.doubleValue() / channelConfig.factor;
         } else if (command instanceof DateTimeType dateTimeCommand) {
             throw new UnsupportedOperationException(dateTimeCommand.toString() + " is currently not supported");
         } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
@@ -552,7 +552,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         State state = metadata.setState(event.args.newValue, Objects.requireNonNull(channel.getAcceptedItemType()),
-                channelConfig.incomingUnit, channelConfig.inverted);
+                channelConfig.incomingUnit, channelConfig.inverted, channelConfig.factor);
 
         if (state == null) {
             return true;
@@ -574,7 +574,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                 rollerShutterCapability.setPosition(newValue.intValue(), isUpDownInverted);
                 rollerShutterState = metadata.setState(event.args.newValue,
                         Objects.requireNonNull(channel.getAcceptedItemType()), channelConfig.incomingUnit,
-                        rollerShutterConfig.inverted);
+                        rollerShutterConfig.inverted, channelConfig.factor);
             } else if (event.args.newValue instanceof Boolean newValue) {
                 boolean isCommandForUp = channelId.equals(rollerShutterCapability.upChannel.getId());
                 boolean isCommandForDown = channelId.equals(rollerShutterCapability.downChannel.getId());
@@ -837,13 +837,19 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {
         // Set initial state for linked channels
         for (Channel channel : thing.getChannels()) {
-            if (result.values.containsKey(channel.getUID().getId()) && isLinked(channel.getUID())) {
-                ChannelMetadata dummy = new ChannelMetadata(getId(), node.values.get(0));
+            String channelId = channel.getUID().getId();
+            if (result.values.containsKey(channelId) && isLinked(channel.getUID())) {
+                ChannelMetadata metadata = result.channelMetadata.get(channelId);
+                if (metadata == null) {
+                    logger.debug("Node {}. Channel {} has a value but no metadata, skipping initial state", node.nodeId,
+                            channelId);
+                    continue;
+                }
                 ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration()
                         .as(ZwaveJSChannelConfiguration.class);
-                State state = dummy.setState(Objects.requireNonNull(result.values.get(channel.getUID().getId())),
+                State state = metadata.setState(Objects.requireNonNull(result.values.get(channelId)),
                         Objects.requireNonNull(channel.getAcceptedItemType()), channelConfig.incomingUnit,
-                        channelConfig.inverted);
+                        channelConfig.inverted, channelConfig.factor);
                 if (state != null) {
                     // Initialize color and color temperature channels
                     ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
