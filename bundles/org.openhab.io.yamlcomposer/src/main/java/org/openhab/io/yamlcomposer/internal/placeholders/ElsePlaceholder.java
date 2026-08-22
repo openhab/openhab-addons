@@ -16,21 +16,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link MergeKeyPlaceholder} replaces the merge key (<<) in a mapping node
- * as a unique object, so that multiple merge keys can be processed later.
+ * The {@link ElsePlaceholder} represents an object constructed from an <code>!else</code> node
+ * to be processed by the {@link org.openhab.io.yamlcomposer.internal.YamlComposer}.
  *
- * @param value The value associated with the merge key placeholder ('<<' - not used)
  * @param sourceLocation Description of the source location for logging purposes
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 @SuppressWarnings("null")
 @NonNullByDefault
-public record MergeKeyPlaceholder(@Nullable Object value,
-        String sourceLocation) implements InterpolablePlaceholder<MergeKeyPlaceholder> {
+public record ElsePlaceholder(@Nullable Object value,
+        String sourceLocation) implements InterpolablePlaceholder<ElsePlaceholder> {
 
     @Override
-    public MergeKeyPlaceholder recreate(@Nullable Object newValue, String location) {
-        return new MergeKeyPlaceholder(newValue, location);
+    public ElsePlaceholder recreate(@Nullable Object newValue, String location) {
+        return new ElsePlaceholder(newValue, location);
     }
 }

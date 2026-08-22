@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.StringInterpolator;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
+import org.openhab.io.yamlcomposer.internal.directives.IfDirective;
 import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
 import org.openhab.io.yamlcomposer.internal.placeholders.IfPlaceholder;
 
@@ -31,11 +32,10 @@ import org.openhab.io.yamlcomposer.internal.placeholders.IfPlaceholder;
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public class IfProcessor implements PlaceholderProcessor<IfPlaceholder> {
-    private final BufferedLogger logger;
+public class IfProcessor extends AbstractConditionalProcessor implements PlaceholderProcessor<IfPlaceholder> {
 
     public IfProcessor(BufferedLogger logger) {
-        this.logger = logger;
+        super(logger);
     }
 
     @Override
@@ -51,7 +51,15 @@ public class IfProcessor implements PlaceholderProcessor<IfPlaceholder> {
 
     @Override
     public @Nullable Object process(IfPlaceholder ifPlaceholder, RecursiveTransformer recursiveTransformer) {
-        Logic logic = switch (ifPlaceholder.value()) {
+        Object value = ifPlaceholder.value();
+
+        @Nullable
+        Boolean simpleSyntaxResult = processSimpleSyntax(value, ifPlaceholder.sourceLocation(), recursiveTransformer);
+        if (simpleSyntaxResult != null) {
+            return new IfDirective(simpleSyntaxResult, ifPlaceholder.sourceLocation());
+        }
+
+        Logic logic = switch (value) {
             case null -> null;
             case Map<?, ?> map -> parseFromMapDefinition(map, ifPlaceholder.sourceLocation());
             case List<?> list -> parseFromListDefinition(list, ifPlaceholder.sourceLocation());

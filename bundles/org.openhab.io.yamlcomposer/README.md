@@ -3,6 +3,7 @@ children:
   - ["doc/basics", "YAML Basics"]
   - ["doc/variables", "Variables"]
   - ["doc/conditionals", "Conditionals"]
+  - ["doc/loops", "Loops"]
   - ["doc/include", "Include"]
   - ["doc/templates", "Templates"]
   - ["doc/packages", "Packages"]
@@ -27,6 +28,7 @@ Each feature addresses a different kind of reuse, composition, or abstraction to
 |--------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | **Variables and Substitution (`${..}`)**   | Insert dynamic values or evaluate expressions             | Build labels, topics, IDs, or computed values                                                                  |
 | **Conditionals (`!if`)**                   | Conditionally include or exclude YAML blocks              | Enable or disable features when using packages or template flags                                               |
+| **Loops (`!for`)**                         | Generate repeated YAML blocks from a list or map          | Create multiple items, channels, or thing definitions from structured data                                     |
 | **Include (`!include`)**                   | Insert the contents of another file                       | Reuse YAML across files; parameterize reusable blocks                                                          |
 | **Templates (`!insert`)**                  | Reuse YAML defined within the same file                   | Local parameterized blocks; reusable channel or item fragments                                                 |
 | **Packages**                               | Bundle multiple top-level sections into one reusable unit | Define reusable device structures containing things, items, metadata; sourced from external files or templates |
@@ -37,6 +39,7 @@ Each feature has a dedicated documentation page:
 
 - [Variables and Substitution](doc/variables.md)
 - [Conditionals](doc/conditionals.md)
+- [Loops](doc/loops.md)
 - [Include](doc/include.md)
 - [Templates](doc/templates.md)
 - [Packages](doc/packages.md)

@@ -64,10 +64,17 @@ public class PackageProcessor {
      * @param packagesObj the raw 'packages' section value to process and merge, or null if not present
      */
     public void mergePackages(Map<?, ?> yamlMap, @Nullable Object packagesObj) {
-        if (packagesObj instanceof Map<?, ?> packagesMap) {
+        if (packagesObj == null) {
+            return;
+        }
+
+        // Expand root structural directives (!for, !if) while deferring !include and !insert
+        Object expandedPackages = recursiveTransformer.transform(packagesObj, ProcessingPhase.DIRECTIVES);
+
+        if (expandedPackages instanceof Map<?, ?> packagesMap) {
             mergePackages(yamlMap, packagesMap);
             logger.debug("Merged packages into data in {}: {}", absolutePath, yamlMap);
-        } else if (packagesObj != null) {
+        } else if (expandedPackages != null) {
             var position = sourceLocator.findPosition(PACKAGES_KEY);
             logger.warn("{}:{} The 'packages' section is not a map", relativePath, position);
         }
