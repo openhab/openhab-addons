@@ -190,6 +190,10 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | Ascending alarm up to the configured volume                                                                                                                                                                                             |
 | doNotDisturb          | Switch      | R/W         | echo, echoshow, echospot      | Do Not Disturb mode enabled                                                                                                                                                                                                             |
 
+The `nextReminder`, `nextAlarm`, `nextMusicAlarm` and `nextTimer` channels are only polled from Amazon while at least one of them is linked to an item on any Echo thing of the account; linking a channel resumes the polling within a few seconds.
+The `nextReminder`, `nextAlarm`, `nextMusicAlarm` and `nextTimer` channels keep their last known value if a request to Amazon fails.
+After three consecutive failed requests they are set to `UNDEF`, because the binding does not know the state anymore.
+
 ## Advanced Feature Technically Experienced Users
 
 The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the Amazon Alexa server.
