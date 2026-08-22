@@ -119,7 +119,7 @@ public class Java223RuleTest {
     @Test
     public void fieldConstructorExecutesCallableAndWrapsCheckedException() throws Exception {
         ScriptWithCallable script = new ScriptWithCallable(() -> {
-            throw new Exception("checked");
+            throw new Java223Exception("checked");
         });
         Field field = ScriptWithCallable.class.getDeclaredField("callable");
 
@@ -280,7 +280,7 @@ public class Java223RuleTest {
         Field field = ScriptWithRunnableDerived.class.getDeclaredField("runnable");
 
         Java223Rule rule = new Java223Rule(script, field);
-        Object result = rule.execute(emptyAction, new HashMap<>());
+        rule.execute(emptyAction, new HashMap<>());
 
         assertEquals(1, runnableDerived.getCount(), "runnable.run() result must be executed");
     }
@@ -406,7 +406,7 @@ public class Java223RuleTest {
         }
 
         public String throwingMethod() {
-            throw new RuntimeException("kaboom");
+            throw new Java223Exception("kaboom");
         }
     }
 }
