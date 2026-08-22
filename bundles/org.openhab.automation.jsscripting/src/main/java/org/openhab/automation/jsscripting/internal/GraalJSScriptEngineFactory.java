@@ -30,12 +30,15 @@ import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.graal.GraalUtil;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -70,53 +73,65 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     /**
      * Shared Polyglot {@link Engine} instance to be used by all instances of {@link OpenhabGraalJSScriptEngine}.
      */
-    private final Engine engine;
+    private final @Nullable Engine engine;
 
     private final JSScriptServiceUtil jsScriptServiceUtil;
-    private final JSDependencyTracker jsDependencyTracker;
+    private volatile @Nullable JSDependencyTracker jsDependencyTracker;
 
     @Activate
     public GraalJSScriptEngineFactory(final @Reference JSScriptServiceUtil jsScriptServiceUtil, //
-            final @Reference JSDependencyTracker jsDependencyTracker, //
-            final @Reference OSGiScriptExtensionProvider osgiScriptExtensionProvider, // declare dependency on
-                                                                                      // OSGiScriptExtensionProvider to
-                                                                                      // fix a timing issue where
-                                                                                      // openhab-js attempts to lookup
-                                                                                      // OSGi services before
-                                                                                      // OSGiScriptExtensionProvider is
-                                                                                      // active
-            Map<String, Object> config) {
+            /*
+             * declare dependency on OSGiScriptExtensionProvider to fix a timing issue where openhab-js attempts to
+             * lookup OSGi services before OSGiScriptExtensionProvider is active
+             */
+            final @Reference OSGiScriptExtensionProvider osgiScriptExtensionProvider, Map<String, Object> config) {
         logger.debug("Loading GraalJSScriptEngineFactory");
 
-        this.jsDependencyTracker = jsDependencyTracker;
         this.jsScriptServiceUtil = jsScriptServiceUtil;
         this.configuration = new GraalJSScriptEngineConfiguration(config);
 
-        if (configuration.isDebuggerEnabled()) {
-            Engine.Builder engineBuilder = createEngineBuilder();
-            engineBuilder //
-                    .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
-                    .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
-                    .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
-                                                             // attach
-                    .option("inspect.Secure", "false"); // Disable TLS
-            Engine engine;
-            try {
-                engine = engineBuilder.build();
-            } catch (RuntimeException e) {
-                logger.error(
-                        "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
-                        e);
-                engine = createEngineBuilder().build();
-            }
-            logger.info("Debugger support is enabled for JavaScript Scripting.");
-            this.engine = engine;
-        } else {
-            this.engine = createEngineBuilder().build();
+        Engine engine;
+        try {
+            engine = createEngine();
+            logger.debug("GraalJS engine created; language resolution deferred to first use");
+        } catch (Exception e) {
+            logger.error("Failed to create GraalJS engine", e);
+            engine = null;
         }
+        this.engine = engine;
+    }
 
-        if (getLanguage() == null) {
-            logger.error(LANG_NOT_INITIALIZED_MSG);
+    private Engine createEngine() {
+        Thread thread = Thread.currentThread();
+
+        // The classloader is swapped during creation to make sure the engine can "see" what it needs
+        ClassLoader original = thread.getContextClassLoader();
+        try {
+            thread.setContextClassLoader(GraalJSScriptEngineFactory.class.getClassLoader());
+            if (configuration.isDebuggerEnabled()) {
+                Engine.Builder engineBuilder = createEngineBuilder();
+                engineBuilder //
+                        .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
+                        .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
+                        .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
+                                                                 // attach
+                        .option("inspect.Secure", "false"); // Disable TLS
+                Engine engine;
+                try {
+                    engine = engineBuilder.build();
+                } catch (RuntimeException e) {
+                    logger.error(
+                            "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
+                            e);
+                    engine = createEngineBuilder().build();
+                }
+                logger.info("Debugger support is enabled for JavaScript Scripting.");
+                return engine;
+            } else {
+                return createEngineBuilder().build();
+            }
+        } finally {
+            thread.setContextClassLoader(original);
         }
     }
 
@@ -134,12 +149,27 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Deactivate
     public void dispose() {
-        this.engine.close();
+        Engine engine = this.engine;
+        if (engine != null) {
+            engine.close();
+        }
+        GraalUtil.clearCache();
     }
 
     @Modified
     protected void modified(Map<String, ?> config) {
         configuration.modified(config);
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    protected void setJsDependencyTracker(JSDependencyTracker tracker) {
+        this.jsDependencyTracker = tracker;
+    }
+
+    protected void unsetJsDependencyTracker(JSDependencyTracker tracker) {
+        if (this.jsDependencyTracker == tracker) {
+            this.jsDependencyTracker = null;
+        }
     }
 
     @Override
@@ -157,7 +187,15 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         if (!SCRIPT_TYPES.contains(scriptType)) {
             return null;
         }
-        if (getLanguage() == null) {
+
+        if (engine == null) {
+            logger.error("Graal engine not initialized");
+            return null;
+        }
+
+        // Use the common lock to safely get the language
+        Language language = GraalUtil.getLanguage(engine, OpenhabGraalJSScriptEngine.LANGUAGE_ID);
+        if (language == null) {
             logger.error(LANG_NOT_INITIALIZED_MSG);
             return null;
         }
@@ -170,12 +208,8 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         return jsDependencyTracker;
     }
 
-    /**
-     * Gets the Graal language of {@link OpenhabGraalJSScriptEngine}.
-     *
-     * @return the Graal language of {@link OpenhabGraalJSScriptEngine} or {@code null} if not available
-     */
-    private @Nullable Language getLanguage() {
-        return engine.getLanguages().get(OpenhabGraalJSScriptEngine.LANGUAGE_ID);
+    @Override
+    public boolean isReady() {
+        return GraalUtil.getLanguage(engine, OpenhabGraalJSScriptEngine.LANGUAGE_ID) != null;
     }
 }
