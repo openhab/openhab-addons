@@ -1,4 +1,4 @@
-package ch.obermuhlner.scriptengine.java.construct;
+package ch.obermuhlner.scriptengine.java.constructor;
 
 import javax.script.ScriptException;
 

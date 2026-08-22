@@ -1,11 +1,7 @@
 package ch.obermuhlner.scriptengine.java;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.CodeSource;
-import java.security.Principal;
-import java.security.ProtectionDomain;
+import java.net.*;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.util.Map;
 
@@ -18,11 +14,10 @@ public class MemoryClassLoader extends ClassLoader {
      * URL used to identify the {@link CodeSource} of the {@link ProtectionDomain} used by this class loader.
      *
      * This is useful to identify classes loaded by this class loader in a policy file.
-     *
      * <pre>
-    grant codeBase "jrt:/ch.obermuhlner.scriptengine.java/memory-class" {
+grant codeBase "jrt:/ch.obermuhlner.scriptengine.java/memory-class" {
     permission java.lang.RuntimePermission "exitVM";
-    };
+};
      * </pre>
      */
     public static final String MEMORY_CLASS_URL = "http://ch.obermuhlner/ch.obermuhlner.scriptengine.java/memory-class";
@@ -41,6 +36,7 @@ public class MemoryClassLoader extends ClassLoader {
         this.mapClassBytes = mapClassBytes;
 
         try {
+            // JAVA223 modification: new Url(...) deprecated, replacing with URI and toURL
             URL url = new java.net.URI(MEMORY_CLASS_URL).toURL();
             CodeSource codeSource = new CodeSource(url, (Certificate[]) null);
             protectionDomain = new ProtectionDomain(codeSource, null, this, new Principal[0]);
@@ -59,6 +55,7 @@ public class MemoryClassLoader extends ClassLoader {
         return defineClass(name, bytes, 0, bytes.length, protectionDomain);
     }
 
+    // JAVA223 modification: new method
     public boolean isLoadedClass(String className) {
         return mapClassBytes.containsKey(className);
     }

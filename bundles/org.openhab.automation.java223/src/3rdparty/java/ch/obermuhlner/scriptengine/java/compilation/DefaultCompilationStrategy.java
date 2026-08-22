@@ -11,8 +11,8 @@ public class DefaultCompilationStrategy implements CompilationStrategy {
 
     @Override
     public List<JavaFileObject> getJavaFileObjectsToCompile(String simpleClassName, String currentSource) {
-        return Collections
-                .singletonList(MemoryFileManager.createSourceFileObject(null, simpleClassName, currentSource));
+	return Collections
+		.singletonList(MemoryFileManager.createSourceFileObject(null, simpleClassName, currentSource));
     }
 
 }
