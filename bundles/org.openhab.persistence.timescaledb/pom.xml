@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>!io.dropwizard.metrics5.*,!com.codahale.metrics.*,!io.prometheus.*,!org.checkerframework.*,!org.jetbrains.annotations.*,!org.hibernate.*,!waffle.windows.auth.*,!org.osgi.service.jdbc.*,!com.sun.jna.*,!javassist.*,!com.google.errorprone.annotations.*,!sun.misc.*</bnd.importpackage>
-    <postgresql.version>42.7.11</postgresql.version>
+    <postgresql.version>42.7.12</postgresql.version>
     <hikari.version>7.0.2</hikari.version>
   </properties>
 
