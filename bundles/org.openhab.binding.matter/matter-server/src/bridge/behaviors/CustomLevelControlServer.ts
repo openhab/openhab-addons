@@ -27,16 +27,19 @@ export class CustomLevelControlServer extends LevelControlServer {
         withOnOff: boolean,
         options: LevelControl.Options = {},
     ) {
-        this.env
-            .get(DeviceFunctions)
-            .sendAttributeChangedEvent(this.endpoint.id, "levelControl", "currentLevel", level);
+        // A move with on/off to the minimum level is how a client turns the light off, while the same level from a
+        // plain move is the dimmest the light can be. Only we can tell those apart, so openHAB is sent the meaning
+        // rather than a level it would have to guess at.
+        const off = withOnOff && level === this.minLevel;
+        const clusterName = off ? "onOff" : "levelControl";
+        const attributeName = off ? "onOff" : "currentLevel";
+        const functions = this.env.get(DeviceFunctions);
+        functions.sendAttributeChangedEvent(this.endpoint.id, clusterName, attributeName, off ? false : level);
         if (this.state.currentLevel !== level) {
             try {
-                await this.env
-                    .get(DeviceFunctions)
-                    .waitForStateUpdate(this.endpoint.id, "levelControl", "currentLevel", 15000);
+                await functions.waitForStateUpdate(this.endpoint.id, clusterName, attributeName, 15000);
             } catch {
-                logger.debug(`No currentLevel confirmation from openHAB for ${this.endpoint.id}, proceeding`);
+                logger.debug(`No ${attributeName} confirmation from openHAB for ${this.endpoint.id}, proceeding`);
             }
         }
         return super.moveToLevelLogic(level, transitionTime, withOnOff, options);

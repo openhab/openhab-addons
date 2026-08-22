@@ -136,6 +136,16 @@ class WindowCoveringDeviceTest {
     }
 
     @Test
+    void testRepeatedPositionIsIgnored() {
+        // movement is finished once the position stops arriving, so a repeat must not look like more movement
+        shutterDevice.updateState(rollershutterItem, new PercentType(50));
+        Mockito.clearInvocations(client);
+
+        shutterDevice.updateState(rollershutterItem, new PercentType(50));
+        verify(client, Mockito.never()).setEndpointState(any(), any(), any(), any());
+    }
+
+    @Test
     void testActivate() {
         rollershutterItem.setState(new PercentType(50));
         MatterDeviceOptions options = shutterDevice.activate();
@@ -217,13 +227,14 @@ class WindowCoveringDeviceTest {
 
     @Test
     void testUpdateStateWithString() throws InterruptedException {
-        stringItem.setState(new StringType("UP"));
-        Thread.sleep(1100); // Wait for timer
-        verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(0));
-
+        // the device is activated open, so close it first to make each position an actual move
         stringItem.setState(new StringType("DOWN"));
         Thread.sleep(1100); // Wait for timer
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(10000));
+
+        stringItem.setState(new StringType("UP"));
+        Thread.sleep(1100); // Wait for timer
+        verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(0));
     }
 
     @Test
@@ -248,12 +259,12 @@ class WindowCoveringDeviceTest {
         invertedSwitchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
         verify(invertedSwitchItem).send(OnOffType.ON, MATTER_SOURCE);
 
-        // Test state updates from switch to position
-        invertedSwitchDevice.updateState(invertedSwitchItem, OnOffType.ON);
-        verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(0));
-
+        // Test state updates from switch to position, activated open so closing comes first
         invertedSwitchDevice.updateState(invertedSwitchItem, OnOffType.OFF);
         verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(10000));
+
+        invertedSwitchDevice.updateState(invertedSwitchItem, OnOffType.ON);
+        verify(client).setEndpointState(any(), eq("windowCovering"), eq("currentPositionLiftPercent100ths"), eq(0));
 
         invertedSwitchDevice.dispose();
     }
