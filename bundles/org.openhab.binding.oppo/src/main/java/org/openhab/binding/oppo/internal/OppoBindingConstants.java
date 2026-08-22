@@ -34,11 +34,18 @@ public class OppoBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
+    public static final ThingTypeUID THING_TYPE_BDP83 = new ThingTypeUID(BINDING_ID, "bdp-83");
+    public static final ThingTypeUID THING_TYPE_BDP93 = new ThingTypeUID(BINDING_ID, "bdp-93");
+    public static final ThingTypeUID THING_TYPE_BDP103 = new ThingTypeUID(BINDING_ID, "bdp-103");
+    public static final ThingTypeUID THING_TYPE_BDP105 = new ThingTypeUID(BINDING_ID, "bdp-105");
+    public static final ThingTypeUID THING_TYPE_UDP203 = new ThingTypeUID(BINDING_ID, "udp-203");
+    public static final ThingTypeUID THING_TYPE_UDP205 = new ThingTypeUID(BINDING_ID, "udp-205");
 
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
     public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
 
     public static final int MODEL83 = 83;
+    public static final int MODEL93 = 93;
     public static final int MODEL103 = 103;
     public static final int MODEL105 = 105;
     public static final int MODEL203 = 203;
