@@ -584,8 +584,12 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                 updateCommandDescriptions();
             } else if (DeviceDescriptionType.SELECTED_PROGRAM.equals(deviceDescriptionChange.type())) {
                 updateSelectedProgramDescription();
+                // the write access of the selected program determines which program commands are possible
+                updateCommandDescriptions();
             } else if (DeviceDescriptionType.ACTIVE_PROGRAM.equals(deviceDescriptionChange.type())) {
                 updateActiveProgramDescription();
+                // the write access of the active program determines whether a program can be started
+                updateCommandDescriptions();
             } else if (OPERATION_STATE_KEY.equals(deviceDescriptionChange.key())) {
                 updateStatusDescriptionIfLinked(CHANNEL_OPERATION_STATE, OPERATION_STATE_KEY);
             } else if (PROGRAM_PROGRESS_KEY.equals(deviceDescriptionChange.key())) {
@@ -1187,6 +1191,16 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                             && deviceDescriptionService.getSelectedProgram(true) != null) {
                         commandOptions = List
                                 .of(new CommandOption(COMMAND_START, translationProvider.getText(I18N_START_PROGRAM)));
+                    }
+                    if (commandOptions.isEmpty()) {
+                        // the appliance does not announce the possible program commands in every state (e.g. as long
+                        // as remote start is not activated), offer all of them instead of leaving the channel empty
+                        logger.debug("Could not determine the possible program commands, offer all of them ({}).",
+                                thing.getUID());
+                        commandOptions = List.of(
+                                new CommandOption(COMMAND_START, translationProvider.getText(I18N_START_PROGRAM)),
+                                new CommandOption(COMMAND_PAUSE, translationProvider.getText(I18N_PAUSE_PROGRAM)),
+                                new CommandOption(COMMAND_RESUME, translationProvider.getText(I18N_RESUME_PROGRAM)));
                     }
 
                     setCommandOptions(channel.getUID(), commandOptions);
