@@ -881,12 +881,17 @@ public class ShellyComponents {
             throws ShellyApiException {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        if (profile.isRGBW2 && !profile.inColor) {
+        if (profile.isRGBW2) {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
             List<ShellySettingsLight> lights = orgStatus.lights;
             for (int i = 0; i < lights.size(); i++) {
+                if (profile.hasColorTag(i)) {
+                    // color component is handled by updateRGBW(); this loop only covers CCT/Light components
+                    // (a hybrid profile's secondary component(s), or all of them for a plain white-mode RGBW2)
+                    continue;
+                }
                 ShellySettingsLight light = lights.get(i);
                 String groupName = profile.getControlGroup(i);
                 OnOffType power = getOnOff(light.ison);
@@ -894,6 +899,12 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
                                 Units.PERCENT));
+                if (light.temp != null) {
+                    ShellyColorUtils col = new ShellyColorUtils();
+                    col.setMinMaxTemp(profile.getMinTemp(i), profile.getMaxTemp(i));
+                    col.setTemp(getInteger(light.temp));
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
+                }
             }
         }
         return updated;

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.shelly.internal.util;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,7 +31,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -337,39 +334,6 @@ public class ShellyUtils {
         }
         String time = DATE_TIME.format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
         return time.replace('T', ' ').replace('-', '/');
-    }
-
-    public static Integer getLightIdFromGroup(String groupName) {
-        if (groupName.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
-            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_INDEX)) - 1;
-        }
-        if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
-        }
-        return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
-    }
-
-    // Gen2 RGBW PM ships on light1..n natively. A Gen1 RGBW2 Thing that already carries the
-    // deprecated channel1..n group (from before this Thing was migrated) keeps publishing there,
-    // dual-written to light1..n by ShellyBaseHandler.updateChannel(); a freshly discovered Gen1
-    // RGBW2 Thing goes straight to light1..n and never gets a channel1..n group.
-    public static String lightChannelGroupPrefix(ShellyDeviceProfile profile) {
-        return profile.isGen2 || !profile.hasLegacyLightChannels ? CHANNEL_GROUP_LIGHT_INDEX
-                : CHANNEL_GROUP_LIGHT_CHANNEL;
-    }
-
-    public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        if (!profile.isRGBW2 || profile.inColor) {
-            return CHANNEL_GROUP_LIGHT_CONTROL;
-        }
-        return lightChannelGroupPrefix(profile) + channelId.toString();
-    }
-
-    public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        if (profile.isBulb || profile.isDuo) {
-            return CHANNEL_GROUP_WHITE_CONTROL;
-        }
-        return lightChannelGroupPrefix(profile) + channelId.toString();
     }
 
     public static DecimalType mapSignalStrength(int dbm) {

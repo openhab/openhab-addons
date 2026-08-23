@@ -246,6 +246,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
                 // RGBW2-white / RGBW PM-white
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_COLOR_TEMP, "whiteTemp", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
@@ -426,8 +427,11 @@ public class ShellyChannelDefinitions {
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
-        // Any multi-meter device (relay or pure meter like ProEM50) gets device-level accumulated channels
-        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
+        // Any multi-meter device (relay, pure meter like ProEM50, or the Pro RGBWW PM light profile with
+        // more than one independently metered component) gets device-level accumulated channels.
+        // Other RGBW2 devices are excluded: their aggregation already lands in the single "meter" group
+        // via updateAggregatedMeter(), so a separate device-level total would be redundant.
+        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && (!profile.isRGBW2 || profile.isProRgbwwPm);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         // Gate returned/apparent totals on the device actually being a dedicated EMeter (3EM or EM50).
@@ -536,18 +540,14 @@ public class ShellyChannelDefinitions {
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
-            String whiteGroup = profile.isRGBW2 && !profile.inColor ? group : CHANNEL_GROUP_WHITE_CONTROL;
+            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
             // Create power channel in color mode and brightness channel in white mode
-            addChannel(thing, add, profile.inColor, group, CHANNEL_LIGHT_POWER);
+            addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            // colorTemp has no channel-type definition for the per-light indexed groups (RGBW2/RGBW PM
-            // hardware has no CCT control); only attempt it for the shared white-control group to avoid
-            // createChannel() throwing IllegalArgumentException for an undefined group/channel pair.
-            addChannel(thing, add, status.temp != null && CHANNEL_GROUP_WHITE_CONTROL.equals(whiteGroup), whiteGroup,
-                    CHANNEL_COLOR_TEMP);
+            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
         }
 
         return add;

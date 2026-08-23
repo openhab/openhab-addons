@@ -12,19 +12,55 @@
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
-			<channel-group id="light1" typeId="rgbwpmChannel">
+			<channel-group id="light1" typeId="rgbwChannel">
 				<label>LED Channel 1</label>
 			</channel-group>
-			<channel-group id="light2" typeId="rgbwpmChannel">
+			<channel-group id="light2" typeId="rgbwChannel">
 				<label>LED Channel 2</label>
 			</channel-group>
-			<channel-group id="light3" typeId="rgbwpmChannel">
+			<channel-group id="light3" typeId="rgbwChannel">
 				<label>LED Channel 3</label>
 			</channel-group>
-			<channel-group id="light4" typeId="rgbwpmChannel">
+			<channel-group id="light4" typeId="rgbwChannel">
 				<label>LED Channel 4</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:rgbw-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyprorgbwwpm">
+		<label>Shelly Pro RGBWW</label>
+		<description>Shelly Pro RGBWW PM - LED Controller with Power Meter</description>
+		<category>ColorLight</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="control" typeId="rgbwpmColorControl"/>
+			<channel-group id="color" typeId="colorSettingsRGB"/>
+			<channel-group id="light1" typeId="rgbwChannel">
+				<label>LED Channel 1</label>
+			</channel-group>
+			<channel-group id="light2" typeId="rgbwChannel">
+				<label>LED Channel 2</label>
+			</channel-group>
+			<channel-group id="light3" typeId="rgbwChannel">
+				<label>LED Channel 3</label>
+			</channel-group>
+			<channel-group id="light4" typeId="rgbwChannel">
+				<label>LED Channel 4</label>
+			</channel-group>
+			<channel-group id="light5" typeId="rgbwChannel">
+				<label>LED Channel 5</label>
+			</channel-group>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="meter1" typeId="meter"/>
+			<channel-group id="meter2" typeId="meter"/>
+			<channel-group id="meter3" typeId="meter"/>
+			<channel-group id="meter4" typeId="meter"/>
+			<channel-group id="meter5" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -50,7 +86,19 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="rgbwpmChannel">
+	<channel-group-type id="colorSettingsRGB">
+		<label>Colors</label>
+		<description>Light colors</description>
+		<channels>
+			<channel id="hsb" typeId="system.color"/>
+			<channel id="full" typeId="colorFull"/>
+			<channel id="red" typeId="colorRed"/>
+			<channel id="green" typeId="colorGreen"/>
+			<channel id="blue" typeId="colorBlue"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rgbwChannel">
 		<label>LED Channel</label>
 		<description>Control individual LED channel (light profile)</description>
 	</channel-group-type>
