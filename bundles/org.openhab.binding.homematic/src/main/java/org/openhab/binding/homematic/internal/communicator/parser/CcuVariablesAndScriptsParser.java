@@ -44,10 +44,11 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
             for (TclScriptDataEntry entry : entries) {
                 HmDatapoint dp = channel.getDatapoint(HmParamsetType.VALUES, entry.name);
                 if (dp != null) {
-                    dp.setValue(convertToType(entry.value));
+                    dp.setValue(convertToType(dp.getType(), entry.value));
                 } else {
-                    dp = new HmDatapoint(entry.name, entry.description, HmValueType.parse(entry.valueType),
-                            convertToType(entry.value), entry.readOnly, HmParamsetType.VALUES);
+                    HmValueType valueType = HmValueType.parse(entry.valueType);
+                    dp = new HmDatapoint(entry.name, entry.description, valueType,
+                            convertToType(valueType, entry.value), entry.readOnly, HmParamsetType.VALUES);
                     dp.setInfo(entry.name);
                     if (dp.isIntegerType()) {
                         dp.setMinValue(toInteger(entry.minValue));
