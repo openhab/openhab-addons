@@ -171,6 +171,7 @@ You can add the following channels:
 - **qos**: QoS of this channel. Overrides the connection QoS (defined in broker connection).
 - **trigger**: If `true`, a received MQTT value that is valid for the selected channel type triggers a channel event instead of updating a state.
   This typed trigger behavior remains supported, but for untyped trigger events the dedicated `trigger` channel type is preferred.
+  Image channels always remain state channels because their payload is binary.
   If a `commandTopic` is also configured, the channel retains state-channel metadata so linked Item commands can continue to be published to MQTT.
 
 ### Trigger Channels

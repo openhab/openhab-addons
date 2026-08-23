@@ -175,6 +175,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
             }
 
             if (channelConfig.trigger && channelConfig.commandTopic.isBlank()
+                    && !MqttBindingConstants.IMAGE.equals(channelTypeUID.getId())
                     && channel.getKind() != ChannelKind.TRIGGER) {
                 if (channelBuilder == null) {
                     channelBuilder = ChannelBuilder.create(channel);

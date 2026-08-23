@@ -421,14 +421,17 @@ public class ChannelStateTests {
 
     @Test
     public void receiveImageTest() {
+        ChannelConfig triggerConfig = ChannelConfigBuilder.create("state", "").makeTrigger(true).build();
         ImageValue value = new ImageValue();
-        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        ChannelState c = spy(new ChannelState(triggerConfig, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         byte[] payload = { (byte) 0xFF, (byte) 0xD8, 0x01, 0x02, (byte) 0xFF, (byte) 0xD9 };
         c.processMessage("state", payload);
         assertThat(value.getChannelState(), is(instanceOf(RawType.class)));
         assertThat(((RawType) value.getChannelState()).getMimeType(), is("image/jpeg"));
+        verify(channelStateUpdateListenerMock).updateChannelState(channelUIDMock, value.getChannelState());
+        verify(channelStateUpdateListenerMock, never()).triggerChannel(any(), any());
     }
 
     @Nested

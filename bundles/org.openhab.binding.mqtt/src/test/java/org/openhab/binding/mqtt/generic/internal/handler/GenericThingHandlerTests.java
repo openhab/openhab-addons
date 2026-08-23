@@ -162,6 +162,18 @@ public class GenericThingHandlerTests {
     }
 
     @Test
+    public void initializeKeepsReadOnlyImageTriggerAsStateChannel() {
+        Configuration configuration = new Configuration(Map.of("stateTopic", "test/state", "trigger", true));
+        Channel imageChannel = cb("image", "Image", configuration, IMAGE_CHANNEL);
+        when(thingMock.getChannels()).thenReturn(List.of(imageChannel));
+
+        thingHandler.initialize();
+
+        verify(callbackMock, never()).thingUpdated(any());
+        assertThat(imageChannel.getKind(), is(ChannelKind.STATE));
+    }
+
+    @Test
     public void handleCommandRefresh() {
         TextValue value = spy(new TextValue());
         value.update(new StringType("DEMOVALUE"));
