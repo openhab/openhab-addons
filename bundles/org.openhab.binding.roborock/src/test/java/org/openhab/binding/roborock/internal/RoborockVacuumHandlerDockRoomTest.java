@@ -17,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -172,21 +174,40 @@ class RoborockVacuumHandlerDockRoomTest {
 
     @Test
     void statusTypeKnowsWhichStatesPutTheRobotOnItsDock() {
-        assertTrue(StatusType.CHARGING.isAtDock());
-        assertTrue(StatusType.CHARGING_ERROR.isAtDock());
-        assertTrue(StatusType.FULL.isAtDock());
-        assertTrue(StatusType.EMPTYING_BIN.isAtDock(), "the dock empties the bin, the robot has to be on it");
-        assertTrue(StatusType.WASHING_MOP.isAtDock(), "the mop is washed in the dock");
-        assertTrue(StatusType.WASHING_MOP2.isAtDock());
+        // Listed here a second time, independently of the switch under test: if the two
+        // enumerations ever disagree, this fails rather than silently following the code.
+        Set<StatusType> onTheDock = EnumSet.of(StatusType.CHARGING, StatusType.CHARGING_ERROR, StatusType.FULL,
+                StatusType.EMPTYING_BIN, StatusType.WASHING_MOP, StatusType.WASHING_MOP2, StatusType.UPDATING,
+                StatusType.ATTACH_MOP, StatusType.DETACH_MOP, StatusType.AIR_DRYING_STOPPED);
+        Set<StatusType> headingThere = EnumSet.of(StatusType.RETURNING, StatusType.DOCKING, StatusType.GOING_WASH_MOP,
+                StatusType.BACK_TO_DOCK_WASHING_DUSTER);
+        Set<StatusType> awayFromIt = EnumSet.of(StatusType.CLEANING, StatusType.SPOTCLEAN, StatusType.GOTO,
+                StatusType.ZONE, StatusType.ROOM, StatusType.MANUAL, StatusType.REMOTE, StatusType.MAPPING,
+                StatusType.PATROL, StatusType.EGG_ATTACK, StatusType.STATUS_MOPPING, StatusType.CLEAN_MOP_MOPPING,
+                StatusType.SEGMENT_MOPPING, StatusType.SEGMENT_CLEAN_MOP_MOPPING, StatusType.ZONED_MOPPING,
+                StatusType.ZONED_CLEAN_MOP_MOPPING);
+        Set<StatusType> positionUnknown = EnumSet.of(StatusType.UNKNOWN, StatusType.INITIATING, StatusType.SLEEPING,
+                StatusType.IDLE, StatusType.PAUSED, StatusType.ERROR, StatusType.SHUTTING_DOWN, StatusType.IN_CALL,
+                StatusType.OFFLINE, StatusType.LOCKED, StatusType.CLEAN_MOP_CLEANING,
+                StatusType.SEGMENT_CLEAN_MOP_CLEANING, StatusType.ZONED_CLEAN_MOP_CLEANING);
 
-        assertFalse(StatusType.DOCKING.isAtDock(), "still driving towards the dock");
-        assertFalse(StatusType.RETURNING.isAtDock(), "still driving towards the dock");
+        for (StatusType status : StatusType.values()) {
+            int buckets = (onTheDock.contains(status) ? 1 : 0) + (headingThere.contains(status) ? 1 : 0)
+                    + (awayFromIt.contains(status) ? 1 : 0) + (positionUnknown.contains(status) ? 1 : 0);
+            assertEquals(1, buckets,
+                    status + " must be classified exactly once - a new status needs a decision here, not a default");
+            assertEquals(onTheDock.contains(status), status.isAtDock(),
+                    status + " is classified differently by isAtDock() than by this test");
+        }
+
+        // The distinctions the grouping exists for, spelled out so a regression names itself.
+        assertTrue(StatusType.EMPTYING_BIN.isAtDock(), "the dock empties the bin, the robot has to be on it");
+        assertTrue(StatusType.UPDATING.isAtDock(), "firmware updates run on the dock");
+        assertTrue(StatusType.DETACH_MOP.isAtDock(), "the dock detaches the mop");
         assertFalse(StatusType.GOING_WASH_MOP.isAtDock(), "still driving towards the dock");
-        assertFalse(StatusType.BACK_TO_DOCK_WASHING_DUSTER.isAtDock(), "still driving towards the dock");
-        assertFalse(StatusType.CLEANING.isAtDock());
-        assertFalse(StatusType.ROOM.isAtDock());
-        assertFalse(StatusType.IDLE.isAtDock());
+        assertFalse(StatusType.SEGMENT_MOPPING.isAtDock(), "mopping is cleaning, not dock work");
         assertFalse(StatusType.UNKNOWN.isAtDock(), "an unmapped state id must not be taken for a docked robot");
+        assertFalse(StatusType.IDLE.isAtDock(), "idle says nothing about where the robot stands");
     }
 
     /** A map with two segmented rooms: the robot in the hallway segment, the charging dock in the other. */

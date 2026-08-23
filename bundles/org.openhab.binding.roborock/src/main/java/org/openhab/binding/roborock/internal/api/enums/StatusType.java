@@ -93,14 +93,38 @@ public enum StatusType {
     }
 
     /**
-     * Tells whether the robot physically sits on its charging dock while in this state; states in
-     * which it is only on its way there, and model-specific dock chores this binding has no capture
-     * of, are excluded.
+     * Tells whether the robot physically sits on its charging dock while in this state.
+     *
+     * The switch deliberately has no {@code default} branch: every constant is listed, so adding a
+     * status forces a decision here instead of silently defaulting to "not docked". The cases are
+     * grouped by why they answer as they do, because {@code false} carries two different meanings -
+     * known to be elsewhere, and position not derivable from the status alone.
      */
     public boolean isAtDock() {
         return switch (this) {
-            case CHARGING, CHARGING_ERROR, FULL, EMPTYING_BIN, WASHING_MOP, WASHING_MOP2 -> true;
-            default -> false;
+            // The dock performs these with the robot sitting on it: charging, emptying the bin,
+            // washing the mop, firmware updates, mop attach/detach and mop drying are dock work.
+            case CHARGING, CHARGING_ERROR, FULL, EMPTYING_BIN, WASHING_MOP, WASHING_MOP2, UPDATING, ATTACH_MOP,
+                    DETACH_MOP, AIR_DRYING_STOPPED ->
+                true;
+
+            // On the way to the dock, not on it yet.
+            case RETURNING, DOCKING, GOING_WASH_MOP, BACK_TO_DOCK_WASHING_DUSTER -> false;
+
+            // Driving somewhere that is not the dock. The plain mopping variants are cleaning
+            // states, however close their names look to the dock chores listed above.
+            case CLEANING, SPOTCLEAN, GOTO, ZONE, ROOM, MANUAL, REMOTE, MAPPING, PATROL, EGG_ATTACK, STATUS_MOPPING,
+                    CLEAN_MOP_MOPPING, SEGMENT_MOPPING, SEGMENT_CLEAN_MOP_MOPPING, ZONED_MOPPING,
+                    ZONED_CLEAN_MOP_MOPPING ->
+                false;
+
+            // The status does not say where the robot stands - it can be idle, paused or in error
+            // on the dock just as well as in a room, so answering false keeps the dock position
+            // from being claimed on a guess. The three *_CLEAN_MOP_CLEANING states sit here for a
+            // different reason: their names admit two readings and no evidence settles it.
+            case UNKNOWN, INITIATING, SLEEPING, IDLE, PAUSED, ERROR, SHUTTING_DOWN, IN_CALL, OFFLINE, LOCKED,
+                    CLEAN_MOP_CLEANING, SEGMENT_CLEAN_MOP_CLEANING, ZONED_CLEAN_MOP_CLEANING ->
+                false;
         };
     }
 
