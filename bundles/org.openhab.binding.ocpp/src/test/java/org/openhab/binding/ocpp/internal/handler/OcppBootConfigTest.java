@@ -459,7 +459,9 @@ class OcppBootConfigTest {
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
 
-        verify(transport, timeout(3000).atLeast(3)).send(any(), any());
+        // Wait for the aligned-data key specifically — a generic send count can pass before it is sent.
+        verify(transport, timeout(3000).atLeastOnce()).send(any(),
+                argThat(r -> r instanceof ChangeConfigurationRequest c && "MeterValuesAlignedData".equals(c.getKey())));
         List<String> aligned = sentValuesFor("MeterValuesAlignedData");
         assertEquals("Energy.Active.Import.Register,Power.Active.Import,Temperature", aligned.get(0),
                 "the aligned negotiation must start from the full configured list");
