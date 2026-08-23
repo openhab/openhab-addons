@@ -4,7 +4,7 @@
 
 	<feature name="openhab-binding-emeraldhws" description="EmeraldHWS Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature>openhab-transport-mqtt</feature>
+		<bundle>mvn:org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.2.5</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.emeraldhws/${project.version}</bundle>
 	</feature>
 

@@ -14,11 +14,11 @@
 
   <name>openHAB Add-ons :: Bundles :: EmeraldHWS Binding</name>
   <dependencies>
+    <!-- Replace the openhab mqtt transport with Eclipse Paho -->
     <dependency>
-      <groupId>org.openhab.core.bundles</groupId>
-      <artifactId>org.openhab.core.io.transport.mqtt</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
+      <groupId>org.eclipse.paho</groupId>
+      <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+      <version>1.2.5</version>
     </dependency>
   </dependencies>
 </project>

@@ -14,16 +14,33 @@ package org.openhab.binding.emeraldhws.internal;
 
 import static org.openhab.binding.emeraldhws.internal.EmeraldHWSBindingConstants.*;
 
-import java.net.SocketException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.openhab.binding.emeraldhws.internal.api.List;
 import org.openhab.binding.emeraldhws.internal.api.Login;
 import org.openhab.binding.emeraldhws.internal.discovery.EmeraldHWSDiscoveryService;
@@ -40,9 +57,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 
 /**
  * The {@link EmeraldHWSHandler} is responsible for handling commands, which are
@@ -63,7 +77,7 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) EmeraldHWSWebTargets webTargets;
     private HttpClient httpClient = new HttpClient();
     private @Nullable List emeraldHWSList;
-    private @Nullable Mqtt3AsyncClient mqttClient;
+    private @Nullable MqttAsyncClient mqttClient;
 
     private final Gson gson = new Gson();
     String token = "";
@@ -134,78 +148,142 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
     }
 
     private void setupMqttConnection() throws Exception {
-        if (token == null || token.isEmpty()) {
-            Login loginResponse = webTargets.getToken(config.email, config.password);
-            token = loginResponse.token;
-        }
-
-        // 1. Get AWS Identity & Temporary Credentials
-        String identityId = webTargets.getAwsIdentityId(token);
-        JsonObject credentials = webTargets.getAwsCredentials(identityId, token);
+        String identityId = webTargets.getAwsIdentityId();
+        JsonObject credentials = webTargets.getAwsCredentials(identityId);
 
         String accessKeyId = credentials.get("AccessKeyId").getAsString();
         String secretKey = credentials.get("SecretKey").getAsString();
         String sessionToken = credentials.get("SessionToken").getAsString();
-
-        // Use the constant region matching your python script
         String awsRegion = "ap-southeast-2";
 
-        // 2. Generate SigV4 Signed WebSocket URL using our new utility
-        String signedUrl = AwsIotSigV4Signer.getSignedWebSocketUrl(AWS_IOT_ENDPOINT, awsRegion, accessKeyId, secretKey,
+        String cleanEndpoint = AWS_IOT_ENDPOINT.replace("https://", "").replace("wss://", "").replaceAll("/$", "")
+                .trim();
+
+        String queryString = AwsIotSigV4Signer.getSignedQueryString(cleanEndpoint, awsRegion, accessKeyId, secretKey,
                 sessionToken);
 
-        // 3. Connect via HiveMQ Client
-        mqttClient = MqttClient.builder().useMqttVersion3()
-                .identifier(thing.getUID().getId() + "-" + System.currentTimeMillis()).serverHost(AWS_IOT_ENDPOINT)
-                .serverPort(443).useSslWithDefaultConfig().webSocketConfig() // <-- Changed this line
-                .serverPath(signedUrl.replace("wss://" + AWS_IOT_ENDPOINT, "")).applyWebSocketConfig() // <-- Changed
-                                                                                                       // this line
-                .addDisconnectedListener(this::handleMqttDisconnect).buildAsync();
+        // Paho's getRawQuery() accurately transmits the pristine string without Java corruption
+        String brokerUrl = "wss://" + cleanEndpoint + ":443/mqtt?" + queryString;
+        String clientId = "emeraldhws_" + (System.currentTimeMillis() / 1000L);
 
-        mqttClient.connect().whenComplete((connAck, throwable) -> {
-            if (throwable != null) {
-                logger.error("MQTT Connection failed", throwable);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Connection failed");
-            } else {
-                logger.info("Successfully connected to Emerald AWS IoT via WebSockets");
+        mqttClient = new MqttAsyncClient(brokerUrl, clientId, new MemoryPersistence());
+
+        mqttClient.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(@Nullable Throwable cause) {
+                logger.error("MQTT Client disconnected unexpectedly", cause);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Disconnected");
+            }
+
+            @Override
+            public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) {
+            }
+
+            @Override
+            public void deliveryComplete(@Nullable IMqttDeliveryToken token) {
+            }
+        });
+
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
+        options.setCleanSession(true);
+
+        // Required AWS SNI Injection (TLS Handshake)
+        SSLSocketFactory defaultFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        options.setSocketFactory(new SSLSocketFactory() {
+            private Socket injectSNI(Socket socket) {
+                if (socket instanceof SSLSocket) {
+                    SSLSocket sslSocket = (SSLSocket) socket;
+                    SSLParameters params = sslSocket.getSSLParameters();
+                    params.setServerNames(Arrays.asList(new SNIHostName(cleanEndpoint)));
+                    sslSocket.setSSLParameters(params);
+                }
+                return socket;
+            }
+
+            @Override
+            public String[] getDefaultCipherSuites() {
+                return defaultFactory.getDefaultCipherSuites();
+            }
+
+            @Override
+            public String[] getSupportedCipherSuites() {
+                return defaultFactory.getSupportedCipherSuites();
+            }
+
+            @Override
+            public Socket createSocket(@Nullable Socket s, @Nullable String host, int port, boolean autoClose)
+                    throws IOException {
+                return injectSNI(defaultFactory.createSocket(s, host, port, autoClose));
+            }
+
+            @Override
+            public Socket createSocket(@Nullable String host, int port) throws IOException {
+                return injectSNI(defaultFactory.createSocket(host, port));
+            }
+
+            @Override
+            public Socket createSocket(@Nullable String host, int port, @Nullable InetAddress localHost, int localPort)
+                    throws IOException {
+                return injectSNI(defaultFactory.createSocket(host, port, localHost, localPort));
+            }
+
+            @Override
+            public Socket createSocket(@Nullable InetAddress host, int port) throws IOException {
+                return injectSNI(defaultFactory.createSocket(host, port));
+            }
+
+            @Override
+            public Socket createSocket(@Nullable InetAddress address, int port, @Nullable InetAddress localAddress,
+                    int localPort) throws IOException {
+                return injectSNI(defaultFactory.createSocket(address, port, localAddress, localPort));
+            }
+
+            @Override
+            public Socket createSocket() throws IOException {
+                return injectSNI(defaultFactory.createSocket());
+            }
+        });
+
+        mqttClient.connect(options, null, new IMqttActionListener() {
+            @Override
+            public void onSuccess(@Nullable IMqttToken asyncActionToken) {
+                logger.info("Successfully connected to Emerald AWS IoT via Paho WebSockets!");
                 updateStatus(ThingStatus.ONLINE);
                 subscribeToTopics();
+            }
+
+            @Override
+            public void onFailure(@Nullable IMqttToken asyncActionToken, @Nullable Throwable exception) {
+                logger.error("MQTT Connection failed", exception);
+                String errMsg = exception != null ? exception.getMessage() : "Unknown error";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "MQTT Connection failed: " + errMsg);
             }
         });
     }
 
     private void subscribeToTopics() {
-        // Subscribe to wildcard topic based on what the python script listens to
-        mqttClient.subscribeWith().topicFilter("emerald/hws/+/status") // Adjust topic structure based on the python
-                                                                       // script
-                .callback(publish -> {
-                    String topic = publish.getTopic().toString();
-                    String payload = new String(publish.getPayloadAsBytes());
+        try {
+            if (mqttClient != null) {
+                mqttClient.subscribe("emerald/hws/+/status", 0, (topic, message) -> {
+                    String payload = new String(message.getPayload());
                     logger.trace("Received MQTT message on topic: {} Payload: {}", topic, payload);
 
-                    // Route to children handlers
                     this.getThing().getThings().forEach(child -> {
                         EmeraldHWSHandler handler = (EmeraldHWSHandler) child.getHandler();
-                        if (handler != null) {
+                        if (handler != null && topic != null) {
                             String childUuid = child.getConfiguration().as(EmeraldHWSConfiguration.class).uuid;
                             if (topic.contains(childUuid)) {
                                 handler.updateFromMqtt(payload);
                             }
                         }
                     });
-                }).send();
-    }
-
-    private void handleMqttDisconnect(MqttClientDisconnectedContext context) {
-        Throwable cause = context.getCause();
-        if (cause instanceof SocketException) {
-            logger.warn("SocketException during MQTT disconnect: {}", cause.getMessage());
-        } else {
-            logger.error("MQTT Client disconnected unexpectedly", cause);
+                });
+            }
+        } catch (Exception e) {
+            logger.error("Failed to subscribe to MQTT topics", e);
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Disconnected");
-
-        // Optionally schedule a reconnect attempt here
     }
 
     protected void pollData() {
@@ -253,7 +331,12 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         if (mqttClient != null) {
-            mqttClient.disconnect();
+            try {
+                mqttClient.disconnect();
+                mqttClient.close();
+            } catch (MqttException e) {
+                logger.debug("Error disconnecting Paho MQTT client: {}", e.getMessage());
+            }
         }
         super.dispose();
     }
