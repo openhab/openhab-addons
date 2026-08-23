@@ -210,6 +210,7 @@
 			<channel id="power-active-import" typeId="power-active-import"/>
 			<channel id="power-offered" typeId="power-offered"/>
 			<channel id="energy-active-import" typeId="energy-active-import"/>
+			<channel id="session-energy" typeId="session-energy"/>
 			<!-- Extra OCPP telemetry measurands — aggregate current/voltage, export direction,
 				reactive/apparent power, power factor, frequency, interval energy, soc, rpm,
 				temperature — are NOT declared here. OcppConnectorHandler creates them dynamically
@@ -232,6 +233,10 @@
 				<label>Transaction Stop Time</label>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>uniqueId</representation-property>
 
@@ -296,6 +301,14 @@
 					charger known
 					to wedge there.</description>
 				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="remoteStartRetries" type="integer" min="0">
+				<label>Remote Start Retries</label>
+				<description>Number of times to retry a RemoteStart the charger does not answer. 0 disables retries. Some
+					chargers
+					drop the first start request but accept a retry.</description>
+				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -531,6 +544,20 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy</label>
 		<description>Energy register (MeterValues Energy.Active.Import.Register).</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="session-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Session Energy</label>
+		<description>Energy delivered in the last charging session (meter-stop minus meter-start), published once when
+			the
+			transaction ends. Empty on a meter-less charger.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>

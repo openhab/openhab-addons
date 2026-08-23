@@ -16,4 +16,12 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="ocpp:connector">
+		<instruction-set targetVersion="1">
+			<add-channel id="session-energy">
+				<type>ocpp:session-energy</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>

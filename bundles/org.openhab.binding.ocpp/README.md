@@ -75,6 +75,7 @@ For the charger's own offline authorization cache, see the `chargepoint` `local-
 | nominalVoltage | decimal | Line voltage for converting an amps charge-limit to watts on a charger that only accepts a power limit (W = A×V×phases) | 230 | no | yes |
 | phases | integer | Phases assumed in that amps→watts conversion — 1 single-phase, 3 three-phase | 1 | no | yes |
 | stuckStateRecovery | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long. Off by default; enable only for a charger known to wedge there | false | no | yes |
+| remoteStartRetries | integer | Retry a RemoteStart the charger does not answer, this many times. 0 disables. For a charger that drops the first start request but accepts a retry | 0 | no | yes |
 
 Most connectors need no configuration beyond `connectorId`.
 The rest cover specific charger behaviors.
@@ -83,6 +84,7 @@ The rest cover specific charger behaviors.
 `refreshInterval` actively polls a connector for `MeterValues` for chargers that do not push them on their own; a poll is skipped while the previous one is still outstanding, so a charger that stops answering cannot build a backlog.
 `hardwareMaxCurrentKey` binds the `hardware-max-current` channel to a vendor `ChangeConfiguration` key, since the hardware ceiling is not a standard OCPP setting.
 `stuckStateRecovery` is left off because auto-unlocking a connector is a physical side effect, and `Preparing` and `Finishing` are normal states a charger can dwell in.
+`remoteStartRetries` is for a charger that intermittently ignores the first `RemoteStartTransaction`: the binding re-sends it up to that many times, a few seconds apart, and stops as soon as a transaction starts, so it never double-starts. Off (0) by default, so a charger that answers first time is unaffected.
 
 ## Channels
 
@@ -114,6 +116,7 @@ To add a card without knowing its id, use `learn-card`: switch it ON and present
 | power-active-import  | Number:Power           | R          | Active power imported                                  |
 | power-offered       | Number:Power           | R          | Power offered to the vehicle                           |
 | energy-active-import | Number:Energy          | R          | Energy register (Energy.Active.Import.Register)        |
+| session-energy      | Number:Energy          | R          | Energy of the last session (meter-stop − meter-start), published once at session end |
 | charging           | Switch                 | RW         | ON while a transaction runs; command to remote start/stop |
 | charge-limit        | Number:ElectricCurrent | RW         | Charge current cap via SetChargingProfile              |
 | power-limit         | Number:Power           | RW         | Charge power cap (watts); overrides charge-limit, for power-only chargers |

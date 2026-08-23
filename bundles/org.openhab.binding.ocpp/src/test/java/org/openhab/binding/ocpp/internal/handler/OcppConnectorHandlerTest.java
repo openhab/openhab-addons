@@ -15,8 +15,10 @@ package org.openhab.binding.ocpp.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -126,6 +128,44 @@ class OcppConnectorHandlerTest {
 
         assertChannel(CHANNEL_CHARGING, OnOffType.OFF);
         assertChannel(CHANNEL_CABLE_CONNECTED, OnOffType.OFF);
+    }
+
+    @Test
+    void sessionEnergyIsPublishedAtStopAsMeterStopMinusMeterStart() {
+        handler.onTransactionStarted(
+                new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 100, java.time.ZonedDateTime.now()),
+                7);
+        handler.onTransactionStopped(
+                new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600, java.time.ZonedDateTime.now(), 7));
+
+        assertChannel(CHANNEL_SESSION_ENERGY,
+                new org.openhab.core.library.types.QuantityType<>(1500, org.openhab.core.library.unit.Units.WATT_HOUR));
+    }
+
+    @Test
+    void aRemoteStartTheChargerDoesNotAnswerIsRetried() {
+        ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
+        when(thing.getBridgeUID()).thenReturn(chargePointUID);
+        when(thing.getConfiguration()).thenReturn(new org.openhab.core.config.core.Configuration(
+                java.util.Map.of("remoteStartRetries", new java.math.BigDecimal(1))));
+        OcppChargePointHandler chargePoint = mock(OcppChargePointHandler.class);
+        when(chargePoint.isReady()).thenReturn(true);
+        when(chargePoint.getChargePointId()).thenReturn("charger");
+        when(chargePoint.recoverTransactionId(org.mockito.ArgumentMatchers.anyInt())).thenReturn(null);
+        when(chargePoint.send(any()))
+                .thenReturn(CompletableFuture.completedFuture(mock(eu.chargetime.ocpp.model.Confirmation.class)));
+        when(chargePoint.send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest)))
+                .thenReturn(CompletableFuture.failedFuture(new java.util.concurrent.TimeoutException("no answer")));
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(chargePoint);
+        when(callback.getBridge(chargePointUID)).thenReturn(bridge);
+
+        handler.initialize();
+        command(CHANNEL_CHARGING, OnOffType.ON);
+
+        // The initial attempt plus one retry after the delay, since nothing started in between.
+        verify(chargePoint, timeout(10000).times(2))
+                .send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest));
     }
 
     @Test

@@ -90,6 +90,7 @@ public class OcppBindingConstants {
     public static final String CHANNEL_TRANSACTION_ID = "transaction-id";
     public static final String CHANNEL_METER_START = "meter-start";
     public static final String CHANNEL_METER_STOP = "meter-stop";
+    public static final String CHANNEL_SESSION_ENERGY = "session-energy";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
     public static final String CHANNEL_TIMESTAMP_START = "timestamp-start";
     public static final String CHANNEL_TIMESTAMP_STOP = "timestamp-stop";

@@ -31,4 +31,5 @@ public class OcppConnectorConfiguration {
     public int phases = 1;
     public int refreshInterval = 0;
     public boolean stuckStateRecovery = false;
+    public int remoteStartRetries = 0;
 }
