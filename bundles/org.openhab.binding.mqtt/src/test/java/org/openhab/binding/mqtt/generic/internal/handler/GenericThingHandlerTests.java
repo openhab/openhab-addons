@@ -151,6 +151,26 @@ public class GenericThingHandlerTests {
     }
 
     @Test
+    public void initializeKeepsNumberTriggerKindWhenUpdatingAcceptedItemType() {
+        Configuration configuration = new Configuration(
+                Map.of("stateTopic", "test/state", "trigger", true, "unit", "W"));
+        Channel triggerChannel = ChannelBuilder.create(cb("number", "Number", configuration, NUMBER_CHANNEL))
+                .withKind(ChannelKind.TRIGGER).build();
+        ChannelBuilder replacementBuilder = ChannelBuilder.create(triggerChannel.getUID(), "Number")
+                .withType(NUMBER_CHANNEL);
+        when(callbackMock.createChannelBuilder(triggerChannel.getUID(), NUMBER_CHANNEL)).thenReturn(replacementBuilder);
+        when(thingMock.getChannels()).thenReturn(List.of(triggerChannel));
+
+        thingHandler.initialize();
+
+        ArgumentCaptor<Thing> thingCaptor = ArgumentCaptor.forClass(Thing.class);
+        verify(callbackMock).thingUpdated(thingCaptor.capture());
+        Channel updatedChannel = thingCaptor.getValue().getChannel(triggerChannel.getUID());
+        assertThat(updatedChannel.getKind(), is(ChannelKind.TRIGGER));
+        assertThat(updatedChannel.getAcceptedItemType(), is("Number:Power"));
+    }
+
+    @Test
     public void initializeRestoresCommandCapableTypedTriggerAsStateChannel() {
         Configuration configuration = new Configuration(
                 Map.of("stateTopic", "test/state", "commandTopic", "test/command", "trigger", true));
