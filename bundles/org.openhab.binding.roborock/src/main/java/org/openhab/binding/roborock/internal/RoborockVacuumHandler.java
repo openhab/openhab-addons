@@ -167,6 +167,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      * the dock room has to be resolved from a map parsed earlier.
      */
     private volatile @Nullable RRMapData lastParsedMapData;
+    // Status ids already reported as unknown. Without this the warning would repeat on every
+    // status poll - every 15 seconds while cleaning in direct mode.
+    private final Set<Integer> reportedUnknownStateIds = ConcurrentHashMap.newKeySet();
     private final Gson gson = new Gson();
     private final SecureRandom secureRandom = new SecureRandom();
     protected RoborockVacuumConfiguration config = new RoborockVacuumConfiguration();
@@ -752,6 +755,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateStateIdAndRequestStatusIfChanged(getStatus.result[0].state, false);
 
             StatusType state = StatusType.getType(getStatus.result[0].state);
+            warnOnceAboutUnknownState(getStatus.result[0].state, state);
 
             OnOffType vacuum = switch (state) {
                 case ZONE, ROOM, CLEANING, RETURNING, SPOTCLEAN -> OnOffType.ON;
@@ -1197,6 +1201,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    /** Caller must hold {@link #currentRoomLock}: the segment table is read unguarded here. */
     private void updateCurrentRoomState(RRMapData mapData) {
         State roomState = resolveRoomStateFromMap(mapData, isAtDock(), segmentRoomNames);
         if (roomState != null) {
@@ -1210,6 +1215,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      * room can be resolved the channel goes {@code UNDEF} rather than keeping the room of the
      * interrupted cleaning run.
      */
+    // Caller must hold currentRoomLock: the cached map and the segment table are read as a
+    // pair, and a map response arriving on another thread replaces both.
     private void updateCurrentRoomStateFromDock() {
         updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(),
                 resolveDockRoomState(lastParsedMapData, segmentRoomNames));
@@ -2201,6 +2208,26 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             registerRequest("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
         } catch (UnsupportedEncodingException e) {
             logger.debug("UnsupportedEncodingException while requesting immediate status, {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Reports a status id this binding does not know, once per id.
+     *
+     * An unmapped id resolves to {@link StatusType#UNKNOWN}, which is classified as "position not
+     * derivable" and therefore never claims the charging dock. That is the safe answer, but it is
+     * silent: if the robot gained a new dock chore in a firmware update, {@code status#current-room}
+     * would keep the room of the last cleaning run while the robot already sits on its dock, and
+     * nothing would say why.
+     */
+    private void warnOnceAboutUnknownState(int rawStateId, StatusType resolved) {
+        if (resolved != StatusType.UNKNOWN || rawStateId == StatusType.UNKNOWN.getId()) {
+            return;
+        }
+        if (reportedUnknownStateIds.add(Integer.valueOf(rawStateId))) {
+            logger.warn(
+                    "{}: Unknown robot status id {}. It is treated as an unknown position, so channel '{}' will not resolve the dock room while the robot reports it. Please report this id so it can be classified.",
+                    config.duid, rawStateId, RobotCapabilities.CURRENT_ROOM.getChannel());
         }
     }
 
