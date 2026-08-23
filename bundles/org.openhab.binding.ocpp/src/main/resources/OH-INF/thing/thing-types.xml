@@ -134,6 +134,8 @@
 			<channel id="connected" typeId="connected"/>
 			<channel id="last-seen" typeId="last-seen"/>
 			<channel id="reset" typeId="reset"/>
+			<channel id="last-id-tag" typeId="last-id-tag"/>
+			<channel id="local-auth-list" typeId="local-auth-list"/>
 		</channels>
 
 		<representation-property>chargePointId</representation-property>
@@ -435,6 +437,22 @@
 		<label>Reset</label>
 		<description>Momentary — soft reset the charge point (Reset).</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="last-id-tag">
+		<item-type>String</item-type>
+		<label>Last Presented Tag</label>
+		<description>idTag of the last RFID card the charger presented (Authorize/StartTransaction). Link a String item to
+			read a card id for adding it to the local authorization list.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="local-auth-list">
+		<item-type>String</item-type>
+		<label>Local Authorization List</label>
+		<description>The charger local authorization list as comma-separated idTags. Link a String item and set it (from a
+			rule or the UI) to push the list via SendLocalList, so a cached tag can start a charge while openHAB is offline.
+			Applied only to a charger that supports LocalAuthListManagement.</description>
 	</channel-type>
 
 	<channel-type id="hardware-max-current">

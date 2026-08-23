@@ -76,6 +76,7 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
         AuthorizationStatus status = listener.isTagAuthorized(request.getIdTag()) ? AuthorizationStatus.Accepted
                 : AuthorizationStatus.Invalid;
         logger.debug("Authorize from session {} idTag {} -> {}", sessionIndex, request.getIdTag(), status);
+        listener.onAuthorize(sessionIndex, request.getIdTag());
         return new AuthorizeConfirmation(new IdTagInfo(status));
     }
 

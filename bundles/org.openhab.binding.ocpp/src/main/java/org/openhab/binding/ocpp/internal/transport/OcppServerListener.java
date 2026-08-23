@@ -82,6 +82,9 @@ public interface OcppServerListener {
     /**
      * Whether an idTag is authorized to charge. Used to enforce the optional tag whitelist.
      */
+    /** A card was presented for authorization — the raw idTag, for surfacing the last-seen tag. */
+    void onAuthorize(UUID session, @Nullable String idTag);
+
     boolean isTagAuthorized(@Nullable String idTag);
 
     /**

@@ -111,6 +111,10 @@ class ChargeTimeTransportTest {
             }
 
             @Override
+            public void onAuthorize(UUID session, @Nullable String idTag) {
+            }
+
+            @Override
             public boolean isTagAuthorized(@Nullable String idTag) {
                 return true;
             }

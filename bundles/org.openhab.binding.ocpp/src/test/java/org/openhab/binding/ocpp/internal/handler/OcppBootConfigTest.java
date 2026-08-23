@@ -591,6 +591,37 @@ class OcppBootConfigTest {
                 argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest));
     }
 
+    @Test
+    void theLocalAuthListChannelDrivesTheListSentOnBoot() {
+        // Setting the local-auth-list channel (an openHAB item holds the list) overrides the config; the
+        // list is pushed to a charger that supports the profile on its next boot.
+        when(transport.send(any(), any())).thenAnswer(invocation -> {
+            Request req = invocation.getArgument(1);
+            if (req instanceof GetConfigurationRequest) {
+                eu.chargetime.ocpp.model.core.KeyValueType profiles = new eu.chargetime.ocpp.model.core.KeyValueType(
+                        "SupportedFeatureProfiles", Boolean.TRUE);
+                profiles.setValue("Core,LocalAuthListManagement");
+                GetConfigurationConfirmation conf = new GetConfigurationConfirmation();
+                conf.setConfigurationKey(new eu.chargetime.ocpp.model.core.KeyValueType[] { profiles });
+                return CompletableFuture.completedFuture(conf);
+            }
+            if (req instanceof eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionRequest) {
+                return CompletableFuture
+                        .completedFuture(new eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionConfirmation(0));
+            }
+            return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        });
+
+        handler.handleCommand(new org.openhab.core.thing.ChannelUID(CP_UID, "local-auth-list"),
+                new org.openhab.core.library.types.StringType("RFID-A, RFID-B"));
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        handler.onHeartbeat();
+
+        verify(transport, timeout(2000)).send(any(),
+                argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest s
+                        && s.getLocalAuthorizationList() != null && s.getLocalAuthorizationList().length == 2));
+    }
+
     private static boolean isStatusTrigger(Request request) {
         return request instanceof eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest trigger && trigger
                 .getRequestedMessage() == eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType.StatusNotification;

@@ -94,8 +94,12 @@ The rest cover specific charger behaviors.
 | connected | Switch   | R          | Whether the charger has an open session    |
 | last-seen  | DateTime | R          | Timestamp of the last contact from the charger |
 | reset      | Switch   | W          | Momentary — soft reset the charge point    |
+| last-id-tag | String  | R          | idTag of the last RFID card the charger presented — read a card's id to add it to the local list |
+| local-auth-list | String | W       | The charger's local authorization list (comma-separated idTags) — set it to push cards for offline use |
 
 Vendor, model, firmware version and serial number are published as thing properties from the charger's BootNotification.
+
+The local authorization list lets a cached RFID card start a charge while openHAB or the network is offline, on a charger that supports `LocalAuthListManagement`. Keep the list in a persisted `String` item linked to `local-auth-list`: set it (comma-separated idTags) and the binding pushes it to the charger with `SendLocalList`. To add a card without knowing its id, read it off `last-id-tag` — tap the card and a rule can append what it shows to the `local-auth-list` item. The server-level `localAuthListTags` config is a server-wide default; a per-charger `local-auth-list` item, when set, takes precedence.
 
 ### `connector`
 
