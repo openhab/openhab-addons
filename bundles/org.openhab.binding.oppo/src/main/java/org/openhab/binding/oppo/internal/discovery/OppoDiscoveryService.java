@@ -23,7 +23,6 @@ import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -259,10 +258,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
 
             if (thingTypeUID != null) {
                 final ThingUID uid = new ThingUID(thingTypeUID, host.replace(".", "_"));
-                final HashMap<String, Object> properties = new HashMap<>(1);
-                properties.put("host", host);
-
-                final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperty("host", host)
                         .withRepresentationProperty("host").withLabel(displayName).build();
 
                 this.thingDiscovered(result);
