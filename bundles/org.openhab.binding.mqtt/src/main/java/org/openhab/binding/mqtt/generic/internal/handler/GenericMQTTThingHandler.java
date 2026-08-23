@@ -174,13 +174,15 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 }
             }
 
-            if (channelConfig.trigger && channelConfig.commandTopic.isBlank()
-                    && !MqttBindingConstants.IMAGE.equals(channelTypeUID.getId())
-                    && channel.getKind() != ChannelKind.TRIGGER) {
+            String channelTypeId = channelTypeUID.getId();
+            boolean shouldBeTrigger = MqttBindingConstants.TRIGGER.equals(channelTypeId) || (channelConfig.trigger
+                    && channelConfig.commandTopic.isBlank() && !MqttBindingConstants.IMAGE.equals(channelTypeId));
+            ChannelKind expectedKind = shouldBeTrigger ? ChannelKind.TRIGGER : ChannelKind.STATE;
+            if (channel.getKind() != expectedKind) {
                 if (channelBuilder == null) {
                     channelBuilder = ChannelBuilder.create(channel);
                 }
-                channelBuilder.withKind(ChannelKind.TRIGGER);
+                channelBuilder.withKind(expectedKind);
             }
 
             if (channelBuilder != null) {

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.mqtt.generic.internal.MqttBindingConstants.GENERIC_MQTT_THING;
 import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -53,6 +54,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -149,28 +151,62 @@ public class GenericThingHandlerTests {
     }
 
     @Test
-    public void initializeKeepsCommandCapableTypedTriggerAsStateChannel() {
+    public void initializeRestoresCommandCapableTypedTriggerAsStateChannel() {
         Configuration configuration = new Configuration(
                 Map.of("stateTopic", "test/state", "commandTopic", "test/command", "trigger", true));
-        Channel triggerChannel = cb("onoff", "Switch", configuration, ON_OFF_CHANNEL);
+        Channel triggerChannel = ChannelBuilder.create(cb("onoff", "Switch", configuration, ON_OFF_CHANNEL))
+                .withKind(ChannelKind.TRIGGER).build();
+        when(thingMock.getChannels()).thenReturn(List.of(triggerChannel));
+
+        thingHandler.initialize();
+
+        ArgumentCaptor<Thing> thingCaptor = ArgumentCaptor.forClass(Thing.class);
+        verify(callbackMock).thingUpdated(thingCaptor.capture());
+        Channel updatedChannel = thingCaptor.getValue().getChannel(triggerChannel.getUID());
+        assertThat(updatedChannel.getKind(), is(ChannelKind.STATE));
+    }
+
+    @Test
+    public void initializeRestoresDisabledTypedTriggerAsStateChannel() {
+        Configuration configuration = new Configuration(Map.of("stateTopic", "test/state"));
+        Channel triggerChannel = ChannelBuilder.create(cb("onoff", "Switch", configuration, ON_OFF_CHANNEL))
+                .withKind(ChannelKind.TRIGGER).build();
+        when(thingMock.getChannels()).thenReturn(List.of(triggerChannel));
+
+        thingHandler.initialize();
+
+        ArgumentCaptor<Thing> thingCaptor = ArgumentCaptor.forClass(Thing.class);
+        verify(callbackMock).thingUpdated(thingCaptor.capture());
+        Channel updatedChannel = thingCaptor.getValue().getChannel(triggerChannel.getUID());
+        assertThat(updatedChannel.getKind(), is(ChannelKind.STATE));
+    }
+
+    @Test
+    public void initializeRestoresReadOnlyImageTriggerAsStateChannel() {
+        Configuration configuration = new Configuration(Map.of("stateTopic", "test/state", "trigger", true));
+        Channel imageChannel = ChannelBuilder.create(cb("image", "Image", configuration, IMAGE_CHANNEL))
+                .withKind(ChannelKind.TRIGGER).build();
+        when(thingMock.getChannels()).thenReturn(List.of(imageChannel));
+
+        thingHandler.initialize();
+
+        ArgumentCaptor<Thing> thingCaptor = ArgumentCaptor.forClass(Thing.class);
+        verify(callbackMock).thingUpdated(thingCaptor.capture());
+        Channel updatedChannel = thingCaptor.getValue().getChannel(imageChannel.getUID());
+        assertThat(updatedChannel.getKind(), is(ChannelKind.STATE));
+    }
+
+    @Test
+    public void initializeKeepsDedicatedTriggerChannelAsTriggerChannel() {
+        Configuration configuration = new Configuration(Map.of("stateTopic", "test/state"));
+        Channel triggerChannel = ChannelBuilder.create(cb("trigger", "String", configuration, TRIGGER_CHANNEL))
+                .withKind(ChannelKind.TRIGGER).build();
         when(thingMock.getChannels()).thenReturn(List.of(triggerChannel));
 
         thingHandler.initialize();
 
         verify(callbackMock, never()).thingUpdated(any());
-        assertThat(triggerChannel.getKind(), is(ChannelKind.STATE));
-    }
-
-    @Test
-    public void initializeKeepsReadOnlyImageTriggerAsStateChannel() {
-        Configuration configuration = new Configuration(Map.of("stateTopic", "test/state", "trigger", true));
-        Channel imageChannel = cb("image", "Image", configuration, IMAGE_CHANNEL);
-        when(thingMock.getChannels()).thenReturn(List.of(imageChannel));
-
-        thingHandler.initialize();
-
-        verify(callbackMock, never()).thingUpdated(any());
-        assertThat(imageChannel.getKind(), is(ChannelKind.STATE));
+        assertThat(triggerChannel.getKind(), is(ChannelKind.TRIGGER));
     }
 
     @Test
@@ -232,7 +268,7 @@ public class GenericThingHandlerTests {
                         textValue, thingHandler));
         doReturn(channelConfig).when(thingHandler).createChannelState(any(), any(), any());
         thingHandler.initialize();
-        byte[] payload = "UPDATE".getBytes();
+        byte[] payload = "UPDATE".getBytes(StandardCharsets.UTF_8);
         // Test process message
         channelConfig.processMessage("test/state", payload);
 
