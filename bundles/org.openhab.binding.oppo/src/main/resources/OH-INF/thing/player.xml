@@ -4,11 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Generic Oppo Blu-ray player Thing (deprecated) -->
+	<!-- Generic OPPO Blu-ray player Thing (deprecated) -->
 	<thing-type id="player">
-		<label>Oppo Blu-ray Player</label>
+		<label>OPPO Blu-ray Player</label>
 		<description>
-			Controls an Oppo Blu-ray Player
+			Controls an OPPO Blu-ray Player
 		</description>
 		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
@@ -26,36 +26,36 @@
 				<description>Mute or unmute the volume on the player</description>
 			</channel>
 			<channel id="source" typeId="source"/>
-			<channel id="play_mode" typeId="play_mode"/>
+			<channel id="play_mode" typeId="play-mode"/>
 			<channel id="control" typeId="control"/>
-			<channel id="time_mode" typeId="time_mode"/>
-			<channel id="time_display" typeId="time_display"/>
-			<channel id="current_title" typeId="current_title"/>
-			<channel id="total_title" typeId="total_title"/>
-			<channel id="current_chapter" typeId="current_chapter"/>
-			<channel id="total_chapter" typeId="total_chapter"/>
+			<channel id="time_mode" typeId="time-mode"/>
+			<channel id="time_display" typeId="time-display"/>
+			<channel id="current_title" typeId="current-title"/>
+			<channel id="total_title" typeId="total-title"/>
+			<channel id="current_chapter" typeId="current-chapter"/>
+			<channel id="total_chapter" typeId="total-chapter"/>
 			<channel id="title-elapsed" typeId="title-elapsed"/>
 			<channel id="title-length" typeId="title-length"/>
 			<channel id="title-end-time" typeId="title-end-time"/>
 			<channel id="title-progress" typeId="title-progress"/>
-			<channel id="repeat_mode" typeId="repeat_mode"/>
-			<channel id="zoom_mode" typeId="zoom_mode"/>
-			<channel id="disc_type" typeId="disc_type"/>
-			<channel id="audio_type" typeId="audio_type"/>
-			<channel id="subtitle_type" typeId="subtitle_type"/>
-			<channel id="aspect_ratio" typeId="aspect_ratio"/>
-			<channel id="source_resolution" typeId="source_resolution"/>
-			<channel id="output_resolution" typeId="output_resolution"/>
-			<channel id="3d_indicator" typeId="3d_indicator"/>
-			<channel id="sub_shift" typeId="sub_shift"/>
-			<channel id="osd_position" typeId="osd_position"/>
-			<channel id="hdmi_mode" typeId="hdmi_mode"/>
-			<channel id="hdr_mode" typeId="hdr_mode"/>
-			<channel id="remote_button" typeId="remote_button"/>
+			<channel id="repeat_mode" typeId="repeat-mode"/>
+			<channel id="zoom_mode" typeId="zoom-mode"/>
+			<channel id="disc_type" typeId="disc-type"/>
+			<channel id="audio_type" typeId="audio-type"/>
+			<channel id="subtitle_type" typeId="subtitle-type"/>
+			<channel id="aspect_ratio" typeId="aspect-ratio"/>
+			<channel id="source_resolution" typeId="source-resolution"/>
+			<channel id="output_resolution" typeId="output-resolution"/>
+			<channel id="3d_indicator" typeId="3d-indicator"/>
+			<channel id="sub_shift" typeId="sub-shift"/>
+			<channel id="osd_position" typeId="osd-position"/>
+			<channel id="hdmi_mode" typeId="hdmi-mode"/>
+			<channel id="hdr_mode" typeId="hdr-mode"/>
+			<channel id="remote_button" typeId="remote-button"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description>
@@ -99,7 +99,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="remote_button">
+	<channel-type id="remote-button">
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>Simulate Pressing a Button on the Remote Control</description>

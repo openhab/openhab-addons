@@ -4,11 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Oppo UDP-205 Blu-ray player Thing -->
+	<!-- OPPO UDP-205 Blu-ray player Thing -->
 	<thing-type id="udp-205">
-		<label>Oppo UDP-205 Blu-ray Player</label>
+		<label>OPPO UDP-205 Blu-ray Player</label>
 		<description>
-			Controls an Oppo UDP-205 Blu-ray player
+			Controls an OPPO UDP-205 Blu-ray player
 		</description>
 		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
@@ -26,32 +26,32 @@
 				<description>Mute or unmute the volume on the player</description>
 			</channel>
 			<channel id="source" typeId="source"/>
-			<channel id="play_mode" typeId="play_mode"/>
+			<channel id="play-mode" typeId="play-mode"/>
 			<channel id="control" typeId="control"/>
-			<channel id="time_mode" typeId="time_mode"/>
-			<channel id="time_display" typeId="time_display"/>
-			<channel id="current_title" typeId="current_title"/>
-			<channel id="total_title" typeId="total_title"/>
-			<channel id="current_chapter" typeId="current_chapter"/>
-			<channel id="total_chapter" typeId="total_chapter"/>
+			<channel id="time-mode" typeId="time-mode"/>
+			<channel id="time-display" typeId="time-display"/>
+			<channel id="current-title" typeId="current-title"/>
+			<channel id="total-title" typeId="total-title"/>
+			<channel id="current-chapter" typeId="current-chapter"/>
+			<channel id="total-chapter" typeId="total-chapter"/>
 			<channel id="title-elapsed" typeId="title-elapsed"/>
 			<channel id="title-length" typeId="title-length"/>
 			<channel id="title-end-time" typeId="title-end-time"/>
 			<channel id="title-progress" typeId="title-progress"/>
-			<channel id="repeat_mode" typeId="repeat_mode"/>
-			<channel id="zoom_mode" typeId="zoom_mode"/>
-			<channel id="disc_type" typeId="disc_type"/>
-			<channel id="audio_type" typeId="audio_type"/>
-			<channel id="subtitle_type" typeId="subtitle_type"/>
-			<channel id="aspect_ratio" typeId="aspect_ratio"/>
-			<channel id="source_resolution" typeId="source_resolution"/>
-			<channel id="output_resolution" typeId="output_resolution"/>
-			<channel id="3d_indicator" typeId="3d_indicator"/>
-			<channel id="sub_shift" typeId="sub_shift"/>
-			<channel id="osd_position" typeId="osd_position"/>
-			<channel id="hdmi_mode" typeId="hdmi_mode"/>
-			<channel id="hdr_mode" typeId="hdr_mode"/>
-			<channel id="remote_button" typeId="remote-button-203"/>
+			<channel id="repeat-mode" typeId="repeat-mode"/>
+			<channel id="zoom-mode" typeId="zoom-mode"/>
+			<channel id="disc-type" typeId="disc-type"/>
+			<channel id="audio-type" typeId="audio-type"/>
+			<channel id="subtitle-type" typeId="subtitle-type"/>
+			<channel id="aspect-ratio" typeId="aspect-ratio"/>
+			<channel id="source-resolution" typeId="source-resolution"/>
+			<channel id="output-resolution" typeId="output-resolution"/>
+			<channel id="3d-indicator" typeId="3d-indicator"/>
+			<channel id="sub-shift" typeId="sub-shift"/>
+			<channel id="osd-position" typeId="osd-position"/>
+			<channel id="hdmi-mode" typeId="hdmi-mode"/>
+			<channel id="hdr-mode" typeId="hdr-mode"/>
+			<channel id="remote-button" typeId="remote-button-203"/>
 		</channels>
 
 		<representation-property>host</representation-property>

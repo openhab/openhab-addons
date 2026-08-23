@@ -14,7 +14,7 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="play_mode">
+	<channel-type id="play-mode">
 		<item-type>String</item-type>
 		<label>Play Mode</label>
 		<description>The Current Playback Mode of the Source</description>
@@ -36,7 +36,7 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="time_mode">
+	<channel-type id="time-mode">
 		<item-type>String</item-type>
 		<label>Time Display Mode</label>
 		<description>Sets the Time Information Display</description>
@@ -50,7 +50,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="time_display">
+	<channel-type id="time-display">
 		<item-type>Number:Time</item-type>
 		<label>Time Display</label>
 		<description>The Playback Time Elapsed/Remaining</description>
@@ -61,28 +61,28 @@
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
-	<channel-type id="current_title">
+	<channel-type id="current-title">
 		<item-type>Number</item-type>
 		<label>Current Title/Track</label>
 		<description>Current Title or Track Number Playing</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="total_title">
+	<channel-type id="total-title">
 		<item-type>Number</item-type>
 		<label>Total Number of Titles/Tracks</label>
 		<description>The Total Number of Titles or Tracks on the Disc</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="current_chapter">
+	<channel-type id="current-chapter">
 		<item-type>Number</item-type>
 		<label>Current Chapter</label>
 		<description>Current Chapter Number</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="total_chapter">
+	<channel-type id="total-chapter">
 		<item-type>Number</item-type>
 		<label>Total Number of Chapters</label>
 		<description>The Total Number of Chapters in the Current Title</description>
@@ -134,7 +134,7 @@
 		<state pattern="%.0f%%"/>
 	</channel-type>
 
-	<channel-type id="repeat_mode">
+	<channel-type id="repeat-mode">
 		<item-type>String</item-type>
 		<label>Repeat Mode</label>
 		<description>The Current Repeat Mode</description>
@@ -154,7 +154,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="zoom_mode">
+	<channel-type id="zoom-mode">
 		<item-type>String</item-type>
 		<label>Zoom Mode</label>
 		<description>The Current Zoom Mode</description>
@@ -181,7 +181,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="disc_type">
+	<channel-type id="disc-type">
 		<item-type>String</item-type>
 		<label>Disc Type</label>
 		<description>The Current Type of Disc in the Player</description>
@@ -192,7 +192,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="audio_type">
+	<channel-type id="audio-type">
 		<item-type>String</item-type>
 		<label>Audio Type</label>
 		<description>The Current Audio Track Type</description>
@@ -203,28 +203,28 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="subtitle_type">
+	<channel-type id="subtitle-type">
 		<item-type>String</item-type>
 		<label>Subtitle Type</label>
 		<description>The Current Subtitle Selected</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="aspect_ratio">
+	<channel-type id="aspect-ratio">
 		<item-type>String</item-type>
 		<label>Aspect Ratio</label>
 		<description>The Aspect Ratio of the Current Video Output</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="source_resolution">
+	<channel-type id="source-resolution">
 		<item-type>String</item-type>
 		<label>Source Video Resolution</label>
 		<description>The Video Resolution of the Content Being Played</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="output_resolution">
+	<channel-type id="output-resolution">
 		<item-type>String</item-type>
 		<label>Output Video Resolution</label>
 		<description>The Video Resolution of the Player Output</description>
@@ -235,14 +235,14 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="3d_indicator">
+	<channel-type id="3d-indicator">
 		<item-type>String</item-type>
 		<label>2D/3D Indicator</label>
 		<description>Indicates If the Content Playing is 2D or 3D</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="osd_position">
+	<channel-type id="osd-position">
 		<item-type>Number</item-type>
 		<label>OSD Position</label>
 		<description>Set the OSD Position 0 to 5</description>
@@ -253,14 +253,14 @@
 		<state min="0" max="5" step="1" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="sub_shift">
+	<channel-type id="sub-shift">
 		<item-type>Number</item-type>
 		<label>Subtitle Shift</label>
 		<description>Set the Subtitle Shift -10 to 10</description>
 		<state min="-10" max="10" step="1" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="hdmi_mode">
+	<channel-type id="hdmi-mode">
 		<item-type>String</item-type>
 		<label>HDMI Mode</label>
 		<description>The Current HDMI Output Mode</description>
@@ -270,7 +270,7 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="hdr_mode">
+	<channel-type id="hdr-mode">
 		<item-type>String</item-type>
 		<label>HDR Mode</label>
 		<description>The Current HDR Output Mode</description>
