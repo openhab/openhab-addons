@@ -217,7 +217,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             } else {
                 logger.debug("Reset of {} skipped — charge point not ready", chargePointId);
             }
-            // Momentary: pop the switch back so it does not stick ON.
             updateState(CHANNEL_RESET, OnOffType.OFF);
         } else if (CHANNEL_LOCAL_AUTH_LIST.equals(channelUID.getId()) && command instanceof StringType text) {
             setLocalAuthList(parseTagList(text.toString()));
