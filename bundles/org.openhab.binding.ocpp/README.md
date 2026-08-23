@@ -227,12 +227,17 @@ If you are unsure what the charger actually sends, enable `log:set DEBUG org.ope
 
 `SuspendedEVSE` means the charge point itself is withholding energy — a charging-profile limit or an authorization result — unlike `SuspendedEV`, which is the vehicle not drawing (battery full, or charging scheduled in the car).
 Check the connector is not left paused and that `charge-limit` is not 0: sending `pause` OFF resumes charging — at your `charge-limit` if one is set, otherwise by clearing the cap so the charger returns to its own maximum.
+Some chargers also suspend when a `charge-limit` is set _before_ a transaction starts — with no transaction it goes out as a `TxDefaultProfile`, which such a charger accepts but then drops to `SuspendedEVSE` a few seconds in. On those, start the charge first and set the limit once it is `Charging`: send `charging` ON (or plug in), wait for `Charging`, then set `charge-limit`. Adjusting it mid-charge afterwards works normally.
 
 ### A charger never connects and the log shows nothing after start-up
 
 If the server starts (`OCPP JSON server listening`) but no `Charger connected` line ever follows, the charger is not completing the WebSocket handshake, so nothing reaches the binding.
 First rule out the network: from a device on the charger's own network segment (not just any machine), check the openHAB host and port are reachable — `nc -zv <openhab-host> 8887` — and use the host's IP rather than a `.lan` name to rule out DNS.
 A charger that always sends an HTTP Basic-auth header — some send their id with a very short or empty password on every connection, a V2C Trydan being one — is accepted when no `authPassword` is configured, so that is no longer a cause of a silent no-connect (older builds did reject such a charger during the handshake, before the binding saw it).
+
+### Power readings lag behind the charger
+
+The `power-active-import` and per-phase metering channels only update when the charger sends a `MeterValues` sample, so between samples they look stale (the energy register keeps climbing because it is a running total). To sample more often, lower the `server`'s `meterValueSampleInterval` — the binding pushes it to the charger (10–15 s is plenty). For a charger that will not honour that, set the `connector`'s `refreshInterval` to poll it for a fresh `MeterValues` on a fixed cadence via TriggerMessage. Do not push either below a few seconds on an older charger.
 
 ## Charger-specific notes
 

@@ -507,6 +507,34 @@ class OcppBootConfigTest {
         verify(transport, timeout(2000)).send(any(), argThat(OcppBootConfigTest::isStatusTrigger));
     }
 
+    @Test
+    void anUndiscoveredConnectorIsTriggeredToAppearAfterBoot() {
+        // A charger accepted while already connected reports its connector count but has no connector
+        // Thing yet. After boot the binding triggers a StatusNotification for the undiscovered connector,
+        // so it is offered to the inbox without waiting for a physical state change. (Reported with a
+        // first-generation CHARGESTORM Connected.)
+        serverConfig.disableRemoteTxAuthorization = false; // no boot steps
+        serverConfig.meterValuesData = "";
+        when(transport.send(any(), any())).thenAnswer(invocation -> {
+            Request req = invocation.getArgument(1);
+            if (req instanceof GetConfigurationRequest) {
+                eu.chargetime.ocpp.model.core.KeyValueType count = new eu.chargetime.ocpp.model.core.KeyValueType(
+                        "NumberOfConnectors", Boolean.TRUE);
+                count.setValue("1");
+                GetConfigurationConfirmation conf = new GetConfigurationConfirmation();
+                conf.setConfigurationKey(new eu.chargetime.ocpp.model.core.KeyValueType[] { count });
+                return CompletableFuture.completedFuture(conf);
+            }
+            return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        });
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        handler.onHeartbeat();
+
+        verify(transport, timeout(2000)).send(any(), argThat(r -> isStatusTrigger(r) && Integer.valueOf(1)
+                .equals(((eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest) r).getConnectorId())));
+    }
+
     private static boolean isStatusTrigger(Request request) {
         return request instanceof eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest trigger && trigger
                 .getRequestedMessage() == eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType.StatusNotification;

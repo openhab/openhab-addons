@@ -65,6 +65,8 @@ import eu.chargetime.ocpp.model.core.ResetType;
 import eu.chargetime.ocpp.model.core.StartTransactionRequest;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
+import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
 
 /**
  * The {@link OcppChargePointHandler} represents one physical charger. It registers with the server
@@ -583,12 +585,38 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         for (OcppConnectorHandler connector : connectors.values()) {
             connector.requestStatus();
         }
+        triggerUndiscoveredConnectors(false);
     }
 
     /** Ungated status refresh — only the bare-reconnect fallback, where the charger will not boot. */
     private void requestConnectorStatusesNow() {
         for (OcppConnectorHandler connector : connectors.values()) {
             connector.requestStatusNow();
+        }
+        triggerUndiscoveredConnectors(true);
+    }
+
+    /**
+     * Ask any connector the charger reports (up to NumberOfConnectors) but that has no Thing yet to send
+     * its StatusNotification, so it is offered to the inbox when the charge point is accepted rather than
+     * only after a physical state change makes the charger volunteer one.
+     */
+    private void triggerUndiscoveredConnectors(boolean bypassReadiness) {
+        int count = capabilities.numberOfConnectors().orElse(0);
+        for (int id = 1; id <= count; id++) {
+            if (connectors.containsKey(id)) {
+                continue;
+            }
+            int connectorId = id;
+            TriggerMessageRequest request = new TriggerMessageRequest(TriggerMessageRequestType.StatusNotification);
+            request.setConnectorId(connectorId);
+            CompletionStage<Confirmation> result = bypassReadiness ? sendNow(request) : send(request);
+            result.whenComplete((confirmation, ex) -> {
+                if (ex != null) {
+                    logger.debug("TriggerMessage[StatusNotification] for undiscovered connector {} on {} failed: {}",
+                            connectorId, chargePointId, ex.toString());
+                }
+            });
         }
     }
 
