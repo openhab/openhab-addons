@@ -354,6 +354,7 @@
 			<tag>Switch</tag>
 			<tag>Power</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="charge-limit">
@@ -366,6 +367,7 @@
 			<tag>Current</tag>
 		</tags>
 		<state min="0" step="1" pattern="%.0f A"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="power-limit">
@@ -380,6 +382,7 @@
 			<tag>Power</tag>
 		</tags>
 		<state min="0" step="100" pattern="%.0f W"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="number-phases">
@@ -396,6 +399,7 @@
 				<option value="3">3 phases</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="pause">
@@ -406,6 +410,7 @@
 			<tag>Switch</tag>
 			<tag>Power</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="availability">
@@ -415,6 +420,7 @@
 		<tags>
 			<tag>Switch</tag>
 		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="unlock">
@@ -441,6 +447,7 @@
 			<tag>Current</tag>
 		</tags>
 		<state min="0" step="1" pattern="%.0f A"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="current-phase">
