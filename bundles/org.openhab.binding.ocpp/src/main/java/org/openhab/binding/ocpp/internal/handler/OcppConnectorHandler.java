@@ -102,6 +102,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private static final EnumSet<ChargePointStatus> TRANSIENT = EnumSet.of(ChargePointStatus.Preparing,
             ChargePointStatus.Finishing);
     private static final long STUCK_STATE_SECONDS = 120;
+    private static final long REMOTE_START_RETRY_DELAY_SECONDS = 5;
 
     // Telemetry channels created on demand, only if the charger reports the measurand, rather than
     // declared statically on every connector.
@@ -157,9 +158,12 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile boolean stuckStateRecovery;
     private volatile double nominalVoltage = 230.0;
     private volatile int phases = 1;
+    private volatile int remoteStartRetries;
 
     private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
+    // Meter reading at the transaction's start, kept to compute whole-session energy at its stop.
+    private volatile @Nullable Integer meterStart;
     private volatile double currentLimitAmps;
     // Optional watts limit (the power-limit channel); when > 0 and the charger accepts Power it wins over
     // the amperes charge-limit, sent directly without conversion.
@@ -192,6 +196,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pendingFlush;
     private @Nullable ScheduledFuture<?> pollTask;
     private @Nullable ScheduledFuture<?> stuckTask;
+    private volatile @Nullable ScheduledFuture<?> remoteStartRetryTask;
     // The most recent MeterValues poll, so a new tick can be skipped while it is still outstanding.
     // Touched only from the single-threaded poll task (scheduleWithFixedDelay never runs concurrently).
     private @Nullable CompletableFuture<eu.chargetime.ocpp.model.Confirmation> pendingPoll;
@@ -222,6 +227,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         stuckStateRecovery = config.stuckStateRecovery;
         nominalVoltage = config.nominalVoltage;
         phases = config.phases;
+        remoteStartRetries = config.remoteStartRetries;
         OcppChargePointHandler parent = chargePointHandler();
         if (parent == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -306,7 +312,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         cancel(pollTask);
+        cancel(remoteStartRetryTask);
         pollTask = null;
+        remoteStartRetryTask = null;
         synchronized (lock) {
             cancel(stuckTask);
             cancel(pendingFlush);
@@ -634,12 +642,34 @@ public class OcppConnectorHandler extends BaseThingHandler {
             logger.debug("RemoteStart on connector {} skipped — charge point not ready", connectorId);
             return;
         }
+        cancel(remoteStartRetryTask);
+        remoteStartRetryTask = null;
+        attemptRemoteStart(remoteStartRetries);
+    }
+
+    private void attemptRemoteStart(int remaining) {
         RemoteStartTransactionRequest request = new RemoteStartTransactionRequest(remoteStartTag);
         request.setConnectorId(connectorId);
-        dispatch(request, "RemoteStart");
+        dispatch(request, "RemoteStart").whenComplete((confirmation, ex) -> {
+            // Retry only a timed-out/failed send, and only while nothing has started: a RemoteStart the
+            // charger did answer (even Rejected) is its decision, and a running transaction must not be
+            // restarted. Some chargers drop the first RemoteStart and answer a retry.
+            if (ex == null || remaining <= 0 || transactionId != null || !isReadyToSend()) {
+                return;
+            }
+            logger.info("RemoteStart on connector {} did not answer; retrying ({} attempt(s) left)", connectorId,
+                    remaining);
+            remoteStartRetryTask = scheduler.schedule(() -> {
+                if (transactionId == null && isReadyToSend()) {
+                    attemptRemoteStart(remaining - 1);
+                }
+            }, REMOTE_START_RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
+        });
     }
 
     private void remoteStop() {
+        cancel(remoteStartRetryTask);
+        remoteStartRetryTask = null;
         Integer transaction = transactionId;
         if (transaction == null) {
             logger.debug("No active transaction to stop on connector {}", connectorId);
@@ -902,6 +932,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     public void onTransactionStarted(StartTransactionRequest request, int transactionId) {
         // The charging channel is status-driven (see onStatusNotification); the transaction id is
         // kept for RemoteStop / TxProfile.
+        cancel(remoteStartRetryTask);
+        remoteStartRetryTask = null;
         this.transactionId = transactionId;
         updateState(CHANNEL_TRANSACTION_ID, new DecimalType(transactionId));
         String idTag = request.getIdTag();
@@ -910,6 +942,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         Integer meterStart = request.getMeterStart();
         if (meterStart != null) {
+            this.meterStart = meterStart;
             updateState(CHANNEL_METER_START, new QuantityType<>(meterStart, Units.WATT_HOUR));
         }
         ZonedDateTime timestamp = request.getTimestamp();
@@ -925,7 +958,14 @@ public class OcppConnectorHandler extends BaseThingHandler {
         Integer meterStop = request.getMeterStop();
         if (meterStop != null) {
             updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
+            Integer start = meterStart;
+            if (start != null) {
+                // Whole-session energy as a single value at session end, so everyChange persistence
+                // records one clean point per session rather than sampling the rising register.
+                updateState(CHANNEL_SESSION_ENERGY, new QuantityType<>(meterStop - start, Units.WATT_HOUR));
+            }
         }
+        meterStart = null;
         ZonedDateTime timestamp = request.getTimestamp();
         if (timestamp != null) {
             updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));
