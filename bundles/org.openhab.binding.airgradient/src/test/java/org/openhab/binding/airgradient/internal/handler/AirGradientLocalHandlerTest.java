@@ -42,7 +42,9 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -99,6 +101,9 @@ public class AirGradientLocalHandlerTest {
     public void setUp() throws Exception {
         callbackMock = Mockito.mock(ThingHandlerCallback.class);
         Mockito.when(callbackMock.isChannelLinked(any(ChannelUID.class))).thenReturn(true);
+        Mockito.when(callbackMock.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class)))
+                .thenAnswer(invocation -> ChannelBuilder.create(invocation.getArgument(0, ChannelUID.class))
+                        .withType(invocation.getArgument(1, ChannelTypeUID.class)));
         thing = Mockito.mock(Thing.class);
         updatedThing = Mockito.mock(Thing.class);
         secondUpdatedThing = Mockito.mock(Thing.class);

@@ -28,6 +28,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -103,19 +105,19 @@ public class AirGradientLocationHandlerTest {
         }
     };
 
-    @Nullable
-    private AirGradientLocationHandler sut;
+    public @Nullable AirGradientLocationHandler sut;
 
-    @Nullable
-    private ThingHandlerCallback callbackMock;
+    public @Nullable ThingHandlerCallback callbackMock;
 
-    @Nullable
-    private Thing thing;
+    public @Nullable Thing thing;
 
     @BeforeEach
     public void setUp() {
         callbackMock = Mockito.mock(ThingHandlerCallback.class);
         Mockito.when(callbackMock.isChannelLinked(any(ChannelUID.class))).thenReturn(true);
+        Mockito.when(callbackMock.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class)))
+                .thenAnswer(invocation -> ChannelBuilder.create(invocation.getArgument(0, ChannelUID.class))
+                        .withType(invocation.getArgument(1, ChannelTypeUID.class)));
         thing = Mockito.mock(Thing.class);
 
         sut = new AirGradientLocationHandler(requireNonNull(thing));

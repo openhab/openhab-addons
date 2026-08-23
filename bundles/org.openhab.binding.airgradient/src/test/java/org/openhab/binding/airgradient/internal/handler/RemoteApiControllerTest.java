@@ -145,8 +145,7 @@ public class RemoteApiControllerTest {
             # EOF
             """;
 
-    @Nullable
-    private RemoteAPIController sut;
+    public @Nullable RemoteAPIController sut;
 
     @Nullable
     HttpClient httpClientMock;

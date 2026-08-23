@@ -36,6 +36,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -176,10 +177,13 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             }
 
             Measure measure = measures.get(0);
-            ThingBuilder measurementBuilder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null,
-                    this::editThing, measure);
-            if (measurementBuilder != null) {
-                updateThing(measurementBuilder.build());
+            ThingHandlerCallback callback = getCallback();
+            if (callback != null) {
+                ThingBuilder measurementBuilder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing,
+                        callback, null, this::editThing, measure);
+                if (measurementBuilder != null) {
+                    updateThing(measurementBuilder.build());
+                }
             }
 
             updateProperties(MeasureHelper.createProperties(measure));
@@ -195,9 +199,9 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             boolean deviceSignatureChanged = deviceSignature == null || !deviceSignature.equals(cachedDeviceSignature);
             LocalConfiguration localConfig = apiController.getConfig();
             if (localConfig != null) {
-                if (deviceSignatureChanged) {
-                    ThingBuilder builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, null,
-                            this::editThing, localConfig);
+                if (deviceSignatureChanged && callback != null) {
+                    ThingBuilder builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, callback,
+                            null, this::editThing, localConfig);
                     if (builder != null) {
                         updateThing(builder.build());
                     }

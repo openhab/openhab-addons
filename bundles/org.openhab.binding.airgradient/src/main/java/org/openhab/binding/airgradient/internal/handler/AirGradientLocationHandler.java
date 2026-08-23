@@ -27,6 +27,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -136,10 +137,13 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     }
 
     public void setMeasurment(Measure measure) {
-        ThingBuilder builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null, this::editThing,
-                measure);
-        if (builder != null) {
-            updateThing(builder.build());
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            ThingBuilder builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, callback, null,
+                    this::editThing, measure);
+            if (builder != null) {
+                updateThing(builder.build());
+            }
         }
 
         updateProperties(MeasureHelper.createProperties(measure));

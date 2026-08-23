@@ -28,7 +28,7 @@ import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
@@ -113,28 +113,32 @@ public class DynamicChannelHelper {
         return firmwareVersion + "|" + (model == null ? "" : model);
     }
 
-    public static @Nullable ThingBuilder updateThingWithMeasurementChannels(Thing thing, @Nullable ThingBuilder builder,
-            Supplier<ThingBuilder> builderSupplier, Measure measure) {
-        return updateThingWithChannels(thing, builder, builderSupplier, MEASUREMENT_CHANNELS, measure);
+    public static @Nullable ThingBuilder updateThingWithMeasurementChannels(Thing thing, ThingHandlerCallback callback,
+            @Nullable ThingBuilder builder, Supplier<ThingBuilder> builderSupplier, Measure measure) {
+        return updateThingWithChannels(thing, callback, builder, builderSupplier, MEASUREMENT_CHANNELS, measure);
     }
 
     public static @Nullable ThingBuilder updateThingWithConfigurationChannels(Thing thing,
-            @Nullable ThingBuilder builder, Supplier<ThingBuilder> builderSupplier, LocalConfiguration configuration) {
-        return updateThingWithChannels(thing, builder, builderSupplier, CONFIGURATION_CHANNELS, configuration);
+            ThingHandlerCallback callback, @Nullable ThingBuilder builder, Supplier<ThingBuilder> builderSupplier,
+            LocalConfiguration configuration) {
+        return updateThingWithChannels(thing, callback, builder, builderSupplier, CONFIGURATION_CHANNELS,
+                configuration);
     }
 
-    private static <T> @Nullable ThingBuilder updateThingWithChannels(Thing thing, @Nullable ThingBuilder builder,
-            Supplier<ThingBuilder> builderSupplier, List<DynamicChannel<T>> channels, T currentData) {
+    private static <T> @Nullable ThingBuilder updateThingWithChannels(Thing thing, ThingHandlerCallback callback,
+            @Nullable ThingBuilder builder, Supplier<ThingBuilder> builderSupplier, List<DynamicChannel<T>> channels,
+            T currentData) {
         ThingBuilder currentBuilder = builder;
         for (DynamicChannel<T> channel : channels) {
-            currentBuilder = addDynamicChannel(thing, currentBuilder, builderSupplier, channel, currentData);
+            currentBuilder = addDynamicChannel(thing, callback, currentBuilder, builderSupplier, channel, currentData);
         }
 
         return currentBuilder;
     }
 
-    private static <T> @Nullable ThingBuilder addDynamicChannel(Thing originalThing, @Nullable ThingBuilder builder,
-            Supplier<ThingBuilder> builderSupplier, DynamicChannel<T> toAdd, T currentData) {
+    private static <T> @Nullable ThingBuilder addDynamicChannel(Thing originalThing, ThingHandlerCallback callback,
+            @Nullable ThingBuilder builder, Supplier<ThingBuilder> builderSupplier, DynamicChannel<T> toAdd,
+            T currentData) {
         if (!toAdd.isSupported().test(currentData)) {
             return builder;
         }
@@ -142,7 +146,8 @@ public class DynamicChannelHelper {
         ChannelUID channelId = new ChannelUID(originalThing.getUID(), toAdd.id);
         if (originalThing.getChannel(channelId) == null) {
             LOGGER.debug("Adding dynamic channel {} to {}", toAdd.id, originalThing.getUID());
-            Channel channel = ChannelBuilder.create(channelId, toAdd.itemType).withType(toAdd.channelTypeUID).build();
+            Channel channel = callback.createChannelBuilder(channelId, toAdd.channelTypeUID)
+                    .withAcceptedItemType(toAdd.itemType).build();
             ThingBuilder currentBuilder = builder;
             if (currentBuilder == null) {
                 currentBuilder = builderSupplier.get();

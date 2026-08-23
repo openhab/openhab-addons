@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,7 +38,10 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -47,12 +51,24 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 public class DynamicChannelHelperTest {
 
     private Thing thing = Mockito.mock(Thing.class);
+    private ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
     private ThingBuilder builder = Mockito.mock(ThingBuilder.class);
 
     @BeforeEach
     public void setUp() {
         Mockito.when(thing.getUID()).thenReturn(new ThingUID(AirGradientBindingConstants.THING_TYPE_LOCAL, "1234"));
         Mockito.when(thing.getChannel(any(ChannelUID.class))).thenReturn(null);
+        Mockito.when(callback.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class)))
+                .thenAnswer(invocation -> {
+                    ChannelUID channelUID = invocation.getArgument(0, ChannelUID.class);
+                    ChannelTypeUID channelTypeUID = invocation.getArgument(1, ChannelTypeUID.class);
+                    Set<String> defaultTags = switch (channelTypeUID.getId()) {
+                        case "pm1", "pm2", "pm10", "particle-count" -> Set.of("Measurement", "ParticulateMatter");
+                        case "tvoc" -> Set.of("Measurement", "VOC");
+                        default -> Set.of();
+                    };
+                    return ChannelBuilder.create(channelUID).withType(channelTypeUID).withDefaultTags(defaultTags);
+                });
         Mockito.when(builder.withChannel(any(Channel.class))).thenReturn(builder);
     }
 
@@ -73,7 +89,7 @@ public class DynamicChannelHelperTest {
         measure.noxIndex = 2d;
         measure.noxRaw = 2.5d;
 
-        ThingBuilder returnedBuilder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null,
+        ThingBuilder returnedBuilder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, callback, null,
                 () -> builder, measure);
 
         assertThat(Objects.requireNonNull(returnedBuilder), is(builder));
@@ -108,6 +124,14 @@ public class DynamicChannelHelperTest {
                 Map.entry("pm10-count", "Number:Dimensionless"), Map.entry("pm02-compensated", "Number:Density"),
                 Map.entry("tvoc-index", "Number:Dimensionless"), Map.entry("tvoc-raw", "Number:Dimensionless"),
                 Map.entry("nox-index", "Number:Dimensionless"), Map.entry("nox-raw", "Number:Dimensionless"))));
+        Map<String, Set<String>> defaultTags = captor.getAllValues().stream()
+                .collect(Collectors.toMap((channel) -> channel.getUID().getId(), Channel::getDefaultTags));
+        assertThat(defaultTags.get("pm01-standard"), is(Set.of("Measurement", "ParticulateMatter")));
+        assertThat(defaultTags.get("pm02-standard"), is(Set.of("Measurement", "ParticulateMatter")));
+        assertThat(defaultTags.get("pm10-standard"), is(Set.of("Measurement", "ParticulateMatter")));
+        assertThat(defaultTags.get("pm005-count"), is(Set.of("Measurement", "ParticulateMatter")));
+        assertThat(defaultTags.get("tvoc-index"), is(Set.of("Measurement", "VOC")));
+        assertThat(defaultTags.get("tvoc-raw"), is(Set.of("Measurement", "VOC")));
     }
 
     @Test
@@ -117,7 +141,7 @@ public class DynamicChannelHelperTest {
         configuration.postDataToAirGradient = false;
         configuration.displayBrightness = 75L;
 
-        ThingBuilder returnedBuilder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, null,
+        ThingBuilder returnedBuilder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, callback, null,
                 () -> builder, configuration);
 
         assertThat(Objects.requireNonNull(returnedBuilder), is(builder));
@@ -136,7 +160,7 @@ public class DynamicChannelHelperTest {
         ChannelUID existingChannelUid = new ChannelUID(thing.getUID(), "pm01-standard");
         Mockito.when(thing.getChannel(existingChannelUid)).thenReturn(Mockito.mock(Channel.class));
 
-        ThingBuilder returnedBuilder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, null,
+        ThingBuilder returnedBuilder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, callback, null,
                 () -> builder, measure);
 
         assertThat(returnedBuilder, is(nullValue()));
