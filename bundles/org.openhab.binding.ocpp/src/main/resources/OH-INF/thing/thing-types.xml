@@ -131,6 +131,10 @@
 			<channel id="learn-card" typeId="learn-card"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>chargePointId</representation-property>
 
 		<config-description>
