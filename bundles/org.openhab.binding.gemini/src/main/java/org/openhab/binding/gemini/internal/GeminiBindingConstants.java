@@ -38,7 +38,7 @@ public class GeminiBindingConstants {
     public static final double DEFAULT_TEMPERATURE = 1.0;
     public static final double DEFAULT_TOP_P = 1.0;
     public static final int DEFAULT_MAX_OUTPUT_TOKENS = 2048;
-    public static final int DEFAULT_TOOL_LOOP_LIMIT = 15;
+    public static final int DEFAULT_MAX_MODEL_TURNS = 10;
     public static final String DEFAULT_SYSTEM_MESSAGE = "You are a helpful assistant.";
     public static final int DEFAULT_REQUEST_TIMEOUT = 30;
 

@@ -13,9 +13,9 @@
 package org.openhab.binding.gemini.internal.hli;
 
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.BINDING_ID;
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MAX_MODEL_TURNS;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
-import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MAX_MODEL_TURNS;
 
 import java.util.ArrayList;
 import java.util.Collection;
