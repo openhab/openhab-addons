@@ -14,33 +14,16 @@ package org.openhab.binding.emeraldhws.internal;
 
 import static org.openhab.binding.emeraldhws.internal.EmeraldHWSBindingConstants.*;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SSLParameters;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.openhab.binding.emeraldhws.internal.api.List;
 import org.openhab.binding.emeraldhws.internal.api.Login;
 import org.openhab.binding.emeraldhws.internal.discovery.EmeraldHWSDiscoveryService;
@@ -57,6 +40,20 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import software.amazon.awssdk.crt.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
+import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
+import software.amazon.awssdk.crt.mqtt5.OnAttemptingConnectReturn;
+import software.amazon.awssdk.crt.mqtt5.OnConnectionFailureReturn;
+import software.amazon.awssdk.crt.mqtt5.OnConnectionSuccessReturn;
+import software.amazon.awssdk.crt.mqtt5.OnDisconnectionReturn;
+import software.amazon.awssdk.crt.mqtt5.OnStoppedReturn;
+import software.amazon.awssdk.crt.mqtt5.PublishReturn;
+import software.amazon.awssdk.crt.mqtt5.QOS;
+import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
+import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
+import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 /**
  * The {@link EmeraldHWSHandler} is responsible for handling commands, which are
@@ -77,7 +74,7 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) EmeraldHWSWebTargets webTargets;
     private HttpClient httpClient = new HttpClient();
     private @Nullable List emeraldHWSList;
-    private @Nullable MqttAsyncClient mqttClient;
+    private @Nullable Mqtt5Client mqttClient;
 
     private final Gson gson = new Gson();
     String token = "";
@@ -148,141 +145,123 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
     }
 
     private void setupMqttConnection() throws Exception {
+        // 1. Get Unauthenticated AWS Identity & Temporary Credentials
         String identityId = webTargets.getAwsIdentityId();
         JsonObject credentials = webTargets.getAwsCredentials(identityId);
 
         String accessKeyId = credentials.get("AccessKeyId").getAsString();
         String secretKey = credentials.get("SecretKey").getAsString();
         String sessionToken = credentials.get("SessionToken").getAsString();
-        String awsRegion = "ap-southeast-2";
 
         String cleanEndpoint = AWS_IOT_ENDPOINT.replace("https://", "").replace("wss://", "").replaceAll("/$", "")
                 .trim();
-
-        String queryString = AwsIotSigV4Signer.getSignedQueryString(cleanEndpoint, awsRegion, accessKeyId, secretKey,
-                sessionToken);
-
-        // Paho's getRawQuery() accurately transmits the pristine string without Java corruption
-        String brokerUrl = "wss://" + cleanEndpoint + ":443/mqtt?" + queryString;
+        String awsRegion = "ap-southeast-2";
         String clientId = "emeraldhws_" + (System.currentTimeMillis() / 1000L);
 
-        mqttClient = new MqttAsyncClient(brokerUrl, clientId, new MemoryPersistence());
+        // 2. Wrap the STS temporary credentials securely as byte arrays
+        StaticCredentialsProvider credentialsProvider = new StaticCredentialsProvider.StaticCredentialsProviderBuilder()
+                .withAccessKeyId(accessKeyId.getBytes(StandardCharsets.UTF_8))
+                .withSecretAccessKey(secretKey.getBytes(StandardCharsets.UTF_8))
+                .withSessionToken(sessionToken.getBytes(StandardCharsets.UTF_8)).build();
 
-        mqttClient.setCallback(new MqttCallback() {
+        // 3. Build the SigV4 Configuration Object that the Builder expects
+        AwsIotMqtt5ClientBuilder.WebsocketSigv4Config sigv4Config = new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
+        sigv4Config.region = awsRegion;
+        sigv4Config.credentialsProvider = credentialsProvider;
+
+        // 4. Let the AWS C-Runtime do absolutely ALL the heavy lifting
+        AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(cleanEndpoint,
+                sigv4Config);
+
+        builder.withClientId(clientId);
+
+        // 5. Handle incoming messages explicitly overriding the interface
+        builder.withPublishEvents(new Mqtt5ClientOptions.PublishEvents() {
             @Override
-            public void connectionLost(@Nullable Throwable cause) {
-                logger.error("MQTT Client disconnected unexpectedly", cause);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Disconnected");
-            }
+            public void onMessageReceived(@Nullable Mqtt5Client client, @Nullable PublishReturn publishReturn) {
+                if (publishReturn == null || publishReturn.getPublishPacket() == null)
+                    return;
 
-            @Override
-            public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) {
-            }
+                PublishPacket packet = publishReturn.getPublishPacket();
+                String topic = packet.getTopic();
+                byte[] payloadBytes = packet.getPayload();
 
-            @Override
-            public void deliveryComplete(@Nullable IMqttDeliveryToken token) {
-            }
-        });
+                if (topic == null || payloadBytes == null)
+                    return;
 
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-        options.setCleanSession(true);
+                String payload = new String(payloadBytes, StandardCharsets.UTF_8);
+                logger.trace("Received MQTT message on topic: {} Payload: {}", topic, payload);
 
-        // Required AWS SNI Injection (TLS Handshake)
-        SSLSocketFactory defaultFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        options.setSocketFactory(new SSLSocketFactory() {
-            private Socket injectSNI(Socket socket) {
-                if (socket instanceof SSLSocket) {
-                    SSLSocket sslSocket = (SSLSocket) socket;
-                    SSLParameters params = sslSocket.getSSLParameters();
-                    params.setServerNames(Arrays.asList(new SNIHostName(cleanEndpoint)));
-                    sslSocket.setSSLParameters(params);
-                }
-                return socket;
-            }
-
-            @Override
-            public String[] getDefaultCipherSuites() {
-                return defaultFactory.getDefaultCipherSuites();
-            }
-
-            @Override
-            public String[] getSupportedCipherSuites() {
-                return defaultFactory.getSupportedCipherSuites();
-            }
-
-            @Override
-            public Socket createSocket(@Nullable Socket s, @Nullable String host, int port, boolean autoClose)
-                    throws IOException {
-                return injectSNI(defaultFactory.createSocket(s, host, port, autoClose));
-            }
-
-            @Override
-            public Socket createSocket(@Nullable String host, int port) throws IOException {
-                return injectSNI(defaultFactory.createSocket(host, port));
-            }
-
-            @Override
-            public Socket createSocket(@Nullable String host, int port, @Nullable InetAddress localHost, int localPort)
-                    throws IOException {
-                return injectSNI(defaultFactory.createSocket(host, port, localHost, localPort));
-            }
-
-            @Override
-            public Socket createSocket(@Nullable InetAddress host, int port) throws IOException {
-                return injectSNI(defaultFactory.createSocket(host, port));
-            }
-
-            @Override
-            public Socket createSocket(@Nullable InetAddress address, int port, @Nullable InetAddress localAddress,
-                    int localPort) throws IOException {
-                return injectSNI(defaultFactory.createSocket(address, port, localAddress, localPort));
-            }
-
-            @Override
-            public Socket createSocket() throws IOException {
-                return injectSNI(defaultFactory.createSocket());
+                getThing().getThings().forEach(child -> {
+                    EmeraldHWSHandler handler = (EmeraldHWSHandler) child.getHandler();
+                    if (handler != null) {
+                        String childUuid = child.getConfiguration().as(EmeraldHWSConfiguration.class).uuid;
+                        if (topic.contains(childUuid)) {
+                            handler.updateFromMqtt(payload);
+                        }
+                    }
+                });
             }
         });
 
-        mqttClient.connect(options, null, new IMqttActionListener() {
+        // 6. Connection lifecycle events with compiler-safe @Nullable tags
+        builder.withLifeCycleEvents(new Mqtt5ClientOptions.LifecycleEvents() {
             @Override
-            public void onSuccess(@Nullable IMqttToken asyncActionToken) {
-                logger.info("Successfully connected to Emerald AWS IoT via Paho WebSockets!");
+            public void onAttemptingConnect(@Nullable Mqtt5Client client,
+                    @Nullable OnAttemptingConnectReturn onAttemptingConnectReturn) {
+                logger.debug("Attempting to connect to Emerald AWS IoT via AWS CRT MQTT5...");
+            }
+
+            @Override
+            public void onConnectionSuccess(@Nullable Mqtt5Client client,
+                    @Nullable OnConnectionSuccessReturn onConnectionSuccessReturn) {
+                logger.info("Successfully connected to Emerald AWS IoT via official AWS CRT!");
                 updateStatus(ThingStatus.ONLINE);
                 subscribeToTopics();
             }
 
             @Override
-            public void onFailure(@Nullable IMqttToken asyncActionToken, @Nullable Throwable exception) {
-                logger.error("MQTT Connection failed", exception);
-                String errMsg = exception != null ? exception.getMessage() : "Unknown error";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "MQTT Connection failed: " + errMsg);
+            public void onConnectionFailure(@Nullable Mqtt5Client client,
+                    @Nullable OnConnectionFailureReturn onConnectionFailureReturn) {
+                String error = (onConnectionFailureReturn != null)
+                        ? String.valueOf(onConnectionFailureReturn.getErrorCode())
+                        : "Unknown";
+                logger.error("AWS CRT MQTT Connection failed. Error Code: {}", error);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Connection failed");
+            }
+
+            @Override
+            public void onDisconnection(@Nullable Mqtt5Client client,
+                    @Nullable OnDisconnectionReturn onDisconnectionReturn) {
+                String error = (onDisconnectionReturn != null) ? String.valueOf(onDisconnectionReturn.getErrorCode())
+                        : "Unknown";
+                logger.warn("AWS CRT MQTT Disconnected. Error Code: {}", error);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Disconnected");
+            }
+
+            @Override
+            public void onStopped(@Nullable Mqtt5Client client, @Nullable OnStoppedReturn onStoppedReturn) {
+                logger.debug("AWS CRT MQTT Client stopped.");
             }
         });
+
+        // Build and Start
+        mqttClient = builder.build();
+        mqttClient.start();
     }
 
     private void subscribeToTopics() {
-        try {
-            if (mqttClient != null) {
-                mqttClient.subscribe("emerald/hws/+/status", 0, (topic, message) -> {
-                    String payload = new String(message.getPayload());
-                    logger.trace("Received MQTT message on topic: {} Payload: {}", topic, payload);
+        if (mqttClient != null) {
+            SubscribePacket.SubscribePacketBuilder subBuilder = new SubscribePacket.SubscribePacketBuilder();
+            subBuilder.withSubscription("emerald/hws/+/status", QOS.AT_LEAST_ONCE);
 
-                    this.getThing().getThings().forEach(child -> {
-                        EmeraldHWSHandler handler = (EmeraldHWSHandler) child.getHandler();
-                        if (handler != null && topic != null) {
-                            String childUuid = child.getConfiguration().as(EmeraldHWSConfiguration.class).uuid;
-                            if (topic.contains(childUuid)) {
-                                handler.updateFromMqtt(payload);
-                            }
-                        }
-                    });
-                });
-            }
-        } catch (Exception e) {
-            logger.error("Failed to subscribe to MQTT topics", e);
+            mqttClient.subscribe(subBuilder.build()).whenComplete((subAck, throwable) -> {
+                if (throwable != null) {
+                    logger.error("Failed to subscribe to MQTT topics via AWS CRT", throwable);
+                } else {
+                    logger.debug("Successfully subscribed to Emerald HWS topics.");
+                }
+            });
         }
     }
 
@@ -331,12 +310,8 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         if (mqttClient != null) {
-            try {
-                mqttClient.disconnect();
-                mqttClient.close();
-            } catch (MqttException e) {
-                logger.debug("Error disconnecting Paho MQTT client: {}", e.getMessage());
-            }
+            mqttClient.stop(null);
+            mqttClient.close();
         }
         super.dispose();
     }

@@ -14,11 +14,17 @@
 
   <name>openHAB Add-ons :: Bundles :: EmeraldHWS Binding</name>
   <dependencies>
-    <!-- Replace the openhab mqtt transport with Eclipse Paho -->
     <dependency>
-      <groupId>org.eclipse.paho</groupId>
-      <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-      <version>1.2.5</version>
+      <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
+      <artifactId>aws-iot-device-sdk</artifactId>
+      <version>1.30.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk.crt</groupId>
+      <artifactId>aws-crt</artifactId>
+      <version>0.44.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
