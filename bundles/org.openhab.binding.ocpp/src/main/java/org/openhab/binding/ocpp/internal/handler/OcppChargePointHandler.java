@@ -53,18 +53,25 @@ import org.slf4j.LoggerFactory;
 
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
+import eu.chargetime.ocpp.model.core.AuthorizationStatus;
 import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.ChangeConfigurationRequest;
 import eu.chargetime.ocpp.model.core.ConfigurationStatus;
 import eu.chargetime.ocpp.model.core.GetConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
+import eu.chargetime.ocpp.model.core.IdTagInfo;
 import eu.chargetime.ocpp.model.core.MeterValuesRequest;
 import eu.chargetime.ocpp.model.core.ResetRequest;
 import eu.chargetime.ocpp.model.core.ResetType;
 import eu.chargetime.ocpp.model.core.StartTransactionRequest;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
+import eu.chargetime.ocpp.model.localauthlist.AuthorizationData;
+import eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionConfirmation;
+import eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionRequest;
+import eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest;
+import eu.chargetime.ocpp.model.localauthlist.UpdateType;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
 
@@ -926,6 +933,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 steps.add(() -> sendConfig(key, value));
             }
         }
+        if (!config.localAuthListTags.isEmpty()
+                && Boolean.TRUE.equals(capabilities.supportsLocalAuthList().orElse(false))) {
+            List<String> tags = config.localAuthListTags;
+            steps.add(() -> provisionLocalAuthList(tags));
+        }
         runBootConfigStep(steps, 0, fingerprint, bootSession, new AtomicBoolean(true));
     }
 
@@ -938,7 +950,40 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private String configFingerprint(OcppServerConfiguration config) {
         return chargePointId + "|" + meterless + "|" + config.meterValueSampleInterval + "|"
                 + config.clockAlignedDataInterval + "|" + config.meterValuesData + "|"
-                + config.disableRemoteTxAuthorization + "|" + String.join(",", config.extraConfig);
+                + config.disableRemoteTxAuthorization + "|" + String.join(",", config.extraConfig) + "|"
+                + String.join(",", config.localAuthListTags);
+    }
+
+    /**
+     * Push the configured idTags to the charger's local authorization list (a Full SendLocalList) so a
+     * cached tag can still charge while the central system is offline. Reads the charger's current list
+     * version first and skips the send when it already matches the configured tags, so the list is not
+     * rewritten on every boot. Only run when the charger supports LocalAuthListManagement.
+     */
+    private CompletableFuture<Confirmation> provisionLocalAuthList(List<String> tags) {
+        int version = localAuthListVersion(tags);
+        return send(new GetLocalListVersionRequest()).thenCompose(current -> {
+            if (current instanceof GetLocalListVersionConfirmation reported
+                    && Integer.valueOf(version).equals(reported.getListVersion())) {
+                return CompletableFuture.completedFuture(current);
+            }
+            SendLocalListRequest request = new SendLocalListRequest(version, UpdateType.Full);
+            request.setLocalAuthorizationList(authorizationData(tags));
+            return send(request);
+        }).toCompletableFuture();
+    }
+
+    /** A non-negative list version derived from the tag set, stable regardless of order. */
+    private static int localAuthListVersion(List<String> tags) {
+        return tags.stream().sorted().toList().hashCode() & Integer.MAX_VALUE;
+    }
+
+    private static AuthorizationData[] authorizationData(List<String> tags) {
+        return tags.stream().map(tag -> {
+            AuthorizationData data = new AuthorizationData(tag);
+            data.setIdTagInfo(new IdTagInfo(AuthorizationStatus.Accepted));
+            return data;
+        }).toArray(AuthorizationData[]::new);
     }
 
     /**

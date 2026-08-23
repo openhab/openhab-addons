@@ -535,6 +535,62 @@ class OcppBootConfigTest {
                 .equals(((eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest) r).getConnectorId())));
     }
 
+    @Test
+    void localAuthListIsProvisionedWhenTheChargerSupportsIt() {
+        // A charger that advertises LocalAuthListManagement with a configured tag list gets a Full
+        // SendLocalList on boot, so a cached tag can still start a charge while openHAB is offline.
+        serverConfig.localAuthListTags = List.of("RFID-A", "RFID-B");
+        when(transport.send(any(), any())).thenAnswer(invocation -> {
+            Request req = invocation.getArgument(1);
+            if (req instanceof GetConfigurationRequest) {
+                eu.chargetime.ocpp.model.core.KeyValueType profiles = new eu.chargetime.ocpp.model.core.KeyValueType(
+                        "SupportedFeatureProfiles", Boolean.TRUE);
+                profiles.setValue("Core,LocalAuthListManagement,RemoteTrigger");
+                GetConfigurationConfirmation conf = new GetConfigurationConfirmation();
+                conf.setConfigurationKey(new eu.chargetime.ocpp.model.core.KeyValueType[] { profiles });
+                return CompletableFuture.completedFuture(conf);
+            }
+            if (req instanceof eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionRequest) {
+                return CompletableFuture
+                        .completedFuture(new eu.chargetime.ocpp.model.localauthlist.GetLocalListVersionConfirmation(0));
+            }
+            return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        });
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        handler.onHeartbeat();
+
+        verify(transport, timeout(2000)).send(any(),
+                argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest s
+                        && s.getUpdateType() == eu.chargetime.ocpp.model.localauthlist.UpdateType.Full
+                        && s.getLocalAuthorizationList() != null && s.getLocalAuthorizationList().length == 2));
+    }
+
+    @Test
+    void localAuthListIsNotSentWhenTheChargerLacksTheProfile() {
+        // The charger does not advertise LocalAuthListManagement, so no SendLocalList goes out even with
+        // tags configured — unknown/absent support means do not send.
+        serverConfig.localAuthListTags = List.of("RFID-A");
+        when(transport.send(any(), any())).thenAnswer(invocation -> {
+            Request req = invocation.getArgument(1);
+            if (req instanceof GetConfigurationRequest) {
+                eu.chargetime.ocpp.model.core.KeyValueType profiles = new eu.chargetime.ocpp.model.core.KeyValueType(
+                        "SupportedFeatureProfiles", Boolean.TRUE);
+                profiles.setValue("Core,RemoteTrigger");
+                GetConfigurationConfirmation conf = new GetConfigurationConfirmation();
+                conf.setConfigurationKey(new eu.chargetime.ocpp.model.core.KeyValueType[] { profiles });
+                return CompletableFuture.completedFuture(conf);
+            }
+            return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
+        });
+
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+        handler.onHeartbeat();
+
+        verify(transport, org.mockito.Mockito.after(600).never()).send(any(),
+                argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest));
+    }
+
     private static boolean isStatusTrigger(Request request) {
         return request instanceof eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest trigger && trigger
                 .getRequestedMessage() == eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType.StatusNotification;

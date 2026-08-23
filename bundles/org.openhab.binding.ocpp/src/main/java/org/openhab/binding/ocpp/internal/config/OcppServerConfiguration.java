@@ -42,4 +42,5 @@ public class OcppServerConfiguration {
     public String tlsKeystorePassword = "";
     public List<String> whitelistTagIds = List.of();
     public List<String> chargerIds = List.of();
+    public List<String> localAuthListTags = List.of();
 }

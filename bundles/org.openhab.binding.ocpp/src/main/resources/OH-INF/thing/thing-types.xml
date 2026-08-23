@@ -111,6 +111,13 @@
 					closed.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="localAuthListTags" type="text" multiple="true">
+				<label>Local Authorization List</label>
+				<description>idTags pushed to the charger's local authorization list so a cached tag can still start a charge
+					while
+					openHAB is offline. Only sent to a charger that supports LocalAuthListManagement.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

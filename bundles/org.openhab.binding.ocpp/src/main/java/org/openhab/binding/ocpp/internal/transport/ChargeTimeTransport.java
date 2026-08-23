@@ -56,6 +56,7 @@ import eu.chargetime.ocpp.UnsupportedFeatureException;
 import eu.chargetime.ocpp.WebSocketListener;
 import eu.chargetime.ocpp.WssListenerSupport;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
+import eu.chargetime.ocpp.feature.profile.ServerLocalAuthListProfile;
 import eu.chargetime.ocpp.feature.profile.ServerRemoteTriggerProfile;
 import eu.chargetime.ocpp.feature.profile.ServerSmartChargingProfile;
 import eu.chargetime.ocpp.model.Confirmation;
@@ -112,6 +113,7 @@ public class ChargeTimeTransport implements OcppTransport {
         featureRepository.addFeatureProfile(new ServerCoreProfile(coreHandler));
         featureRepository.addFeatureProfile(new ServerSmartChargingProfile());
         featureRepository.addFeatureProfile(new ServerRemoteTriggerProfile());
+        featureRepository.addFeatureProfile(new ServerLocalAuthListProfile());
         // Override the core BootNotification feature (a later addFeature wins on the action) so a
         // charger whose model or vendor exceeds the OCPP CiString20 limit, or omits one, is accepted
         // rather than rejected with a CALLERROR that would leave it unable to come online. Once
