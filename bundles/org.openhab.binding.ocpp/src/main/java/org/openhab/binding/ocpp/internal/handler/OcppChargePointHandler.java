@@ -969,7 +969,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             }
             SendLocalListRequest request = new SendLocalListRequest(version, UpdateType.Full);
             request.setLocalAuthorizationList(authorizationData(tags));
-            return send(request);
+            return send(request).thenApply(result -> {
+                logger.info("Local authorization list sent to {}: version {}, {} tag(s), {}", chargePointId, version,
+                        tags.size(), result);
+                return result;
+            });
         }).toCompletableFuture();
     }
 
