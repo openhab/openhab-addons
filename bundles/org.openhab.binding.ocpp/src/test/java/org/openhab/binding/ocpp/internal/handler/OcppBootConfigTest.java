@@ -536,10 +536,9 @@ class OcppBootConfigTest {
     }
 
     @Test
-    void localAuthListIsProvisionedWhenTheChargerSupportsIt() {
-        // A charger that advertises LocalAuthListManagement with a configured tag list gets a Full
-        // SendLocalList on boot, so a cached tag can still start a charge while openHAB is offline.
-        serverConfig.localAuthListTags = List.of("RFID-A", "RFID-B");
+    void learningACardAddsItToTheLocalAuthList() {
+        // Arm learn-card, then the next presented card is added to the list and — on a charger that
+        // supports LocalAuthListManagement — pushed on boot via a Full SendLocalList.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request req = invocation.getArgument(1);
             if (req instanceof GetConfigurationRequest) {
@@ -557,20 +556,23 @@ class OcppBootConfigTest {
             return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
         });
 
+        handler.handleCommand(new org.openhab.core.thing.ChannelUID(CP_UID, "learn-card"),
+                org.openhab.core.library.types.OnOffType.ON);
+        handler.onAuthorized("RFID-LEARN");
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
         handler.onHeartbeat();
 
         verify(transport, timeout(2000)).send(any(),
                 argThat(r -> r instanceof eu.chargetime.ocpp.model.localauthlist.SendLocalListRequest s
                         && s.getUpdateType() == eu.chargetime.ocpp.model.localauthlist.UpdateType.Full
-                        && s.getLocalAuthorizationList() != null && s.getLocalAuthorizationList().length == 2));
+                        && s.getLocalAuthorizationList() != null && s.getLocalAuthorizationList().length == 1
+                        && "RFID-LEARN".equals(s.getLocalAuthorizationList()[0].getIdTag())));
     }
 
     @Test
     void localAuthListIsNotSentWhenTheChargerLacksTheProfile() {
         // The charger does not advertise LocalAuthListManagement, so no SendLocalList goes out even with
-        // tags configured — unknown/absent support means do not send.
-        serverConfig.localAuthListTags = List.of("RFID-A");
+        // a list set — unknown/absent support means do not send.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request req = invocation.getArgument(1);
             if (req instanceof GetConfigurationRequest) {
@@ -584,6 +586,8 @@ class OcppBootConfigTest {
             return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
         });
 
+        handler.handleCommand(new org.openhab.core.thing.ChannelUID(CP_UID, "local-auth-list"),
+                new org.openhab.core.library.types.StringType("RFID-A"));
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
         handler.onHeartbeat();
 
@@ -593,8 +597,8 @@ class OcppBootConfigTest {
 
     @Test
     void theLocalAuthListChannelDrivesTheListSentOnBoot() {
-        // Setting the local-auth-list channel (an openHAB item holds the list) overrides the config; the
-        // list is pushed to a charger that supports the profile on its next boot.
+        // The list is held in an openHAB item on the local-auth-list channel; it is pushed to a charger
+        // that supports the profile on its next boot.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request req = invocation.getArgument(1);
             if (req instanceof GetConfigurationRequest) {

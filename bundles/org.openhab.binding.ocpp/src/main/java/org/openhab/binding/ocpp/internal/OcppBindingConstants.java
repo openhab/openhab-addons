@@ -83,8 +83,10 @@ public class OcppBindingConstants {
 
     // Transaction metadata channels
     public static final String CHANNEL_ID_TAG = "id-tag";
-    public static final String CHANNEL_LAST_ID_TAG = "last-id-tag";
     public static final String CHANNEL_LOCAL_AUTH_LIST = "local-auth-list";
+    public static final String CHANNEL_LEARN_CARD = "learn-card";
+    // Thing property persisting the local authorization list (comma-separated idTags) across restarts.
+    public static final String PROPERTY_LOCAL_AUTH_LIST = "localAuthList";
     public static final String CHANNEL_TRANSACTION_ID = "transaction-id";
     public static final String CHANNEL_METER_START = "meter-start";
     public static final String CHANNEL_METER_STOP = "meter-stop";

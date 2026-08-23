@@ -109,6 +109,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     // Only used when a charger reopens its socket without booting again; the normal path requests
     // status after the BootNotification has been accepted and the boot configuration has run.
     private static final long STATUS_FALLBACK_SECONDS = 25;
+    private static final long LEARN_WINDOW_SECONDS = 60;
     private static final int MAX_BOOT_CONFIG_ATTEMPTS = 3;
     // Fallback delay before treating the charger as ready: the library sends the boot confirmation
     // right after the event handler returns and this binding cannot hook that write, so a scheduled
@@ -176,7 +177,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private volatile ChargerCapabilities capabilities = ChargerCapabilities.unknown();
     // The local authorization list set via the local-auth-list channel (an openHAB item holds it); when
     // non-null it overrides the server-wide localAuthListTags config for this charger.
-    private volatile @Nullable List<String> localAuthListOverride;
+    private volatile List<String> localAuthList = List.of();
+    // While armed (learn-card ON), the next presented card is added to the local authorization list.
+    private volatile boolean learningCard;
+    private volatile @Nullable ScheduledFuture<?> learnTask;
     private volatile @Nullable ScheduledFuture<?> bootConfigTask;
     private volatile @Nullable ScheduledFuture<?> livenessTask;
     private volatile @Nullable ScheduledFuture<?> statusFallbackTask;
@@ -216,23 +220,53 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             // Momentary: pop the switch back so it does not stick ON.
             updateState(CHANNEL_RESET, OnOffType.OFF);
         } else if (CHANNEL_LOCAL_AUTH_LIST.equals(channelUID.getId()) && command instanceof StringType text) {
-            List<String> tags = parseTagList(text.toString());
-            localAuthListOverride = tags;
-            updateState(CHANNEL_LOCAL_AUTH_LIST, new StringType(String.join(",", tags)));
-            if (isReady() && Boolean.TRUE.equals(capabilities.supportsLocalAuthList().orElse(false))) {
-                provisionLocalAuthList(tags).whenComplete((confirmation, ex) -> {
-                    if (ex != null) {
-                        logger.warn("SendLocalList to {} failed: {}", chargePointId, ex.getMessage());
-                    }
-                });
+            setLocalAuthList(parseTagList(text.toString()));
+        } else if (CHANNEL_LEARN_CARD.equals(channelUID.getId()) && command instanceof OnOffType onOff) {
+            if (onOff == OnOffType.ON) {
+                learningCard = true;
+                cancel(learnTask);
+                learnTask = scheduler.schedule(this::stopLearning, LEARN_WINDOW_SECONDS, TimeUnit.SECONDS);
+                logger.info("Learning next card for {} — present a card within {} s", chargePointId,
+                        LEARN_WINDOW_SECONDS);
+            } else {
+                stopLearning();
             }
         }
     }
 
-    /** A card was presented — surface its idTag so a rule or the UI can add it to the local auth list. */
+    private void stopLearning() {
+        learningCard = false;
+        cancel(learnTask);
+        learnTask = null;
+        updateState(CHANNEL_LEARN_CARD, OnOffType.OFF);
+    }
+
+    /** Persist, publish and push the local authorization list to the charger. */
+    private void setLocalAuthList(List<String> tags) {
+        localAuthList = tags;
+        // Empty must clear the property, so persist directly rather than via the skip-blank helper.
+        updateProperty(PROPERTY_LOCAL_AUTH_LIST, tags.isEmpty() ? null : String.join(",", tags));
+        updateState(CHANNEL_LOCAL_AUTH_LIST, new StringType(String.join(",", tags)));
+        if (isReady() && Boolean.TRUE.equals(capabilities.supportsLocalAuthList().orElse(false))) {
+            provisionLocalAuthList(tags).whenComplete((confirmation, ex) -> {
+                if (ex != null) {
+                    logger.warn("SendLocalList to {} failed: {}", chargePointId, ex.getMessage());
+                }
+            });
+        }
+    }
+
+    /** A card was presented — while learning, add it to the local authorization list. */
     public void onAuthorized(@Nullable String idTag) {
-        if (idTag != null && !idTag.isBlank()) {
-            updateState(CHANNEL_LAST_ID_TAG, new StringType(idTag));
+        if (idTag == null || idTag.isBlank() || !learningCard) {
+            return;
+        }
+        stopLearning();
+        if (!localAuthList.contains(idTag)) {
+            List<String> updated = new ArrayList<>(localAuthList);
+            updated.add(idTag);
+            logger.info("Learned card {} for {}", idTag, chargePointId);
+            setLocalAuthList(updated);
         }
     }
 
@@ -243,6 +277,12 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         configSettleSeconds = config.configSettleSeconds;
         meterless = config.meterless;
         heartbeat = config.heartbeat;
+        // Restore the persisted local authorization list so it survives an openHAB restart.
+        String savedAuthList = getThing().getProperties().get(PROPERTY_LOCAL_AUTH_LIST);
+        if (savedAuthList != null && !savedAuthList.isBlank()) {
+            localAuthList = parseTagList(savedAuthList);
+            updateState(CHANNEL_LOCAL_AUTH_LIST, new StringType(String.join(",", localAuthList)));
+        }
         if (chargePointId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "chargePointId must be set to the charger's OCPP identity");
@@ -307,10 +347,13 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         cancel(livenessTask);
         cancel(statusFallbackTask);
         cancel(readyTask);
+        cancel(learnTask);
         bootConfigTask = null;
         livenessTask = null;
         statusFallbackTask = null;
         readyTask = null;
+        learnTask = null;
+        learningCard = false;
     }
 
     private @Nullable OcppServerBridgeHandler serverHandler() {
@@ -955,9 +998,9 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 steps.add(() -> sendConfig(key, value));
             }
         }
-        List<String> authTags = localAuthListOverride != null ? localAuthListOverride : config.localAuthListTags;
-        if (!authTags.isEmpty() && Boolean.TRUE.equals(capabilities.supportsLocalAuthList().orElse(false))) {
-            steps.add(() -> provisionLocalAuthList(authTags));
+        if (!localAuthList.isEmpty() && Boolean.TRUE.equals(capabilities.supportsLocalAuthList().orElse(false))) {
+            List<String> tags = localAuthList;
+            steps.add(() -> provisionLocalAuthList(tags));
         }
         runBootConfigStep(steps, 0, fingerprint, bootSession, new AtomicBoolean(true));
     }
@@ -971,8 +1014,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private String configFingerprint(OcppServerConfiguration config) {
         return chargePointId + "|" + meterless + "|" + config.meterValueSampleInterval + "|"
                 + config.clockAlignedDataInterval + "|" + config.meterValuesData + "|"
-                + config.disableRemoteTxAuthorization + "|" + String.join(",", config.extraConfig) + "|"
-                + String.join(",", config.localAuthListTags);
+                + config.disableRemoteTxAuthorization + "|" + String.join(",", config.extraConfig);
     }
 
     /**
