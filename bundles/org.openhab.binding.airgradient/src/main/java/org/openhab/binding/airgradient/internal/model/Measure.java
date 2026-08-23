@@ -210,30 +210,13 @@ public class Measure {
     @Nullable
     public String model; // Model of sensor from cloud API
 
-    @Nullable
-    public Double pm01Standard;
-
-    @Nullable
-    public Double pm02Standard;
-
-    @Nullable
-    public Double pm10Standard;
-
-    @Nullable
-    public Double pm005Count;
-
-    @Nullable
-    public Double pm01Count;
-
-    @Nullable
-    public Double pm02Count;
-
-    @Nullable
-    public Double pm50Count;
-
-    @Nullable
-    public Double pm10Count;
-
-    @Nullable
-    public Double pm02Compensated;
+    public @Nullable Double pm01Standard;
+    public @Nullable Double pm02Standard;
+    public @Nullable Double pm10Standard;
+    public @Nullable Double pm005Count;
+    public @Nullable Double pm01Count;
+    public @Nullable Double pm02Count;
+    public @Nullable Double pm50Count;
+    public @Nullable Double pm10Count;
+    public @Nullable Double pm02Compensated;
 }
