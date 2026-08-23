@@ -140,13 +140,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
         final int model;
         if (THING_TYPE_PLAYER.equals(thing.getThingTypeUID())) {
-            if (config.model == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.player-model");
-                return;
-            }
             model = config.model;
         } else {
-            model = Integer.parseInt(thing.getThingTypeUID().getId().replaceAll("\\D", ""));
+            model = THING_TYPE_TO_MODEL.getOrDefault(thing.getThingTypeUID(), 0);
+        }
+
+        if (model == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.player-model");
+            return;
         }
         this.isUDP20X = (model == MODEL203 || model == MODEL205);
 
