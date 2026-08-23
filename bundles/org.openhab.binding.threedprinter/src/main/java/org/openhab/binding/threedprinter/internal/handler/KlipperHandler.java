@@ -122,6 +122,17 @@ public class KlipperHandler extends AbstractPrinterHandler {
     }
 
     @Override
+    protected void resetEndpointState() {
+        config = null;
+        lastPreviewFilename = "";
+        lastPreviewState = null;
+        extrudersDiscovered = false;
+        extraExtruders = List.of();
+        queryUrlSuffix = QUERY_URL_SUFFIX;
+        extraSetpointHeaterByChannel = new LinkedHashMap<>();
+    }
+
+    @Override
     protected int getRefreshInterval() {
         KlipperConfiguration cfg = config;
         return cfg != null ? cfg.refreshInterval : 30;

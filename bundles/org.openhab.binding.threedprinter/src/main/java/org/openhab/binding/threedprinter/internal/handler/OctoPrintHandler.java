@@ -105,6 +105,14 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
     }
 
     @Override
+    protected void resetEndpointState() {
+        config = null;
+        lastPreviewFilename = "";
+        lastPreviewState = null;
+        extraSetpointToolIndexByChannel = new LinkedHashMap<>();
+    }
+
+    @Override
     protected int getRefreshInterval() {
         OctoPrintConfiguration cfg = config;
         return cfg != null ? cfg.refreshInterval : 30;

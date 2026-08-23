@@ -91,6 +91,15 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
     }
 
     @Override
+    protected void resetEndpointState() {
+        config = null;
+        lastPreviewFilename = "";
+        lastPreviewState = null;
+        lastJobId = -1;
+        lastKnownJobFileId = -2;
+    }
+
+    @Override
     protected int getRefreshInterval() {
         PrusaLinkConfiguration cfg = config;
         return cfg != null ? cfg.refreshInterval : 30;

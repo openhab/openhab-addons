@@ -76,11 +76,22 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
             job.cancel(true);
             refreshJob = null;
         }
+        resetEndpointState();
     }
 
     protected abstract int getRefreshInterval();
 
     protected abstract void refresh();
+
+    /**
+     * Clears any endpoint-derived configuration, discovery, and preview/job caches. openHAB reinitializes the same
+     * handler instance after a configuration update by calling {@link #dispose()} then {@code initialize()}, so
+     * without this a reconfigured Thing (e.g. pointed at a different printer) could keep using state - discovered
+     * extruders, a cached preview image, a remembered job ID - left over from the previous endpoint. Subclasses
+     * should override this to reset every field they populate from the printer's configuration or from polling.
+     */
+    protected void resetEndpointState() {
+    }
 
     /**
      * Result of an {@link #httpGet(String, String)} call. A negative {@code status} means the request could not be
