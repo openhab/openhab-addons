@@ -46,11 +46,13 @@ The id is whatever path the charger appends to its backend URL — often its ser
 | tlsKeystorePassword         | text    | Password for the TLS keystore (store and key)                               | (empty) | no       | yes      |
 | whitelistTagIds                        | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected | (empty) | no     | yes      |
 | chargerIds                    | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected | (empty) | no | yes |
+| localAuthListTags           | text[]  | idTags pushed to the charger's local authorization list (SendLocalList), so a cached tag can start a charge while openHAB is offline. Only sent to a charger that supports LocalAuthListManagement | (empty) | no | yes |
 
 These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once for the configured values — a changed configuration is sent again on the charger's next boot, an unchanged one is not repeated on every reconnect.
 A request a charger leaves unanswered fails after `requestTimeoutSeconds`; the OCPP library itself would wait on it forever.
 Measurands a charger rejects are dropped one at a time until it accepts them, and the accepted set is remembered per configuration key.
 The binding also runs a heartbeat-derived liveness watchdog and self-heals when a charger reconnects under a new session.
+`localAuthListTags` provisions the charger's own authorization cache: on a charger that advertises `LocalAuthListManagement`, the configured idTags are sent as a Full `SendLocalList` (versioned by content, so it is not rewritten on every boot), letting those tags still start a charge when the charger cannot reach openHAB. A charger that does not advertise the profile is left untouched.
 
 ### `chargepoint`
 

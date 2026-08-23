@@ -50,6 +50,7 @@ public final class ChargerCapabilities {
     private static final String NUMBER_OF_CONNECTORS = "NumberOfConnectors";
     private static final String CONNECTOR_SWITCH_3_TO_1_PHASE = "ConnectorSwitch3to1PhaseSupported";
     private static final String SMART_CHARGING_PROFILE = "SmartCharging";
+    private static final String LOCAL_AUTH_LIST_PROFILE = "LocalAuthListManagement";
     // The two ChargingRateUnitType values a charger may allow (OCPP reports them as words, not A/W).
     private static final String RATE_UNIT_CURRENT = "Current";
     private static final String RATE_UNIT_POWER = "Power";
@@ -116,6 +117,10 @@ public final class ChargerCapabilities {
 
     public Optional<Boolean> supportsSmartCharging() {
         return supportsFeatureProfile(SMART_CHARGING_PROFILE);
+    }
+
+    public Optional<Boolean> supportsLocalAuthList() {
+        return supportsFeatureProfile(LOCAL_AUTH_LIST_PROFILE);
     }
 
     /** The allowed charge-limit units ({@code Current} / {@code Power}), or empty if not reported. */
