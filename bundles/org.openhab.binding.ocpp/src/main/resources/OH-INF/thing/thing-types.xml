@@ -111,13 +111,6 @@
 					closed.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="localAuthListTags" type="text" multiple="true">
-				<label>Local Authorization List</label>
-				<description>idTags pushed to the charger's local authorization list so a cached tag can still start a charge
-					while
-					openHAB is offline. Only sent to a charger that supports LocalAuthListManagement.</description>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -134,8 +127,8 @@
 			<channel id="connected" typeId="connected"/>
 			<channel id="last-seen" typeId="last-seen"/>
 			<channel id="reset" typeId="reset"/>
-			<channel id="last-id-tag" typeId="last-id-tag"/>
 			<channel id="local-auth-list" typeId="local-auth-list"/>
+			<channel id="learn-card" typeId="learn-card"/>
 		</channels>
 
 		<representation-property>chargePointId</representation-property>
@@ -439,20 +432,22 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
-	<channel-type id="last-id-tag">
-		<item-type>String</item-type>
-		<label>Last Presented Tag</label>
-		<description>idTag of the last RFID card the charger presented (Authorize/StartTransaction). Link a String item to
-			read a card id for adding it to the local authorization list.</description>
-		<state readOnly="true"/>
+	<channel-type id="learn-card">
+		<item-type>Switch</item-type>
+		<label>Learn Card</label>
+		<description>Switch ON to arm learning; the next RFID card presented to the charger is added to the local
+			authorization list. Auto-disarms once the card is read or 60 s pass.</description>
 	</channel-type>
 
 	<channel-type id="local-auth-list">
 		<item-type>String</item-type>
 		<label>Local Authorization List</label>
-		<description>The charger local authorization list as comma-separated idTags. Link a String item and set it (from a
-			rule or the UI) to push the list via SendLocalList, so a cached tag can start a charge while openHAB is offline.
-			Applied only to a charger that supports LocalAuthListManagement.</description>
+		<description>The charger local authorization list as comma-separated idTags, persisted across restarts. Set it
+			(from a
+			rule or the UI) to push the list via SendLocalList, so a cached tag can start a charge while openHAB is
+			offline; use
+			Learn Card to add a card without typing its id. Applied only to a charger that supports
+			LocalAuthListManagement.</description>
 	</channel-type>
 
 	<channel-type id="hardware-max-current">

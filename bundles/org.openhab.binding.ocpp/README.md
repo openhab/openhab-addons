@@ -46,13 +46,12 @@ The id is whatever path the charger appends to its backend URL — often its ser
 | tlsKeystorePassword         | text    | Password for the TLS keystore (store and key)                               | (empty) | no       | yes      |
 | whitelistTagIds                        | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected | (empty) | no     | yes      |
 | chargerIds                    | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected | (empty) | no | yes |
-| localAuthListTags           | text[]  | idTags pushed to the charger's local authorization list (SendLocalList), so a cached tag can start a charge while openHAB is offline. Only sent to a charger that supports LocalAuthListManagement | (empty) | no | yes |
 
 These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once for the configured values — a changed configuration is sent again on the charger's next boot, an unchanged one is not repeated on every reconnect.
 A request a charger leaves unanswered fails after `requestTimeoutSeconds`; the OCPP library itself would wait on it forever.
 Measurands a charger rejects are dropped one at a time until it accepts them, and the accepted set is remembered per configuration key.
 The binding also runs a heartbeat-derived liveness watchdog and self-heals when a charger reconnects under a new session.
-`localAuthListTags` provisions the charger's own authorization cache: on a charger that advertises `LocalAuthListManagement`, the configured idTags are sent as a Full `SendLocalList` (versioned by content, so it is not rewritten on every boot), letting those tags still start a charge when the charger cannot reach openHAB. A charger that does not advertise the profile is left untouched.
+For the charger's own offline authorization cache, see the `chargepoint` `local-auth-list` and `learn-card` channels below.
 
 ### `chargepoint`
 
@@ -94,12 +93,14 @@ The rest cover specific charger behaviors.
 | connected | Switch   | R          | Whether the charger has an open session    |
 | last-seen  | DateTime | R          | Timestamp of the last contact from the charger |
 | reset      | Switch   | W          | Momentary — soft reset the charge point    |
-| last-id-tag | String  | R          | idTag of the last RFID card the charger presented — read a card's id to add it to the local list |
-| local-auth-list | String | W       | The charger's local authorization list (comma-separated idTags) — set it to push cards for offline use |
+| local-auth-list | String | RW      | The charger's local authorization list (comma-separated idTags), persisted — set it to push cards for offline use |
+| learn-card | Switch  | W          | Momentary — switch ON, then present a card at the reader and it is added to the local authorization list |
 
 Vendor, model, firmware version and serial number are published as thing properties from the charger's BootNotification.
 
-The local authorization list lets a cached RFID card start a charge while openHAB or the network is offline, on a charger that supports `LocalAuthListManagement`. Keep the list in a persisted `String` item linked to `local-auth-list`: set it (comma-separated idTags) and the binding pushes it to the charger with `SendLocalList`. To add a card without knowing its id, read it off `last-id-tag` — tap the card and a rule can append what it shows to the `local-auth-list` item. The server-level `localAuthListTags` config is a server-wide default; a per-charger `local-auth-list` item, when set, takes precedence.
+The local authorization list lets a cached RFID card start a charge while openHAB or the network is offline, on a charger that supports `LocalAuthListManagement`.
+The list lives on the `local-auth-list` channel as a comma-separated set of idTags: set it (from a rule or the UI) and the binding pushes it to the charger with `SendLocalList`, versioned by content so it is not rewritten on every boot. It is persisted on the charge point thing, so it survives an openHAB restart.
+To add a card without knowing its id, use `learn-card`: switch it ON and present the card at the reader — the binding takes the idTag from the charger's Authorize and adds it to the list, then disarms. Learning also disarms on its own after 60 s if no card is presented. A charger that does not advertise the profile is left untouched.
 
 ### `connector`
 
