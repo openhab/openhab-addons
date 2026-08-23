@@ -257,7 +257,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             }
             return;
         }
-        // Connection allow-list: if configured, only listed charge points may connect.
         List<String> allowed = config.chargerIds;
         if (!allowed.isEmpty() && !allowed.contains(chargePointId)) {
             logger.warn("Rejecting charger '{}' — not in the permitted chargers list", chargePointId);
