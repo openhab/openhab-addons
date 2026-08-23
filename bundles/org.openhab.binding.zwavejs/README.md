@@ -74,7 +74,7 @@ The following devices and parameters support inversion:
 - **Switch, Contact, and Dimmer**: These channels have a single configuration parameter, `inverted`, which reverses the logical state.
 - **RollerShutter**: These channels have two configuration parameters:
   - `inverted`: Reverses the logical state, similar to the above.
-  - `isUpdownInverted`: Independently inverts the up and down directions.
+  - `isUpDownInverted`: Independently inverts the up and down directions.
 
 **note:** Without any inversion, the binding considers 100% fully open (up position) and 0% fully closed (down position).
 
