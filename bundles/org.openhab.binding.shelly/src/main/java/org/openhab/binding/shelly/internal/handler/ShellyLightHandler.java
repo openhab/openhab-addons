@@ -143,8 +143,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                                 command == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
                         col.power = getOnOff(light.ison);
                         col.setBrightness(light.brightness);
-                        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", col.power);
-                        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
+                        String brightnessGroup = buildWhiteGroupName(profile, lightId);
+                        updateChannel(brightnessGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
+                        updateChannel(brightnessGroup, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
                                 (double) (col.power == OnOffType.ON ? col.brightness : 0), DIGITS_NONE, Units.PERCENT));
                         update = false;
                         break;
@@ -177,7 +178,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         logger.debug("{}: Changing brightness from {} to {}", thingName, oldCol.brightness, value);
                         col.setBrightness(value);
                     }
-                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, OnOffType.from(value > 0));
+                    if (!profile.isProRgbwwPm || CHANNEL_GROUP_LIGHT_CONTROL.equals(groupName)) {
+                        updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, OnOffType.from(value > 0));
+                    }
                     break;
 
                 case CHANNEL_COLOR_TEMP:
