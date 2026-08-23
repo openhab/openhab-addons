@@ -86,6 +86,8 @@ class InboundCoreHandlerTest {
                 handler.handleAuthorizeRequest(session, new AuthorizeRequest("stranger")).getIdTagInfo().getStatus());
         assertEquals(AuthorizationStatus.Accepted,
                 handler.handleAuthorizeRequest(session, new AuthorizeRequest("known")).getIdTagInfo().getStatus());
+        verify(listener).onAuthorize(session, "stranger");
+        verify(listener).onAuthorize(session, "known");
     }
 
     @Test

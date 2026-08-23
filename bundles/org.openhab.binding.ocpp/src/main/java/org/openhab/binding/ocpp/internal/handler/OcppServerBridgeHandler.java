@@ -327,6 +327,14 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     }
 
     @Override
+    public void onAuthorize(UUID session, @Nullable String idTag) {
+        OcppChargePointHandler handler = resolve(session);
+        if (handler != null) {
+            handler.onAuthorized(idTag);
+        }
+    }
+
+    @Override
     public void onMeterValues(UUID session, MeterValuesRequest request) {
         OcppChargePointHandler handler = resolve(session);
         if (handler != null) {
