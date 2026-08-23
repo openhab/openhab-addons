@@ -20,20 +20,19 @@ jobs:
       matrix:
         java: [ '21' ]
         os: [ 'ubuntu-24.04' ]
+        include:
+          - primary: false
+          - java: '21'
+            primary: true
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     # typical duration is ~70min, set twice the amount as limit (default is 6h)
     timeout-minutes: 140
     steps:
       - name: Checkout
-        if: github.head_ref == ''
-        uses: actions/checkout@v7
-
-      - name: Checkout merge
-        if: github.head_ref != ''
         uses: actions/checkout@v7
         with:
-          ref: refs/pull/${{github.event.pull_request.number}}/merge
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
 
       - name: Set up Cache
         uses: actions/cache@v6
@@ -52,46 +51,73 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: Register Problem Matchers
-        if: ${{ matrix.java == '21' }}
-        id: problem_matchers
+        if: ${{ matrix.primary }}
         run: |
           echo "::add-matcher::.github/openhab-compile-problems.json"
 
-      # pinning to SHA to mitigate possible supply chain attacks
       - name: Get Changed Files
         if: github.head_ref != ''
-        id: files
-        uses: Ana06/get-changed-files@25f79e676e7ea1868813e21465014798211fad8c # v2.3.0
-        with:
-          format: 'csv'
+        shell: bash
+        run: |
+          CHANGED_FILES_FILE="$RUNNER_TEMP/changed-files.txt"
+          echo "CHANGED_FILES_FILE=$CHANGED_FILES_FILE" >> "$GITHUB_ENV"
+          git diff --name-only --no-renames HEAD^1 HEAD > "$CHANGED_FILES_FILE"
+          count=$(wc -l < "$CHANGED_FILES_FILE")
+          echo "Found $count changed files."
+          echo "::group::Changed files"
+          if [[ -s "$CHANGED_FILES_FILE" ]]; then
+            cat "$CHANGED_FILES_FILE"
+          else
+            echo "No changed files found."
+          fi
+          echo "::endgroup::"
 
       - name: Build
         id: build
         run: bash './.github/scripts/maven-build'
         env:
-          CHANGED_FILES: ${{ steps.files.outputs.all }}
           MAVEN_OPTS: >-
             -Xmx8g
             -Dmaven.wagon.http.retryHandler.count=5
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+      - name: Prepare Uploads
+        id: prepare-uploads
+        if: ${{ !cancelled() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure') }}
+        shell: bash
+        run: |
+          uploads="$RUNNER_TEMP/uploads"
+          mkdir -p "${uploads}"
+
+          if [[ -f build.log ]]; then
+            cp build.log "${uploads}/build-log-java-${{ matrix.java }}-${{ matrix.os }}.txt"
+            echo "build-log=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [[ -f target/summary_report.html ]]; then
+            cp target/summary_report.html "${uploads}/sat-summary-report.html"
+            echo "sat-report=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload Build Log
-        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        if: ${{ !cancelled() && steps.prepare-uploads.outputs.build-log == 'true' }}
         uses: actions/upload-artifact@v7
         with:
-          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
-          path: build.log
+          path: ${{ runner.temp }}/uploads/build-log-java-${{ matrix.java }}-${{ matrix.os }}.txt
+          archive: false
+          if-no-files-found: error
 
       - name: Upload SAT Summary Report
-        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        if: ${{ !cancelled() && matrix.primary && steps.prepare-uploads.outputs.sat-report == 'true' }}
         uses: actions/upload-artifact@v7
         with:
-          name: sat-summary-report
-          path: target/summary_report.html
+          path: ${{ runner.temp }}/uploads/sat-summary-report.html
+          archive: false
+          if-no-files-found: error
 
       - name: Report SAT Errors as Annotations
-        if: ${{ matrix.java == '21' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        if: ${{ !cancelled() && matrix.primary && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         uses: ghys/checkstyle-github-action@main
         with:
           title: CheckStyle Violations
@@ -102,13 +128,14 @@ jobs:
       # untracked files will be included as well!
       - name: Verify Changed Files
         id: verify-changed-files
+        if: ${{ !cancelled() }}
         run: |
           set -o pipefail
-          changed_files=$(echo -n "$(git diff --name-only HEAD && git ls-files --others --exclude-standard)"|tr '\n' ' ')
+          changed_files=$(echo -n "$(git diff --name-only HEAD && git ls-files --others --exclude-standard)" | tr '\n' ' ')
           echo "changed_files=$changed_files" >> $GITHUB_OUTPUT
 
       - name: Fail on Changed Files
-        if: steps.verify-changed-files.outputs.changed_files != ''
+        if: ${{ !cancelled() && steps.verify-changed-files.outputs.changed_files != '' }}
         env:
           CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
         run: |

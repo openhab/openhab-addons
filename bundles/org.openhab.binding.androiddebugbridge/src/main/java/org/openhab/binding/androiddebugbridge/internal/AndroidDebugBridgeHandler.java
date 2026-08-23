@@ -17,6 +17,7 @@ import static org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridge
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +67,10 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     private static final String SHUTDOWN_REBOOT = "REBOOT";
     private static final Gson GSON = new Gson();
     private static final Pattern RECORD_NAME_PATTERN = Pattern.compile("^[A-Za-z0-9_]*$");
+    // Consecutive failed connection-check cycles tolerated before marking the thing OFFLINE. Absorbs
+    // transient ADB stream rejections from devices whose adbd half-freezes in standby (they reject a
+    // shell stream instead of timing out), which would otherwise flap the thing ONLINE/OFFLINE each cycle.
+    private static final int OFFLINE_AFTER_FAILURES = 3;
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeHandler.class);
 
     private final AndroidDebugBridgeDynamicCommandDescriptionProvider commandDescriptionProvider;
@@ -76,6 +81,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     private AndroidDebugBridgeMediaStatePackageConfig @Nullable [] packageConfigs = null;
     private boolean deviceAwake = false;
     private int consecutiveTimeouts = 0;
+    private int connectionFailures = 0;
 
     public AndroidDebugBridgeHandler(Thing thing,
             AndroidDebugBridgeDynamicCommandDescriptionProvider commandDescriptionProvider) {
@@ -92,7 +98,19 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 // try reconnect
                 adbConnection.connect();
             }
-            handleCommandInternal(channelUID, command);
+            try {
+                handleCommandInternal(channelUID, command);
+            } catch (AndroidDebugBridgeDeviceStreamRejectedException e) {
+                // A failed stream open does not prove the device never got the request, so only
+                // repeat commands that stay correct when they run twice.
+                if (!isSafeToRepeat(channelUID.getId(), command)) {
+                    throw e;
+                }
+                logger.debug("{} - shell stream rejected, reconnecting and retrying command: {}", currentConfig.ip,
+                        e.getMessage());
+                adbConnection.reconnectForRetry();
+                handleCommandInternal(channelUID, command);
+            }
         } catch (InterruptedException ignored) {
         } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
             if (!(e.getCause() instanceof InterruptedException)) {
@@ -105,6 +123,30 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             logger.warn("{} - timeout error", currentConfig.ip);
             disconnectOnMaxADBTimeouts();
         }
+    }
+
+    /**
+     * Channels that treat {@link RefreshType} as a read. Elsewhere REFRESH is not special cased and
+     * ends up as a value, so {@code text} would type "REFRESH".
+     */
+    private static final Set<String> REFRESH_READS_STATE = Set.of(CURRENT_PACKAGE_CHANNEL, WAKE_LOCK_CHANNEL,
+            AWAKE_STATE_CHANNEL, SCREEN_STATE_CHANNEL, MEDIA_VOLUME_CHANNEL, MEDIA_CONTROL_CHANNEL,
+            START_INTENT_CHANNEL);
+
+    /**
+     * Whether running {@code command} twice cannot change what the device ends up doing: a read, or
+     * the wake-up key event, which does nothing to an already awake device.
+     */
+    private static boolean isSafeToRepeat(String channelId, Command command) {
+        if (command instanceof RefreshType) {
+            return REFRESH_READS_STATE.contains(channelId);
+        }
+        if (!KEY_EVENT_CHANNEL.equals(channelId)) {
+            return false;
+        }
+        // "input keyevent" takes either the symbolic name or the numeric code.
+        String keyEvent = command.toFullString().trim();
+        return KEY_EVENT_WAKEUP_NAME.equalsIgnoreCase(keyEvent) || KEY_EVENT_WAKEUP_CODE.equals(keyEvent);
     }
 
     private void handleCommandInternal(ChannelUID channelUID, Command command)
@@ -381,8 +423,8 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                     // refresh properties only on state changes
                     refreshProperties();
                 }
-                updateStatus(ThingStatus.ONLINE);
                 refreshStatus();
+                reportOnline();
             } else {
                 try {
                     adbConnection.connect();
@@ -390,20 +432,41 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                     logger.debug("Error connecting to device; [{}]: {}", e.getClass().getCanonicalName(),
                             e.getMessage());
                     adbConnection.disconnect();
-                    updateStatus(ThingStatus.OFFLINE);
+                    reportOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     return;
                 }
                 if (adbConnection.isConnected()) {
-                    updateStatus(ThingStatus.ONLINE);
                     refreshProperties();
                     refreshStatus();
+                    reportOnline();
                 }
             }
         } catch (InterruptedException ignored) {
         } catch (AndroidDebugBridgeDeviceException | AndroidDebugBridgeDeviceReadException | ExecutionException e) {
             logger.debug("Connection checker error: {}", e.getMessage());
             adbConnection.disconnect();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            reportOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    /** Mark the thing ONLINE and reset the transient-failure counter after a fully successful cycle. */
+    private void reportOnline() {
+        connectionFailures = 0;
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
+     * Mark the thing OFFLINE only once {@link #OFFLINE_AFTER_FAILURES} consecutive check cycles have
+     * failed. A single transient ADB stream rejection (common on devices whose adbd half-freezes in
+     * standby and rejects the shell stream rather than timing out) is ridden through with the previous
+     * status retained, instead of flapping the thing ONLINE/OFFLINE every cycle.
+     */
+    private void reportOffline(ThingStatusDetail statusDetail, @Nullable String description) {
+        if (++connectionFailures >= OFFLINE_AFTER_FAILURES) {
+            updateStatus(ThingStatus.OFFLINE, statusDetail, description);
+        } else {
+            logger.debug("{} - transient ADB failure {}/{}, keeping status {}", config.ip, connectionFailures,
+                    OFFLINE_AFTER_FAILURES, getThing().getStatus());
         }
     }
 
@@ -466,35 +529,35 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh media volume: {}", e.getMessage());
         } catch (TimeoutException e) {
-            logger.warn("Unable to refresh media volume: Timeout");
+            logger.debug("Unable to refresh media volume: Timeout");
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), MEDIA_CONTROL_CHANNEL), RefreshType.REFRESH);
         } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh play status: {}", e.getMessage());
         } catch (TimeoutException e) {
-            logger.warn("Unable to refresh play status: Timeout");
+            logger.debug("Unable to refresh play status: Timeout");
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), CURRENT_PACKAGE_CHANNEL), RefreshType.REFRESH);
         } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh current package: {}", e.getMessage());
         } catch (TimeoutException e) {
-            logger.warn("Unable to refresh current package: Timeout");
+            logger.debug("Unable to refresh current package: Timeout");
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), WAKE_LOCK_CHANNEL), RefreshType.REFRESH);
         } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh wake lock: {}", e.getMessage());
         } catch (TimeoutException e) {
-            logger.warn("Unable to refresh wake lock: Timeout");
+            logger.debug("Unable to refresh wake lock: Timeout");
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), SCREEN_STATE_CHANNEL), RefreshType.REFRESH);
         } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh screen state: {}", e.getMessage());
         } catch (TimeoutException e) {
-            logger.warn("Unable to refresh screen state: Timeout");
+            logger.debug("Unable to refresh screen state: Timeout");
         }
     }
 

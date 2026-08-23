@@ -19,30 +19,50 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_CLOSE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_OPEN;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtAnalogInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtDigitalInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtHumidity;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -54,6 +74,13 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 public class ShellyComponentsTest {
+
+    @BeforeAll
+    static void initChannelDefinitions() {
+        ShellyTranslationProvider messages = mock(ShellyTranslationProvider.class);
+        when(messages.get(anyString(), any(Object[].class))).thenAnswer(i -> i.getArgument(0));
+        new ShellyChannelDefinitions(messages);
+    }
 
     @Test
     void hasAddonAllNullReturnsFalse() {
@@ -152,6 +179,35 @@ public class ShellyComponentsTest {
         verify(handler).updateChannel(anyString(), eq(CHANNEL_OUTPUT), eq(OnOffType.ON));
     }
 
+    @Test
+    void updateRollerSkipsPositionWhileOpening() throws Exception {
+        // Regression (#14189, Copilot review on PR #21316): the shared Gen1/Gen2 poll path
+        // hardcoded pos=100 for "open" regardless of the actual target, flapping the position
+        // channel to 100 mid-move before the real value arrived once the roller stopped.
+        ShellyBaseHandler handler = relayUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_ALWD_ROLLER_TURN_OPEN, 40), 0);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+    }
+
+    @Test
+    void updateRollerSkipsPositionWhileClosing() throws Exception {
+        ShellyBaseHandler handler = relayUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_ALWD_ROLLER_TURN_CLOSE, 60), 0);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+    }
+
+    private static ShellyRollerStatus rollerStatus(String state, int currentPos) {
+        ShellyRollerStatus control = new ShellyRollerStatus();
+        control.isValid = true;
+        control.state = state;
+        control.currentPos = currentPos;
+        return control;
+    }
+
     private static ShellyBaseHandler relayUpdateHandler() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.numRelays = 1;
@@ -170,6 +226,25 @@ public class ShellyComponentsTest {
         relay.ison = ison;
         status.relays = new ArrayList<>(List.of(relay));
         return status;
+    }
+
+    @Test
+    void updateDimmersPushesTimerActiveChannel() throws Exception {
+        // Regression test: updateDimmers() created the timerActive channel via
+        // createDimmerChannels() but never actually pushed a value to it.
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYDIMMER);
+        profile.isGen2 = true; // skip the Gen1 JSON reparse, use the status object directly
+        profile.settings.dimmers = new ArrayList<>(List.of(new ShellySettingsDimmer()));
+
+        ShellyShortLightStatus dimmerStatus = new ShellyShortLightStatus();
+        dimmerStatus.hasTimer = true;
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.dimmers = new ArrayList<>(List.of(dimmerStatus));
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateDimmers(handler, status);
+
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_TIMER_ACTIVE), eq(OnOffType.ON));
     }
 
     @Test
@@ -493,6 +568,271 @@ public class ShellyComponentsTest {
                 any(State.class));
     }
 
+    @Test
+    void updateSensorsWs90RainPublishesOnOff() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.rain = true;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST, OnOffType.ON);
+    }
+
+    @Test
+    void updateSensorsWs90RainFalsePublishesOff() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.rain = false;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST, OnOffType.OFF);
+    }
+
+    @Test
+    void updateSensorsWs90WindSpeedPublishesQuantityType() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.windSpeed = 3.5;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDSP),
+                argThat(s -> closeTo(s, 3.5)));
+    }
+
+    @Test
+    void updateSensorsWs90UvIndexPublishesDecimalTypeRoundedToWholeNumber() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.uvIndex = 5.3;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_UV),
+                argThat(s -> s instanceof DecimalType && ((DecimalType) s).doubleValue() == 5.0));
+    }
+
+    @Test
+    void updateSensorsWs90LuxPublishesQuantityType() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.lux = new ShellySensorLux();
+        sdata.lux.isValid = true;
+        sdata.lux.value = 12345.0;
+        sdata.lux.illumination = "dark";
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_LUX),
+                argThat(s -> closeTo(s, 12345.0)));
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ILLUM, new StringType("dark"));
+    }
+
+    @Test
+    void updateSensorsWs90NullWindFieldsSkipsWindChannels() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        // all WS90 fields null — simulates atmospheric-only packet arriving before wind packet
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDSP), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTSP), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_RAINST), any());
+    }
+
+    @Test
+    void updateSensorsWs90PressurePublishesQuantityTypeInHectoPascal() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.pressure = 1013.25;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRESSURE),
+                argThat(s -> s instanceof QuantityType<?> qt && "hPa".equals(qt.getUnit().toString())
+                        && Math.abs(qt.doubleValue() - 1013.25) < 0.01));
+    }
+
+    @Test
+    void updateSensorsWs90RemainingFieldsPublishQuantityTypes() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.windDirection = 270.0;
+        sdata.gustSpeed = 7.2;
+        sdata.dewPoint = 12.5;
+        sdata.precipitation = 2.1;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR),
+                argThat(s -> closeTo(s, 270.0)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTSP),
+                argThat(s -> closeTo(s, 7.2)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_DEWPOINT),
+                argThat(s -> closeTo(s, 12.5)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRECIPITATION),
+                argThat(s -> closeTo(s, 2.1)));
+    }
+
+    @Test
+    void updateSensorsWs90GustDirectionIndependentFromWindDirection() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.windDirection = 270.0;
+        sdata.gustDirection = 290.0;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR),
+                argThat(s -> closeTo(s, 270.0)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR),
+                argThat(s -> closeTo(s, 290.0)));
+    }
+
+    @Test
+    void updateSensorsWs90NullGustDirectionSkipsChannel() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.windDirection = 270.0;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR), any());
+    }
+
+    @Test
+    void createSensorChannelsWs90WithoutDataCreatesNeitherLuxNorIllumination() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isWS90 = true;
+        // unlike temperature/humidity, lux/illumination are not created unconditionally for WS90:
+        // whether the lux value shows up depends on the device having sent a BTHome 0x05 packet yet
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile, sdata);
+
+        assertThat("lux channel created",
+                channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_LUX),
+                is(false));
+        assertThat("illumination channel created",
+                channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_ILLUM),
+                is(false));
+    }
+
+    @Test
+    void createSensorChannelsWs90WithoutDataStillCreatesAllWs90DataChannels() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isWS90 = true;
+        // no packet has arrived yet: the "ws90 ||" gate must still create every WS90 data
+        // channel up front, since creation can't wait for a specific packet to show up first
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile, sdata);
+
+        for (String channelId : new String[] { CHANNEL_SENSOR_TEMP, CHANNEL_SENSOR_HUM, CHANNEL_SENSOR_RAINST,
+                CHANNEL_SENSOR_WINDSP, CHANNEL_SENSOR_WINDDIR, CHANNEL_SENSOR_GUSTSP, CHANNEL_SENSOR_GUSTDIR,
+                CHANNEL_SENSOR_UV, CHANNEL_SENSOR_PRESSURE, CHANNEL_SENSOR_DEWPOINT, CHANNEL_SENSOR_PRECIPITATION }) {
+            assertThat(channelId + " channel created",
+                    channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelId),
+                    is(true));
+        }
+    }
+
+    @Test
+    void createSensorChannelsWs90WithLuxValueCreatesLuxButNotIllumination() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isWS90 = true;
+        // WS90 reports the numeric Lux value (BTHome 0x05) but never the dark/bright
+        // "illumination" classification the BLU H&T Display sends
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.lux = new ShellyStatusSensor.ShellySensorLux();
+        sdata.lux.value = 123.0;
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile, sdata);
+
+        assertThat("lux channel created",
+                channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_LUX),
+                is(true));
+        assertThat("illumination channel created",
+                channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_ILLUM),
+                is(false));
+    }
+
+    private static boolean closeTo(State state, double expected) {
+        return state instanceof QuantityType<?> qt && Math.abs(qt.doubleValue() - expected) < 0.01;
+    }
+
+    private static ShellyThingInterface ws90HandlerWith(ShellyStatusSensor sdata) throws ShellyApiException {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isSensor = true;
+        profile.hasBattery = true;
+        profile.isWS90 = true;
+
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        when(api.getSensorStatus()).thenReturn(sdata);
+
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.getApi()).thenReturn(api);
+        when(handler.areChannelsCreated()).thenReturn(true);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        return handler;
+    }
+
+    @Test
+    void updateSensorsMutePresentPostsAlarmMutedForFlood() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.mute = Boolean.TRUE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSFLOOD, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).postEvent(eq(ALARM_TYPE_MUTED), eq(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), any());
+    }
+
+    @Test
+    void updateSensorsMuteAbsentPostsAlarmNoneForFlood() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.mute = Boolean.FALSE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSFLOOD, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).postEvent(eq(ALARM_TYPE_NONE), eq(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), any());
+    }
+
+    @Test
+    void updateSensorsMutePresentUpdatesSensorsMuteForSmoke() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.mute = Boolean.TRUE;
+        sdata.smoke = Boolean.FALSE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSSMOKE, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_MUTE), eq(OnOffType.ON));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_SENSOR_MUTE), any());
+        verify(handler, never()).postEvent(any(), anyBoolean());
+    }
+
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.isSensor = false;
@@ -511,6 +851,22 @@ public class ShellyComponentsTest {
         when(handler.getProfile()).thenReturn(profile);
         when(handler.areChannelsCreated()).thenReturn(true);
         when(handler.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
+        return handler;
+    }
+
+    private static ShellyThingInterface sensorHandlerFor(ThingTypeUID thingTypeUID, ShellyStatusSensor sdata)
+            throws ShellyApiException {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        when(api.getSensorStatus()).thenReturn(sdata);
+
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.areChannelsCreated()).thenReturn(true);
+        when(handler.getApi()).thenReturn(api);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        when(handler.updateWakeupReason(any())).thenReturn(false);
         return handler;
     }
 
@@ -846,13 +1202,14 @@ public class ShellyComponentsTest {
 
     @Test
     void gen2RelayPmLastMinuteChannelsBothWrittenWithCorrectUnits() {
-        // energyByMinute[0]=3.0 Wh → lastPower1 (LASTMIN1)=180.0 W (Wh×60), energyAvg1Min=3.0 Wh
+        // energyByMinute[0]=3.0 Wh → lastPower1 (LASTMIN1)=180.0 W (Wh×60), energyHistMin1=3.0 Wh
         ShellyDeviceProfile profile = emeterProfile(false, 1);
         ShellyThingInterface handler = mockHandler(profile);
         ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0)));
 
         assertEquals(180.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
-        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1).doubleValue(),
+                0.001);
     }
 
     @Test
@@ -862,7 +1219,7 @@ public class ShellyComponentsTest {
         ShellyComponents.updateMeters(handler, statusWithEMeters(emeter(50.0)));
 
         verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_LASTMIN1), any(State.class));
-        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVG1MIN), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN1), any(State.class));
     }
 
     @Test
@@ -875,7 +1232,7 @@ public class ShellyComponentsTest {
                 statusWithEMeters(emeterWithByMinute(428.5, 7.148092, 7.160587, 6.429836)));
 
         assertEquals(428.9, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
-        assertEquals(7.148, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(),
+        assertEquals(7.148, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1).doubleValue(),
                 0.001);
     }
 
@@ -892,12 +1249,64 @@ public class ShellyComponentsTest {
         ShellyComponents.updateMeters(handler, statusWithMeters(m0));
 
         assertEquals(60.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
-        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen1SimpleMeterEnergyHistMinConvertedFromWattMinutes() {
+        // counters[0]=60 W-min=1.0 Wh, counters[1]=120 W-min=2.0 Wh, counters[2]=180 W-min=3.0 Wh
+        // each is an independent per-minute sum (not an average); energyAvgLast3Min = mean(1.0, 2.0, 3.0) = 2.0 Wh
+        ShellyDeviceProfile profile = simpleRelayProfile(1);
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 60.0;
+        m0.counters = new Double[] { 60.0, 120.0, 180.0 };
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithMeters(m0));
+
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN2).doubleValue(),
+                0.001);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN3).doubleValue(),
+                0.001);
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVGLAST3MIN).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen2EMetersEnergyHistMinChannelsWrittenWhenPresent() {
+        // byMinute Wh = [3.0, 4.5, 6.0], each an independent per-minute sum (not an average);
+        // energyAvgLast3Min = mean(3.0, 4.5, 6.0) = 4.5
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0, 4.5, 6.0)));
+
+        assertEquals(4.5, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN2).doubleValue(),
+                0.001);
+        assertEquals(6.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN3).doubleValue(),
+                0.001);
+        assertEquals(4.5, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVGLAST3MIN).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen2EMetersEnergyHistMinSkippedWhenAbsent() {
+        // Non-PM Gen2 relays / short by_minute arrays omit slots 1/2 — must not be written, while
+        // slot 0 (present) still updates energyHistMin1 as usual
+        ShellyDeviceProfile profile = emeterProfile(false, 1);
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithEMeters(emeterWithByMinute(50.0, 3.0)));
+
+        verify(handler, atLeastOnce()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN1), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN2), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN3), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVGLAST3MIN), any(State.class));
     }
 
     @Test
     void gen1AggregatedMeterSumsMinuteCountersAcrossMeters() {
-        // Roller with 2 motor meters: counters[0] is summed before conversion
+        // Roller with 2 motor meters: each counters[] slot is summed across meters before conversion
         ShellyDeviceProfile profile = gen1RollerProfile();
         ShellySettingsMeter m0 = new ShellySettingsMeter();
         m0.isValid = true;
@@ -912,7 +1321,32 @@ public class ShellyComponentsTest {
         ShellyComponents.updateMeters(handler, statusWithMeters(m0, m1));
 
         assertEquals(60.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1).doubleValue(), 0.1);
-        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVG1MIN).doubleValue(), 0.001);
+        assertEquals(1.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1).doubleValue(),
+                0.001);
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN2).doubleValue(),
+                0.001);
+        assertEquals(3.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN3).doubleValue(),
+                0.001);
+        assertEquals(2.0, lastQuantity(handler, CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVGLAST3MIN).doubleValue(),
+                0.001);
+    }
+
+    @Test
+    void gen1AggregatedMeterMissingLaterSlotsSkipsTheirChannels() {
+        // Only counters[0] present: energyHistMin2/3 and the average must not be written
+        ShellyDeviceProfile profile = gen1RollerProfile();
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 100.0;
+        m0.counters = new Double[] { 30.0 };
+
+        ShellyThingInterface handler = mockHandler(profile);
+        ShellyComponents.updateMeters(handler, statusWithMeters(m0));
+
+        verify(handler, atLeastOnce()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN1), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN2), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYHISTMIN3), any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_METER_ENERGYAVGLAST3MIN), any(State.class));
     }
 
     @Test

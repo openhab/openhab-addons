@@ -49,7 +49,7 @@ public class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler {
         super(bridge);
         this.smartthingsHandlerFactory = smartthingsHandlerFactory;
         this.bundleContext = bundleContext;
-        config = getThing().getConfiguration().as(SmartthingsBridgeConfig.class);
+        config = getConfigAs(SmartthingsBridgeConfig.class);
     }
 
     @Override

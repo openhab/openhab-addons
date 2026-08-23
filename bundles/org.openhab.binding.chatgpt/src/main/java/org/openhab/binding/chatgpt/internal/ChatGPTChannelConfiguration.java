@@ -22,16 +22,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ChatGPTChannelConfiguration {
-
-    public String model = "gpt-4o-mini";
-
-    public Double temperature = 0.5;
-
-    public Double topP = 1.0;
-
-    public String systemMessage = "";
-
-    public int maxTokens = 500;
-
+    public @Nullable String model;
+    public @Nullable Double temperature;
+    public @Nullable Double topP;
+    public @Nullable Integer maxTokens;
+    public @Nullable String systemMessage;
     public @Nullable Integer requestTimeout;
 }

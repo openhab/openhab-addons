@@ -18,6 +18,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link Shelly2ApiClient#byMinuteToWh} — conversion of Gen2/3/4 by-minute mWh samples to
+ * Wh, including null and empty-array input handling.
+ *
+ * @author Markus Michels - Initial contribution
+ */
 @NonNullByDefault
 @SuppressWarnings("null")
 public class Shelly2ByMinuteConversionTest {

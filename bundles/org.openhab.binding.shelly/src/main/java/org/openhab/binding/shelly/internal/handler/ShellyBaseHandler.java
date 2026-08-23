@@ -61,7 +61,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDevic
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -127,6 +127,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private volatile boolean stopping = false;
     private int vibrationFilter = 0;
     private String lastWakeupReason = "";
+    private volatile boolean updateMarkerSet;
 
     // Scheduler
     private volatile double watchdog = now();
@@ -367,6 +368,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
         tmpPrf.initFromThingType(thing.getThingTypeUID());
+        if (tmpPrf.isRGBW2 && !tmpPrf.isGen2) {
+            tmpPrf.hasLegacyLightChannels = thing.getChannels().stream()
+                    .anyMatch(c -> c.getUID().getId().startsWith(CHANNEL_GROUP_LIGHT_CHANNEL));
+        }
         String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, mode);
@@ -422,12 +427,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // All initialization done, so keep the profile and set Thing to ONLINE
         profile = tmpPrf;
-        ShellyChannelMigration.migrateChannels(this);
         showThingConfig(profile);
 
         // Push the full channel state now rather than waiting for the next background poll,
         // so a disable/enable cycle doesn't show stale/default channel values in the meantime.
         updateAllChannels(profile.status);
+
+        // Must run after updateAllChannels(): dynamic per-device channels (e.g. RGBW2's
+        // channel1..4) don't exist yet before that call, so migration rules matching them
+        // would find nothing and the schema version would get stamped as up-to-date anyway.
+        ShellyChannelMigration.migrateChannels(this);
         postEvent(ALARM_TYPE_NONE, false);
 
         logger.debug("{}: Thing successfully initialized.", thingName);
@@ -443,6 +452,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // Capture the channel value before any command handling runs an optimistic update, so a
+        // failed API call can restore the true previous state rather than the already-overwritten one.
+        String group = getString(channelUID.getGroupId());
+        String channel = getString(channelUID.getIdWithoutGroup());
+        State oldValue = getChannelValue(group, channel);
         try {
             if (command instanceof RefreshType) {
                 String channelId = channelUID.getId();
@@ -519,7 +533,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_MODE:
                     logger.debug("{}: Set mode to {}", thingName, command);
-                    api.setValveMode(0, CHANNEL_CONTROL_MODE.equalsIgnoreCase(command.toString()));
+                    api.setValveMode(0, SHELLY_TRV_MODE_AUTO.equalsIgnoreCase(command.toString()));
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
@@ -537,11 +551,37 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Set boost timer to {}", thingName, command);
                     api.setValveBoostTime(0, getNumber(command).intValue());
                     break;
+                case CHANNEL_CONTROL_ALARM_MODE:
+                    if (profile.isFlood) {
+                        logger.debug("{}: Set Flood alarm mode to {}", thingName, command);
+                        api.setFloodConfig(0, command.toString(), profile.reportHoldoff);
+                        update = true;
+                    }
+                    break;
+                case CHANNEL_CONTROL_REPORT_HOLDOFF:
+                    if (profile.isFlood) {
+                        logger.debug("{}: Set Flood report holdoff to {}", thingName, command);
+                        api.setFloodConfig(0, profile.floodAlarmMode, getNumber(command).intValue());
+                        update = true;
+                    }
+                    break;
                 case CHANNEL_SENSOR_MUTE:
                     if (profile.isSmoke && ((OnOffType) command) == OnOffType.ON) {
                         logger.debug("{}: Mute Smoke Alarm", thingName);
                         api.muteSmokeAlarm(0);
                         updateChannel(getString(channelUID.getGroupId()), CHANNEL_SENSOR_MUTE, OnOffType.OFF);
+                    }
+                    break;
+                case CHANNEL_EMETER_RESETTOTAL:
+                    if (command == OnOffType.ON) {
+                        int idx = 0;
+                        if (group.startsWith(CHANNEL_GROUP_METER) && group.length() > CHANNEL_GROUP_METER.length()) {
+                            idx = Integer.parseInt(substringAfter(group, CHANNEL_GROUP_METER)) - 1;
+                        }
+                        logger.debug("{}: Reset meter totals for group {}", thingName, group);
+                        api.resetMeterTotal(idx);
+                        // force: republish OFF even if the cache already holds OFF from a previous reset
+                        updateChannel(mkChannelId(group, CHANNEL_EMETER_RESETTOTAL), OnOffType.OFF, true);
                     }
                     break;
                 default:
@@ -561,14 +601,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             ShellyApiResult res = e.getApiResult();
             if (res.isNotCalibrtated()) {
                 logger.warn("{}: {}", thingName, messages.get("roller.calibrating"));
+            } else if (e.isTimeout() && profile.isSensor) {
+                logger.debug(
+                        "{}: Command {} for channel {} timed out, device is likely a sleeping battery-powered sensor: {}",
+                        thingName, command, channelUID, e.toString());
             } else {
                 logger.warn("{}: {} - {}", thingName, messages.get("command.failed", command, channelUID),
                         e.toString());
             }
 
-            String group = getString(channelUID.getGroupId());
-            String channel = getString(channelUID.getIdWithoutGroup());
-            State oldValue = getChannelValue(group, channel);
             if (oldValue != UnDefType.NULL) {
                 logger.info("{}: Restore channel value to {}", thingName, oldValue);
                 updateChannel(group, channel, oldValue);
@@ -613,6 +654,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 // but not while firmware update is in progress
                 if (getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
                     setThingOnline();
+
+                    // set or clear the update available marker
+                    boolean updateAvailable = getBool(status.update.hasUpdate);
+                    if (updateAvailable && !updateMarkerSet) {
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                messages.get("manager.action.checkupd.new", getString(status.update.newVersion)));
+                        updateMarkerSet = true; // specifically set update marker flag only in this case
+                    } else if (!updateAvailable && updateMarkerSet) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 }
 
                 // map status to channels
@@ -633,6 +684,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 cache.enable();
             }
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
+        updateMarkerSet = false;
+        super.updateStatus(status, statusDetail, description);
     }
 
     /**
@@ -884,9 +942,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private boolean checkRestarted(ShellySettingsStatus status) {
         if (profile.isInitialized() && profile.alwaysOn /* exclude battery powered devices */
-                && (status.uptime != null && status.uptime < stats.lastUptime.get()
-                        || (profile.status.update != null && !getString(profile.status.update.oldVersion).isEmpty()
-                                && !status.update.oldVersion.equals(profile.status.update.oldVersion)))) {
+                && (status.uptime != null && status.uptime < stats.lastUptime.get() || (profile.status.update != null
+                        && !getString(profile.status.update.oldVersion).isEmpty()
+                        && !getString(status.update.oldVersion).equals(getString(profile.status.update.oldVersion))))) {
             logger.debug("{}: Device has been restarted, uptime={}/{}, firmware={}/{}", thingName, stats.lastUptime,
                     getLong(status.uptime), profile.status.update.oldVersion, status.update.oldVersion);
             updateProperties(profile, status);
@@ -1152,7 +1210,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // no fw version available (e.g. BLU device)
             return;
         }
-        ShellyVersionDTO version = new ShellyVersionDTO();
+        ShellyVersionComparator version = new ShellyVersionComparator();
         if (version.checkBeta(getString(prf.fwVersion))) {
             logger.info("{}: {}", prf.device.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
         } else {
@@ -1167,7 +1225,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
             autoCoIoT = true;
         }
-        if (getBool(status.update.hasUpdate) && !version.checkBeta(getString(prf.fwVersion))) {
+        if (getBool(status.update.hasUpdate) && !getString(status.update.newVersion).isEmpty()
+                && !version.checkBeta(getString(prf.fwVersion))) {
             logger.info("{}: {}", thingName,
                     messages.get("versioncheck.update", status.update.oldVersion, status.update.newVersion));
         }
@@ -1353,7 +1412,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public void publishState(String channelId, State value) {
-        String id = channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
+        String id = stripDeprecatedSuffix(channelId);
         if (!stopping && isLinked(id)) {
             updateState(id, value);
             logger.debug("{}: Channel {} updated with {} (type {}).", thingName, channelId, value, value.getClass());
@@ -1370,18 +1429,26 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (stopping) {
             return false;
         }
+        boolean updated = cache.updateChannel(channelId, value, force);
+
         String replacementChannelId = ShellyChannelDefinitions.getReplacementChannelId(channelId);
         if (replacementChannelId != null) {
             warnDeprecatedChannel(channelId, replacementChannelId);
-            boolean updated = cache.updateChannel(channelId, value, force);
             updated |= cache.updateChannel(replacementChannelId, value, force);
-            return updated;
         }
-        return cache.updateChannel(channelId, value, force);
+
+        String replacementGroupId = ShellyChannelDefinitions.getReplacementGroupId(channelId);
+        if (replacementGroupId != null) {
+            warnDeprecatedChannel(channelId, replacementGroupId);
+            updated |= cache.updateChannel(replacementGroupId, value, force);
+        }
+
+        return updated;
     }
 
     private synchronized void warnDeprecatedChannel(String channelId, String replacementChannelId) {
-        if (!isLinked(channelId)) {
+        String id = stripDeprecatedSuffix(channelId);
+        if (!isLinked(id)) {
             return;
         }
         long now = System.currentTimeMillis();

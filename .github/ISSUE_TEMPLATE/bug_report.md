@@ -42,6 +42,6 @@ type: Bug
 
 ## Your Environment
 <!-- Include as many relevant details about the environment you experienced the bug in -->
-* Version used: (e.g., openHAB and add-on versions)
-* Environment name and version (e.g. Chrome 76, Java 8, Node.js 12.9, ...):
-* Operating System and version (desktop or mobile, Windows 10, Raspbian Buster, ...):
+- Version used: (e.g., openHAB and add-on versions)
+- Environment name and version (e.g. Chrome 151, Java 21, Node.js 24.19.0, ...):
+- Operating System and version (desktop or mobile, Windows 11, Raspberry Pi OS Trixie, ...):

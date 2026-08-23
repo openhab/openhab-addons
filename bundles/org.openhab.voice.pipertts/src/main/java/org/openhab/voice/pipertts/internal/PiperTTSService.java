@@ -87,7 +87,7 @@ import io.github.jvoiceproject.piperjni.PiperVoice;
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PiperTTSService extends AbstractCachedTTSService {
     // piper-jni version from pom.xml
-    private static final String PIPER_VERSION = "1.4.1";
+    private static final String PIPER_VERSION = "1.4.2";
     private static final Path PIPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "piper");
     private static final Path LIB_FOLDER = PIPER_FOLDER.resolve("lib-" + PIPER_VERSION);
     private static final Path JAR_FILE = PIPER_FOLDER.resolve("piper-jni-" + PIPER_VERSION + ".jar");
@@ -101,28 +101,26 @@ public class PiperTTSService extends AbstractCachedTTSService {
     private boolean ready = false;
     private @Nullable VoiceModel preloadedModel;
     private @Nullable PiperJNI piper;
-    private @Nullable Future<?> activateTask;
-    static {
-        System.setProperty("io.github.jvoiceproject.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
-    }
+    private final Future<?> activateTask;
 
     @Activate
-    public PiperTTSService(final @Reference TTSCache ttsCache) {
+    public PiperTTSService(final @Reference TTSCache ttsCache, Map<String, Object> config) {
         super(ttsCache);
-    }
 
-    @Activate
-    protected void activate(Map<String, Object> config) {
         tryCreatePiperDirectory();
         activateTask = executor.submit(() -> {
             try {
+                logger.debug("Setting Piper native library path to: {}", LIB_FOLDER);
+                System.setProperty("io.github.jvoiceproject.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
+                logger.debug("Setting up Piper native dependencies...");
                 setupNativeDependencies();
+                logger.debug("Initializing Piper...");
                 PiperJNI piper = this.piper = new PiperJNI();
                 piper.initialize(true);
                 logger.debug("Using Piper version {}", piper.getPiperVersion());
                 ready = true;
-            } catch (IOException e) {
-                logger.warn("Piper registration failed, the add-on will not work: {}", e.getMessage());
+            } catch (Throwable t) {
+                logger.error("Piper registration failed, the add-on will not work: {}", t.getMessage(), t);
             }
         });
         configChange(config);
@@ -131,7 +129,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
     @Deactivate
     private void deactivate() {
         Future<?> activateTask = this.activateTask;
-        if (activateTask != null && !activateTask.isDone()) {
+        if (!activateTask.isDone()) {
             activateTask.cancel(true);
         }
     }

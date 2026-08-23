@@ -50,6 +50,7 @@ import org.jivesoftware.smackx.ping.PingManager;
 import org.jxmpp.JxmppContext;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.openhab.binding.ecovacs.internal.api.EcovacsApi.Credentials;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
@@ -58,7 +59,6 @@ import org.openhab.binding.ecovacs.internal.api.commands.GetFirmwareVersionComma
 import org.openhab.binding.ecovacs.internal.api.commands.IotDeviceCommand;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Device;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
-import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
@@ -169,24 +169,24 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     public void connect(final EventListener listener, final ScheduledExecutorService scheduler)
             throws EcovacsApiException {
         EcovacsApiConfiguration config = api.getConfig();
-        PortalLoginResponse loginData = api.getLoginData();
-        if (loginData == null) {
+        Credentials creds = api.getCredentials();
+        if (creds == null) {
             throw new EcovacsApiException("Can not connect when not logged in");
         }
 
         logger.trace("{}: Connecting to XMPP", getSerialNumber());
 
-        String password = String.format("0/%s/%s", loginData.getResource(), loginData.getToken());
+        String password = String.format("0/%s/%s", creds.resource(), creds.token());
         String host = String.format("msg-%s.%s", config.getContinent(), config.getRealm());
 
         try {
-            Jid ownAddress = JidCreate.from(loginData.getUserId(), config.getRealm(), loginData.getResource());
+            Jid ownAddress = JidCreate.from(creds.userId(), config.getRealm(), creds.resource());
             Jid targetAddress = JidCreate.from(device.getDid(), device.getDeviceClass() + ".ecorobot.net", "atom");
 
             XMPPTCPConnectionConfiguration connConfig = XMPPTCPConnectionConfiguration.builder().setHost(host)
-                    .setPort(5223).setUsernameAndPassword(loginData.getUserId(), password)
-                    .setResource(loginData.getResource()).setXmppDomain(config.getRealm())
-                    .setCustomX509TrustManager(TrustAllTrustManager.getInstance()).setSendPresence(false).build();
+                    .setPort(5223).setUsernameAndPassword(creds.userId(), password).setResource(creds.resource())
+                    .setXmppDomain(config.getRealm()).setCustomX509TrustManager(TrustAllTrustManager.getInstance())
+                    .setSendPresence(false).build();
 
             XMPPTCPConnection conn = new XMPPTCPConnection(connConfig);
             conn.addConnectionListener(new ConnectionListener() {

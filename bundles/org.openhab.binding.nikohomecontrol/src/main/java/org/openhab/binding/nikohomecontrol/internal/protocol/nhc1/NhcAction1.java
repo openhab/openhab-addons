@@ -70,7 +70,7 @@ public class NhcAction1 extends NhcAction {
      *            rollershutter action: between 0 and 100
      */
     @Override
-    public void setState(int newState) {
+    public void setState(long newState) {
         if (getType() == ActionType.ROLLERSHUTTER) {
             if (filterEvent) {
                 filterEvent = false;
@@ -153,7 +153,7 @@ public class NhcAction1 extends NhcAction {
                 logger.trace("handleRollerShutterCommand: rollershutter {} task running", id);
             }
 
-            int currentValue = state;
+            long currentValue = state;
 
             if (command.equals(NHCDOWN)) {
                 executeRollershutterDown();
@@ -238,7 +238,7 @@ public class NhcAction1 extends NhcAction {
      * @param newValue new percent position
      *
      */
-    private void scheduleRollershutterStop(int currentValue, int newValue) {
+    private void scheduleRollershutterStop(long currentValue, long newValue) {
         // filter first event for a rollershutter coming from Niko Home Control if moving to an intermediate
         // position to avoid updating state to full open or full close
         filterEvent = true;
@@ -293,7 +293,7 @@ public class NhcAction1 extends NhcAction {
         }
     }
 
-    private long rollershutterMoveTime(int currentValue, int newValue) {
+    private long rollershutterMoveTime(long currentValue, long newValue) {
         int totalTime = (newValue > currentValue) ? getOpenTime() : getCloseTime();
         long duration = Math.abs(newValue - currentValue) * totalTime * 10;
         if (logger.isTraceEnabled()) {

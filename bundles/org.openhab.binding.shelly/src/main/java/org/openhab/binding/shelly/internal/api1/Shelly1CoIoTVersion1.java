@@ -138,12 +138,18 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         // incompatible with the Wh channel — so both channels are written explicitly.
                         updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN1,
                                 toQuantityType(s.value, DIGITS_WATT, Units.WATT));
-                        updateChannel(updates, rGroup, CHANNEL_METER_ENERGYAVG1MIN,
+                        updateChannel(updates, rGroup, CHANNEL_METER_ENERGYHISTMIN1,
                                 toQuantityType(s.value / 60.0, DIGITS_KWH, Units.WATT_HOUR));
                         break;
                     case "energy counter 1 [w-min]":
+                        updateChannel(updates, rGroup, CHANNEL_METER_ENERGYHISTMIN2,
+                                toQuantityType(s.value / 60.0, DIGITS_KWH, Units.WATT_HOUR));
+                        break;
                     case "energy counter 2 [w-min]":
-                        // we don't use them
+                        // energyAvgLast3Min is not computed here: each counter arrives as an independent
+                        // CoIoT event, so the poll path remains the only source for that average
+                        updateChannel(updates, rGroup, CHANNEL_METER_ENERGYHISTMIN3,
+                                toQuantityType(s.value / 60.0, DIGITS_KWH, Units.WATT_HOUR));
                         break;
                     case "energy counter total [w-h]": // 3EM reports W/h
                     case "energy counter total [w-min]":

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.unifi.internal.protect.api.priv.dto.system;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.base.UniFiProtectObject;
@@ -49,6 +51,14 @@ public class Bootstrap extends UniFiProtectObject {
     public Map<String, AiPort> aiports;
     public Map<String, Event> events;
     public String lastUpdateId;
+
+    // Raw ids per collection as listed in the source JSON; no entry when the collection was
+    // absent. Unlike the typed maps, unaffected by per-item deserialization failures.
+    public Map<String, Set<String>> sourceIds = new HashMap<>();
+
+    public @Nullable Set<String> sourceIdsFor(String collection) {
+        return sourceIds.get(collection);
+    }
 
     public @Nullable User getAuthUser() {
         return users != null ? users.get(authUserId) : null;

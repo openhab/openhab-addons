@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
-import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -22,23 +20,27 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.action.FroniusSymoInverterActions;
 import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
-import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
-import org.openhab.binding.fronius.internal.api.dto.inverter.*;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatus;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterInfoBody;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterInfoBodyData;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterInfoResponse;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBody;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBodyData;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBody;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBodyData;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeInverter;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeResponse;
 import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeSite;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -48,10 +50,6 @@ import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link FroniusSymoInverterHandler} is responsible for updating the data, which are
@@ -67,7 +65,6 @@ import com.google.gson.JsonSyntaxException;
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterHandler.class);
-    private final HttpClient httpClient;
 
     private @Nullable InverterRealtimeResponse inverterRealtimeResponse;
     private @Nullable PowerFlowRealtimeResponse powerFlowResponse;
@@ -75,14 +72,63 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     private @Nullable InverterInfo inverterInfo;
     private @Nullable FroniusBatteryControl batteryControl;
 
-    public FroniusSymoInverterHandler(Thing thing, HttpClient httpClient) {
+    public FroniusSymoInverterHandler(Thing thing) {
         super(thing);
-        this.httpClient = httpClient;
     }
 
     @Override
     protected String getDescription() {
         return "Fronius Symo Inverter";
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(FroniusSymoInverterActions.class);
+    }
+
+    /**
+     * Provides the battery control for the deprecated battery control actions on this thing. The actions have moved to
+     * the battery thing, but are kept available here so that existing scripts keep working.
+     * Unlike the battery thing, this thing does not have battery settings channels, therefore the battery control is
+     * only created when an action is actually used.
+     *
+     * @return the battery control, or null if it is not available
+     * @deprecated retrieve the actions through the battery thing instead
+     */
+    @Deprecated
+    public @Nullable FroniusBatteryControl getBatteryControl() {
+        FroniusBatteryControl control = batteryControl;
+        if (control != null) {
+            return control;
+        }
+        FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null || bridgeHandler == null) {
+            return null;
+        }
+        FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
+        String username = bridgeConfig.username;
+        String password = bridgeConfig.password;
+        if (username == null || password == null) {
+            logger.warn(
+                    "Credentials are not configured in the bridge. Battery control is not available for Thing '{}'.",
+                    thing.getUID());
+            return null;
+        }
+        InverterInfo localInverterInfo = inverterInfo;
+        String firmwareVersion = localInverterInfo == null ? null : localInverterInfo.firmware();
+        if (firmwareVersion == null) {
+            logger.warn(
+                    "The firmware version of the Fronius inverter could not be determined. Battery control is not available for Thing '{}'.",
+                    thing.getUID());
+            return null;
+        }
+        int hyphenIndex = firmwareVersion.indexOf('-');
+        String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
+        SemverVersion version = SemverVersion.fromString(versionString);
+        batteryControl = control = new FroniusBatteryControl(bridgeHandler.getConfigApiClient(), version,
+                bridgeConfig.scheme, bridgeConfig.hostname, username, password);
+        return control;
     }
 
     @Override
@@ -94,32 +140,6 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         }
         updateData(bridgeConfiguration, config);
         updateChannels();
-    }
-
-    private void initializeBatteryControl(FroniusHttpUtil httpUtil, String scheme, String hostname,
-            @Nullable String username, @Nullable String password) {
-        if (username == null || password == null) {
-            logger.info(
-                    "Credentials are not configured in the bridge. Battery control is not available for Thing '{}'.",
-                    thing.getUID());
-            return;
-        }
-
-        InverterInfo localInverterInfo = inverterInfo;
-        if (localInverterInfo != null) {
-            String firmwareVersion = localInverterInfo.firmware();
-            if (firmwareVersion != null) {
-                int hyphenIndex = firmwareVersion.indexOf('-');
-                String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
-                SemverVersion version = SemverVersion.fromString(versionString);
-                batteryControl = new FroniusBatteryControl(httpUtil, httpClient, version, scheme, hostname, username,
-                        password);
-                return;
-            }
-        }
-        logger.warn(
-                "The firmware version of the Fronius inverter could not be determined. Battery control is not available for Thing '{}'.",
-                thing.getUID());
     }
 
     private void updateProperties() {
@@ -140,36 +160,24 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     @Override
     public void initialize() {
         FroniusBaseDeviceConfiguration config = this.config = getConfigAs(FroniusBaseDeviceConfiguration.class);
-        FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
         Bridge bridge = getBridge();
-        if (bridge == null || bridgeHandler == null) {
-            logger.warn("bridge ({}) or bridgeHandler ({}) is null in initialize(), this is a bug, please report it.",
-                    bridge, bridgeHandler);
+        if (bridge == null) {
+            logger.warn("bridge is null in initialize(), this is a bug, please report it.");
             return;
         }
         FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
         inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
         updateProperties();
-        initializeBatteryControl(bridgeHandler.getHttpUtil(), bridgeConfig.scheme, bridgeConfig.hostname,
-                bridgeConfig.username, bridgeConfig.password);
         super.initialize();
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(FroniusSymoInverterActions.class);
     }
 
     @Override
     public void handleBridgeConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleBridgeConfigurationUpdate(configurationParameters);
         Bridge bridge = getBridge();
-        FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
         FroniusBaseDeviceConfiguration config = this.config;
-        if (bridge == null || bridgeHandler == null) {
-            logger.warn(
-                    "bridge ({}) or bridgeHandler ({}) is null in handleBridgeConfigurationUpdate(), this is a bug, please report it.",
-                    bridge, bridgeHandler);
+        if (bridge == null) {
+            logger.warn("bridge is null in handleBridgeConfigurationUpdate(), this is a bug, please report it.");
             return;
         }
         if (config == null) {
@@ -179,16 +187,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
         inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
         updateProperties();
-        initializeBatteryControl(bridgeHandler.getHttpUtil(), bridgeConfig.scheme, bridgeConfig.hostname,
-                bridgeConfig.username, bridgeConfig.password);
-    }
-
-    public @Nullable FroniusBatteryControl getBatteryControl() {
-        if (batteryControl == null) {
-            logger.warn("Battery control is not available for Thing '{}'. Check the bridge configuration.",
-                    thing.getUID());
-        }
-        return batteryControl;
+        // Recreate the battery control for the deprecated actions on the next use, as the bridge configuration changed
+        batteryControl = null;
     }
 
     /**
@@ -287,6 +287,14 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 new QuantityType<>(site.getRelAutonomy(), Units.PERCENT);
             case FroniusBindingConstants.POWER_FLOW_SELF_CONSUMPTION ->
                 new QuantityType<>(site.getRelSelfConsumption(), Units.PERCENT);
+            case FroniusBindingConstants.POWER_FLOW_BACKUP_MODE -> {
+                Boolean backupMode = site.getBackupMode();
+                yield backupMode == null ? null : OnOffType.from(backupMode);
+            }
+            case FroniusBindingConstants.POWER_FLOW_BATTERY_STANDBY -> {
+                Boolean batteryStandby = site.getBatteryStandby();
+                yield batteryStandby == null ? null : OnOffType.from(batteryStandby);
+            }
             case FroniusBindingConstants.POWER_FLOW_INVERTER_POWER -> {
                 PowerFlowRealtimeInverter inverter = getInverter(config.deviceId);
                 if (inverter == null) {
@@ -467,49 +475,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         }
 
         final String serial = String.valueOf(data.getUniqueID());
-
-        final String host = scheme + "://" + ip;
-        final String versionPath = "/status/version";
-        FroniusHttpUtil httpUtil;
-        try {
-            httpUtil = getHttpUtil();
-        } catch (FroniusCommunicationException e) {
-            logger.warn("Failed to get bridge HTTP utility for Fronius inverter at {}: {}", ip, e.getMessage());
-            return null;
-        }
-
-        String url = host + "/api" + versionPath; // try the new API path first
-        String response;
-        try {
-            response = httpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
-        } catch (FroniusCommunicationException e) {
-            url = host + versionPath; // fallback to the old API path
-            try {
-                response = httpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
-            } catch (FroniusCommunicationException ex) {
-                logger.debug("Failed to get version info from Fronius inverter at {}: {}", ip, ex.getMessage());
-                return new InverterInfo(serial, null);
-            }
-        }
-        try {
-            JsonElement jsonElement = JsonParser.parseString(response);
-            if (!jsonElement.isJsonObject()) {
-                logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", ip, response);
-                return new InverterInfo(serial, null);
-            }
-            try {
-                String firmware = jsonElement.getAsJsonObject().get("swrevisions").getAsJsonObject().get("GEN24")
-                        .getAsString();
-                return new InverterInfo(serial, firmware);
-            } catch (IllegalStateException | UnsupportedOperationException e) {
-                logger.debug("Failed to parse version info from Fronius inverter at {}: {}", ip, e.getMessage());
-                return new InverterInfo(serial, null);
-            }
-        } catch (JsonSyntaxException e) {
-            // 404 errors go here, as the response is not valid JSON
-            logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", ip, response, e);
-        }
-        return new InverterInfo(serial, null);
+        return new InverterInfo(serial, getFirmwareVersion(scheme, ip));
     }
 
     private record InverterInfo(String serial, @Nullable String firmware) {

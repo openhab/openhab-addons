@@ -224,18 +224,14 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         if (msg.isCommand()) {
             logger.warn("handleMessage() Ignoring unsupported command for thing {}. Frame={}", getThing().getUID(),
                     msg);
-            return;
         } else {
-            // fix: check for correct DIM (ActivePower / 113)
-            if (msg.getDim().equals(EnergyManagement.DimEnergyMgmt.ACTIVE_POWER)) {
-                updateActivePower(msg);
-            } else if (msg.getDim().equals(EnergyManagement.DimEnergyMgmt.PARTIAL_TOTALIZER_CURRENT_DAY)) {
-                updateCurrentDayTotalizer(msg);
-            } else if (msg.getDim().equals(EnergyManagement.DimEnergyMgmt.PARTIAL_TOTALIZER_CURRENT_MONTH)) {
-                updateCurrentMonthTotalizer(msg);
-            } else {
-                logger.debug("handleMessage() Ignoring message {} because it's not related to active power value.",
-                        msg);
+            switch (msg.getDim()) {
+                case null -> logger.warn("handleMessage() Ignoring message {} because dimension is null.", msg);
+                case EnergyManagement.DimEnergyMgmt.ACTIVE_POWER -> updateActivePower(msg);
+                case EnergyManagement.DimEnergyMgmt.PARTIAL_TOTALIZER_CURRENT_DAY -> updateCurrentDayTotalizer(msg);
+                case EnergyManagement.DimEnergyMgmt.PARTIAL_TOTALIZER_CURRENT_MONTH -> updateCurrentMonthTotalizer(msg);
+                default -> logger.warn(
+                        "handleMessage() Ignoring message {} because it's not related to active power value.", msg);
             }
         }
     }

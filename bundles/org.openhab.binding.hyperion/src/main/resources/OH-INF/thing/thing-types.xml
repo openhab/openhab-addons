@@ -85,6 +85,12 @@
 				<default>openHAB</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="instances" type="text" required="false">
+				<label>Instance IDs</label>
+				<description>Comma separated list of Hyperion instance indices to apply commands to (e.g. "0,1"). Leave empty to
+					apply to all instances.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>

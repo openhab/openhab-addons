@@ -12,6 +12,36 @@
 				<type>oppo:time_display</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<update-channel id="time_display">
+				<type>oppo:time_display</type>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<add-channel id="title-elapsed">
+				<type>oppo:title-elapsed</type>
+			</add-channel>
+			<add-channel id="title-length">
+				<type>oppo:title-length</type>
+			</add-channel>
+			<add-channel id="title-end-time">
+				<type>oppo:title-end-time</type>
+			</add-channel>
+			<add-channel id="title-progress">
+				<type>oppo:title-progress</type>
+			</add-channel>
+			<update-channel id="power">
+				<type>system:power</type>
+			</update-channel>
+			<update-channel id="volume">
+				<type>system:volume</type>
+			</update-channel>
+			<update-channel id="mute">
+				<type>system:mute</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

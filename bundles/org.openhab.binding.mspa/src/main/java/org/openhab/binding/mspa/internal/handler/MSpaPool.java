@@ -43,6 +43,7 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
@@ -222,6 +223,9 @@ public class MSpaPool extends BaseThingHandler {
                 int status = cr.getStatus();
                 String response = cr.getContentAsString();
                 if (status == 200) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Device shadow {}", response);
+                    }
                     distributeData(response);
                 } else {
                     logger.info("Failed to get data - reason {}", response);
@@ -276,11 +280,24 @@ public class MSpaPool extends BaseThingHandler {
         }
     }
 
+    /**
+     * Updates the {@code fault} channel from the device shadow's {@code fault} code. A missing or blank code is
+     * reported as {@link org.openhab.binding.mspa.internal.MSpaConstants#FAULT_STATE_NONE}.
+     *
+     * @param rawData the "data" object of a device shadow response
+     */
+    private void updateFaultState(JSONObject rawData) {
+        String fault = rawData.optString("fault", EMPTY);
+        String faultText = fault.isBlank() ? FAULT_STATE_NONE : fault;
+        updateState(CHANNEL_FAULT, new StringType(faultText));
+    }
+
     public void distributeData(String response) {
         JSONObject data = new JSONObject(response);
         dataCache = data.toString();
         if (data.has("data")) {
             JSONObject rawData = data.getJSONObject("data");
+            updateFaultState(rawData);
             if (rawData.has("heater_state")) {
                 updateState(CHANNEL_HEATER, OnOffType.from(rawData.getInt("heater_state") == 1));
             }

@@ -64,13 +64,44 @@ The output type depends on how the substitution is structured within the YAML sc
 
 #### Type Preservation (Single Expression)
 
-If a YAML value consists **entirely** of a single substitution pattern, the resulting object preserves the original Java type returned by the expression.
-This allows you to inject complex structures like booleans, lists, or maps directly.
+In YAML, quoting normally sets the value to be a string.
+However, when a quoted value consists **entirely** of a substitution expression, it behaves differently: the resulting object preserves the original Java type returned by the expression.
+The purpose of quoting in this case is simply to prevent YAML from interpreting characters inside the expression (such as colons) as YAML syntax and rejecting the value.
 
 ```yaml
-is_active: ${status == 'ON'}       # Becomes a real Boolean
-target_rooms: ${rooms}             # Becomes a real List
-connection: "${mqtt_config_map}"   # Becomes a real Map
+is_active: ${status == 'ON'}       # Boolean(true)
+target_rooms: ${rooms}             # List
+
+# Quoting is optional here because the expression is YAML‑friendly
+connection: "${mqtt_config_map}"   # Map
+```
+
+In contrast, some expressions **must** be quoted because they contain characters that YAML would otherwise treat as structural syntax:
+
+```yaml
+# Without quotes, YAML will interpret the colon inside the expression
+# as a mapping delimiter and reject it as invalid syntax.
+result: "${true ? 1 : 0}"          # Integer(1)
+```
+
+::: tip Important
+Type preservation applies **only** when the entire value is a substitution expression.
+If the value is not exactly `${expr}` or `"${expr}"`, normal YAML rules apply and the result is a string.
+:::
+
+```yaml
+moo: 1               # Integer(1)
+foo: "1"             # String("1")
+bar: "${1}"          # Integer(1)
+baz: "Value: ${1}"   # String("Value: 1")
+qux: "${'1'}"        # String("1")
+```
+
+To explicitly convert the result to a String, use a filter or concatenation:
+
+```yaml
+result: "${(true ? 1 : 0) | string}"   # String("1")
+result: "${(true ? 1 : 0) ~ ''}"       # String("1")
 ```
 
 #### String Coercion (Mixed Content)
@@ -274,8 +305,8 @@ foo: !sub:jinja "Hello {{ username }}!"
 
 ## Common Pitfalls
 
-1. **Unquoted Operators**: Expressions with operators should be quoted so YAML doesn't misinterpret characters.
+1. **Unquoted Operators**: Expressions containing YAML‑significant characters such as `:` or `?` must be quoted; otherwise YAML interprets those characters as structural syntax and rejects the value
 1. **Reserved Names**: Avoid naming variables using keywords like `true`, `false`, `null`, `in`, or `if`.
 1. **`+` vs `~`**: Use `~` for strings to avoid type mismatch errors and use `+` for numbers or lists.
-1. **Jinja Blocks**: Template blocks such as `{% for %}` are not supported; use inline `if` expressions instead.
+1. **Jinja Blocks**: Block‑level Jinja constructs (e.g., `{% for %}`) are not supported. Use YAMLComposer’s own control‑flow tags, such as `!if`/`!elseif`/`!else` and `!for`.
 1. **Whitespace Sensitivity**: Spaces outside of quotes inside `${ ... }` are ignored, but spaces in quoted strings are preserved.

@@ -31,4 +31,5 @@ public class KaleidescapeThingConfiguration {
     public boolean volumeBasicEnabled;
     public boolean loadHighlightedDetails;
     public boolean loadAlbumDetails;
+    public String parentalControlPasscode = "";
 }

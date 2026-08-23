@@ -46,12 +46,12 @@ public abstract class NhcCarCharger {
     protected volatile @Nullable String chargingStatus;
     protected volatile @Nullable String evStatus;
     protected volatile @Nullable String couplingStatus;
-    protected volatile @Nullable Integer electricalPower;
+    protected volatile @Nullable Long electricalPower;
     protected volatile @Nullable String chargingMode;
-    protected volatile float targetDistance;
+    protected volatile double targetDistance;
     protected volatile @Nullable String targetTime;
     protected volatile boolean boost;
-    protected volatile float reachableDistance;
+    protected volatile double reachableDistance;
     protected volatile @Nullable String nextChargingTime;
     protected volatile double reading;
     protected volatile double dayReading;
@@ -165,7 +165,7 @@ public abstract class NhcCarCharger {
      *
      * @return the target distance in km
      */
-    public float getTargetDistance() {
+    public double getTargetDistance() {
         return targetDistance;
     }
 
@@ -226,7 +226,7 @@ public abstract class NhcCarCharger {
      *
      * @return the reachable distance in km
      */
-    public float getReachableDistance() {
+    public double getReachableDistance() {
         return reachableDistance;
     }
 
@@ -248,8 +248,8 @@ public abstract class NhcCarCharger {
      *
      * @return the electrical power value, or {@code 0} if not available
      */
-    public int getElectricalPower() {
-        Integer electricalPower = this.electricalPower;
+    public long getElectricalPower() {
+        Long electricalPower = this.electricalPower;
         return electricalPower != null ? electricalPower : 0;
     }
 
@@ -264,7 +264,7 @@ public abstract class NhcCarCharger {
      * @param electricalPower the new electrical power value, or {@code null} to keep the current value
      */
     public void setStatus(@Nullable Boolean status, @Nullable String chargingStatus, @Nullable String evStatus,
-            @Nullable String couplingStatus, @Nullable Integer electricalPower) {
+            @Nullable String couplingStatus, @Nullable Long electricalPower) {
         this.status = (status != null) ? status : this.status;
         this.chargingStatus = (chargingStatus != null) ? chargingStatus : this.chargingStatus;
         this.evStatus = (evStatus != null) ? evStatus : this.evStatus;
@@ -321,8 +321,8 @@ public abstract class NhcCarCharger {
      * @param reachableDistance the currently reachable distance, or {@code null} to keep the current value
      * @param nextChargingTime the next scheduled charging time, or {@code null} or empty to keep the current value
      */
-    public void setChargingMode(@Nullable String chargingMode, @Nullable Float targetDistance,
-            @Nullable String targetTime, @Nullable Boolean boost, @Nullable Float reachableDistance,
+    public void setChargingMode(@Nullable String chargingMode, @Nullable Double targetDistance,
+            @Nullable String targetTime, @Nullable Boolean boost, @Nullable Double reachableDistance,
             @Nullable String nextChargingTime) {
         this.chargingMode = (chargingMode != null) ? chargingMode : this.chargingMode;
         this.targetDistance = (targetDistance != null) ? targetDistance : this.targetDistance;
@@ -386,14 +386,13 @@ public abstract class NhcCarCharger {
      * Changes the charging mode of the car charger in the Niko Home Control system.
      *
      * @param chargingMode The desired charging mode to set (SOLAR, NORMAL or SMART).
-     * @param targetDistance The target distance (in kilometers) to be achieved during charging for SMART mode..
+     * @param d The target distance (in kilometers) to be achieved during charging for SMART mode..
      * @param targetTime The target time (in ISO 8601 format or HH:mm) by which charging should be completed for SMART
      *            mode.
      */
-    public void executeCarChargerChargingMode(String chargingMode, float targetDistance, String targetTime) {
-        logger.debug("change car charger charging mode for {} to {}, target {} at {}", id, chargingMode, targetDistance,
-                targetTime);
-        nhcComm.executeCarChargerChargingMode(id, chargingMode, targetDistance, targetTime);
+    public void executeCarChargerChargingMode(String chargingMode, double d, String targetTime) {
+        logger.debug("change car charger charging mode for {} to {}, target {} at {}", id, chargingMode, d, targetTime);
+        nhcComm.executeCarChargerChargingMode(id, chargingMode, d, targetTime);
     }
 
     /**

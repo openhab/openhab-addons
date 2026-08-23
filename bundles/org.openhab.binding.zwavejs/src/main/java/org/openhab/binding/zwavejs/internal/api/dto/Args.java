@@ -22,6 +22,10 @@ public class Args {
     public int endpoint;
     public Object newValue;
     public Object prevValue;
+    /**
+     * See {@link org.openhab.binding.zwavejs.internal.handler.ZwaveJSBridgeHandler#normalizeValueNotification}.
+     */
+    public Object value;
     public String propertyName;
     public Object propertyKey;
 

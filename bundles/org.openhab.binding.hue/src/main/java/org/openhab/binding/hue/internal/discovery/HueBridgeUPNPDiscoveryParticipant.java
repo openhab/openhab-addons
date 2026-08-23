@@ -28,6 +28,7 @@ import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -62,7 +63,7 @@ public class HueBridgeUPNPDiscoveryParticipant implements UpnpDiscoveryParticipa
 
     private long removalGracePeriod = 50L;
 
-    private boolean isAutoDiscoveryEnabled = true;
+    private volatile boolean isAutoDiscoveryEnabled = true;
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -76,11 +77,9 @@ public class HueBridgeUPNPDiscoveryParticipant implements UpnpDiscoveryParticipa
 
     private void activateOrModifyService(ComponentContext componentContext) {
         Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String autoDiscoveryPropertyValue = (String) properties
-                .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
-        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
-            isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
-        }
+        isAutoDiscoveryEnabled = ConfigParser.valueAsOrElse(
+                properties.get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY), Boolean.class,
+                isAutoDiscoveryEnabled);
         String removalGracePeriodPropertyValue = (String) properties.get(REMOVAL_GRACE_PERIOD);
         if (removalGracePeriodPropertyValue != null && !removalGracePeriodPropertyValue.isBlank()) {
             try {
