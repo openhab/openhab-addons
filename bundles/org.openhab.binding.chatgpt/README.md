@@ -1,6 +1,6 @@
 # ChatGPT Binding
 
-The openHAB ChatGPT Binding allows openHAB to communicate with any OpenAI API-compatible service, e.g., [OpenAI](https://platform.openai.com/), [OpenRouter](https://openrouter.ai/), [Mistral AI](https://mistral.ai/), Ollama, etc. and access large language models like OpenAI's ChatGPT and many more.
+The openHAB ChatGPT Binding allows openHAB to communicate with any OpenAI API-compatible service and access large language models like OpenAI's ChatGPT and many more.
 
 Large Language Models (LLMs) like the GPT models offer powerful natural language processing (NLP) that can be used to understand and respond to a wide range of text-based commands and questions.
 With this binding, users can:
@@ -18,16 +18,27 @@ The binding supports a single thing type `account`, which corresponds to the AI 
 
 ## Thing Configuration
 
-The `account` thing uses the API key that allows accessing the account (optional for local AI services).
-API keys for the different services can be managed under:
+The `account` Thing connects to an OpenAI API-compatible service and uses an API key to authenticate itself.
 
-- OpenAI/ChatGPT: <https://platform.openai.com/account/api-keys>
-- OpenRouter: <https://openrouter.ai/keys>
-- Mistral AI: <https://admin.mistral.ai/organization/api-keys>
+Here is an overview of some OpenAI API-compatible services:
+
+| Service                                                         | Country     | Type  | API Key                                          |
+|-----------------------------------------------------------------|-------------|-------|--------------------------------------------------|
+| [Anthropic](https://www.anthropic.com/)                         | US          | Cloud | <https://platform.claude.com/settings/keys>      |
+| [DeepSeek](https://www.deepseek.com/en/)                        | China       | Cloud | <https://platform.deepseek.com/api_keys>         |
+| [Infomaniak](https://www.infomaniak.com/en/hosting/ai-services) | Switzerland | Cloud | <https://shop.infomaniak.com/order2/ai-tools>    |
+| [LLMBase](https://llmbase.ai/de/)                               | Germany     | Cloud | <https://llmbase.ai/dashboard/>                  |
+| [Mistral](https://mistral.ai/)                                  | France      | Cloud | <https://admin.mistral.ai/organization/api-keys> |
+| [Ollama](https://ollama.com)                                    | -           | Local | None                                             |
+| [OpenAI](https://platform.openai.com/)                          | US          | Cloud | <https://platform.openai.com/account/api-keys>   |
+| [OpenRouter](https://openrouter.ai/)                            | US          | Cloud | <https://openrouter.ai/keys>                     |
+| [SpaceXAI](https://x.ai/)                                       | US          | Cloud | <https://console.x.ai/team/default/api-keys>     |
+
+The `account` Thing takes the following configuration parameters:
 
 | Name           | Type    | Description                                                                                                                                                                                                                                                                                                                            | Default                     | Required | Advanced |
 |----------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|----------|----------|
-| apiKey         | text    | The API key to be used for the requests (required for OpenAI, Mistral & OpenRouter, optional for local AI services)                                                                                                                                                                                                                    | N/A                         | no       | no       |
+| apiKey         | text    | The API key to be used for the requests (required for cloud providers, optional for local AI services)                                                                                                                                                                                                                                 | N/A                         | no       | no       |
 | baseUrl        | text    | The base URL of the OpenAI API-compatible AI service                                                                                                                                                                                                                                                                                   | <https://api.openai.com/v1> | no       | yes      |
 | model          | text    | The model to be used for the HLI service                                                                                                                                                                                                                                                                                               | gpt-4o-mini                 | no       | no       |
 | temperature    | decimal | A value between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.                                                                                                                                                                             | 1.0                         | no       | yes      |
