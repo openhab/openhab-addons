@@ -239,7 +239,7 @@ public class Shelly1CoIoTProtocol {
      *
      * @param profile Device profile, required to select the channel group and name
      * @param updates List of updates. updatePower will add brightness$Switch and brightness$Value if changed
-     * @param id Sensor id from the update
+     * @param id Sensor id from the update (1- based)
      * @param sen Sensor description from the update
      * @param s New sensor value
      * @param allUpdates List of updates. This is required, because we need to update both values at the same time
@@ -277,7 +277,7 @@ public class Shelly1CoIoTProtocol {
                 }
             } else if (profile.isLight) {
                 if (lightModelHandler != null
-                        && lightModelHandler.getLightModelByIndex(id) instanceof ShellyLightModel model) {
+                        && lightModelHandler.getLightModelByIndex(id - 1) instanceof ShellyLightModel model) {
                     if (brightness != -1) {
                         if (ShellyLightModel.Mode.COLOR == model.getMode()) {
                             model.setGain((int) brightness);
@@ -289,7 +289,7 @@ public class Shelly1CoIoTProtocol {
                         model.setOnOff(power == 1.0); // do power after gain / brightness
                     }
                 } else {
-                    logger.warn("{}: updatePower() for index={} but no light model found!", thingName, id);
+                    logger.warn("{}: updatePower() for index={} but no light model found!", thingName, id - 1);
                 }
             }
         } else if (profile.hasRelays) {
