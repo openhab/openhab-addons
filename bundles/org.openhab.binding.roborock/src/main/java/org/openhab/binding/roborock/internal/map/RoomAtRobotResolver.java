@@ -19,9 +19,8 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Resolves the map segment (room) id at a map position (in raw RR map coordinate units) from the
- * per-pixel segment ids in {@link RRMapData#imageData()}, using the same coordinate transform and
- * pixel decoding as {@link RRMapRenderer}.
+ * Resolves the map segment (room) id at a map position, decoding pixels the same way as
+ * {@link RRMapRenderer}.
  *
  * @author Martin Littkovsky - Initial contribution
  */
@@ -41,10 +40,8 @@ public final class RoomAtRobotResolver {
     }
 
     /**
-     * Resolves the segment id of the map pixel at the given position, falling back to the nearest
-     * ring within {@link #FALLBACK_SEARCH_RADIUS} that holds any segmented-floor pixels; a segment
-     * wins only by holding more than half of that ring's segmented pixels, so ties and mere
-     * pluralities resolve to empty rather than depending on scan order.
+     * The segment id at the given position, or of the nearest ring within
+     * {@link #FALLBACK_SEARCH_RADIUS} where one segment holds a strict majority.
      */
     public static Optional<Integer> resolveSegmentId(RRMapData mapData, int positionX, int positionY) {
         int width = mapData.imageWidth();

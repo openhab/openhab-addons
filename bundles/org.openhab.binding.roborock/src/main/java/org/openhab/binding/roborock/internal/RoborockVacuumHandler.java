@@ -888,12 +888,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Installs the segment-id to room-name table and re-evaluates the most recently parsed map
-     * with it: getMap and getRoomMapping are independent requests, so the map may have been cached
-     * while the names were still missing, and while docked no further map response is due that
-     * would self-correct the channel.
-     */
+    /** Installs the segment-to-room-name table and re-resolves the cached map with it. */
     void installSegmentRoomNames(Map<Integer, String> resolvedSegmentNames) {
         synchronized (currentRoomLock) {
             segmentRoomNames = Map.copyOf(resolvedSegmentNames);
@@ -1209,25 +1204,14 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Republishes {@code status#current-room} from the charging dock's position in the most
-     * recently parsed map, since no map is polled while the robot sits on the dock. When no dock
-     * room can be resolved the channel goes {@code UNDEF} rather than keeping the room of the
-     * interrupted cleaning run.
-     */
-    // Caller must hold currentRoomLock: the cached map and the segment table are read as a
-    // pair, and a map response arriving on another thread replaces both.
+    /** Republishes {@code status#current-room} from the dock position in the cached map, {@code UNDEF} if none. */
+    // caller holds currentRoomLock: cached map and segment table are read as a pair
     private void updateCurrentRoomStateFromDock() {
         updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(),
                 resolveDockRoomState(lastParsedMapData, segmentRoomNames));
     }
 
-    /**
-     * Resolves the {@code status#current-room} state for a freshly parsed map: from the charging
-     * dock's position while the robot is docked ({@code UNDEF} when no dock room can be resolved),
-     * from the robot position otherwise, where {@code null} means the channel must be left as it is
-     * because no segment could be resolved at the robot position.
-     */
+    /** The room for a freshly parsed map: the dock while docked, the robot otherwise; {@code null} keeps it. */
     static @Nullable State resolveRoomStateFromMap(RRMapData mapData, boolean atDock,
             Map<Integer, String> segmentRoomNames) {
         if (atDock) {
@@ -2211,15 +2195,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Reports a status id this binding does not know, once per id.
-     *
-     * An unmapped id resolves to {@link StatusType#UNKNOWN}, which is classified as "position not
-     * derivable" and therefore never claims the charging dock. That is the safe answer, but it is
-     * silent: if the robot gained a new dock chore in a firmware update, {@code status#current-room}
-     * would keep the room of the last cleaning run while the robot already sits on its dock, and
-     * nothing would say why.
-     */
+    /** Reports a status id this binding does not know, once per id. */
     private void warnOnceAboutUnknownState(int rawStateId, StatusType resolved) {
         if (resolved != StatusType.UNKNOWN || rawStateId == StatusType.UNKNOWN.getId()) {
             return;
