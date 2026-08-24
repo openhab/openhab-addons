@@ -31,7 +31,7 @@ public interface ShellyLightModelHandler {
      * @return the light model, or null if not found.
      */
     @Nullable
-    ShellyLightModel getLightModelForChannelGroup(int channelGroupNumber);
+    ShellyLightModel getLightModelByIndex(int channelGroupNumber);
 
     /**
      * Acquire the lock for the light models. This means that other callers cannot modify the light

@@ -149,9 +149,8 @@ public class Shelly1CoIoTProtocol {
                     case "white":
                     case "gain":
                     case "effect":
-                        int groupNo = getIdFromBlk(sen) - 1; // TODO confirm
                         if (lightModelHandler != null && lightModelHandler
-                                .getLightModelForChannelGroup(groupNo) instanceof ShellyLightModel model) {
+                                .getLightModelByIndex(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {
                                 case "red":
                                     model.setColor(R, (int) s.value);
@@ -277,9 +276,8 @@ public class Shelly1CoIoTProtocol {
                             toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
                 }
             } else if (profile.isLight) {
-                int groupNo = id - 1; // TODO confirm
                 if (lightModelHandler != null
-                        && lightModelHandler.getLightModelForChannelGroup(groupNo) instanceof ShellyLightModel model) {
+                        && lightModelHandler.getLightModelByIndex(id) instanceof ShellyLightModel model) {
                     if (brightness != -1) {
                         if (ShellyLightModel.Mode.COLOR == model.getMode()) {
                             model.setGain((int) brightness);
@@ -291,8 +289,7 @@ public class Shelly1CoIoTProtocol {
                         model.setOnOff(power == 1.0); // do power after gain / brightness
                     }
                 } else {
-                    logger.warn("{}: updatePower() for channelGroupNo={} but no light model found!", thingName,
-                            groupNo);
+                    logger.warn("{}: updatePower() for index={} but no light model found!", thingName, id);
                 }
             }
         } else if (profile.hasRelays) {

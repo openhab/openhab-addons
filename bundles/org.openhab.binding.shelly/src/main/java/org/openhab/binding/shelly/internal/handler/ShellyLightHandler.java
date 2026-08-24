@@ -90,7 +90,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         try {
             acquireLock();
             try {
-                int channelGroupNumber = getChannelGroupFromChannelUID(channelUID);
+                int channelGroupNumber = ShellyLightModel.getChannelGroupNumber(channelUID);
                 ShellyLightModel model = lightModels.get(channelGroupNumber);
                 if (model == null) {
                     model = ShellyLightModel.create(this, channelGroupNumber, profile, DIM_STEPSIZE);
@@ -131,8 +131,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         boolean updated = false;
         try {
             acquireLock();
-            int groupNo = 0;
-            for (ShellyStatusLightChannel light : status.lights) {
+            for (int i = 0; i < status.lights.size(); i++) {
+                ShellyStatusLightChannel light = status.lights.get(i);
+                int groupNo = profile.inColor ? i : i + 1;
                 ShellyLightModel model = lightModels.get(groupNo);
                 if (model == null) {
                     model = ShellyLightModel.create(this, groupNo, profile, DIM_STEPSIZE);
@@ -141,7 +142,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 }
                 updateLightModelFromStatus(model, light);
                 updated |= updateChannelsFromLightStatusDTO(light, groupNo);
-                groupNo++;
             }
         } finally {
             updated |= releaseLock();
@@ -265,7 +265,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // ON-OFF (via own channel): send first as it may affect the processing of subsequent parameters
         if (model.supportsOnOffChannel() && model.isOnOffDirty()) { // config.getBrightnessAutoOn() not used
-            api.setLightTurn(model.getChannelGroupNumber(),
+            api.setLightTurn(model.getApiLightIndex(),
                     OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF);
             apiCommandSent = true;
         }
@@ -319,8 +319,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
 
         if (!parms.isEmpty()) {
-            logger.debug("{}: lightId {} set new light parameters {}", thingName, model.getChannelGroupNumber(), parms);
-            api.setLightParms(model.getChannelGroupNumber(), parms);
+            logger.debug("{}: lightId {} set new light parameters {}", thingName, model.getApiLightIndex(), parms);
+            api.setLightParms(model.getApiLightIndex(), parms);
             apiCommandSent = true;
         }
 
@@ -496,9 +496,16 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     }
 
     @Override
-    public @Nullable ShellyLightModel getLightModelForChannelGroup(int channelGroupNumber) {
-        ShellyLightModel model = lightModels.get(channelGroupNumber);
-        logger.debug("{}: getLightModel({}) returns {}", thingName, channelGroupNumber, model);
+    public @Nullable ShellyLightModel getLightModelByIndex(int apiLightIndex) {
+        ShellyLightModel model = lightModels.values().stream().filter(m -> m.getApiLightIndex() == apiLightIndex)
+                .findFirst().orElse(null);
+        logger.debug("{}: getLightModelByIndex({}) returns {}", thingName, apiLightIndex, model);
+        return model;
+    }
+
+    public @Nullable ShellyLightModel getLightModelByGroupNumber(int groupNumber) {
+        ShellyLightModel model = lightModels.get(groupNumber);
+        logger.debug("{}: getLightModelByGroupNumber({}) returns {}", thingName, groupNumber, model);
         return model;
     }
 
@@ -518,23 +525,5 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
         logger.debug("{}: all light models released", thingName);
         return result;
-    }
-
-    /**
-     * Extracts the channel group number from the channel UID. If the channel is not in a group,
-     * or the group id does not have a numeric suffix, returns 0.
-     *
-     * @param channelUID the channel UID
-     * @return the channel group number, or 0
-     */
-    private static int getChannelGroupFromChannelUID(ChannelUID channelUID) {
-        String groupId = channelUID.getGroupId();
-        if (groupId != null) {
-            try {
-                return Integer.parseInt(groupId.replaceAll(".*?(\\d+)#.*", "$1"));
-            } catch (NumberFormatException e) {
-            }
-        }
-        return 0;
     }
 }

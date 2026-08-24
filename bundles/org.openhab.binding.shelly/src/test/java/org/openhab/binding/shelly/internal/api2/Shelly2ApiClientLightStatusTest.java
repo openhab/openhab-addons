@@ -16,9 +16,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 
@@ -41,11 +39,13 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2Energy;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.handler.ShellyTestLightHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
@@ -215,10 +215,15 @@ public class Shelly2ApiClientLightStatusTest {
 
     @Test
     void lightModeStatusPushesChannelUpdatesWhenRequested() throws ShellyApiException {
-        ShellyDeviceProfile profile = lightModeProfile(2);
-        Shelly2ApiClient client = newClient(profile);
-        when(thing.areChannelsCreated()).thenReturn(true);
-        when(thing.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
+        ThingTypeUID thingTypeUID = new ThingTypeUID("shelly", "shellyplusrgbwpm");
+        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_LIGHT, 2, 1);
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
+        profile.device.profile = SHELLY2_PROFILE_LIGHT;
+        handler.setProfile(profile);
+        handler.addLightModel(1, thingTypeUID, profile, 10.0);
+        handler.addLightModel(2, thingTypeUID, profile, 10.0);
+
+        Shelly2ApiClient client = new Shelly2ApiClient("test", discoveryConfig(), handler);
 
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.light0 = lightStatus(0, true, 55.0);
@@ -226,24 +231,32 @@ public class Shelly2ApiClientLightStatusTest {
         boolean updated = client.fillDeviceStatus(profile.status, result, true);
 
         assertThat(updated, is(true));
-        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
-        verify(thing, never()).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_LIGHT_POWER, OnOffType.ON);
+        assertThat(handler.getChannelUpdates().get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_BRIGHTNESS),
+                is(new PercentType(55)));
+        assertThat(handler.getChannelUpdates().get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_LIGHT_POWER),
+                is(nullValue()));
     }
 
     @Test
     void lightModeStatusSignalsWatchdogEvenWhenNoChannelChanged() throws ShellyApiException {
-        ShellyDeviceProfile profile = lightModeProfile(1);
-        Shelly2ApiClient client = newClient(profile);
-        when(thing.areChannelsCreated()).thenReturn(true);
-        when(thing.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(false);
+        ThingTypeUID thingTypeUID = new ThingTypeUID("shelly", "shellyplusrgbwpm");
+        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_LIGHT, 1, 1);
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
+        handler.setProfile(profile);
+        handler.addLightModel(1, thingTypeUID, profile, 10.0);
+
+        Shelly2ApiClient client = new Shelly2ApiClient("test", discoveryConfig(), handler);
 
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.light0 = lightStatus(0, true, 55.0);
 
         boolean updated = client.fillDeviceStatus(profile.status, result, true);
 
+        // updateLightModeStatus always signals "processed" for watchdog purposes, independent of
+        // whether the channel push itself (verified below) reports a changed value.
         assertThat(updated, is(true));
-        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
+        assertThat(handler.getChannelUpdates().get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_BRIGHTNESS),
+                is(new PercentType(55)));
     }
 
     @Test

@@ -33,6 +33,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -92,6 +93,7 @@ public class ShellyLightModel extends LightModel {
     private final int[] cacheRGBX;
     private final int rgbxLength;
     private final int channelGroupNumber;
+    private final int apiLightIndex;
     private final ShellyLightHandler handler;
     private final ReentrantLock lock = new ReentrantLock();
     private final boolean isOperatingModeReadOnly;
@@ -99,7 +101,6 @@ public class ShellyLightModel extends LightModel {
     // essential fields copied from profile
     private final boolean isBulb;
     private final boolean isDuo;
-    private final boolean isRGBW2;
     private final boolean isVintage;
     private final boolean isG3DuoBulb;
     private final boolean isG3ColorBulb;
@@ -109,6 +110,8 @@ public class ShellyLightModel extends LightModel {
     private final boolean isProfileRGBCCT;
     private final boolean isProfileRGBX2LIGHT;
     private final boolean isProfileCCTX2;
+    private final boolean isRGBW2White;
+    private final boolean isRGBW2Color;
 
     private Mode operatingMode = Mode.WHITE;
     private int effect = 0;
@@ -134,7 +137,7 @@ public class ShellyLightModel extends LightModel {
      */
     public static ShellyLightModel create(ShellyLightHandler handler, int channelGroupNumber,
             ShellyDeviceProfile deviceProfile, double stepSize) {
-        Parameters required = getRequiredParamaters(handler, channelGroupNumber, deviceProfile.device.profile);
+        Parameters required = getRequiredParameters(handler, channelGroupNumber, deviceProfile.device.profile);
         return new ShellyLightModel(handler, channelGroupNumber, deviceProfile.device.profile,
                 required.lightCapabilities, required.rgbDataType, required.ledOperatingMode,
                 reciprocal(deviceProfile.maxTemp), reciprocal(deviceProfile.minTemp), stepSize,
@@ -151,7 +154,7 @@ public class ShellyLightModel extends LightModel {
      * @param configProfile the Shelly Gen 2/3 device configured operating profile, may be null e.g. for Gen 1 devices
      * @return a Parameters record with the required light capabilities, RGB data type, LED operating mode etc.
      */
-    private static Parameters getRequiredParamaters(ShellyLightHandler handler, int componentIndex,
+    private static Parameters getRequiredParameters(ShellyLightHandler handler, int componentIndex,
             @Nullable String configProfile) {
         ThingTypeUID thingTypeUID = handler.getThing().getThingTypeUID();
 
@@ -268,7 +271,8 @@ public class ShellyLightModel extends LightModel {
         isVintage = THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
-        isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
+        isRGBW2White = THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID);
+        isRGBW2Color = THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID);
         isG3DuoBulb = THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID); // TODO mapping in #20909 is wrong
         isG3ColorBulb = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID); // TODO mapping in #20909 is wrong
 
@@ -279,6 +283,9 @@ public class ShellyLightModel extends LightModel {
         isProfileRGBCCT = SHELLY2_PROFILE_RGBCCT.equals(configProfile);
         isProfileRGBX2LIGHT = SHELLY2_PROFILE_RGBX2LIGHT.equals(configProfile);
         isProfileCCTX2 = SHELLY2_PROFILE_CCTX2.equals(configProfile);
+
+        boolean noPrimary = isProfileLIGHT || isProfileCCTX2 || isRGBW2White;
+        apiLightIndex = noPrimary ? channelGroupNumber - 1 : channelGroupNumber;
 
         rgbxLength = super.getRGBx().length;
         baselineRGBX = new int[rgbxLength];
@@ -512,6 +519,32 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
+     * Extracts the channel group number from the channel UID. Returns 0 if the channel is not in
+     * a group, or the group id does not have a numeric suffix. Main color channels have no group
+     * number suffix which is equivalent to group 0, while white channels are in groups 1 .. n
+     *
+     * @param channelUID the channel UID
+     * @return the channel group number, or 0
+     */
+    public static int getChannelGroupNumber(ChannelUID channelUID) {
+        String groupId = channelUID.getGroupId();
+        if (groupId != null) {
+            try {
+                return Integer.parseInt(groupId.replaceAll("\\D+(\\d+)", "$1"));
+            } catch (NumberFormatException e) {
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Get the light index used by the API.
+     */
+    public int getApiLightIndex() {
+        return apiLightIndex;
+    }
+
+    /**
      * Get the shelly device mode.
      */
     public Mode getMode() {
@@ -639,9 +672,10 @@ public class ShellyLightModel extends LightModel {
 
     @Override
     public String toString() {
-        return "mode:%s, power:%s, gain/bri:%s, rgbw:%s, color-temp:%s, color-temp-abs:%s, effect:%s".formatted(
-                getMode(), getOnOffState(), getBrightnessState(), Arrays.toString(getRGBX()),
-                getColorTemperaturePercentState(), getColorTemperatureAbsoluteState(), getEffectState());
+        return "groupNo:%d, index:%d, mode:%s, power:%s, gain/bri:%s, rgbw:%s, color-temp:%s, color-temp-abs:%s, effect:%s"
+                .formatted(channelGroupNumber, apiLightIndex, getMode(), getOnOffState(), getBrightnessState(),
+                        Arrays.toString(getRGBX()), getColorTemperaturePercentState(),
+                        getColorTemperatureAbsoluteState(), getEffectState());
     }
 
     /**
@@ -698,7 +732,7 @@ public class ShellyLightModel extends LightModel {
             (isVintage) || 
             (isDuo) ||
             (isBulb) ||
-            (isRGBW2 && Mode.WHITE == operatingMode) || // never ignore the operating mode
+            (isRGBW2White) || 
             (isG3DuoBulb) ||
             (isG3ColorBulb) ||
             (isProfileCCTX2) ||
@@ -715,7 +749,6 @@ public class ShellyLightModel extends LightModel {
 
     /**
      * Returns true if the light model supports color channels (RGB or RGBW), false otherwise.
-     * In case of dual mode devices, the inColor flag is used to refine the check.
      * In case of multiple profile devices, the model id is used to refine the check.
      *
      * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
@@ -725,7 +758,7 @@ public class ShellyLightModel extends LightModel {
         return (
         // @formatter:off
            (isBulb) ||
-           (isRGBW2 && Mode.COLOR == operatingMode) || // never ignore the operating mode
+           (isRGBW2Color) || 
            (isG3ColorBulb) ||
            (isProfileRGB) ||
            (isProfileRGBW) ||
@@ -805,10 +838,9 @@ public class ShellyLightModel extends LightModel {
         // @formatter:off
             (isDuo) || 
             (isBulb) ||
-            (isRGBW2 && Mode.COLOR == operatingMode) ||
+            (isRGBW2Color) ||
             (isG3DuoBulb) ||
             (isG3ColorBulb) ||
-            // TODO isProfileCCTX2 ??
             (isProfileRGB) ||
             (isProfileRGBW) ||
             (isProfileRGBCCT && channelGroupNumber == 0) || 
@@ -827,9 +859,9 @@ public class ShellyLightModel extends LightModel {
     public boolean supportsOnOffViaBrightnessChannel() {
         return
         // @formatter:off
-            (isRGBW2 && Mode.WHITE == operatingMode) ||
-            // TODO isProfileCCTX2 ??
-            // TODO isProfileRGBCCT && lightId == 0 ?? 
+            (isRGBW2White) ||
+            (isProfileCCTX2) ||
+            (isProfileRGBCCT && channelGroupNumber > 0) || 
             (isProfileLIGHT) ||
             (isProfileRGBX2LIGHT && channelGroupNumber > 0)
         // @formatter:on

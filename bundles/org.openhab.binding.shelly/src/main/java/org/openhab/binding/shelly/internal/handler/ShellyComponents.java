@@ -864,19 +864,20 @@ public class ShellyComponents {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
-            int groupNo = 0; // RGBx component is always the first channel group (i.e. number 0)
-            ShellySettingsLight light = orgStatus.lights.get(groupNo);
+            // RGBx component is always the first channel group (i.e. number 0)
+            ShellySettingsLight light = orgStatus.lights.get(0);
             if (light == null) {
-                throw new ShellyApiException("updateRGBW() failed: channelGroupNo:%d not found".formatted(groupNo));
+                throw new ShellyApiException("updateRGBW() failed: index:0 not found");
             }
             if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
                 try {
                     lightModelHandler.acquireLock();
-                    if (lightModelHandler.getLightModelForChannelGroup(groupNo) instanceof ShellyLightModel model) {
-                        model.setRGBX(light.red, light.green, light.blue, light.white);
+                    if (lightModelHandler.getLightModelByIndex(0) instanceof ShellyLightModel model) {
+                        int[] rgbx = light.white == null ? new int[] { light.red, light.green, light.blue }
+                                : new int[] { light.red, light.green, light.blue, light.white };
+                        model.setRGBX(rgbx);
                     } else {
-                        throw new ShellyApiException(
-                                "updateRGBW() failed: channelGroupNo:%d model missing".formatted(groupNo));
+                        throw new ShellyApiException("updateRGBW() failed: index:0 model missing");
                     }
                 } finally {
                     lightModelHandler.releaseLock();
@@ -905,11 +906,10 @@ public class ShellyComponents {
                             continue;
                         }
                         ShellySettingsLight light = lights.get(i);
-                        int groupNo = i + 1;
-                        ShellyLightModel model = lightHandler.getLightModelForChannelGroup(groupNo);
+                        ShellyLightModel model = lightHandler.getLightModelByIndex(i);
                         if (model == null) {
                             throw new ShellyApiException(
-                                    "updateLightMode() failed: channelGroupNo:%d model missing".formatted(groupNo));
+                                    "updateLightMode() failed: index:%d model missing".formatted(i));
                         }
                         if (light.ison != null) {
                             model.setOnOff(light.ison);
