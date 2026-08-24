@@ -90,7 +90,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         try {
             acquireLock();
             try {
-                int channelGroupNumber = getChannelGroupFromChannelId(channelUID.getId());
+                int channelGroupNumber = getChannelGroupFromChannelUID(channelUID);
                 ShellyLightModel model = lightModels.get(channelGroupNumber);
                 if (model == null) {
                     model = ShellyLightModel.create(this, channelGroupNumber, profile, DIM_STEPSIZE);
@@ -520,11 +520,21 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         return result;
     }
 
-    private static int getChannelGroupFromChannelId(String channelId) {
-        try {
-            return Integer.parseInt(channelId.replaceAll(".*?(\\d+)#.*", "$1"));
-        } catch (NumberFormatException e) {
-            return 0;
+    /**
+     * Extracts the channel group number from the channel UID. If the channel is not in a group,
+     * or the group id does not have a numeric suffix, returns 0.
+     *
+     * @param channelUID the channel UID
+     * @return the channel group number, or 0
+     */
+    private static int getChannelGroupFromChannelUID(ChannelUID channelUID) {
+        String groupId = channelUID.getGroupId();
+        if (groupId != null) {
+            try {
+                return Integer.parseInt(groupId.replaceAll(".*?(\\d+)#.*", "$1"));
+            } catch (NumberFormatException e) {
+            }
         }
+        return 0;
     }
 }
