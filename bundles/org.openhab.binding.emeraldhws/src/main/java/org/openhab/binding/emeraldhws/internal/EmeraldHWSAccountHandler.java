@@ -16,6 +16,7 @@ import static org.openhab.binding.emeraldhws.internal.EmeraldHWSBindingConstants
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import software.amazon.awssdk.crt.auth.credentials.StaticCredentialsProvider;
@@ -251,18 +253,175 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
     }
 
     private void subscribeToTopics() {
-        if (mqttClient != null) {
-            SubscribePacket.SubscribePacketBuilder subBuilder = new SubscribePacket.SubscribePacketBuilder();
-            subBuilder.withSubscription("emerald/hws/+/status", QOS.AT_LEAST_ONCE);
+        if (mqttClient == null)
+            return;
 
-            mqttClient.subscribe(subBuilder.build()).whenComplete((subAck, throwable) -> {
-                if (throwable != null) {
-                    logger.error("Failed to subscribe to MQTT topics via AWS CRT", throwable);
-                } else {
-                    logger.debug("Successfully subscribed to Emerald HWS topics.");
-                }
-            });
+        int childCount = this.getThing().getThings().size();
+
+        // The Race Condition Fix: Wait for openHAB to finish attaching the child Things
+        if (childCount == 0) {
+            logger.info(
+                    "openHAB hasn't attached the child Heat Pumps to the Bridge yet. Delaying subscription by 5 seconds...");
+            scheduler.schedule(this::subscribeToTopics, 5, TimeUnit.SECONDS);
+            return;
         }
+
+        logger.info("Attempting explicit MQTT subscriptions for {} attached Heat Pumps.", childCount);
+
+        this.getThing().getThings().forEach(child -> {
+            EmeraldHWSConfiguration config = child.getConfiguration().as(EmeraldHWSConfiguration.class);
+            if (config != null && config.uuid != null && !config.uuid.isEmpty()) {
+                String topic = "ep/heat_pump/from_gw/" + config.uuid;
+
+                SubscribePacket.SubscribePacketBuilder subBuilder = new SubscribePacket.SubscribePacketBuilder();
+                subBuilder.withSubscription(topic, QOS.AT_LEAST_ONCE);
+
+                mqttClient.subscribe(subBuilder.build()).whenComplete((subAck, throwable) -> {
+                    if (throwable != null) {
+                        logger.error("Failed to subscribe to explicit MQTT topic: {}", topic, throwable);
+                    } else {
+                        logger.info("Successfully subscribed to explicit Emerald Heat Pump MQTT topic: {}", topic);
+
+                        // Fire off the status request immediately after subscribing
+                        requestStatusUpdate(config.uuid);
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Sends a control command to a specific Heat Pump via MQTT
+     */
+    public void sendControlMessage(String deviceId, JsonObject commandPayload) {
+        if (mqttClient == null) {
+            logger.warn("MQTT client not connected. Cannot send control message.");
+            return;
+        }
+
+        String propertyId = null;
+        String macAddress = null;
+
+        try {
+            // Retrieve the cached REST API metadata
+            List api = getApi();
+            if (api != null) {
+                for (int i = 0; i < api.info.property.length; i++) {
+                    for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
+                        if (deviceId.equals(api.info.property[i].heatpump[j].id)) {
+                            propertyId = api.info.property[i].id;
+                            macAddress = api.info.property[i].heatpump[j].macAddress;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Could not fetch API details for control message", e);
+        }
+
+        if (propertyId == null || macAddress == null) {
+            logger.warn("Missing property_id or mac_address. Cannot send control message for {}", deviceId);
+            return;
+        }
+
+        // Build the two-part JSON Array payload
+        JsonArray payloadArray = new JsonArray();
+        JsonObject metadata = new JsonObject();
+
+        int msgId = new Random().nextInt(9900) + 100;
+
+        metadata.addProperty("msg_id", String.valueOf(msgId));
+        metadata.addProperty("namespace", "business");
+        metadata.addProperty("direction", "app2gw");
+        metadata.addProperty("command", "control"); // Setting command to 'control'
+        metadata.addProperty("property_id", propertyId);
+        metadata.addProperty("device_id", deviceId);
+        metadata.addProperty("hw_id", macAddress);
+
+        payloadArray.add(metadata);
+        payloadArray.add(commandPayload); // Injecting the actual state changes
+
+        String payload = payloadArray.toString();
+        String topic = "ep/heat_pump/to_gw/" + deviceId;
+
+        PublishPacket.PublishPacketBuilder pubBuilder = new PublishPacket.PublishPacketBuilder();
+        pubBuilder.withTopic(topic);
+        pubBuilder.withPayload(payload.getBytes(StandardCharsets.UTF_8));
+        pubBuilder.withQOS(QOS.AT_LEAST_ONCE);
+
+        mqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
+            if (throwable != null) {
+                logger.error("Failed to send control message to HWS {}", deviceId, throwable);
+            } else {
+                logger.debug("Successfully sent control message to HWS {}: {}", deviceId, commandPayload.toString());
+            }
+        });
+    }
+
+    private void requestStatusUpdate(String deviceId) {
+        if (mqttClient == null)
+            return;
+
+        String propertyId = null;
+        String macAddress = null;
+
+        try {
+            // Retrieve the cached REST API response
+            List api = getApi();
+            if (api != null) {
+                for (int i = 0; i < api.info.property.length; i++) {
+                    for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
+                        if (deviceId.equals(api.info.property[i].heatpump[j].id)) {
+                            // Extract required metadata.
+                            // Verify these variable names match your POJO mapping exactly!
+                            propertyId = api.info.property[i].id;
+                            macAddress = api.info.property[i].heatpump[j].macAddress;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Could not fetch API details for status update", e);
+        }
+
+        if (propertyId == null || macAddress == null) {
+            logger.warn("Missing property_id or mac_address. Cannot send comp_query for {}", deviceId);
+            return;
+        }
+
+        // Build the two-part JSON Array payload
+        JsonArray payloadArray = new JsonArray();
+        JsonObject metadata = new JsonObject();
+
+        int msgId = new Random().nextInt(9900) + 100; // Random msg_id between 100 and 9999
+
+        metadata.addProperty("msg_id", String.valueOf(msgId));
+        metadata.addProperty("namespace", "business");
+        metadata.addProperty("direction", "app2gw");
+        metadata.addProperty("command", "comp_query");
+        metadata.addProperty("property_id", propertyId);
+        metadata.addProperty("device_id", deviceId);
+        metadata.addProperty("hw_id", macAddress);
+
+        payloadArray.add(metadata);
+        payloadArray.add(new JsonObject()); // Second array element is an empty object
+
+        String payload = payloadArray.toString();
+        String topic = "ep/heat_pump/to_gw/" + deviceId;
+
+        // Construct the AWS CRT Publish Packet
+        PublishPacket.PublishPacketBuilder pubBuilder = new PublishPacket.PublishPacketBuilder();
+        pubBuilder.withTopic(topic);
+        pubBuilder.withPayload(payload.getBytes(StandardCharsets.UTF_8));
+        pubBuilder.withQOS(QOS.AT_LEAST_ONCE);
+
+        mqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
+            if (throwable != null) {
+                logger.error("Failed to request status update (comp_query) for HWS {}", deviceId, throwable);
+            } else {
+                logger.debug("Successfully sent comp_query to HWS {}", deviceId);
+            }
+        });
     }
 
     protected void pollData() {

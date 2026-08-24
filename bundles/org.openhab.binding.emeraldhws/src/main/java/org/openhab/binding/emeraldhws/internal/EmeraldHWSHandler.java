@@ -17,6 +17,7 @@ import static org.openhab.binding.emeraldhws.internal.EmeraldHWSBindingConstants
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.emeraldhws.internal.api.List;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -32,8 +33,9 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link EmeraldHWSHandler} is responsible for handling commands, which are
@@ -56,17 +58,58 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_CURRENT_TEMPERATURE.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
+        if (command instanceof RefreshType) {
+            // Optional: You could call bridgeHandler.requestStatusUpdate(config.uuid) here
+            return;
+        }
 
-            // TODO: handle command
+        if (bridgeHandler == null || config == null || config.uuid == null) {
+            logger.warn("Thing not fully configured or bridge offline. Cannot send command.");
+            return;
+        }
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        JsonObject payload = new JsonObject();
+
+        switch (channelUID.getId()) {
+            case EmeraldHWSBindingConstants.CHANNEL_POWER:
+                if (command == OnOffType.ON) {
+                    payload.addProperty("switch", 1);
+                } else if (command == OnOffType.OFF) {
+                    payload.addProperty("switch", 0);
+                }
+                break;
+
+            case EmeraldHWSBindingConstants.CHANNEL_MODE:
+                String mode = command.toString();
+                if ("Boost".equalsIgnoreCase(mode)) {
+                    payload.addProperty("mode", 0);
+                } else if ("Normal".equalsIgnoreCase(mode)) {
+                    payload.addProperty("mode", 1);
+                } else if ("Quiet".equalsIgnoreCase(mode)) {
+                    payload.addProperty("mode", 2);
+                }
+                break;
+
+            case EmeraldHWSBindingConstants.CHANNEL_SET_TEMPERATURE:
+                if (command instanceof QuantityType) {
+                    int temp = ((QuantityType<?>) command).intValue();
+                    payload.addProperty("temp_set", temp);
+                }
+                // Fallback in case openHAB sends it as a raw decimal
+                else if (command instanceof DecimalType) {
+                    int temp = ((DecimalType) command).intValue();
+                    payload.addProperty("temp_set", temp);
+                }
+                break;
+
+            default:
+                logger.debug("Command not supported or unhandled for channel: {}", channelUID.getId());
+                return;
+        }
+
+        // Only send the MQTT packet if we successfully mapped a command payload
+        if (payload.size() > 0) {
+            bridgeHandler.sendControlMessage(config.uuid, payload);
         }
     }
 
@@ -127,7 +170,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
     public void updateChannels() {
         config = getConfigAs(EmeraldHWSConfiguration.class);
-        logger.info("Updating channels");
+        logger.debug("Updating channels");
         List api = getApi();
         if (api != null) {
             for (int i = 0; i < api.info.property.length; i++) {
@@ -156,26 +199,94 @@ public class EmeraldHWSHandler extends BaseThingHandler {
      * Called by the Bridge when a real-time MQTT packet arrives for this specific Thing's UUID
      */
     public void updateFromMqtt(String jsonPayload) {
-        logger.debug("Updating Thing {} from MQTT real-time data", thing.getUID().getId());
+        logger.debug("Raw MQTT Payload received for {}: {}", thing.getUID().getId(), jsonPayload);
 
         try {
-            Gson gson = new Gson();
-            JsonObject payload = gson.fromJson(jsonPayload, JsonObject.class);
+            JsonElement element = JsonParser.parseString(jsonPayload);
+            java.util.List<JsonObject> objectsToProcess = new java.util.ArrayList<>();
 
-            // Example extraction (adapt the keys based on the actual Emerald AWS IoT payload)
-            if (payload.has("temp_current")) {
-                int currentTemp = payload.get("temp_current").getAsInt();
-                updateState(EmeraldHWSBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
-                        new QuantityType<>(currentTemp, SIUnits.CELSIUS));
+            // Emerald sends an array where index 0 is metadata, and index 1 contains state updates
+            if (element.isJsonArray()) {
+                for (JsonElement arrElement : element.getAsJsonArray()) {
+                    if (arrElement.isJsonObject()) {
+                        objectsToProcess.add(arrElement.getAsJsonObject());
+                    }
+                }
+            }
+            // Fallback just in case they ever send a raw object instead of an array
+            else if (element.isJsonObject()) {
+                objectsToProcess.add(element.getAsJsonObject());
             }
 
-            if (payload.has("temp_set")) {
-                int setTemp = payload.get("temp_set").getAsInt();
-                updateState(EmeraldHWSBindingConstants.CHANNEL_SET_TEMPERATURE,
-                        new QuantityType<>(setTemp, SIUnits.CELSIUS));
+            boolean dataFound = false;
+
+            // Check every object in the payload for our target keys
+            for (JsonObject payload : objectsToProcess) {
+
+                // 1. Current Temperature
+                if (payload.has("temp_current")) {
+                    int currentTemp = payload.get("temp_current").getAsInt();
+                    updateState(EmeraldHWSBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
+                            new QuantityType<>(currentTemp, SIUnits.CELSIUS));
+                    dataFound = true;
+                }
+
+                // 2. Set Temperature
+                if (payload.has("temp_set")) {
+                    int setTemp = payload.get("temp_set").getAsInt();
+                    updateState(EmeraldHWSBindingConstants.CHANNEL_SET_TEMPERATURE,
+                            new QuantityType<>(setTemp, SIUnits.CELSIUS));
+                    dataFound = true;
+                }
+
+                // 3. Power State
+                if (payload.has("switch")) {
+                    String switchState = payload.get("switch").getAsString();
+                    OnOffType powerState = "on".equalsIgnoreCase(switchState) ? OnOffType.ON : OnOffType.OFF;
+                    updateState(EmeraldHWSBindingConstants.CHANNEL_POWER, powerState);
+                    dataFound = true;
+                }
+
+                // 4. Operating Mode
+                if (payload.has("mode")) {
+                    int mode = payload.get("mode").getAsInt();
+                    if (mode == 0) {
+                        updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Boost"));
+                    } else if (mode == 1) {
+                        updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Normal"));
+                    } else if (mode == 2) {
+                        updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Quiet"));
+                    }
+                    dataFound = true;
+                }
+
+                // 5. Fault Code
+                if (payload.has("fault")) {
+                    int faultCode = payload.get("fault").getAsInt();
+                    // 0 usually indicates no fault.
+                    updateState(EmeraldHWSBindingConstants.CHANNEL_FAULT, new DecimalType(faultCode));
+                    dataFound = true;
+                }
+                // 6. Defrost Status
+                if (payload.has("defrost")) {
+                    String defrostState = payload.get("defrost").getAsString();
+                    OnOffType isDefrosting = "1".equals(defrostState) ? OnOffType.ON : OnOffType.OFF;
+                    updateState(EmeraldHWSBindingConstants.CHANNEL_DEFROST, isDefrosting);
+                    dataFound = true;
+                }
+                // 7. Work State
+                if (payload.has("work_state")) {
+                    int workState = payload.get("work_state").getAsInt();
+                    updateState(EmeraldHWSBindingConstants.CHANNEL_WORK_STATE, new DecimalType(workState));
+                    dataFound = true;
+                }
             }
 
-            // Add additional channel updates as discovered in the MQTT payload...
+            if (dataFound) {
+                logger.debug("Successfully mapped MQTT data to openHAB channels.");
+            } else {
+                logger.trace("Parsed MQTT message did not contain channel state data (Metadata only).");
+            }
 
         } catch (Exception e) {
             logger.warn("Error parsing incoming MQTT message for Thing {}: {}", thing.getUID().getId(), e.getMessage());
