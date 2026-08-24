@@ -25,8 +25,7 @@ public class OcppBindingConstants {
 
     public static final String BINDING_ID = "ocpp";
 
-    // Thing Type UIDs — three tiers mirroring the OCPP topology:
-    // server (the JSON WebSocket endpoint) > chargepoint (one charger) > connector (one outlet).
+    // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
     public static final ThingTypeUID THING_TYPE_CHARGEPOINT = new ThingTypeUID(BINDING_ID, "chargepoint");
     public static final ThingTypeUID THING_TYPE_CONNECTOR = new ThingTypeUID(BINDING_ID, "connector");
@@ -34,7 +33,6 @@ public class OcppBindingConstants {
     // Chargepoint channels
     public static final String CHANNEL_CONNECTED = "connected";
     public static final String CHANNEL_LAST_SEEN = "last-seen";
-    // Reset addresses the charge point, not a single outlet, so it lives on the chargepoint.
     public static final String CHANNEL_RESET = "reset";
 
     // Connector channels — control
@@ -49,7 +47,7 @@ public class OcppBindingConstants {
     public static final String CHANNEL_UNLOCK = "unlock";
     public static final String CHANNEL_HARDWARE_MAX_CURRENT = "hardware-max-current";
 
-    // Connector channels — metering (fixed per-phase layout: explicit L1/L2/L3)
+    // Connector channels — metering
     public static final String CHANNEL_CURRENT_L1 = "current-import-l1";
     public static final String CHANNEL_CURRENT_L2 = "current-import-l2";
     public static final String CHANNEL_CURRENT_L3 = "current-import-l3";
@@ -85,7 +83,7 @@ public class OcppBindingConstants {
     public static final String CHANNEL_ID_TAG = "id-tag";
     public static final String CHANNEL_LOCAL_AUTH_LIST = "local-auth-list";
     public static final String CHANNEL_LEARN_CARD = "learn-card";
-    // Thing property persisting the local authorization list (comma-separated idTags) across restarts.
+    // Persisted local authorization list (comma-separated idTags).
     public static final String PROPERTY_LOCAL_AUTH_LIST = "localAuthList";
     public static final String CHANNEL_TRANSACTION_ID = "transaction-id";
     public static final String CHANNEL_METER_START = "meter-start";
@@ -99,11 +97,7 @@ public class OcppBindingConstants {
     public static final String CONFIG_CHARGE_POINT_ID = "chargePointId";
     public static final String CONFIG_CONNECTOR_ID = "connectorId";
 
-    /**
-     * Representation property of a connector. A connector id alone repeats across chargers, and the
-     * framework matches a representation property on thing type plus value without considering the
-     * bridge, so it has to carry the charge point id to stay unique.
-     */
+    // A connector id repeats across chargers, so the representation property carries the charge point id too.
     public static final String PROPERTY_UNIQUE_ID = "uniqueId";
 
     public static String uniqueConnectorId(String chargePointId, int connectorId) {

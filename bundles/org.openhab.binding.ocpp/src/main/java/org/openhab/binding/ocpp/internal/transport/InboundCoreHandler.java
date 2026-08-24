@@ -43,20 +43,8 @@ import eu.chargetime.ocpp.model.core.StopTransactionConfirmation;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 
 /**
- * Handles inbound OCPP 1.6 Core-profile requests from chargers, answering each with a spec-valid
- * confirmation and forwarding the load-bearing events (boot, status, metering, transactions) to the
- * {@link OcppServerListener}. Authorize / StartTransaction honour the optional idTag whitelist, and
- * the BootNotification response carries the per-charger heartbeat.
- *
- * <p>
- * A {@code null} return here makes the library reply CallError {@code NotSupported}; a thrown
- * exception makes it reply {@code InternalError}. Both are deliberately avoided for the Core profile.
- *
- * <p>
- * The {@code handle*} overrides carry {@code @NonNullByDefault({})} because the library's
- * {@link ServerCoreEventHandler} leaves its parameters null-unconstrained; a {@code @NonNull}
- * override of an unconstrained parameter is rejected by the null checker. The library never actually
- * passes null here.
+ * Handles inbound OCPP 1.6 Core-profile requests, answering each with a spec-valid confirmation and
+ * forwarding events to the {@link OcppServerListener}.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -87,7 +75,6 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
         logger.debug("BootNotification from session {}: vendor={} model={} fw={}", sessionIndex,
                 request.getChargePointVendor(), request.getChargePointModel(), request.getFirmwareVersion());
         listener.onBootNotification(sessionIndex, request);
-        // UTC: this timestamp (like the heartbeat's) is what chargers synchronize their clock to.
         return new BootNotificationConfirmation(ZonedDateTime.now(ZoneOffset.UTC), listener.heartbeatFor(sessionIndex),
                 RegistrationStatus.Accepted);
     }
@@ -96,7 +83,6 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
     @NonNullByDefault({})
     public DataTransferConfirmation handleDataTransferRequest(UUID sessionIndex, DataTransferRequest request) {
         logger.debug("DataTransfer from session {} vendorId {}", sessionIndex, request.getVendorId());
-        // Spec-correct default for an unrecognised vendor id (rather than a CallError).
         return new DataTransferConfirmation(DataTransferStatus.UnknownVendorId);
     }
 
@@ -115,8 +101,6 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
         try {
             listener.onMeterValues(sessionIndex, request);
         } catch (RuntimeException e) {
-            // Always acknowledge received metering — a processing failure is ours to log, not a
-            // protocol error (InternalError) to hand back to the charger.
             logger.warn("Failed to process MeterValues from session {}: {}", sessionIndex, e.getMessage());
         }
         return new MeterValuesConfirmation();

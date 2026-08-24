@@ -21,38 +21,20 @@ import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
 
 /**
- * The seam between this binding and the underlying OCPP protocol library. Everything OCPP-wire lives
- * behind this interface, so the concrete library (currently ChargeTime OCA-OCPP 1.6-J) can be
- * swapped or upgraded without touching the thing handlers.
+ * The seam between this binding and the underlying OCPP protocol library.
  *
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public interface OcppTransport {
 
-    /**
-     * Bind the WebSocket endpoint and confirm it is accepting connections before returning. Because the
-     * underlying server binds asynchronously, this may block briefly while startup is verified, and
-     * throws if the endpoint does not come up.
-     */
     void start(String host, int port);
 
-    /**
-     * Close the endpoint and drop all sessions.
-     */
     void stop();
 
     boolean isRunning();
 
-    /**
-     * Force-close a session (used to make a silent charger reconnect fresh).
-     */
     void closeSession(UUID session);
 
-    /**
-     * Send an outbound request (RemoteStart, SetChargingProfile, ChangeConfiguration, ...) to a
-     * charger session. The returned stage completes with the charger's confirmation, or completes
-     * exceptionally if the session is gone or the feature is unsupported.
-     */
     CompletionStage<Confirmation> send(UUID session, Request request);
 }

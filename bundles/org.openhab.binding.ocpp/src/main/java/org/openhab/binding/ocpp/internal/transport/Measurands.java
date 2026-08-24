@@ -21,11 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Helpers for negotiating the MeterValues measurand list with a charger.
  *
- * <p>
- * OCPP 1.6 has no way to ask a charger which measurands it supports; the only signal that one is
- * unsupported is a ChangeConfiguration Reject. So the supported set is found by elimination — drop
- * the last measurand and try again — rather than from any hardcoded list of "difficult" measurands.
- *
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
@@ -36,11 +31,7 @@ public final class Measurands {
     private Measurands() {
     }
 
-    /**
-     * Return {@code list} with its final comma-separated entry removed and every remaining entry
-     * trimmed. Returns the empty string when there is nothing left to drop to (null input, or a list
-     * that holds at most one entry).
-     */
+    /** Return {@code list} with its final comma-separated entry removed, or empty. */
     public static String dropLast(@Nullable String list) {
         if (list == null) {
             return "";

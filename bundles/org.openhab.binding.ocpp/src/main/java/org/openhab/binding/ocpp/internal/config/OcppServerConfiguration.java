@@ -17,9 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration for the {@code server} bridge — the OCPP JSON WebSocket endpoint. The boot-config
- * fields drive the ChangeConfiguration burst each charger receives after it boots; a field left at
- * its "unset" default (empty string, or a negative interval) is simply not sent.
+ * Configuration for the {@code server} bridge — the OCPP JSON WebSocket endpoint.
  *
  * @author Stamate Viorel - Initial contribution
  */
