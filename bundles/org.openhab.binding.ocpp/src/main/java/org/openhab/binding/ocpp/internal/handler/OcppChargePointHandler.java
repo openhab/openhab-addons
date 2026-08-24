@@ -109,7 +109,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private boolean dispatching;
     private @Nullable PendingSend inFlight;
     private long dispatchEpoch;
-    // Guards the coupled (session, operational) write; never takes dispatchLock or does I/O under it.
     private final Object stateLock = new Object();
 
     private volatile String chargePointId = "";
@@ -226,14 +225,13 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return;
         }
         this.server = serverHandler;
-        // Registration can take this charge point ONLINE synchronously; a status set after would clobber it.
         updateStatus(ThingStatus.UNKNOWN);
         serverHandler.registerChargePoint(chargePointId, this);
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        // Deliberately not super: must re-register with a re-initialized bridge, whose charge-point map is empty.
+        // Not super: bridge re-init leaves its charge-point map empty; must re-register.
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             OcppServerBridgeHandler serverHandler = serverHandler();
             if (serverHandler != null && !chargePointId.isBlank()) {
@@ -316,7 +314,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         new IllegalStateException("Charger " + chargePointId + " not ready and its queue is full"));
             }
             pendingSends.add(pending);
-            // Re-check after enqueuing: a concurrent disconnect or readiness flip may have missed this entry.
             if (session == null) {
                 if (pendingSends.remove(pending)) {
                     future.completeExceptionally(
@@ -373,7 +370,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             PendingSend next;
             boolean superseded;
             synchronized (dispatchLock) {
-                // A superseded epoch means a session change owns the dispatcher now; stop without clearing dispatching.
                 if (epoch != dispatchEpoch) {
                     return;
                 }
@@ -449,8 +445,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             toFail.add(pending);
         }
         synchronized (dispatchLock) {
-            // Bump the epoch to kill the active drain chain, then abandon the in-flight request the
-            // library never completes on session close — else the successor stalls till its timeout reaper.
+            // Library never completes an in-flight request on session close; abandon it.
             dispatchEpoch++;
             PendingSend current = inFlight;
             if (current != null) {
@@ -463,7 +458,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             }
             dispatching = false;
         }
-        // Complete outside the lock: dependent stages run synchronously and can re-enter the dispatcher.
         for (PendingSend p : toFail) {
             p.future().completeExceptionally(new IllegalStateException("Charger " + chargePointId + " disconnected"));
         }
@@ -474,7 +468,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     public void onConnected(UUID session) {
-        // Publish the new session and clear readiness together, before abandoning the old session's work.
         synchronized (stateLock) {
             bootAccepted = false;
             operational = false;
@@ -487,8 +480,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_CONNECTED, OnOffType.ON);
         recordActivity();
-        // Nothing is sent here: OCPP 1.6 forbids any request before the BootNotification is accepted.
-        // This fallback only covers a charger that reopens its socket without booting again.
+        // OCPP 1.6 forbids any request before the BootNotification is accepted.
         cancel(statusFallbackTask);
         UUID connectedSession = session;
         statusFallbackTask = scheduler.schedule(() -> {
@@ -554,7 +546,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         setProperty(Thing.PROPERTY_MODEL_ID, request.getChargePointModel());
         setProperty(Thing.PROPERTY_FIRMWARE_VERSION, request.getFirmwareVersion());
         setProperty(Thing.PROPERTY_SERIAL_NUMBER, request.getChargePointSerialNumber());
-        // Deliberately not touch(): readiness must not flip before the boot confirmation is sent.
         recordActivity();
         UUID bootSession = session;
         if (bootSession == null) {
@@ -629,7 +620,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         OcppServerBridgeHandler serverHandler = server;
         boolean ownsTransaction = connector != null;
         if (connector == null && serverHandler != null) {
-            // Not in memory (restart mid-transaction): recover from persistence, scoped to this charge point.
+            // Not in memory after a restart mid-transaction; recover from persistence.
             Integer connectorId = serverHandler.transactionConnector(transactionId, chargePointId);
             if (connectorId != null) {
                 ownsTransaction = true;
@@ -834,7 +825,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         }
         if (index >= steps.size()) {
             if (allSucceeded.get()) {
-                // Latch on success only: a failed burst retries on the next boot.
                 appliedConfigFingerprint = fingerprint;
                 if (!steps.isEmpty()) {
                     logger.debug("Boot config for {} complete ({} steps)", chargePointId, steps.size());

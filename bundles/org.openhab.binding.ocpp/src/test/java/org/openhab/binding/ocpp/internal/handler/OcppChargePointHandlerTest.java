@@ -113,9 +113,8 @@ class OcppChargePointHandlerTest {
 
     @Test
     void aTransactionThatWasNeverStoppedIsDiscardedWhenTheNextOneStarts() {
-        // A connector runs one transaction at a time. If a StopTransaction is lost — which happens
-        // when a charger drops mid-session — the old entry must not be kept, otherwise the map grows
-        // for the lifetime of the binding and a late stop would address a session that is long gone.
+        // A connector runs one transaction at a time, so a new start must discard a prior one whose StopTransaction was
+        // lost (charger dropped mid-session) rather than leak it.
         handler.onStartTransaction(start(1), 100);
         handler.onStartTransaction(start(1), 101);
 
@@ -157,8 +156,7 @@ class OcppChargePointHandlerTest {
         assertFalse(handler.isReady(), "a just-connected charger has not booted yet");
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
-        // Readiness must NOT flip inside the boot handler — the confirmation has not been sent at
-        // that point — it arrives asynchronously afterwards.
+        // Readiness must NOT flip inside the boot handler; it flips asynchronously once the confirmation is sent.
         assertFalse(handler.isReady(), "not ready while the boot notification is still being handled");
         awaitReady();
     }
@@ -166,9 +164,8 @@ class OcppChargePointHandlerTest {
     @Test
     void becomingReadyReleasesConnectorsThatDeferredASend() {
         handler.onConnected(UUID.randomUUID());
-        // A heartbeat is the charger proving it is booted — e.g. after reopening its socket without a
-        // fresh BootNotification — and must release anything the connectors held back. The release
-        // runs off the library thread, hence the timeout.
+        // A heartbeat also proves the charger booted (e.g. socket reopened without a fresh BootNotification); the
+        // release runs off the library thread, hence the timeout.
         handler.onHeartbeat();
 
         verify(connector1, org.mockito.Mockito.timeout(2000)).onChargePointReady();

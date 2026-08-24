@@ -60,11 +60,6 @@ import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
 /**
  * Tests how {@link OcppConnectorHandler} turns a charger's reported status into channel state.
  *
- * <p>
- * The charging channel is deliberately driven by the reported status rather than by transaction
- * bookkeeping: a StopTransaction that never arrives would otherwise leave a connector showing a
- * charging session forever, which in turn misleads anything acting on that state.
- *
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
@@ -110,8 +105,6 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aSuspendedSessionIsStillAnActiveSession() {
-        // The car has paused, not unplugged — treating this as "not charging" would end the session
-        // in anything watching the channel.
         handler.onStatusNotification(status(ChargePointStatus.SuspendedEV));
 
         assertChannel(CHANNEL_CHARGING, OnOffType.ON);
@@ -208,8 +201,6 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aMeasurandTheChargerReportsGetsAChannelEvenIfItIsNotDeclared() {
-        // Optional telemetry is not declared on every connector: a charger that reports it gets the
-        // channel, one that never does stays free of channels that would only ever be empty.
         handler.onMeterValues(meterValues("SoC", null, "Percent", "62"));
 
         org.mockito.ArgumentCaptor<Thing> updated = org.mockito.ArgumentCaptor.forClass(Thing.class);
@@ -221,7 +212,6 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aDeclaredMeasurandDoesNotTriggerAThingUpdate() {
-        // Phased current maps to a statically declared channel, so nothing about the thing changes.
         handler.onMeterValues(meterValues("Current.Import", "L1", "A", "14.2"));
 
         verify(callback, org.mockito.Mockito.never()).thingUpdated(org.mockito.ArgumentMatchers.any());
@@ -230,9 +220,6 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aMultiBlockMeterValuesPublishesTheLastBlocksTimestamp() {
-        // A request can carry several MeterValue blocks; the mapper lets a later block overwrite an
-        // earlier one, so the timestamp channel must describe the last block (matching the states just
-        // published), not the first.
         java.time.ZonedDateTime older = java.time.ZonedDateTime.parse("2026-01-01T10:00:00Z");
         java.time.ZonedDateTime newer = java.time.ZonedDateTime.parse("2026-01-01T10:05:00Z");
         eu.chargetime.ocpp.model.core.SampledValue first = new eu.chargetime.ocpp.model.core.SampledValue("10");
@@ -256,20 +243,16 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aFaultLeavesAvailabilityAlone() {
-        // Faulted describes a fault, not whether the operator has taken the connector out of service,
-        // so it must not overwrite the availability the operator set.
+        // Faulted reports a fault, not the operator taking the connector out of service, so availability must stand.
         handler.onStatusNotification(status(ChargePointStatus.Faulted));
 
         verify(callback, org.mockito.Mockito.never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_AVAILABILITY)),
                 org.mockito.ArgumentMatchers.any());
     }
 
-    // --- pause / limit control: a resume must clear the cap, not re-send 0 A ---
-
     /**
-     * Wires a ready charge point as this connector's parent and lets it answer sends. The ONLINE
-     * bridge-status path is used rather than initialize(), so nothing is transmitted during set-up and
-     * every captured request comes from the command under test.
+     * Uses the ONLINE bridge-status path rather than initialize(), so set-up transmits nothing and every
+     * captured request comes from the command under test.
      */
     private OcppChargePointHandler attachReadyChargePoint() {
         return attachReadyChargePoint(ClearChargingProfileStatus.Accepted);
@@ -307,11 +290,8 @@ class OcppConnectorHandlerTest {
 
     @Test
     void unpausingWithoutALimitClearsTheProfileInsteadOfSuspending() {
-        // A user who only ever toggles the pause switch never sets a current limit, so the stored limit
-        // is 0. A pause is a 0 A profile (the charger reports SuspendedEVSE); un-pausing must NOT
-        // re-send 0 A — that leaves the connector suspended — but must REMOVE the cap so the charger
-        // returns to its own maximum. Reproduces a real report: an Alfen + BMW i4 stuck SuspendedEVSE
-        // after pause/un-pause because the resume put another 0 A on the wire.
+        // A 0 A profile suspends (charger reports SuspendedEVSE), so un-pausing with no stored limit must CLEAR the
+        // cap, not re-send 0 A. Real report: Alfen + BMW i4 stuck SuspendedEVSE after pause/un-pause.
         OcppChargePointHandler chargePoint = attachReadyChargePoint();
 
         command(CHANNEL_PAUSE, OnOffType.ON);
@@ -336,9 +316,6 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aZeroChargeLimitClearsTheCapRatherThanSuspending() {
-        // A 0 A charge limit is meaningless as a charge target — pause is how a connector is suspended.
-        // Setting the limit to 0 must therefore lift the cap (ClearChargingProfile), not install a 0 A
-        // profile that suspends the connector.
         OcppChargePointHandler chargePoint = attachReadyChargePoint();
 
         command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));
@@ -351,9 +328,8 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aResumeIsPublishedEvenWhenTheChargerReportsNoProfileToClear() {
-        // A charger with no cap installed answers ClearChargingProfile with Unknown, not Accepted (per
-        // OCPP 1.6, "no matching profile"). That still means the connector is uncapped, so the resume
-        // must publish the same "no limit" state — charge-limit UNDEF, pause OFF — as an Accepted clear.
+        // Per OCPP 1.6 a charger with no matching profile answers ClearChargingProfile Unknown, not Accepted; still
+        // uncapped, so the resume must publish the same "no limit" state.
         OcppChargePointHandler chargePoint = attachReadyChargePoint(ClearChargingProfileStatus.Unknown);
 
         command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));
@@ -367,8 +343,6 @@ class OcppConnectorHandlerTest {
 
     @Test
     void unpausingRestoresAPreviouslySetLimit() {
-        // Regression guard for the fix above: when a real limit WAS set, un-pausing must restore that
-        // limit with a SetChargingProfile, not clear the cap.
         OcppChargePointHandler chargePoint = attachReadyChargePoint();
 
         command(CHANNEL_CHARGE_LIMIT, new DecimalType(16));

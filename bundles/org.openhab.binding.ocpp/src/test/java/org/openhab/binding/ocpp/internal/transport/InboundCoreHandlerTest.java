@@ -41,9 +41,8 @@ import eu.chargetime.ocpp.model.core.StartTransactionConfirmation;
 import eu.chargetime.ocpp.model.core.StartTransactionRequest;
 
 /**
- * Tests the confirmations {@link InboundCoreHandler} returns for inbound Core-profile requests, and
- * the events it forwards. A wrong confirmation here is not a cosmetic problem: the library turns a
- * {@code null} return into a CallError, which a charger treats as a failed message.
+ * Tests the confirmations {@link InboundCoreHandler} returns for inbound Core-profile requests and the
+ * events it forwards; the library turns a {@code null} return into a CallError a charger treats as failed.
  *
  * @author Stamate Viorel - Initial contribution
  */

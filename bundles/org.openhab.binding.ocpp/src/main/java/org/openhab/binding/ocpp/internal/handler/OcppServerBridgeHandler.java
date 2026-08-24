@@ -229,7 +229,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             }
             return;
         }
-        // De-map any prior session before closing it, so onSessionClosed stays a no-op.
         List<UUID> staleSessions = new ArrayList<>();
         sessionChargePoints.entrySet().removeIf(entry -> {
             if (chargePointId.equals(entry.getValue()) && !session.equals(entry.getKey())) {
@@ -313,7 +312,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         String chargePointId = sessionChargePoints.get(session);
         Integer connectorId = request.getConnectorId();
         if (chargePointId != null && connectorId != null) {
-            // Persist at accept time, even before a Thing exists, so the stop can be routed.
+            // Persist at accept time so a later stop routes even before a Thing exists.
             rememberTransaction(transactionId, chargePointId, connectorId);
         }
         OcppChargePointHandler handler = chargePointId != null ? chargePoints.get(chargePointId) : null;
@@ -329,7 +328,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             handler.onStopTransaction(request);
             return;
         }
-        // No handler yet: clear the persisted-at-accept transaction here, guarded by charge point identity.
         String chargePointId = sessionChargePoints.get(session);
         Integer transactionId = request.getTransactionId();
         if (chargePointId != null && transactionId != null

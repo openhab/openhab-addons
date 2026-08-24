@@ -63,7 +63,6 @@ class OcppServerBridgeHandlerTest {
     private @NonNullByDefault({}) ThingHandlerCallback callback;
     private @NonNullByDefault({}) TestableBridgeHandler handler;
 
-    /** A minimal in-memory Storage so transaction persistence can be exercised. */
     private static final class MemoryStorage implements Storage<String> {
         private final Map<String, String> map = new HashMap<>();
 
@@ -98,7 +97,6 @@ class OcppServerBridgeHandlerTest {
         }
     }
 
-    /** Supplies a mock transport instead of binding a real socket. */
     private static final class TestableBridgeHandler extends OcppServerBridgeHandler {
         private final OcppTransport injected;
 
@@ -135,10 +133,8 @@ class OcppServerBridgeHandlerTest {
 
     @Test
     void aPasswordTheLibraryWouldRejectFailsInitializationInstead() {
-        // The embedded library only accepts 16-20 byte Basic-auth passwords and rejects every
-        // charger's handshake otherwise — before the binding's callback runs. A password outside
-        // that range must therefore fail the bridge configuration, not silently lock every charger
-        // out. (The thing-type pattern guards the UI; this guards file-defined things.)
+        // The embedded library only accepts 16-20 byte Basic-auth passwords, rejecting every handshake otherwise before
+        // our callback runs, so an out-of-range one must fail config, not silently lock out every charger.
         when(thing.getConfiguration()).thenReturn(new Configuration(java.util.Map.of("authPassword", "tooshort")));
 
         handler.initialize();
@@ -151,16 +147,12 @@ class OcppServerBridgeHandlerTest {
 
     @Test
     void aTransactionAcceptedBeforeItsHandlerExistsIsStillPersisted() {
-        // Passive-discovery race: a charger's session is mapped (it is in the inbox) but no
-        // charge-point/connector Thing exists yet, and it starts an authorized transaction. The
-        // mapping must be persisted at the bridge from the session identity and the request, so the
-        // charger does not hold an id openHAB can never recover, route a stop to, or remote-stop.
         handler.initialize();
         verify(callback, timeout(2000)).statusUpdated(any(),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
 
         UUID session = UUID.randomUUID();
-        handler.onSessionOpened(session, "charx", null); // maps session -> charx; no handler registered
+        handler.onSessionOpened(session, "charx", null);
         handler.onStartTransaction(session, new StartTransactionRequest(2, "tag", 0, ZonedDateTime.now()), 77);
 
         assertEquals(Integer.valueOf(77), handler.openTransactionFor("charx", 2),
@@ -169,16 +161,12 @@ class OcppServerBridgeHandlerTest {
 
     @Test
     void aTransactionStoppedBeforeItsHandlerExistsIsClearedFromTheStore() {
-        // Same passive-discovery race, but the charger STOPS the transaction while still in the inbox.
-        // Since the start was persisted at the bridge, the stop must clear it at the bridge too —
-        // otherwise the store keeps an already-finished transaction that a later restart recovers as
-        // active (routable to a RemoteStop or a TxProfile).
         handler.initialize();
         verify(callback, timeout(2000)).statusUpdated(any(),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
 
         UUID session = UUID.randomUUID();
-        handler.onSessionOpened(session, "charx", null); // mapped; no handler registered
+        handler.onSessionOpened(session, "charx", null);
         handler.onStartTransaction(session, new StartTransactionRequest(2, "tag", 0, ZonedDateTime.now()), 77);
         assertEquals(Integer.valueOf(77), handler.openTransactionFor("charx", 2));
 
@@ -191,7 +179,6 @@ class OcppServerBridgeHandlerTest {
     @Test
     void aReconnectUnderANewSessionClosesTheOldSocket() {
         handler.initialize();
-        // The server starts asynchronously; ONLINE means the (mock) transport is in place.
         verify(callback, timeout(2000)).statusUpdated(any(),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
 
@@ -200,20 +187,14 @@ class OcppServerBridgeHandlerTest {
         handler.onSessionOpened(first, "charx", null);
         handler.onSessionOpened(second, "charx", null);
 
-        // The stale session's socket is closed; the live one is left alone.
         verify(transport).closeSession(first);
         verify(transport, never()).closeSession(second);
     }
 
     @Test
     void aSessionWithoutAChargePointIdIsIgnored() {
-        // A charger that dials the bare root (ws://host:port/ with no path — a trailing-slash URL that
-        // leaves nothing after the slash) presents no charge point id. The library still opens a
-        // WebSocket session, but with no identity there is nothing to onboard it as, so the bridge
-        // ignores it: it maps nothing, discovers nothing, and does not persist a transaction under an
-        // empty id. If the guard regressed, onSessionOpened would map session -> "" and the start below
-        // would persist a transaction retrievable under "". (Seen with a V2C Trydan whose backend URL
-        // was ws://host:8887/ with the id in a separate field the charger never puts in the path.)
+        // A bare-root connection (ws://host:port/, empty path) still opens a WebSocket but carries no charge point id,
+        // so the bridge must map and persist nothing under "". Seen with a V2C Trydan.
         handler.initialize();
         verify(callback, timeout(2000)).statusUpdated(any(),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
@@ -228,9 +209,6 @@ class OcppServerBridgeHandlerTest {
 
     @Test
     void aBareRootConnectionWithoutAChargePointIdIsClosed() {
-        // A no-id session cannot be onboarded, and with ping-cleanup off by default nothing else owns
-        // it — so the bridge must close the socket rather than leave it open for repeated bare-root
-        // probes to accumulate. Mirrors the allow-list-reject branch, which already closes.
         handler.initialize();
         verify(callback, timeout(2000)).statusUpdated(any(),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
