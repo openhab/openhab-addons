@@ -186,7 +186,8 @@ EXTRA_JAVA_OPTS="-javaagent:/path/to/opentelemetry-javaagent.jar \
   -Dotel.metrics.exporter=none"
 ```
 
-Set `-Dotel.exporter.otlp.protocol` explicitly and make sure it matches your endpoint's port — `http/protobuf` typically listens on `4318`, `grpc` on `4317`. A protocol/port mismatch fails silently at the transport layer with no data arriving and no obvious error.
+Set `-Dotel.exporter.otlp.protocol` explicitly and make sure it matches your endpoint's port — `http/protobuf` typically listens on `4318`, `grpc` on `4317`.
+A protocol/port mismatch fails silently at the transport layer with no data arriving and no obvious error.
 
 The agent's own JVM metrics instrumentation overlaps with this bundle's Micrometer-based `jvm.*` meters, so running both without `-Dotel.metrics.exporter=none` produces two independently-sourced series for the same JVM. Disable the agent's metrics exporter to avoid that duplication, or leave it enabled if your backend deduplicates by resource identity.
 
