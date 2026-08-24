@@ -38,13 +38,13 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.voice.RecognitionStartEvent;
-import org.openhab.core.voice.RecognitionStopEvent;
-import org.openhab.core.voice.STTListener;
-import org.openhab.core.voice.STTService;
-import org.openhab.core.voice.STTServiceHandle;
-import org.openhab.core.voice.SpeechRecognitionErrorEvent;
-import org.openhab.core.voice.SpeechRecognitionEvent;
+import org.openhab.core.voice.stt.RecognitionStartEvent;
+import org.openhab.core.voice.stt.RecognitionStopEvent;
+import org.openhab.core.voice.stt.STTListener;
+import org.openhab.core.voice.stt.STTService;
+import org.openhab.core.voice.stt.STTServiceHandle;
+import org.openhab.core.voice.stt.SpeechRecognitionErrorEvent;
+import org.openhab.core.voice.stt.SpeechRecognitionEvent;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
@@ -150,10 +150,9 @@ public class GoogleSTTService implements STTService {
     }
 
     @Override
-    public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale,
-            Set<String> set) {
+    public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale) {
         AtomicBoolean aborted = new AtomicBoolean(false);
-        backgroundRecognize(sttListener, audioStream, aborted, locale, set);
+        backgroundRecognize(sttListener, audioStream, aborted, locale);
         return new STTServiceHandle() {
             @Override
             public void abort() {
@@ -215,7 +214,7 @@ public class GoogleSTTService implements STTService {
     }
 
     private Future<?> backgroundRecognize(STTListener sttListener, AudioStream audioStream, AtomicBoolean aborted,
-            Locale locale, Set<String> set) {
+            Locale locale) {
         Credentials credentials = getCredentials();
         return executor.submit(() -> {
             logger.debug("Background recognize starting");

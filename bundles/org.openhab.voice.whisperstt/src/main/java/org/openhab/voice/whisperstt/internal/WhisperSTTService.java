@@ -57,14 +57,14 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.rest.LocaleService;
-import org.openhab.core.voice.RecognitionStartEvent;
-import org.openhab.core.voice.RecognitionStopEvent;
-import org.openhab.core.voice.STTException;
-import org.openhab.core.voice.STTListener;
-import org.openhab.core.voice.STTService;
-import org.openhab.core.voice.STTServiceHandle;
-import org.openhab.core.voice.SpeechRecognitionErrorEvent;
-import org.openhab.core.voice.SpeechRecognitionEvent;
+import org.openhab.core.voice.stt.RecognitionStartEvent;
+import org.openhab.core.voice.stt.RecognitionStopEvent;
+import org.openhab.core.voice.stt.STTException;
+import org.openhab.core.voice.stt.STTListener;
+import org.openhab.core.voice.stt.STTService;
+import org.openhab.core.voice.stt.STTServiceHandle;
+import org.openhab.core.voice.stt.SpeechRecognitionErrorEvent;
+import org.openhab.core.voice.stt.SpeechRecognitionEvent;
 import org.openhab.voice.whisperstt.internal.WhisperSTTConfiguration.Mode;
 import org.openhab.voice.whisperstt.internal.utils.VAD;
 import org.osgi.framework.Constants;
@@ -284,7 +284,7 @@ public class WhisperSTTService implements STTService {
     }
 
     @Override
-    public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
+    public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale)
             throws STTException {
         AtomicBoolean aborted = new AtomicBoolean(false);
         try {
