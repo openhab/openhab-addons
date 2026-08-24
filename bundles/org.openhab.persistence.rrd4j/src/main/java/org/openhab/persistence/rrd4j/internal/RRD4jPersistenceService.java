@@ -126,12 +126,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private static final Set<String> SUPPORTED_TYPES = Set.of(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT,
             CoreItemFactory.DIMMER, CoreItemFactory.NUMBER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.COLOR);
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
-            new NamedThreadFactory("RRD4j"));
+    private final ScheduledExecutorService scheduler;
 
     private final Map<String, RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
 
     private final ConcurrentSkipListMap<Key, Double> storageMap = new ConcurrentSkipListMap<>(Key::compareTo);
+    private final Object flushLock = new Object();
 
     private static final String DATASOURCE_STATE = "state";
 
@@ -160,8 +160,14 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     RRD4jPersistenceService(ItemRegistry itemRegistry, Map<String, Object> config, Clock clock) {
+        this(itemRegistry, config, clock, Executors.newScheduledThreadPool(1, new NamedThreadFactory("RRD4j")));
+    }
+
+    RRD4jPersistenceService(ItemRegistry itemRegistry, Map<String, Object> config, Clock clock,
+            ScheduledExecutorService scheduler) {
         this.itemRegistry = itemRegistry;
         this.clock = clock;
+        this.scheduler = scheduler;
         storeJob = scheduler.scheduleWithFixedDelay(() -> doStore(false), 1, 1, TimeUnit.SECONDS);
         modified(config);
         active = true;
@@ -279,6 +285,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     protected void deactivate() {
         active = false;
         storeJob.cancel(false);
+        scheduler.shutdown();
 
         // make sure we really store everything
         doStore(true);
@@ -348,16 +355,19 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private void doStore(boolean force) {
-        long now = clock.instant().getEpochSecond();
-        while (!storageMap.isEmpty()) {
-            Key key = storageMap.firstKey();
-            if (now > key.timestamp || force) {
-                // no new elements can be added for this timestamp because we are already past that time or the service
-                // requires forced storing
-                Double value = storageMap.pollFirstEntry().getValue();
-                writePointToDatabase(key.name, value, key.timestamp);
-            } else {
-                return;
+        synchronized (flushLock) {
+            long now = clock.instant().getEpochSecond();
+            while (!storageMap.isEmpty()) {
+                Key key = storageMap.firstKey();
+                if (now > key.timestamp || force) {
+                    // no new elements can be added for this timestamp because we are already past that time or the
+                    // service
+                    // requires forced storing
+                    Double value = storageMap.pollFirstEntry().getValue();
+                    writePointToDatabase(key.name, value, key.timestamp);
+                } else {
+                    return;
+                }
             }
         }
     }

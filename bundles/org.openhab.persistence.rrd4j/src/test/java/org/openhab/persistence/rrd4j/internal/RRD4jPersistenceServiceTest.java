@@ -26,6 +26,9 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -254,6 +257,17 @@ class RRD4jPersistenceServiceTest {
     }
 
     @Test
+    void deactivationTerminatesScheduler() throws InterruptedException {
+        service.deactivate();
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        service = new RRD4jPersistenceService(itemRegistry, Map.of(), Clock.systemUTC(), scheduler);
+
+        service.deactivate();
+
+        assertTrue(scheduler.awaitTermination(5, TimeUnit.SECONDS));
+    }
+
+    @Test
     void serviceIdIsCorrect() throws Exception {
         RRD4jPersistenceService simpleService = new RRD4jPersistenceService(itemRegistry, Map.of());
         try {
@@ -277,6 +291,7 @@ class RRD4jPersistenceServiceTest {
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveWithInvalidDBConfig(boolean reloadAfterStore) throws Exception {
+        service.deactivate();
         service = new RRD4jPersistenceService(itemRegistry, Map.of("something.invalid", "invalid/path/to/db"));
 
         configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
