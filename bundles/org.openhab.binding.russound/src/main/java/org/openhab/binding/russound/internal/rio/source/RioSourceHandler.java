@@ -229,7 +229,7 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
             return;
         }
 
-        final RioSourceConfig config = getThing().getConfiguration().as(RioSourceConfig.class);
+        final RioSourceConfig config = getConfigAs(RioSourceConfig.class);
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
             return;

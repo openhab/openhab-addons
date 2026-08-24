@@ -69,6 +69,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RGBW_STATUS = "RGBW.GetStatus";
     public static final String SHELLYRPC_METHOD_RGBW_SET = "RGBW.Set";
     public static final String SHELLYRPC_METHOD_RGBW_SETCONFIG = "RGBW.SetConfig";
+    public static final String SHELLYRPC_METHOD_CCT_STATUS = "CCT.GetStatus";
+    public static final String SHELLYRPC_METHOD_CCT_SET = "CCT.Set";
+    public static final String SHELLYRPC_METHOD_CCT_SETCONFIG = "CCT.SetConfig";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
@@ -108,7 +111,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_PROFILE_MONOPHASE = "monophase";
     public static final String SHELLY2_PROFILE_TRIPHASE = "triphase";
     public static final String SHELLY2_PROFILE_RGBCCT = "rgbcct"; // Pro RGBWW PM: RGB:0 + CCT:0
-    public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1 (CCT deferred)
+    public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1
     public static final String SHELLY2_PROFILE_RGBX2LIGHT = "rgbx2light"; // Pro RGBWW PM: RGB:0 + Light:0/1
 
     // Button types/modes
@@ -404,10 +407,24 @@ public class Shelly2ApiJsonDTO {
             public static class Shelly2GetConfigLightNightMode {
                 public @Nullable Boolean enable;
                 public @Nullable Integer brightness;
+                public @Nullable Double[] rgb;
+                public @Nullable Double white;
+            }
+
+            public static class Shelly2ConfigLightPresets {
+                public static class Shelly2ConfigLightButtonPreset {
+                    public @Nullable Double brightness;
+                    public @Nullable Double[] rgb;
+                }
+
+                @SerializedName("button_doublepush")
+                public @Nullable Shelly2ConfigLightButtonPreset buttonDoublePush;
             }
 
             public @Nullable Integer id;
             public @Nullable String name;
+            @SerializedName("in_mode")
+            public @Nullable String inMode;
             @SerializedName("initial_state")
             public @Nullable String initialState;
             @SerializedName("auto_on")
@@ -418,10 +435,22 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Double autoOnDelay;
             @SerializedName("auto_off_delay")
             public @Nullable Double autoOffDelay;
+            @SerializedName("transition_duration")
+            public @Nullable Double transitionDuration;
+            @SerializedName("min_brightness_on_toggle")
+            public @Nullable Double minBrightnessOnToggle;
+            @SerializedName("button_fade_rate")
+            public @Nullable Integer buttonFadeRate;
+            @SerializedName("button_presets")
+            public @Nullable Shelly2ConfigLightPresets buttonPresets;
             @SerializedName("default")
             public @Nullable Shelly2GetConfigLightDefault defaultCfg;
             @SerializedName("night_mode")
             public @Nullable Shelly2GetConfigLightNightMode nightMode;
+            @SerializedName("range_map")
+            public @Nullable Double[] rangeMap;
+            @SerializedName("ct_range")
+            public @Nullable Integer[] ctRange; // CCT component only: [min, max] color temperature in Kelvin
         }
 
         public class Shelly2DeviceConfigLed {
@@ -467,6 +496,8 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DevConfigInput input2;
             @SerializedName("input:3")
             public Shelly2DevConfigInput input3;
+            @SerializedName("input:4")
+            public Shelly2DevConfigInput input4;
 
             @SerializedName("switch:0")
             public Shelly2DevConfigSwitch switch0;
@@ -514,10 +545,16 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Shelly2GetConfigLight light2;
             @SerializedName("light:3")
             public @Nullable Shelly2GetConfigLight light3;
+            @SerializedName("light:4")
+            public @Nullable Shelly2GetConfigLight light4;
             @SerializedName("rgb:0")
             public @Nullable Shelly2GetConfigLight rgb0;
             @SerializedName("rgbw:0")
             public @Nullable Shelly2GetConfigLight rgbw0;
+            @SerializedName("cct:0")
+            public @Nullable Shelly2GetConfigLight cct0;
+            @SerializedName("cct:1")
+            public @Nullable Shelly2GetConfigLight cct1;
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
@@ -599,11 +636,20 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Integer id;
             public @Nullable String source;
             public @Nullable Boolean output;
+            public @Nullable Double[] rgb;
             public @Nullable Double brightness;
+            public @Nullable Shelly2Energy aenergy;
+            public @Nullable Double apower;
+            public @Nullable Double current;
+            public @Nullable Double voltage;
+
+            public @Nullable Shelly2DeviceStatusTemp temperature;
             @SerializedName("timer_started_at")
             public @Nullable Double timerStartedAt;
             @SerializedName("timer_duration")
             public @Nullable Double timerDuration;
+            public @Nullable String[] flags;
+            public @Nullable Integer ct; // color temperature in Kelvin (CCT component)
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -795,11 +841,11 @@ public class Shelly2ApiJsonDTO {
             public Shelly2InputStatus input2;
             @SerializedName("input:3")
             public Shelly2InputStatus input3;
+            @SerializedName("input:4")
+            public Shelly2InputStatus input4;
             @SerializedName("input:100")
             public Shelly2InputStatus input100; // Digital Input from Add-On
 
-            @SerializedName("rgb:0")
-            public @Nullable Shelly2RGBWStatus rgb0;
             @SerializedName("rgbw:0")
             public @Nullable Shelly2RGBWStatus rgbw0;
 
@@ -858,6 +904,14 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Shelly2DeviceStatusLight light2;
             @SerializedName("light:3")
             public @Nullable Shelly2DeviceStatusLight light3;
+            @SerializedName("light:4")
+            public @Nullable Shelly2DeviceStatusLight light4;
+            @SerializedName("rgb:0")
+            public @Nullable Shelly2RGBWStatus rgb0;
+            @SerializedName("cct:0")
+            public @Nullable Shelly2DeviceStatusLight cct0;
+            @SerializedName("cct:1")
+            public @Nullable Shelly2DeviceStatusLight cct1;
 
             @SerializedName("temperature:0")
             public @Nullable Shelly2DeviceStatusTempId temperature0;
@@ -1083,6 +1137,7 @@ public class Shelly2ApiJsonDTO {
 
             // Dimmer / Light
             public Integer brightness;
+            public Integer ct; // color temperature in Kelvin (CCT.Set)
             @SerializedName("toggle_after")
             public Integer toggleAfter;
             public Integer white;

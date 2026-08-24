@@ -298,10 +298,16 @@ public class UnifiAccessNotificationRouter {
     private void handleDeviceDeleteEvent(Notification notification) {
         String deviceId = notification.eventObjectId;
         if (deviceId != null) {
+            // The topology changed; a cached bootstrap would resurrect the deleted device on
+            // the next sync within the cache TTL
+            var apiClient = bridgeHandler.getApiClient();
+            if (apiClient != null) {
+                apiClient.invalidateBootstrapCache();
+            }
             UnifiAccessBaseHandler bh = bridgeHandler.getBaseHandler(deviceId);
             if (bh != null) {
                 bh.updateStatus(org.openhab.core.thing.ThingStatus.OFFLINE,
-                        org.openhab.core.thing.ThingStatusDetail.GONE, "Device removed from controller");
+                        org.openhab.core.thing.ThingStatusDetail.GONE, "@text/offline.access-gone");
             }
         }
     }

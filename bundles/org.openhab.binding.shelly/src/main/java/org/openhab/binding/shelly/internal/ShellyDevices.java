@@ -112,6 +112,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PRODM2PM = "SPDM-002PE01EU";
     public static final String SHELLYDT_PLUSWALLDISPLAY = "SAWD-0A1XX10EU1";
     public static final String SHELLYDT_PLUSRGBWPM = "SNDC-0D4P10WW";
+    public static final String SHELLYDT_PRORGBWWPM = "SPDC-0D5PE16EU";
     public static final String SHELLYDT_PLUSSTRIP = "S4PL-00416EU";
     public static final String SHELLYDT_PLUSPLUGCPM = "S4PL-00116EU"; // Shelly Plus Plug CPM (Gen4)
     public static final String SHELLYDT_PLUSEM = "S3EM-002CXCEU";
@@ -327,7 +328,8 @@ public class ShellyDevices {
 
     // RGBW2 devices
     public static final Set<ThingTypeUID> GROUP_RGBW2_THING_TYPES = Set.of( //
-            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM);
+            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM,
+            THING_TYPE_SHELLYPRORGBWWPM);
 
     // All Light Bulbs / RGBW devices
     public static final Set<ThingTypeUID> GROUP_LIGHT_THING_TYPES = Stream
@@ -473,6 +475,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUSDIMMERG3, THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry(SHELLYDT_PRODM2PM, THING_TYPE_SHELLYPRODM2PM),
             Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM),
+            Map.entry(SHELLYDT_PRORGBWWPM, THING_TYPE_SHELLYPRORGBWWPM),
             Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM),
             Map.entry(SHELLYDT_PLUS3EM63, THING_TYPE_SHELLYPLUS3EM63),
             Map.entry(SHELLYDT_PLUSBLUGW, THING_TYPE_SHELLYPLUSBLUGW), //
@@ -662,6 +665,7 @@ public class ShellyDevices {
             Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyprodm2pm", THING_TYPE_SHELLYPRODM2PM),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
+            Map.entry("shellyprorgbwwpm", THING_TYPE_SHELLYPRORGBWWPM),
             Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
             Map.entry("shellyblugw", THING_TYPE_SHELLYPLUSBLUGW), //
             Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW), //

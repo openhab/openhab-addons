@@ -95,6 +95,11 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
     }
 
     @Override
+    public <T> T getConfigAs(Class<T> configurationClass) {
+        return super.getConfigAs(configurationClass);
+    }
+
+    @Override
     public void initialize() {
         this.updateStatus(ThingStatus.UNKNOWN);
 

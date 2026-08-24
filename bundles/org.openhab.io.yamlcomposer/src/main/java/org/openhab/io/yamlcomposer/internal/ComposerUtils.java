@@ -40,7 +40,7 @@ import org.snakeyaml.engine.v2.schema.CoreSchema;
 import org.snakeyaml.engine.v2.schema.Schema;
 
 /**
- * Pure utility functions for YAML preprocessing.
+ * Pure utility functions for YAML loading and output.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
@@ -194,7 +194,7 @@ final class ComposerUtils {
             // --- Level 2 Logic (Items or List Elements) ---
             // Matches exactly 2 spaces followed by a non-whitespace character.
             // This targets siblings within a top-level section.
-            else if (line.matches("^ {2}[^ \\t].*")) {
+            else if (line.matches("^ {2}[^ \\t\\-].*")) {
                 if (hasSeenLevel2) {
                     sb.append("\n");
                 }

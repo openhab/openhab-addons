@@ -312,7 +312,7 @@ public class AirqHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration().as(AirqConfiguration.class);
+        config = getConfigAs(AirqConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA_MSEC,

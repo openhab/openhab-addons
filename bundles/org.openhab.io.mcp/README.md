@@ -163,6 +163,39 @@ claude mcp add --transport http openhab http://openhab.local:8080/mcp \
 
 Works with both direct LAN URLs and Cloud URLs.
 
+#### GitHub Copilot app
+
+In the GitHub Copilot app, add a new MCP server and fill in the form with the **HTTP** transport selected.
+
+1. Open **Settings → MCP Servers**.
+1. Click **Add server**.
+1. Enter **Server name**: `openHAB`.
+1. Select **HTTP**.
+1. Enter **URL**: `http://openhab.local:8080/mcp`.
+1. Add a header with name `Authorization` and value `Bearer <your-openhab-token>`.
+1. Save the server.
+
+#### GitHub Copilot in VS Code
+
+VS Code 1.99+ can connect to HTTP MCP servers directly.
+You can store the configuration per-workspace in `.vscode/mcp.json`, or globally via **MCP: Open User Configuration**.
+
+```json
+{
+  "servers": {
+    "openhab": {
+      "type": "http",
+      "url": "http://openhab.local:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer <your-openhab-token>"
+      }
+    }
+  }
+}
+```
+
+After saving, start the server from the `mcp.json` editor if VS Code shows a **Start** button, then open Copilot Chat in **Agent** mode to use the tools.
+
 #### Antigravity CLI (agy)
 
 Antigravity CLI configuration is stored in `~/.gemini/config/mcp_config.json`.

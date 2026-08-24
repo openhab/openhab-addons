@@ -220,7 +220,16 @@ public class ChromecastHandler extends BaseThingHandler {
             DISCONNECTED
         }
 
-        private ConnectionState connectionState = ConnectionState.UNKNOWN;
+        private volatile ConnectionState connectionState = ConnectionState.UNKNOWN;
+
+        /**
+         * Set once {@link #destroy()} has run. The connect retry is scheduled from inside
+         * {@link #connect()}'s own failure path, which can run concurrently with (or be woken by the
+         * interrupt from) {@code destroy()}, so cancelling the futures is not by itself enough to stop
+         * the retry loop - the losing connect would simply re-arm it afterwards and this Coordinator
+         * would keep retrying, and keep calling back into an already disposed handler, forever.
+         */
+        private volatile boolean destroyed;
 
         private Coordinator(ChromecastHandler handler, Thing thing, ChromeCast chromeCast, long refreshRate) {
             this.chromeCast = chromeCast;
@@ -253,6 +262,7 @@ public class ChromecastHandler extends BaseThingHandler {
         }
 
         void destroy() {
+            destroyed = true;
             connectionState = ConnectionState.DISCONNECTING;
 
             chromeCast.unregisterConnectionListener(eventReceiver);
@@ -271,14 +281,29 @@ public class ChromecastHandler extends BaseThingHandler {
         }
 
         private void connect() {
+            if (destroyed) {
+                return;
+            }
             try {
                 chromeCast.connect();
+
+                if (destroyed) {
+                    // destroy() ran while this connect was in flight. The connection is already being
+                    // torn down, so updating status here would report a disposed handler as online.
+                    return;
+                }
 
                 statusUpdater.updateMediaStatus(null);
                 statusUpdater.updateStatus(ThingStatus.ONLINE);
 
                 connectionState = ConnectionState.CONNECTED;
             } catch (final IOException | GeneralSecurityException e) {
+                if (destroyed) {
+                    // destroy() ran while this connect was in flight (and may well be the reason it
+                    // failed). Rescheduling here would outlive the handler.
+                    logger.debug("Connect failed after dispose, not reconnecting: {}", e.getMessage());
+                    return;
+                }
                 logger.debug("Connect failed, trying to reconnect: {}", e.getMessage());
                 statusUpdater.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         e.getMessage());
@@ -287,6 +312,9 @@ public class ChromecastHandler extends BaseThingHandler {
         }
 
         private void refresh() {
+            if (destroyed) {
+                return;
+            }
             commander.handleRefresh();
         }
     }

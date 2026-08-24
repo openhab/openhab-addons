@@ -108,8 +108,12 @@ public class ChannelMetadata extends BaseMetadata {
      *         not possible
      */
     public @Nullable State setState(Object value, String itemType, @Nullable String unitSymbol, boolean inverted) {
+        return setState(value, itemType, unitSymbol, inverted, determineFactor(unitSymbol));
+    }
+
+    public @Nullable State setState(Object value, String itemType, @Nullable String unitSymbol, boolean inverted,
+            Double factor) {
         this.unitSymbol = normalizeUnit(unitSymbol, value);
-        Double factor = determineFactor(unitSymbol);
         this.unit = UnitUtils.parseUnit(this.unitSymbol);
         if (unitSymbol != null && this.unit == null) {
             logger.warn("Node {}. Unable to parse unitSymbol '{}' from channel config, this is a bug", nodeId,

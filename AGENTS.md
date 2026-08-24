@@ -252,6 +252,8 @@ When modifying existing behavior, inspect existing tests first and extend them r
 - Integration tests are located in the `itests/` directory.
 - Use bndrun configurations to define realistic OSGi runtime environments.
 - For lifecycle-sensitive changes, consider activation, deactivation, reactivation, service arrival/removal, and different installation orders where relevant.
+- In bnd-based integration tests, do not infer a service-availability race merely from a direct `getService(...)` call during test setup. Services supplied by the resolved runtime are normally available before the tests execute; use polling only when the specific service can actually arrive asynchronously after test execution has started.
+- When an integration test modifies a provider tracked by an `AbstractRegistry`-based registry, ensure asynchronous registry activation has completed before modifying the provider. Use `waitForCompletedAsyncActivationTasks()` when available, before adding, updating, or removing provider elements.
 
 ### Build Validation
 
@@ -306,6 +308,5 @@ Before considering a change complete:
 When creating a pull request, read and follow `.github/PULL_REQUEST_TEMPLATE.md` for the repository's current PR requirements.
 
 - Treat HTML-commented template text as instructions and write visible Markdown that addresses the applicable requirements; do not copy the comment delimiters or leave the PR description hidden inside an HTML comment.
-- The template's guidance about linking to automatically generated pull-request build artifacts is currently outdated; do not add such artifact links.
 - Before creating or updating a pull request, verify that its title and description still match the current diff and scope, especially after follow-up changes.
 - Treat the template as the source of truth for the remaining pull-request requirements rather than duplicating them here.
