@@ -43,6 +43,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.util.UnitUtils;
@@ -150,6 +151,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 continue;
             }
             final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
+            ChannelBuilder channelBuilder = null;
 
             if (channelTypeUID
                     .equals(new ChannelTypeUID(MqttBindingConstants.BINDING_ID, MqttBindingConstants.NUMBER))) {
@@ -159,7 +161,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 // Number
                 String actualItemType = channel.getAcceptedItemType();
                 if (!expectedItemType.equals(actualItemType)) {
-                    ChannelBuilder channelBuilder = callback.createChannelBuilder(channel.getUID(), channelTypeUID)
+                    channelBuilder = callback.createChannelBuilder(channel.getUID(), channelTypeUID)
                             .withAcceptedItemType(expectedItemType).withConfiguration(channel.getConfiguration());
                     String label = channel.getLabel();
                     if (label != null) {
@@ -169,10 +171,21 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                     if (description != null) {
                         channelBuilder.withDescription(description);
                     }
-                    thingBuilder.withoutChannel(channel.getUID());
-                    thingBuilder.withChannel(channelBuilder.build());
-                    modified = true;
                 }
+            }
+
+            String channelTypeId = channelTypeUID.getId();
+            boolean shouldBeTrigger = MqttBindingConstants.TRIGGER.equals(channelTypeId) || (channelConfig.trigger
+                    && channelConfig.commandTopic.isBlank() && !MqttBindingConstants.IMAGE.equals(channelTypeId));
+            ChannelKind expectedKind = shouldBeTrigger ? ChannelKind.TRIGGER : ChannelKind.STATE;
+            if (channelBuilder == null && channel.getKind() != expectedKind) {
+                channelBuilder = ChannelBuilder.create(channel);
+            }
+            if (channelBuilder != null) {
+                channelBuilder.withKind(expectedKind);
+                thingBuilder.withoutChannel(channel.getUID());
+                thingBuilder.withChannel(channelBuilder.build());
+                modified = true;
             }
 
             try {

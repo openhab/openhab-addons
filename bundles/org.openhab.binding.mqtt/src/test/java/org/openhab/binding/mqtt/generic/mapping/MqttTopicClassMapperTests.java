@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -184,7 +185,7 @@ public class MqttTopicClassMapperTests {
             verify(f).subscribeAndReceive(any(), anyInt());
 
             // Simulate a received MQTT value and use the annotation data as input.
-            f.processMessage(f.topic, annotation.value().getBytes());
+            f.processMessage(f.topic, annotation.value().getBytes(StandardCharsets.UTF_8));
             verify(fieldChangedObserverMock, times(++loopCounter)).attributeChanged(any(), any(), any(), any(),
                     anyBoolean());
 
@@ -223,7 +224,7 @@ public class MqttTopicClassMapperTests {
 
         SubscribeFieldToMQTTtopic field = attributes.subscriptions.stream()
                 .filter(f -> "state".equals(f.field.getName())).findFirst().get();
-        field.processMessage(field.topic, "garbage".getBytes());
+        field.processMessage(field.topic, "garbage".getBytes(StandardCharsets.UTF_8));
         verify(fieldChangedObserverMock, times(0)).attributeChanged(any(), any(), any(), any(), anyBoolean());
         assertThat(attributes.state.toString(), is("unknown"));
     }
