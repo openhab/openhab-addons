@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
+import org.openhab.binding.modbus.sungrow.internal.mapper.impl.IHomeManagerDeviceTypeMapper;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
@@ -209,7 +210,7 @@ public class SungrowIHomeManagerHandler extends BaseModbusThingHandler {
             }
             int deviceTypeCode = ModbusBitUtilities.extractUInt16(registers.getBytes(), 0);
             getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_IHM_DEVICE_TYPE_CODE,
-                    String.valueOf(deviceTypeCode));
+                    IHomeManagerDeviceTypeMapper.instance().map(deviceTypeCode));
 
             // Protocol number is stored with swapped register order: register 2 holds the first two chars,
             // register 1 holds the last char and the NUL terminator.
