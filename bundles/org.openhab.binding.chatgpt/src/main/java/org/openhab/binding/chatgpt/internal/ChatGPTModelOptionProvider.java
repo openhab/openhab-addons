@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
- * The {@link ChatGPTModelOptionProvider} provides the available models from a OpenAI API-compatible service as options
+ * The {@link ChatGPTModelOptionProvider} provides the available models from an OpenAI API-compatible service as options
  * for the model configuration.
  *
  * @author Kai Kreuzer - Initial contribution
