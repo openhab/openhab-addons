@@ -85,7 +85,7 @@ Simple to set up; backend credentials are stored in openHAB's configuration.
 
 **Via an OTel Collector** — set `otlpURL` to the collector's HTTP endpoint (e.g. `http://localhost:4318`) and leave `otlpHeaders` empty.
 The collector receives all three signals from openHAB and forwards them to one or more backends.
-This keeps backend credentials out of openHAB, allows fan-out to multiple backends, and handles metric temporality conversion.
+  This keeps backend credentials out of openHAB, allows fan-out to multiple backends, and handles metric temporality conversion.
 See the [OTel Collector example](doc/otel-collector.md) for a ready-to-use configuration.
 
 ## Configuration
