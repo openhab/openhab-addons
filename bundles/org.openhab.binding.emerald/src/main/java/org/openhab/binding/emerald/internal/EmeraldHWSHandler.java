@@ -18,11 +18,10 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.emerald.internal.api.List;
+import org.openhab.binding.emerald.internal.api.EmeraldList;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -43,7 +42,7 @@ import com.google.gson.JsonParser;
  * The {@link EmeraldHWSHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author paul@smedley.id.au - Initial contribution
+ * @author Paul Smedley - Initial contribution
  */
 @NonNullByDefault
 public class EmeraldHWSHandler extends BaseThingHandler {
@@ -128,7 +127,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
         }
     }
 
-    protected @Nullable List getApi() {
+    protected @Nullable EmeraldList getApi() {
         EmeraldAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
             return null;
@@ -149,10 +148,17 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No Emerald Bridge thing selected");
             return;
         }
-        bridgeHandler = (EmeraldAccountHandler) bridge.getHandler();
+        if (bridge.getHandler() instanceof EmeraldAccountHandler emeraldAccountHandler) {
+            bridgeHandler = emeraldAccountHandler;
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "Emerald bridge handler is not initialized");
+            return;
+        }
+
         updateStatus(ThingStatus.ONLINE);
 
-        List api = getApi();
+        EmeraldList api = getApi();
         int found = 0;
         if (api != null) {
             for (int i = 0; i < api.info.property.length; i++) {
@@ -202,20 +208,16 @@ public class EmeraldHWSHandler extends BaseThingHandler {
     public void updateChannels() {
         config = getConfigAs(EmeraldHWSConfiguration.class);
         logger.debug("Updating channels");
-        List api = getApi();
+        EmeraldList api = getApi();
         if (api != null) {
             for (int i = 0; i < api.info.property.length; i++) {
                 for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
                     if (config.uuid.equals(api.info.property[i].heatpump[j].id)) {
                         updateState(EmeraldBindingConstants.CHANNEL_POWER,
-                                OnOffType.from(api.info.property[i].heatpump[j].lastState.switchOn));
-                        if (api.info.property[i].heatpump[j].lastState.mode == 0) {
-                            updateState(EmeraldBindingConstants.CHANNEL_MODE, new StringType("Boost"));
-                        } else if (api.info.property[i].heatpump[j].lastState.mode == 1) {
-                            updateState(EmeraldBindingConstants.CHANNEL_MODE, new StringType("Normal"));
-                        } else if (api.info.property[i].heatpump[j].lastState.mode == 2) {
-                            updateState(EmeraldBindingConstants.CHANNEL_MODE, new StringType("Quiet"));
-                        }
+                                OnOffType.from("1".equals(api.info.property[i].heatpump[j].lastState.switchOn)
+                                        || "on".equalsIgnoreCase(api.info.property[i].heatpump[j].lastState.switchOn)));
+                        updateState(EmeraldBindingConstants.CHANNEL_MODE,
+                                new DecimalType(api.info.property[i].heatpump[j].lastState.mode));
                         updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE, new QuantityType<>(
                                 api.info.property[i].heatpump[j].lastState.tempCurrent, SIUnits.CELSIUS));
                         updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE, new QuantityType<>(

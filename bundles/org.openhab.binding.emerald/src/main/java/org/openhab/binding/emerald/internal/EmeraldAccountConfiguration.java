@@ -15,15 +15,17 @@ package org.openhab.binding.emerald.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EmeraldHWSConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EmeraldConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Paul Smedley - Initial contribution
+ * @author paul@smedley.id.au - Initial contribution
  */
 @NonNullByDefault
-public class EmeraldHWSConfiguration {
+public class EmeraldAccountConfiguration {
 
     /**
-     * Configuration parameters for the Emerald HWS.
+     * Sample configuration parameters. Replace with your own.
      */
-    public String uuid = "";
+    public String email = "";
+    public String password = "";
+    public int refreshInterval = 600;
 }

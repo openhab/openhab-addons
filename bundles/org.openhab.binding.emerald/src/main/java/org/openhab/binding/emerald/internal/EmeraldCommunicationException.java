@@ -15,15 +15,24 @@ package org.openhab.binding.emerald.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EmeraldHWSConfiguration} class contains fields mapping thing configuration parameters.
+ * Exception for when an unexpected response is received from the Emerald servers.
  *
  * @author Paul Smedley - Initial contribution
+ *
  */
 @NonNullByDefault
-public class EmeraldHWSConfiguration {
+public class EmeraldCommunicationException extends Exception {
+    private static final long serialVersionUID = 529232811860854017L;
 
-    /**
-     * Configuration parameters for the Emerald HWS.
-     */
-    public String uuid = "";
+    public EmeraldCommunicationException(String message) {
+        super(message);
+    }
+
+    public EmeraldCommunicationException(Throwable ex) {
+        super(ex);
+    }
+
+    public EmeraldCommunicationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

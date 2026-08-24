@@ -17,13 +17,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Class for holding the set of parameters used to read the battery soe.
+ * Class for holding the list of devices from the Emerald API.
  *
  * @author Paul Smedley - Initial Contribution
  *
  */
 @NonNullByDefault
-public class List {
+public class EmeraldList {
     public int code;
     public String message = "";
 
@@ -84,6 +84,6 @@ public class List {
         public int tempCurrent;
     }
 
-    private List() {
+    private EmeraldList() {
     }
 }
