@@ -40,9 +40,13 @@
 				<default>https://api.openai.com/v1</default>
 				<advanced>true</advanced>
 				<options>
+					<option value="https://api.anthropic.com/v1">Anthropic</option>
+					<option value="https://api.deepseek.com">DeepSeek</option>
+					<option value="https://api.llmbase.ai/v1">LLMBase</option>
+					<option value="https://api.mistral.ai/v1">Mistral</option>
 					<option value="https://api.openai.com/v1">OpenAI</option>
 					<option value="https://openrouter.ai/api/v1">OpenRouter</option>
-					<option value="https://api.mistral.ai/v1">Mistral AI</option>
+					<option value="https://api.x.ai">SpaceXAI</option>
 				</options>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
