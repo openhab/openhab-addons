@@ -91,7 +91,7 @@ public class ShellyLightModel extends LightModel {
      */
     private final int[] cacheRGBX;
     private final int rgbxLength;
-    private final int componentIndex;
+    private final int channelGroupNumber;
     private final ShellyLightHandler handler;
     private final ReentrantLock lock = new ReentrantLock();
     private final boolean isOperatingModeReadOnly;
@@ -127,18 +127,18 @@ public class ShellyLightModel extends LightModel {
      * given {@link ThingTypeUID},the component index, and the {@link ShellyDeviceProfile}.
      * 
      * @param handler the ShellyLightHandler that owns this model
-     * @param componentIndex the component index of the light within the device
+     * @param channelGroupNumber the channel group number of the light within the device
      * @param deviceProfile the ShellyDeviceProfile for the device
      * @param stepSize the step size for the light model
      * @return a new ShellyLightModel with the correct parameters
      */
-    public static ShellyLightModel create(ShellyLightHandler handler, int componentIndex,
+    public static ShellyLightModel create(ShellyLightHandler handler, int channelGroupNumber,
             ShellyDeviceProfile deviceProfile, double stepSize) {
-        Parameters required = getRequiredParamaters(handler, componentIndex, deviceProfile.device.profile);
-        return new ShellyLightModel(handler, componentIndex, deviceProfile.device.profile, required.lightCapabilities,
-                required.rgbDataType, required.ledOperatingMode, reciprocal(deviceProfile.maxTemp),
-                reciprocal(deviceProfile.minTemp), stepSize, required.modelOperatingMode,
-                required.isOperatingModeReadOnly);
+        Parameters required = getRequiredParamaters(handler, channelGroupNumber, deviceProfile.device.profile);
+        return new ShellyLightModel(handler, channelGroupNumber, deviceProfile.device.profile,
+                required.lightCapabilities, required.rgbDataType, required.ledOperatingMode,
+                reciprocal(deviceProfile.maxTemp), reciprocal(deviceProfile.minTemp), stepSize,
+                required.modelOperatingMode, required.isOperatingModeReadOnly);
     }
 
     /**
@@ -237,7 +237,7 @@ public class ShellyLightModel extends LightModel {
      * Private constructor to create a ShellyLightModel with the given parameters.
      * 
      * @param handler the ShellyLightHandler that owns this model
-     * @param componentIndex the component index of the light within the device
+     * @param channelGroupNumber the channel group number of the light within the device
      * @param configProfile the Shelly Gen 2/3 device profile (if any), may be null e.g. for Gen 1 devices
      * @param lightCapabilities the required light capabilities
      * @param rgbDataType the required RGB data type
@@ -249,7 +249,7 @@ public class ShellyLightModel extends LightModel {
      * @param isOperatingModeReadOnly true if the operating mode is read-only, false otherwise
      * @throws IllegalArgumentException if the parameters are invalid
      */
-    private ShellyLightModel(ShellyLightHandler handler, int componentIndex, @Nullable String configProfile,
+    private ShellyLightModel(ShellyLightHandler handler, int channelGroupNumber, @Nullable String configProfile,
             LightCapabilities lightCapabilities, RgbDataType rgbDataType, LedOperatingMode ledOperatingMode,
             Double mirekCoolest, Double mirekWarmest, Double stepSize, Mode operatingMode,
             boolean isOperatingModeReadOnly) throws IllegalArgumentException {
@@ -258,7 +258,7 @@ public class ShellyLightModel extends LightModel {
         super.setLedOperatingMode(ledOperatingMode);
 
         this.handler = handler;
-        this.componentIndex = componentIndex;
+        this.channelGroupNumber = channelGroupNumber;
         this.operatingMode = operatingMode;
         this.baselineOperatingMode = operatingMode;
         this.isOperatingModeReadOnly = isOperatingModeReadOnly;
@@ -285,9 +285,9 @@ public class ShellyLightModel extends LightModel {
         cacheRGBX = Arrays.copyOf(baselineRGBX, rgbxLength);
         super.setRGBx(Arrays.stream(cacheRGBX).mapToDouble(i -> (double) i).toArray());
 
-        logger.debug("{}: created model from thingTypeUID:{} configProfile:{} for componentIndex:{} with "
+        logger.debug("{}: created model from thingTypeUID:{} configProfile:{} for channelGroupNumber:{} with "
                 + "capabilities:{}, rgbDataType:{}, ledOperatingMode:{}, shellyMode:{}, isModeReadOnly:{}, ct-range: [{} K..{} K]",
-                handler.thingName, thingTypeUID, configProfile, componentIndex, lightCapabilities, rgbDataType,
+                handler.thingName, thingTypeUID, configProfile, channelGroupNumber, lightCapabilities, rgbDataType,
                 ledOperatingMode, baselineOperatingMode, isOperatingModeReadOnly, Math.round(reciprocal(mirekWarmest)),
                 Math.round(reciprocal(mirekCoolest)));
     }
@@ -298,7 +298,7 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void handleCommand(Command command) {
-        logger.trace("{}: component:{} model handleCommand({})", handler.thingName, componentIndex, command);
+        logger.trace("{}: channelGroupNo:{} model handleCommand({})", handler.thingName, channelGroupNumber, command);
         super.handleCommand(command);
         if (command instanceof HSBType) {
             setMode(Mode.COLOR);
@@ -312,8 +312,8 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void handleColorTemperatureCommand(Command command) {
-        logger.trace("{}: component:{} model handleColorTemperatureCommand({})", handler.thingName, componentIndex,
-                command);
+        logger.trace("{}: channelGroupNo:{} model handleColorTemperatureCommand({})", handler.thingName,
+                channelGroupNumber, command);
         super.handleColorTemperatureCommand(command);
         setMode(Mode.WHITE);
     }
@@ -329,7 +329,8 @@ public class ShellyLightModel extends LightModel {
      * Set the brightness (i.e. the brightness when color temperature mode).
      */
     public void setBrightness(int brightness) {
-        logger.trace("{}: component:{} model setBrightness({})", handler.thingName, componentIndex, brightness);
+        logger.trace("{}: channelGroupNo:{} model setBrightness({})", handler.thingName, channelGroupNumber,
+                brightness);
         super.setBrightness(brightness);
         setMode(Mode.WHITE);
     }
@@ -339,7 +340,8 @@ public class ShellyLightModel extends LightModel {
      */
     public void setBrightness(Command command) {
         if (!(command instanceof HSBType)) {
-            logger.trace("{}: component:{} model setBrightness({})", handler.thingName, componentIndex, command);
+            logger.trace("{}: channelGroupNo:{} model setBrightness({})", handler.thingName, channelGroupNumber,
+                    command);
             super.handleCommand(command);
             setMode(Mode.WHITE);
         }
@@ -377,7 +379,8 @@ public class ShellyLightModel extends LightModel {
      * Set the color component at the given RGBX index.
      */
     public void setColor(RGBX index, int value) {
-        logger.trace("{}: component:{} model setColor({},{})", handler.thingName, componentIndex, index, value);
+        logger.trace("{}: channelGroupNo:{} model setColor({},{})", handler.thingName, channelGroupNumber, index,
+                value);
         cacheRGBX[index.ordinal()] = value;
         double[] rgbx = getRGBx();
         rgbx[index.ordinal()] = value;
@@ -428,9 +431,14 @@ public class ShellyLightModel extends LightModel {
      * Set the color temperature.
      */
     public void setColorTemp(double kelvin) {
-        logger.trace("{}: component:{} model setColorTemp({})", handler.thingName, componentIndex, kelvin);
+        logger.trace("{}: channelGroupNo:{} model setColorTemp({})", handler.thingName, channelGroupNumber, kelvin);
         super.setMirek(reciprocal(kelvin));
         setMode(Mode.WHITE);
+    }
+
+    public void setColorTempRange(int minKelvin, int maxKelvin) {
+        configSetMirekControlCoolest(reciprocal(maxKelvin));
+        configSetMirekControlWarmest(reciprocal(minKelvin));
     }
 
     /**
@@ -451,7 +459,7 @@ public class ShellyLightModel extends LightModel {
      * Set the effect.
      */
     public void setEffect(int value) {
-        logger.trace("{}: component:{} model setEffect({})", handler.thingName, componentIndex, value);
+        logger.trace("{}: channelGroupNo:{} model setEffect({})", handler.thingName, channelGroupNumber, value);
         effect = value;
     }
 
@@ -473,7 +481,7 @@ public class ShellyLightModel extends LightModel {
      * Set gain (i.e. the brightness when color mode).
      */
     public void setGain(double gain) {
-        logger.trace("{}: component:{} model setGain({})", handler.thingName, componentIndex, gain);
+        logger.trace("{}: channelGroupNo:{} model setGain({})", handler.thingName, channelGroupNumber, gain);
         super.setBrightness(gain);
         setMode(Mode.COLOR);
     }
@@ -483,7 +491,7 @@ public class ShellyLightModel extends LightModel {
      */
     public void setGain(Command command) {
         if (!(command instanceof HSBType)) {
-            logger.trace("{}: component:{} model setGain({})", handler.thingName, componentIndex, command);
+            logger.trace("{}: channelGroupNo:{} model setGain({})", handler.thingName, channelGroupNumber, command);
             super.handleCommand(command);
             setMode(Mode.COLOR);
         }
@@ -497,10 +505,10 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Get the light component index within the device.
+     * Get the the channel group number within the device.
      */
-    public int getComponentIndex() {
-        return componentIndex;
+    public int getChannelGroupNumber() {
+        return channelGroupNumber;
     }
 
     /**
@@ -519,7 +527,7 @@ public class ShellyLightModel extends LightModel {
      */
     public void setMode(Mode shellyMode) {
         if (!isOperatingModeReadOnly) {
-            logger.trace("{}: component:{} model setMode({})", handler.thingName, componentIndex, shellyMode);
+            logger.trace("{}: channelGroupNo:{} model setMode({})", handler.thingName, channelGroupNumber, shellyMode);
             this.operatingMode = shellyMode;
         }
     }
@@ -540,7 +548,7 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void setOnOff(boolean on) {
-        logger.trace("{}: component:{} model setOnOff({})", handler.thingName, componentIndex, on);
+        logger.trace("{}: channelGroupNo:{} model setOnOff({})", handler.thingName, channelGroupNumber, on);
         super.setOnOff(on);
     }
 
@@ -562,7 +570,7 @@ public class ShellyLightModel extends LightModel {
      * Set the RGBX values.
      */
     public void setRGBX(int[] rgbx) {
-        logger.trace("{}: component:{} model setRGBX({})", handler.thingName, componentIndex, rgbx);
+        logger.trace("{}: channelGroupNo:{} model setRGBX({})", handler.thingName, channelGroupNumber, rgbx);
         super.setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
         refreshCache(rgbx);
         setMode(Mode.COLOR);
@@ -656,7 +664,7 @@ public class ShellyLightModel extends LightModel {
         baselineOperatingMode = operatingMode;
         baselineBrightness = super.getBrightness(true);
         baselineColorTemperature = super.getColorTemperature();
-        logger.debug("{}: component:{} model acquired", handler.thingName, componentIndex);
+        logger.debug("{}: channelGroupNo:{} model acquired", handler.thingName, channelGroupNumber);
     }
 
     /**
@@ -667,10 +675,10 @@ public class ShellyLightModel extends LightModel {
     public boolean release() {
         boolean updated = handler.updateChannelsFromLightModel(this);
         if (updated) {
-            logger.debug("{}: component:{} model updated..\n => OLD: {}\n => NEW: {}", handler.thingName,
-                    componentIndex, baselineSnapshot, this);
+            logger.debug("{}: channelGroupNo:{} model updated..\n => OLD: {}\n => NEW: {}", handler.thingName,
+                    channelGroupNumber, baselineSnapshot, this);
         }
-        logger.debug("{}: component:{} model released", handler.thingName, componentIndex);
+        logger.debug("{}: channelGroupNo:{} model released", handler.thingName, channelGroupNumber);
         lock.unlock();
         return updated;
     }
@@ -695,8 +703,8 @@ public class ShellyLightModel extends LightModel {
             (isG3ColorBulb) ||
             (isProfileCCTX2) ||
             (isProfileLIGHT) ||
-            (isProfileRGBCCT && componentIndex > 0) ||
-            (isProfileRGBX2LIGHT && componentIndex > 0)
+            (isProfileRGBCCT && channelGroupNumber > 0) ||
+            (isProfileRGBX2LIGHT && channelGroupNumber > 0)
         // @formatter:on
         ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
     }
@@ -721,8 +729,8 @@ public class ShellyLightModel extends LightModel {
            (isG3ColorBulb) ||
            (isProfileRGB) ||
            (isProfileRGBW) ||
-           (isProfileRGBCCT && componentIndex == 0) || 
-           (isProfileRGBX2LIGHT && componentIndex == 0)
+           (isProfileRGBCCT && channelGroupNumber == 0) || 
+           (isProfileRGBX2LIGHT && channelGroupNumber == 0)
         // @formatter:on
         ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.COLOR == operatingMode);
     }
@@ -745,7 +753,7 @@ public class ShellyLightModel extends LightModel {
             (isG3DuoBulb) || 
             (isG3ColorBulb) || 
             (isProfileCCTX2) ||
-            (isProfileRGBCCT && componentIndex > 0) 
+            (isProfileRGBCCT && channelGroupNumber > 0) 
         // @formatter:on
         ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
     }
@@ -803,8 +811,8 @@ public class ShellyLightModel extends LightModel {
             // TODO isProfileCCTX2 ??
             (isProfileRGB) ||
             (isProfileRGBW) ||
-            (isProfileRGBCCT && componentIndex == 0) || 
-            (isProfileRGBX2LIGHT && componentIndex == 0)
+            (isProfileRGBCCT && channelGroupNumber == 0) || 
+            (isProfileRGBX2LIGHT && channelGroupNumber == 0)
         // @formatter:on
         ;
     }
@@ -823,7 +831,7 @@ public class ShellyLightModel extends LightModel {
             // TODO isProfileCCTX2 ??
             // TODO isProfileRGBCCT && lightId == 0 ?? 
             (isProfileLIGHT) ||
-            (isProfileRGBX2LIGHT && componentIndex > 0)
+            (isProfileRGBX2LIGHT && channelGroupNumber > 0)
         // @formatter:on
         ;
     }

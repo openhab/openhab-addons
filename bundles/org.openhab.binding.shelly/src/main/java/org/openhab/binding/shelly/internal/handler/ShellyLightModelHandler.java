@@ -25,13 +25,13 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface ShellyLightModelHandler {
 
     /**
-     * Get the light model for the given modelId
+     * Get the light model for the given channel group number
      * 
-     * @param componentIndex the component index of the light within the device.
+     * @param channelGroupNumber the channel group number of the light within the device.
      * @return the light model, or null if not found.
      */
     @Nullable
-    ShellyLightModel getLightModel(int componentIndex);
+    ShellyLightModel getLightModelForChannelGroup(int channelGroupNumber);
 
     /**
      * Acquire the lock for the light models. This means that other callers cannot modify the light

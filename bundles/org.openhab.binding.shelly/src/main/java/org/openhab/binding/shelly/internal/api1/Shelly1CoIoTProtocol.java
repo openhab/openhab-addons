@@ -13,7 +13,6 @@
 package org.openhab.binding.shelly.internal.api1;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
@@ -150,8 +149,9 @@ public class Shelly1CoIoTProtocol {
                     case "white":
                     case "gain":
                     case "effect":
+                        int groupNo = getIdFromBlk(sen) - 1; // TODO confirm
                         if (lightModelHandler != null && lightModelHandler
-                                .getLightModel(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
+                                .getLightModelForChannelGroup(groupNo) instanceof ShellyLightModel model) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {
                                 case "red":
                                     model.setColor(R, (int) s.value);
@@ -277,8 +277,9 @@ public class Shelly1CoIoTProtocol {
                             toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
                 }
             } else if (profile.isLight) {
+                int groupNo = id - 1; // TODO confirm
                 if (lightModelHandler != null
-                        && lightModelHandler.getLightModel(id - 1) instanceof ShellyLightModel model) {
+                        && lightModelHandler.getLightModelForChannelGroup(groupNo) instanceof ShellyLightModel model) {
                     if (brightness != -1) {
                         if (ShellyLightModel.Mode.COLOR == model.getMode()) {
                             model.setGain((int) brightness);
@@ -290,7 +291,8 @@ public class Shelly1CoIoTProtocol {
                         model.setOnOff(power == 1.0); // do power after gain / brightness
                     }
                 } else {
-                    logger.warn("{}: updatePower() for id={} but no light model found!", thingName, id);
+                    logger.warn("{}: updatePower() for channelGroupNo={} but no light model found!", thingName,
+                            groupNo);
                 }
             }
         } else if (profile.hasRelays) {
