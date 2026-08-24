@@ -22,7 +22,10 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_CLOSE;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_OPEN;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_RSTATE_CLOSE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_RSTATE_OPEN;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +72,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link ShellyComponents} — addon sensor update path and meter update path.
@@ -184,11 +188,13 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateRollerSkipsPositionWhileOpening() throws Exception {
+    void updateRollerSkipsPositionWhileOpeningOnGen1() throws Exception {
         // Regression (#14189, Copilot review on PR #21316): the shared Gen1/Gen2 poll path
         // hardcoded pos=100 for "open" regardless of the actual target, flapping the position
         // channel to 100 mid-move before the real value arrived once the roller stopped.
-        ShellyBaseHandler handler = relayUpdateHandler();
+        // On Gen1 "open"/"close" mean the roller is currently moving in that direction, so
+        // currentPos must stay untrusted until the device reports "stop" (#21479).
+        ShellyBaseHandler handler = gen1RollerUpdateHandler();
         ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_ALWD_ROLLER_TURN_OPEN, 40), 0);
 
         verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
@@ -196,9 +202,42 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateRollerSkipsPositionWhileClosing() throws Exception {
-        ShellyBaseHandler handler = relayUpdateHandler();
+    void updateRollerSkipsPositionWhileClosingOnGen1() throws Exception {
+        ShellyBaseHandler handler = gen1RollerUpdateHandler();
         ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_ALWD_ROLLER_TURN_CLOSE, 60), 0);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+    }
+
+    @Test
+    void updateRollerTrustsPositionAtOpenEndOnGen2() throws Exception {
+        // #21479: Gen2+ only reports "open"/"close" once the roller has actually reached that end
+        // position (its moving states are the distinct "opening"/"closing"), so currentPos is
+        // reliable there too - unlike Gen1, where the same strings mean "currently moving".
+        ShellyBaseHandler handler = gen2RollerUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_RSTATE_OPEN, 100), 0);
+
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+    }
+
+    @Test
+    void updateRollerTrustsPositionAtCloseEndOnGen2() throws Exception {
+        ShellyBaseHandler handler = gen2RollerUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_RSTATE_CLOSE, 0), 0);
+
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
+        verify(handler).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+    }
+
+    @Test
+    void updateRollerSkipsPositionWhileOpeningOrClosingOnGen2() throws Exception {
+        // Gen2's genuine moving states are "opening"/"closing" - distinct from the Gen1-colliding
+        // "open"/"close" literals - and must still skip position updates like Gen1 does (#14189).
+        ShellyBaseHandler handler = gen2RollerUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus("opening", 40), 0);
+        ShellyComponents.updateRoller(handler, rollerStatus("closing", 60), 0);
 
         verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
         verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
@@ -221,6 +260,40 @@ public class ShellyComponentsTest {
         when(handler.getProfile()).thenReturn(profile);
         when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
         return handler;
+    }
+
+    private static ShellyBaseHandler gen1RollerUpdateHandler() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLY25_ROLLER);
+        profile.numRelays = 1;
+        profile.settings.relays = new ArrayList<>(List.of(new ShellySettingsRelay()));
+
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        injectLogger(handler);
+        return handler;
+    }
+
+    private static ShellyBaseHandler gen2RollerUpdateHandler() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS2PM_ROLLER);
+        profile.numRelays = 1;
+        profile.settings.relays = new ArrayList<>(List.of(new ShellySettingsRelay()));
+
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        injectLogger(handler);
+        return handler;
+    }
+
+    private static void injectLogger(ShellyBaseHandler handler) {
+        try {
+            Field field = ShellyBaseHandler.class.getDeclaredField("logger");
+            field.setAccessible(true);
+            field.set(handler, LoggerFactory.getLogger(ShellyComponentsTest.class));
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private static ShellySettingsStatus statusWithRelayIson(@Nullable Boolean ison) {
