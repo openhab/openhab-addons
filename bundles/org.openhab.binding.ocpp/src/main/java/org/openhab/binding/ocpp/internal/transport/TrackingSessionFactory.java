@@ -28,10 +28,8 @@ import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
 
 /**
- * A session factory that records, per outbound request unique id, the session that queued it.
- * {@link TimingOutPromiseRepository} uses this mapping to remove a request from its session's queue on
- * timeout: the library removes a queued request only when a response arrives, so without this an
- * ignored request is retained for the session's lifetime.
+ * A session factory that records, per outbound request unique id, the session that queued it, so
+ * {@link TimingOutPromiseRepository} can clear a request from its session's queue on timeout.
  *
  * @author Stamate Viorel - Initial contribution
  */

@@ -17,15 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import eu.chargetime.ocpp.wss.WssFactoryBuilder;
 
 /**
- * Bridges the ChargeTime library's package-private {@link WebSocketListener#enableWSS} so the binding
- * can serve OCPP over TLS while still composing the server itself.
- *
- * <p>
- * The library only exposes a public {@code enableWSS} on its {@code JSONServer}, which builds its own
- * server and does not allow injecting a promise repository. This binding composes {@code Server} +
- * {@link WebSocketListener} directly precisely so it can inject a request-timeout promise repository
- * the library otherwise lacks, and that composition has no public way to turn on TLS. This small
- * same-package accessor closes that gap without giving up the timeout hardening.
+ * Same-package accessor for the library's package-private {@link WebSocketListener#enableWSS}.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -35,7 +27,6 @@ public final class WssListenerSupport {
     private WssListenerSupport() {
     }
 
-    /** Enables TLS on {@code listener} using {@code wssFactoryBuilder}; must be called before it opens. */
     public static void enableWss(WebSocketListener listener, WssFactoryBuilder wssFactoryBuilder) {
         listener.enableWSS(wssFactoryBuilder);
     }

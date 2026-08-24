@@ -29,9 +29,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
- * Passive discovery for the OCPP binding: a charge point is offered to the inbox when it opens a
- * session whose id has no thing, and a connector is offered when it first reports a StatusNotification
- * under a known charge point. There is no active scan — chargers announce themselves.
+ * Passive discovery: charge points and connectors are offered to the inbox as they announce themselves.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -61,7 +59,6 @@ public class OcppDiscoveryService extends AbstractThingHandlerDiscoveryService<O
 
     @Override
     protected void startScan() {
-        // Passive: results are raised from live charger connections, not an active scan.
     }
 
     public void chargePointDiscovered(String chargePointId) {
@@ -81,9 +78,7 @@ public class OcppDiscoveryService extends AbstractThingHandlerDiscoveryService<O
     }
 
     /**
-     * A charge point id reduced to a valid ThingUID segment. A clean id is used as-is; one holding
-     * characters a segment cannot carry is encoded reversibly (URL-safe Base64) rather than blanket-
-     * replacing each with an underscore, so two distinct ids can never collide onto the same Thing.
+     * Reduces a charge point id to a valid ThingUID segment; non-segment ids are Base64-encoded so they stay distinct.
      */
     static String sanitize(String id) {
         if (VALID_SEGMENT.matcher(id).matches()) {

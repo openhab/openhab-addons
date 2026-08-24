@@ -28,15 +28,7 @@ import eu.chargetime.ocpp.PromiseRepository;
 import eu.chargetime.ocpp.model.Confirmation;
 
 /**
- * An {@link IPromiseRepository} that bounds every outbound request with a timeout.
- *
- * <p>
- * The embedded ChargeTime library never times out an outbound request: a promise is completed only
- * when a CALLRESULT/CALLERROR arrives, and closing a session leaves its promises incomplete. This
- * decorator completes each promise exceptionally after the timeout and removes it, so callers always
- * get an outcome. On timeout it also removes the request from its session's queue (tracked by
- * {@link TrackingSessionFactory}); the library removes that entry only on a response, so an ignored
- * request would otherwise be retained for the session's life.
+ * An {@link IPromiseRepository} that completes every outbound request exceptionally after a timeout.
  *
  * @author Stamate Viorel - Initial contribution
  */

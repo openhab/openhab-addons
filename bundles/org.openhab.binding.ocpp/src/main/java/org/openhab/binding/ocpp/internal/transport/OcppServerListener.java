@@ -25,77 +25,34 @@ import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 
 /**
- * Callbacks raised by the {@link OcppTransport} for inbound OCPP traffic. Every callback is keyed by
- * the library session id; the server bridge resolves that to a charge point (and, via connectorId,
- * to a connector) and updates the corresponding things.
+ * Callbacks raised by the {@link OcppTransport} for inbound OCPP traffic, keyed by session id.
  *
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public interface OcppServerListener {
 
-    /**
-     * A charger opened a WebSocket session. {@code chargePointId} is the URL path it dialled with the
-     * leading slash removed (e.g. {@code charger}, or {@code site/charger}) — the OCPP charge point
-     * identity used to match the session to a chargepoint thing.
-     */
     void onSessionOpened(UUID session, @Nullable String chargePointId, @Nullable InetSocketAddress remote);
 
-    /**
-     * The charger's session was lost (socket closed or reconnected under a fresh session id).
-     */
     void onSessionClosed(UUID session);
 
-    /**
-     * The charger sent a BootNotification — carries vendor / model / firmware for the chargepoint
-     * properties.
-     */
     void onBootNotification(UUID session, BootNotificationRequest request);
 
-    /**
-     * A connector reported a new status (StatusNotification).
-     */
     void onStatusNotification(UUID session, StatusNotificationRequest request);
 
-    /**
-     * A connector reported metering samples (MeterValues).
-     */
     void onMeterValues(UUID session, MeterValuesRequest request);
 
-    /**
-     * The charger sent a Heartbeat (or any keep-alive worth recording as "last seen").
-     */
     void onHeartbeat(UUID session);
 
-    /**
-     * A transaction started on a connector (StartTransaction). The transaction id is the one this
-     * server assigned in the confirmation.
-     */
     void onStartTransaction(UUID session, StartTransactionRequest request, int transactionId);
 
-    /**
-     * A transaction stopped (StopTransaction). OCPP StopTransaction carries only the transaction id,
-     * not the connector, so the connector is resolved from the id.
-     */
     void onStopTransaction(UUID session, StopTransactionRequest request);
 
-    /**
-     * Whether an idTag is authorized to charge. Used to enforce the optional tag whitelist.
-     */
-    /** A card was presented for authorization — the raw idTag, for surfacing the last-seen tag. */
     void onAuthorize(UUID session, @Nullable String idTag);
 
     boolean isTagAuthorized(@Nullable String idTag);
 
-    /**
-     * The effective heartbeat interval (seconds) to return to the charger of this session — the
-     * charge point's own override if set, otherwise the server default.
-     */
     int heartbeatFor(UUID session);
 
-    /**
-     * The next transaction id to assign in a StartTransaction confirmation. Sourced from a persisted
-     * counter so a restart mid-transaction does not reissue an id a charger still holds.
-     */
     int nextTransactionId();
 }

@@ -24,15 +24,8 @@ import eu.chargetime.ocpp.model.core.BootNotificationConfirmation;
 import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 
 /**
- * A BootNotification {@link Feature} that accepts a payload the library's strict CiString20 validation
- * would reject (see {@link TolerantBootNotificationRequest}).
- *
- * <p>
- * Registering it with {@code FeatureRepository.addFeature(...)} AFTER the core profile overrides the
- * strict feature: the repository keys features by action, so the later put wins and the inbound path
- * deserializes into {@link #getRequestType()}. A charger whose model or vendor exceeds 20 characters,
- * or omits one, can therefore still boot. The boot itself is handled identically — this delegates to
- * the same {@link ServerCoreEventHandler} the core feature uses.
+ * A BootNotification {@link Feature} that accepts an over-length CiString20 payload
+ * (see {@link TolerantBootNotificationRequest}).
  *
  * @author Stamate Viorel - Initial contribution
  */

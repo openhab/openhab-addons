@@ -49,10 +49,8 @@ import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 
 /**
- * The {@link OcppServerBridgeHandler} owns the OCPP JSON WebSocket endpoint and routes inbound
- * traffic. It keeps two maps — library session id to charge point id, and charge point id to its
- * handler — and dispatches each message to the matching {@link OcppChargePointHandler}. A session
- * whose charge point id has no thing is offered to discovery.
+ * Owns the OCPP JSON WebSocket endpoint and routes inbound traffic to the matching
+ * {@link OcppChargePointHandler}.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -64,22 +62,13 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     private final Map<UUID, String> sessionChargePoints = new ConcurrentHashMap<>();
     private final Map<String, OcppChargePointHandler> chargePoints = new ConcurrentHashMap<>();
 
-    // Guards the transitions of the transport reference and the disposed flag so the asynchronous
-    // startup below and dispose() cannot race into leaving a bound server behind on a disposed
-    // handler. The transport field itself is additionally volatile: session callbacks and charge
-    // point handlers read it from library and scheduler threads without taking this lock, and the
-    // lock alone would not give those readers visibility.
     private final Object lifecycleLock = new Object();
     private volatile boolean disposed;
-    // Bumped (under the lock) on every initialize and dispose; an asynchronous startup task carries
-    // the generation it was created for and abandons itself if the handler has moved on.
     private long lifecycleGeneration;
     private volatile @Nullable Future<?> startupTask;
 
     private final StorageService storageService;
     private volatile @Nullable TransactionStore transactionStore;
-    // Only used if the store is somehow unavailable; the store is created in initialize() before any
-    // charger can start a transaction, so in practice ids always come from the persisted counter.
     private final AtomicInteger fallbackSequence = new AtomicInteger();
 
     private volatile @Nullable OcppTransport transport;
@@ -102,7 +91,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // The server bridge has no writable channels.
     }
 
     public OcppServerConfiguration getServerConfig() {
@@ -113,9 +101,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     public void initialize() {
         config = getConfigAs(OcppServerConfiguration.class);
         OcppServerConfiguration localConfig = config;
-        // The embedded OCPP library only accepts Basic-auth passwords of 16-20 bytes and rejects the
-        // handshake of every charger before the binding's authentication callback runs otherwise.
-        // The thing-type pattern enforces this in the UI; this guard covers file-defined things.
         if (!localConfig.authPassword.isEmpty() && !localConfig.authPassword.matches("[\\x21-\\x7E]{16,20}")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "authPassword must be 16-20 visible ASCII characters — the OCPP library rejects other lengths "
@@ -123,16 +108,9 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             return;
         }
         disposed = false;
-        // Created synchronously here so a transaction id or lookup is available the moment the
-        // transport (started below) begins accepting chargers. Keyed per server bridge.
         transactionStore = new TransactionStore(storageService.getStorage(getThing().getUID().getAsString()));
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Published BEFORE it is started: the session callbacks raised during startup (a charger can
-        // connect the moment the socket binds) must be able to reach the transport — to close a
-        // rejected or duplicate session — so there must be no window in which the server accepts
-        // sessions while the field is still null. Stopping a never-started transport is a no-op, so
-        // a dispose that wins the race against the startup task below is safe.
         OcppTransport newTransport = createTransport(localConfig);
         long generation;
         synchronized (lifecycleLock) {
@@ -146,7 +124,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         startupTask = scheduler.submit(() -> {
             synchronized (lifecycleLock) {
                 if (disposed || generation != lifecycleGeneration) {
-                    return; // disposed (or re-initialized) before the server ever started
+                    return;
                 }
             }
             try {
@@ -159,8 +137,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
                         transport = null;
                     }
                 }
-                // Status only while this startup still belongs to the live lifecycle — an abandoned
-                // generation must not mark a re-initialized handler OFFLINE.
                 if (current) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not start OCPP server: " + e.getMessage());
@@ -174,9 +150,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             if (adopted) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                // Lost the race with dispose(): stop the freshly-bound server rather than leaving it
-                // running on an already-disposed handler. stop() runs its close exactly once, so this
-                // cannot double-close against the dispose path.
                 newTransport.stop();
             }
         });
@@ -187,7 +160,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         OcppTransport localTransport;
         synchronized (lifecycleLock) {
             disposed = true;
-            lifecycleGeneration++; // invalidate any startup task still in flight
+            lifecycleGeneration++;
             localTransport = transport;
             transport = null;
         }
@@ -207,17 +180,13 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         return transport;
     }
 
-    /** The transport backing this server. A seam so a test can supply one without binding a socket. */
     protected OcppTransport createTransport(OcppServerConfiguration serverConfig) {
         return new ChargeTimeTransport(this, serverConfig.pingInterval, serverConfig.requestTimeoutSeconds,
                 serverConfig.authPassword, serverConfig.tlsKeystorePath, serverConfig.tlsKeystorePassword);
     }
 
-    // --- charge point registration (called by OcppChargePointHandler) ---
-
     public void registerChargePoint(String chargePointId, OcppChargePointHandler handler) {
         chargePoints.put(chargePointId, handler);
-        // Adopt an already-open session (the charger may have connected before its thing was ready).
         for (Map.Entry<UUID, String> entry : sessionChargePoints.entrySet()) {
             if (chargePointId.equals(entry.getValue())) {
                 handler.onConnected(entry.getKey());
@@ -238,19 +207,13 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         }
     }
 
-    // --- OcppServerListener ---
-
     @Override
     public void onSessionOpened(UUID session, @Nullable String chargePointId, @Nullable InetSocketAddress remote) {
         if (chargePointId == null || chargePointId.isBlank()) {
-            // remote can be null (the session may carry no peer address); fall back to the session id so
-            // the message still names the offending connection.
             Object peer = remote != null ? remote : session;
             logger.warn(
                     "Charger connected without a charge point id in its URL path and was ignored (connection {}); it must dial ws://<host>:{}/<chargePointId>, not the bare root",
                     peer, config.port);
-            // Close the unusable socket — with ping-cleanup off by default and no charge point owning
-            // it, bare-root connections would otherwise pile up. Mirrors the allow-list-reject branch.
             OcppTransport localTransport = transport;
             if (localTransport != null) {
                 localTransport.closeSession(session);
@@ -266,11 +229,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             }
             return;
         }
-        // Reconnect self-heal: a charger that reconnects under a fresh session id leaves its old one
-        // behind. De-map any prior session for the same charge point (so the stale one can't be
-        // treated as live) and then close its socket (so it can't linger sending ignored traffic).
-        // De-mapping first makes the resulting onSessionClosed a no-op, so it can't offline the
-        // charger we are about to bring online under the new session.
+        // De-map any prior session before closing it, so onSessionClosed stays a no-op.
         List<UUID> staleSessions = new ArrayList<>();
         sessionChargePoints.entrySet().removeIf(entry -> {
             if (chargePointId.equals(entry.getValue()) && !session.equals(entry.getKey())) {
@@ -354,11 +313,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         String chargePointId = sessionChargePoints.get(session);
         Integer connectorId = request.getConnectorId();
         if (chargePointId != null && connectorId != null) {
-            // Persist as soon as the start is accepted, from the session's charge point identity and
-            // the request's connector id — even if no charge-point or connector Thing exists yet (the
-            // charger may still be in the discovery inbox). Otherwise the charger holds an accepted
-            // transaction id the binding could never associate, recover, or route its stop to. When a
-            // handler is present it does the in-memory routing; the persistence lives here, once.
+            // Persist at accept time, even before a Thing exists, so the stop can be routed.
             rememberTransaction(transactionId, chargePointId, connectorId);
         }
         OcppChargePointHandler handler = chargePointId != null ? chargePoints.get(chargePointId) : null;
@@ -374,12 +329,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
             handler.onStopTransaction(request);
             return;
         }
-        // No charge-point handler yet (the charger is still in the discovery inbox), but the start was
-        // persisted here at accept time — so the stop must clear it here too. Otherwise a transaction
-        // that started and stopped before its Thing was added stays open in the store, and a later
-        // restart would recover it as active (routable to a RemoteStop or a TxProfile). Guard with the
-        // session's charge point identity, exactly as the handler path does, so a charger cannot clear
-        // a transaction that belongs to a different one.
+        // No handler yet: clear the persisted-at-accept transaction here, guarded by charge point identity.
         String chargePointId = sessionChargePoints.get(session);
         Integer transactionId = request.getTransactionId();
         if (chargePointId != null && transactionId != null
@@ -407,8 +357,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         return store != null ? store.nextTransactionId() : fallbackSequence.incrementAndGet();
     }
 
-    // --- transaction persistence (called by OcppChargePointHandler) ---
-
     public void rememberTransaction(int transactionId, String chargePointId, int connectorId) {
         TransactionStore store = transactionStore;
         if (store != null) {
@@ -423,7 +371,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         }
     }
 
-    /** The connector a transaction belongs to on this charge point, or {@code null} if not recorded. */
     public @Nullable Integer transactionConnector(int transactionId, String chargePointId) {
         TransactionStore store = transactionStore;
         if (store == null) {
@@ -433,7 +380,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         return location != null && chargePointId.equals(location.chargePointId()) ? location.connectorId() : null;
     }
 
-    /** A connector's open transaction id recovered after a restart, or {@code null} if none. */
     public @Nullable Integer openTransactionFor(String chargePointId, int connectorId) {
         TransactionStore store = transactionStore;
         return store != null ? store.openTransaction(chargePointId, connectorId) : null;

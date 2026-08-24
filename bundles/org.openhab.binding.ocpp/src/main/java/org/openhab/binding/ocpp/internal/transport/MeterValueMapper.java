@@ -37,17 +37,7 @@ import eu.chargetime.ocpp.model.core.MeterValuesRequest;
 import eu.chargetime.ocpp.model.core.SampledValue;
 
 /**
- * Maps an OCPP 1.6 {@code MeterValues} request to connector channel states, covering the full
- * SampledValue measurand set.
- *
- * <p>
- * OCPP reports each sample as a (measurand, phase, unit, value) tuple where all four are free
- * strings on the wire. The mapping here is deliberately tolerant, following the OCPP 1.6 spec and
- * lessons from real chargers: an omitted measurand defaults to {@code Energy.Active.Import.Register}
- * (per the SampledValue table), an unphased Current/Voltage sample maps to the aggregate channel
- * while a phased one maps to L1/L2/L3, and an unrecognised or unparseable unit degrades to a plain
- * {@link DecimalType} rather than being dropped or raising an error — including the spec's own
- * mis-spelling {@code Celcius}, which a strict unit parser would reject.
+ * Maps an OCPP 1.6 {@code MeterValues} request to connector channel states.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -57,14 +47,10 @@ public final class MeterValueMapper {
     private static final String DEFAULT_MEASURAND = "Energy.Active.Import.Register";
     private static final Logger LOGGER = LoggerFactory.getLogger(MeterValueMapper.class);
 
-    // Channels that carry a single phase's value directly — never an aggregation target.
     private static final Set<String> PER_PHASE_CHANNELS = Set.of(CHANNEL_CURRENT_L1, CHANNEL_CURRENT_L2,
             CHANNEL_CURRENT_L3, CHANNEL_VOLTAGE_L1, CHANNEL_VOLTAGE_L2, CHANNEL_VOLTAGE_L3);
 
-    // Measurands whose per-phase samples meaningfully SUM to the charge total: powers and energies.
-    // Currents deliberately do NOT sum — a charger reporting 16 A per phase offers 16 A on each
-    // conductor, not 48 A — and a phased sample of anything else (power factor, temperature, ...)
-    // has no defensible aggregate either; both are skipped rather than passed off as one.
+    // Currents deliberately do not sum across phases; only powers and energies do.
     private static final Set<String> SUMMABLE_MEASURANDS = Set.of("Power.Active.Import", "Power.Active.Export",
             "Power.Reactive.Import", "Power.Reactive.Export", "Power.Offered", "Energy.Active.Import.Register",
             "Energy.Active.Export.Register", "Energy.Reactive.Import.Register", "Energy.Reactive.Export.Register",
@@ -74,13 +60,7 @@ public final class MeterValueMapper {
     private MeterValueMapper() {
     }
 
-    /**
-     * Flatten a MeterValues request into channelId -&gt; state. Within one MeterValue block (one
-     * timestamp), per-phase samples of a summable measurand are added into the aggregate channel —
-     * three phased Power.Active.Import samples become the total, not whichever phase came last — and
-     * an unphased sample, being the charger's own total, wins over any sum. Later blocks overwrite
-     * earlier ones, as a charger may report the same measurand at several timestamps.
-     */
+    /** Flatten a MeterValues request into channelId -&gt; state. */
     public static Map<String, State> toStates(MeterValuesRequest request) {
         Map<String, State> states = new LinkedHashMap<>();
         MeterValue[] meterValues = request.getMeterValue();
@@ -113,13 +93,10 @@ public final class MeterValueMapper {
                     } else if (basePhase(phase) != null && SUMMABLE_MEASURANDS.contains(measurand)) {
                         summed.merge(channelId, state, MeterValueMapper::sum);
                     } else {
-                        // Phased currents, line-to-line or neutral samples, and phased samples of
-                        // non-summable measurands: no channel represents them truthfully.
                         LOGGER.debug("Ignoring phase {} sample of {} — no meaningful aggregate for channel {}", phase,
                                 measurand, channelId);
                     }
                 } catch (RuntimeException e) {
-                    // A single malformed sample must never drop the rest of the MeterValues request.
                     LOGGER.warn("Skipping MeterValues sample (measurand={} value={} unit={}): {}",
                             sample.getMeasurand(), sample.getValue(), sample.getUnit(), e.getMessage());
                 }
@@ -212,12 +189,7 @@ public final class MeterValueMapper {
         }
     }
 
-    /**
-     * The single conductor a phase identifier denotes, or {@code null} for identifiers that do not
-     * describe one conductor's quantity. OCPP 1.6 also allows line-to-line ({@code L1-L2},
-     * {@code L2-L3}, {@code L3-L1}) and neutral ({@code N}) measurements — those have no per-phase
-     * channel and must not be lumped into one, nor be summed into a total.
-     */
+    /** The single conductor a phase identifier denotes, or {@code null} for line-to-line/neutral. */
     private static @Nullable String basePhase(String phase) {
         switch (phase) {
             case "L1":
@@ -249,12 +221,6 @@ public final class MeterValueMapper {
         }
     }
 
-    /**
-     * Parse a sample with the OCPP default unit applied: an omitted unit means Wh — a default that
-     * only carries meaning for the energy measurands (the default measurand itself is the energy
-     * register). Stamping Wh onto a unitless Power.Factor or SoC would fabricate a wrong dimension,
-     * so everything else keeps the plain number.
-     */
     static @Nullable State toState(@Nullable String value, @Nullable String unit, String measurand) {
         if ((unit == null || unit.isBlank()) && measurand.startsWith("Energy.")) {
             return toState(value, "Wh");
@@ -273,9 +239,7 @@ public final class MeterValueMapper {
             return null;
         }
         if (!Double.isFinite(parsed)) {
-            // "NaN" / "Infinity" parse as valid doubles but are not representable as a QuantityType
-            // (BigDecimal rejects them); a charger sending them for an unavailable reading must not
-            // blow up the whole MeterValues request.
+            // NaN/Infinity are not representable as a QuantityType.
             return null;
         }
         if (unit == null || unit.isBlank()) {
@@ -318,8 +282,6 @@ public final class MeterValueMapper {
             case "Fahrenheit":
                 return new QuantityType<>(parsed, ImperialUnits.FAHRENHEIT);
             default:
-                // A non-standard unit outside the OCPP 1.6 set: keep the number rather than dropping
-                // the sample.
                 LOGGER.debug("Unrecognised MeterValues unit '{}'; keeping a dimensionless value", unit);
                 return new DecimalType(parsed);
         }
