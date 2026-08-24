@@ -25,9 +25,9 @@ import eu.chargetime.ocpp.model.core.GetConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.KeyValueType;
 
 /**
- * Verifies {@link ChargerCapabilities} parses a GetConfiguration response into the facts the binding
- * adapts to, and — the whole point of the "positive signal only" contract — returns empty for anything
- * absent, unparseable, or malformed rather than a false negative.
+ * Tests that {@link ChargerCapabilities} parses a GetConfiguration response and, per its
+ * "positive signal only" contract, returns empty rather than a false negative for absent or malformed
+ * keys.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -92,15 +92,12 @@ class ChargerCapabilitiesTest {
 
     @Test
     void aChargerWithoutSmartChargingReportsFalseNotUnknown() {
-        // SupportedFeatureProfiles IS present and does not list SmartCharging: a real "no", so the
-        // caller may act on it — distinct from the key being absent (empty), where it must not.
         ChargerCapabilities caps = caps(kv("SupportedFeatureProfiles", "Core,FirmwareManagement"));
         assertFalse(caps.supportsSmartCharging().orElseThrow());
     }
 
     @Test
     void anAbsentFeatureProfilesKeyIsUnknownNotNo() {
-        // The safety contract: no SupportedFeatureProfiles at all must NOT read as "SmartCharging off".
         ChargerCapabilities caps = caps(kv("HeartbeatInterval", "60"));
         assertTrue(caps.supportsSmartCharging().isEmpty());
     }
@@ -115,13 +112,12 @@ class ChargerCapabilitiesTest {
     void booleanParsingIsTolerantAndSafe() {
         assertTrue(caps(kv("ConnectorSwitch3to1PhaseSupported", "TRUE")).phaseSwitchSupported().orElseThrow());
         assertFalse(caps(kv("ConnectorSwitch3to1PhaseSupported", "false")).phaseSwitchSupported().orElseThrow());
-        // Anything that is not true/false is not silently coerced to false.
         assertTrue(caps(kv("ConnectorSwitch3to1PhaseSupported", "maybe")).phaseSwitchSupported().isEmpty());
     }
 
     @Test
     void anEntryWithNoValueIsSkipped() {
-        // value is optional in a KeyValueType; a key reported with no value must not become a phantom.
+        // value is optional in a KeyValueType.
         ChargerCapabilities caps = caps(new KeyValueType("HeartbeatInterval", Boolean.TRUE),
                 kv("NumberOfConnectors", "1"));
         assertTrue(caps.heartbeatIntervalSeconds().isEmpty());
@@ -146,7 +142,6 @@ class ChargerCapabilitiesTest {
         assertFalse(powerOnly.allowsCurrentUnit().orElseThrow());
         assertTrue(powerOnly.allowsPowerUnit().orElseThrow());
 
-        // Absent key ⇒ empty, so a caller defaults rather than assuming "no".
         assertTrue(caps(kv("HeartbeatInterval", "10")).allowsPowerUnit().isEmpty());
     }
 }

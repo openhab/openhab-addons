@@ -37,7 +37,6 @@ import org.openhab.core.storage.Storage;
 @NonNullByDefault
 class TransactionStoreTest {
 
-    /** A minimal in-memory Storage that outlives a store instance, standing in for a restart. */
     private static class MemoryStorage implements Storage<String> {
         private final Map<String, String> map = new HashMap<>();
 
@@ -80,8 +79,6 @@ class TransactionStoreTest {
         assertEquals(2, store.nextTransactionId());
         assertEquals(3, store.nextTransactionId());
 
-        // A fresh store on the same backing storage is the restart: ids must continue, not reset to 1
-        // and risk reissuing an id a charger still holds.
         TransactionStore afterRestart = new TransactionStore(storage);
         assertEquals(4, afterRestart.nextTransactionId());
     }
@@ -94,10 +91,8 @@ class TransactionStoreTest {
 
         assertEquals(new Location("charx", 2), store.locate(7));
         assertEquals(Integer.valueOf(7), store.openTransaction("charx", 2));
-        // A different connector has nothing open.
         assertNull(store.openTransaction("charx", 1));
 
-        // The mapping is what a restart reads back to route a late StopTransaction.
         assertEquals(new Location("charx", 2), new TransactionStore(storage).locate(7));
     }
 
@@ -114,10 +109,9 @@ class TransactionStoreTest {
 
     @Test
     void concurrentAllocationsCannotPersistOutOfOrder() throws InterruptedException {
-        // The failure mode: thread A obtains id 1, thread B obtains id 2 and stores "2", then A's
-        // delayed write stores "1" — and a restart resumes below an id a charger still holds. The
-        // storage below blocks the FIRST sequence write until released, so without atomic
-        // allocate-and-persist the lower id would always land last.
+        // The race: without atomic allocate-and-persist, a delayed write of the lower id can land last
+        // and a restart resumes below an id a charger still holds. The storage blocks the first sequence
+        // write until released to force that ordering.
         java.util.concurrent.CountDownLatch firstWriteEntered = new java.util.concurrent.CountDownLatch(1);
         java.util.concurrent.CountDownLatch releaseFirstWrite = new java.util.concurrent.CountDownLatch(1);
         MemoryStorage storage = new MemoryStorage() {
@@ -160,7 +154,6 @@ class TransactionStoreTest {
         MemoryStorage storage = new MemoryStorage();
         TransactionStore store = new TransactionStore(storage);
         store.begin(7, "charx", 2);
-        // A StopTransaction for 7 never arrived; a new transaction starts on the same connector.
         store.begin(9, "charx", 2);
 
         assertNull(store.locate(7), "the stale transaction must not linger");

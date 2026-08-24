@@ -161,7 +161,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile boolean smartChargingUnsupportedLogged;
     private volatile boolean phaseSwitchWarningLogged;
 
-    // Dedicated lock, not the handler monitor, to avoid lock-ordering deadlock with the base class.
+    // Dedicated lock: the base class synchronizes on the handler monitor.
     private final Object lock = new Object();
 
     private double pendingLimitAmps;
@@ -202,7 +202,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         this.chargePoint = parent;
         updateProperty(PROPERTY_UNIQUE_ID, uniqueConnectorId(parent.getChargePointId(), connectorId));
-        // UNKNOWN before registering: registration may adopt an open session and take the connector ONLINE.
         updateStatus(ThingStatus.UNKNOWN);
         parent.registerConnector(connectorId, this);
         recoverTransaction(parent);
@@ -232,7 +231,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        // Not calling super: must also re-register with the charge point and stop polling when offline.
+        // Not super: re-register with the charge point; stop polling when offline.
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             OcppChargePointHandler parent = chargePointHandler();
             if (parent != null) {
@@ -248,7 +247,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
             pollTask = null;
             synchronized (lock) {
                 cancel(stuckTask);
-                // Cancelling would drop a coalesced limit/pause; defer it so it re-applies when ready.
                 if (pendingFlush != null) {
                     limitDeferred = true;
                 }
@@ -418,7 +416,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
         sendProfile(claim);
     }
 
-    /** Caller must hold {@link #lock}. */
     private ProfileClaim claimSend() {
         cancel(pendingFlush);
         pendingFlush = null;
@@ -467,9 +464,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
     }
 
-    // Must send outside the lock: a framework callback under a lock can deadlock.
     private void sendProfile(ProfileClaim claim) {
-        // Un-pause with no cap must CLEAR the profile; 0 A is a pause, not "resume to full".
+        // 0 A is a pause; to resume with no cap, clear the profile.
         if (!claim.paused() && claim.wireValue() <= 0.0) {
             clearProfile(claim);
         } else {
@@ -545,7 +541,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
         RemoteStartTransactionRequest request = new RemoteStartTransactionRequest(remoteStartTag);
         request.setConnectorId(connectorId);
         dispatch(request, "RemoteStart").whenComplete((confirmation, ex) -> {
-            // Retry only a failed send while nothing has started — never restart a running transaction.
             if (ex == null || remaining <= 0 || transactionId != null || !isReadyToSend()) {
                 return;
             }
@@ -615,7 +610,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> previous = pendingPoll;
         if (previous != null && !previous.isDone()) {
-            // Skip while a poll is outstanding, so a non-answering charger cannot grow a backlog.
             logger.debug("MeterValues poll on connector {} skipped — the previous poll is still outstanding",
                     connectorId);
             return;
@@ -629,7 +623,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
         sendStatusRequest(false);
     }
 
-    /** Status refresh that bypasses the readiness gate; for the bare-WebSocket-reconnect fallback. */
     public void requestStatusNow() {
         sendStatusRequest(true);
     }
@@ -716,7 +709,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (status != null) {
             updateState(CHANNEL_STATUS, new StringType(status.name()));
             updateState(CHANNEL_CABLE_CONNECTED, OnOffType.from(CABLE_PRESENT.contains(status)));
-            // Faulted is a fault, not an availability or charging state, so leave those channels be.
+            // Faulted is a fault, not an availability/charging state; leave those channels.
             if (status == ChargePointStatus.Unavailable) {
                 updateState(CHANNEL_AVAILABILITY, OnOffType.OFF);
             } else if (status != ChargePointStatus.Faulted) {
@@ -726,7 +719,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 updateState(CHANNEL_CHARGING, OnOffType.from(CHARGING_ACTIVE.contains(status)));
             }
             if (status == ChargePointStatus.Available) {
-                // Available means no transaction: clear a stale one everywhere or a restart recovers it.
+                // Available means no active transaction; clear any stale one.
                 Integer stale = transactionId;
                 if (stale != null) {
                     transactionId = null;
@@ -748,7 +741,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
         states.forEach(this::updateState);
         MeterValue[] meterValues = request.getMeterValue();
         if (meterValues != null && meterValues.length > 0) {
-            // States come from the last block, so publish its timestamp, not the first block's.
             ZonedDateTime timestamp = null;
             for (int i = meterValues.length - 1; i >= 0 && timestamp == null; i--) {
                 timestamp = meterValues[i].getTimestamp();

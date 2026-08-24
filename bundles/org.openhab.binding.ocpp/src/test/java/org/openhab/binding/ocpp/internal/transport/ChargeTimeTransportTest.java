@@ -60,9 +60,7 @@ import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequest;
 import eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType;
 
 /**
- * Proves the embedded ChargeTime OCA-OCPP library is reachable and functional from inside the
- * bundle: the transport composes the library server (which pulls in Java-WebSocket and gson off the
- * bundle class path), verifies its startup with real connections, and surfaces a failed bind.
+ * Tests that {@link ChargeTimeTransport} starts the embedded OCA-OCPP server and handles connections.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -135,7 +133,6 @@ class ChargeTimeTransportTest {
         return new ChargeTimeTransport(noopListener(), 0, 30, "", "", "");
     }
 
-    /** A port that was free a moment ago — the standard local-test approximation. */
     private static int findFreePort() throws java.io.IOException {
         try (java.net.ServerSocket socket = new java.net.ServerSocket(0)) {
             return socket.getLocalPort();
@@ -157,12 +154,8 @@ class ChargeTimeTransportTest {
         assertNull(ChargeTimeTransport.normalizeIdentifier(null));
     }
 
-    /**
-     * The library refuses to send a request whose feature profile isn't registered on the server
-     * ({@code UnsupportedFeatureException}) — which silently breaks charge-limit control and status
-     * refresh. Sending to an unknown session must therefore fail as "not connected", never as
-     * "unsupported feature".
-     */
+    // The library refuses to send a request whose feature profile isn't registered on the server
+    // (UnsupportedFeatureException); an unknown session must fail as "not connected", not "unsupported".
     @Test
     void nonCoreFeatureProfilesAreRegisteredSoTheirRequestsCanBeSent() throws java.io.IOException {
         ChargeTimeTransport transport = newTransport();
@@ -178,12 +171,9 @@ class ChargeTimeTransportTest {
 
     @Test
     void aChargerSendingAShortBasicAuthPasswordIsAccepted() throws Exception {
-        // Some chargers open the OCPP connection with an HTTP Basic-auth header whose password is far
-        // shorter than the OCPP profile-1 16-20 character rule, even when the backend uses no
-        // authentication — a V2C Trydan sends its id with a single-space password ("<id>: "). With no
-        // authPassword configured the binding must accept it: the underlying library otherwise rejects
-        // the handshake on that length rule before authenticateSession runs, so the charger never
-        // connects and nothing is even logged.
+        // The library rejects a Basic-auth password outside the OCPP profile-1 16-20 char rule during
+        // the handshake, before authenticateSession runs; some chargers (V2C Trydan) send a single-space
+        // password. With no authPassword configured the binding must accept it regardless.
         CountDownLatch opened = new CountDownLatch(1);
         ChargeTimeTransport transport = new ChargeTimeTransport(listener(opened::countDown), 0, 30, "", "", "");
         int port = findFreePort();
@@ -220,9 +210,6 @@ class ChargeTimeTransportTest {
 
     @Test
     void aChargerConnectingOverTlsIsAccepted() throws Exception {
-        // With a keystore configured the endpoint serves wss:// (TLS; OCPP security profile 2 when a
-        // password is also set). A charger connecting over TLS completes the handshake and its session
-        // opens — here the test client trusts the self-signed test certificate.
         Path keystore = Path.of(Objects.requireNonNull(getClass().getResource("/tls-test-keystore.p12")).toURI());
         CountDownLatch opened = new CountDownLatch(1);
         ChargeTimeTransport transport = new ChargeTimeTransport(listener(opened::countDown), 0, 30, "",
@@ -286,9 +273,8 @@ class ChargeTimeTransportTest {
 
     @Test
     void startVerifiesTheServerAcceptsARealConnection() throws java.io.IOException {
-        // start() returning must mean a listening socket, not just a started thread: the embedded
-        // server binds asynchronously and start() probes it with a real TCP connection. The test
-        // repeats that proof with its own connection.
+        // The embedded server binds asynchronously, so start() must probe it and return only once a
+        // socket is actually listening.
         int port = findFreePort();
         ChargeTimeTransport transport = newTransport();
         transport.start("127.0.0.1", port);
@@ -306,9 +292,8 @@ class ChargeTimeTransportTest {
 
     @Test
     void startFailsWhenThePortIsAlreadyOccupied() throws java.io.IOException {
-        // The embedded server reports a failed bind only to an internal callback and would
-        // otherwise appear to have started; the transport must surface it as a startup failure so
-        // the bridge cannot go ONLINE with no socket listening.
+        // The embedded server reports a failed bind only to an internal callback and otherwise appears
+        // started; the transport must surface it so the bridge cannot go ONLINE with no socket.
         try (java.net.ServerSocket occupier = new java.net.ServerSocket(0)) {
             ChargeTimeTransport transport = newTransport();
             assertThrows(IllegalStateException.class, () -> transport.start("127.0.0.1", occupier.getLocalPort()));

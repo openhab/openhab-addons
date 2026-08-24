@@ -57,9 +57,8 @@ import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileConfirmation;
 import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
 
 /**
- * Tests that a connector holds a command sent before its charge point is ready and sends it once the
- * charge point becomes ready, rather than transmitting before the charger can accept it or dropping
- * it. This is the caller-side of the outbound gate — the recovery probe stays ungated elsewhere.
+ * Tests that a connector holds a command sent before its charge point is ready, then sends it once
+ * the charge point becomes ready, along with charge-limit conversion and coalescing behaviour.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -117,8 +116,6 @@ class OcppConnectorReadinessTest {
 
     @Test
     void aChargerWithoutSmartChargingIsNeverSentAProfile() {
-        // The charger reported SupportedFeatureProfiles without SmartCharging, so a SetChargingProfile
-        // is refused and can even stop its charge — neither a charge limit nor a pause may go out.
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithoutSmartCharging());
 
@@ -156,8 +153,7 @@ class OcppConnectorReadinessTest {
 
     @Test
     void aPowerOnlyChargerGetsTheAmpsLimitConvertedToWatts() {
-        // The charger only accepts a power limit, so 16 A is converted with the defaults (230 V, 1
-        // phase): 16 * 230 = 3680 W, sent in the Power unit.
+        // Power-only charger: 16 A converts with the defaults (230 V, 1 phase) to 3680 W.
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Power"));
         List<Request> sent = captureAcceptedSends();
@@ -172,7 +168,6 @@ class OcppConnectorReadinessTest {
 
     @Test
     void aWattsPowerLimitIsSentDirectlyWhenTheChargerAcceptsPower() {
-        // An explicit watts limit wins over the amps channel and is sent as-is, no conversion.
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current,Power"));
         List<Request> sent = captureAcceptedSends();
@@ -187,7 +182,6 @@ class OcppConnectorReadinessTest {
 
     @Test
     void aCurrentChargerStillGetsAmpsUnconverted() {
-        // The charger accepts a current limit, so the amps go out as amps — unchanged from before.
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
         List<Request> sent = captureAcceptedSends();
@@ -202,9 +196,8 @@ class OcppConnectorReadinessTest {
 
     @Test
     void hardwareMaxCurrentPublishesTheWholeAmpereActuallySent() {
-        // The vendor hardware-max key takes whole amperes, so a fractional command is rounded on the
-        // wire; the channel must then report that rounded value, not the fractional request — 16.4 A
-        // applies 16 A, and reporting 16.4 would misstate what the charger is enforcing.
+        // The vendor hardware-max key takes whole amperes, so 16.4 A rounds to 16 A on the wire and the
+        // channel must report the rounded value.
         ready.set(true);
         List<Request> sent = new java.util.ArrayList<>();
         when(parent.send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.ChangeConfigurationRequest)))
@@ -229,8 +222,7 @@ class OcppConnectorReadinessTest {
 
     @Test
     void aRequestedPhaseCountIsPutOnTheProfile() {
-        // number-phases 1 requests single-phase charging; it appears on the schedule period sent with
-        // the limit (the phase command alone, with no limit yet, clears — the limit send carries it).
+        // A phase command with no limit yet sends nothing; the following limit send carries the phase.
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
         List<Request> sent = captureAcceptedSends();
@@ -244,8 +236,7 @@ class OcppConnectorReadinessTest {
 
     @Test
     void withNoPhaseCountTheProfileKeepsTheDefault() {
-        // Unset ⇒ the binding does not touch numberPhases, so it stays at the library/OCPP default of 3
-        // (three-phase) that the schedule-period constructor sets — unchanged from before this channel.
+        // Unset ⇒ numberPhases stays at the library schedule-period default of 3.
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
         List<Request> sent = captureAcceptedSends();
@@ -261,10 +252,8 @@ class OcppConnectorReadinessTest {
         ready.set(false);
         handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
 
-        // Not ready: nothing goes out yet.
         verify(parent, never()).send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
 
-        // The charger boots and proves it is ready; the held limit is now sent.
         ready.set(true);
         handler.onChargePointReady();
 
@@ -279,9 +268,6 @@ class OcppConnectorReadinessTest {
 
     @Test
     void anAcceptedOlderRequestPublishesWhenTheNewerOneIsRejected() {
-        // The charger accepts the 10 A request and rejects the newer 20 A one: it is then genuinely
-        // running 10 A, and the channels must say so — publishing the mutable fields would have
-        // reported 20 A, and publishing nothing would hide the applied state.
         ready.set(true);
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> first = new CompletableFuture<>();
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> second = new CompletableFuture<>();
@@ -293,7 +279,6 @@ class OcppConnectorReadinessTest {
         first.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
         second.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Rejected));
 
-        // The accepted request's own 10 A is published; the rejected 20 A never is.
         verify(callback).stateUpdated(org.mockito.ArgumentMatchers.eq(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT)),
                 argThat(state -> state instanceof QuantityType<?> quantity && quantity.doubleValue() == 10.0));
         assertLimitNeverPublished(20.0);
@@ -309,40 +294,31 @@ class OcppConnectorReadinessTest {
         handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(10, Units.AMPERE));
         handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(20, Units.AMPERE));
 
-        // Out-of-order completion: the newer request is accepted first...
+        // Out-of-order completion: the newer request is accepted before the older one.
         second.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
         verify(callback).stateUpdated(org.mockito.ArgumentMatchers.eq(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT)),
                 argThat(state -> state instanceof QuantityType<?> quantity && quantity.doubleValue() == 20.0));
 
-        // ...and the older confirmation arriving afterwards must not roll the channel back to 10 A.
         first.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
         assertLimitNeverPublished(10.0);
     }
 
     @Test
     void aLimitCaughtMidCoalesceWindowIsReappliedAfterAnOfflineBlip() {
-        // With coalescing enabled, a limit can be sitting in a scheduled flush when the charge point
-        // drops offline. Cancelling that flush must not silently lose the setpoint — the latest value
-        // is re-applied when the charge point comes back, rather than dropped until the next command.
         OcppConnectorHandler coalescing = newConnector(Map.of("connectorId", 1, "profileMinIntervalMs", 100));
 
         ready.set(true);
-        // The first command sends immediately (nothing to coalesce against yet) and opens the interval.
         coalescing.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(10, Units.AMPERE));
         verify(parent, org.mockito.Mockito.timeout(1000).times(1))
                 .send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
-        // A second command within the interval only schedules a flush — nothing on the wire yet.
         coalescing.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(16, Units.AMPERE));
 
-        // The charge point drops before the flush fires: the scheduled 16 A flush is cancelled and
-        // must not sneak out afterwards — still exactly one send through the whole offline window.
         coalescing
                 .bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null));
         ready.set(false);
         verify(parent, org.mockito.Mockito.after(400).times(1))
                 .send(argThat(OcppConnectorReadinessTest::isSetChargingProfile));
 
-        // Back ready: the 16 A the cancelled flush would have carried is re-applied, not lost.
         ready.set(true);
         coalescing.onChargePointReady();
         verify(parent, org.mockito.Mockito.timeout(1000).times(2))
@@ -351,8 +327,8 @@ class OcppConnectorReadinessTest {
 
     @Test
     void pausingSendsZeroAmpsAndUnpausingRestoresTheLimit() {
-        // PAUSE ON sends a 0 A charging profile (limit 0, transaction kept); PAUSE OFF restores the
-        // last commanded limit. The stored fields, not the wire, carry the setpoint across the pause.
+        // PAUSE keeps the transaction and sends a 0 A profile; the last limit is carried in stored
+        // fields, not on the wire, and restored on unpause.
         ready.set(true);
         List<Request> sent = new java.util.ArrayList<>();
         when(parent.send(any())).thenAnswer(inv -> {
@@ -375,9 +351,6 @@ class OcppConnectorReadinessTest {
 
     @Test
     void aTransientStateDoesNotAutoUnlockWhenStuckRecoveryIsOff() {
-        // stuckStateRecovery defaults to false: a connector sitting in a transient OCPP state
-        // (Preparing/Finishing) must never be auto-unlocked — that physical action is opt-in per
-        // charger, not triggered by elapsed time in an otherwise normal state.
         ready.set(true);
         handler.onStatusNotification(
                 new StatusNotificationRequest(1, ChargePointErrorCode.NoError, ChargePointStatus.Preparing));
@@ -387,9 +360,6 @@ class OcppConnectorReadinessTest {
 
     @Test
     void meterValuesPollingCoalescesWhileAPreviousPollIsOutstanding() throws InterruptedException {
-        // 1-second polling against a charger that keeps its socket open but stops answering: while a
-        // poll is still outstanding, subsequent ticks must be skipped so the queue cannot grow an
-        // unbounded backlog behind the request timeout.
         ready.set(true);
         java.util.concurrent.atomic.AtomicInteger polls = new java.util.concurrent.atomic.AtomicInteger();
         when(parent.send(argThat(OcppConnectorReadinessTest::isMeterValuesTrigger))).thenAnswer(inv -> {

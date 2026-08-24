@@ -36,10 +36,7 @@ import eu.chargetime.ocpp.model.core.BootNotificationConfirmation;
 import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 
 /**
- * Proves the tolerant BootNotification handling: the embedded library rejects an inbound boot whose
- * {@code chargePointModel}/{@code chargePointVendor} breaks the OCPP CiString20 constraint, which
- * bricks the charger; the tolerant type accepts it while keeping the values for the Thing properties,
- * and the tolerant feature overrides the core one.
+ * Tests that the tolerant BootNotification type and feature accept a boot the strict library rejects.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -47,22 +44,18 @@ import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 @SuppressWarnings({ "null" })
 class TolerantBootNotificationTest {
 
-    // 25 characters — over the OCPP CiString20 limit. A representative over-length model; the library
-    // rejects ANY model/vendor beyond 20, so this stands in for whatever the real charger sends.
+    // 25 characters — over the OCPP CiString20 limit the library enforces on model/vendor.
     private static final String LONG_MODEL = "Eve Single Pro-line 22 kW";
     private static final String VENDOR = "Alfen BV";
     private static final String BOOT_JSON = "{\"chargePointVendor\":\"" + VENDOR + "\",\"chargePointModel\":\""
             + LONG_MODEL + "\"}";
 
-    // BootNotificationRequest has only String fields, so this deserializes identically to the library's
-    // Gson (whose sole customisation is a ZonedDateTime adapter, irrelevant here). Field reflection sets
-    // the value directly, bypassing the length-checking setter, exactly as JSONCommunicator does.
+    // Gson sets fields directly, bypassing the length-checking setter — exactly as the library's
+    // JSONCommunicator deserializes an inbound request off the wire.
     private static final Gson GSON = new Gson();
 
     @Test
     void theLibraryRejectsAnOverLongModel() {
-        // Reproduces the bug: the strict library type fails validation on a >20 model, which is what
-        // makes the library answer OccurenceConstraintViolation and the charger never boot.
         assertTrue(LONG_MODEL.length() > 20);
         BootNotificationRequest strict = GSON.fromJson(BOOT_JSON, BootNotificationRequest.class);
         assertFalse(strict.validate(), "the embedded library rejects a model over 20 chars");
@@ -70,8 +63,6 @@ class TolerantBootNotificationTest {
 
     @Test
     void theTolerantRequestAcceptsAnOverLongModelAndKeepsIt() {
-        // The fix: deserialized the same way, the tolerant type validates and retains the over-long
-        // model (and vendor) for the Thing properties.
         TolerantBootNotificationRequest tolerant = GSON.fromJson(BOOT_JSON, TolerantBootNotificationRequest.class);
         assertTrue(tolerant.validate());
         assertEquals(LONG_MODEL, tolerant.getChargePointModel());
@@ -80,7 +71,6 @@ class TolerantBootNotificationTest {
 
     @Test
     void theTolerantRequestAlsoAcceptsAMissingModel() {
-        // The other validate()-fail case: an omitted model. Still accepted, so the boot is not refused.
         TolerantBootNotificationRequest tolerant = GSON.fromJson("{\"chargePointVendor\":\"" + VENDOR + "\"}",
                 TolerantBootNotificationRequest.class);
         assertTrue(tolerant.validate());
@@ -88,8 +78,8 @@ class TolerantBootNotificationTest {
 
     @Test
     void theTolerantFeatureOverridesTheCoreBootNotificationFeature() {
-        // A later addFeature wins on the action, so the server deserializes an inbound BootNotification
-        // into the tolerant type. Uses the real library FeatureRepository + core profile.
+        // In the library's FeatureRepository a later addFeature wins on the action, so the tolerant
+        // feature must resolve over the core profile's.
         ServerCoreEventHandler handler = mock(ServerCoreEventHandler.class);
         FeatureRepository repository = new FeatureRepository();
         repository.addFeatureProfile(new ServerCoreProfile(handler));
@@ -102,7 +92,6 @@ class TolerantBootNotificationTest {
 
     @Test
     void theTolerantFeatureDelegatesToTheCoreHandler() {
-        // Once accepted, the boot is handled exactly as the core feature would have handled it.
         ServerCoreEventHandler handler = mock(ServerCoreEventHandler.class);
         BootNotificationConfirmation confirmation = new BootNotificationConfirmation();
         when(handler.handleBootNotificationRequest(any(), any())).thenReturn(confirmation);

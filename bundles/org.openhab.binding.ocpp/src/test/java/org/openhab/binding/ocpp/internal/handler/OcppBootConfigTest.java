@@ -51,14 +51,8 @@ import eu.chargetime.ocpp.model.core.GetConfigurationConfirmation;
 import eu.chargetime.ocpp.model.core.GetConfigurationRequest;
 
 /**
- * Tests the configuration a charger receives after it boots.
- *
- * <p>
- * This is deliberately conservative: a charger that is busy — flushing an offline message queue, for
- * instance — may leave a request unanswered. Such a request fails after the configured timeout (the
- * session itself stays up), so re-sending the configuration on every reconnect is pointless traffic
- * against a struggling charger, which is why it is sent until accepted once for the effective
- * settings and then left alone.
+ * Tests the configuration a charge point receives after it boots and the outbound-request
+ * serialization around it.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -78,7 +72,7 @@ class OcppBootConfigTest {
     void setUp() {
         serverConfig = new OcppServerConfiguration();
         serverConfig.meterValuesData = "";
-        serverConfig.disableRemoteTxAuthorization = true; // exactly one step unless stated otherwise
+        serverConfig.disableRemoteTxAuthorization = true;
 
         transport = mock(OcppTransport.class);
         acceptEverything();
@@ -137,8 +131,7 @@ class OcppBootConfigTest {
 
     @Test
     void outboundRequestsAreSerializedToOneCallInFlight() throws InterruptedException {
-        // A heartbeat makes the charge point ready (nothing queued). Two sends then follow: only the
-        // first may reach the transport until it has settled — OCPP-J keeps one CALL outstanding.
+        // OCPP-J keeps one CALL outstanding: the second send waits until the first settles.
         handler.onHeartbeat();
         awaitReady();
 
@@ -153,16 +146,13 @@ class OcppBootConfigTest {
         verify(transport, timeout(1000)).send(any(), eq(first));
         verify(transport, org.mockito.Mockito.after(500).never()).send(any(), eq(second));
 
-        // Only once the first CALL settles is the second one transmitted.
         firstResult.complete(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
         verify(transport, timeout(1000)).send(any(), eq(second));
     }
 
     @Test
     void theStatusProbePathIsSerializedToo() {
-        // The status-recovery probe (sendNow) bypasses the readiness gate but must still queue behind
-        // any in-flight CALL — two probes, as requestConnectorStatuses issues for a two-connector
-        // charger, do not go out together.
+        // sendNow bypasses the readiness gate but must still queue behind an in-flight CALL.
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstProbe = new CompletableFuture<>();
         when(transport.send(any(), any())).thenReturn(firstProbe);
 
@@ -179,78 +169,59 @@ class OcppBootConfigTest {
 
     @Test
     void aReconnectDoesNotWedgeTheDispatcherBehindAnInFlightRequestFromTheOldSession() throws InterruptedException {
-        // Regression: a request still in flight when the charger reconnects must not stall every
-        // request to the NEW session until the old one times out. The embedded library never completes
-        // the old promise when its session closes, so the dispatcher itself has to abandon the
-        // in-flight request on the session change and keep draining — rather than sit with a single
-        // CALL slot latched for the whole request timeout.
-        handler.onHeartbeat(); // ready on session A (from setUp)
+        // The embedded library never completes the old promise when its session closes, so the
+        // dispatcher must abandon the in-flight request on the session change and keep draining.
+        handler.onHeartbeat();
         awaitReady();
 
-        // The first request goes in flight and the transport never answers it — the charger vanished
-        // mid-request, the same fault that drops the socket.
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstNeverAnswers = new CompletableFuture<>();
         ChangeConfigurationRequest first = new ChangeConfigurationRequest("First", "1");
         when(transport.send(any(), eq(first))).thenReturn(firstNeverAnswers);
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstResult = handler.send(first)
                 .toCompletableFuture();
-        verify(transport, timeout(1000)).send(any(), eq(first)); // it is in flight
+        verify(transport, timeout(1000)).send(any(), eq(first));
 
-        // The charger reconnects under a fresh session. The in-flight request must fail at once, not
-        // hang until its timeout.
         handler.onConnected(UUID.randomUUID());
         assertTrue(firstResult.isCompletedExceptionally(),
                 "the in-flight request must be abandoned on the session change");
 
-        // The new session boots; a request on it must go out immediately, not wait behind the old
-        // (never-arriving) answer.
         handler.onHeartbeat();
         awaitReady();
         ChangeConfigurationRequest second = new ChangeConfigurationRequest("Second", "2");
         handler.send(second);
         verify(transport, timeout(1000)).send(any(), eq(second));
 
-        // The old request's transport future was never completed — proof the successor's drain never
-        // depended on it.
         assertFalse(firstNeverAnswers.isDone());
     }
 
     @Test
     void aLateCompletionOfAnAbandonedRequestDoesNotDisturbTheNewSessionChain() throws InterruptedException {
-        // After a reconnect abandons an in-flight request, that request's transport future can still
-        // complete later — the request-timeout reaper fires on a scheduler thread regardless of the
-        // socket. That late completion must be inert: it must neither complete anything on, nor start a
-        // second drain against, the NEW session's chain (which by then has its own request in flight).
-        // The drain-chain epoch is what makes it a no-op.
-        handler.onHeartbeat(); // ready on session A
+        // The request-timeout reaper can complete an abandoned request's future late, on a scheduler
+        // thread; a drain-chain epoch keeps that late completion from forking a second CALL.
+        handler.onHeartbeat();
         awaitReady();
 
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> f1 = new CompletableFuture<>();
         ChangeConfigurationRequest r1 = new ChangeConfigurationRequest("R1", "1");
         when(transport.send(any(), eq(r1))).thenReturn(f1);
         handler.send(r1);
-        verify(transport, timeout(1000)).send(any(), eq(r1)); // R1 in flight on A
+        verify(transport, timeout(1000)).send(any(), eq(r1));
 
-        // Reconnect: R1 is abandoned; the new session boots and becomes ready.
         handler.onConnected(UUID.randomUUID());
         handler.onHeartbeat();
         awaitReady();
 
-        // A request goes in flight on the NEW session.
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> f2 = new CompletableFuture<>();
         ChangeConfigurationRequest r2 = new ChangeConfigurationRequest("R2", "2");
         when(transport.send(any(), eq(r2))).thenReturn(f2);
         handler.send(r2);
-        verify(transport, timeout(1000)).send(any(), eq(r2)); // R2 in flight on the new session
+        verify(transport, timeout(1000)).send(any(), eq(r2));
 
-        // The abandoned R1's transport future completes late (the reaper). It must be a no-op: it must
-        // not release R3 (that would be a second, concurrent CALL alongside R2).
         f1.complete(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
         ChangeConfigurationRequest r3 = new ChangeConfigurationRequest("R3", "3");
         handler.send(r3);
-        verify(transport, org.mockito.Mockito.after(500).never()).send(any(), eq(r3)); // still behind R2
+        verify(transport, org.mockito.Mockito.after(500).never()).send(any(), eq(r3));
 
-        // Only when R2 settles does R3 go — the one-CALL-at-a-time chain was never forked.
         f2.complete(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
         verify(transport, timeout(1000)).send(any(), eq(r3));
     }
@@ -272,16 +243,14 @@ class OcppBootConfigTest {
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
 
-        // Still exactly one send: repeating it is what turns a reconnect into a connect/configure/
-        // drop loop on a charger that cannot answer promptly.
         verify(transport, timeout(1000).times(1)).send(any(),
                 eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
     }
 
     @Test
     void aRejectedConfigurationIsRetriedOnTheNextBoot() {
-        // A ChangeConfiguration answered Rejected completes normally but has not applied, so the
-        // burst must not latch on it — the key is attempted again when the charger next boots.
+        // A Rejected ChangeConfiguration completes normally but has not applied, so the burst must not
+        // latch on it.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             record(invocation.getArgument(1));
             return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Rejected));
@@ -315,10 +284,8 @@ class OcppBootConfigTest {
 
     @Test
     void aSettleDelayedBootConfigDoesNotRunAgainstAReplacementSession() {
-        // configSettleSeconds > 0: session A boots and schedules its burst for later. Before the
-        // delay expires the charger reconnects as session B (a bare WebSocket reconnect that sends no
-        // fresh BootNotification). A's delayed task must recognise its originating session is gone —
-        // captured when scheduled, not read when it runs — and not configure B.
+        // A bare WebSocket reconnect (session B) sends no fresh BootNotification; A's delayed burst
+        // must key off the session captured when scheduled, not the current one.
         OcppServerBridgeHandler serverHandler = mock(OcppServerBridgeHandler.class);
         when(serverHandler.getServerConfig()).thenReturn(serverConfig);
         when(serverHandler.getTransport()).thenReturn(transport);
@@ -338,26 +305,19 @@ class OcppBootConfigTest {
         delayed.onConnected(UUID.randomUUID());
 
         delayed.onBootNotification(new BootNotificationRequest("vendor", "model"));
-        delayed.onConnected(UUID.randomUUID()); // reconnect as a new session during the settle delay
+        delayed.onConnected(UUID.randomUUID());
 
-        // The 1s-delayed burst must never fire against the replacement session.
         verify(transport, org.mockito.Mockito.after(2000).never()).send(any(),
                 eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
     }
 
     @Test
     void anAbandonedBootSequenceDoesNotContinueOnAReplacementSession() {
-        // A step of session A's boot-configuration sequence is answered only after the charger has
-        // reconnected as session B (a timeout resolves this way too). The old sequence must stop:
-        // advancing it would transmit its remaining stale steps through B, interleaved with the
-        // sequence B's own boot runs, and could latch its fingerprint as applied.
-        serverConfig.extraConfig = List.of("VendorKey=42"); // steps: AuthorizeRemoteTxRequests, VendorKey
+        serverConfig.extraConfig = List.of("VendorKey=42");
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstStep = new CompletableFuture<>();
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request request = invocation.getArgument(1);
             record(request);
-            // Let the capability read complete so the burst starts; hang its first ChangeConfiguration
-            // step — the sequence element this test abandons on the reconnect.
             if (request instanceof GetConfigurationRequest) {
                 return CompletableFuture.completedFuture(new GetConfigurationConfirmation());
             }
@@ -368,33 +328,26 @@ class OcppBootConfigTest {
         verify(transport, timeout(3000)).send(any(),
                 eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
 
-        // The charger reconnects and proves itself on a fresh session.
         handler.onConnected(UUID.randomUUID());
         handler.onHeartbeat();
 
-        // A's outstanding step now completes; the abandoned sequence must not send its next step.
         firstStep.complete(new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted));
         verify(transport, org.mockito.Mockito.after(1500).never()).send(any(),
                 eq(new ChangeConfigurationRequest("VendorKey", "42")));
 
-        // And it must not have latched its fingerprint: B's own boot sends the configuration fresh.
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
         verify(transport, timeout(3000)).send(any(), eq(new ChangeConfigurationRequest("VendorKey", "42")));
     }
 
     @Test
     void aRequestQueuedOnOneSessionIsNotSentOnItsSuccessor() {
-        // The charger is connected (session A, from setUp) but not booted, so this request queues.
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> queued = handler
                 .send(new ChangeConfigurationRequest("Key", "1")).toCompletableFuture();
         assertFalse(queued.isDone());
 
-        // The charger reconnects under a fresh session B: A's queued request belongs to A's context
-        // and must fail rather than carry over.
         handler.onConnected(UUID.randomUUID());
         assertTrue(queued.isCompletedExceptionally(), "a request queued on a superseded session must fail");
 
-        // And when B becomes ready, the old request must not be transmitted on it.
         handler.onHeartbeat();
         verify(transport, org.mockito.Mockito.after(1500).never()).send(any(),
                 eq(new ChangeConfigurationRequest("Key", "1")));
@@ -406,13 +359,11 @@ class OcppBootConfigTest {
         verify(transport, timeout(3000)).send(any(),
                 eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
 
-        // Unchanged configuration: the next boot sends nothing again.
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
         verify(transport, org.mockito.Mockito.after(1500).times(1)).send(any(),
                 eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
 
-        // Changed configuration: the applied latch is keyed on the effective settings, so the next
-        // boot must send the new value — and the rest of the burst with it.
+        // The applied latch is keyed on the effective settings, so a changed value resends the burst.
         serverConfig.extraConfig = List.of("VendorKey=42");
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
         verify(transport, timeout(3000)).send(any(), eq(new ChangeConfigurationRequest("VendorKey", "42")));
@@ -422,11 +373,8 @@ class OcppBootConfigTest {
 
     @Test
     void nothingIsSentWhileTheBootNotificationIsBeingHandled() {
-        // The library sends the BootNotification confirmation only after the event handler returns,
-        // so any outbound request transmitted from inside the handler would reach the charger before
-        // its boot answer. The boot configuration (settle 0 here) and any deferred connector traffic
-        // must therefore be held: nothing on the wire when the handler returns, everything shortly
-        // after.
+        // The library sends the BootNotification confirmation only after the event handler returns, so
+        // anything sent from inside the handler would reach the charger before its boot answer.
         OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
         handler.registerConnector(1, connector);
 
@@ -435,16 +383,14 @@ class OcppBootConfigTest {
         verify(transport, org.mockito.Mockito.never()).send(any(), any());
         verify(connector, org.mockito.Mockito.never()).onChargePointReady();
 
-        // Once ready, traffic flows: at least one send (the boot GetConfiguration read, then the
-        // status refresh) — not exactly one, so the count cannot race the number of post-boot sends.
         verify(transport, timeout(3000).atLeastOnce()).send(any(), any());
         verify(connector, timeout(3000)).onChargePointReady();
     }
 
     @Test
     void aListReducedForSampledDataDoesNotNarrowAlignedData() {
-        // Sampled and aligned data may support different measurand sets, so a rejection while
-        // negotiating one key must not shrink the starting list of the other.
+        // Sampled and aligned data may support different measurand sets, so a rejection negotiating one
+        // key must not shrink the other's starting list.
         serverConfig.meterValuesData = "Energy.Active.Import.Register,Power.Active.Import,Temperature";
         serverConfig.disableRemoteTxAuthorization = false;
         when(transport.send(any(), any())).thenAnswer(invocation -> {
@@ -459,7 +405,6 @@ class OcppBootConfigTest {
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
 
-        // Wait for the aligned-data key specifically — a generic send count can pass before it is sent.
         verify(transport, timeout(3000).atLeastOnce()).send(any(),
                 argThat(r -> r instanceof ChangeConfigurationRequest c && "MeterValuesAlignedData".equals(c.getKey())));
         List<String> aligned = sentValuesFor("MeterValuesAlignedData");
@@ -491,31 +436,21 @@ class OcppBootConfigTest {
 
     @Test
     void aDefaultBootWithNoStepsHoldsTheStatusRefreshUntilReadiness() {
-        // The default server configuration produces no boot-configuration steps, so runBootConfig
-        // reaches its completion branch at once and asks for connector statuses. That refresh must go
-        // through the readiness gate (send), not the ungated fallback (sendNow): nothing may reach the
-        // wire until the charger is ready after its BootNotification is answered.
-        serverConfig.disableRemoteTxAuthorization = false; // no steps at all now
+        serverConfig.disableRemoteTxAuthorization = false;
         serverConfig.meterValuesData = "";
-        realConnector(1); // real connector, so requestStatus actually gates through the charge point
+        realConnector(1);
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
 
-        // While the boot is being handled and before readiness: nothing on the wire.
         verify(transport, org.mockito.Mockito.after(600).never()).send(any(), any());
 
-        // The charger's first post-boot message flips readiness; only now does the gated refresh go out.
         handler.onHeartbeat();
         verify(transport, timeout(2000)).send(any(), argThat(OcppBootConfigTest::isStatusTrigger));
     }
 
     @Test
     void anUndiscoveredConnectorIsTriggeredToAppearAfterBoot() {
-        // A charger accepted while already connected reports its connector count but has no connector
-        // Thing yet. After boot the binding triggers a StatusNotification for the undiscovered connector,
-        // so it is offered to the inbox without waiting for a physical state change. (Reported with a
-        // first-generation CHARGESTORM Connected.)
-        serverConfig.disableRemoteTxAuthorization = false; // no boot steps
+        serverConfig.disableRemoteTxAuthorization = false;
         serverConfig.meterValuesData = "";
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request req = invocation.getArgument(1);
@@ -539,8 +474,6 @@ class OcppBootConfigTest {
 
     @Test
     void learningACardAddsItToTheLocalAuthList() {
-        // Arm learn-card, then the next presented card is added to the list and — on a charger that
-        // supports LocalAuthListManagement — pushed on boot via a Full SendLocalList.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request req = invocation.getArgument(1);
             if (req instanceof GetConfigurationRequest) {
@@ -573,8 +506,6 @@ class OcppBootConfigTest {
 
     @Test
     void localAuthListIsNotSentWhenTheChargerLacksTheProfile() {
-        // The charger does not advertise LocalAuthListManagement, so no SendLocalList goes out even with
-        // a list set — unknown/absent support means do not send.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request req = invocation.getArgument(1);
             if (req instanceof GetConfigurationRequest) {
@@ -599,8 +530,6 @@ class OcppBootConfigTest {
 
     @Test
     void theLocalAuthListChannelDrivesTheListSentOnBoot() {
-        // The list is held in an openHAB item on the local-auth-list channel; it is pushed to a charger
-        // that supports the profile on its next boot.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             Request req = invocation.getArgument(1);
             if (req instanceof GetConfigurationRequest) {
@@ -633,7 +562,6 @@ class OcppBootConfigTest {
                 .getRequestedMessage() == eu.chargetime.ocpp.model.remotetrigger.TriggerMessageRequestType.StatusNotification;
     }
 
-    /** A real connector handler bridged to this test's real charge point handler. */
     private OcppConnectorHandler realConnector(int connectorId) {
         Bridge cpBridge = mock(Bridge.class);
         when(cpBridge.getHandler()).thenReturn(handler);

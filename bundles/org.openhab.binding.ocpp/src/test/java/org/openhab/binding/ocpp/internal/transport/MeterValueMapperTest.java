@@ -33,12 +33,6 @@ import eu.chargetime.ocpp.model.core.SampledValue;
 /**
  * Tests the measurand/phase to channel routing and the unit parsing of {@link MeterValueMapper}.
  *
- * <p>
- * The unit-tolerance cases (unknown / mis-spelled units) go through the String-based
- * {@code toState} directly: the ChargeTime {@code SampledValue.setUnit} validates and would reject
- * exactly those wire values, whereas a real charger reaches them via gson field deserialization that
- * bypasses the setter.
- *
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
@@ -49,9 +43,7 @@ class MeterValueMapperTest {
         assertEquals("current-import-l1", MeterValueMapper.channelFor("Current.Import", "L1"));
         assertEquals("current-import-l2", MeterValueMapper.channelFor("Current.Import", "L2"));
         assertEquals("current-import-l3", MeterValueMapper.channelFor("Current.Import", "L3"));
-        // Phase-to-neutral variants still resolve to the base phase channel.
         assertEquals("current-import-l2", MeterValueMapper.channelFor("Current.Import", "L2-N"));
-        // No phase maps to the aggregate channel, not a phase.
         assertEquals("current-import", MeterValueMapper.channelFor("Current.Import", null));
         assertEquals("voltage", MeterValueMapper.channelFor("Voltage", null));
     }
@@ -97,8 +89,6 @@ class MeterValueMapperTest {
 
     @Test
     void reactiveAndApparentUnitsKeepTheirDimension() {
-        // These are routed to dimensioned energy/power channels, so they must carry a unit, not
-        // degrade to a bare number.
         assertEquals(Units.VAR_HOUR,
                 assertInstanceOf(QuantityType.class, MeterValueMapper.toState("42", "varh")).getUnit());
         assertEquals(Units.KILOVAR,
@@ -109,9 +99,6 @@ class MeterValueMapperTest {
 
     @Test
     void omittedUnitDefaultsToWattHoursForEnergyMeasurands() {
-        // OCPP 1.6 defines Wh as the default SampledValue unit — meaningful exactly for the energy
-        // measurands (the default measurand is the energy register). A unitless Power.Factor must NOT
-        // be stamped as Wh: that would fabricate a wrong dimension.
         assertEquals(Units.WATT_HOUR, assertInstanceOf(QuantityType.class,
                 MeterValueMapper.toState("42", null, "Energy.Active.Import.Register")).getUnit());
         assertInstanceOf(DecimalType.class, MeterValueMapper.toState("0.98", null, "Power.Factor"));
@@ -119,7 +106,6 @@ class MeterValueMapperTest {
 
     @Test
     void aTrulyUnknownUnitDegradesToDecimalRatherThanThrowing() {
-        // Not an OCPP unit at all — keep the number rather than dropping the sample or throwing.
         assertInstanceOf(DecimalType.class, MeterValueMapper.toState("42", "furlong"));
     }
 
@@ -165,8 +151,6 @@ class MeterValueMapperTest {
 
     @Test
     void phasedPowerSamplesSumIntoTheAggregateChannel() {
-        // Three per-phase Power.Active.Import samples are the phase contributions of ONE total; the
-        // aggregate channel must carry their sum, not whichever phase happened to be listed last.
         Map<String, State> states = MeterValueMapper.toStates(requestOf(
                 sample("Power.Active.Import", "L1", "W", "1000"), sample("Power.Active.Import", "L2", "W", "1100"),
                 sample("Power.Active.Import", "L3", "W", "1200")));
@@ -177,8 +161,6 @@ class MeterValueMapperTest {
 
     @Test
     void aChargerReportedTotalWinsOverThePhaseSum() {
-        // If the charger reports its own unphased total alongside the phases, that total is
-        // authoritative — the phases must not be double-counted on top of it.
         Map<String, State> states = MeterValueMapper.toStates(requestOf(
                 sample("Power.Active.Import", "L1", "W", "1000"), sample("Power.Active.Import", "L2", "W", "1100"),
                 sample("Power.Active.Import", "L3", "W", "1200"), sample("Power.Active.Import", null, "W", "3300")));
@@ -188,8 +170,6 @@ class MeterValueMapperTest {
 
     @Test
     void phasedCurrentSamplesAreNotSummedIntoATotal() {
-        // A charger offering 16 A on each of three conductors offers 16 A per phase — not 48 A.
-        // Currents have no meaningful phase sum, so these samples are skipped, not aggregated.
         Map<String, State> states = MeterValueMapper.toStates(requestOf(sample("Current.Offered", "L1", "A", "16"),
                 sample("Current.Offered", "L2", "A", "16"), sample("Current.Offered", "L3", "A", "16")));
 
@@ -199,8 +179,6 @@ class MeterValueMapperTest {
 
     @Test
     void lineToLineVoltageDoesNotMasqueradeAsAPhaseVoltage() {
-        // L1-N is conductor L1's voltage; L1-L2 is a line-to-line measurement with no per-phase
-        // channel — it must be ignored, not published into (and overwrite) the L1 channel.
         Map<String, State> states = MeterValueMapper
                 .toStates(requestOf(sample("Voltage", "L1-N", "V", "230"), sample("Voltage", "L1-L2", "V", "400")));
 
@@ -210,8 +188,6 @@ class MeterValueMapperTest {
 
     @Test
     void aPhasedPowerFactorIsNotPassedOffAsAnAggregate() {
-        // Per-phase power factors have no meaningful sum or single representative value; publishing
-        // one phase as "the" power factor would be silently wrong, so the sample is skipped.
         Map<String, State> states = MeterValueMapper.toStates(requestOf(sample("Power.Factor", "L1", "Percent", "98")));
 
         org.junit.jupiter.api.Assertions.assertFalse(states.containsKey("power-factor"),

@@ -35,10 +35,7 @@ import eu.chargetime.ocpp.model.core.StartTransactionRequest;
 import eu.chargetime.ocpp.model.core.StopTransactionRequest;
 
 /**
- * Tests that transaction state survives an openHAB restart. Because the id and the
- * transaction-to-connector mapping are persisted through the server bridge, a StopTransaction that
- * arrives after a restart — when the in-memory map is empty — still reaches its connector, and a
- * connector can recover the id it needs for a RemoteStop or a TxProfile.
+ * Tests that transaction state survives an openHAB restart, persisted through the server bridge.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -91,8 +88,7 @@ class OcppTransactionRecoveryTest {
         handler.onStartTransaction(start(1), 100);
 
         verify(connector).onTransactionStarted(any(), org.mockito.ArgumentMatchers.eq(100));
-        // Persistence is the server bridge's responsibility now (it happens even without a handler);
-        // the charge-point handler only does in-memory routing.
+        // Persistence is the server bridge's job; the charge-point handler only routes in memory.
         verify(server, org.mockito.Mockito.never()).rememberTransaction(org.mockito.ArgumentMatchers.anyInt(), any(),
                 org.mockito.ArgumentMatchers.anyInt());
     }
@@ -101,7 +97,7 @@ class OcppTransactionRecoveryTest {
     void aStopAfterARestartRecoversTheConnectorFromThePersistedMapping() {
         OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
         handler.registerConnector(1, connector);
-        // No onStartTransaction in this process — the in-memory map is empty, as it is after a restart.
+        // No onStartTransaction here, so the in-memory map is empty, as after a restart.
         when(server.transactionConnector(100, "charger")).thenReturn(1);
 
         handler.onStopTransaction(stop(100));
@@ -112,9 +108,6 @@ class OcppTransactionRecoveryTest {
 
     @Test
     void aStopForAnotherChargersTransactionDoesNotClearItFromTheStore() {
-        // A charger sends StopTransaction with a transaction id that belongs to a DIFFERENT charge
-        // point (transactionConnector returns null because the stored owner is not this one). The
-        // stop must not delete that other charger's persisted transaction.
         when(server.transactionConnector(500, "charger")).thenReturn(null);
 
         handler.onStopTransaction(stop(500));
@@ -131,10 +124,8 @@ class OcppTransactionRecoveryTest {
 
     @Test
     void anAvailableStatusWithoutAStopClearsThePersistedTransaction() {
-        // The StopTransaction for transaction 55 was lost; the connector recovers it at initialize.
-        // The charger then authoritatively reports Available — no transaction is active — so every
-        // representation must be cleared, most importantly the persistent one: otherwise the next
-        // openHAB restart would recover a transaction the charger already declared finished.
+        // Available authoritatively means no active transaction, so a lost StopTransaction must not leave a persisted
+        // one a restart would recover as active.
         when(server.openTransactionFor("charger", 1)).thenReturn(55);
         OcppConnectorHandler connector = realConnector(1);
 
@@ -145,7 +136,6 @@ class OcppTransactionRecoveryTest {
         verify(server).forgetTransaction(55);
     }
 
-    /** A real connector handler bridged to the real charge point handler of this test. */
     private OcppConnectorHandler realConnector(int connectorId) {
         Bridge cpBridge = mock(Bridge.class);
         when(cpBridge.getHandler()).thenReturn(handler);

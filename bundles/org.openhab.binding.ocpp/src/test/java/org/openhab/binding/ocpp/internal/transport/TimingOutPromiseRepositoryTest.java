@@ -38,10 +38,8 @@ import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.core.HeartbeatConfirmation;
 
 /**
- * Tests that an unanswered request cannot wait forever. The embedded library removes a promise only
- * when an answer arrives and never times one out, so the repository decorator is what guarantees a
- * caller — a boot-configuration chain, a control command — always gets an outcome, and that the
- * abandoned promise does not stay retained.
+ * Tests the timeout decorator around a library that removes a promise only when an answer arrives and
+ * never times one out on its own.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -74,7 +72,7 @@ class TimingOutPromiseRepositoryTest {
         CompletableFuture<Confirmation> promise = repository.createPromise("call-2");
         promise.complete(new HeartbeatConfirmation(java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)));
 
-        Thread.sleep(1500); // outlive the timeout: the reaper must not disturb a completed promise
+        Thread.sleep(1500);
         assertTrue(promise.isDone());
         assertFalse(promise.isCompletedExceptionally(), "the timeout must not fire on an answered promise");
     }
