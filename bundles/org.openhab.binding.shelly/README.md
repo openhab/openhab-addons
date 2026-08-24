@@ -259,6 +259,11 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 
 Try moving the device to force status updates.
 
+#### Custom oh-blu-scanner.js
+
+The binding automatically manages the installation of `oh-blu-scanner.js` on the gateway device.
+See [Advanced Users](doc/AdvancedUsers.md) for how to change the script's log level (DEBUG/TRACE) or override the installed script for prototyping.
+
 Every time an event is received sensors#lastUpdate and channels are updated with the reported values.
 `device#wifiSignal` indicates the Bluetooth signal strength and gets updated when the device sends an event.
 
