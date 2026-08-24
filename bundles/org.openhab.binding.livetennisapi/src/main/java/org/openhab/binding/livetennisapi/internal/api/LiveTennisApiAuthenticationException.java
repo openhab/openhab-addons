@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Thrown when the Live Tennis API rejects the configured API key.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiAuthenticationException extends LiveTennisApiException {

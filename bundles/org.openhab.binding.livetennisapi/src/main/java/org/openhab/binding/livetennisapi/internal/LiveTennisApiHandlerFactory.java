@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link LiveTennisApiHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.livetennisapi", service = ThingHandlerFactory.class)

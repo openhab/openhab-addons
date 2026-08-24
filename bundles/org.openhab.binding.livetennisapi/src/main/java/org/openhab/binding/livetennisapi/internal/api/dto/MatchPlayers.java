@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The two participants of a match. Each side ({@link #p1}, {@link #p2}) is a {@link Player}, which for a doubles
  * match is a doubles team rather than an individual — so singles and doubles share this same two-sided shape.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 public class MatchPlayers {
 

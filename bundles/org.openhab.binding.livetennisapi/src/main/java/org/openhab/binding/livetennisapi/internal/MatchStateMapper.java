@@ -26,7 +26,7 @@ import org.openhab.binding.livetennisapi.internal.api.dto.Score;
  * {@code points} entries and {@code server} can be null and that {@code games} can be empty, and this binding maps
  * those states to UNDEF rather than guessing.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public final class MatchStateMapper {

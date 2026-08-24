@@ -21,7 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link LiveTennisApiBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiBindingConstants {

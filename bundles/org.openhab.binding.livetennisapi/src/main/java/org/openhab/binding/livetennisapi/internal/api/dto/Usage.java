@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The calling key's own usage and quota as returned by {@code GET /usage}. Calls to that endpoint are quota-exempt.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 public class Usage {
 

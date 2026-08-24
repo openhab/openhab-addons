@@ -28,7 +28,7 @@ import org.openhab.binding.livetennisapi.internal.api.dto.MatchListResponse;
  * Tests the live-match paging: the client must follow {@code meta.has_more} across pages rather than treating the
  * first page as a complete snapshot, and must stop rather than fan out unbounded requests.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiClientTest {

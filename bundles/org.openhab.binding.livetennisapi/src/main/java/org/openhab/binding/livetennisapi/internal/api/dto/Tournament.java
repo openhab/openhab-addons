@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * A tournament of the catalogue as returned by the Live Tennis API.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 public class Tournament {
 

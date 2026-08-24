@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Envelope of the match list endpoints ({@code {"data": [...], "meta": {...}}}).
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 public class MatchListResponse {
 
