@@ -15,6 +15,7 @@ package org.openhab.persistence.rrd4j.internal;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -140,6 +141,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceService.class);
     private final ItemRegistry itemRegistry;
+    private final Clock clock;
     private boolean active = false;
 
     public static Path getDatabasePath(String name) {
@@ -154,7 +156,12 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Activate
     public RRD4jPersistenceService(final @Reference ItemRegistry itemRegistry, Map<String, Object> config) {
+        this(itemRegistry, config, Clock.systemUTC());
+    }
+
+    RRD4jPersistenceService(ItemRegistry itemRegistry, Map<String, Object> config, Clock clock) {
         this.itemRegistry = itemRegistry;
+        this.clock = clock;
         storeJob = scheduler.scheduleWithFixedDelay(() -> doStore(false), 1, 1, TimeUnit.SECONDS);
         modified(config);
         active = true;
@@ -331,7 +338,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             return;
         }
 
-        long now = System.currentTimeMillis() / 1000;
+        long now = clock.instant().getEpochSecond();
         Double oldValue = storageMap.put(new Key(now, name), value);
         if (oldValue != null && !oldValue.equals(value)) {
             logger.debug(
@@ -341,7 +348,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private void doStore(boolean force) {
-        long now = System.currentTimeMillis() / 1000;
+        long now = clock.instant().getEpochSecond();
         while (!storageMap.isEmpty()) {
             Key key = storageMap.firstKey();
             if (now > key.timestamp || force) {
@@ -358,7 +365,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private synchronized void writePointToDatabase(String name, double value, long timestamp) {
         RrdDb db = null;
         try {
-            db = getDB(name, true);
+            db = getOrCreateDB(name, timestamp);
         } catch (Exception e) {
             logger.warn("Failed to open rrd4j database '{}' to store data ({})", name, e.toString());
         }
@@ -436,7 +443,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         String localAlias = alias != null ? alias : itemName;
         RrdDb db = null;
         try {
-            db = getDB(localAlias, false);
+            db = getDB(localAlias);
         } catch (Exception e) {
             logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
             return List.of();
@@ -580,7 +587,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         RrdDb db = null;
         try {
-            db = getDB(localAlias, false);
+            db = getDB(localAlias);
         } catch (Exception e) {
             logger.warn("Failed to open rrd4j database '{}' for querying ({})", itemName, e.toString());
             return null;
@@ -694,7 +701,15 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         };
     }
 
-    protected synchronized @Nullable RrdDb getDB(String alias, boolean createFileIfAbsent) {
+    private @Nullable RrdDb getDB(String alias) {
+        return openDatabase(alias, null);
+    }
+
+    private @Nullable RrdDb getOrCreateDB(String alias, long firstSampleTimestamp) {
+        return openDatabase(alias, firstSampleTimestamp);
+    }
+
+    private synchronized @Nullable RrdDb openDatabase(String alias, @Nullable Long firstSampleTimestamp) {
         RrdDb db = null;
         Path path = getDatabasePath(alias);
         try {
@@ -705,11 +720,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 // recreate the RrdDb instance from the file
                 builder.setPath(path.toString());
                 db = builder.build();
-            } else if (createFileIfAbsent) {
+            } else if (firstSampleTimestamp != null) {
                 if (!Files.exists(DB_FOLDER)) {
                     Files.createDirectories(DB_FOLDER);
                 }
-                RrdDef rrdDef = getRrdDef(alias, path);
+                RrdDef rrdDef = getRrdDef(alias, path, firstSampleTimestamp);
                 if (rrdDef != null) {
                     // create a new database file
                     builder.setRrdDef(rrdDef);
@@ -760,12 +775,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         return useRdc;
     }
 
-    private @Nullable RrdDef getRrdDef(String itemName, Path path) {
+    private @Nullable RrdDef getRrdDef(String itemName, Path path, long firstSampleTimestamp) {
         RrdDef rrdDef = new RrdDef(path.toString());
         RrdDefConfig useRdc = getRrdDefConfig(itemName);
         if (useRdc != null) {
             rrdDef.setStep(useRdc.step);
-            rrdDef.setStartTime(System.currentTimeMillis() / 1000 - useRdc.step);
+            // Ensure the first sample crosses an RRD step boundary even if database creation is delayed.
+            rrdDef.setStartTime(firstSampleTimestamp - useRdc.step);
             rrdDef.addDatasource(DATASOURCE_STATE, useRdc.dsType, useRdc.heartbeat, useRdc.min, useRdc.max);
             for (RrdArchiveDef rad : useRdc.archives) {
                 rrdDef.addArchive(rad.fcn, rad.xff, rad.steps, rad.rows);
