@@ -188,7 +188,7 @@ public class SungrowIHomeManagerHandler extends BaseModbusThingHandler {
         ModbusReadRequestBlueprint getDeviceInfoRequest = new ModbusReadRequestBlueprint(this.getSlaveId(),
                 ModbusReadFunctionCode.READ_INPUT_REGISTERS, //
                 7999, //
-                8, //
+                5, //
                 config.maxTries //
         );
         this.submitOneTimePoll(getDeviceInfoRequest, this::updateDeviceInfoProperties, this::readError);
@@ -202,7 +202,7 @@ public class SungrowIHomeManagerHandler extends BaseModbusThingHandler {
         this.submitOneTimePoll(getApplicationVersionRequest, this::updateApplicationVersionProperties, this::readError);
     }
 
-    private void updateDeviceInfoProperties(AsyncModbusReadResult result) {
+    void updateDeviceInfoProperties(AsyncModbusReadResult result) {
         result.getRegisters().ifPresent(registers -> {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
@@ -211,13 +211,20 @@ public class SungrowIHomeManagerHandler extends BaseModbusThingHandler {
             getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_IHM_DEVICE_TYPE_CODE,
                     String.valueOf(deviceTypeCode));
 
-            long protocolNumber = ModbusBitUtilities.extractUInt32(registers.getBytes(), 2);
-            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_IHM_PROTOCOL_NUMBER,
-                    String.valueOf(protocolNumber));
+            // Protocol number is stored with swapped register order: register 2 holds the first two chars,
+            // register 1 holds the last char and the NUL terminator.
+            byte[] rawBytes = registers.getBytes();
+            byte[] protocolNumberBytes = new byte[] { rawBytes[4], rawBytes[5], rawBytes[2], rawBytes[3] };
+            String protocolNumber = ModbusBitUtilities.extractStringFromBytes(protocolNumberBytes, 0, 4,
+                    StandardCharsets.UTF_8);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_IHM_PROTOCOL_NUMBER, protocolNumber);
 
-            long protocolVersion = ModbusBitUtilities.extractUInt32(registers.getBytes(), 6);
-            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_IHM_PROTOCOL_VERSION,
-                    String.valueOf(protocolVersion));
+            // Protocol version is stored as 4 individual version-component bytes in swapped register order
+            // (register 4 holds major/minor, register 3 holds patch/build).
+            long rawVersion = ModbusBitUtilities.extractUInt32Swap(registers.getBytes(), 6);
+            String protocolVersion = "V" + ((rawVersion >> 24) & 0xFF) + "." + ((rawVersion >> 16) & 0xFF) + "."
+                    + ((rawVersion >> 8) & 0xFF);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_IHM_PROTOCOL_VERSION, protocolVersion);
         });
     }
 
