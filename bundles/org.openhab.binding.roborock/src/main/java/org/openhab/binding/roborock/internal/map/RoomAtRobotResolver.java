@@ -27,28 +27,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class RoomAtRobotResolver {
 
-    /** Coordinate-to-pixel conversion divisor, matching {@code RRMapRenderer.MM}. */
     private static final int MM = 50;
 
-    /**
-     * Maximum Chebyshev-distance ring searched outward when the queried pixel is not itself a
-     * segmented-floor pixel; kept small to avoid matching a distant room.
-     */
     private static final int FALLBACK_SEARCH_RADIUS = 2;
 
     private RoomAtRobotResolver() {
     }
 
-    /**
-     * The segment id at the given position, or of the nearest ring within
-     * {@link #FALLBACK_SEARCH_RADIUS} where one segment holds a strict majority.
-     */
+    /** The segment id at the given position, or of the nearest ring holding a strict majority. */
     public static Optional<Integer> resolveSegmentId(RRMapData mapData, int positionX, int positionY) {
         int width = mapData.imageWidth();
         int height = mapData.imageHeight();
         byte[] imageData = mapData.imageData();
-        // The dimensions are unvalidated uint32 values whose product can wrap in int arithmetic; a
-        // passing long comparison also keeps every in-bounds pixel index within int range.
+        // The dimensions are unvalidated uint32 values whose product can wrap in int arithmetic.
         if (width <= 0 || height <= 0 || imageData.length < (long) width * height) {
             return Optional.empty();
         }
@@ -96,9 +87,8 @@ public final class RoomAtRobotResolver {
                 dominantId = candidate.getKey();
             }
         }
-        // The winner must hold more than half of all counted ring pixels, so a mere plurality like
-        // 2/1/1 stays unresolved instead of deciding the room with only half the evidence.
-        return highestCount * 2 > totalCount ? Optional.of(dominantId) : Optional.empty();
+        boolean holdsStrictMajority = highestCount * 2 > totalCount;
+        return holdsStrictMajority ? Optional.of(dominantId) : Optional.empty();
     }
 
     private static Optional<Integer> segmentAt(byte[] imageData, int width, int height, int x, int y) {

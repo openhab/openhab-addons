@@ -112,7 +112,6 @@ public enum StatusType {
                     ZONED_CLEAN_MOP_MOPPING ->
                 DockPosition.AWAY_FROM_IT;
 
-            // the three *_CLEAN_MOP_CLEANING names admit both readings and no payload settles it
             case UNKNOWN, INITIATING, SLEEPING, IDLE, PAUSED, ERROR, SHUTTING_DOWN, IN_CALL, OFFLINE, LOCKED,
                     CLEAN_MOP_CLEANING, SEGMENT_CLEAN_MOP_CLEANING, ZONED_CLEAN_MOP_CLEANING ->
                 DockPosition.NOT_DERIVABLE;

@@ -220,7 +220,6 @@ public final class RRMapRenderer {
         };
     }
 
-    /** The segment (room) id carried by a base-map pixel, or {@link #NO_SEGMENT}. */
     static int decodeSegmentId(int pixelValue) {
         // reserved values that would pass the kind test below
         if (pixelValue == MAP_SCAN || pixelValue == MAP_INSIDE) {

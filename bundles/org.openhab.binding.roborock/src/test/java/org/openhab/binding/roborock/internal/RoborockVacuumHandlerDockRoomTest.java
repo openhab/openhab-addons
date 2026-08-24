@@ -46,6 +46,9 @@ class RoborockVacuumHandlerDockRoomTest {
     private static final int WIDTH = 20;
     private static final int HEIGHT = 20;
 
+    private static final Set<StatusType> NAME_ADMITS_BOTH_READINGS = EnumSet.of(StatusType.CLEAN_MOP_CLEANING,
+            StatusType.SEGMENT_CLEAN_MOP_CLEANING, StatusType.ZONED_CLEAN_MOP_CLEANING);
+
     private static final int HALLWAY_SEGMENT = 4;
     private static final int DOCK_ROOM_SEGMENT = 7;
 
@@ -173,6 +176,15 @@ class RoborockVacuumHandlerDockRoomTest {
     }
 
     @Test
+    void aStatusWhoseNameAdmitsBothReadingsDoesNotClaimTheDock() {
+        for (StatusType ambiguous : NAME_ADMITS_BOTH_READINGS) {
+            assertFalse(ambiguous.isAtDock(), ambiguous
+                    + " reads both as washing the mop at the dock and as cleaning with a clean mop, and no payload"
+                    + " settles it, so it must not claim the dock");
+        }
+    }
+
+    @Test
     void statusTypeKnowsWhichStatesPutTheRobotOnItsDock() {
         // Listed here a second time, independently of the switch under test: if the two
         // enumerations ever disagree, this fails rather than silently following the code.
@@ -188,8 +200,8 @@ class RoborockVacuumHandlerDockRoomTest {
                 StatusType.ZONED_CLEAN_MOP_MOPPING);
         Set<StatusType> positionUnknown = EnumSet.of(StatusType.UNKNOWN, StatusType.INITIATING, StatusType.SLEEPING,
                 StatusType.IDLE, StatusType.PAUSED, StatusType.ERROR, StatusType.SHUTTING_DOWN, StatusType.IN_CALL,
-                StatusType.OFFLINE, StatusType.LOCKED, StatusType.CLEAN_MOP_CLEANING,
-                StatusType.SEGMENT_CLEAN_MOP_CLEANING, StatusType.ZONED_CLEAN_MOP_CLEANING);
+                StatusType.OFFLINE, StatusType.LOCKED);
+        positionUnknown.addAll(NAME_ADMITS_BOTH_READINGS);
 
         for (StatusType status : StatusType.values()) {
             int buckets = (onTheDock.contains(status) ? 1 : 0) + (headingThere.contains(status) ? 1 : 0)
