@@ -20,32 +20,31 @@ When a charger connects with a charge point id that has no `chargepoint` thing, 
 When a known charge point reports a connector for the first time, that `connector` appears in the inbox under its `chargepoint` bridge.
 There is no active scan; point your charger at `ws://<openhab-host>:<port>/<chargePointId>` and it will show up.
 
-If you are unsure what id your charger uses, you do not have to guess it.
-Connect the charger and it appears in the inbox under its real id, ready to accept.
-Or enable `log:set DEBUG org.openhab.binding.ocpp` and look for the `Charger connected: id=...` line, which prints the exact id the charger dialed.
+You do not need to know the charge point id in advance: connect the charger and it appears in the inbox under its real id, ready to accept.
+Only if it never shows up, set the binding's log level to `DEBUG` (see [Logging](https://www.openhab.org/docs/administration/logging.html)) and look for the `Charger connected: id=...` line — it prints the exact id the charger dialed, which helps track down a URL or connection problem.
 The id is whatever path the charger appends to its backend URL — often its serial number — so it is easiest to read it back here rather than hunt for it in the charger's own settings.
 
 ## Thing Configuration
 
 ### `server`
 
-| Name                        | Type    | Description                                                                 | Default | Required | Advanced |
-|-----------------------------|---------|-----------------------------------------------------------------------------|---------|----------|----------|
-| port                        | integer | TCP port the OCPP server listens on                                         | 8887    | no       | no       |
-| host                        | text    | Local bind address                                                          | 0.0.0.0 | no       | yes      |
-| heartbeatInterval           | integer | Heartbeat interval (s) returned to chargers on boot                         | 300     | no       | yes      |
-| meterValuesData             | text    | Measurands to configure on chargers (empty = leave unchanged)               | (empty) | no       | yes      |
-| meterValueSampleInterval    | integer | MeterValueSampleInterval to configure (-1 = leave unchanged)                | -1      | no       | yes      |
-| clockAlignedDataInterval    | integer | ClockAlignedDataInterval to configure (-1 = leave unchanged)                | -1      | no       | yes      |
-| disableRemoteTxAuthorization| boolean | Configure AuthorizeRemoteTxRequests=false                                    | false   | no       | yes      |
-| extraConfig                | text[]  | Extra ChangeConfiguration entries as key=value, applied on boot             | (empty) | no       | yes      |
-| pingInterval                | integer | WebSocket ping interval (s). A charger that does not answer a ping is disconnected, and many never do — leave at 0 unless yours is known to reply | 0 | no | yes |
-| requestTimeoutSeconds       | integer | Seconds before an unanswered request to a charger fails                     | 30      | no       | yes      |
-| authPassword                | text    | HTTP Basic password chargers must present (username = charge point id), 16–20 visible ASCII characters. Empty disables authentication | (empty) | no | yes |
-| tlsKeystorePath                 | text    | Path to a PKCS12 keystore with the server's TLS certificate and key. When set, the endpoint runs `wss://` (TLS) instead of `ws://` | (empty) | no | yes |
-| tlsKeystorePassword         | text    | Password for the TLS keystore (store and key)                               | (empty) | no       | yes      |
-| whitelistTagIds                        | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected | (empty) | no     | yes      |
-| chargerIds                    | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected | (empty) | no | yes |
+| Name                         | Type    | Description                                                                                                                                       | Default | Required | Advanced |
+| ---------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
+| port                         | integer | TCP port the OCPP server listens on                                                                                                               | 8887    | no       | no       |
+| host                         | text    | Local bind address                                                                                                                                | 0.0.0.0 | no       | yes      |
+| heartbeatInterval            | integer | Heartbeat interval (s) returned to chargers on boot                                                                                               | 300     | no       | yes      |
+| meterValuesData              | text    | Measurands to configure on chargers (empty = leave unchanged)                                                                                     | (empty) | no       | yes      |
+| meterValueSampleInterval     | integer | MeterValueSampleInterval to configure (-1 = leave unchanged)                                                                                      | -1      | no       | yes      |
+| clockAlignedDataInterval     | integer | ClockAlignedDataInterval to configure (-1 = leave unchanged)                                                                                      | -1      | no       | yes      |
+| disableRemoteTxAuthorization | boolean | Configure AuthorizeRemoteTxRequests=false                                                                                                         | false   | no       | yes      |
+| extraConfig                  | text[]  | Extra ChangeConfiguration entries as key=value, applied on boot                                                                                   | (empty) | no       | yes      |
+| pingInterval                 | integer | WebSocket ping interval (s). A charger that does not answer a ping is disconnected, and many never do — leave at 0 unless yours is known to reply | 0       | no       | yes      |
+| requestTimeoutSeconds        | integer | Seconds before an unanswered request to a charger fails                                                                                           | 30      | no       | yes      |
+| authPassword                 | text    | HTTP Basic password chargers must present (username = charge point id), 16–20 visible ASCII characters. Empty disables authentication             | (empty) | no       | yes      |
+| tlsKeystorePath              | text    | Path to a PKCS12 keystore with the server's TLS certificate and key. When set, the endpoint runs `wss://` (TLS) instead of `ws://`                | (empty) | no       | yes      |
+| tlsKeystorePassword          | text    | Password for the TLS keystore (store and key)                                                                                                     | (empty) | no       | yes      |
+| whitelistTagIds              | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected                                                                     | (empty) | no       | yes      |
+| chargerIds                   | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected                                                       | (empty) | no       | yes      |
 
 These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once for the configured values — a changed configuration is sent again on the charger's next boot, an unchanged one is not repeated on every reconnect.
 A request a charger leaves unanswered fails after `requestTimeoutSeconds`; the OCPP library itself would wait on it forever.
@@ -55,27 +54,27 @@ For the charger's own offline authorization cache, see the `chargepoint` `local-
 
 ### `chargepoint`
 
-| Name          | Type | Description                                            | Default | Required | Advanced |
-|---------------|------|-------------------------------------------------------|---------|----------|----------|
-| chargePointId | text | The charger's OCPP identity (its WebSocket URL suffix) | N/A     | yes      | no       |
-| configSettleSeconds | integer | Delay after BootNotification before the configuration above is sent. Some chargers are not ready to answer immediately | 0 | no | yes |
-| meterless     | boolean | The charger has no internal meter: skip measurand configuration and disable clock-aligned sampling | false | no | yes |
-| heartbeat     | integer | Per-charger heartbeat interval (s), overriding the server default. Also sizes this charger's liveness window. 0 uses the server default | 0 | no | yes |
+| Name                | Type    | Description                                                                                                                             | Default | Required | Advanced |
+| ------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
+| chargePointId       | text    | The charger's OCPP identity (its WebSocket URL suffix)                                                                                  | N/A     | yes      | no       |
+| configSettleSeconds | integer | Delay after BootNotification before the configuration above is sent. Some chargers are not ready to answer immediately                  | 0       | no       | yes      |
+| meterless           | boolean | The charger has no internal meter: skip measurand configuration and disable clock-aligned sampling                                      | false   | no       | yes      |
+| heartbeat           | integer | Per-charger heartbeat interval (s), overriding the server default. Also sizes this charger's liveness window. 0 uses the server default | 0       | no       | yes      |
 
 ### `connector`
 
-| Name        | Type    | Description                    | Default | Required | Advanced |
-|-------------|---------|--------------------------------|---------|----------|----------|
-| connectorId | integer | OCPP connector number (1..N)   | 1       | no       | no       |
-| forceTxDefaultProfile | boolean | Always send the charge limit as a TxDefaultProfile, even during a transaction. Needed for chargers that reject a TxProfile outside one | false | no | yes |
-| profileMinIntervalMs | integer | Minimum spacing (ms) between SetChargingProfile sends; rapid changes are coalesced. 0 disables | 0 | no | yes |
-| hardwareMaxCurrentKey | text | Vendor ChangeConfiguration key backing the `hardware-max-current` channel. Empty disables that channel | (empty) | no | yes |
-| remoteStartTag | text | idTag used when starting a transaction via the `charging` channel | openhab | no | yes |
-| refreshInterval | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling | 0 | no | yes |
-| nominalVoltage | decimal | Line voltage for converting an amps charge-limit to watts on a charger that only accepts a power limit (W = A×V×phases) | 230 | no | yes |
-| phases | integer | Phases assumed in that amps→watts conversion — 1 single-phase, 3 three-phase | 1 | no | yes |
-| stuckStateRecovery | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long. Off by default; enable only for a charger known to wedge there | false | no | yes |
-| remoteStartRetries | integer | Retry a RemoteStart the charger does not answer, this many times. 0 disables. For a charger that drops the first start request but accepts a retry | 0 | no | yes |
+| Name                  | Type    | Description                                                                                                                                                        | Default | Required | Advanced |
+| --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- | -------- | -------- |
+| connectorId           | integer | OCPP connector number (1..N)                                                                                                                                       | 1       | no       | no       |
+| forceTxDefaultProfile | boolean | Always send the charge limit as a TxDefaultProfile, even during a transaction. Needed for chargers that reject a TxProfile outside one                             | false   | no       | yes      |
+| profileMinIntervalMs  | integer | Minimum spacing (ms) between SetChargingProfile sends; rapid changes are coalesced. 0 disables                                                                     | 0       | no       | yes      |
+| hardwareMaxCurrentKey | text    | Vendor ChangeConfiguration key backing the `hardware-max-current` channel. Empty disables that channel                                                             | (empty) | no       | yes      |
+| remoteStartTag        | text    | idTag used when starting a transaction via the `charging` channel                                                                                                  | openhab | no       | yes      |
+| refreshInterval       | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling                                                                         | 0       | no       | yes      |
+| nominalVoltage        | decimal | Line voltage for converting an amps charge-limit to watts on a charger that only accepts a power limit (W = A×V×phases)                                            | 230     | no       | yes      |
+| phases                | integer | Phases assumed in that amps→watts conversion — 1 single-phase, 3 three-phase                                                                                       | 1       | no       | yes      |
+| stuckStateRecovery    | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long. Off by default; enable only for a charger known to wedge there | false   | no       | yes      |
+| remoteStartRetries    | integer | Retry a RemoteStart the charger does not answer, this many times. 0 disables. For a charger that drops the first start request but accepts a retry                 | 0       | no       | yes      |
 
 Most connectors need no configuration beyond `connectorId`.
 The rest cover specific charger behaviors.
@@ -90,13 +89,13 @@ The rest cover specific charger behaviors.
 
 ### `chargepoint`
 
-| Channel   | Type     | Read/Write | Description                                |
-|-----------|----------|------------|--------------------------------------------|
-| connected | Switch   | R          | Whether the charger has an open session    |
-| last-seen  | DateTime | R          | Timestamp of the last contact from the charger |
-| reset      | Switch   | W          | Momentary — soft reset the charge point    |
-| local-auth-list | String | RW      | The charger's local authorization list (comma-separated idTags), persisted — set it to push cards for offline use |
-| learn-card | Switch  | W          | Momentary — switch ON, then present a card at the reader and it is added to the local authorization list |
+| Channel         | Type     | Read/Write | Description                                                                                                       |
+| --------------- | -------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| connected       | Switch   | R          | Whether the charger has an open session                                                                           |
+| last-seen       | DateTime | R          | Timestamp of the last contact from the charger                                                                    |
+| reset           | Switch   | W          | Momentary — soft reset the charge point                                                                           |
+| local-auth-list | String   | RW         | The charger's local authorization list (comma-separated idTags), persisted — set it to push cards for offline use |
+| learn-card      | Switch   | W          | Momentary — switch ON, then present a card at the reader and it is added to the local authorization list          |
 
 Vendor, model, firmware version and serial number are published as thing properties from the charger's BootNotification.
 
@@ -106,25 +105,25 @@ To add a card without knowing its id, use `learn-card`: switch it ON and present
 
 ### `connector`
 
-| Channel            | Type                   | Read/Write | Description                                             |
-|--------------------|------------------------|------------|--------------------------------------------------------|
-| charge-point-status  | String                 | R          | OCPP status (Available, Preparing, Charging, ...)      |
-| cable-connected     | Switch                 | R          | Whether a vehicle cable is plugged in (derived)        |
-| current-import-l1/l2/l3 | Number:ElectricCurrent | R         | Imported current per phase (MeterValues)               |
-| voltage-l1/l2/l3      | Number:ElectricPotential | R        | Voltage per phase (MeterValues)                        |
-| current-offered     | Number:ElectricCurrent | R          | Current offered to the vehicle                         |
-| power-active-import  | Number:Power           | R          | Active power imported                                  |
-| power-offered       | Number:Power           | R          | Power offered to the vehicle                           |
-| energy-active-import | Number:Energy          | R          | Energy register (Energy.Active.Import.Register)        |
-| session-energy      | Number:Energy          | R          | Energy of the last session (meter-stop − meter-start), published once at session end |
-| charging           | Switch                 | RW         | ON while a transaction runs; command to remote start/stop |
-| charge-limit        | Number:ElectricCurrent | RW         | Charge current cap via SetChargingProfile              |
-| power-limit         | Number:Power           | RW         | Charge power cap (watts); overrides charge-limit, for power-only chargers |
-| number-phases       | Number                 | RW         | Phases to charge on (1/2/3); 0 = charger default. Needs a charger that supports phase switching |
-| pause              | Switch                 | RW         | Pause charging (profile limit 0) without ending the transaction |
-| availability       | Switch                 | RW         | OCPP availability (Operative/Inoperative)              |
-| unlock             | Switch                 | W          | Momentary — unlock the connector                       |
-| hardware-max-current | Number:ElectricCurrent | RW         | Hardware current ceiling via a vendor config key       |
+| Channel                 | Type                     | Read/Write | Description                                                                                     |
+| ----------------------- | ------------------------ | ---------- | ----------------------------------------------------------------------------------------------- |
+| charge-point-status     | String                   | R          | OCPP status (Available, Preparing, Charging, ...)                                               |
+| cable-connected         | Switch                   | R          | Whether a vehicle cable is plugged in (derived)                                                 |
+| current-import-l1/l2/l3 | Number:ElectricCurrent   | R          | Imported current per phase (MeterValues)                                                        |
+| voltage-l1/l2/l3        | Number:ElectricPotential | R          | Voltage per phase (MeterValues)                                                                 |
+| current-offered         | Number:ElectricCurrent   | R          | Current offered to the vehicle                                                                  |
+| power-active-import     | Number:Power             | R          | Active power imported                                                                           |
+| power-offered           | Number:Power             | R          | Power offered to the vehicle                                                                    |
+| energy-active-import    | Number:Energy            | R          | Energy register (Energy.Active.Import.Register)                                                 |
+| session-energy          | Number:Energy            | R          | Energy of the last session (meter-stop − meter-start), published once at session end            |
+| charging                | Switch                   | RW         | ON while a transaction runs; command to remote start/stop                                       |
+| charge-limit            | Number:ElectricCurrent   | RW         | Charge current cap via SetChargingProfile                                                       |
+| power-limit             | Number:Power             | RW         | Charge power cap (watts); overrides charge-limit, for power-only chargers                       |
+| number-phases           | Number                   | RW         | Phases to charge on (1/2/3); 0 = charger default. Needs a charger that supports phase switching |
+| pause                   | Switch                   | RW         | Pause charging (profile limit 0) without ending the transaction                                 |
+| availability            | Switch                   | RW         | OCPP availability (Operative/Inoperative)                                                       |
+| unlock                  | Switch                   | W          | Momentary — unlock the connector                                                                |
+| hardware-max-current    | Number:ElectricCurrent   | RW         | Hardware current ceiling via a vendor config key                                                |
 
 Beyond the channels above, the connector also exposes the full OCPP 1.6 SampledValue set — aggregate and per-phase current/voltage, active and reactive power, power factor, frequency, active/reactive energy (register and interval, import and export), plus vehicle telemetry (`soc`, `rpm`, `temperature`) — and per-transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`) and the metering timestamps (`timestamp`, `timestamp-start`, `timestamp-stop`).
 
@@ -253,13 +252,13 @@ The `power-active-import` and per-phase metering channels only update when the c
 
 Every charger dials `ws://<openhab-host>:<port>/<chargePointId>`; the only real differences are how each vendor's UI presents the URL and the id, and a few per-charger quirks.
 
-| Charger | Configure on the charger | Notes |
-|---------|--------------------------|-------|
-| Phoenix Contact CHARX SEC-3xxx | `ws://<host>:8887/<id>` | No internal meter: set `meterless` on the `chargepoint` and `forceTxDefaultProfile` on the `connector`. Metered externally. |
-| Wallbox Copper SB / Pulsar Plus | `ws://<host>:8887/<id>` | Works with defaults. |
-| Alfen Eve Single Pro | `ws://<host>:8887/<id>` (CSMS URL in the ACE Service Installer) | Its BootNotification model can exceed OCPP's 20-character limit; the binding accepts it rather than refusing the charger. |
-| Mennekes Amtron (Bender controller) | Backend URL `ws://<host>:8887/` plus ChargeBoxIdentity `<id>` in a separate field | The controller joins them into `ws://<host>:8887/<id>`. Do not copy the `/OCPPJProxy/v16/` path from the Bender docs — that is only for their proxy backend. |
-| V2C Trydan | `ws://<host>:8887/<id>` | Sends a short-password HTTP Basic-auth header on every connection; accepted (the binding relaxes the library's password-length check when no `authPassword` is set). |
+| Charger                             | Configure on the charger                                                          | Notes                                                                                                                                                                |
+| ----------------------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Phoenix Contact CHARX SEC-3xxx      | `ws://<host>:8887/<id>`                                                           | No internal meter: set `meterless` on the `chargepoint` and `forceTxDefaultProfile` on the `connector`. Metered externally.                                          |
+| Wallbox Copper SB / Pulsar Plus     | `ws://<host>:8887/<id>`                                                           | Works with defaults.                                                                                                                                                 |
+| Alfen Eve Single Pro                | `ws://<host>:8887/<id>` (CSMS URL in the ACE Service Installer)                   | Its BootNotification model can exceed OCPP's 20-character limit; the binding accepts it rather than refusing the charger.                                            |
+| Mennekes Amtron (Bender controller) | Backend URL `ws://<host>:8887/` plus ChargeBoxIdentity `<id>` in a separate field | The controller joins them into `ws://<host>:8887/<id>`. Do not copy the `/OCPPJProxy/v16/` path from the Bender docs — that is only for their proxy backend.         |
+| V2C Trydan                          | `ws://<host>:8887/<id>`                                                           | Sends a short-password HTTP Basic-auth header on every connection; accepted (the binding relaxes the library's password-length check when no `authPassword` is set). |
 
 ## Security
 
