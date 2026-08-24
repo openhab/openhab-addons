@@ -10,9 +10,9 @@
     <version>5.3.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.binding.emeraldhws</artifactId>
+  <artifactId>org.openhab.binding.emerald</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: EmeraldHWS Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Emerald Binding</name>
   <dependencies>
     <dependency>
       <groupId>software.amazon.awssdk.iotdevicesdk</groupId>

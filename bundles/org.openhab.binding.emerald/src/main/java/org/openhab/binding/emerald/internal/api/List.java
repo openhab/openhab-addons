@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.emeraldhws.internal.api;
+package org.openhab.binding.emerald.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

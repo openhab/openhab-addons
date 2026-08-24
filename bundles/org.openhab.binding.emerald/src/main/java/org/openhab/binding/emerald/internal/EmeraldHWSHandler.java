@@ -10,15 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.emeraldhws.internal;
+package org.openhab.binding.emerald.internal;
 
-import static org.openhab.binding.emeraldhws.internal.EmeraldHWSBindingConstants.*;
+import static org.openhab.binding.emerald.internal.EmeraldBindingConstants.*;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.emeraldhws.internal.api.List;
+import org.openhab.binding.emerald.internal.api.List;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -51,7 +51,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EmeraldHWSHandler.class);
 
     @Nullable
-    EmeraldHWSAccountHandler bridgeHandler;
+    EmeraldAccountHandler bridgeHandler;
     private @Nullable EmeraldHWSConfiguration config;
 
     public EmeraldHWSHandler(Thing thing) {
@@ -73,7 +73,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
         JsonObject payload = new JsonObject();
 
         switch (channelUID.getId()) {
-            case EmeraldHWSBindingConstants.CHANNEL_POWER:
+            case EmeraldBindingConstants.CHANNEL_POWER:
                 if (command == OnOffType.ON) {
                     payload.addProperty("switch", 1);
                 } else if (command == OnOffType.OFF) {
@@ -81,7 +81,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 }
                 break;
 
-            case EmeraldHWSBindingConstants.CHANNEL_MODE:
+            case EmeraldBindingConstants.CHANNEL_MODE:
                 try {
                     int modeValue = -1;
 
@@ -105,7 +105,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                     logger.warn("Error parsing mode command to integer: {}", command, e);
                 }
                 break;
-            case EmeraldHWSBindingConstants.CHANNEL_SET_TEMPERATURE:
+            case EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE:
                 if (command instanceof QuantityType) {
                     int temp = ((QuantityType<?>) command).intValue();
                     payload.addProperty("temp_set", temp);
@@ -129,7 +129,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
     }
 
     protected @Nullable List getApi() {
-        EmeraldHWSAccountHandler localBridge = bridgeHandler;
+        EmeraldAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
             return null;
         }
@@ -146,10 +146,10 @@ public class EmeraldHWSHandler extends BaseThingHandler {
         config = getConfigAs(EmeraldHWSConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No EmeraldHWS Bridge thing selected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No Emerald Bridge thing selected");
             return;
         }
-        bridgeHandler = (EmeraldHWSAccountHandler) bridge.getHandler();
+        bridgeHandler = (EmeraldAccountHandler) bridge.getHandler();
         updateStatus(ThingStatus.ONLINE);
 
         List api = getApi();
@@ -207,18 +207,18 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             for (int i = 0; i < api.info.property.length; i++) {
                 for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
                     if (config.uuid.equals(api.info.property[i].heatpump[j].id)) {
-                        updateState(EmeraldHWSBindingConstants.CHANNEL_POWER,
+                        updateState(EmeraldBindingConstants.CHANNEL_POWER,
                                 OnOffType.from(api.info.property[i].heatpump[j].lastState.switchOn));
                         if (api.info.property[i].heatpump[j].lastState.mode == 0) {
-                            updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Boost"));
+                            updateState(EmeraldBindingConstants.CHANNEL_MODE, new StringType("Boost"));
                         } else if (api.info.property[i].heatpump[j].lastState.mode == 1) {
-                            updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Normal"));
+                            updateState(EmeraldBindingConstants.CHANNEL_MODE, new StringType("Normal"));
                         } else if (api.info.property[i].heatpump[j].lastState.mode == 2) {
-                            updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Quiet"));
+                            updateState(EmeraldBindingConstants.CHANNEL_MODE, new StringType("Quiet"));
                         }
-                        updateState(EmeraldHWSBindingConstants.CHANNEL_CURRENT_TEMPERATURE, new QuantityType<>(
+                        updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE, new QuantityType<>(
                                 api.info.property[i].heatpump[j].lastState.tempCurrent, SIUnits.CELSIUS));
-                        updateState(EmeraldHWSBindingConstants.CHANNEL_SET_TEMPERATURE, new QuantityType<>(
+                        updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE, new QuantityType<>(
                                 api.info.property[i].heatpump[j].lastState.tempSet, SIUnits.CELSIUS));
                     }
                 }
@@ -257,7 +257,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 // 1. Current Temperature
                 if (payload.has("temp_current")) {
                     int currentTemp = payload.get("temp_current").getAsInt();
-                    updateState(EmeraldHWSBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
+                    updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
                             new QuantityType<>(currentTemp, SIUnits.CELSIUS));
                     dataFound = true;
                 }
@@ -265,7 +265,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 // 2. Set Temperature
                 if (payload.has("temp_set")) {
                     int setTemp = payload.get("temp_set").getAsInt();
-                    updateState(EmeraldHWSBindingConstants.CHANNEL_SET_TEMPERATURE,
+                    updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE,
                             new QuantityType<>(setTemp, SIUnits.CELSIUS));
                     dataFound = true;
                 }
@@ -291,14 +291,14 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                         logger.warn("Could not parse switch state from MQTT: {}", switchElement);
                     }
 
-                    updateState(EmeraldHWSBindingConstants.CHANNEL_POWER, powerState);
+                    updateState(EmeraldBindingConstants.CHANNEL_POWER, powerState);
                     dataFound = true;
                 }
 
                 // 4. Operating Mode
                 if (payload.has("mode")) {
                     int mode = payload.get("mode").getAsInt();
-                    updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new DecimalType(mode));
+                    updateState(EmeraldBindingConstants.CHANNEL_MODE, new DecimalType(mode));
                     dataFound = true;
                 }
 
@@ -306,20 +306,20 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 if (payload.has("fault")) {
                     int faultCode = payload.get("fault").getAsInt();
                     // 0 usually indicates no fault.
-                    updateState(EmeraldHWSBindingConstants.CHANNEL_FAULT, new DecimalType(faultCode));
+                    updateState(EmeraldBindingConstants.CHANNEL_FAULT, new DecimalType(faultCode));
                     dataFound = true;
                 }
                 // 6. Defrost Status
                 if (payload.has("defrost")) {
                     String defrostState = payload.get("defrost").getAsString();
                     OnOffType isDefrosting = "1".equals(defrostState) ? OnOffType.ON : OnOffType.OFF;
-                    updateState(EmeraldHWSBindingConstants.CHANNEL_DEFROST, isDefrosting);
+                    updateState(EmeraldBindingConstants.CHANNEL_DEFROST, isDefrosting);
                     dataFound = true;
                 }
                 // 7. Work State
                 if (payload.has("work_state")) {
                     int workState = payload.get("work_state").getAsInt();
-                    updateState(EmeraldHWSBindingConstants.CHANNEL_WORK_STATE, new DecimalType(workState));
+                    updateState(EmeraldBindingConstants.CHANNEL_WORK_STATE, new DecimalType(workState));
                     dataFound = true;
                 }
             }

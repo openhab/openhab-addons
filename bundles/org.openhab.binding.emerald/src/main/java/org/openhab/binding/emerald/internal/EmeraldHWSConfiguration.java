@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.emeraldhws.internal;
+package org.openhab.binding.emerald.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -20,12 +20,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author paul@smedley.id.au - Initial contribution
  */
 @NonNullByDefault
-public class EmeraldHWSAccountConfiguration {
+public class EmeraldHWSConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Configuration parameters for the Emerald HWS.
      */
-    public String email = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public String uuid = "";
 }
