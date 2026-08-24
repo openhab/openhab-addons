@@ -35,7 +35,7 @@ import com.google.gson.GsonBuilder;
  * Tests that the API's documented JSON shapes — including the documented null states and doubles matches —
  * deserialize into the DTOs and map to the expected channel values.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class DeserializationTest {

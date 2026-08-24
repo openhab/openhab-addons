@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * feed states them and are {@code null} otherwise — the API does not attempt to reconcile the two
  * individuals' countries or rankings into one record.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 public class Player {
 

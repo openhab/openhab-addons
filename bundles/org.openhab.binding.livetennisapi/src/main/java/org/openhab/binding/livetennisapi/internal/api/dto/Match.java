@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * A match as returned by the Live Tennis API. Singles and doubles share this shape; {@link #draw} states which it
  * is, and for a doubles match {@link #players} holds the two teams.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 public class Match {
 

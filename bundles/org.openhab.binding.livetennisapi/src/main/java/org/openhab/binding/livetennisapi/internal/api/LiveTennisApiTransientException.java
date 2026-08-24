@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * or a request timeout. Handlers can catch this specifically to schedule a delayed retry rather than giving up until
  * the next scheduled cycle.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiTransientException extends LiveTennisApiException {

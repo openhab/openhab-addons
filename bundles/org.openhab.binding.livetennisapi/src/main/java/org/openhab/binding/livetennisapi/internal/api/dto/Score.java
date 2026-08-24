@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * All fields are nullable: the API documents that {@code points} entries can be null, {@code games} can be empty
  * (observed on completed matches) and {@code server} is null when no game is in progress.
  *
- * @author Ben Synapse - Initial contribution
+ * @author Ben Abulafia - Initial contribution
  */
 public class Score {
 
