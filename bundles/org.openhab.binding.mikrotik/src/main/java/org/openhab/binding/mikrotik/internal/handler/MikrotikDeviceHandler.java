@@ -113,7 +113,6 @@ public class MikrotikDeviceHandler extends MikrotikBaseThingHandler<DeviceConfig
         for (Map<String, String> device : devices) {
             String mac = device.get("mac-address");
             if (mac != null && mac.contentEquals(config.mac)) {
-                logger.info("Found device {}", device);
                 return index;
             }
             index++;
