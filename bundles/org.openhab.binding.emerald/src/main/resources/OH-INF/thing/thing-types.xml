@@ -58,7 +58,7 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Turns on/off the Hot Water Service</description>
-		<state pattern="%.0f %unit%"/>
+		<state/>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>Number</item-type>
