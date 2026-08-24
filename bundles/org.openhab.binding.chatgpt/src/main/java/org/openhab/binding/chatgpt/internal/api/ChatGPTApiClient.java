@@ -313,13 +313,14 @@ public class ChatGPTApiClient {
             throw new ChatGPTApiException("Failed to serialize request body: " + e.getMessage(), e);
         }
 
-        // If we know this model requires reasoning_effort, use it preemptively
-        String reasoningEffort = modelsRequiringReasoningEffort.contains(model) ? "none" : null;
-        return executeCompletionRequest(queryJson, model, timeoutSeconds, reasoningEffort);
+        // If we know this model requires reasoning_effort for tool requests, use it preemptively
+        boolean hasTools = tools != null && !tools.isEmpty();
+        String reasoningEffort = hasTools && modelsRequiringReasoningEffort.contains(model) ? "none" : null;
+        return executeCompletionRequest(queryJson, model, hasTools, timeoutSeconds, reasoningEffort);
     }
 
-    private ChatResponse executeCompletionRequest(String queryJson, String model, @Nullable Integer timeoutSeconds,
-            @Nullable String reasoningEffort) throws ChatGPTApiException {
+    private ChatResponse executeCompletionRequest(String queryJson, String model, boolean hasTools,
+            @Nullable Integer timeoutSeconds, @Nullable String reasoningEffort) throws ChatGPTApiException {
         String finalJson = queryJson;
         if (reasoningEffort != null) {
             try {
@@ -382,10 +383,11 @@ public class ChatGPTApiClient {
                         baseUrl + PATH_CHAT_COMPLETIONS, response.getStatus(), response.getReason(),
                         errorBody.getBytes(StandardCharsets.UTF_8).length);
 
-                if (response.getStatus() == HttpStatus.BAD_REQUEST_400 && errorBody.contains("reasoning_effort")) {
+                if (reasoningEffort == null && hasTools && response.getStatus() == HttpStatus.BAD_REQUEST_400
+                        && errorBody.contains("reasoning_effort")) {
                     logger.debug("Model {} requires reasoning_effort; caching and retrying", model);
                     modelsRequiringReasoningEffort.add(model);
-                    return executeCompletionRequest(queryJson, model, timeoutSeconds, "none");
+                    return executeCompletionRequest(queryJson, model, hasTools, timeoutSeconds, "none");
                 }
                 if (logger.isTraceEnabled()) {
                     try {
