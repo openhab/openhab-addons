@@ -134,9 +134,8 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private long nextLoginCheck = 0;
     private long nextRefreshNotifications = 0;
     private final NotificationPollBackoff notificationPollBackoff = new NotificationPollBackoff();
-    // Guards accepting a poll result as one step: validating the attempt, publishing it and
-    // recording when the next poll is due. Split apart, setConnection() can land in between and
-    // the replaced session's result overwrites the reset the new session depends on.
+    // Held while a poll result is accepted as one step: validate the attempt, publish it, record the
+    // next due time. Split apart, setConnection() lands in between and the replaced session wins.
     private final Object notificationCommit = new Object();
 
     private final LinkedBlockingQueue<String> requestedDeviceUpdates = new LinkedBlockingQueue<>();
@@ -413,14 +412,12 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         nextDataRefresh = now + CHECK_DATA_INTERVAL * 1000;
                         refreshData();
                     }
-                    // the checks only keep the tick quiet, admission is decided by tryStart() in
-                    // refreshNotifications()
-                    boolean notificationPollDue;
+                    boolean notificationPollLooksDue;
                     synchronized (notificationCommit) {
-                        notificationPollDue = notificationPollBackoff.isDue(now)
+                        notificationPollLooksDue = notificationPollBackoff.isDue(now)
                                 || (now > nextRefreshNotifications && !notificationPollBackoff.shouldSkip(now));
                     }
-                    if (notificationPollDue) {
+                    if (notificationPollLooksDue) {
                         refreshNotifications();
                     }
                 }

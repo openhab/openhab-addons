@@ -133,7 +133,7 @@ public class NotificationPollBackoffTest {
 
         for (int attempt = 0; attempt < 8; attempt++) {
             Failure failure = fail(backoff, now);
-            assertThat(failure.delaySeconds(), lessThanOrEqualTo(NotificationPollBackoff.MAX_INTERVAL));
+            assertThat(failure.delaySeconds(), lessThanOrEqualTo(NotificationPollBackoff.MAX_INTERVAL_SECONDS));
             assertThat(backoff.shouldSkip(now), is(true));
             now += failure.delaySeconds() * 1000L;
             assertThat(backoff.isDue(now), is(true));

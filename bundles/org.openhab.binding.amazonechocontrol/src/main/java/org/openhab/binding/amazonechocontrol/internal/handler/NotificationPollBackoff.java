@@ -23,22 +23,20 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 class NotificationPollBackoff {
-    /** Delay before the first retry, in seconds. */
-    static final int MIN_INTERVAL = 300;
-    /** Upper bound of the retry delay, in seconds. */
-    static final int MAX_INTERVAL = AccountHandler.CHECK_DATA_INTERVAL;
+    static final int MIN_INTERVAL_SECONDS = 300;
+    static final int MAX_INTERVAL_SECONDS = AccountHandler.CHECK_DATA_INTERVAL;
     static final int FAILURES_BEFORE_UNDEF = 3;
 
     private static final long NO_ATTEMPT = 0;
 
-    private int interval = MIN_INTERVAL;
+    private int intervalSeconds = MIN_INTERVAL_SECONDS;
     private int failures = 0;
     private long nextAttempt = 0;
     private long attemptCounter = 0;
     private long inFlightToken = NO_ATTEMPT;
     private boolean pollAgain = false;
 
-    /** The decision on starting a poll; {@code token} identifies the attempt that {@link Outcome#STARTED} grants. */
+    /** {@code token} identifies the one attempt that {@link Outcome#STARTED} grants; it is the key to ending it. */
     record Start(Outcome outcome, long token) {
         enum Outcome {
             STARTED,
@@ -47,11 +45,9 @@ class NotificationPollBackoff {
         }
     }
 
-    /** The reaction to a single failed poll. */
     record Failure(boolean firstOfStreak, boolean crossedUndefThreshold, boolean publishUndef, int delaySeconds) {
     }
 
-    /** The reaction to a successful poll. */
     record Success(boolean endedStreak, boolean pollAgain) {
     }
 
@@ -77,8 +73,8 @@ class NotificationPollBackoff {
         // a trigger refused during this attempt expires here, because a push must not undercut the backoff deadline
         pollAgain = false;
         failures++;
-        int delaySeconds = interval;
-        interval = Math.min(interval * 2, MAX_INTERVAL);
+        int delaySeconds = intervalSeconds;
+        intervalSeconds = Math.min(intervalSeconds * 2, MAX_INTERVAL_SECONDS);
         nextAttempt = now + delaySeconds * 1000L;
         // publishUndef is ">=", not "==": a handler that registers during an outage has to be told as well.
         return new Failure(failures == 1, failures == FAILURES_BEFORE_UNDEF, failures >= FAILURES_BEFORE_UNDEF,
@@ -110,19 +106,17 @@ class NotificationPollBackoff {
     /** Clears the backoff and releases a running attempt, whose late result is then discarded. */
     synchronized void reset() {
         failures = 0;
-        interval = MIN_INTERVAL;
+        intervalSeconds = MIN_INTERVAL_SECONDS;
         nextAttempt = 0;
         inFlightToken = NO_ATTEMPT;
         // a pending catch-up is dropped, because the caller resetting the backoff polls immediately anyway
         pollAgain = false;
     }
 
-    /** A poll right now would be refused, because of a pending backoff delay or a running attempt. */
     synchronized boolean shouldSkip(long now) {
         return inFlightToken != NO_ATTEMPT || (failures > 0 && now < nextAttempt);
     }
 
-    /** A failed poll is ready for its retry and no attempt is running. */
     synchronized boolean isDue(long now) {
         return inFlightToken == NO_ATTEMPT && failures > 0 && now >= nextAttempt;
     }
