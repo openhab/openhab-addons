@@ -422,6 +422,7 @@ public class WhisperSTTService implements STTService {
                         // run vad
                         if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
                             logger.debug("VAD: Skipping, max length reached");
+                            break;
                         } else {
                             VAD.@Nullable VADResult lastVADResult = vad.analyze(stepAudioSamples);
                             if (lastVADResult.isVoice()) {
