@@ -45,6 +45,11 @@ public final class RRMapRenderer {
     private static final int MAP_INSIDE = 0xFF;
     private static final int MAP_SCAN = 0x07;
 
+    private static final int PIXEL_KIND_MASK = 0x07;
+    private static final int PIXEL_KIND_SEGMENT = 7;
+    private static final int SEGMENT_ID_SHIFT = 3;
+    private static final int NO_SEGMENT = -1;
+
     private static final Color COLOR_MAP_OUTSIDE = new Color(24, 24, 24);
     private static final Color COLOR_MAP_WALL = new Color(92, 92, 92);
     private static final Color COLOR_MAP_INSIDE = new Color(212, 221, 233);
@@ -200,7 +205,7 @@ public final class RRMapRenderer {
             case MAP_INSIDE -> COLOR_MAP_INSIDE;
             case MAP_SCAN -> COLOR_MAP_SCAN;
             default -> {
-                int obstacle = value & 0x07;
+                int obstacle = value & PIXEL_KIND_MASK;
                 if (obstacle == 0) {
                     yield COLOR_MAP_GREY_WALL;
                 } else if (obstacle == 1) {
@@ -215,16 +220,13 @@ public final class RRMapRenderer {
         };
     }
 
-    /**
-     * Decodes the segment/room id from a base-map pixel byte (low 3 bits equal to 7 mark a
-     * segmented-floor pixel, the id sits in the high 5 bits), or -1 for non-segment pixels;
-     * {@link #MAP_SCAN} and {@link #MAP_INSIDE} satisfy the same bit test but are reserved values.
-     */
+    /** The segment (room) id carried by a base-map pixel, or {@link #NO_SEGMENT}. */
     static int decodeSegmentId(int pixelValue) {
+        // reserved values that would pass the kind test below
         if (pixelValue == MAP_SCAN || pixelValue == MAP_INSIDE) {
-            return -1;
+            return NO_SEGMENT;
         }
-        return (pixelValue & 0x07) == 7 ? pixelValue >>> 3 : -1;
+        return (pixelValue & PIXEL_KIND_MASK) == PIXEL_KIND_SEGMENT ? pixelValue >>> SEGMENT_ID_SHIFT : NO_SEGMENT;
     }
 
     private Color roomColor(int roomId) {

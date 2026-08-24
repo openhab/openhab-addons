@@ -1231,9 +1231,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     /**
-     * Resolves the {@code status#current-room} state from the charging dock's position in the given
-     * cached map, going {@code UNDEF} whenever no dock room can be resolved, since nothing
-     * self-corrects the channel while the robot sits on the dock.
+     * The room at the dock in the given map; {@code UNDEF} when none resolves, because nothing
+     * self-corrects the channel while the robot is docked.
      */
     static State resolveDockRoomState(@Nullable RRMapData mapData, Map<Integer, String> segmentRoomNames) {
         if (mapData == null) {
@@ -1256,9 +1255,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     /**
-     * Resolves the room state at the given map position, returning {@code null} when no segment
-     * can be resolved there at all and {@code UNDEF} when the resolved segment has no name in the
-     * table.
+     * The room at the given map position: {@code null} when no segment resolves there,
+     * {@code UNDEF} when the segment has no name.
      */
     private static @Nullable State roomStateAt(RRMapData mapData, MapPoint position,
             Map<Integer, String> segmentRoomNames) {
