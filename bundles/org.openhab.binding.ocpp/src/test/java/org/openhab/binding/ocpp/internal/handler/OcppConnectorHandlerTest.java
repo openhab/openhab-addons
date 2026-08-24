@@ -290,8 +290,7 @@ class OcppConnectorHandlerTest {
 
     @Test
     void unpausingWithoutALimitClearsTheProfileInsteadOfSuspending() {
-        // A 0 A profile suspends (charger reports SuspendedEVSE), so un-pausing with no stored limit must CLEAR the
-        // cap, not re-send 0 A. Real report: Alfen + BMW i4 stuck SuspendedEVSE after pause/un-pause.
+        // Un-pause with no stored limit must clear the cap, not re-send 0 A (0 A reads as suspend).
         OcppChargePointHandler chargePoint = attachReadyChargePoint();
 
         command(CHANNEL_PAUSE, OnOffType.ON);
@@ -328,8 +327,7 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aResumeIsPublishedEvenWhenTheChargerReportsNoProfileToClear() {
-        // Per OCPP 1.6 a charger with no matching profile answers ClearChargingProfile Unknown, not Accepted; still
-        // uncapped, so the resume must publish the same "no limit" state.
+        // A charger with no matching profile answers ClearChargingProfile Unknown (not Accepted); still uncapped.
         OcppChargePointHandler chargePoint = attachReadyChargePoint(ClearChargingProfileStatus.Unknown);
 
         command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));

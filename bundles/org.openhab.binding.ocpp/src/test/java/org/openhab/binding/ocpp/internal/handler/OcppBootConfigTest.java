@@ -169,8 +169,7 @@ class OcppBootConfigTest {
 
     @Test
     void aReconnectDoesNotWedgeTheDispatcherBehindAnInFlightRequestFromTheOldSession() throws InterruptedException {
-        // The embedded library never completes the old promise when its session closes, so the
-        // dispatcher must abandon the in-flight request on the session change and keep draining.
+        // The library never completes the old promise on session close, so the dispatcher must abandon it on reconnect.
         handler.onHeartbeat();
         awaitReady();
 
@@ -196,8 +195,7 @@ class OcppBootConfigTest {
 
     @Test
     void aLateCompletionOfAnAbandonedRequestDoesNotDisturbTheNewSessionChain() throws InterruptedException {
-        // The request-timeout reaper can complete an abandoned request's future late, on a scheduler
-        // thread; a drain-chain epoch keeps that late completion from forking a second CALL.
+        // A drain-chain epoch stops a late (timeout-reaper) completion of an abandoned request forking a second CALL.
         handler.onHeartbeat();
         awaitReady();
 
@@ -249,8 +247,7 @@ class OcppBootConfigTest {
 
     @Test
     void aRejectedConfigurationIsRetriedOnTheNextBoot() {
-        // A Rejected ChangeConfiguration completes normally but has not applied, so the burst must not
-        // latch on it.
+        // A Rejected ChangeConfiguration completes normally but has not applied, so the burst must not latch on it.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             record(invocation.getArgument(1));
             return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Rejected));
@@ -284,8 +281,7 @@ class OcppBootConfigTest {
 
     @Test
     void aSettleDelayedBootConfigDoesNotRunAgainstAReplacementSession() {
-        // A bare WebSocket reconnect (session B) sends no fresh BootNotification; A's delayed burst
-        // must key off the session captured when scheduled, not the current one.
+        // A bare reconnect sends no fresh BootNotification; the delayed burst keys off the session it was scheduled on.
         OcppServerBridgeHandler serverHandler = mock(OcppServerBridgeHandler.class);
         when(serverHandler.getServerConfig()).thenReturn(serverConfig);
         when(serverHandler.getTransport()).thenReturn(transport);
@@ -373,8 +369,7 @@ class OcppBootConfigTest {
 
     @Test
     void nothingIsSentWhileTheBootNotificationIsBeingHandled() {
-        // The library sends the BootNotification confirmation only after the event handler returns, so
-        // anything sent from inside the handler would reach the charger before its boot answer.
+        // The library sends the boot confirmation only after the handler returns; a send from inside arrives first.
         OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
         handler.registerConnector(1, connector);
 
@@ -389,8 +384,7 @@ class OcppBootConfigTest {
 
     @Test
     void aListReducedForSampledDataDoesNotNarrowAlignedData() {
-        // Sampled and aligned data may support different measurand sets, so a rejection negotiating one
-        // key must not shrink the other's starting list.
+        // Sampled and aligned data may take different measurands; negotiating one key must not shrink the other's list.
         serverConfig.meterValuesData = "Energy.Active.Import.Register,Power.Active.Import,Temperature";
         serverConfig.disableRemoteTxAuthorization = false;
         when(transport.send(any(), any())).thenAnswer(invocation -> {

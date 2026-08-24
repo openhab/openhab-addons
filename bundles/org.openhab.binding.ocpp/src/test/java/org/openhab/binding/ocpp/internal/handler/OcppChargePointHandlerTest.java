@@ -113,8 +113,7 @@ class OcppChargePointHandlerTest {
 
     @Test
     void aTransactionThatWasNeverStoppedIsDiscardedWhenTheNextOneStarts() {
-        // A connector runs one transaction at a time, so a new start must discard a prior one whose StopTransaction was
-        // lost (charger dropped mid-session) rather than leak it.
+        // A connector runs one transaction at a time; a new start discards a prior one whose StopTransaction was lost.
         handler.onStartTransaction(start(1), 100);
         handler.onStartTransaction(start(1), 101);
 
@@ -164,8 +163,7 @@ class OcppChargePointHandlerTest {
     @Test
     void becomingReadyReleasesConnectorsThatDeferredASend() {
         handler.onConnected(UUID.randomUUID());
-        // A heartbeat also proves the charger booted (e.g. socket reopened without a fresh BootNotification); the
-        // release runs off the library thread, hence the timeout.
+        // A heartbeat also proves the charger booted (socket reopened, no fresh BootNotification); release is async.
         handler.onHeartbeat();
 
         verify(connector1, org.mockito.Mockito.timeout(2000)).onChargePointReady();

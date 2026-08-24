@@ -196,8 +196,7 @@ class OcppConnectorReadinessTest {
 
     @Test
     void hardwareMaxCurrentPublishesTheWholeAmpereActuallySent() {
-        // The vendor hardware-max key takes whole amperes, so 16.4 A rounds to 16 A on the wire and the
-        // channel must report the rounded value.
+        // The hardware-max key takes whole amperes: 16.4 A rounds to 16 A and the channel reports the rounded value.
         ready.set(true);
         List<Request> sent = new java.util.ArrayList<>();
         when(parent.send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.ChangeConfigurationRequest)))
@@ -327,8 +326,7 @@ class OcppConnectorReadinessTest {
 
     @Test
     void pausingSendsZeroAmpsAndUnpausingRestoresTheLimit() {
-        // PAUSE keeps the transaction and sends a 0 A profile; the last limit is carried in stored
-        // fields, not on the wire, and restored on unpause.
+        // PAUSE keeps the transaction and sends 0 A; the last limit is kept in stored fields and restored on unpause.
         ready.set(true);
         List<Request> sent = new java.util.ArrayList<>();
         when(parent.send(any())).thenAnswer(inv -> {
