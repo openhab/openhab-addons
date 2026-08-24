@@ -80,7 +80,7 @@ Use `tracesSamplingRatio` to limit the exported volume on busy instances (e.g. `
 
 The add-on supports two deployment patterns:
 
-**Direct to backend** — set `otlpURL` to your observability backend's OTLP ingest URL and `otlpHeaders` to the required authentication header.
+- **Direct to backend**: Set `otlpURL` to your observability backend's OTLP ingest URL and `otlpHeaders` to the required authentication header.
 Simple to set up; backend credentials are stored in openHAB's configuration.
 
 **Via an OTel Collector** — set `otlpURL` to the collector's HTTP endpoint (e.g. `http://localhost:4318`) and leave `otlpHeaders` empty.
