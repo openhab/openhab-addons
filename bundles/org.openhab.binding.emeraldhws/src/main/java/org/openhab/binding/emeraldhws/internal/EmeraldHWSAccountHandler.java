@@ -112,20 +112,15 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
         if (configure()) {
             updateStatus(ThingStatus.UNKNOWN);
 
-            scheduler.execute(() -> {
-                // Initial API Poll
-                pollData();
+            pollData();
 
-                // Initialize MQTT
+            scheduler.execute(() -> {
                 try {
                     setupMqttConnection();
                 } catch (Exception e) {
                     logger.error("Failed to setup MQTT Stream", e);
                 }
             });
-
-            pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval,
-                    TimeUnit.SECONDS);
         }
     }
 
@@ -457,13 +452,6 @@ public class EmeraldHWSAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
-    }
-
-    /**
-     * The actual polling loop
-     */
-    protected void pollingCode() {
-        pollData();
     }
 
     @Override

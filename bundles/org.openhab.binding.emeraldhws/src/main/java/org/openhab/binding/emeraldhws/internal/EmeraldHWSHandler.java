@@ -14,6 +14,8 @@ package org.openhab.binding.emeraldhws.internal;
 
 import static org.openhab.binding.emeraldhws.internal.EmeraldHWSBindingConstants.*;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.emeraldhws.internal.api.List;
@@ -80,16 +82,29 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 break;
 
             case EmeraldHWSBindingConstants.CHANNEL_MODE:
-                String mode = command.toString();
-                if ("Boost".equalsIgnoreCase(mode)) {
-                    payload.addProperty("mode", 0);
-                } else if ("Normal".equalsIgnoreCase(mode)) {
-                    payload.addProperty("mode", 1);
-                } else if ("Quiet".equalsIgnoreCase(mode)) {
-                    payload.addProperty("mode", 2);
+                try {
+                    int modeValue = -1;
+
+                    // If openHAB passes the command as a raw decimal
+                    if (command instanceof org.openhab.core.library.types.DecimalType) {
+                        modeValue = ((org.openhab.core.library.types.DecimalType) command).intValue();
+                    }
+                    // Fallback if the UI passes it as a numeric string (e.g., "1")
+                    else {
+                        modeValue = Integer.parseInt(command.toString());
+                    }
+
+                    // Only send if it matches our valid options (0, 1, or 2)
+                    if (modeValue >= 0 && modeValue <= 2) {
+                        payload.addProperty("mode", modeValue);
+                        logger.debug("Successfully mapped numerical Mode command: {}", modeValue);
+                    } else {
+                        logger.warn("Received invalid mode command: {}", command);
+                    }
+                } catch (NumberFormatException e) {
+                    logger.warn("Error parsing mode command to integer: {}", command, e);
                 }
                 break;
-
             case EmeraldHWSBindingConstants.CHANNEL_SET_TEMPERATURE:
                 if (command instanceof QuantityType) {
                     int temp = ((QuantityType<?>) command).intValue();
@@ -145,27 +160,43 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                     if (config.uuid.equals(api.info.property[i].heatpump[j].id)) {
                         logger.info("Found Heat Pump id = {}", api.info.property[i].heatpump[j].id);
                         found = 1;
+
+                        Map<String, String> properties = editProperties();
+                        if (api.info.property[i].heatpump[j].softVersion != null) {
+                            properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
+                                    api.info.property[i].heatpump[j].softVersion);
+                        }
+                        if (api.info.property[i].heatpump[j].hwVersion != null) {
+                            properties.put(Thing.PROPERTY_HARDWARE_VERSION, api.info.property[i].heatpump[j].hwVersion);
+                        }
+                        if (api.info.property[i].heatpump[j].macAddress != null) {
+                            properties.put(Thing.PROPERTY_MAC_ADDRESS, api.info.property[i].heatpump[j].macAddress);
+                        }
+                        if (api.info.property[i].heatpump[j].brand != null) {
+                            properties.put(Thing.PROPERTY_VENDOR, api.info.property[i].heatpump[j].brand);
+                        }
+                        if (api.info.property[i].heatpump[j].model != null) {
+                            properties.put(Thing.PROPERTY_MODEL_ID, api.info.property[i].heatpump[j].model);
+                        }
+                        if (api.info.property[i].heatpump[j].serialNumber != null) {
+                            properties.put(Thing.PROPERTY_SERIAL_NUMBER, api.info.property[i].heatpump[j].serialNumber);
+                        }
+                        if (api.info.property[i].heatpump[j].wifiName != null) {
+                            properties.put(PROPERTY_WIFI_NAME, api.info.property[i].heatpump[j].wifiName);
+                        }
+                        updateProperties(properties);
                     }
                 }
             }
         }
+
         if (found == 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "UUID is not found in Emerald API - check value");
+        } else {
+            // If we found the unit and pulled properties, it's fully online
+            updateStatus(ThingStatus.ONLINE);
         }
-
-        updateStatus(ThingStatus.UNKNOWN);
-
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
     }
 
     public void updateChannels() {
@@ -241,8 +272,25 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
                 // 3. Power State
                 if (payload.has("switch")) {
-                    String switchState = payload.get("switch").getAsString();
-                    OnOffType powerState = "on".equalsIgnoreCase(switchState) ? OnOffType.ON : OnOffType.OFF;
+                    JsonElement switchElement = payload.get("switch");
+                    OnOffType powerState = OnOffType.OFF; // Default to OFF
+
+                    try {
+                        // Check if the payload sent a raw number (1 or 0)
+                        if (switchElement.getAsJsonPrimitive().isNumber()) {
+                            powerState = (switchElement.getAsInt() == 1) ? OnOffType.ON : OnOffType.OFF;
+                        }
+                        // Check if the payload sent a string ("on", "off", "1", "0")
+                        else {
+                            String switchStr = switchElement.getAsString();
+                            if ("on".equalsIgnoreCase(switchStr) || "1".equals(switchStr)) {
+                                powerState = OnOffType.ON;
+                            }
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Could not parse switch state from MQTT: {}", switchElement);
+                    }
+
                     updateState(EmeraldHWSBindingConstants.CHANNEL_POWER, powerState);
                     dataFound = true;
                 }
@@ -250,13 +298,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 // 4. Operating Mode
                 if (payload.has("mode")) {
                     int mode = payload.get("mode").getAsInt();
-                    if (mode == 0) {
-                        updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Boost"));
-                    } else if (mode == 1) {
-                        updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Normal"));
-                    } else if (mode == 2) {
-                        updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new StringType("Quiet"));
-                    }
+                    updateState(EmeraldHWSBindingConstants.CHANNEL_MODE, new DecimalType(mode));
                     dataFound = true;
                 }
 

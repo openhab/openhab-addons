@@ -41,6 +41,8 @@ public class EmeraldHWSBindingConstants {
     public static final String CHANNEL_DEFROST = "defrost";
     public static final String CHANNEL_WORK_STATE = "work-state";
 
+    public static final String PROPERTY_WIFI_NAME = "wifi-name";
+
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_HWS);
 }
