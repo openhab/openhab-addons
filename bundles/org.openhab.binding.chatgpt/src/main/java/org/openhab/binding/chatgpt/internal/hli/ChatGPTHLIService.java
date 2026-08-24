@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -107,7 +108,9 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     public String getLabel(@Nullable Locale locale) {
         ChatGPTHandler chatGPTHandler = this.handler;
         if (chatGPTHandler != null) {
-            return HLI_SERVICE_LABEL + " (" + chatGPTHandler.getThing().getLabel() + ")";
+            String label = chatGPTHandler.getThing().getLabel();
+            return HLI_SERVICE_LABEL + " ("
+                    + Objects.requireNonNullElseGet(label, () -> chatGPTHandler.getThing().getUID().getId()) + ")";
         }
         return HLI_SERVICE_LABEL;
     }
