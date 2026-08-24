@@ -538,7 +538,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.emeraldhws</artifactId>
+      <artifactId>org.openhab.binding.emerald</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
