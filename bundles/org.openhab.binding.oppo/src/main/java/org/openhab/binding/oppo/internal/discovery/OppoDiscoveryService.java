@@ -115,7 +115,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
      * <li>For each network interface, create a listening thread using {@link #executorService}</li>
      * <li>Each listening thread will open up a {@link MulticastSocket} using {@link #SDDP_ADDR} and {@link #SDDP_PORT}
      * and will receive any {@link DatagramPacket} that comes in</li>
-     * <li>If the {@link DatagramPacket} is a Oppo SDDP packet, a new thing will be created from it</li>
+     * <li>If the {@link DatagramPacket} is an Oppo SDDP packet, a new thing will be created from it</li>
      * </ul>
      * The process will continue until {@link #stopScan()} is called.
      */
