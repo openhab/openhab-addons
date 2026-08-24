@@ -134,6 +134,10 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private long nextLoginCheck = 0;
     private long nextRefreshNotifications = 0;
     private final NotificationPollBackoff notificationPollBackoff = new NotificationPollBackoff();
+    // Guards accepting a poll result as one step: validating the attempt, publishing it and
+    // recording when the next poll is due. Split apart, setConnection() can land in between and
+    // the replaced session's result overwrites the reset the new session depends on.
+    private final Object notificationCommit = new Object();
 
     private final LinkedBlockingQueue<String> requestedDeviceUpdates = new LinkedBlockingQueue<>();
     private @Nullable SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator;
@@ -385,8 +389,10 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         nextLoginCheck = 0;
         nextDataRefresh = 0;
         // failures of the expired session must not delay polls on the new one
-        notificationPollBackoff.reset();
-        nextRefreshNotifications = 0;
+        synchronized (notificationCommit) {
+            notificationPollBackoff.reset();
+            nextRefreshNotifications = 0;
+        }
     }
 
     private void storeSession() {
@@ -409,8 +415,12 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                     }
                     // the checks only keep the tick quiet, admission is decided by tryStart() in
                     // refreshNotifications()
-                    if (notificationPollBackoff.isDue(now)
-                            || (now > nextRefreshNotifications && !notificationPollBackoff.shouldSkip(now))) {
+                    boolean notificationPollDue;
+                    synchronized (notificationCommit) {
+                        notificationPollDue = notificationPollBackoff.isDue(now)
+                                || (now > nextRefreshNotifications && !notificationPollBackoff.shouldSkip(now));
+                    }
+                    if (notificationPollDue) {
                         refreshNotifications();
                     }
                 }
@@ -441,57 +451,63 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         .map(n -> map(n, requestTime, ZonedDateTime.now())).filter(Objects::nonNull)
                         .map(Objects::requireNonNull).toList();
             } catch (ConnectionException e) {
-                NotificationPollBackoff.Failure failure = notificationPollBackoff.onFailure(start.token(),
-                        System.currentTimeMillis());
-                if (failure == null) {
-                    // the failure of a replaced connection must not throttle the new one
-                    logger.debug("Discarding notification poll failure of a replaced connection for {}",
+                synchronized (notificationCommit) {
+                    NotificationPollBackoff.Failure failure = notificationPollBackoff.onFailure(start.token(),
+                            System.currentTimeMillis());
+                    if (failure == null) {
+                        // the failure of a replaced connection must not throttle the new one
+                        logger.debug("Discarding notification poll failure of a replaced connection for {}",
+                                getThing().getUID().getAsString());
+                        return;
+                    }
+                    if (failure.firstOfStreak()) {
+                        logger.warn("Failed to get notifications for {}, next attempt in {} s: {}",
+                                getThing().getUID().getAsString(), failure.delaySeconds(), e.getMessage());
+                    } else {
+                        logger.debug("Failed to get notifications for {}, next attempt in {} s: {}",
+                                getThing().getUID().getAsString(), failure.delaySeconds(), e.getMessage());
+                    }
+                    if (failure.crossedUndefThreshold()) {
+                        logger.warn("Setting notification channels of {} to UNDEF after {} consecutive poll failures",
+                                getThing().getUID().getAsString(), NotificationPollBackoff.FAILURES_BEFORE_UNDEF);
+                    }
+                    if (failure.publishUndef()) {
+                        // repeated on every failure so that a handler registering during the outage is told as well
+                        echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(List.of()));
+                    }
+                    return;
+                }
+            }
+            synchronized (notificationCommit) {
+                NotificationPollBackoff.Success success = notificationPollBackoff.onSuccess(start.token());
+                if (success == null) {
+                    // the result of a replaced connection must neither confirm the new one nor delay its first poll
+                    logger.debug("Discarding notification poll result of a replaced connection for {}",
                             getThing().getUID().getAsString());
                     return;
                 }
-                if (failure.firstOfStreak()) {
-                    logger.warn("Failed to get notifications for {}, next attempt in {} s: {}",
-                            getThing().getUID().getAsString(), failure.delaySeconds(), e.getMessage());
+                if (success.endedStreak()) {
+                    logger.info("Successfully polled notifications for {} again", getThing().getUID().getAsString());
+                }
+                echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(notifications));
+                ZonedDateTime first = notifications.stream().map(Notification::nextAlarmTime)
+                        .min(ChronoZonedDateTime::compareTo).orElse(null);
+                if (first != null) {
+                    nextRefreshNotifications = first.toEpochSecond() * 1000;
                 } else {
-                    logger.debug("Failed to get notifications for {}, next attempt in {} s: {}",
-                            getThing().getUID().getAsString(), failure.delaySeconds(), e.getMessage());
+                    nextRefreshNotifications = Long.MAX_VALUE;
                 }
-                if (failure.crossedUndefThreshold()) {
-                    logger.warn("Setting notification channels of {} to UNDEF after {} consecutive poll failures",
-                            getThing().getUID().getAsString(), NotificationPollBackoff.FAILURES_BEFORE_UNDEF);
+                if (success.pollAgain()) {
+                    // a trigger refused during this poll may announce data this response predates
+                    nextRefreshNotifications = 0;
                 }
-                if (failure.publishUndef()) {
-                    // repeated on every failure so that a handler registering during the outage is told as well
-                    echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(List.of()));
-                }
-                return;
-            }
-            NotificationPollBackoff.Success success = notificationPollBackoff.onSuccess(start.token());
-            if (success == null) {
-                // the result of a replaced connection must neither confirm the new one nor delay its first poll
-                logger.debug("Discarding notification poll result of a replaced connection for {}",
-                        getThing().getUID().getAsString());
-                return;
-            }
-            if (success.endedStreak()) {
-                logger.info("Successfully polled notifications for {} again", getThing().getUID().getAsString());
-            }
-            echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(notifications));
-            ZonedDateTime first = notifications.stream().map(Notification::nextAlarmTime)
-                    .min(ChronoZonedDateTime::compareTo).orElse(null);
-            if (first != null) {
-                nextRefreshNotifications = first.toEpochSecond() * 1000;
-            } else {
-                nextRefreshNotifications = Long.MAX_VALUE;
-            }
-            if (success.pollAgain()) {
-                // a trigger refused during this poll may announce data this response predates
-                nextRefreshNotifications = 0;
             }
         } finally {
             // an attempt ending without a recorded result must neither block polling nor swallow a refused trigger
-            if (notificationPollBackoff.abort(start.token())) {
-                nextRefreshNotifications = 0;
+            synchronized (notificationCommit) {
+                if (notificationPollBackoff.abort(start.token())) {
+                    nextRefreshNotifications = 0;
+                }
             }
         }
     }
