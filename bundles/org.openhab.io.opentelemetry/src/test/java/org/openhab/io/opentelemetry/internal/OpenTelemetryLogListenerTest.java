@@ -216,6 +216,23 @@ public class OpenTelemetryLogListenerTest {
     }
 
     @Test
+    public void testMicrometerLoggingIgnored() {
+        // The Micrometer OTLP registry logs metrics export failures under io.micrometer.*
+        // and must be suppressed for the same reason as the OTel SDK loggers
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        LogEntry logEntry = mock(LogEntry.class);
+        when(logEntry.getLoggerName()).thenReturn("io.micrometer.registry.otlp.OtlpMeterRegistry");
+        when(logEntry.getLogLevel()).thenReturn(LogLevel.WARN);
+        when(logEntry.getMessage()).thenReturn("Failed to publish metrics to OTLP receiver");
+        when(logEntry.getTime()).thenReturn(System.currentTimeMillis());
+
+        listener.logged(logEntry);
+
+        verifyNoInteractions(otelLogger);
+    }
+
+    @Test
     public void testRuntimeExceptionDuringLoggingIsSwallowed() {
         when(otelLogger.logRecordBuilder()).thenThrow(new RuntimeException("boom"));
         OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);

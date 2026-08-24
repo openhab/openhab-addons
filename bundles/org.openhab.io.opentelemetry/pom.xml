@@ -102,18 +102,19 @@
       <artifactId>micrometer-registry-otlp</artifactId>
       <version>${micrometer.version}</version>
     </dependency>
-    <!-- OTel proto classes required by micrometer-registry-otlp; embedded and exported so
-         micrometer-registry-otlp (a separate OSGi bundle) can wire its proto import to us -->
+    <!-- OTel proto classes required by the embedded micrometer-registry-otlp.
+         Every release of this artifact carries the -alpha suffix, it does not mark a pre-release.
+         Keep the version in sync with the one micrometer-registry-otlp compiles against. -->
     <dependency>
       <groupId>io.opentelemetry.proto</groupId>
       <artifactId>opentelemetry-proto</artifactId>
-      <version>1.8.0-alpha</version>
+      <version>1.10.0-alpha</version>
     </dependency>
     <!-- protobuf runtime embedded privately: required by the embedded opentelemetry-proto classes -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>4.32.0</version>
+      <version>4.34.0</version>
     </dependency>
     <!-- micrometer-core is provided by openhab.core.io.monitor -->
     <dependency>

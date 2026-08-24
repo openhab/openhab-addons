@@ -1,6 +1,5 @@
 ---
 children:
-
   - ["doc/lgtm-stack", "LGTM Stack Example"]
   - ["doc/otel-collector", "OpenTelemetry Collector Example"]
 ---
@@ -81,12 +80,11 @@ Use `tracesSamplingRatio` to limit the exported volume on busy instances (e.g. `
 The add-on supports two deployment patterns:
 
 - **Direct to backend**: Set `otlpURL` to your observability backend's OTLP ingest URL and `otlpHeaders` to the required authentication header.
-Simple to set up; backend credentials are stored in openHAB's configuration.
-
-**Via an OTel Collector** — set `otlpURL` to the collector's HTTP endpoint (e.g. `http://localhost:4318`) and leave `otlpHeaders` empty.
-The collector receives all three signals from openHAB and forwards them to one or more backends.
+  Simple to set up; backend credentials are stored in openHAB's configuration.
+- **Via an OTel Collector**: Set `otlpURL` to the collector's HTTP endpoint (e.g. `http://localhost:4318`) and leave `otlpHeaders` empty.
+  The collector receives all three signals from openHAB and forwards them to one or more backends.
   This keeps backend credentials out of openHAB, allows fan-out to multiple backends, and handles metric temporality conversion.
-See the [OTel Collector example](doc/otel-collector.md) for a ready-to-use configuration.
+  See the [OTel Collector example](doc/otel-collector.md) for a ready-to-use configuration.
 
 ## Configuration
 
@@ -102,7 +100,7 @@ The OpenTelemetry service can be configured via Main UI (_Settings_ → _Add-on 
 | `otlpHeaders` | Comma-separated authentication headers, e.g. `Authorization=Bearer token`. Only needed for direct-to-backend deployments — leave empty when using a collector. Stored as a masked secret. | |
 
 :::tip Note
-If `otlpURL` uses `http://`, this is logged at startup. Use HTTPS in production to protect credentials in transit.
+If `otlpURL` uses `http://`, this is logged at startup. Use HTTPS to protect credentials in transit.
 :::
 
 The service supports environment variable substitution in all parameters using the `${ENV:MY_ENV_VAR}` syntax.
@@ -161,20 +159,28 @@ tracesSamplingRatio=1.0
 
 ## Scope and Limitations
 
-This bundle uses openHAB's OSGi seams (log service, Micrometer registry, event bus) to export telemetry without requiring a JVM agent.
-This approach is clean and OSGi-native, but has inherent coverage limits compared to bytecode-instrumentation agents:
+The bundle reads telemetry from three places openHAB already offers: the OSGi log service, the Micrometer registry and the event bus.
+No JVM agent is needed, but that also means it only sees what those three sources expose:
 
-- **No automatic library instrumentation.** Only openHAB's own signals are exported: its logs, its Micrometer meters, and its event-bus activity. HTTP/REST calls to external services, persistence layer operations, MQTT broker interactions, and binding-internal operations are not automatically traced.
-- **No automatic context propagation.** openHAB's event bus is asynchronous and fire-and-forget. Spans emitted by this bundle are flat per-event spans — a useful activity timeline — not distributed call trees. There is no W3C `traceparent` injected across thread or network boundaries.
-- **Late-start blind window.** The bundle activates after openHAB core and bindings are already running. Log entries, events, and metric changes produced during the bootstrap phase before activation are not captured.
-- **Metrics use Micrometer semantics.** Micrometer naming conventions apply (not OTel semantic conventions for metrics). Trace–metric exemplar linking is not produced.
-- **Event-bus spans are `internal`-kind.** Observability backends that derive request-level RED metrics (request rate, error rate, response time) from `server`-kind root spans will not compute them for this service. This is expected: openHAB is an event-driven system, not an HTTP request-response service.
+- Only openHAB's own logs, meters and events are exported.
+  Calls a binding makes to a device or a REST API, persistence writes and MQTT traffic are not traced.
+- Event-bus spans are flat.
+  Each event gets its own root span, so you get a timeline of activity rather than call trees.
+  No `traceparent` is passed between threads or over the network.
+- Nothing is captured before the bundle starts.
+  openHAB core and the bindings are already up by then, so early log entries, events and metric changes are lost.
+- Metric names follow Micrometer, not the OTel semantic conventions.
+  There are no exemplars linking metrics to traces.
+- Event-bus spans have kind `internal`.
+  Backends that build RED metrics from `server` spans will show nothing for openHAB, which is an event-driven system and not an HTTP service.
 
 ## Coexistence with the OTel Java Agent
 
-The [OTel Java agent](https://opentelemetry.io/docs/zero-code/java/agent/) can complement this bundle by providing automatic HTTP server instrumentation (which adds `server`-kind root spans and enables RED metrics in observability backends), JDBC tracing, and other library-level coverage that the bundle cannot provide.
+The [OTel Java agent](https://opentelemetry.io/docs/zero-code/java/agent/) covers what this bundle cannot: HTTP server instrumentation, JDBC and other libraries.
+Its HTTP spans have kind `server`, so backends can build RED metrics from them.
 
-When the agent is detected at startup, this bundle routes its event-bus spans through the agent's already-registered `GlobalOpenTelemetry` pipeline rather than starting its own tracer provider, so both sources land in the same service entity in the backend.
+If the agent is present at startup, the bundle sends its event-bus spans through the agent's `GlobalOpenTelemetry` instead of setting up its own tracer provider.
+Both then appear under the same service in the backend.
 
 To run the agent alongside openHAB, add to `/etc/default/openhab` (or the equivalent for your installation):
 
@@ -189,7 +195,9 @@ EXTRA_JAVA_OPTS="-javaagent:/path/to/opentelemetry-javaagent.jar \
 Set `-Dotel.exporter.otlp.protocol` explicitly and make sure it matches your endpoint's port — `http/protobuf` typically listens on `4318`, `grpc` on `4317`.
 A protocol/port mismatch fails silently at the transport layer with no data arriving and no obvious error.
 
-The agent's own JVM metrics instrumentation overlaps with this bundle's Micrometer-based `jvm.*` meters, so running both without `-Dotel.metrics.exporter=none` produces two independently-sourced series for the same JVM. Disable the agent's metrics exporter to avoid that duplication, or leave it enabled if your backend deduplicates by resource identity.
+The agent collects JVM metrics of its own, which overlap with the `jvm.*` meters this bundle exports through Micrometer.
+Without `-Dotel.metrics.exporter=none` you end up with the same JVM reported twice.
+Leave the agent's metrics exporter on only if your backend deduplicates by resource identity.
 
 When running both, consider disabling `logsEnabled` (the agent exports logs) while keeping `metricsEnabled` and `tracesEnabled` (the agent does not see openHAB's Micrometer meters or event-bus events).
 

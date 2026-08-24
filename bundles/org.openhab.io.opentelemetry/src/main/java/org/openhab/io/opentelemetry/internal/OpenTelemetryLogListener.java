@@ -46,11 +46,11 @@ public class OpenTelemetryLogListener implements LogListener {
 
     @Override
     public void logged(@NonNullByDefault({}) LogEntry logEntry) {
-        // Suppress our own bundle and the OTel SDK to break the export-failure feedback loop
+        // Suppress our own bundle, the OTel SDK and Micrometer to break the export-failure feedback loop
         // (e.g. a 403 from the OTLP endpoint would otherwise be re-ingested and re-exported).
         String loggerName = logEntry.getLoggerName();
-        if (loggerName != null && (loggerName.startsWith("org.openhab.io.opentelemetry")
-                || loggerName.startsWith("io.opentelemetry."))) {
+        if (loggerName.startsWith("org.openhab.io.opentelemetry") || loggerName.startsWith("io.opentelemetry.")
+                || loggerName.startsWith("io.micrometer.")) {
             return;
         }
 
@@ -64,7 +64,7 @@ public class OpenTelemetryLogListener implements LogListener {
                     .setBody(logEntry.getMessage());
 
             AttributesBuilder attributesBuilder = Attributes.builder() //
-                    .put("log.logger.name", loggerName != null ? loggerName : "") //
+                    .put("log.logger.name", loggerName) //
                     .put("thread.name", logEntry.getThreadInfo());
 
             @Nullable

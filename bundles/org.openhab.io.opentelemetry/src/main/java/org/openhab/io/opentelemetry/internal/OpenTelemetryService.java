@@ -432,7 +432,8 @@ public class OpenTelemetryService {
 
     /**
      * Tag attached by openHAB core's DefaultMetricsRegistration to every core meter binder.
-     * The constant lives in a non-exported core package, so the literal is duplicated here.
+     * The constant lives in a non-exported core package, so the literal is duplicated here until
+     * core exposes it from org.openhab.core.io.monitor.
      */
     static final String CORE_METRIC_TAG_KEY = "openhab_core_metric";
     static final String CORE_METRIC_TAG_VALUE = "true";
