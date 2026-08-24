@@ -124,8 +124,7 @@ class InboundCoreHandlerTest {
     void meterValuesAreStillAcknowledgedWhenProcessingFails() {
         doThrow(new IllegalStateException("boom")).when(listener).onMeterValues(any(), any());
 
-        // Must not propagate: an exception here becomes a CallError, and a charger that cannot get
-        // its metering acknowledged will queue and retransmit it indefinitely.
+        // Must not propagate: the exception becomes a CallError and an unacked charger retransmits its metering.
         assertNotNull(handler.handleMeterValuesRequest(session, new MeterValuesRequest(1)));
     }
 }

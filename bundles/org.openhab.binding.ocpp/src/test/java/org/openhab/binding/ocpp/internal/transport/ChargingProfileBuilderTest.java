@@ -43,8 +43,7 @@ class ChargingProfileBuilderTest {
         ChargingProfile profile = request.getCsChargingProfiles();
         assertEquals(ChargingProfileBuilder.profileId(1, false), profile.getChargingProfileId().intValue());
         assertEquals(ChargingProfilePurposeType.TxDefaultProfile, profile.getChargingProfilePurpose());
-        // Relative, not Absolute: a fixed cap from the start of charging needs no absolute
-        // startSchedule (and an Absolute profile without one is invalid per OCPP 1.6).
+        // Relative not Absolute: a fixed cap needs no startSchedule (Absolute without one is invalid per OCPP 1.6).
         assertEquals(ChargingProfileKindType.Relative, profile.getChargingProfileKind());
         assertNull(profile.getTransactionId());
         assertEquals(0, profile.getStackLevel().intValue());
@@ -67,8 +66,7 @@ class ChargingProfileBuilderTest {
 
     @Test
     void distinctConnectorsAndPurposesGetDistinctProfileIds() {
-        // A profile id identifies an installed profile charge-point-wide, and installing one with an
-        // existing id replaces it — so connectors and purposes must not share ids.
+        // A profile id is charge-point-wide and reinstalls replace by id, so connectors/purposes must not share ids.
         int c1Default = ChargingProfileBuilder.currentLimit(1, 16.0, false, null).getCsChargingProfiles()
                 .getChargingProfileId();
         int c2Default = ChargingProfileBuilder.currentLimit(2, 16.0, false, null).getCsChargingProfiles()
@@ -97,9 +95,7 @@ class ChargingProfileBuilderTest {
 
     @Test
     void clearLimitRemovesOurCapByConnectorAndStackLevel() {
-        // Resuming to full removes the profile rather than sending 0 A (which a charger reads as
-        // suspend). Clearing by connector and stack level — not a single profile id or purpose —
-        // removes whichever purpose (TxProfile or TxDefaultProfile) installed the cap.
+        // Clearing by connector+stack level (not id/purpose) removes whichever purpose set the cap; 0 A would suspend.
         ClearChargingProfileRequest request = ChargingProfileBuilder.clearLimit(2);
         assertEquals(2, request.getConnectorId().intValue());
         assertEquals(0, request.getStackLevel().intValue());

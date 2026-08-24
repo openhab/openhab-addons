@@ -109,9 +109,7 @@ class TransactionStoreTest {
 
     @Test
     void concurrentAllocationsCannotPersistOutOfOrder() throws InterruptedException {
-        // The race: without atomic allocate-and-persist, a delayed write of the lower id can land last
-        // and a restart resumes below an id a charger still holds. The storage blocks the first sequence
-        // write until released to force that ordering.
+        // Race: without atomic allocate+persist, a delayed lower-id write lands last and a restart resumes below it.
         java.util.concurrent.CountDownLatch firstWriteEntered = new java.util.concurrent.CountDownLatch(1);
         java.util.concurrent.CountDownLatch releaseFirstWrite = new java.util.concurrent.CountDownLatch(1);
         MemoryStorage storage = new MemoryStorage() {

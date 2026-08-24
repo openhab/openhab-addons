@@ -50,8 +50,7 @@ class OcppLivenessThresholdTest {
 
     @Test
     void aReportedZeroIsNotUsedToReapAnIdleNonHeartbeatingCharger() {
-        // HeartbeatInterval 0 means the charger sends no periodic heartbeat, so it is no liveness signal: fall back to
-        // the server default, not the tight floor, or a silent-but-healthy charger gets reaped.
+        // HeartbeatInterval 0 = no periodic heartbeat (no liveness signal): fall back to server default, not the floor.
         assertEquals(660, OcppChargePointHandler.livenessThreshold(0, OptionalInt.of(0), 300));
     }
 

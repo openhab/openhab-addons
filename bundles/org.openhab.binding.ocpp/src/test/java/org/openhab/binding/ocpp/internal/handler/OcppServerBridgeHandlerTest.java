@@ -133,8 +133,7 @@ class OcppServerBridgeHandlerTest {
 
     @Test
     void aPasswordTheLibraryWouldRejectFailsInitializationInstead() {
-        // The embedded library only accepts 16-20 byte Basic-auth passwords, rejecting every handshake otherwise before
-        // our callback runs, so an out-of-range one must fail config, not silently lock out every charger.
+        // The library only accepts 16-20 byte Basic-auth passwords; out-of-range must fail config, not lock them out.
         when(thing.getConfiguration()).thenReturn(new Configuration(java.util.Map.of("authPassword", "tooshort")));
 
         handler.initialize();
@@ -193,8 +192,7 @@ class OcppServerBridgeHandlerTest {
 
     @Test
     void aSessionWithoutAChargePointIdIsIgnored() {
-        // A bare-root connection (ws://host:port/, empty path) still opens a WebSocket but carries no charge point id,
-        // so the bridge must map and persist nothing under "". Seen with a V2C Trydan.
+        // A bare-root connection (empty path) has no charge point id, so map/persist nothing (V2C Trydan).
         handler.initialize();
         verify(callback, timeout(2000)).statusUpdated(any(),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));

@@ -29,8 +29,7 @@ public class OcppBindingConstantsTest {
 
     @Test
     public void connectorRepresentationIsUniqueAcrossChargers() {
-        // The framework matches a representation property on thing type and value alone, without
-        // consulting the bridge, so connector 1 of two different chargers must not collide.
+        // The framework matches a representation property on type+value alone; connector 1 of two chargers must differ.
         assertThat(uniqueConnectorId("charx", 1), is(not(uniqueConnectorId("wallbox", 1))));
     }
 

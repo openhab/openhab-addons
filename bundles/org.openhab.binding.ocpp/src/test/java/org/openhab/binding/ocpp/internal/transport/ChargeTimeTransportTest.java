@@ -154,8 +154,7 @@ class ChargeTimeTransportTest {
         assertNull(ChargeTimeTransport.normalizeIdentifier(null));
     }
 
-    // The library refuses to send a request whose feature profile isn't registered on the server
-    // (UnsupportedFeatureException); an unknown session must fail as "not connected", not "unsupported".
+    // A request whose feature profile isn't registered can't be sent; an unknown session must fail as "not connected".
     @Test
     void nonCoreFeatureProfilesAreRegisteredSoTheirRequestsCanBeSent() throws java.io.IOException {
         ChargeTimeTransport transport = newTransport();
@@ -171,9 +170,7 @@ class ChargeTimeTransportTest {
 
     @Test
     void aChargerSendingAShortBasicAuthPasswordIsAccepted() throws Exception {
-        // The library rejects a Basic-auth password outside the OCPP profile-1 16-20 char rule during
-        // the handshake, before authenticateSession runs; some chargers (V2C Trydan) send a single-space
-        // password. With no authPassword configured the binding must accept it regardless.
+        // The library rejects a Basic-auth password outside 16-20 chars; with no authPassword set, accept it anyway.
         CountDownLatch opened = new CountDownLatch(1);
         ChargeTimeTransport transport = new ChargeTimeTransport(listener(opened::countDown), 0, 30, "", "", "");
         int port = findFreePort();
@@ -273,8 +270,7 @@ class ChargeTimeTransportTest {
 
     @Test
     void startVerifiesTheServerAcceptsARealConnection() throws java.io.IOException {
-        // The embedded server binds asynchronously, so start() must probe it and return only once a
-        // socket is actually listening.
+        // The embedded server binds asynchronously, so start() probes and returns only once a socket is listening.
         int port = findFreePort();
         ChargeTimeTransport transport = newTransport();
         transport.start("127.0.0.1", port);
@@ -292,8 +288,7 @@ class ChargeTimeTransportTest {
 
     @Test
     void startFailsWhenThePortIsAlreadyOccupied() throws java.io.IOException {
-        // The embedded server reports a failed bind only to an internal callback and otherwise appears
-        // started; the transport must surface it so the bridge cannot go ONLINE with no socket.
+        // The embedded server signals a failed bind only via an internal callback, so the transport must surface it.
         try (java.net.ServerSocket occupier = new java.net.ServerSocket(0)) {
             ChargeTimeTransport transport = newTransport();
             assertThrows(IllegalStateException.class, () -> transport.start("127.0.0.1", occupier.getLocalPort()));

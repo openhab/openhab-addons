@@ -124,8 +124,7 @@ class OcppTransactionRecoveryTest {
 
     @Test
     void anAvailableStatusWithoutAStopClearsThePersistedTransaction() {
-        // Available authoritatively means no active transaction, so a lost StopTransaction must not leave a persisted
-        // one a restart would recover as active.
+        // Available means no active transaction, so a lost StopTransaction must not leave a persisted one.
         when(server.openTransactionFor("charger", 1)).thenReturn(55);
         OcppConnectorHandler connector = realConnector(1);
 
