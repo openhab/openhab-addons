@@ -63,9 +63,10 @@ Channel configuration inherits from the [Thing configuration](#thing-configurati
 
 ## Human Language Interpreter
 
-The `account` Thing automatically registers a human language interpreter implementation.
+An `account` Thing automatically registers a human language interpreter implementation with the ID `chatgpt:<thing-id>`, where `<thing-id>` is the ID of the Thing.
+For a Thing UID of `chatgpt:account:1`, the HLI ID is `chatgpt:1`.
 
-To configure the ChatGPT HLI as default, go to _Settings_ → _Voice_ and select _ChatGPT Human Language Interpreter_ as default.
+To configure a ChatGPT HLI as default, go to _Settings_ → _Voice_ and select _ChatGPT Human Language Interpreter_ as default.
 
 In that place, you can also configure the system prompt used to instruct the LLM on how to process the user's input.
 The used model, temperature, topP, and maximum output tokens parameters can be configured in the Thing configuration.

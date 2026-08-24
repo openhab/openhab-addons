@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,11 +40,14 @@ import org.osgi.service.component.annotations.Reference;
 public class ChatGPTHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT);
-    private HttpClientFactory httpClientFactory;
+    private final HttpClientFactory httpClientFactory;
+    private final TranslationProvider translationProvider;
 
     @Activate
-    public ChatGPTHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public ChatGPTHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider translationProvider) {
         this.httpClientFactory = httpClientFactory;
+        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class ChatGPTHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new ChatGPTHandler(thing, httpClientFactory);
+            return new ChatGPTHandler(thing, httpClientFactory.getCommonHttpClient(), translationProvider);
         }
 
         return null;
