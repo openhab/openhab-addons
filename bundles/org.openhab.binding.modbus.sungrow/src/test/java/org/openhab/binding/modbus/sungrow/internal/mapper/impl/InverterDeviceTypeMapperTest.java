@@ -21,11 +21,11 @@ import org.junit.jupiter.api.Test;
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
-class DeviceTypeMapperTest {
+class InverterDeviceTypeMapperTest {
 
     @Test
     public void testMapDeviceType() {
         int valueFromHex = Integer.parseInt("E25", 16);
-        assertEquals("SH15T-V11", DeviceTypeMapper.instance().map(valueFromHex));
+        assertEquals("SH15T-V11", InverterDeviceTypeMapper.instance().map(valueFromHex));
     }
 }

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
-import org.openhab.binding.modbus.sungrow.internal.mapper.impl.DeviceTypeMapper;
+import org.openhab.binding.modbus.sungrow.internal.mapper.impl.InverterDeviceTypeMapper;
 import org.openhab.binding.modbus.sungrow.internal.mapper.impl.OutputTypeMapper;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
@@ -218,7 +218,7 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
             getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_SERIAL_NUMBER, serialNumber);
             int deviceTypeCode = ModbusBitUtilities.extractUInt16(registers.getBytes(), 20);
             getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_DEVICE_TYPE,
-                    DeviceTypeMapper.instance().map(deviceTypeCode));
+                    InverterDeviceTypeMapper.instance().map(deviceTypeCode));
             int outputPower = ModbusBitUtilities.extractUInt16(registers.getBytes(), 22);
             getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_NOMINAL_OUTPUT_POWER,
                     outputPower * 100 + " W");
