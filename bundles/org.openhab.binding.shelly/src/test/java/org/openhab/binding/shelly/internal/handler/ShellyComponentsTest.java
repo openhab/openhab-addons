@@ -962,6 +962,111 @@ public class ShellyComponentsTest {
         assertEquals(new PercentType(50), lastState(handler, CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_COLOR_TEMP));
     }
 
+    @Test
+    void updateRGBWPushesColorChannelsForMulticolorBulb() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
+        profile.inColor = true;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.red = 10;
+        light.green = 20;
+        light.blue = 30;
+        light.white = 0;
+        status.lights = new ArrayList<>(List.of(light));
+
+        boolean updated = ShellyComponents.updateRGBW(handler, status);
+
+        assertThat(updated, is(true));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), eq(CHANNEL_COLOR_PICKER), any());
+    }
+
+    @Test
+    void updateRGBWPushesColorChannelsForDuoBulbInColorMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.inColor = true;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.red = 10;
+        light.green = 20;
+        light.blue = 30;
+        light.white = 0;
+        status.lights = new ArrayList<>(List.of(light));
+
+        boolean updated = ShellyComponents.updateRGBW(handler, status);
+
+        assertThat(updated, is(true));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), eq(CHANNEL_COLOR_PICKER), any());
+    }
+
+    @Test
+    void updateRGBWSkipsColorChannelsForDuoBulbInWhiteMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.inColor = false;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+
+        boolean updated = ShellyComponents.updateRGBW(handler, status);
+
+        assertThat(updated, is(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), anyString(), any());
+    }
+
+    @Test
+    void updateLightModePushesBrightnessAndCtForDuoBulbInWhiteMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.inColor = false;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.ison = true;
+        light.brightness = 55;
+        light.temp = 3200;
+        status.lights = new ArrayList<>(List.of(light));
+
+        boolean updated = ShellyComponents.updateLightMode(handler, status);
+
+        assertThat(updated, is(true));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_WHITE_CONTROL), eq(CHANNEL_BRIGHTNESS + "$Switch"),
+                eq(OnOffType.ON));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_WHITE_CONTROL), eq(CHANNEL_COLOR_TEMP), any());
+    }
+
+    @Test
+    void updateLightModeSkipsColorSlotForDuoBulbInColorMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.inColor = true;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+
+        boolean updated = ShellyComponents.updateLightMode(handler, status);
+
+        assertThat(updated, is(false));
+        verify(handler, never()).updateChannel(anyString(), anyString(), any());
+    }
+
+    @Test
+    void updateLightModeSkipsForMulticolorBulbInColorMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
+        profile.inColor = true;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+
+        boolean updated = ShellyComponents.updateLightMode(handler, status);
+
+        assertThat(updated, is(false));
+    }
+
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.isSensor = false;

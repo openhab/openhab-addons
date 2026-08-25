@@ -30,6 +30,7 @@ import javax.measure.quantity.Pressure;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
@@ -887,7 +888,9 @@ public class ShellyComponents {
             throws ShellyApiException {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        if (profile.isRGBW2) {
+        // RGBW2 (incl. hybrid Pro/Plus RGBWW-PM) always reports its color component at index 0; Duo/Multicolor
+        // Bulb G3 share the same slot 0 but only while actually operating in RGB/color mode
+        if (profile.isRGBW2 || (profile.isDuo && profile.inColor)) {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
@@ -908,7 +911,9 @@ public class ShellyComponents {
             throws ShellyApiException {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        if (profile.isRGBW2) {
+        // RGBW2 (incl. hybrid Pro/Plus RGBWW-PM) always has CCT/Light components to cover here; Duo/Multicolor
+        // Bulb G3 share slot 0, which hasColorTag() below skips while they're actually in color mode
+        if (profile.isRGBW2 || profile.isDuo) {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
@@ -920,7 +925,7 @@ public class ShellyComponents {
                     continue;
                 }
                 ShellySettingsLight light = lights.get(i);
-                String groupName = profile.getControlGroup(i);
+                String groupName = ShellyApiLightUtil.buildWhiteGroupName(profile, i);
                 OnOffType power = getOnOff(light.ison);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", power);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",

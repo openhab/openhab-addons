@@ -75,8 +75,12 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         @Override
         public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
             calledMethods.add(method);
-            if (params instanceof Shelly2RpcRequestParams) {
-                calledParams.add((Shelly2RpcRequestParams) params);
+            if (params instanceof Shelly2RpcRequestParams requestParams) {
+                if (SHELLYRPC_METHOD_RGBCCT_SET.equals(method) && requestParams.on == null
+                        && requestParams.brightness == null) {
+                    throw new ShellyApiException("RGBCCT.Set requires at least one of on or brightness");
+                }
+                calledParams.add(requestParams);
             }
             if (cannedIndex < cannedResponses.size()) {
                 return classOfT.cast(cannedResponses.get(cannedIndex++));
@@ -250,6 +254,19 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         Shelly2RpcRequestParams params = rpc.lastParams();
         assertThat(params.id, is(0));
         assertThat(params.rgb, is(new Integer[] { 10, 20, 30 }));
+        assertThat(params.on, is(true));
+    }
+
+    @Test
+    void setLightParmsMulticolorBulbInColorModeSendsRgbcctSetWithBrightness() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(multicolorBulbProfile(true));
+        rpc.setLightParms(0, Map.of(SHELLY_COLOR_RED, "10", SHELLY_COLOR_GREEN, "20", SHELLY_COLOR_BLUE, "30",
+                SHELLY_COLOR_BRIGHTNESS, "42"));
+
+        assertThat(rpc.firstMethod(), is(SHELLYRPC_METHOD_RGBCCT_SET));
+        Shelly2RpcRequestParams params = rpc.lastParams();
+        assertThat(params.rgb, is(new Integer[] { 10, 20, 30 }));
+        assertThat(params.brightness, is(42));
     }
 
     @Test
@@ -261,6 +278,51 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         Shelly2RpcRequestParams params = rpc.lastParams();
         assertThat(params.id, is(0));
         assertThat(params.ct, is(3000));
+        assertThat(params.on, is(true));
+    }
+
+    @Test
+    void setLightParmsMulticolorBulbKeepsExplicitOffWithColorTemp() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(multicolorBulbProfile(false));
+        rpc.setLightParms(0, Map.of(SHELLY_COLOR_TEMP, "3000", SHELLY_LIGHT_TURN, SHELLY_API_OFF));
+
+        Shelly2RpcRequestParams params = rpc.lastParams();
+        assertThat(params.ct, is(3000));
+        assertThat(params.on, is(false));
+    }
+
+    @Test
+    void setLightParmsMulticolorBulbCombinesModeSwitchAndColorTempInOneRequest() throws ShellyApiException {
+        ShellyDeviceProfile profile = multicolorBulbProfile(true);
+        StubApiRpc rpc = newRpc(profile);
+        rpc.setLightParms(0, Map.of(SHELLY_API_MODE, SHELLY_MODE_WHITE, SHELLY_COLOR_TEMP, "3000"));
+
+        assertThat(rpc.calledMethods.size(), is(1));
+        assertThat(rpc.firstMethod(), is(SHELLYRPC_METHOD_RGBCCT_SET));
+        Shelly2RpcRequestParams params = rpc.lastParams();
+        assertThat(params.mode, is(SHELLY_RGBCCT_MODE_CCT));
+        assertThat(params.ct, is(3000));
+        assertThat(params.rgb, is(nullValue()));
+        assertThat(params.on, is(true));
+        assertThat(profile.inColor, is(false));
+        assertThat(profile.device.mode, is(SHELLY_MODE_WHITE));
+    }
+
+    @Test
+    void setLightParmsMulticolorBulbCombinesModeSwitchAndRgbInOneRequest() throws ShellyApiException {
+        ShellyDeviceProfile profile = multicolorBulbProfile(false);
+        StubApiRpc rpc = newRpc(profile);
+        rpc.setLightParms(0, Map.of(SHELLY_API_MODE, SHELLY_MODE_COLOR, SHELLY_COLOR_RED, "10", SHELLY_COLOR_GREEN,
+                "20", SHELLY_COLOR_BLUE, "30", SHELLY_COLOR_BRIGHTNESS, "50"));
+
+        assertThat(rpc.calledMethods.size(), is(1));
+        Shelly2RpcRequestParams params = rpc.lastParams();
+        assertThat(params.mode, is(SHELLY_RGBCCT_MODE_RGB));
+        assertThat(params.rgb, is(new Integer[] { 10, 20, 30 }));
+        assertThat(params.ct, is(nullValue()));
+        assertThat(params.brightness, is(50));
+        assertThat(params.on, is(true));
+        assertThat(profile.inColor, is(true));
     }
 
     // --- mode switch dispatch (Multicolor Bulb only) ---
@@ -271,7 +333,8 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         rpc.setLightMode(SHELLY_MODE_COLOR);
 
         assertThat(rpc.firstMethod(), is(SHELLYRPC_METHOD_RGBCCT_SET));
-        assertThat(rpc.lastParams().mode, is("rgb"));
+        assertThat(rpc.lastParams().mode, is(SHELLY_RGBCCT_MODE_RGB));
+        assertThat(rpc.lastParams().on, is(true));
     }
 
     @Test

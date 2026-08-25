@@ -133,8 +133,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 case CHANNEL_COLOR_GAIN:
                     col.setGain(setColor(lightId, SHELLY_COLOR_GAIN, command, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
                     break;
-                case CHANNEL_BRIGHTNESS: // only in white mode
-                    if (profile.hasColorTag(lightId) && !profile.isBulb) {
+                case CHANNEL_BRIGHTNESS: // only in white mode, except for Bulb/Duo where it's the only brightness
+                                         // channel
+                    if (profile.hasColorTag(lightId) && !profile.isBulb && !profile.isDuo) {
                         logger.debug("{}: Not in white mode, brightness not available", thingName);
                         break;
                     }
@@ -211,6 +212,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     validateRange(CHANNEL_COLOR_TEMP, temp, col.minTemp, col.maxTemp);
                     col.setTemp(temp);
                     col.brightness = -1;
+                    if (profile.isDuo && profile.isRGBCCT) {
+                        // switch the shared LEDs back to CCT mode so the temperature actually takes effect
+                        col.setMode(SHELLY_MODE_WHITE);
+                    }
                     break;
 
                 case CHANNEL_COLOR_EFFECT:
@@ -234,8 +239,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             }
 
             if (update) {
-                // check for switching color mode
-                if (profile.isBulb && !col.mode.isEmpty() && !col.mode.equals(oldCol.mode)) {
+                // Gen1 Bulb switches color mode with a separate settings call; the Multicolor Bulb G3 gets the mode
+                // combined into the RGBCCT.Set request built by sendColors()
+                if (profile.isBulb && isModeSwitch(oldCol, col)) {
                     logger.debug("{}: Color mode changed from {} to {}, set new mode", thingName, oldCol.mode,
                             col.mode);
                     api.setLightMode(col.mode);
@@ -320,7 +326,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         } else if (color.equals(SHELLY_COLOR_YELLOW)) {
             col.setRGBW(SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, 0, 0);
         } else if (color.equals(SHELLY_COLOR_WHITE)) {
-            if (profile.isProRgbwwPm) { // RGB component has no white output, mix full RGB instead
+            if (profile.isProRgbwwPm || (profile.isDuo && profile.isRGBCCT)) {
+                // RGB component has no white output, mix full RGB instead
                 col.setRGBW(SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, SHELLY_MAX_COLOR, 0);
             } else {
                 col.setRGBW(0, 0, 0, SHELLY_MAX_COLOR);
@@ -371,7 +378,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             createLightChannels(light, lightId);
             // The bulb has a combined channel set for color or white mode
             // The RGBW2 uses 2 different thing types: color=1 channel, white=4 channel
-            if (profile.isBulb) {
+            if (profile.isBulb || (profile.isDuo && profile.isRGBCCT)) {
                 updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_COLOR_MODE, getOnOff(profile.inColor));
             }
 
@@ -388,7 +395,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         toQuantityType(getDouble(ls.autoOff), Units.SECOND));
                 updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
                 updated |= updateChannel(controlGroup, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
-                updated |= updateChannel(controlGroup, CHANNEL_LIGHT_POWER, col.power);
             }
 
             if (getBool(light.overpower)) {
@@ -444,10 +450,12 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         return updated;
     }
 
-    // Bulbs always report white/temp alongside color; RGBW2/RGBW PM only for a component that isn't the color one
-    // (this also covers a hybrid profile's secondary CCT/Light component, whose color slot is a different index).
+    // Bulbs and Duo/Multicolor Bulb G3 always report white/temp alongside color; RGBW2/RGBW PM only for a
+    // component that isn't the color one (this also covers a hybrid profile's secondary CCT/Light component,
+    // whose color slot is a different index).
     private static boolean updatesWhiteChannels(ShellyDeviceProfile profile, int lightId) {
-        return profile.isBulb || (!profile.hasColorTag(lightId) && (!profile.isGen2 || profile.isRGBW2));
+        return profile.isBulb || profile.isDuo
+                || (!profile.hasColorTag(lightId) && (!profile.isGen2 || profile.isRGBW2));
     }
 
     private void createLightChannels(ShellyStatusLightChannel status, int idx) {
@@ -509,11 +517,19 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 "{}: New color settings for channel {}: RGB {}/{}/{}, white={}, gain={}, brightness={}, color-temp={}",
                 thingName, channelId, newCol.red, newCol.green, newCol.blue, newCol.white, newCol.gain,
                 newCol.brightness, newCol.temp);
-        if (autoOn && (newCol.brightness >= 0)) {
-            parms.put(SHELLY_LIGHT_TURN,
-                    profile.hasColorTag(lightId) || newCol.brightness > 0 ? SHELLY_API_ON : SHELLY_API_OFF);
+        boolean switchRgbcctMode = profile.isDuo && profile.isRGBCCT && isModeSwitch(oldCol, newCol);
+        boolean inColor = switchRgbcctMode ? SHELLY_MODE_COLOR.equals(newCol.mode) : profile.hasColorTag(lightId);
+        if (switchRgbcctMode) {
+            logger.debug("{}: Color mode changed from {} to {}", thingName, oldCol.mode, newCol.mode);
+            parms.put(SHELLY_API_MODE, newCol.mode);
         }
-        if (profile.hasColorTag(lightId)) {
+        if (newCol.brightness == 0 && profile.isDuo) {
+            // Bulb/Duo has no separate power channel: brightness=0 always means OFF, regardless of autoOn setting
+            parms.put(SHELLY_LIGHT_TURN, SHELLY_API_OFF);
+        } else if (autoOn && (newCol.brightness >= 0)) {
+            parms.put(SHELLY_LIGHT_TURN, inColor || newCol.brightness > 0 ? SHELLY_API_ON : SHELLY_API_OFF);
+        }
+        if (inColor) {
             if (oldCol.red != newCol.red || oldCol.green != newCol.green || oldCol.blue != newCol.blue
                     || oldCol.white != newCol.white) {
                 logger.debug("{}: Setting RGBW to {}/{}/{}/{}", thingName, newCol.red, newCol.green, newCol.blue,
@@ -524,7 +540,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 parms.put(SHELLY_COLOR_WHITE, String.valueOf(newCol.white));
             }
         }
-        if ((!profile.hasColorTag(lightId)) && (oldCol.temp != newCol.temp)) {
+        if (!inColor && (oldCol.temp != newCol.temp)) {
             logger.debug("{}: Setting color temp to {}", thingName, newCol.temp);
             parms.put(SHELLY_COLOR_TEMP, String.valueOf(newCol.temp));
         }
@@ -532,7 +548,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             logger.debug("{}: Setting gain to {}", thingName, newCol.gain);
             parms.put(SHELLY_COLOR_GAIN, String.valueOf(newCol.gain));
         }
-        if ((newCol.brightness >= 0) && (!profile.hasColorTag(lightId) || profile.isBulb)
+        if ((newCol.brightness >= 0) && (!inColor || profile.isBulb || (profile.isDuo && profile.isRGBCCT))
                 && (oldCol.brightness != newCol.brightness)) {
             logger.debug("{}: Setting brightness to {}", thingName, newCol.brightness);
             parms.put(SHELLY_COLOR_BRIGHTNESS, String.valueOf(newCol.brightness));
@@ -546,6 +562,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             api.setLightParms(lightId, parms);
             updateCurrentColors(lightId, newCol);
         }
+    }
+
+    private static boolean isModeSwitch(ShellyColorUtils oldCol, ShellyColorUtils newCol) {
+        return !newCol.mode.isEmpty() && !newCol.mode.equals(oldCol.mode);
     }
 
     private void updateCurrentColors(int lightId, ShellyColorUtils col) {

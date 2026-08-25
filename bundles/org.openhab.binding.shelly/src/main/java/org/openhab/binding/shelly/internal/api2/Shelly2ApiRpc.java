@@ -1311,12 +1311,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (profile.isDuo) {
             params.id = 0;
             if (profile.isRGBCCT) {
-                if (profile.inColor) {
-                    applyRgbParams(params, parameters);
-                } else {
-                    applyCctParam(params, parameters);
-                }
-                apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
+                setRgbcctParms(profile, params, parameters);
             } else {
                 applyCctParam(params, parameters);
                 apiRequest(SHELLYRPC_METHOD_CCT_SET, params, String.class);
@@ -1342,6 +1337,33 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         apiRequest(lightRpcMethods(profile, lightIndex).set(), params, String.class);
     }
 
+    /**
+     * Single RGBCCT.Set request for the Multicolor Bulb G3: an optional mode switch (SHELLY_API_MODE) is combined with
+     * the rgb/ct values of the target mode. RGBCCT.Set requires on or brightness, so a request that only carries
+     * mode/rgb/ct turns the light on - showing the new color/temperature is the intent of such a command.
+     */
+    private void setRgbcctParms(ShellyDeviceProfile profile, Shelly2RpcRequestParams params,
+            Map<String, String> parameters) throws ShellyApiException {
+        String mode = parameters.get(SHELLY_API_MODE);
+        boolean inColor = mode != null ? SHELLY_MODE_COLOR.equals(mode) : profile.inColor;
+        if (mode != null) {
+            params.mode = inColor ? SHELLY_RGBCCT_MODE_RGB : SHELLY_RGBCCT_MODE_CCT;
+        }
+        if (inColor) {
+            applyRgbParams(params, parameters);
+        } else {
+            applyCctParam(params, parameters);
+        }
+        if (params.on == null && params.brightness == null) {
+            params.on = true;
+        }
+        apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
+        if (mode != null) {
+            profile.inColor = inColor;
+            profile.device.mode = mode;
+        }
+    }
+
     @Override
     public void loraSendData(int index, String data) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
@@ -1359,12 +1381,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void setLightMode(String mode) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         if (profile.isDuo && profile.isRGBCCT) {
-            Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-            params.id = 0;
-            params.mode = SHELLY_MODE_COLOR.equals(mode) ? SHELLY_RGBCCT_MODE_RGB : SHELLY_RGBCCT_MODE_CCT;
-            apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
-            profile.inColor = SHELLY_MODE_COLOR.equals(mode);
-            profile.device.mode = mode;
+            setLightParms(0, Map.of(SHELLY_API_MODE, mode));
             return;
         }
         throw new ShellyApiException("API call not implemented");
