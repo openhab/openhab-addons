@@ -17,7 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Tracks consecutive failures of the notification poll and admits one running attempt at a time,
- * identified by a token. The retry delay doubles from {@link #MIN_INTERVAL} to {@link #MAX_INTERVAL}.
+ * identified by a token. The retry delay doubles from {@link #MIN_INTERVAL_SECONDS} to
+ * {@link #MAX_INTERVAL_SECONDS}.
  *
  * @author Martin Littkovsky - Initial contribution
  */
