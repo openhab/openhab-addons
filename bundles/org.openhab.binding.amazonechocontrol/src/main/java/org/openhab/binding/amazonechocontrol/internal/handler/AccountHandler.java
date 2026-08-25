@@ -133,13 +133,12 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private int lastMessageId = 1000;
     private long nextDataRefresh = 0;
     private long nextLoginCheck = 0;
-    // volatile: armed to 0 by notificationChannelLinked() from the thread that created the link
+    // volatile: armed from the thread that creates a link, read by the scheduler
     private volatile long nextRefreshNotifications = 0;
     private final NotificationPollBackoff notificationPollBackoff = new NotificationPollBackoff();
     // Held while a poll result is accepted as one step: validate the attempt, publish it, record the
     // next due time. Split apart, setConnection() lands in between and the replaced session wins.
     private final Object notificationCommit = new Object();
-    // set while polls are skipped for lack of linked channels, so the transition is logged once per suspension
     private volatile boolean notificationPollSuspended = false;
 
     private final LinkedBlockingQueue<String> requestedDeviceUpdates = new LinkedBlockingQueue<>();
@@ -441,8 +440,6 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             return;
         }
         if (!hasLinkedNotificationTargets()) {
-            // re-evaluated on every attempt, so echo handlers registering after the account handler
-            // started - the normal boot order - open the gate on the next attempt
             if (!notificationPollSuspended) {
                 notificationPollSuspended = true;
                 logger.debug("Skipping notification polls for {}: no echo thing has a notification channel linked",
@@ -533,19 +530,11 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         }
     }
 
-    /**
-     * @return {@code true} if at least one echo thing of this account has one of the channels fed by the
-     *         notification poll linked
-     */
     private boolean hasLinkedNotificationTargets() {
         return echoHandlers.values().stream().anyMatch(EchoHandler::hasLinkedNotificationChannel);
     }
 
-    /**
-     * Called by an echo handler when one of its notification channels got linked. Only arms the deadline
-     * for the next scheduler tick instead of polling: the core delivers channelLinked() synchronously on
-     * the thread that created the link, so no I/O may happen here.
-     */
+    /** Arms the next tick rather than polling: the core calls this on the linking thread, so no I/O here. */
     void notificationChannelLinked() {
         if (notificationPollSuspended) {
             nextRefreshNotifications = 0;
