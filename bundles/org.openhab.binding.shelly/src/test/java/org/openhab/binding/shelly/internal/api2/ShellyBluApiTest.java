@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -144,6 +145,63 @@ public class ShellyBluApiTest {
         verify(thingMock).postEvent("BTH_UNKNOWN_TYPE", false);
     }
 
+    @Test
+    void onNotifyEventDecodesRawBTHomePayloadFromScript() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        String rawDataPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 5, "ver": 2, "raw": "0005015502660803ae15"}}]}}
+                """;
+
+        api.onNotifyEvent(rawDataPacket);
+
+        ShellyStatusSensor sensorData = api.getSensorStatus();
+        assertThat("battery decoded from raw payload", sensorData.bat.value, is(equalTo(85.0)));
+        assertThat("temperature decoded from raw payload", sensorData.tmp.tC, is(equalTo(21.50)));
+        assertThat("humidity decoded from raw payload", sensorData.hum.value, is(equalTo(55.50)));
+    }
+
+    @Test
+    void onNotifyEventPostsAlarmForUnknownObjectTypeInRawPayload() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        String rawUnknownTypePacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "ver": 2, "raw": "0155fe"}}]}}
+                """;
+
+        api.onNotifyEvent(rawUnknownTypePacket);
+
+        verify(thingMock).postEvent("BTH_UNKNOWN_TYPE", false);
+    }
+
+    @Test
+    void onNotifyEventOverwritesRepeatedScalarObjectInsteadOfThrowing() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        String repeatedBatteryPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 9, "ver": 2, "raw": "0155014b"}}]}}
+                """;
+
+        assertDoesNotThrow(() -> api.onNotifyEvent(repeatedBatteryPacket));
+
+        ShellyStatusSensor sensorData = api.getSensorStatus();
+        assertThat("last Battery reading wins", sensorData.bat.value, is(equalTo(75.0)));
+    }
+
+    @Test
+    void missingDataVersionIsTrackedAsWarnedInsteadOfSilentlyIgnored() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        String packetWithoutVersion = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "raw": "0005015502660803ae15"}}]}}
+                """;
+
+        api.onNotifyEvent(packetWithoutVersion);
+
+        assertThat("missing version must still be recorded as warned", getField(api, "warnedDataVersionSet"), is(true));
+        assertThat(getField(api, "warnedDataVersion"), is(nullValue()));
+    }
+
     private ShellyBluApi buildBluApi() {
         return buildBluApi(THING_TYPE_SHELLYBLUBUTTON1);
     }
@@ -179,6 +237,12 @@ public class ShellyBluApiTest {
         Field f = target.getClass().getDeclaredField(fieldName);
         f.setAccessible(true);
         f.set(target, value);
+    }
+
+    private static @Nullable Object getField(Object target, String fieldName) throws Exception {
+        Field f = target.getClass().getDeclaredField(fieldName);
+        f.setAccessible(true);
+        return f.get(target);
     }
 
     private static NetworkAddressService nullNas() {

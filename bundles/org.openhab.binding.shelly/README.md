@@ -116,6 +116,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
+| shellyprorgbwwpm     | Shelly Pro RGBWW PM                                      | SPDC-0D5PE16EU                                                            |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
@@ -257,6 +258,11 @@ Follow these steps to add the Shelly BLU Device to openHAB:
   It will appear automatically once it is within range of a configured BLU gateway.
 
 Try moving the device to force status updates.
+
+#### Custom oh-blu-scanner.js
+
+The binding automatically manages the installation of `oh-blu-scanner.js` on the gateway device.
+See [Advanced Users](doc/AdvancedUsers.md) for how to change the script's log level (DEBUG/TRACE) or override the installed script for prototyping.
 
 Every time an event is received sensors#lastUpdate and channels are updated with the reported values.
 `device#wifiSignal` indicates the Bluetooth signal strength and gets updated when the device sends an event.
@@ -1736,6 +1742,71 @@ In `light` profile (white mode), each of the 4 LED output channels is exposed as
 | light3 |             |        |           | Same for LED channel 3                                                  |
 | light4 |             |        |           | Same for LED channel 4                                                  |
 | meter  |             |        |           | Same as color mode, see above                                           |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
+
+### Shelly Pro RGBWW PM (thing-type: shellyprorgbwwpm)
+
+The active device profile (`light`, `rgbcct`, `cctx2` or `rgbx2light`) is selected in the Shelly App/device settings and determines which channel groups below are populated.
+Changing the profile requires deleting and re-discovering the Thing.
+
+In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color component (color mode):
+
+| Group   | Channel       | Type     | read-only | Description                                                             |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
+| control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |
+| color   | hsb           | HSB      | r/w       | Represents the color picker (HSBType)                                   |
+|         | full          | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
+|         |               |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"    |
+|         |               |          | r/w       | "white" sets RGB to 255,255,255 (no separate white output)              |
+|         | red           | Dimmer   | r/w       | Red brightness: 0..100% (control only the red channel)                  |
+|         | green         | Dimmer   | r/w       | Green brightness: 0..100% (control only the green channel)              |
+|         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% (control only the blue channel)                |
+| meter1  | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
+|         | energyAvg1Min | Number   | yes       | Energy consumed in the previous minute (Wh)                             |
+|         | totalEnergy   | Number   | yes       | Total energy consumption in kWh                                         |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                       |
+
+`Note`:
+`rgbcct` and `rgbx2light` combine the RGB component above with additional CCT (`rgbcct`) or Light
+(`rgbx2light`) components. Each additional component is exposed as its own `light1`/`light2` group
+(same layout as the `light` profile below) with its own independent meter (`meter2`/`meter3`).
+Since every profile has more than one meter, the device also gets the aggregated `device#accumulatedPower`/`device#totalEnergy` channels described in the general notes on channels above.
+
+In `light` profile (white mode), each of the 5 LED output channels is exposed as its own group:
+
+| Group  | Channel     | Type   | read-only | Description                                                             |
+| ------ | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| light1 | brightness  | Dimmer | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
+|        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| light2 |             |        |           | Same for LED channel 2                                                  |
+| light3 |             |        |           | Same for LED channel 3                                                  |
+| light4 |             |        |           | Same for LED channel 4                                                  |
+| light5 |             |        |           | Same for LED channel 5                                                  |
+| meter1 |             |        |           | Meter for LED channel 1, see meter group in color mode above            |
+| meter2 |             |        |           | Meter for LED channel 2 (if configured)                                 |
+| meter3 |             |        |           | Meter for LED channel 3 (if configured)                                 |
+| meter4 |             |        |           | Meter for LED channel 4 (if configured)                                 |
+| meter5 |             |        |           | Meter for LED channel 5 (if configured)                                 |
+
+In `cctx2` profile (dual color-temperature mode), the device exposes two independent CCT components (`CCT:0` and `CCT:1`), each controlling its own warm/cold white pair; they are each exposed as their own channel group, with its own independent meter:
+
+| Group  | Channel     | Type   | read-only | Description                                                             |
+| ------ | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| light1 | brightness  | Dimmer | r/w       | CCT channel 1: Brightness: 0..100, control power state with ON/OFF      |
+|        | colorTemp   | Dimmer | r/w       | CCT channel 1: Color temperature: 0..100% (2700K..6500K)                |
+|        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| light2 |             |        |           | Same for CCT channel 2                                                  |
+| meter1 |             |        |           | Meter for CCT channel 1 (light1), see meter group above                 |
+| meter2 |             |        |           | Meter for CCT channel 2 (light2), see meter group above                 |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version

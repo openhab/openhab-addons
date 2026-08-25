@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -49,6 +50,7 @@ import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
 import org.openhab.binding.mqtt.generic.values.LocationValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
+import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -121,18 +123,18 @@ public class ChannelStateTests {
         verify(connectionMock).subscribe(eq("state"), eq(c));
 
         c.publishValue(new StringType("UPDATE")).get();
-        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "UPDATE".getBytes())), anyInt(),
-                eq(false));
+        verify(connectionMock).publish(eq("command"),
+                argThat(p -> Arrays.equals(p, "UPDATE".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
 
         c.config.formatBeforePublish = "prefix%s";
         c.publishValue(new StringType("UPDATE")).get();
-        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "prefixUPDATE".getBytes())),
-                anyInt(), eq(false));
+        verify(connectionMock).publish(eq("command"),
+                argThat(p -> Arrays.equals(p, "prefixUPDATE".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
 
         c.config.formatBeforePublish = "%1$s-%1$s";
         c.publishValue(new StringType("UPDATE")).get();
-        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "UPDATE-UPDATE".getBytes())),
-                anyInt(), eq(false));
+        verify(connectionMock).publish(eq("command"),
+                argThat(p -> Arrays.equals(p, "UPDATE-UPDATE".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
 
         c.config.formatBeforePublish = "%s";
         c.config.retained = true;
@@ -153,8 +155,8 @@ public class ChannelStateTests {
         verify(connectionMock).subscribe(eq("state"), eq(c));
 
         c.publishValue(StopMoveType.STOP).get();
-        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "STOP".getBytes())), anyInt(),
-                eq(false));
+        verify(connectionMock).publish(eq("command"),
+                argThat(p -> Arrays.equals(p, "STOP".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
 
         c.stop().get();
         verify(connectionMock).unsubscribe(eq("state"), eq(c));
@@ -171,8 +173,8 @@ public class ChannelStateTests {
         verify(connectionMock).subscribe(eq("state"), eq(c));
 
         c.publishValue(StopMoveType.STOP).get();
-        verify(connectionMock).publish(eq("stopCommand"), argThat(p -> Arrays.equals(p, "STOP".getBytes())), anyInt(),
-                eq(false));
+        verify(connectionMock).publish(eq("stopCommand"),
+                argThat(p -> Arrays.equals(p, "STOP".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
 
         c.stop().get();
         verify(connectionMock).unsubscribe(eq("state"), eq(c));
@@ -184,7 +186,7 @@ public class ChannelStateTests {
                 channelUIDMock, textValue, channelStateUpdateListenerMock));
 
         CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
-        c.processMessage("state/bla/topic", "A TEST".getBytes());
+        c.processMessage("state/bla/topic", "A TEST".getBytes(StandardCharsets.UTF_8));
         future.get(300, TimeUnit.MILLISECONDS);
 
         assertThat(textValue.getChannelState().toString(), is("A TEST"));
@@ -196,11 +198,25 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
 
         CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
-        c.processMessage("state", "A TEST".getBytes());
+        c.processMessage("state", "A TEST".getBytes(StandardCharsets.UTF_8));
         future.get(300, TimeUnit.MILLISECONDS);
 
         assertThat(textValue.getChannelState().toString(), is("A TEST"));
         verify(channelStateUpdateListenerMock).updateChannelState(eq(channelUIDMock), any());
+    }
+
+    @Test
+    public void typedTriggerOnlyEmitsEventsForValidValues() {
+        ChannelConfig triggerConfig = ChannelConfigBuilder.create("state", "").makeTrigger(true).build();
+        ChannelState channelState = new ChannelState(triggerConfig, channelUIDMock, new OnOffValue("ON", "OFF"),
+                channelStateUpdateListenerMock);
+
+        channelState.processMessage("state", "ON".getBytes(StandardCharsets.UTF_8));
+        channelState.processMessage("state", "INVALID".getBytes(StandardCharsets.UTF_8));
+
+        verify(channelStateUpdateListenerMock).triggerChannel(channelUIDMock, "ON");
+        verify(channelStateUpdateListenerMock, times(1)).triggerChannel(any(), any());
+        verify(channelStateUpdateListenerMock, never()).updateChannelState(any(), any());
     }
 
     @Test
@@ -209,13 +225,13 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        c.processMessage("state", "15".getBytes());
+        c.processMessage("state", "15".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("15"));
 
-        c.processMessage("state", "INCREASE".getBytes());
+        c.processMessage("state", "INCREASE".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("25"));
 
-        c.processMessage("state", "DECREASE".getBytes());
+        c.processMessage("state", "DECREASE".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("15"));
 
         verify(channelStateUpdateListenerMock, times(3)).updateChannelState(eq(channelUIDMock), any());
@@ -227,10 +243,10 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        c.processMessage("state", "5.5".getBytes());
+        c.processMessage("state", "5.5".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("5.5"));
 
-        c.processMessage("state", "INCREASE".getBytes());
+        c.processMessage("state", "INCREASE".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("16.0"));
     }
 
@@ -240,13 +256,13 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        c.processMessage("state", "15".getBytes());
+        c.processMessage("state", "15".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("15 W"));
 
-        c.processMessage("state", "INCREASE".getBytes());
+        c.processMessage("state", "INCREASE".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("25 W"));
 
-        c.processMessage("state", "DECREASE".getBytes());
+        c.processMessage("state", "DECREASE".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("15 W"));
 
         verify(channelStateUpdateListenerMock, times(3)).updateChannelState(eq(channelUIDMock), any());
@@ -258,7 +274,7 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        c.processMessage("state", "63.7".getBytes());
+        c.processMessage("state", "63.7".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("63.7 %"));
 
         verify(channelStateUpdateListenerMock, times(1)).updateChannelState(eq(channelUIDMock), any());
@@ -271,16 +287,16 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        c.processMessage("state", "-100".getBytes()); // 0%
+        c.processMessage("state", "-100".getBytes(StandardCharsets.UTF_8)); // 0%
         assertThat(value.getChannelState().toString(), is("0"));
 
-        c.processMessage("state", "100".getBytes()); // 100%
+        c.processMessage("state", "100".getBytes(StandardCharsets.UTF_8)); // 100%
         assertThat(value.getChannelState().toString(), is("100"));
 
-        c.processMessage("state", "0".getBytes()); // 50%
+        c.processMessage("state", "0".getBytes(StandardCharsets.UTF_8)); // 50%
         assertThat(value.getChannelState().toString(), is("50"));
 
-        c.processMessage("state", "INCREASE".getBytes());
+        c.processMessage("state", "INCREASE".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("55"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("10"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%03.0f"), is("010"));
@@ -292,21 +308,21 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        c.processMessage("state", "ON".getBytes()); // Normal on state
+        c.processMessage("state", "ON".getBytes(StandardCharsets.UTF_8)); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("26,26,26"));
 
-        c.processMessage("state", "FOFF".getBytes()); // Custom off state
+        c.processMessage("state", "FOFF".getBytes(StandardCharsets.UTF_8)); // Custom off state
         assertThat(value.getChannelState().toString(), is("0,0,0"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0,0,0"));
 
-        c.processMessage("state", "10".getBytes()); // Brightness only
+        c.processMessage("state", "10".getBytes(StandardCharsets.UTF_8)); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("26,26,26"));
 
         HSBType t = HSBType.fromRGB(12, 18, 231);
 
-        c.processMessage("state", "12,18,231".getBytes());
+        c.processMessage("state", "12,18,231".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState(), is(t)); // HSB
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("12,18,231"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$d,%2$d,%1$d"), is("231,18,12"));
@@ -318,19 +334,19 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        c.processMessage("state", "ON".getBytes()); // Normal on state
+        c.processMessage("state", "ON".getBytes(StandardCharsets.UTF_8)); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0,0,10"));
 
-        c.processMessage("state", "FOFF".getBytes()); // Custom off state
+        c.processMessage("state", "FOFF".getBytes(StandardCharsets.UTF_8)); // Custom off state
         assertThat(value.getChannelState().toString(), is("0,0,0"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0,0,0"));
 
-        c.processMessage("state", "10".getBytes()); // Brightness only
+        c.processMessage("state", "10".getBytes(StandardCharsets.UTF_8)); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0,0,10"));
 
-        c.processMessage("state", "12,18,100".getBytes());
+        c.processMessage("state", "12,18,100".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("12,18,100"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("12,18,100"));
     }
@@ -342,18 +358,18 @@ public class ChannelStateTests {
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         // incoming messages
-        c.processMessage("state", "ON".getBytes()); // Normal on state
+        c.processMessage("state", "ON".getBytes(StandardCharsets.UTF_8)); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
 
-        c.processMessage("state", "FOFF".getBytes()); // Custom off state
+        c.processMessage("state", "FOFF".getBytes(StandardCharsets.UTF_8)); // Custom off state
         // note we don't care what color value is currently stored, just that brightness is off
         assertThat(((HSBType) value.getChannelState()).getBrightness(), is(PercentType.ZERO));
 
-        c.processMessage("state", "10".getBytes()); // Brightness only
+        c.processMessage("state", "10".getBytes(StandardCharsets.UTF_8)); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
 
         HSBType t = ColorUtil.xyToHsb(new double[] { 0.3f, 0.6f });
-        c.processMessage("state", "0.3,0.6,100".getBytes());
+        c.processMessage("state", "0.3,0.6,100".getBytes(StandardCharsets.UTF_8));
         assertTrue(((HSBType) value.getChannelState()).closeTo(t, 0.001)); // HSB
 
         // outgoing messages
@@ -382,7 +398,7 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
-        c.processMessage("state", "46.833974, 7.108433".getBytes());
+        c.processMessage("state", "46.833974, 7.108433".getBytes(StandardCharsets.UTF_8));
         assertThat(value.getChannelState().toString(), is("46.833974,7.108433"));
         assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("46.833974,7.108433"));
     }
@@ -396,7 +412,7 @@ public class ChannelStateTests {
         ZonedDateTime zd = ZonedDateTime.now();
         String datetime = zd.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-        subject.processMessage("state", datetime.getBytes());
+        subject.processMessage("state", datetime.getBytes(StandardCharsets.UTF_8));
 
         String channelState = value.getChannelState().toString();
         assertTrue(channelState.startsWith(datetime),
@@ -406,14 +422,17 @@ public class ChannelStateTests {
 
     @Test
     public void receiveImageTest() {
+        ChannelConfig triggerConfig = ChannelConfigBuilder.create("state", "").makeTrigger(true).build();
         ImageValue value = new ImageValue();
-        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+        ChannelState c = spy(new ChannelState(triggerConfig, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
         byte[] payload = { (byte) 0xFF, (byte) 0xD8, 0x01, 0x02, (byte) 0xFF, (byte) 0xD9 };
         c.processMessage("state", payload);
         assertThat(value.getChannelState(), is(instanceOf(RawType.class)));
         assertThat(((RawType) value.getChannelState()).getMimeType(), is("image/jpeg"));
+        verify(channelStateUpdateListenerMock).updateChannelState(channelUIDMock, value.getChannelState());
+        verify(channelStateUpdateListenerMock, never()).triggerChannel(any(), any());
     }
 
     @Nested
@@ -461,7 +480,7 @@ public class ChannelStateTests {
             ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
 
             CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
-            c.processMessage("state", T1_INPUT.getBytes());
+            c.processMessage("state", T1_INPUT.getBytes(StandardCharsets.UTF_8));
             future.get(300, TimeUnit.MILLISECONDS);
 
             assertThat(textValue.getChannelState().toString(), is(T1_RESULT));
@@ -476,7 +495,7 @@ public class ChannelStateTests {
 
             // First, test with an input that doesn't get transformed to null
             CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
-            c.processMessage("state", T1_INPUT.getBytes());
+            c.processMessage("state", T1_INPUT.getBytes(StandardCharsets.UTF_8));
             future.get(300, TimeUnit.MILLISECONDS);
 
             assertThat(textValue.getChannelState().toString(), is(T1_RESULT));
@@ -486,7 +505,7 @@ public class ChannelStateTests {
 
             // now test with an input that gets transformed to null
             future = c.start(connectionMock, scheduler, 100);
-            c.processMessage("state", NULL_INPUT.getBytes());
+            c.processMessage("state", NULL_INPUT.getBytes(StandardCharsets.UTF_8));
             future.get(300, TimeUnit.MILLISECONDS);
 
             // textValue should not have been updated
@@ -504,8 +523,8 @@ public class ChannelStateTests {
             verify(connectionMock).subscribe(eq("state"), eq(c));
 
             c.publishValue(new StringType(T1_INPUT)).get();
-            verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, T1_RESULT.getBytes())),
-                    anyInt(), eq(false));
+            verify(connectionMock).publish(eq("command"),
+                    argThat(p -> Arrays.equals(p, T1_RESULT.getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
         }
     }
 }

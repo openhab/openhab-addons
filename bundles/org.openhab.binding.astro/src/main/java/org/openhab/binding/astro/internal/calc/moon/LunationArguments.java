@@ -54,7 +54,8 @@ public class LunationArguments {
         this.f = 160.7108 + 390.67050274 * kMod - 0.0016341 * t2 - 0.00000227 * t3 + 0.000000011 * t4;
         this.o = 124.7746 - 1.5637558 * kMod + 0.0020691 * t2 + 0.00000215 * t3;
         this.e = 1 - 0.002516 * t - 0.0000074 * t2;
-        this.jde = 2451550.09765 + 29.530588853 * kMod + 0.0001337 * t2 - 0.00000015 * t3 + 0.00000000073 * t4;
+        this.jde = 2451550.09765 + AstroConstants.LUNAR_SYNODIC_MONTH_DAYS * kMod + 0.0001337 * t2 - 0.00000015 * t3
+                + 0.00000000073 * t4;
     }
 
     public static double varK(double jd, double tz) {

@@ -2,13 +2,17 @@
 
 Variables allow you to define reusable values and substitute them throughout your YAML configuration.
 They provide the flexibility needed for complex templates and reduce hard-coded values.
-These variables work consistently across both the current file and any included packages.
+These variables work consistently across the current file, included files, templates, and packages.
 
 [[toc]]
 
 ## Variable Definition
 
-Variables are defined within a top-level `variables:` section.
+Variables can be defined either globally using a top-level `variables:` block or inline anywhere in a document using the `!var` directive tag.
+
+### Top-Level `variables:` Block
+
+The `variables:` section defines variables at the root level.
 It is recommended to place this section at the beginning of the file for better organization.
 
 **Example:**
@@ -28,6 +32,45 @@ variables:
     - Kitchen
     - Bedroom
 ```
+
+### Inline `!var` Directives
+
+The `!var` directive declares or reassigns variables **inline at the key level** within a mapping.
+Each directive updates the local variable scope immediately and produces **no output key** in the final composed structure.
+
+Variables defined this way are **local to the current mapping node** and automatically propagate to all of its descendants.
+
+#### `!var` Syntax
+
+Declare a variable using the key‑level form:
+
+```yaml
+!var name: value
+```
+
+Multiple `!var` directives may appear sequentially. Later directives may reference variables defined earlier in the same mapping.
+
+```yaml
+!var host: "localhost"
+!var port: 8080
+!var base_url: "http://${host}:${port}"
+!var api_url: "${base_url}/v1"
+
+endpoint: "${api_url}/users"
+```
+
+**Result:**
+
+```yaml
+endpoint: "http://localhost:8080/v1/users"
+```
+
+::: tip Position dependence and usage
+The top‑level `variables:` block is position independent (its variables are visible everywhere).
+Inline `!var` directives are position dependent: they take effect where they appear and only affect subsequent entries in the same mapping node and its descendants.
+`!var` can be used to **define new local variables** or to **override** existing ones.
+See [Variable Scoping and Isolation](#variable-scoping-and-isolation) for more info.
+:::
 
 ## Variable Substitution
 
@@ -177,6 +220,8 @@ effective_groups: ${ groups + location }
 # Result: [Group1, Group2, SemanticLocationGroup]
 ```
 
+## Filters
+
 ### Built-in Filters
 
 Filters are applied using the `variable|filter` syntax and can be chained.
@@ -221,10 +266,11 @@ label: ${room_label | default('Kitchen')}
 
 ### Custom Filters
 
-| Filter  | Description                                                                         |
-|:--------|:------------------------------------------------------------------------------------|
-| `label` | Converts identifiers (camelCase, snake_case) into human-friendly titles.            |
-| `dig`   | Safely navigates deep maps; returns `null` instead of an error if a key is missing. |
+| Filter      | Description                                                                         |
+|:------------|:------------------------------------------------------------------------------------|
+| `label`     | Converts identifiers (camelCase, snake_case) into human-friendly titles.            |
+| `dig`       | Safely navigates deep maps; returns `null` instead of an error if a key is missing. |
+| `enumerate` | Maps collections, arrays, or maps into an indexed list of `[index, item]` pairs.    |
 
 **`dig` Example:**
 
@@ -234,7 +280,194 @@ user: ${ infrastructure | dig('config.login.user') }
 host: ${ VARS | dig('config', 'servers', 1, 'host') | default('localhost') }
 ```
 
-## Advanced Usage
+**`enumerate` Example:**
+
+The `enumerate` filter and function map any collection, array, or map into a list of index-item pairs, making them fully compatible with `!for` loops and tuple unpacking.
+
+```yaml
+variables:
+  items: ["alpha", "beta", "gamma"]
+  mapping:
+    alpha: "one"
+    beta: "two"
+
+# Using the filter syntax with a !for loop
+devices:
+  !for "index, item in items | enumerate":
+    "dev_${index}": "${item}"
+
+# Using the function syntax with a !for loop
+items_mapped:
+  !for "index, item in enumerate(items)":
+    "item_${index}": "${item}"
+
+# Enumerating maps yields index and Map.Entry pairs (.key and .value)
+map_results:
+  !for "idx, entry in enumerate(mapping)":
+    "item_${idx}_${entry.key}": "${entry.value}"
+```
+
+## Functions
+
+Expressions support both built-in functions and custom functions to generate sequences, handle iterations, and transform data.
+
+### Built-in Functions
+
+#### `range()`
+
+**Syntax:**
+
+**`range([start,] stop[, step])`**: Generates a sequence of integers. It supports single-argument bounds (stop), start/stop bounds, and custom positive or negative steps.
+
+**Example:**
+
+`${range(3)}` produces `[0, 1, 2]`
+
+#### Ruby-Style Range Syntax
+
+The Composer also supports Ruby-style range literals inside `${...}` expressions.
+
+Ruby defines two range operators:
+
+- `..` — **inclusive** range
+- `...` — **exclusive** range (stop value is not included)
+
+These behave the same way inside Composer expressions.
+
+```yaml
+${[0..2]}    # Inclusive: [0, 1, 2]
+${[0...2]}   # Exclusive: [0, 1]
+```
+
+Both forms produce a real Java `List` when used as a standalone expression, following the same type‑preservation rules described above.
+
+This syntax is equivalent to calling `range()`:
+
+```yaml
+${range(0, 3)}   # Same as [0..2]
+${range(0, 2)}   # Same as [0...2]
+```
+
+Use whichever form is clearer for your template.
+
+### Custom Functions
+
+#### `enumerate()`
+
+**Syntax:**
+
+**`enumerate(target)`**: Maps collections, arrays, or maps into a list of indexed `[index, item]` pairs. When used with maps, it yields entry objects supporting `.key` and `.value` accessors.
+
+**Example:**
+
+```yaml
+variables:
+  items: ["alpha", "beta", "gamma"]
+  mapping:
+    alpha: "one"
+    beta: "two"
+
+# Using the enumerate filter
+enumerated_list: ${items | enumerate}
+# Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
+
+# Using the enumerate function
+enumerated_list_func: ${enumerate(items)}
+# Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
+
+# Enumerating maps yields indexed Map.Entry objects.
+# Each entry wraps the original key-value pair and provides explicit
+# property accessors: .key (for the map key) and .value (for the map value).
+enumerated_map: ${enumerate(mapping)}
+# Result Structure: [[0, alpha=one], [1, beta=two]]
+#
+# Accessing properties from a specific index (e.g., the first item):
+#   - Key access:   ${enumerated_map[0][1].key}   -> "alpha"
+#   - Value access: ${enumerated_map[0][1].value} -> "one"
+```
+
+## Advanced Topics
+
+### Variable Scoping and Isolation
+
+Variable scoping in YAML Composer follows a strict combination of **sequential evaluation**, **lexical mapping‑node boundaries**, and **downstream inheritance**. The two declaration mechanisms — the top‑level `variables:` block (global scope) and inline `!var` directives (local scope) — participate in the same unified scoping model. This section explains how they interact and lists the concrete rules you must follow.
+
+#### Global vs Local: how `variables:` and `!var` interact
+
+- **Global variables (`variables:` block)**
+  - Define the **initial scope** for the entire file.
+  - Are visible everywhere in the file, including included files, templates, and loops, regardless of where the `variables:` block appears in the document (i.e., `variables:` is position independent).
+  - Are evaluated as part of the file composition and act as the root values that inline `!var` directives may override locally.
+  - **Cannot** override system variables (e.g., `OPENHAB_CONF`, `__FILE__`, etc.).
+
+- **Inline variables (`!var` directives)**
+  - Declare or reassign variables **inline at the key level** within a mapping.
+  - Update the local variable scope immediately and produce **no output key** in the final composed structure.
+  - Are **local to the mapping node** in which they appear and automatically propagate to that node’s descendants.
+  - Override global variables for that mapping and its descendants but do **not** change the `variables:` block itself.
+  - Are **position dependent**: a `!var` only affects entries that appear **after** it in the same mapping node. A `!var` placed at the root mapping behaves like a global override **from the point it appears onward** but does not retroactively change values already evaluated earlier in the file.
+
+**Practical summary:** treat `variables:` as the file’s initial defaults (position independent) and `!var` as local, sequential declarations that take effect at the point they are evaluated (position dependent).
+A `!var` may either **define a new local variable** or **override** an existing one; when a `!var` appears at the root mapping it behaves like a global override only for entries processed after it appears and does not retroactively change values already evaluated earlier in the file.
+
+#### Core rules for `!var`
+
+##### 1. Sequential Evaluation (Order Matters)
+
+`!var` directives apply **immediately** and affect all subsequent keys, values, and nested mappings **within the same mapping node**.
+
+- Earlier entries cannot see variables declared later.
+- Reassigning a variable updates its value only for entries that appear after the reassignment.
+- Reassignments evaluate expressions using the **current** scope value.
+
+```yaml
+!var mode: "dev"
+first: "${mode}"     # "dev"
+
+!var mode: "prod"
+second: "${mode}"    # "prod"
+```
+
+##### 2. Mapping‑Node Boundaries (Lexical Scope)
+
+Each mapping node defines a scope.
+
+- Child mappings **inherit** all variables visible at the moment they are created.
+- Variables declared **inside** a child mapping:
+  - apply only to that child and its descendants,
+  - do **not** propagate back to the parent,
+  - do **not** leak sideways into sibling mappings.
+
+**Diagram:**
+
+```text
+parent-map:
+├─ !var a: 1              ← defines `a` in this mapping
+├─ key1: ${a}             ← sees `a`
+│
+├─ child-map:             ← new mapping node (inherits `a`)
+│   ├─ key2: ${a}         ← sees `a` but not `b`
+│   │                       (because `b` is declared *after* this entry)
+│   ├─ !var b: 2          ← defines `b` only in this child mapping
+│   └─ key3: ${b}         ← sees `b` (same mapping node, declared earlier)
+│
+└─ key4: ${a}             ← sees `a` but not `b`
+                           (because `b` was declared inside child-map)
+```
+
+##### 3. List Context Restriction
+
+`!var` is valid **only inside mapping nodes**.
+
+If used inside a list item:
+
+```yaml
+- !var foo: bar
+```
+
+the list item becomes a mapping containing the directive.
+
+If the list item must remain a scalar, declare the variable in the parent mapping instead.
 
 ### Predefined Variables
 
@@ -251,6 +484,10 @@ These variables can be interpolated just like regular ones and are helpful when 
 | `__DIRECTORY__`    | Directory portion of the current file.                                  |
 | `__DIR__`          | Alias for `__DIRECTORY__`.                                              |
 | `package_id`       | Automatically resolved to the Package ID within included package files. |
+
+::: warning System Variable Protection
+System variables (`OPENHAB_CONF`, `__FILE__`, etc.) cannot be overridden or redefined by `!var` directives or `variables:` blocks. Attempting to redefine a system variable logs a warning and leaves the system value intact.
+:::
 
 ### Handling Reserved Keywords
 
@@ -305,8 +542,8 @@ foo: !sub:jinja "Hello {{ username }}!"
 
 ## Common Pitfalls
 
-1. **Unquoted Operators**: Expressions containing YAML‑significant characters such as `:` or `?` must be quoted; otherwise YAML interprets those characters as structural syntax and rejects the value
-1. **Reserved Names**: Avoid naming variables using keywords like `true`, `false`, `null`, `in`, or `if`.
+1. **Unquoted Operators**: Expressions containing YAML‑significant characters such as `:` or `?` must be quoted; otherwise YAML interprets those characters as structural syntax and rejects the value.
+1. **Reserved Names & System Variables**: System variables (`OPENHAB_CONF`, `__FILE__`, etc.) and Jinja keywords (`true`, `false`, `null`, `in`, `if`) cannot be overwritten.
 1. **`+` vs `~`**: Use `~` for strings to avoid type mismatch errors and use `+` for numbers or lists.
 1. **Jinja Blocks**: Block‑level Jinja constructs (e.g., `{% for %}`) are not supported. Use YAMLComposer’s own control‑flow tags, such as `!if`/`!elseif`/`!else` and `!for`.
 1. **Whitespace Sensitivity**: Spaces outside of quotes inside `${ ... }` are ignored, but spaces in quoted strings are preserved.

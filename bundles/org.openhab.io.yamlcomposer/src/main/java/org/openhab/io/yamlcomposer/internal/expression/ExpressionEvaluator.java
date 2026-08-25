@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.LogSession;
 import org.openhab.io.yamlcomposer.internal.expression.filters.DigFilter;
+import org.openhab.io.yamlcomposer.internal.expression.filters.EnumerateFilter;
 import org.openhab.io.yamlcomposer.internal.expression.filters.LabelFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import com.hubspot.jinjava.features.FeatureStrategies;
 import com.hubspot.jinjava.interpret.Context;
 import com.hubspot.jinjava.interpret.JinjavaInterpreter;
 import com.hubspot.jinjava.interpret.TemplateError;
+import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.hubspot.jinjava.util.ObjectTruthValue;
 
 /**
@@ -60,6 +62,10 @@ public class ExpressionEvaluator {
         Context context = JINJAVA.getGlobalContext();
         context.registerFilter(new LabelFilter());
         context.registerFilter(new DigFilter());
+        context.registerFilter(new EnumerateFilter());
+
+        context.registerFunction(
+                new ELFunctionDefinition("", "enumerate", EnumerateFilter.class, "staticEnumerate", Object.class));
     }
 
     /**
@@ -71,12 +77,19 @@ public class ExpressionEvaluator {
      */
     public static @Nullable Object renderObject(String expression, Map<String, @Nullable Object> variables,
             LogSession logSession, String sourceLocation) {
+
+        // Transform Ruby-style ranges ([1..5] / [1...5]) into Jinjava-compatible range() calls
+        String transformedExpression = RangeExpressionTransformer.transform(expression);
+
         @SuppressWarnings("null")
         Context context = new Context(JINJAVA.getGlobalContext(), variables);
         context.setDynamicVariableResolver(varName -> dynamicVariableResolver(varName, variables));
         JinjavaInterpreter interpreter = new JinjavaInterpreter(JINJAVA, context, CONFIG);
 
-        Object result = interpreter.resolveELExpression(expression, 0);
+        Object result;
+        try (var scope = JinjavaInterpreter.closeablePushCurrent(interpreter).get()) {
+            result = interpreter.resolveELExpression(transformedExpression, 0);
+        }
 
         @SuppressWarnings("null")
         List<TemplateError> errors = interpreter.getErrorsCopy();

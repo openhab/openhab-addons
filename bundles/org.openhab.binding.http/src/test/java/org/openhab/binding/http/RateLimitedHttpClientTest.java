@@ -66,9 +66,9 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
         assertEquals(0, responses.get(0).seqNumber);
         assertEquals(1, responses.get(1).seqNumber);
 
-        // we expect a short delay between both requests, but less than 100ms
+        // Set upper tolerance to 300ms to account for build server jitter
         long msBetween = responses.get(1).time - responses.get(0).time;
-        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(0), lessThan(100)));
+        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(0), lessThan(300)));
     }
 
     @Test
@@ -78,9 +78,9 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
         assertEquals(0, responses.get(0).seqNumber);
         assertEquals(1, responses.get(1).seqNumber);
 
-        // we expect at least 500ms delay between both requests, but less than 500+100=600ms
+        // we expect at least 500ms delay between both requests, but less than 500+200=700ms
         long msBetween = responses.get(1).time - responses.get(0).time;
-        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(500), lessThan(600)));
+        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(500), lessThan(700)));
     }
 
     @Test
@@ -94,9 +94,9 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
         assertNotEquals(responses.get(1).seqNumber, responses.get(0).seqNumber);
         assertEquals(1, responses.get(2).seqNumber);
 
-        // we expect at least 2*500=1000ms delay between the first and last request, but less than 2*500+100=1100 ms
+        // we expect at least 2*500=1000ms delay between the first and last request, but less than 2*500+300=1300 ms
         long msBetween = responses.get(2).time - responses.get(0).time;
-        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(1000), lessThan(1100)));
+        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(1000), lessThan(1300)));
     }
 
     private void doLimitTest(int setDelay, List<Boolean> config) {

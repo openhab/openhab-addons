@@ -280,6 +280,9 @@ public class ShellyBindingConstants {
     public static final String SHELLY_API_FW_110 = "v1.10"; // FW 1.10 or newer detected, activates some add feature
     public static final String SHELLY2_API_MIN_FWVERSION = "v0.10.1"; // Gen 2 minimum FW
 
+    // Unprefixed (unlike the "v"-prefixed Gen1 constants above) to match Gen2+ profile.fwVersion (e.g. "1.2.3")
+    public static final String SHELLY2_API_FW_BLEAUTOSCAN = "2.0"; // FW 2.0+: BLE.SetConfig enable flag removed
+
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
     public static final String ALARM_TYPE_RESTARTED = "RESTARTED";

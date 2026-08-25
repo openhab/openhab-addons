@@ -308,6 +308,5 @@ Before considering a change complete:
 When creating a pull request, read and follow `.github/PULL_REQUEST_TEMPLATE.md` for the repository's current PR requirements.
 
 - Treat HTML-commented template text as instructions and write visible Markdown that addresses the applicable requirements; do not copy the comment delimiters or leave the PR description hidden inside an HTML comment.
-- The template's guidance about linking to automatically generated pull-request build artifacts is currently outdated; do not add such artifact links.
 - Before creating or updating a pull request, verify that its title and description still match the current diff and scope, especially after follow-up changes.
 - Treat the template as the source of truth for the remaining pull-request requirements rather than duplicating them here.
