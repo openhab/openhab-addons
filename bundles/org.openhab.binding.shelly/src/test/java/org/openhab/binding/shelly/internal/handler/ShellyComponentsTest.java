@@ -40,7 +40,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurre
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
@@ -54,6 +53,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -845,15 +845,21 @@ public class ShellyComponentsTest {
         handler.addLightModel(0, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
         handler.addLightModel(1, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
 
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        ShellySettingsLight colorLight = new ShellySettingsLight(); // settings.lights[0], the "rgb" color slot
-        ShellySettingsLight cctLight = new ShellySettingsLight(); // settings.lights[1], the "cct" secondary slot
-        cctLight.ison = true;
-        cctLight.brightness = 42;
-        cctLight.temp = 4000;
-        status.lights = new ArrayList<>(List.of(colorLight, cctLight));
+        // ShellySettingsStatus status = new ShellySettingsStatus();
+        // ShellySettingsLight colorLight = new ShellySettingsLight(); // settings.lights[0], the "rgb" color slot
+        // ShellySettingsLight cctLight = new ShellySettingsLight(); // settings.lights[1], the "cct" secondary slot
+        // cctLight.ison = true;
+        // cctLight.brightness = 42;
+        // cctLight.temp = 4000;
+        // status.lights = new ArrayList<>(List.of(colorLight, cctLight));
 
-        boolean updated = ShellyComponents.updateLightMode(handler, status);
+        Shelly2DeviceStatusLight value = new Shelly2DeviceStatusLight();
+        value.id = 0;
+        value.output = true;
+        value.brightness = 42.0;
+        value.ct = 4000;
+
+        boolean updated = ShellyComponents.updateLightMode(value, handler);
         Map<String, State> updates = handler.getChannelUpdates();
 
         int ctPercent = kelvinToMirekPercent(2700, 6500, 4000);
@@ -887,15 +893,21 @@ public class ShellyComponentsTest {
         handler.addLightModel(0, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
         handler.addLightModel(1, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
 
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        ShellySettingsLight colorLight = new ShellySettingsLight();
-        ShellySettingsLight cctLight = new ShellySettingsLight();
-        cctLight.ison = true;
-        cctLight.brightness = 42;
-        cctLight.temp = 4500;
-        status.lights = new ArrayList<>(List.of(colorLight, cctLight));
+        // ShellySettingsStatus status = new ShellySettingsStatus();
+        // ShellySettingsLight colorLight = new ShellySettingsLight();
+        // ShellySettingsLight cctLight = new ShellySettingsLight();
+        // cctLight.ison = true;
+        // cctLight.brightness = 42;
+        // cctLight.temp = 4500;
+        // status.lights = new ArrayList<>(List.of(colorLight, cctLight));
 
-        boolean updated = ShellyComponents.updateLightMode(handler, status);
+        Shelly2DeviceStatusLight value = new Shelly2DeviceStatusLight();
+        value.id = 0;
+        value.output = true;
+        value.brightness = 42.0;
+        value.ct = 4500;
+
+        boolean updated = ShellyComponents.updateLightMode(value, handler);
         Map<String, State> updates = handler.getChannelUpdates();
 
         int ctPercent = kelvinToMirekPercent(3000, 6000, 4500);

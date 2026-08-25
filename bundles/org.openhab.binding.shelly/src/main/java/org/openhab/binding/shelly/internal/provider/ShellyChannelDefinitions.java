@@ -557,6 +557,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
             addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
+            // TODO an RGBW2 in RGBxx mode needs a channel for the gain of rgb:0
 
             if (idx == 0 && (profile.hasColorTag(0) || profile.isBulb || profile.isDuo
                     || (profile.isRGBW2 && profile.inColor))) {

@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.measure.MetricPrefix;
 import javax.measure.Unit;
@@ -31,7 +32,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
@@ -49,6 +49,8 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -856,28 +858,38 @@ public class ShellyComponents {
         return updated;
     }
 
-    public static boolean updateRGBW(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+    public static boolean updateRGBW(@Nullable Shelly2RGBWStatus value, ShellyThingInterface thingHandler)
             throws ShellyApiException {
+        if (value == null) {
+            return false;
+        }
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
         if (profile.isRGBW2) {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
-            // RGBx component is always the first channel group (i.e. number 0)
-            ShellySettingsLight light = orgStatus.lights.get(0);
-            if (light == null) {
-                throw new ShellyApiException("updateRGBW() failed: index:0 not found");
-            }
             if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
                 try {
                     lightModelHandler.acquireLock();
-                    if (lightModelHandler.getLightModelByIndex(0) instanceof ShellyLightModel model) {
-                        int[] rgbx = light.white == null ? new int[] { light.red, light.green, light.blue }
-                                : new int[] { light.red, light.green, light.blue, light.white };
+                    ShellyLightModel model = lightModelHandler.getLightModelByIndex(0);
+                    if (model == null) {
+                        throw new ShellyApiException("updateLightMode() failed: index:0 model missing");
+                    }
+                    Integer[] rgb = value.rgb;
+                    if (rgb != null && rgb.length >= 3 && rgb[0] != null && rgb[1] != null && rgb[2] != null) {
+                        int[] rgbx = value.white == null ? new int[] { rgb[0], rgb[1], rgb[2] }
+                                : new int[] { rgb[0], rgb[1], rgb[2], value.white };
                         model.setRGBX(rgbx);
-                    } else {
-                        throw new ShellyApiException("updateRGBW() failed: index:0 model missing");
+                        updated = true;
+                    }
+                    if (value.brightness != null) {
+                        model.setGain(Objects.requireNonNull(value.brightness));
+                        updated = true;
+                    }
+                    if (value.output != null) {
+                        model.setOnOff(Objects.requireNonNull(value.output));
+                        updated = true;
                     }
                 } finally {
                     lightModelHandler.releaseLock();
@@ -887,45 +899,44 @@ public class ShellyComponents {
         return updated;
     }
 
-    public static boolean updateLightMode(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+    public static boolean updateLightMode(@Nullable Shelly2DeviceStatusLight value, ShellyThingInterface thingHandler)
             throws ShellyApiException {
+        if (value == null || value.id == null) {
+            return false;
+        }
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
         if (profile.isRGBW2) {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
-            if (thingHandler instanceof ShellyLightModelHandler lightHandler) {
+            int id = Objects.requireNonNull(value.id) + profile.getColorComponentCount();
+            if (profile.hasColorTag(id)) {
+                // color component is handled by updateRGBW()
+                return false;
+            }
+            if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
                 try {
-                    lightHandler.acquireLock();
-                    List<ShellySettingsLight> lights = orgStatus.lights;
-                    for (int i = 0; i < lights.size(); i++) {
-                        if (profile.hasColorTag(i)) {
-                            // color component is handled by updateRGBW(); this loop only covers CCT/Light components
-                            // (a hybrid profile's secondary component(s), or all of them for a plain white-mode RGBW2)
-                            continue;
-                        }
-                        ShellySettingsLight light = lights.get(i);
-                        ShellyLightModel model = lightHandler.getLightModelByIndex(i);
-                        if (model == null) {
-                            throw new ShellyApiException(
-                                    "updateLightMode() failed: index:%d model missing".formatted(i));
-                        }
-                        if (light.ison != null) {
-                            model.setOnOff(light.ison);
-                            updated = true;
-                        }
-                        if (light.brightness != null) {
-                            model.setBrightness(light.brightness);
-                            updated = true;
-                        }
-                        if (light.temp != null) {
-                            model.setColorTempRange(profile.getMinTemp(i), profile.getMaxTemp(i));
-                            model.setColorTemp(light.temp);
-                        }
+                    lightModelHandler.acquireLock();
+                    ShellyLightModel model = lightModelHandler.getLightModelByIndex(id);
+                    if (model == null) {
+                        throw new ShellyApiException("updateLightMode() failed: index:%d model missing".formatted(id));
+                    }
+                    if (value.ct != null) {
+                        model.setColorTempRange(profile.getMinTemp(id), profile.getMaxTemp(id));
+                        model.setColorTemp(Objects.requireNonNull(value.ct));
+                        updated = true;
+                    }
+                    if (value.brightness != null) {
+                        model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
+                        updated = true;
+                    }
+                    if (value.output != null) {
+                        model.setOnOff(Objects.requireNonNull(value.output));
+                        updated = true;
                     }
                 } finally {
-                    lightHandler.releaseLock();
+                    lightModelHandler.releaseLock();
                 }
             }
         }
