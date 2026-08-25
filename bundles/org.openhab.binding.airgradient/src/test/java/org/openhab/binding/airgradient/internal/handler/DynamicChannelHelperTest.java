@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -67,7 +68,8 @@ public class DynamicChannelHelperTest {
                         case "tvoc" -> Set.of("Measurement", "VOC");
                         default -> Set.of();
                     };
-                    return ChannelBuilder.create(channelUID).withType(channelTypeUID).withDefaultTags(defaultTags);
+                    return ChannelBuilder.create(channelUID).withType(channelTypeUID).withDefaultTags(defaultTags)
+                            .withLabel("Inherited label").withDescription("Inherited description");
                 });
         Mockito.when(builder.withChannel(any(Channel.class))).thenReturn(builder);
     }
@@ -132,6 +134,32 @@ public class DynamicChannelHelperTest {
         assertThat(defaultTags.get("pm005-count"), is(Set.of("Measurement", "ParticulateMatter")));
         assertThat(defaultTags.get("tvoc-index"), is(Set.of("Measurement", "VOC")));
         assertThat(defaultTags.get("tvoc-raw"), is(Set.of("Measurement", "VOC")));
+
+        Map<String, String> labels = captor.getAllValues().stream().collect(Collectors
+                .toMap((channel) -> channel.getUID().getId(), (channel) -> Objects.requireNonNull(channel.getLabel())));
+        assertEquals(Map.ofEntries(Map.entry("pm01-standard", "PM1 Standard"),
+                Map.entry("pm02-standard", "PM2.5 Standard"), Map.entry("pm10-standard", "PM10 Standard"),
+                Map.entry("pm005-count", "PM0.5 Particle Count"), Map.entry("pm01-count", "PM1 Particle Count"),
+                Map.entry("pm02-count", "PM2.5 Particle Count"), Map.entry("pm50-count", "PM5 Particle Count"),
+                Map.entry("pm10-count", "PM10 Particle Count"), Map.entry("pm02-compensated", "PM2.5 Compensated"),
+                Map.entry("tvoc-index", "TVOC Index"), Map.entry("tvoc-raw", "TVOC Raw"),
+                Map.entry("nox-index", "NOx Index"), Map.entry("nox-raw", "NOx Raw")), labels);
+
+        Map<String, String> descriptions = captor.getAllValues().stream().collect(Collectors.toMap(
+                (channel) -> channel.getUID().getId(), (channel) -> Objects.requireNonNull(channel.getDescription())));
+        assertEquals(
+                Map.ofEntries(Map.entry("pm01-standard", "PM1.0 concentration (standard particle)"),
+                        Map.entry("pm02-standard", "PM2.5 concentration (standard particle)"),
+                        Map.entry("pm10-standard", "PM10 concentration (standard particle)"),
+                        Map.entry("pm005-count", "Particle count for particles >= 0.5 microns per deciliter air"),
+                        Map.entry("pm01-count", "Particle count for particles >= 1.0 microns per deciliter air"),
+                        Map.entry("pm02-count", "Particle count for particles >= 2.5 microns per deciliter air"),
+                        Map.entry("pm50-count", "Particle count for particles >= 5.0 microns per deciliter air"),
+                        Map.entry("pm10-count", "Particle count for particles >= 10 microns per deciliter air"),
+                        Map.entry("pm02-compensated", "PM2.5 concentration with correction applied"),
+                        Map.entry("tvoc-index", "TVOC index value"), Map.entry("tvoc-raw", "Raw TVOC value"),
+                        Map.entry("nox-index", "NOx index value"), Map.entry("nox-raw", "Raw NOx value")),
+                descriptions);
     }
 
     @Test
