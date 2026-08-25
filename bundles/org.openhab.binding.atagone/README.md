@@ -91,7 +91,7 @@ Advanced diagnostic channels are also available (visible when **Show advanced** 
 |-------|-------------|
 | `auto` | Follow the programmed schedule |
 | `holiday` | Hold a fixed low temperature for the vacation period |
-| `fireplace` | Temporarily reduce setpoint (fireplace warmth compensation) |
+| `fireplace` | Temporarily reduce setpoint (fireplace warmth compensation) — reuses the last known `fireplace-duration`, or 1 hour if none is known yet |
 
 `manual` and `extend` cannot be set directly via the API.
 Writing an unknown value is rejected with a warning and the item reverts to its last known state.
@@ -105,14 +105,14 @@ Holiday mode lets you set a fixed low temperature for a defined period.
 There is no separate "activate" step — writing a duration starts the period immediately, starting now.
 
 ```text
-Item atagone_vacation_duration  "Vacation duration"  { channel="atagone:thermostat:boiler:vacation-duration" }
-Item atagone_preset             "Preset mode"        { channel="atagone:thermostat:boiler:preset-mode" }
+Number:Time  atagone_vacation_duration  "Vacation duration"  { channel="atagone:thermostat:boiler:vacation-duration" }
+String       atagone_preset             "Preset mode"        { channel="atagone:thermostat:boiler:preset-mode" }
 ```
 
 Two equivalent ways to start it:
 
 - Write a duration to `vacation-duration` (in days, e.g. `7 d`) — holiday mode starts immediately for that many days.
-- Write `preset-mode = holiday` — reuses the last `vacation-duration` value, or defaults to 7 days if none was ever set.
+- Write `preset-mode = holiday` — reuses the currently-active `vacation-duration` if a holiday is already running, otherwise starts one using the device's own stored default duration (typically 7 days, but reflects whatever was last configured on the thermostat or in its app).
 
 `vacation-start` and `vacation-end` are read-only status channels that report the currently running period; they cannot be written to schedule a future period.
 
@@ -124,7 +124,7 @@ Writing a duration to `fireplace-duration` (in hours, e.g. `2 h`) activates fire
 There is no separate "activate" step.
 
 ```text
-Item atagone_fireplace  "Fireplace duration"  { channel="atagone:thermostat:boiler:fireplace-duration" }
+Number:Time  atagone_fireplace  "Fireplace duration"  { channel="atagone:thermostat:boiler:fireplace-duration" }
 ```
 
 Send `2 h` to activate for 2 hours (any time unit is accepted, e.g. `7200 s` works too).

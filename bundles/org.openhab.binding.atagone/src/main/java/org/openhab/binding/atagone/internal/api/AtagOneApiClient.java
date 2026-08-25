@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -103,10 +104,7 @@ public class AtagOneApiClient {
 
         String responseJson = sendRequest("/pair", gson.toJson(root));
         logger.trace("pair raw response: {}", responseJson);
-        JsonObject reply = JsonParser.parseString(responseJson).getAsJsonObject().getAsJsonObject("pair_reply");
-        if (reply == null) {
-            throw new AtagOneCommunicationException("Missing pair_reply in response: " + responseJson);
-        }
+        JsonObject reply = parseReplyObject(responseJson, "pair_reply");
         PairReplyDTO dto = gson.fromJson(reply, PairReplyDTO.class);
         if (dto == null) {
             throw new AtagOneCommunicationException("Failed to parse pair_reply");
@@ -136,10 +134,7 @@ public class AtagOneApiClient {
 
         String responseJson = sendRequest("/retrieve", gson.toJson(root));
         logger.trace("retrieve raw response: {}", responseJson);
-        JsonObject reply = JsonParser.parseString(responseJson).getAsJsonObject().getAsJsonObject("retrieve_reply");
-        if (reply == null) {
-            throw new AtagOneCommunicationException("Missing retrieve_reply in response: " + responseJson);
-        }
+        JsonObject reply = parseReplyObject(responseJson, "retrieve_reply");
         int accStatus = reply.has("acc_status") ? reply.get("acc_status").getAsInt() : 0;
         if (accStatus != 2) {
             throw new AtagOneCommunicationException("retrieve denied: acc_status=" + accStatus);
@@ -150,6 +145,36 @@ public class AtagOneApiClient {
         }
         validateComplete(result);
         return result;
+    }
+
+    /**
+     * Parses {@code responseJson} and extracts the named top-level reply object (e.g.
+     * {@code pair_reply}, {@code retrieve_reply}, {@code update_reply}).
+     * <p>
+     * A malformed, empty, or non-object HTTP body — a realistic failure mode given this device's
+     * documented HTTP/1.0 flakiness — would otherwise throw an unchecked {@link JsonParseException} or
+     * {@link IllegalStateException} straight out of the caller. Both are translated here into the
+     * checked {@link AtagOneCommunicationException} every caller already handles, so a bad response
+     * can never silently break a caller's retry/recovery path (e.g. {@code doPair()}'s pairing retry,
+     * or the poll job restart in {@code AtagOneHandler}).
+     * <p>
+     * Package-private (not private) so {@code AtagOneApiClientValidationTest} can exercise it
+     * directly with hand-crafted malformed input, without standing up the HTTP layer.
+     *
+     * @throws AtagOneCommunicationException if the response cannot be parsed or the named reply object
+     *             is missing
+     */
+    JsonObject parseReplyObject(String responseJson, String replyKey) throws AtagOneCommunicationException {
+        JsonObject reply;
+        try {
+            reply = JsonParser.parseString(responseJson).getAsJsonObject().getAsJsonObject(replyKey);
+        } catch (JsonParseException | IllegalStateException e) {
+            throw new AtagOneCommunicationException("Malformed response for " + replyKey + ": " + responseJson, e);
+        }
+        if (reply == null) {
+            throw new AtagOneCommunicationException("Missing " + replyKey + " in response: " + responseJson);
+        }
+        return reply;
     }
 
     /**
@@ -205,10 +230,7 @@ public class AtagOneApiClient {
         root.add("update_message", updateMsg);
 
         String responseJson = sendRequest("/update", gson.toJson(root));
-        JsonObject reply = JsonParser.parseString(responseJson).getAsJsonObject().getAsJsonObject("update_reply");
-        if (reply == null) {
-            throw new AtagOneCommunicationException("Missing update_reply in response: " + responseJson);
-        }
+        JsonObject reply = parseReplyObject(responseJson, "update_reply");
         int accStatus = reply.has("acc_status") ? reply.get("acc_status").getAsInt() : 0;
         if (accStatus != 2) {
             throw new AtagOneCommunicationException("update denied: acc_status=" + accStatus);

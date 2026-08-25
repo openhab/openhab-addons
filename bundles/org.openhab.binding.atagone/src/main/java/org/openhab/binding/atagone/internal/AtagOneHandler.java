@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -70,7 +71,19 @@ public class AtagOneHandler extends BaseThingHandler {
     private @Nullable AtagOneApiClient apiClient;
     private @Nullable ScheduledFuture<?> pollJob;
     private @Nullable ScheduledFuture<?> pairingJob;
+    private @Nullable Future<?> connectJob;
     private volatile boolean disposing = false;
+
+    // Bumped on every initialize(). connect()/doPair() capture it at dispatch time and re-check it
+    // after any blocking call, so a task queued or in flight from a superseded generation (e.g. a
+    // rapid dispose+reinitialize while pairing) can't mutate this generation's apiClient/clientId.
+    private volatile long generation = 0L;
+
+    // Guards only the sendControlUpdate() stop/write/start sequence. Deliberately NOT the same lock
+    // as startPollJob()/stopPollJob() (which stay synchronized on `this`) — sendControlUpdate() holds
+    // this across a blocking HTTP call, and sharing the lifecycle lock would make dispose() (which
+    // calls stopPollJob()) block for the full request/retry duration.
+    private final Object commandLock = new Object();
 
     private final Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
 
@@ -78,6 +91,11 @@ public class AtagOneHandler extends BaseThingHandler {
     // several minutes. During this window, communication errors are suppressed so the Thing stays
     // UNKNOWN rather than OFFLINE.
     private volatile long suppressCommErrorUntil = 0L;
+
+    // The device's own persisted default vacation duration (configuration.ch_mode_vacation), tracked
+    // unconditionally on every poll so "reuse the last duration" survives holiday mode ending — unlike
+    // CHANNEL_VACATION_DURATION in stateMap, which is intentionally UNDEF whenever holiday isn't active.
+    private volatile long defaultVacationDurationSeconds = 7 * 86400L;
 
     public AtagOneHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -89,6 +107,7 @@ public class AtagOneHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         disposing = false;
+        long myGeneration = ++generation;
         config = getConfigAs(AtagOneConfiguration.class);
         if (config.hostname.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -97,13 +116,18 @@ public class AtagOneHandler extends BaseThingHandler {
         }
         stateMap.clear();
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(this::connect);
+        connectJob = scheduler.submit(() -> connect(myGeneration));
     }
 
     @Override
     public void dispose() {
         disposing = true;
         stopPollJob();
+        Future<?> connecting = connectJob;
+        if (connecting != null) {
+            connecting.cancel(true);
+            connectJob = null;
+        }
         ScheduledFuture<?> pairing = pairingJob;
         if (pairing != null) {
             pairing.cancel(true);
@@ -154,28 +178,38 @@ public class AtagOneHandler extends BaseThingHandler {
 
     /**
      * Sends a control/configuration update and restarts polling afterwards.
-     * Synchronized against {@link #startPollJob} / {@link #stopPollJob} (via the same intrinsic lock)
-     * so two commands handled concurrently cannot interleave the stop/write/start sequence.
+     * Serialized on {@link #commandLock} (not the lifecycle lock — see its field comment) so two
+     * commands handled concurrently cannot interleave the stop/write/start sequence.
+     * {@code startPollJob} runs in a {@code finally} block so that no exception from the write —
+     * checked or unchecked — can ever leave polling permanently disabled.
      */
-    private synchronized void sendControlUpdate(AtagOneApiClient client, String channelId, ControlUpdateDTO control,
+    private void sendControlUpdate(AtagOneApiClient client, String channelId, ControlUpdateDTO control,
             DeviceConfigUpdateDTO configUpdate) {
-        boolean hasConfig = configUpdate.hasChanges();
-        stopPollJob();
-        try {
-            client.updateControl(control, hasConfig ? configUpdate : null);
-            // Timed-preset writes (vacation, fireplace) trigger a boiler API reinitialization lasting
-            // several minutes. Suppress COMMUNICATION_ERROR during that window so the Thing stays
-            // UNKNOWN rather than OFFLINE.
-            if (control.ch_mode != null
-                    && (control.ch_mode == CH_MODE_HOLIDAY || control.ch_mode == CH_MODE_FIREPLACE)) {
-                suppressCommErrorUntil = System.currentTimeMillis() + 5 * 60 * 1000L;
-                logger.debug("Timed preset (ch_mode={}) sent — suppressing COMMUNICATION_ERROR for 5 min",
-                        control.ch_mode);
-            }
-        } catch (AtagOneCommunicationException e) {
-            logger.warn("Command failed for {}: {}", channelId, e.getMessage());
+        if (disposing) {
+            return;
         }
-        startPollJob(POST_COMMAND_DELAY_S);
+        synchronized (commandLock) {
+            boolean hasConfig = configUpdate.hasChanges();
+            stopPollJob();
+            try {
+                client.updateControl(control, hasConfig ? configUpdate : null);
+                // Timed-preset writes (vacation, fireplace) trigger a boiler API reinitialization
+                // lasting several minutes. Suppress COMMUNICATION_ERROR during that window so the
+                // Thing stays UNKNOWN rather than OFFLINE.
+                if (control.ch_mode != null
+                        && (control.ch_mode == CH_MODE_HOLIDAY || control.ch_mode == CH_MODE_FIREPLACE)) {
+                    suppressCommErrorUntil = System.currentTimeMillis() + 5 * 60 * 1000L;
+                    logger.debug("Timed preset (ch_mode={}) sent — suppressing COMMUNICATION_ERROR for 5 min",
+                            control.ch_mode);
+                }
+            } catch (AtagOneCommunicationException e) {
+                logger.warn("Command failed for {}: {}", channelId, e.getMessage());
+            } catch (RuntimeException e) {
+                logger.warn("Unexpected error sending command for {}: {}", channelId, e.getMessage(), e);
+            } finally {
+                startPollJob(POST_COMMAND_DELAY_S);
+            }
+        }
     }
 
     /**
@@ -210,8 +244,15 @@ public class AtagOneHandler extends BaseThingHandler {
 
             case CHANNEL_HVAC_MODE:
                 if (command instanceof StringType s) {
-                    dto.ch_control_mode = "auto".equalsIgnoreCase(s.toString()) ? CH_CONTROL_MODE_AUTO
-                            : CH_CONTROL_MODE_HEAT;
+                    String hvacMode = s.toString();
+                    if ("auto".equalsIgnoreCase(hvacMode)) {
+                        dto.ch_control_mode = CH_CONTROL_MODE_AUTO;
+                    } else if ("heat".equalsIgnoreCase(hvacMode)) {
+                        dto.ch_control_mode = CH_CONTROL_MODE_HEAT;
+                    } else {
+                        logger.warn("Unknown hvac-mode value '{}'; valid write values: auto, heat", hvacMode);
+                        return false;
+                    }
                     return true;
                 }
                 return false;
@@ -253,24 +294,48 @@ public class AtagOneHandler extends BaseThingHandler {
                         return false;
                     }
                     if (mode == CH_MODE_HOLIDAY) {
-                        // Use stored vacation-duration or default to 7 days.
-                        long durationSeconds = 7 * 86400L;
-                        boolean usedStoredDuration = false;
+                        // Reuse the currently-active vacation-duration if one is running; otherwise fall
+                        // back to the device's own persisted default (configuration.ch_mode_vacation,
+                        // tracked in defaultVacationDurationSeconds since CHANNEL_VACATION_DURATION itself
+                        // is UNDEF whenever holiday isn't active, so it can't be reused directly here).
+                        long durationSeconds = defaultVacationDurationSeconds;
+                        boolean usedActiveDuration = false;
                         State stored = stateMap.get(CHANNEL_VACATION_DURATION);
                         if (stored instanceof QuantityType<?> sq) {
                             QuantityType<?> inSeconds = sq.toUnit(Units.SECOND);
                             if (inSeconds != null && inSeconds.longValue() > 0) {
                                 durationSeconds = inSeconds.longValue();
-                                usedStoredDuration = true;
+                                usedActiveDuration = true;
                             }
                         }
-                        if (!usedStoredDuration) {
-                            logger.info("No vacation-duration set, defaulting to 7 days");
+                        if (!usedActiveDuration) {
+                            logger.info("No vacation currently active; using stored default duration ({} s)",
+                                    durationSeconds);
                         }
                         dto.ch_mode = CH_MODE_HOLIDAY;
                         dto.ch_mode_duration = durationSeconds;
                         dto.vacation_duration = durationSeconds;
                         configDto.start_vacation = AtagEpoch.fromZonedDateTime(ZonedDateTime.now());
+                        return true;
+                    }
+                    if (mode == CH_MODE_FIREPLACE) {
+                        // Reuse the stored fireplace-duration (always populated in stateMap — unlike
+                        // vacation-duration it isn't wiped to UNDEF when fireplace isn't active).
+                        long durationSeconds = 3600L;
+                        State stored = stateMap.get(CHANNEL_FIREPLACE_DURATION);
+                        if (stored instanceof QuantityType<?> sq) {
+                            QuantityType<?> inSeconds = sq.toUnit(Units.SECOND);
+                            if (inSeconds != null && inSeconds.longValue() > 0) {
+                                durationSeconds = inSeconds.longValue();
+                            } else {
+                                logger.info("No fireplace-duration available yet; defaulting to 1 hour");
+                            }
+                        } else {
+                            logger.info("No fireplace-duration available yet; defaulting to 1 hour");
+                        }
+                        dto.ch_mode = CH_MODE_FIREPLACE;
+                        dto.ch_mode_duration = durationSeconds;
+                        dto.fireplace_duration = durationSeconds;
                         return true;
                     }
                     dto.ch_mode = mode;
@@ -324,7 +389,7 @@ public class AtagOneHandler extends BaseThingHandler {
             case CHANNEL_FIREPLACE_DURATION:
                 if (command instanceof QuantityType<?> qt) {
                     QuantityType<?> seconds = qt.toUnit(Units.SECOND);
-                    if (seconds == null) {
+                    if (seconds == null || seconds.longValue() <= 0) {
                         return false;
                     }
                     // Activate for the written duration and update the stored default simultaneously.
@@ -343,8 +408,8 @@ public class AtagOneHandler extends BaseThingHandler {
 
     // ── Connection / pairing ──────────────────────────────────────────────────
 
-    private void connect() {
-        if (disposing) {
+    private void connect(long myGeneration) {
+        if (disposing || generation != myGeneration) {
             return;
         }
         String clientId = resolveClientId();
@@ -354,20 +419,30 @@ public class AtagOneHandler extends BaseThingHandler {
             logger.info("Generated new client ID {}", clientId);
         }
         AtagOneApiClient client = new AtagOneApiClient(httpClient, config.hostname, config.port, clientId);
+        if (disposing || generation != myGeneration) {
+            // Superseded by a dispose+reinitialize while the client was being constructed — don't let
+            // a stale generation's client become this Thing's apiClient.
+            return;
+        }
         apiClient = client;
         if (needsPairing) {
-            doPair(client, clientId);
+            doPair(client, clientId, myGeneration);
         } else {
             startPollJob(0);
         }
     }
 
-    private void doPair(AtagOneApiClient client, String clientId) {
-        if (disposing) {
+    private void doPair(AtagOneApiClient client, String clientId, long myGeneration) {
+        if (disposing || generation != myGeneration) {
             return;
         }
         try {
             int accStatus = client.pair();
+            if (disposing || generation != myGeneration) {
+                // Superseded while the (blocking) pairing request was in flight — a newer generation
+                // may already have its own apiClient/clientId; don't let this one persist or poll.
+                return;
+            }
             switch (accStatus) {
                 case 2: // explicitly granted
                 case 0: // open-LAN firmware — auto-accepted without user prompt
@@ -379,7 +454,7 @@ public class AtagOneHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "@text/offline.conf-pending.press-accept");
                     if (!disposing) {
-                        pairingJob = scheduler.schedule(() -> doPair(client, clientId), PAIRING_RETRY_S,
+                        pairingJob = scheduler.schedule(() -> doPair(client, clientId, myGeneration), PAIRING_RETRY_S,
                                 TimeUnit.SECONDS);
                     }
                     break;
@@ -393,10 +468,14 @@ public class AtagOneHandler extends BaseThingHandler {
                             "Unexpected pairing response (acc_status=" + accStatus + ")");
             }
         } catch (AtagOneCommunicationException e) {
+            if (disposing || generation != myGeneration) {
+                return;
+            }
             logger.debug("Pairing error: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             if (!disposing) {
-                pairingJob = scheduler.schedule(() -> doPair(client, clientId), PAIRING_RETRY_S, TimeUnit.SECONDS);
+                pairingJob = scheduler.schedule(() -> doPair(client, clientId, myGeneration), PAIRING_RETRY_S,
+                        TimeUnit.SECONDS);
             }
         }
     }
@@ -446,6 +525,12 @@ public class AtagOneHandler extends BaseThingHandler {
     // ── Channel updates ───────────────────────────────────────────────────────
 
     private void updateChannels(RetrieveReplyDTO r) {
+        // Tracked unconditionally (not mode-gated) so it survives holiday mode ending — see the
+        // defaultVacationDurationSeconds field comment.
+        if (r.configuration.ch_mode_vacation > 0) {
+            defaultVacationDurationSeconds = r.configuration.ch_mode_vacation;
+        }
+
         // Report — temperatures
         updateIfChanged(CHANNEL_ROOM_TEMPERATURE, new QuantityType<>(r.report.room_temp, SIUnits.CELSIUS));
         updateIfChanged(CHANNEL_OUTSIDE_TEMPERATURE, new QuantityType<>(r.report.outside_temp, SIUnits.CELSIUS));
@@ -483,7 +568,7 @@ public class AtagOneHandler extends BaseThingHandler {
         updateIfChanged(CHANNEL_VOLTAGE, new QuantityType<>(voltage, Units.VOLT));
         updateIfChanged(CHANNEL_CURRENT, new DecimalType(r.report.current));
         updateIfChanged(CHANNEL_POWER_CONSUMPTION, new DecimalType(r.report.power_cons));
-        updateIfChanged(CHANNEL_DHW_FLOW_RATE, new DecimalType(r.report.dhw_flow_rate));
+        updateIfChanged(CHANNEL_DHW_FLOW_RATE, new QuantityType<>(r.report.dhw_flow_rate, Units.LITRE_PER_MINUTE));
         updateIfChanged(CHANNEL_RESETS, new DecimalType(r.report.resets));
         updateIfChanged(CHANNEL_MEMORY_ALLOCATION, new DecimalType(r.report.memory_allocation));
         updateIfChanged(CHANNEL_BOILER_TEMPERATURE, new QuantityType<>(r.report.details.boiler_temp, SIUnits.CELSIUS));

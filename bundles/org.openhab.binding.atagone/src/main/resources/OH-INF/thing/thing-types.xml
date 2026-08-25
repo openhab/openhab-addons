@@ -449,10 +449,10 @@
 	</channel-type>
 
 	<channel-type id="dhw-flow-rate" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>DHW Flow Rate</label>
-		<description>Domestic hot water flow rate (L/min).</description>
-		<state readOnly="true" pattern="%.1f L/min"/>
+		<description>Domestic hot water flow rate.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="resets" advanced="true">

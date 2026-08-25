@@ -64,6 +64,13 @@ class AtagOneHandlerTest {
         ((Map<String, State>) fieldValue).put(channelId, state);
     }
 
+    /** Directly sets the device's persisted default vacation duration, simulating a prior poll. */
+    private void seedDefaultVacationDurationSeconds(long seconds) throws ReflectiveOperationException {
+        Field field = AtagOneHandler.class.getDeclaredField("defaultVacationDurationSeconds");
+        field.setAccessible(true);
+        field.set(handler, seconds);
+    }
+
     @Test
     void unknownPresetModeIsRejected() {
         ControlUpdateDTO control = new ControlUpdateDTO();
@@ -205,5 +212,121 @@ class AtagOneHandlerTest {
         boolean accepted = handler.buildControlUpdate("not-a-real-channel", new StringType("x"), control, configUpdate);
 
         assertFalse(accepted);
+    }
+
+    @Test
+    void hvacModeAcceptsHeat() {
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_HVAC_MODE, new StringType("heat"), control, configUpdate);
+
+        assertTrue(accepted);
+        assertEquals(CH_CONTROL_MODE_HEAT, control.ch_control_mode);
+    }
+
+    @Test
+    void hvacModeAcceptsAuto() {
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_HVAC_MODE, new StringType("auto"), control, configUpdate);
+
+        assertTrue(accepted);
+        assertEquals(CH_CONTROL_MODE_AUTO, control.ch_control_mode);
+    }
+
+    @Test
+    void hvacModeRejectsUnknownValue() {
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_HVAC_MODE, new StringType("AUTO_"), control,
+                configUpdate);
+
+        assertFalse(accepted);
+        assertNull(control.ch_control_mode);
+    }
+
+    @Test
+    void fireplaceDurationRejectsZero() {
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_FIREPLACE_DURATION,
+                new org.openhab.core.library.types.QuantityType<>(0, Units.SECOND), control, configUpdate);
+
+        assertFalse(accepted);
+    }
+
+    @Test
+    void fireplaceDurationRejectsNegativeValue() {
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_FIREPLACE_DURATION,
+                new org.openhab.core.library.types.QuantityType<>(-100, Units.SECOND), control, configUpdate);
+
+        assertFalse(accepted);
+    }
+
+    @Test
+    void fireplacePresetModeReusesStoredDuration() throws ReflectiveOperationException {
+        seedState(CHANNEL_FIREPLACE_DURATION, new org.openhab.core.library.types.QuantityType<>(2, Units.HOUR));
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_PRESET_MODE, new StringType("fireplace"), control,
+                configUpdate);
+
+        assertTrue(accepted);
+        assertEquals(CH_MODE_FIREPLACE, control.ch_mode);
+        assertEquals(7200L, control.fireplace_duration);
+        assertEquals(7200L, control.ch_mode_duration);
+    }
+
+    @Test
+    void fireplacePresetModeDefaultsToOneHourWithNoStoredDuration() {
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_PRESET_MODE, new StringType("fireplace"), control,
+                configUpdate);
+
+        assertTrue(accepted);
+        assertEquals(CH_MODE_FIREPLACE, control.ch_mode);
+        assertEquals(3600L, control.fireplace_duration);
+        assertEquals(3600L, control.ch_mode_duration);
+    }
+
+    @Test
+    void holidayPresetModeReusesActiveVacationDurationOverDeviceDefault() throws ReflectiveOperationException {
+        seedDefaultVacationDurationSeconds(3 * 86400L);
+        seedState(CHANNEL_VACATION_DURATION, new org.openhab.core.library.types.QuantityType<>(5, Units.DAY));
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_PRESET_MODE, new StringType("holiday"), control,
+                configUpdate);
+
+        assertTrue(accepted);
+        // An actively-running vacation-duration takes priority over the device's stored default.
+        assertEquals(5 * 86400L, control.ch_mode_duration);
+    }
+
+    @Test
+    void holidayPresetModeFallsBackToDeviceStoredDefault() throws ReflectiveOperationException {
+        seedDefaultVacationDurationSeconds(3 * 86400L);
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_PRESET_MODE, new StringType("holiday"), control,
+                configUpdate);
+
+        assertTrue(accepted);
+        // No vacation currently active — falls back to the device's own persisted default, not a
+        // hardcoded 7 days.
+        assertEquals(3 * 86400L, control.ch_mode_duration);
+        assertEquals(3 * 86400L, control.vacation_duration);
     }
 }

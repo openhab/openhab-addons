@@ -75,7 +75,7 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        scheduler.execute(this::listenOnce);
+        scheduler.execute(() -> listenUntilDeadline(System.currentTimeMillis() + MANUAL_DISCOVERY_TIME_S * 1000L));
     }
 
     @Override
@@ -113,6 +113,41 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
             parseAndAnnounce(packet);
         } catch (SocketTimeoutException e) {
             logger.debug("No ATAG ONE broadcast received within {}ms on port {}", SOCKET_TIMEOUT_MS, DISCOVERY_PORT);
+        } catch (SocketException e) {
+            logger.warn("Cannot open UDP port {} for ATAG ONE discovery — another process may hold it: {}",
+                    DISCOVERY_PORT, e.getMessage());
+        } catch (IOException e) {
+            logger.debug("Error receiving ATAG ONE discovery broadcast: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Manual-scan variant of {@link #listenOnce()}: keeps receiving on a single bound socket until
+     * {@code deadlineMs}, announcing every valid datagram, instead of returning after the first one.
+     * The framework advertises a {@value #MANUAL_DISCOVERY_TIME_S}s manual scan window to the user —
+     * without this loop, a scan would silently end after the first datagram (or after one
+     * {@value #SOCKET_TIMEOUT_MS}ms timeout with none), missing any second device on the LAN or
+     * recovering from a first packet that turned out to be noise. Background discovery doesn't need
+     * this: it already gets repeated coverage over time via its own recurring schedule.
+     */
+    private void listenUntilDeadline(long deadlineMs) {
+        byte[] buf = new byte[64];
+        try (DatagramSocket socket = new DatagramSocket(null)) {
+            socket.setReuseAddress(true);
+            socket.bind(new InetSocketAddress(DISCOVERY_PORT));
+            while (System.currentTimeMillis() < deadlineMs) {
+                long remainingMs = deadlineMs - System.currentTimeMillis();
+                socket.setSoTimeout((int) Math.max(1, Math.min(remainingMs, SOCKET_TIMEOUT_MS)));
+                try {
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                    socket.receive(packet);
+                    parseAndAnnounce(packet);
+                } catch (SocketTimeoutException e) {
+                    // No broadcast in this window — keep listening until the deadline.
+                    logger.trace("No ATAG ONE broadcast received within {}ms on port {}", SOCKET_TIMEOUT_MS,
+                            DISCOVERY_PORT);
+                }
+            }
         } catch (SocketException e) {
             logger.warn("Cannot open UDP port {} for ATAG ONE discovery — another process may hold it: {}",
                     DISCOVERY_PORT, e.getMessage());
