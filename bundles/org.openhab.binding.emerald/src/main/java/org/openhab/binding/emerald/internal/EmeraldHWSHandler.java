@@ -163,7 +163,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             for (int i = 0; i < api.info.property.length; i++) {
                 for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
                     if (localConfig.uuid.equals(api.info.property[i].heatpump[j].id)) {
-                        logger.info("Found Heat Pump id = {}", api.info.property[i].heatpump[j].id);
+                        logger.debug("Found Heat Pump id = {}", api.info.property[i].heatpump[j].id);
                         found = 1;
 
                         Map<String, String> properties = editProperties();
@@ -232,7 +232,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
      * Called by the Bridge when a real-time MQTT packet arrives for this specific Thing's UUID
      */
     public void updateFromMqtt(String jsonPayload) {
-        logger.debug("Raw MQTT Payload received for {}: {}", thing.getUID().getId(), jsonPayload);
+        logger.trace("Raw MQTT Payload received for {}: {}", thing.getUID().getId(), jsonPayload);
 
         try {
             JsonElement element = JsonParser.parseString(jsonPayload);
@@ -251,7 +251,6 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             boolean dataFound = false;
 
             for (JsonObject payload : objectsToProcess) {
-                // 1. Current Temperature
                 if (payload.has("temp_current")) {
                     int currentTemp = payload.get("temp_current").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
@@ -259,7 +258,6 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                     dataFound = true;
                 }
 
-                // 2. Set Temperature
                 if (payload.has("temp_set")) {
                     int setTemp = payload.get("temp_set").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE,
@@ -267,7 +265,6 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                     dataFound = true;
                 }
 
-                // 3. Power State
                 if (payload.has("switch")) {
                     JsonElement switchElement = payload.get("switch");
                     OnOffType powerState = OnOffType.OFF;
@@ -289,21 +286,18 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                     dataFound = true;
                 }
 
-                // 4. Operating Mode
                 if (payload.has("mode")) {
                     int mode = payload.get("mode").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_MODE, new DecimalType(mode));
                     dataFound = true;
                 }
 
-                // 5. Fault Code
                 if (payload.has("fault")) {
                     int faultCode = payload.get("fault").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_FAULT, new DecimalType(faultCode));
                     dataFound = true;
                 }
 
-                // 6. Defrost Status
                 if (payload.has("defrost")) {
                     String defrostState = payload.get("defrost").getAsString();
                     OnOffType isDefrosting = "1".equals(defrostState) ? OnOffType.ON : OnOffType.OFF;
@@ -311,7 +305,6 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                     dataFound = true;
                 }
 
-                // 7. Work State
                 if (payload.has("work_state")) {
                     int workState = payload.get("work_state").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_WORK_STATE, new DecimalType(workState));
@@ -322,7 +315,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             if (dataFound) {
                 logger.debug("Successfully mapped MQTT data to openHAB channels.");
             } else {
-                logger.trace("Parsed MQTT message did not contain channel state data (Metadata only).");
+                logger.debug("Parsed MQTT message did not contain channel state data (Metadata only).");
             }
 
         } catch (Exception e) {

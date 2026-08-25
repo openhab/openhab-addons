@@ -89,7 +89,6 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
     }
 
     public ThingUID getUID() {
-        logger.info("thing.getUID() = {}", thing.getUID());
         return thing.getUID();
     }
 
@@ -111,7 +110,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
                 try {
                     setupMqttConnection();
                 } catch (Exception e) {
-                    logger.error("Failed to setup MQTT Stream", e);
+                    logger.debug("Failed to setup MQTT Stream", e);
                 }
             });
         }
@@ -220,7 +219,6 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
                 String error = (onConnectionFailureReturn != null)
                         ? String.valueOf(onConnectionFailureReturn.getErrorCode())
                         : "Unknown";
-                logger.error("AWS CRT MQTT Connection failed. Error Code: {}", error);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Connection failed");
             }
 
@@ -261,8 +259,6 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             return;
         }
 
-        logger.info("Attempting explicit MQTT subscriptions for {} attached Heat Pumps.", childCount);
-
         getThing().getThings().forEach(child -> {
             EmeraldHWSConfiguration childConfig = child.getConfiguration().as(EmeraldHWSConfiguration.class);
 
@@ -274,7 +270,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
                 localMqttClient.subscribe(subBuilder.build()).whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
-                        logger.error("Failed to subscribe to explicit MQTT topic: {}", topic, throwable);
+                        logger.debug("Failed to subscribe to explicit MQTT topic: {}", topic, throwable);
                     } else {
                         logger.info("Successfully subscribed to explicit Emerald Heat Pump MQTT topic: {}", topic);
                         requestStatusUpdate(childConfig.uuid);
@@ -338,7 +334,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
         localMqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
             if (throwable != null) {
-                logger.error("Failed to send control message to HWS {}", deviceId, throwable);
+                logger.debug("Failed to send control message to HWS {}", deviceId, throwable);
             } else {
                 logger.debug("Successfully sent control message to HWS {}: {}", deviceId, commandPayload.toString());
             }
@@ -398,7 +394,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
         localMqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
             if (throwable != null) {
-                logger.error("Failed to request status update (comp_query) for HWS {}", deviceId, throwable);
+                logger.debug("Failed to request status update (comp_query) for HWS {}", deviceId, throwable);
             } else {
                 logger.debug("Successfully sent comp_query to HWS {}", deviceId);
             }

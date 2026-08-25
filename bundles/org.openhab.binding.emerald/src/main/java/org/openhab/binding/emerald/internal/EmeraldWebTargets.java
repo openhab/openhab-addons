@@ -70,7 +70,7 @@ public class EmeraldWebTargets {
         payload.addProperty("password", password);
         payload.addProperty("email", email);
         payload.addProperty("password", password);
-        logger.debug("payload = {}", payload.toString());
+
         String response = invoke(getTokenUri, HttpMethod.POST, null, null, payload.toString());
         return gson.fromJson(response, Login.class);
     }
@@ -153,7 +153,7 @@ public class EmeraldWebTargets {
 
     private String invoke(String uri, HttpMethod method, @Nullable String headerKey, @Nullable String headerValue,
             String params) throws EmeraldCommunicationException, EmeraldAuthenticationException {
-        logger.debug("Calling url: {}", uri);
+
         int status = 0;
         String jsonResponse = "";
         synchronized (this) {
