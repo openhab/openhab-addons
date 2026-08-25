@@ -669,8 +669,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     getThing().postEvent(ALARM_TYPE_SENSOR_ERROR, true);
                     break;
                 case SHELLY2_EVENT_BLE_SCAN_RESULT:
-                    // 3rd party BLE-proxy script (e.g. Home Assistant's), not our oh-blu.* scanner; belt-and-braces
-                    // no-op for delivery paths other than Shelly2RpcSocket.onMessage, which already skips it.
                     logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, event);
                     break;
                 default:

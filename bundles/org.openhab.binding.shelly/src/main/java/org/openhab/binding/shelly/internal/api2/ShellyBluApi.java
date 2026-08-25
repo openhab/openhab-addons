@@ -208,11 +208,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             }
             for (Shelly2NotifyEvent e : events) {
                 String event = getString(e.event);
-                // Only oh-blu.* events carry a BLU payload. The complete hub frame reaches this
-                // handler, so deserializing the data of unrelated events would both misread them and
-                // let an unrelated malformed payload abort the entire frame.
-                Shelly2NotifyBluEventData blu = event.startsWith(SHELLY2_EVENT_BLUPREFIX) ? e.getBluData(gson)
-                        : null;
+                Shelly2NotifyBluEventData blu = event.startsWith(SHELLY2_EVENT_BLUPREFIX) ? e.getBluData(gson) : null;
                 if (blu != null && blu.raw != null) {
                     blu = decodeRawBTHomeData(blu);
                     String alarmCode = blu.alarmCode;
