@@ -15,6 +15,8 @@ package org.openhab.binding.chatgpt.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -49,6 +51,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link ChatGPTHandler} is responsible for handling commands, which are
@@ -71,6 +74,7 @@ public class ChatGPTHandler extends BaseThingHandler {
     private String modelUrl = "";
     private String lastPrompt = "";
     private List<String> models = List.of();
+    private final Set<String> modelsRequiringReasoningEffort = ConcurrentHashMap.newKeySet();
 
     public ChatGPTHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
@@ -174,10 +178,45 @@ public class ChatGPTHandler extends BaseThingHandler {
     }
 
     public @Nullable String sendPrompt(String queryJson, @Nullable Integer timeoutSeconds) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String model = null;
+        boolean hasTools = false;
+        try {
+            JsonNode jsonNode = objectMapper.readTree(queryJson);
+            JsonNode modelNode = jsonNode.get("model");
+            if (modelNode != null && modelNode.isTextual()) {
+                model = modelNode.asText();
+            }
+            JsonNode toolsNode = jsonNode.get("tools");
+            hasTools = toolsNode != null && toolsNode.isArray() && toolsNode.size() > 0;
+        } catch (JsonProcessingException e) {
+            logger.debug("Failed to parse ChatGPT request: {}", e.getMessage(), e);
+        }
+
+        // If we know this model requires reasoning_effort for tool requests, use it preemptively
+        String reasoningEffort = hasTools && model != null && modelsRequiringReasoningEffort.contains(model) ? "none"
+                : null;
+        return executeCompletionRequest(queryJson, model, hasTools, timeoutSeconds, reasoningEffort);
+    }
+
+    private @Nullable String executeCompletionRequest(String queryJson, @Nullable String model, boolean hasTools,
+            @Nullable Integer timeoutSeconds, @Nullable String reasoningEffort) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String finalJson = queryJson;
+        if (reasoningEffort != null) {
+            try {
+                JsonNode jsonNode = objectMapper.readTree(queryJson);
+                ((ObjectNode) jsonNode).put("reasoning_effort", reasoningEffort);
+                finalJson = objectMapper.writeValueAsString(jsonNode);
+            } catch (JsonProcessingException e) {
+                logger.debug("Failed to add reasoning_effort to request: {}", e.getMessage(), e);
+            }
+        }
+
         Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
                 .timeout(timeoutSeconds != null ? timeoutSeconds : DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
                 .header("Content-Type", "application/json").header("Authorization", "Bearer " + apiKey)
-                .content(new StringContentProvider(queryJson));
+                .content(new StringContentProvider(finalJson));
         logger.trace("Query '{}'", queryJson);
         try {
             ContentResponse response = request.send();
@@ -185,8 +224,16 @@ public class ChatGPTHandler extends BaseThingHandler {
             if (response.getStatus() == HttpStatus.OK_200) {
                 return response.getContentAsString();
             } else {
+                String errorBody = response.getContentAsString();
                 logger.error("ChatGPT request resulted in HTTP {} with message: {}", response.getStatus(),
                         response.getReason());
+                if (reasoningEffort == null && hasTools && model != null
+                        && response.getStatus() == HttpStatus.BAD_REQUEST_400
+                        && errorBody.contains("reasoning_effort")) {
+                    logger.debug("Model {} requires reasoning_effort; caching and retrying", model);
+                    modelsRequiringReasoningEffort.add(model);
+                    return executeCompletionRequest(queryJson, model, hasTools, timeoutSeconds, "none");
+                }
                 return null;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
