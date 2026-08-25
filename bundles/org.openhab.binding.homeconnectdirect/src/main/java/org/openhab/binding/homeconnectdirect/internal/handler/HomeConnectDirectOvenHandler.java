@@ -13,7 +13,6 @@
 package org.openhab.binding.homeconnectdirect.internal.handler;
 
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
-import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ACTIVE_PROGRAM;
 import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ALL_MANDATORY_VALUES;
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
@@ -46,9 +45,7 @@ import org.openhab.binding.homeconnectdirect.internal.service.description.model.
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.Enumeration;
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.change.DeviceDescriptionChange;
 import org.openhab.binding.homeconnectdirect.internal.service.profile.ApplianceProfileService;
-import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Action;
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource;
-import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.data.ProgramData;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -148,27 +145,10 @@ public class HomeConnectDirectOvenHandler extends BaseHomeConnectDirectHandler {
                 logger.warn("Could not set temperature! uid={}", getThing().getUID());
             }
         } else if (CHANNEL_OVEN_PROGRAM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
-            if (COMMAND_START.equalsIgnoreCase(command.toFullString())) {
-                var selectedProgram = getKeyValueStore().get(SELECTED_PROGRAM_KEY);
-                if (selectedProgram != null) {
-                    getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                        if (deviceDescriptionService.getActiveProgram(true) != null) {
-                            mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
-                                    List.of(new ProgramData(programUid, null)), null, 1));
-                        } else {
-                            logger.info(
-                                    "The '{}' control is either unavailable or in read-only mode. Cannot start program.",
-                                    ACTIVE_PROGRAM_KEY);
-                        }
-                    });
-
-                }
-            } else if (COMMAND_PAUSE.equalsIgnoreCase(command.toFullString())) {
-                sendBooleanCommandIfAllowed(PAUSE_PROGRAM_KEY);
-            } else if (COMMAND_RESUME.equalsIgnoreCase(command.toFullString())) {
-                sendBooleanCommandIfAllowed(RESUME_PROGRAM_KEY);
-            } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
+            if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
                 sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
+            } else {
+                handleProgramCommand(command);
             }
         }
 

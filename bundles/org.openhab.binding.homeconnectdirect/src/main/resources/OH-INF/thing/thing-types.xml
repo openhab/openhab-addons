@@ -26,7 +26,7 @@
 			<channel id="rinse-aid-nearly-empty" typeId="dishwasher-rinse-aid-nearly-empty-channel"/>
 			<channel id="machine-care-reminder" typeId="dishwasher-machine-care-reminder-channel"/>
 			<channel id="program-phase" typeId="dishwasher-program-phase-channel"/>
-			<channel id="program-command" typeId="dishwasher-program-command-channel"/>
+			<channel id="dishwasher-program-command" typeId="dishwasher-program-command-channel"/>
 
 			<!-- program -->
 			<channel id="active-program" typeId="active-program-channel"/>

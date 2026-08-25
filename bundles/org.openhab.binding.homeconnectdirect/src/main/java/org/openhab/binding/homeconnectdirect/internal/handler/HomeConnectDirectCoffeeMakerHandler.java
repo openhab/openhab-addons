@@ -13,7 +13,6 @@
 package org.openhab.binding.homeconnectdirect.internal.handler;
 
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
-import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ACTIVE_PROGRAM;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +27,7 @@ import org.openhab.binding.homeconnectdirect.internal.provider.HomeConnectDirect
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.DeviceDescriptionType;
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.change.DeviceDescriptionChange;
 import org.openhab.binding.homeconnectdirect.internal.service.profile.ApplianceProfileService;
-import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Action;
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource;
-import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.data.ProgramData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -38,8 +35,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HomeConnectDirectCoffeeMakerHandler} is responsible for handling commands, which are
@@ -50,16 +45,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HomeConnectDirectCoffeeMakerHandler extends BaseHomeConnectDirectHandler {
 
-    private final Logger logger;
-
     public HomeConnectDirectCoffeeMakerHandler(Thing thing, ApplianceProfileService applianceProfileService,
             HomeConnectDirectDynamicCommandDescriptionProvider commandDescriptionProvider,
             HomeConnectDirectDynamicStateDescriptionProvider stateDescriptionProvider, String deviceId,
             HomeConnectDirectConfiguration configuration, HomeConnectDirectTranslationProvider translationProvider) {
         super(thing, applianceProfileService, commandDescriptionProvider, stateDescriptionProvider, deviceId,
                 configuration, translationProvider);
-
-        this.logger = LoggerFactory.getLogger(HomeConnectDirectCoffeeMakerHandler.class);
     }
 
     @Override
@@ -72,23 +63,10 @@ public class HomeConnectDirectCoffeeMakerHandler extends BaseHomeConnectDirectHa
         super.handleCommand(channelUID, command);
 
         if (CHANNEL_COFFEE_MAKER_PROGRAM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
-            if (COMMAND_START.equalsIgnoreCase(command.toFullString())) {
-                var selectedProgram = getKeyValueStore().get(SELECTED_PROGRAM_KEY);
-                if (selectedProgram != null) {
-                    getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                        if (deviceDescriptionService.getActiveProgram(true) != null) {
-                            mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
-                                    List.of(new ProgramData(programUid, null)), null, 1));
-                        } else {
-                            logger.warn(
-                                    "The '{}' control is either unavailable or in read-only mode. Cannot start program.",
-                                    ACTIVE_PROGRAM_KEY);
-                        }
-                    });
-
-                }
-            } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
+            if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
                 sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
+            } else {
+                handleProgramCommand(command);
             }
         }
     }

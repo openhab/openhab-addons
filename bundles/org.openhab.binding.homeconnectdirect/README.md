@@ -82,23 +82,24 @@ These channels provide immediate access to common functions. Available channels 
 | `selected-program`             | String               | R/W    | The program currently selected on the device.                                                                                                           | Dishwasher, Washer, Washer/Dryer, Dryer, Coffee Maker, Oven, Warming Drawer                                |
 | `remaining-program-time`       | Number:Time          | R      | Estimated time remaining.                                                                                                                               | Dishwasher, Washer, Washer/Dryer, Dryer, Oven, Warming Drawer                                              |
 | `program-progress`             | Number:Dimensionless | R      | Progress in percent (0-100%).                                                                                                                           | Dishwasher, Cook Processor, Washer, Washer/Dryer, Dryer, Coffee Maker, Oven, Warming Drawer                |
-| `program-command`              | String               | W      | Send commands like `start`, `pause`, `resume`, or `stop`.                                                                                               | Dishwasher, Cook Processor, Washer, Washer/Dryer, Dryer                                                    |
+| `program-command`              | String               | W      | Send commands like `start`, `pause`, or `resume`.                                                                                                       | Cook Processor, Washer, Washer/Dryer, Dryer                                                                |
 | `command`                      | String               | W      | Send specific operation commands to the appliance.                                                                                                      | All                                                                                                        |
 | `raw-message`                  | String               | W      | Advanced: Send raw JSON payloads.<br>Example (Start coffee program): `{"action": "POST", "resource": "/ro/activeProgram", "data": [{"program": 8217}]}` | All                                                                                                        |
 
 #### Dishwasher Channels
 
-| Channel ID                    | Item Type | Access | Description                                              |
-|-------------------------------|-----------|--------|----------------------------------------------------------|
-| `salt-lack`                   | Switch    | R      | Indicates if dishwasher salt is empty.                   |
-| `rinse-aid-lack`              | Switch    | R      | Indicates if dishwasher rinse aid is empty.              |
-| `salt-nearly-empty`           | Switch    | R      | Indicates when the dishwasher salt is almost empty.      |
-| `rinse-aid-nearly-empty`      | Switch    | R      | Indicates when the dishwasher rinse aid is almost empty. |
-| `machine-care-reminder`       | Switch    | R      | Indicates whether the dishwasher needs cleaning.         |
-| `program-phase`               | String    | R      | The program or process phase of the dishwasher.          |
-| `dishwasher-vario-speed-plus` | Switch    | R/W    | High-speed cleaning option.                              |
-| `dishwasher-intensiv-zone`    | Switch    | R/W    | Increases spray pressure in the lower basket.            |
-| `dishwasher-brilliance-dry`   | Switch    | R/W    | Enhances the drying process for glassware.               |
+| Channel ID                    | Item Type | Access | Description                                                      |
+|-------------------------------|-----------|--------|------------------------------------------------------------------|
+| `salt-lack`                   | Switch    | R      | Indicates if dishwasher salt is empty.                           |
+| `rinse-aid-lack`              | Switch    | R      | Indicates if dishwasher rinse aid is empty.                      |
+| `salt-nearly-empty`           | Switch    | R      | Indicates when the dishwasher salt is almost empty.              |
+| `rinse-aid-nearly-empty`      | Switch    | R      | Indicates when the dishwasher rinse aid is almost empty.         |
+| `machine-care-reminder`       | Switch    | R      | Indicates whether the dishwasher needs cleaning.                 |
+| `program-phase`               | String    | R      | The program or process phase of the dishwasher.                  |
+| `dishwasher-program-command`  | String    | W      | Controls program execution (`start`, `pause`, `resume`, `stop`). |
+| `dishwasher-vario-speed-plus` | Switch    | R/W    | High-speed cleaning option.                                      |
+| `dishwasher-intensiv-zone`    | Switch    | R/W    | Increases spray pressure in the lower basket.                    |
+| `dishwasher-brilliance-dry`   | Switch    | R/W    | Enhances the drying process for glassware.                       |
 
 #### Washer, Dryer & Washer/Dryer Channels
 

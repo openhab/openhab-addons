@@ -14,6 +14,7 @@ package org.openhab.binding.homeconnectdirect.internal.handler;
 
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import org.openhab.binding.homeconnectdirect.internal.handler.model.Value;
 import org.openhab.binding.homeconnectdirect.internal.i18n.HomeConnectDirectTranslationProvider;
 import org.openhab.binding.homeconnectdirect.internal.provider.HomeConnectDirectDynamicCommandDescriptionProvider;
 import org.openhab.binding.homeconnectdirect.internal.provider.HomeConnectDirectDynamicStateDescriptionProvider;
+import org.openhab.binding.homeconnectdirect.internal.service.description.model.DeviceDescriptionType;
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.change.DeviceDescriptionChange;
 import org.openhab.binding.homeconnectdirect.internal.service.profile.ApplianceProfileService;
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource;
@@ -31,6 +33,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 
 /**
  * The {@link HomeConnectDirectDishwasherHandler} is responsible for handling commands, which are
@@ -64,9 +67,12 @@ public class HomeConnectDirectDishwasherHandler extends BaseHomeConnectDirectHan
             sendBooleanOptionIfAllowed(command, DISHWASHER_INTENSIV_ZONE_KEY);
         } else if (CHANNEL_DISHWASHER_BRILLIANCE_DRY.equals(channelUID.getId()) && command instanceof OnOffType) {
             sendBooleanOptionIfAllowed(command, DISHWASHER_BRILLIANCE_DRY_KEY);
-        } else if (CHANNEL_PROGRAM_COMMAND.equals(channelUID.getId())
-                && COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
-            sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
+        } else if (CHANNEL_DISHWASHER_PROGRAM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
+            if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
+                sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
+            } else {
+                handleProgramCommand(command);
+            }
         }
     }
 
@@ -75,7 +81,10 @@ public class HomeConnectDirectDishwasherHandler extends BaseHomeConnectDirectHan
         super.onApplianceDescriptionChangeEvent(deviceDescriptionChanges);
 
         deviceDescriptionChanges.forEach(deviceDescriptionChange -> {
-            if (deviceDescriptionChange.key().equals(DISHWASHER_PROGRAM_PHASE_KEY)) {
+            if (DeviceDescriptionType.COMMAND.equals(deviceDescriptionChange.type())
+                    || DeviceDescriptionType.COMMAND_LIST.equals(deviceDescriptionChange.type())) {
+                updateProgramCommandDescription();
+            } else if (deviceDescriptionChange.key().equals(DISHWASHER_PROGRAM_PHASE_KEY)) {
                 updateStatusDescriptionIfLinked(CHANNEL_DISHWASHER_PROGRAM_PHASE, DISHWASHER_PROGRAM_PHASE_KEY);
             }
         });
@@ -86,6 +95,7 @@ public class HomeConnectDirectDishwasherHandler extends BaseHomeConnectDirectHan
         super.onApplianceValueEvent(value, resource);
 
         switch (value.key()) {
+            case SELECTED_PROGRAM_KEY, ACTIVE_PROGRAM_KEY -> updateProgramCommandDescription();
             case DISHWASHER_PROGRAM_PHASE_KEY ->
                 updateStateIfLinked(CHANNEL_DISHWASHER_PROGRAM_PHASE, new StringType(value.getValueAsString()));
             case DISHWASHER_SALT_LACK_KEY -> updateStateIfLinked(CHANNEL_DISHWASHER_SALT_LACK,
@@ -119,21 +129,38 @@ public class HomeConnectDirectDishwasherHandler extends BaseHomeConnectDirectHan
     }
 
     private void initializeAllStates() {
-        Arrays.asList(CHANNEL_DISHWASHER_PROGRAM_PHASE, CHANNEL_DISHWASHER_SALT_LACK, CHANNEL_DISHWASHER_RINSE_AID_LACK,
-                CHANNEL_DISHWASHER_SALT_NEARLY_EMPTY, CHANNEL_DISHWASHER_RINSE_AID_NEARLY_EMPTY,
-                CHANNEL_DISHWASHER_MACHINE_CARE_REMINDER, CHANNEL_DISHWASHER_VARIO_SPEED_PLUS,
-                CHANNEL_DISHWASHER_INTENSIV_ZONE, CHANNEL_DISHWASHER_BRILLIANCE_DRY).forEach(this::initializeState);
+        Arrays.asList(CHANNEL_DISHWASHER_PROGRAM_PHASE, CHANNEL_DISHWASHER_PROGRAM_COMMAND,
+                CHANNEL_DISHWASHER_SALT_LACK, CHANNEL_DISHWASHER_RINSE_AID_LACK, CHANNEL_DISHWASHER_SALT_NEARLY_EMPTY,
+                CHANNEL_DISHWASHER_RINSE_AID_NEARLY_EMPTY, CHANNEL_DISHWASHER_MACHINE_CARE_REMINDER,
+                CHANNEL_DISHWASHER_VARIO_SPEED_PLUS, CHANNEL_DISHWASHER_INTENSIV_ZONE,
+                CHANNEL_DISHWASHER_BRILLIANCE_DRY).forEach(this::initializeState);
     }
 
     private void initializeState(String channelId) {
         switch (channelId) {
             case CHANNEL_DISHWASHER_PROGRAM_PHASE ->
                 updateStatusDescriptionIfLinked(channelId, DISHWASHER_PROGRAM_PHASE_KEY);
+            case CHANNEL_DISHWASHER_PROGRAM_COMMAND -> updateProgramCommandDescription();
             case CHANNEL_DISHWASHER_SALT_LACK, CHANNEL_DISHWASHER_RINSE_AID_LACK, CHANNEL_DISHWASHER_SALT_NEARLY_EMPTY,
                     CHANNEL_DISHWASHER_RINSE_AID_NEARLY_EMPTY, CHANNEL_DISHWASHER_MACHINE_CARE_REMINDER,
                     CHANNEL_DISHWASHER_VARIO_SPEED_PLUS, CHANNEL_DISHWASHER_INTENSIV_ZONE,
                     CHANNEL_DISHWASHER_BRILLIANCE_DRY ->
                 updateStateIfLinked(channelId, OnOffType.OFF);
         }
+    }
+
+    private void updateProgramCommandDescription() {
+        getLinkedChannel(CHANNEL_DISHWASHER_PROGRAM_COMMAND).ifPresent(channel -> {
+            getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
+                var commandOptions = new ArrayList<>(getProgramCommandDescription(deviceDescriptionService));
+
+                if (deviceDescriptionService.isCommandAvailableAndWritable(ABORT_PROGRAM_KEY)) {
+                    commandOptions
+                            .add(new CommandOption(COMMAND_STOP, getTranslationProvider().getText(I18N_STOP_PROGRAM)));
+                }
+
+                setCommandOptions(channel.getUID(), commandOptions);
+            });
+        });
     }
 }

@@ -307,24 +307,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         } else if (CHANNEL_CHILD_LOCK.equals(channelUID.getId()) && command instanceof OnOffType) {
             sendBooleanSettingIfAllowed(command, CHILD_LOCK_KEY);
         } else if (CHANNEL_PROGRAM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
-            if (COMMAND_START.equalsIgnoreCase(command.toFullString())) {
-                var selectedProgram = keyValueStore.get(SELECTED_PROGRAM_KEY);
-                if (selectedProgram != null) {
-                    getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                        if (deviceDescriptionService.getActiveProgram(true) != null) {
-                            mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
-                                    List.of(new ProgramData(programUid, null)), null, 1));
-                        } else {
-                            logger.warn("The '{}' control is either unavailable or in read-only mode. Cannot start program.", ACTIVE_PROGRAM_KEY);
-                        }
-                    });
-
-                }
-            } else if (COMMAND_PAUSE.equalsIgnoreCase(command.toFullString())) {
-                sendBooleanCommandIfAllowed(PAUSE_PROGRAM_KEY);
-            } else if (COMMAND_RESUME.equalsIgnoreCase(command.toFullString())) {
-                sendBooleanCommandIfAllowed(RESUME_PROGRAM_KEY);
-            }
+            handleProgramCommand(command);
         } else if (CHANNEL_SELECTED_PROGRAM.equals(channelUID.getId()) && command instanceof StringType) {
             getDeviceDescriptionServiceOptional().ifPresent(deviceDescription -> {
                 if (deviceDescription.getSelectedProgram(true) != null) {
@@ -393,6 +376,29 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                             }
                         });
                     });
+        }
+    }
+
+    protected void handleProgramCommand(Command command) {
+        if (COMMAND_START.equalsIgnoreCase(command.toFullString())) {
+            var selectedProgram = keyValueStore.get(SELECTED_PROGRAM_KEY);
+            if (selectedProgram != null) {
+                getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
+                    if (deviceDescriptionService.getActiveProgram(true) != null) {
+                        mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
+                                List.of(new ProgramData(programUid, null)), null, 1));
+                    } else {
+                        logger.warn(
+                                "The '{}' control is either unavailable or in read-only mode. Cannot start program.",
+                                ACTIVE_PROGRAM_KEY);
+                    }
+                });
+
+            }
+        } else if (COMMAND_PAUSE.equalsIgnoreCase(command.toFullString())) {
+            sendBooleanCommandIfAllowed(PAUSE_PROGRAM_KEY);
+        } else if (COMMAND_RESUME.equalsIgnoreCase(command.toFullString())) {
+            sendBooleanCommandIfAllowed(RESUME_PROGRAM_KEY);
         }
     }
 
@@ -1164,33 +1170,36 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         // program command
         getLinkedChannel(CHANNEL_PROGRAM_COMMAND)
                 .ifPresent(channel -> getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                    var commands = deviceDescriptionService.getCommands(true, true);
-
-                    // collect all commands of type boolean
-                    var commandOptions = commands.stream()
-                            .filter(command -> ContentType.BOOLEAN.equals(command.contentType()))
-                            .filter(command -> Set.of(RESUME_PROGRAM_KEY, PAUSE_PROGRAM_KEY).contains(command.key()))
-                            .map(command -> {
-                                var commandOptionCommand = switch (command.key()) {
-                                    case RESUME_PROGRAM_KEY -> COMMAND_RESUME;
-                                    case PAUSE_PROGRAM_KEY -> COMMAND_PAUSE;
-                                    default -> throw new IllegalStateException("Unexpected value: " + command.key());
-                                };
-                                var commandOptionLabel = switch (command.key()) {
-                                    case RESUME_PROGRAM_KEY -> translationProvider.getText(I18N_RESUME_PROGRAM);
-                                    case PAUSE_PROGRAM_KEY -> translationProvider.getText(I18N_PAUSE_PROGRAM);
-                                    default -> throw new IllegalStateException("Unexpected value: " + command.key());
-                                };
-                                return new CommandOption(commandOptionCommand, commandOptionLabel);
-                            }).toList();
-                    if (commandOptions.isEmpty() && deviceDescriptionService.getActiveProgram(true) != null
-                            && deviceDescriptionService.getSelectedProgram(true) != null) {
-                        commandOptions = List
-                                .of(new CommandOption(COMMAND_START, translationProvider.getText(I18N_START_PROGRAM)));
-                    }
+                    final var commandOptions = getProgramCommandDescription(deviceDescriptionService);
 
                     setCommandOptions(channel.getUID(), commandOptions);
                 }));
+    }
+
+    protected List<CommandOption> getProgramCommandDescription(DeviceDescriptionService deviceDescriptionService) {
+        var commands = deviceDescriptionService.getCommands(true, true);
+
+        // collect all commands of type boolean
+        var commandOptions = commands.stream().filter(command -> ContentType.BOOLEAN.equals(command.contentType()))
+                .filter(command -> Set.of(RESUME_PROGRAM_KEY, PAUSE_PROGRAM_KEY).contains(command.key()))
+                .map(command -> {
+                    var commandOptionCommand = switch (command.key()) {
+                        case RESUME_PROGRAM_KEY -> COMMAND_RESUME;
+                        case PAUSE_PROGRAM_KEY -> COMMAND_PAUSE;
+                        default -> throw new IllegalStateException("Unexpected value: " + command.key());
+                    };
+                    var commandOptionLabel = switch (command.key()) {
+                        case RESUME_PROGRAM_KEY -> translationProvider.getText(I18N_RESUME_PROGRAM);
+                        case PAUSE_PROGRAM_KEY -> translationProvider.getText(I18N_PAUSE_PROGRAM);
+                        default -> throw new IllegalStateException("Unexpected value: " + command.key());
+                    };
+                    return new CommandOption(commandOptionCommand, commandOptionLabel);
+                }).toList();
+        if (commandOptions.isEmpty() && deviceDescriptionService.getActiveProgram(true) != null
+                && deviceDescriptionService.getSelectedProgram(true) != null) {
+            commandOptions = List.of(new CommandOption(COMMAND_START, translationProvider.getText(I18N_START_PROGRAM)));
+        }
+        return commandOptions;
     }
 
     protected void updateReadonlyEnumOptionDescriptionIfLinked(String channelId, String optionKey) {

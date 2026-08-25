@@ -284,6 +284,7 @@ public class HomeConnectDirectBindingConstants {
     public static final String CHANNEL_DISHWASHER_VARIO_SPEED_PLUS = "dishwasher-vario-speed-plus";
     public static final String CHANNEL_DISHWASHER_INTENSIV_ZONE = "dishwasher-intensiv-zone";
     public static final String CHANNEL_DISHWASHER_BRILLIANCE_DRY = "dishwasher-brilliance-dry";
+    public static final String CHANNEL_DISHWASHER_PROGRAM_COMMAND = "dishwasher-program-command";
     public static final String CHANNEL_COFFEE_MAKER_COUNTDOWN_CLEANING = "cleaning";
     public static final String CHANNEL_COFFEE_MAKER_COUNTDOWN_CALC_AND_CLEAN = "calc-n-clean";
     public static final String CHANNEL_COFFEE_MAKER_COUNTDOWN_DESCALING = "descaling";

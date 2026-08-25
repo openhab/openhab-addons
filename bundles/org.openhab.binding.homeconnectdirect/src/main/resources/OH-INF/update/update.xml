@@ -5,9 +5,10 @@
 
 	<thing-type uid="homeconnectdirect:dishwasher">
 		<instruction-set targetVersion="1">
-			<update-channel id="program-command">
+			<remove-channel id="program-command"/>
+			<add-channel id="dishwasher-program-command">
 				<type>homeconnectdirect:dishwasher-program-command-channel</type>
-			</update-channel>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
