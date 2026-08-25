@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.shelly.internal.api1;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLY25_ROLLER;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
 
 import java.util.HashMap;
@@ -32,7 +31,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModelHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.types.State;
 
@@ -84,8 +83,9 @@ public class Shelly1CoIoTVersion2Test {
         CoIotSensor posSensor = rollerPosSensor(0);
         List<CoIotSensor> sensorUpdates = List.of(rollerStateSensor("open"), posSensor);
         Map<String, State> updates = new HashMap<>();
+        ShellyLightModelHandler lightModel = mock(ShellyLightModelHandler.class);
 
-        v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, new ShellyColorUtils());
+        v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, lightModel);
 
         assertThat(updates.containsKey(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS)), is(false));
         assertThat(updates.containsKey(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL)), is(false));
@@ -97,8 +97,9 @@ public class Shelly1CoIoTVersion2Test {
         CoIotSensor posSensor = rollerPosSensor(30);
         List<CoIotSensor> sensorUpdates = List.of(rollerStateSensor("stop"), posSensor);
         Map<String, State> updates = new HashMap<>();
+        ShellyLightModelHandler lightModel = mock(ShellyLightModelHandler.class);
 
-        v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, new ShellyColorUtils());
+        v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, lightModel);
 
         State pos = updates.get(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS));
         State control = updates.get(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL));
@@ -116,8 +117,9 @@ public class Shelly1CoIoTVersion2Test {
         CoIotSensor posSensor = rollerPosSensor(50);
         List<CoIotSensor> sensorUpdates = List.of(posSensor);
         Map<String, State> updates = new HashMap<>();
+        ShellyLightModelHandler lightModel = mock(ShellyLightModelHandler.class);
 
-        v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, new ShellyColorUtils());
+        v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, lightModel);
 
         assertThat(updates.containsKey(mkChannelId(CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS)), is(true));
     }

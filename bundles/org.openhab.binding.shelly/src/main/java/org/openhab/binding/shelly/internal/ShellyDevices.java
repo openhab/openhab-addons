@@ -294,6 +294,11 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
 
+    // Shelly Gen3 Bulb Series
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDUOBULB = new ThingTypeUID(BINDING_ID, "shellyplusduobulb");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSCOLORBULB = new ThingTypeUID(BINDING_ID,
+            "shellypluscolorbulb");
+
     // Shelly Blu series
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON1 = new ThingTypeUID(BINDING_ID, "shellyblubutton");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUWALLSWITCH4 = new ThingTypeUID(BINDING_ID,

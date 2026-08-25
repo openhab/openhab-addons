@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
-import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.hasColorComponent;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyDiscoveryInterface;
@@ -86,6 +87,8 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusTemp;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2Energy;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
@@ -1312,7 +1315,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             // the color component always sits at settings.lights[0]
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
-        return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
+        return channelUpdate ? ShellyComponents.updateRGBW(value, getThing()) : false;
     }
 
     private boolean updateLightModeStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
@@ -1348,13 +1351,14 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.temp = ct;
         }
         lights.set(lightId, ds);
+
         if (profile.isProRgbwwPm) {
             // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
             updateComponentMeter(status, lightId, value.apower, value.aenergy, value.voltage, value.current,
                     channelUpdate);
         }
         if (channelUpdate) {
-            ShellyComponents.updateLightMode(getThing(), status);
+            ShellyComponents.updateLightMode(value, getThing());
         }
         // Always true: signals the watchdog even if the channel value itself didn't change.
         return true;

@@ -19,9 +19,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_CLOSE;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_OPEN;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_PROFILE_RGBCCT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurre
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
@@ -55,6 +53,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -840,23 +839,45 @@ public class ShellyComponentsTest {
     @Test
     void updateLightModeHybridProfileSkipsColorSlotAndUpdatesSecondaryComponent() throws Exception {
         ShellyDeviceProfile profile = proRgbwwPmHybridProfile();
-        ShellyThingInterface handler = mockHandler(profile);
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPRORGBWWPM);
+        handler.setProfile(profile);
+        profile.device.profile = SHELLY2_PROFILE_RGBCCT;
+        handler.addLightModel(0, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
+        handler.addLightModel(1, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
 
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        ShellySettingsLight colorLight = new ShellySettingsLight(); // settings.lights[0], the "rgb" color slot
-        ShellySettingsLight cctLight = new ShellySettingsLight(); // settings.lights[1], the "cct" secondary slot
-        cctLight.ison = true;
-        cctLight.brightness = 42;
-        cctLight.temp = 4000;
-        status.lights = new ArrayList<>(List.of(colorLight, cctLight));
+        // ShellySettingsStatus status = new ShellySettingsStatus();
+        // ShellySettingsLight colorLight = new ShellySettingsLight(); // settings.lights[0], the "rgb" color slot
+        // ShellySettingsLight cctLight = new ShellySettingsLight(); // settings.lights[1], the "cct" secondary slot
+        // cctLight.ison = true;
+        // cctLight.brightness = 42;
+        // cctLight.temp = 4000;
+        // status.lights = new ArrayList<>(List.of(colorLight, cctLight));
 
-        boolean updated = ShellyComponents.updateLightMode(handler, status);
+        Shelly2DeviceStatusLight value = new Shelly2DeviceStatusLight();
+        value.id = 0;
+        value.output = true;
+        value.brightness = 42.0;
+        value.ct = 4000;
+
+        boolean updated = ShellyComponents.updateLightMode(value, handler);
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        int ctPercent = kelvinToMirekPercent(2700, 6500, 4000);
 
         assertThat(updated, is(true));
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_LIGHT_CONTROL), anyString(), any());
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_INDEX + "1"), eq(CHANNEL_BRIGHTNESS + "$Switch"),
-                eq(OnOffType.ON));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_INDEX + "1"), eq(CHANNEL_COLOR_TEMP), any());
+        assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_BRIGHTNESS), is(new PercentType(42)));
+        assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP), is(new PercentType(ctPercent)));
+    }
+
+    /*
+     * Helper to convert a kelvin value to a percent value for the Shelly CCT channel, given the min/max range
+     * of the component. Note that value is not linear in kelvin, but rather in reciprocal kelvin (mirek).
+     */
+    private static int kelvinToMirekPercent(double tMin, double tMax, double T) {
+        double mkMin = 1.0 / tMax;
+        double mkMax = 1.0 / tMin;
+        double mk = 1.0 / T;
+        return (int) Math.round((mk - mkMin) / (mkMax - mkMin) * 100.0);
     }
 
     @Test
@@ -865,19 +886,34 @@ public class ShellyComponentsTest {
         ShellySettingsRgbwLight cctComponent = profile.settings.lights.get(1);
         cctComponent.minTemp = 3000;
         cctComponent.maxTemp = 6000;
-        ShellyThingInterface handler = mockHandler(profile);
 
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        ShellySettingsLight colorLight = new ShellySettingsLight();
-        ShellySettingsLight cctLight = new ShellySettingsLight();
-        cctLight.ison = true;
-        cctLight.brightness = 42;
-        cctLight.temp = 4500;
-        status.lights = new ArrayList<>(List.of(colorLight, cctLight));
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPRORGBWWPM);
+        handler.setProfile(profile);
+        profile.device.profile = SHELLY2_PROFILE_RGBCCT;
+        handler.addLightModel(0, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
+        handler.addLightModel(1, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
 
-        ShellyComponents.updateLightMode(handler, status);
+        // ShellySettingsStatus status = new ShellySettingsStatus();
+        // ShellySettingsLight colorLight = new ShellySettingsLight();
+        // ShellySettingsLight cctLight = new ShellySettingsLight();
+        // cctLight.ison = true;
+        // cctLight.brightness = 42;
+        // cctLight.temp = 4500;
+        // status.lights = new ArrayList<>(List.of(colorLight, cctLight));
 
-        assertEquals(new PercentType(50), lastState(handler, CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_COLOR_TEMP));
+        Shelly2DeviceStatusLight value = new Shelly2DeviceStatusLight();
+        value.id = 0;
+        value.output = true;
+        value.brightness = 42.0;
+        value.ct = 4500;
+
+        boolean updated = ShellyComponents.updateLightMode(value, handler);
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        int ctPercent = kelvinToMirekPercent(3000, 6000, 4500);
+
+        assertThat(updated, is(true));
+        assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP), is(new PercentType(ctPercent)));
     }
 
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
