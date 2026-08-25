@@ -216,9 +216,6 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             @Override
             public void onConnectionFailure(@Nullable Mqtt5Client client,
                     @Nullable OnConnectionFailureReturn onConnectionFailureReturn) {
-                String error = (onConnectionFailureReturn != null)
-                        ? String.valueOf(onConnectionFailureReturn.getErrorCode())
-                        : "Unknown";
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Connection failed");
             }
 

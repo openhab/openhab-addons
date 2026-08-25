@@ -21,7 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link EmeraldBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author paul@smedley.id.au - Initial contribution
+ * @author Paul Smedley - Initial contribution
  */
 @NonNullByDefault
 public class EmeraldBindingConstants {

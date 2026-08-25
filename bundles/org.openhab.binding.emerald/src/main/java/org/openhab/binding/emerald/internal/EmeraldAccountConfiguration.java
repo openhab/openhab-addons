@@ -15,16 +15,12 @@ package org.openhab.binding.emerald.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EmeraldConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EmeraldAccountConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author paul@smedley.id.au - Initial contribution
+ * @author Paul Smedley - Initial contribution
  */
 @NonNullByDefault
 public class EmeraldAccountConfiguration {
-
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
     public String email = "";
     public String password = "";
 }

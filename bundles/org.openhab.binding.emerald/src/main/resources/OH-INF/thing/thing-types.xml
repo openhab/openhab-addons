@@ -76,7 +76,7 @@
 		<item-type>Switch</item-type>
 		<label>Defrost</label>
 		<description>Is the defrost cycle running</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="work-state">
 		<item-type>Number</item-type>

@@ -69,7 +69,6 @@ public class EmeraldWebTargets {
         payload.addProperty("device_type", "iOS");
         payload.addProperty("password", password);
         payload.addProperty("email", email);
-        payload.addProperty("password", password);
 
         String response = invoke(getTokenUri, HttpMethod.POST, null, null, payload.toString());
         return gson.fromJson(response, Login.class);

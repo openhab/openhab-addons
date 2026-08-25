@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The EmeraldDiscoveryService is responsible for auto detecting an Emerald
- * HWS device in the local network.
+ * HWS device via the cloud API.
  *
- * @author paul@smedley.id.au - Initial contribution
+ * @author Paul Smedley - Initial contribution
  */
 
 @Component(scope = ServiceScope.PROTOTYPE, service = EmeraldDiscoveryService.class)

@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link EmeraldHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author paul@smedley.id.au - Initial contribution
+ * @author Paul Smedley - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.emerald", service = ThingHandlerFactory.class)
