@@ -319,7 +319,7 @@ public class HttpRequestBuilder {
                 : statusReason + " (" + AMZN_ERROR_TYPE_HEADER + ": " + amznErrorType + ")";
     }
 
-    // package-private so that HttpRequestBuilderTest can drive onComplete() directly
+    /** Package-private so that HttpRequestBuilderTest can drive onComplete() directly. */
     class HttpResponseListener extends BufferingResponseListener {
         private static final int MAX_REDIRECTS = 30;
         private static final int MAX_RETRIES = 3;
