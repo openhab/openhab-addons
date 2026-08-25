@@ -232,7 +232,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        final String channel = channelUID.getId();
+        // in case of a channel from the deprecated thing type, replace _ with -
+        final String channel = channelUID.getId().replace('_', '-');
 
         if (getThing().getStatus() != ThingStatus.ONLINE || !connector.isConnected()) {
             logger.debug("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
@@ -431,7 +432,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 }
 
                                 if (isValidTimecode(matcher.group(4))) {
-                                    updateState(CHANNEL_TIME_DISPLAY, new QuantityType<>(
+                                    updateState(getChannelName(CHANNEL_TIME_DISPLAY), new QuantityType<>(
                                             getSecondsFromTimecode(matcher.group(4)), API_SECONDS_UNIT));
                                 } else {
                                     logger.debug("Invalid timecode in {} message: {}", key, updateData);
@@ -460,7 +461,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                     || (key.equals(QTR) && X.equals(currentTimeMode))
                                     || (key.equals(QCE) && C.equals(currentTimeMode))
                                     || (key.equals(QCR) && K.equals(currentTimeMode)))) {
-                                updateState(CHANNEL_TIME_DISPLAY, new QuantityType<>(timecode, API_SECONDS_UNIT));
+                                updateState(getChannelName(CHANNEL_TIME_DISPLAY),
+                                        new QuantityType<>(timecode, API_SECONDS_UNIT));
                             }
 
                             if (key.equals(QTE)) {
@@ -941,18 +943,22 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * @param value the value to be updated
      */
     private void updateChannelState(String channel, @Nullable String value) {
-        if (!isLinked(channel)) {
+        // fix channel names from the deprecated thing type
+        final String channelName = channel.replace('_', '-');
+        final String targetChannel = getChannelName(channel);
+
+        if (!isLinked(targetChannel)) {
             return;
         }
 
         if (value == null) {
-            updateState(channel, UnDefType.UNDEF);
+            updateState(targetChannel, UnDefType.UNDEF);
             return;
         }
 
         State state = UnDefType.UNDEF;
 
-        switch (channel) {
+        switch (channelName) {
             case CHANNEL_POWER:
             case CHANNEL_MUTE:
                 state = OnOffType.from(ON.equals(value));
@@ -987,7 +993,20 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             default:
                 break;
         }
-        updateState(channel, state);
+        updateState(targetChannel, state);
+    }
+
+    /**
+     * Handle when a channel from the the deprecated thing is encountered
+     *
+     * @param channel the logical channel name with dash separator
+     * @return the actual linked channel name with either dash or underscore separator
+     */
+    private String getChannelName(String channel) {
+        if (isLinked(channel.replace('-', '_'))) {
+            return channel.replace('-', '_');
+        }
+        return channel;
     }
 
     /**
