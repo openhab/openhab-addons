@@ -606,13 +606,23 @@ public class ShellyChannelDefinitions {
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
-            // Create power channel in color mode and brightness channel in white mode
-            addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
+            // Create power channel in color mode and brightness channel in white mode; the new Gen3 Duo/Multicolor
+            // Bulb (isDuo && isGen2) never gets a power channel, regardless of the mode it happened to be in at
+            // pairing time. The pre-existing Gen1 Duo RGBW (shellycolorbulb) keeps its documented power channel.
+            addChannel(thing, add, profile.hasColorTag(idx) && !(profile.isDuo && profile.isGen2), group,
+                    CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
+            // Always create CCT channel for Duo/Bulb: device may not report ct when off,
+            // but the channel must exist to be populated on subsequent polls when on.
+            // Duo range is 2700-6500K; Bulb/RGBW2 range is 3000-6500K — use separate channel types.
+            // Vintage shares the isDuo flag but is a fixed warm-white bulb with no CCT component at all.
+            boolean isDuoCct = profile.isDuo && !profile.isVintage;
+            boolean hasCCT = status.temp != null || isDuoCct || profile.isBulb;
+            String tempChannelType = isDuoCct ? "whiteTempDuo" : "whiteTemp";
+            addChannel(thing, add, hasCCT, whiteGroup, CHANNEL_COLOR_TEMP, tempChannelType);
         }
 
         return add;
@@ -942,9 +952,14 @@ public class ShellyChannelDefinitions {
 
     private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
+        addChannel(thing, newChannels, supported, group, channelName, null);
+    }
+
+    private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
+            String channelName, @Nullable String typeIdOverride) throws IllegalArgumentException {
         if (supported) {
             String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelName;
-            Channel channel = createChannel(thing, channelId, group, channelName);
+            Channel channel = createChannel(thing, channelId, group, channelName, typeIdOverride);
             if (channel != null) {
                 newChannels.put(channelId, channel);
                 String replacement = getReplacementChannelName(channelName);
@@ -957,14 +972,20 @@ public class ShellyChannelDefinitions {
 
     private static @Nullable Channel createChannel(Thing thing, String channelId, String group, String channelName)
             throws IllegalArgumentException {
+        return createChannel(thing, channelId, group, channelName, null);
+    }
+
+    private static @Nullable Channel createChannel(Thing thing, String channelId, String group, String channelName,
+            @Nullable String typeIdOverride) throws IllegalArgumentException {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
         ShellyChannel channelDef = getDefinition(channelId);
         if (channelDef == null) {
             return null;
         }
 
-        ChannelTypeUID channelTypeUID = channelDef.typeId.contains("system:") ? new ChannelTypeUID(channelDef.typeId)
-                : new ChannelTypeUID(BINDING_ID, channelDef.typeId);
+        String typeId = typeIdOverride != null ? typeIdOverride : channelDef.typeId;
+        ChannelTypeUID channelTypeUID = typeId.contains("system:") ? new ChannelTypeUID(typeId)
+                : new ChannelTypeUID(BINDING_ID, typeId);
         ChannelBuilder builder;
         if ("system:button".equalsIgnoreCase(channelDef.typeId)) {
             builder = ChannelBuilder.create(channelUID, null).withKind(ChannelKind.TRIGGER);

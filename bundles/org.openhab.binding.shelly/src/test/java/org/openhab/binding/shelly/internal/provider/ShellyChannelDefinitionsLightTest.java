@@ -127,6 +127,22 @@ public class ShellyChannelDefinitionsLightTest {
     }
 
     @Test
+    void vintageWhiteModeDoesNotCreateColorTempChannel() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYVINTAGE);
+        profile.inColor = false;
+        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight()));
+
+        ShellyStatusLightChannel status = new ShellyStatusLightChannel();
+        status.brightness = 50;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellyvintage"), profile,
+                status, 0);
+
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)));
+    }
+
+    @Test
     void indexedLightGroupHasColorTempDefinitionForProRgbwwPmCctx2Profile() {
         assertDoesNotThrow(
                 () -> ShellyChannelDefinitions.getDefinition(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP));
