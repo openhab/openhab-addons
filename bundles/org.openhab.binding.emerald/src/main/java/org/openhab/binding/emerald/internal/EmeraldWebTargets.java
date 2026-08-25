@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.emerald.internal;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -32,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Handles performing the actual HTTP requests for communicating with the Emerald Servers.
@@ -122,8 +120,8 @@ public class EmeraldWebTargets {
         return jsonResponse.getAsJsonObject("Credentials");
     }
 
-    private String invokeAws(String uri, String amzTarget, String payload) throws IOException, InterruptedException,
-            JsonSyntaxException, TimeoutException, ExecutionException, EmeraldCommunicationException {
+    private String invokeAws(String uri, String amzTarget, String payload)
+            throws InterruptedException, TimeoutException, ExecutionException, EmeraldCommunicationException {
         Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
                 .header("content-type", "application/x-amz-json-1.1").header("x-amz-target", amzTarget)
                 .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)

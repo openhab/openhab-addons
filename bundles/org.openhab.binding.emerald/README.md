@@ -4,7 +4,7 @@ A binding that supports the Australian brand Emerald's range of Heat Pump Hot Wa
 
 ## Supported Things
 
-HWS sold by Emerald. 
+HWS sold by Emerald.
 In the case of a household with multiple HWS, each HWS is represented by its own 'hws' thing.
 
 ## Discovery
