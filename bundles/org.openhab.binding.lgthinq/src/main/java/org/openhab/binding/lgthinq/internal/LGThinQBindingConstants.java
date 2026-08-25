@@ -140,6 +140,7 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String CHANNEL_WMD_COURSE_ID = "course";
     public static final String CHANNEL_WMD_DELAY_TIME_ID = "delay-time";
     public static final String CHANNEL_WMD_DOOR_LOCK_ID = "door-lock";
+    public static final String CHANNEL_WMD_PREVIOUS_STATE_ID = "previous-state";
     public static final String CHANNEL_WMD_PROCESS_STATE_ID = "process-state";
     public static final String CHANNEL_WMD_REMAIN_TIME_ID = "remain-time";
     public static final String CHANNEL_WMD_REMOTE_COURSE = "rs-course";

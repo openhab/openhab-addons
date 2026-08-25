@@ -45,7 +45,9 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,7 @@ public class LGThinQWasherDryerHandler
     private final ChannelUID spinChannelUID;
     private final ChannelUID rinseChannelUID;
     private final ChannelUID stateChannelUID;
+    private final ChannelUID previousStateChannelUID;
     private final ChannelUID processStateChannelUID;
     private final ChannelUID childLockChannelUID;
     private final ChannelUID dryLevelChannelUID;
@@ -94,6 +97,7 @@ public class LGThinQWasherDryerHandler
         courseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_COURSE_ID);
         dryLevelChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DRY_LEVEL_ID);
         stateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STATE_ID);
+        previousStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PREVIOUS_STATE_ID);
         processStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PROCESS_STATE_ID);
         remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMAIN_TIME_ID);
         delayTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DELAY_TIME_ID);
@@ -150,6 +154,11 @@ public class LGThinQWasherDryerHandler
                 .forEach((k, v) -> optionsPre.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_PROCESS_STATE, v))));
         stateDescriptionProvider.setStateOptions(processStateChannelUID, optionsPre);
 
+        List<StateOption> optionsPrevious = new ArrayList<>();
+        wmCap.getPreviousState().getValuesMapping()
+                .forEach((k, v) -> optionsPrevious.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_STATE, v))));
+        stateDescriptionProvider.setStateOptions(previousStateChannelUID, optionsPrevious);
+
         List<StateOption> optionsChildLock = new ArrayList<>();
         optionsChildLock.add(new StateOption("CHILDLOCK_OFF", "Unlocked"));
         optionsChildLock.add(new StateOption("CHILDLOCK_ON", "Locked"));
@@ -200,8 +209,9 @@ public class LGThinQWasherDryerHandler
     protected void updateDeviceChannels(WasherDryerSnapshot shot) throws LGThinqApiException {
         updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID,
                 OnOffType.from(DevicePowerState.DV_POWER_ON == shot.getPowerStatus()));
-        updateState(stateChannelUID, new StringType(shot.getState()));
-        updateState(processStateChannelUID, new StringType(shot.getProcessState()));
+        updateState(stateChannelUID, stringState(shot.getState()));
+        updateState(previousStateChannelUID, stringState(shot.getPreviousState()));
+        updateState(processStateChannelUID, stringState(shot.getProcessState()));
         updateState(dryLevelChannelUID, new StringType(shot.getDryLevel()));
         updateState(childLockChannelUID, new StringType(shot.getChildLock()));
         updateState(courseChannelUID, new StringType(shot.getCourse()));
@@ -420,10 +430,16 @@ public class LGThinQWasherDryerHandler
     public void onDeviceDisconnected() {
         updateState(CHANNEL_AC_POWER_ID, OnOffType.OFF);
         updateState(CHANNEL_WMD_STATE_ID, new StringType(WMD_POWER_OFF_VALUE));
+        updateState(previousStateChannelUID, UnDefType.UNDEF);
+        updateState(processStateChannelUID, UnDefType.UNDEF);
         updateState(CHANNEL_WMD_COURSE_ID, new StringType("NOT_SELECTED"));
         updateState(CHANNEL_WMD_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
         updateState(CHANNEL_WMD_TEMP_LEVEL_ID, new StringType("NOT_SELECTED"));
         updateState(CHANNEL_WMD_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
         updateState(CHANNEL_WMD_REMAIN_TIME_ID, new StringType("00:00"));
+    }
+
+    private State stringState(String value) {
+        return value.isBlank() ? UnDefType.UNDEF : new StringType(value);
     }
 }

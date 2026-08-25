@@ -177,6 +177,7 @@ LG ThinQ Washer Machine supports the following channels
 |--------------------|-------------------|------------|------------------------------------------------------------------------------------------------------------|
 | state              | Washer State      | String     | General State of the Washer                                                                                |
 | power              | Power             | Switch     | Define the device's Current Power state.                                                                   |
+| previous-state     | Previous State    | String     | Previous operation state reported by LG ThinQ                                                              |
 | process-state      | Process State     | String     | States of the running cycle                                                                                |
 | course             | Course            | String     | Course set up to work                                                                                      |
 | temperature-level  | Temperature Level | String     | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.)                                     |
@@ -214,6 +215,7 @@ LG ThinQ Dryer Machine supports the following channels
 |--------------------|-------------------|---------|------------------------------------------------------------------------|
 | power              | Power             | Switch  | Define the device's Current Power state.                               |
 | state              | Dryer State       | String  | General State of the Washer                                            |
+| previous-state     | Previous State    | String  | Previous operation state reported by LG ThinQ                          |
 | process-state      | Process State     | String  | States of the running cycle                                            |
 | course             | Course            | String  | Course set up to work                                                  |
 | temperature-level  | Temperature Level | String  | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
