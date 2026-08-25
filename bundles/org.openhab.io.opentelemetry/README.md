@@ -167,7 +167,7 @@ No JVM agent is needed, but that also means it only sees what those three source
 - Event-bus spans are flat.
   Each event gets its own root span, so you get a timeline of activity rather than call trees.
   No `traceparent` is passed between threads or over the network.
-- Nothing is captured before the bundle starts.
+- Nothing is captured before the add-on starts.
   openHAB core and the bindings are already up by then, so early log entries, events and metric changes are lost.
 - Metric names follow Micrometer, not the OTel semantic conventions.
   There are no exemplars linking metrics to traces.
