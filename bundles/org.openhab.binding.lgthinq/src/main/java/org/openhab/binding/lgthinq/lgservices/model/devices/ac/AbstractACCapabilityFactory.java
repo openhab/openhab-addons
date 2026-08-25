@@ -238,15 +238,10 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
                 }
             });
         }
-        if (HEAT_PUMP.equals(acCap.getDeviceType())) {
-            JsonNode supHpAirSwitchNode = valuesNode.path(getHpAirWaterSwitchNodeName()).path(getOptionsMapNodeName());
-            if (!supHpAirSwitchNode.isMissingNode()) {
-                // TODO no-op code for future use
-                // supHpAirSwitchNode.properties().forEach(r -> {
-                // r.getValue().asText();
-                // });
-            }
-        }
+        // NOTE: the Heat Pump air/water temperature selector (awhpTempSwitch) has a fixed two-value domain
+        // (0 = air, 1 = water) and is exposed as a read-only channel. Its labels are declared statically as
+        // <options> on the "hp-air-water-switch" channel-type (see channels.xml), keyed by the DecimalType
+        // representation "0.0"/"1.0", so no per-device dynamic state options are extracted here.
 
         JsonNode infoNode = rootNode.get("Info");
         if (infoNode.isMissingNode()) {
@@ -291,7 +286,4 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
     }
 
     protected abstract String getValuesNodeName();
-
-    // ===== For HP only ====
-    protected abstract String getHpAirWaterSwitchNodeName();
 }
