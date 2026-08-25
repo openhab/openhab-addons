@@ -159,7 +159,7 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
         }
     }
 
-    // the first failure of a streak is a WARN, repetitions only DEBUG to keep a format change from flooding the log
+    /** The first failure of a streak is a WARN, repetitions only DEBUG: a format change must not flood the log. */
     private void logFailure(String message, Object... arguments) {
         if (failureLogged) {
             logger.debug(message, arguments);
