@@ -13,6 +13,7 @@
 package org.openhab.binding.emerald.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -85,5 +86,28 @@ public class EmeraldList {
     }
 
     private EmeraldList() {
+    }
+
+    public record HeatpumpContext(Property property, Heatpump heatpump) {
+    }
+
+    /**
+     * Finds a heat pump and its parent property by UUID.
+     */
+    public @Nullable HeatpumpContext findHeatpump(String uuid) {
+        if (info == null || info.property == null) {
+            return null;
+        }
+        for (Property prop : info.property) {
+            if (prop.heatpump == null) {
+                continue;
+            }
+            for (Heatpump hp : prop.heatpump) {
+                if (uuid.equals(hp.id)) {
+                    return new HeatpumpContext(prop, hp);
+                }
+            }
+        }
+        return null;
     }
 }

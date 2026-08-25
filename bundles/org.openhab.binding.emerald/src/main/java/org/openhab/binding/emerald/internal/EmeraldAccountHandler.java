@@ -14,9 +14,9 @@ package org.openhab.binding.emerald.internal;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,7 +47,6 @@ import software.amazon.awssdk.crt.mqtt5.OnConnectionFailureReturn;
 import software.amazon.awssdk.crt.mqtt5.OnConnectionSuccessReturn;
 import software.amazon.awssdk.crt.mqtt5.OnDisconnectionReturn;
 import software.amazon.awssdk.crt.mqtt5.OnStoppedReturn;
-import software.amazon.awssdk.crt.mqtt5.PublishReturn;
 import software.amazon.awssdk.crt.mqtt5.QOS;
 import software.amazon.awssdk.crt.mqtt5.packets.PublishPacket;
 import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
@@ -166,36 +165,31 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
         builder.withClientId(clientId);
 
-        builder.withPublishEvents(new Mqtt5ClientOptions.PublishEvents() {
-            @Override
-            public void onMessageReceived(@Nullable Mqtt5Client client, @Nullable PublishReturn publishReturn) {
-                if (publishReturn == null || publishReturn.getPublishPacket() == null) {
-                    return;
-                }
-
-                PublishPacket packet = publishReturn.getPublishPacket();
-                String topic = packet.getTopic();
-                byte[] payloadBytes = packet.getPayload();
-
-                if (topic == null || payloadBytes == null) {
-                    return;
-                }
-
-                String payload = new String(payloadBytes, StandardCharsets.UTF_8);
-                logger.trace("Received MQTT message on topic: {} Payload: {}", topic, payload);
-
-                getThing().getThings().forEach(child -> {
-                    EmeraldHWSHandler handler = (EmeraldHWSHandler) child.getHandler();
-                    if (handler != null) {
-                        EmeraldHWSConfiguration childConfig = child.getConfiguration()
-                                .as(EmeraldHWSConfiguration.class);
-
-                        if (!childConfig.uuid.isEmpty() && topic.contains(childConfig.uuid)) {
-                            handler.updateFromMqtt(payload);
-                        }
-                    }
-                });
+        builder.withPublishEvents((client, publishReturn) -> {
+            if (publishReturn == null || publishReturn.getPublishPacket() == null) {
+                return;
             }
+
+            PublishPacket packet = publishReturn.getPublishPacket();
+            String topic = packet.getTopic();
+            byte[] payloadBytes = packet.getPayload();
+
+            if (topic == null || payloadBytes == null) {
+                return;
+            }
+
+            String payload = new String(payloadBytes, StandardCharsets.UTF_8);
+            logger.trace("Received MQTT message on topic: {} Payload: {}", topic, payload);
+
+            getThing().getThings().forEach(child -> {
+                EmeraldHWSHandler handler = (EmeraldHWSHandler) child.getHandler();
+                if (handler != null) {
+                    EmeraldHWSConfiguration childConfig = child.getConfiguration().as(EmeraldHWSConfiguration.class);
+                    if (!childConfig.uuid.isEmpty() && topic.contains(childConfig.uuid)) {
+                        handler.updateFromMqtt(payload);
+                    }
+                }
+            });
         });
 
         builder.withLifeCycleEvents(new Mqtt5ClientOptions.LifecycleEvents() {
@@ -284,99 +278,79 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             return;
         }
 
-        String propertyId = null;
-        String macAddress = null;
-
+        EmeraldList.HeatpumpContext ctx = null;
         try {
-            EmeraldList api = getApi();
-            for (int i = 0; i < api.info.property.length; i++) {
-                for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
-                    if (deviceId.equals(api.info.property[i].heatpump[j].id)) {
-                        propertyId = api.info.property[i].id;
-                        macAddress = api.info.property[i].heatpump[j].macAddress;
-                    }
-                }
-            }
+            ctx = getApi().findHeatpump(deviceId);
         } catch (Exception e) {
             logger.warn("Could not fetch API details for control message", e);
         }
 
-        if (propertyId == null || macAddress == null) {
-            logger.warn("Missing property_id or mac_address. Cannot send control message for {}", deviceId);
+        if (ctx == null) {
+            logger.warn("Heat pump metadata not found. Cannot send control message for {}", deviceId);
             return;
         }
 
         JsonArray payloadArray = new JsonArray();
         JsonObject metadata = new JsonObject();
-        int msgId = new Random().nextInt(9900) + 100;
+        int msgId = ThreadLocalRandom.current().nextInt(100, 10000);
 
         metadata.addProperty("msg_id", String.valueOf(msgId));
         metadata.addProperty("namespace", "business");
         metadata.addProperty("direction", "app2gw");
         metadata.addProperty("command", "control");
-        metadata.addProperty("property_id", propertyId);
+        metadata.addProperty("property_id", ctx.property().id);
         metadata.addProperty("device_id", deviceId);
-        metadata.addProperty("hw_id", macAddress);
+        metadata.addProperty("hw_id", ctx.heatpump().macAddress);
 
         payloadArray.add(metadata);
         payloadArray.add(commandPayload);
 
-        String payload = payloadArray.toString();
         String topic = "ep/heat_pump/to_gw/" + deviceId;
 
         PublishPacket.PublishPacketBuilder pubBuilder = new PublishPacket.PublishPacketBuilder();
         pubBuilder.withTopic(topic);
-        pubBuilder.withPayload(payload.getBytes(StandardCharsets.UTF_8));
+        pubBuilder.withPayload(payloadArray.toString().getBytes(StandardCharsets.UTF_8));
         pubBuilder.withQOS(QOS.AT_LEAST_ONCE);
 
-        localMqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
+        localMqttClient.publish(pubBuilder.build()).whenComplete((subAck, throwable) -> {
             if (throwable != null) {
                 logger.debug("Failed to send control message to HWS {}", deviceId, throwable);
             } else {
-                logger.debug("Successfully sent control message to HWS {}: {}", deviceId, commandPayload.toString());
+                logger.debug("Successfully sent control message to HWS {}: {}", deviceId, commandPayload);
             }
         });
     }
 
     private void requestStatusUpdate(String deviceId) {
+        @Nullable
         Mqtt5Client localMqttClient = mqttClient;
         if (localMqttClient == null) {
             return;
         }
 
-        String propertyId = null;
-        String macAddress = null;
-
+        EmeraldList.HeatpumpContext ctx = null;
         try {
-            EmeraldList api = getApi();
-            for (int i = 0; i < api.info.property.length; i++) {
-                for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
-                    if (deviceId.equals(api.info.property[i].heatpump[j].id)) {
-                        propertyId = api.info.property[i].id;
-                        macAddress = api.info.property[i].heatpump[j].macAddress;
-                    }
-                }
-            }
+            ctx = getApi().findHeatpump(deviceId);
         } catch (Exception e) {
             logger.warn("Could not fetch API details for status update", e);
         }
 
-        if (propertyId == null || macAddress == null) {
-            logger.warn("Missing property_id or mac_address. Cannot send comp_query for {}", deviceId);
+        if (ctx == null) {
+            logger.warn("Heat pump metadata not found. Cannot send comp_query for {}", deviceId);
             return;
         }
 
         JsonArray payloadArray = new JsonArray();
         JsonObject metadata = new JsonObject();
-        int msgId = new Random().nextInt(9900) + 100;
+        int msgId = ThreadLocalRandom.current().nextInt(100, 10000);
 
         metadata.addProperty("msg_id", String.valueOf(msgId));
         metadata.addProperty("namespace", "business");
         metadata.addProperty("direction", "app2gw");
         metadata.addProperty("command", "comp_query");
-        metadata.addProperty("property_id", propertyId);
+        metadata.addProperty("property_id", ctx.property().id);
         metadata.addProperty("device_id", deviceId);
-        metadata.addProperty("hw_id", macAddress);
+        metadata.addProperty("hw_id", ctx.heatpump().macAddress);
 
         payloadArray.add(metadata);
         payloadArray.add(new JsonObject());
@@ -391,7 +365,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
         localMqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
             if (throwable != null) {
-                logger.debug("Failed to request status update (comp_query) for HWS {}", deviceId, throwable);
+                logger.error("Failed to request status update (comp_query) for HWS {}", deviceId, throwable);
             } else {
                 logger.debug("Successfully sent comp_query to HWS {}", deviceId);
             }

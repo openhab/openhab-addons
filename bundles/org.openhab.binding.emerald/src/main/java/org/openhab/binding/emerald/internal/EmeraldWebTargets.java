@@ -179,7 +179,8 @@ public class EmeraldWebTargets {
                             String.format("Emerald Servers returned error <%d> while invoking %s", status, uri));
                 }
             } catch (TimeoutException | ExecutionException | InterruptedException ex) {
-                throw new EmeraldCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+                String msg = ex.getMessage();
+                throw new EmeraldCommunicationException(msg != null ? msg : ex.toString(), ex);
             }
         }
 

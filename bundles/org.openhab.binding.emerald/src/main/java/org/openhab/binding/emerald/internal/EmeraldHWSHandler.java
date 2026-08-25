@@ -60,7 +60,6 @@ public class EmeraldHWSHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateChannels();
             return;
         }
 
@@ -76,23 +75,19 @@ public class EmeraldHWSHandler extends BaseThingHandler {
         JsonObject payload = new JsonObject();
 
         switch (channelUID.getId()) {
-            case EmeraldBindingConstants.CHANNEL_POWER:
+            case EmeraldBindingConstants.CHANNEL_POWER -> {
                 if (command == OnOffType.ON) {
                     payload.addProperty("switch", 1);
                 } else if (command == OnOffType.OFF) {
                     payload.addProperty("switch", 0);
                 }
-                break;
-
-            case EmeraldBindingConstants.CHANNEL_MODE:
+            }
+            case EmeraldBindingConstants.CHANNEL_MODE -> {
                 try {
-                    int modeValue = -1;
-
-                    if (command instanceof org.openhab.core.library.types.DecimalType) {
-                        modeValue = ((org.openhab.core.library.types.DecimalType) command).intValue();
-                    } else {
-                        modeValue = Integer.parseInt(command.toString());
-                    }
+                    int modeValue = switch (command) {
+                        case DecimalType dec -> dec.intValue();
+                        default -> Integer.parseInt(command.toString());
+                    };
 
                     if (modeValue >= 0 && modeValue <= 2) {
                         payload.addProperty("mode", modeValue);
@@ -103,21 +98,18 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 } catch (NumberFormatException e) {
                     logger.warn("Error parsing mode command to integer: {}", command, e);
                 }
-                break;
-
-            case EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE:
-                if (command instanceof QuantityType) {
-                    int temp = ((QuantityType<?>) command).intValue();
-                    payload.addProperty("temp_set", temp);
-                } else if (command instanceof DecimalType) {
-                    int temp = ((DecimalType) command).intValue();
-                    payload.addProperty("temp_set", temp);
+            }
+            case EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE -> {
+                if (command instanceof QuantityType<?> qty) {
+                    payload.addProperty("temp_set", qty.intValue());
+                } else if (command instanceof DecimalType dec) {
+                    payload.addProperty("temp_set", dec.intValue());
                 }
-                break;
-
-            default:
+            }
+            default -> {
                 logger.debug("Command not supported or unhandled for channel: {}", channelUID.getId());
                 return;
+            }
         }
 
         if (payload.size() > 0) {
@@ -159,49 +151,44 @@ public class EmeraldHWSHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
 
         EmeraldList api = getApi();
-        int found = 0;
         if (api != null) {
-            for (int i = 0; i < api.info.property.length; i++) {
-                for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
-                    if (localConfig.uuid.equals(api.info.property[i].heatpump[j].id)) {
-                        logger.debug("Found Heat Pump id = {}", api.info.property[i].heatpump[j].id);
-                        found = 1;
+            EmeraldList.HeatpumpContext ctx = api.findHeatpump(localConfig.uuid);
 
-                        Map<String, String> properties = editProperties();
-                        if (!api.info.property[i].heatpump[j].softVersion.isEmpty()) {
-                            properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
-                                    api.info.property[i].heatpump[j].softVersion);
-                        }
-                        if (!api.info.property[i].heatpump[j].hwVersion.isEmpty()) {
-                            properties.put(Thing.PROPERTY_HARDWARE_VERSION, api.info.property[i].heatpump[j].hwVersion);
-                        }
-                        if (!api.info.property[i].heatpump[j].macAddress.isEmpty()) {
-                            properties.put(Thing.PROPERTY_MAC_ADDRESS, api.info.property[i].heatpump[j].macAddress);
-                        }
-                        if (!api.info.property[i].heatpump[j].brand.isEmpty()) {
-                            properties.put(Thing.PROPERTY_VENDOR, api.info.property[i].heatpump[j].brand);
-                        }
-                        if (!api.info.property[i].heatpump[j].model.isEmpty()) {
-                            properties.put(Thing.PROPERTY_MODEL_ID, api.info.property[i].heatpump[j].model);
-                        }
-                        if (!api.info.property[i].heatpump[j].serialNumber.isEmpty()) {
-                            properties.put(Thing.PROPERTY_SERIAL_NUMBER, api.info.property[i].heatpump[j].serialNumber);
-                        }
-                        if (!api.info.property[i].heatpump[j].wifiName.isEmpty()) {
-                            properties.put(PROPERTY_WIFI_NAME, api.info.property[i].heatpump[j].wifiName);
-                        }
-                        updateProperties(properties);
-                    }
+            if (ctx != null) {
+                EmeraldList.Heatpump hp = ctx.heatpump();
+                logger.info("Found Heat Pump id = {}", hp.id);
+
+                Map<String, String> properties = editProperties();
+                if (!hp.softVersion.isEmpty()) {
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, hp.softVersion);
                 }
+                if (!hp.hwVersion.isEmpty()) {
+                    properties.put(Thing.PROPERTY_HARDWARE_VERSION, hp.hwVersion);
+                }
+                if (!hp.macAddress.isEmpty()) {
+                    properties.put(Thing.PROPERTY_MAC_ADDRESS, hp.macAddress);
+                }
+                if (!hp.brand.isEmpty()) {
+                    properties.put(Thing.PROPERTY_VENDOR, hp.brand);
+                }
+                if (!hp.model.isEmpty()) {
+                    properties.put(Thing.PROPERTY_MODEL_ID, hp.model);
+                }
+                if (!hp.serialNumber.isEmpty()) {
+                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, hp.serialNumber);
+                }
+                if (!hp.wifiName.isEmpty()) {
+                    properties.put(PROPERTY_WIFI_NAME, hp.wifiName);
+                }
+                updateProperties(properties);
+
+                updateStatus(ThingStatus.ONLINE);
+                return;
             }
         }
 
-        if (found == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "UUID is not found in Emerald API - check value");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "UUID is not found in Emerald API - check value");
     }
 
     public void updateChannels() {
@@ -210,21 +197,20 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
         logger.debug("Updating channels");
         EmeraldList api = getApi();
+
         if (api != null) {
-            for (int i = 0; i < api.info.property.length; i++) {
-                for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
-                    if (localConfig.uuid.equals(api.info.property[i].heatpump[j].id)) {
-                        updateState(EmeraldBindingConstants.CHANNEL_POWER,
-                                OnOffType.from("1".equals(api.info.property[i].heatpump[j].lastState.switchOn)
-                                        || "on".equalsIgnoreCase(api.info.property[i].heatpump[j].lastState.switchOn)));
-                        updateState(EmeraldBindingConstants.CHANNEL_MODE,
-                                new DecimalType(api.info.property[i].heatpump[j].lastState.mode));
-                        updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE, new QuantityType<>(
-                                api.info.property[i].heatpump[j].lastState.tempCurrent, SIUnits.CELSIUS));
-                        updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE, new QuantityType<>(
-                                api.info.property[i].heatpump[j].lastState.tempSet, SIUnits.CELSIUS));
-                    }
-                }
+            EmeraldList.HeatpumpContext ctx = api.findHeatpump(localConfig.uuid);
+
+            if (ctx != null) {
+                EmeraldList.Heatpump hp = ctx.heatpump();
+
+                updateState(EmeraldBindingConstants.CHANNEL_POWER, OnOffType
+                        .from("1".equals(hp.lastState.switchOn) || "on".equalsIgnoreCase(hp.lastState.switchOn)));
+                updateState(EmeraldBindingConstants.CHANNEL_MODE, new DecimalType(hp.lastState.mode));
+                updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
+                        new QuantityType<>(hp.lastState.tempCurrent, SIUnits.CELSIUS));
+                updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE,
+                        new QuantityType<>(hp.lastState.tempSet, SIUnits.CELSIUS));
             }
         }
     }

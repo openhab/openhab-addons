@@ -14,7 +14,7 @@ package org.openhab.binding.emerald.internal.discovery;
 
 import static org.openhab.binding.emerald.internal.EmeraldBindingConstants.*;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,16 +62,19 @@ public class EmeraldDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     private void discover() {
         EmeraldList api = getApi();
+        if (api == null || api.info == null || api.info.property == null) {
+            return;
+        }
 
-        if (api != null) {
-            HashMap<String, Object> properties = new HashMap<>();
-            for (int i = 0; i < api.info.property.length; i++) {
-                for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
-                    properties.put("uuid", api.info.property[i].heatpump[j].id);
-                    ThingUID uid = new ThingUID(THING_TYPE_HWS, bridgeUid, api.info.property[i].heatpump[j].id);
-                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(properties)
-                            .withRepresentationProperty("uuid").withLabel("Emerald HWS").build());
-                }
+        for (EmeraldList.Property property : api.info.property) {
+            if (property.heatpump == null) {
+                continue;
+            }
+            for (EmeraldList.Heatpump hp : property.heatpump) {
+                ThingUID uid = new ThingUID(THING_TYPE_HWS, bridgeUid, hp.id);
+                thingDiscovered(
+                        DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(Map.of("uuid", hp.id))
+                                .withRepresentationProperty("uuid").withLabel("Emerald HWS").build());
             }
         }
     }
