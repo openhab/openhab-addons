@@ -159,7 +159,7 @@ tracesSamplingRatio=1.0
 
 ## Scope and Limitations
 
-The bundle reads telemetry from three places openHAB already offers: the OSGi log service, the Micrometer registry and the event bus.
+The add-on reads telemetry from three places openHAB already offers: the OSGi log service, the Micrometer metrics registry and the event bus.
 No JVM agent is needed, but that also means it only sees what those three sources expose:
 
 - Only openHAB's own logs, meters and events are exported.
