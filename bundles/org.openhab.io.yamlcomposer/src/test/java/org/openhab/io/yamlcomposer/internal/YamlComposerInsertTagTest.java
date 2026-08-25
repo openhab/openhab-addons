@@ -100,6 +100,20 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
 
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("template not found")));
         }
+
+        @Test
+        @DisplayName("Stops an unbounded recursive template insertion")
+        void stopsUnboundedRecursiveTemplateInsertion() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    templates:
+                      recursive: !insert recursive
+                    target: !insert recursive
+                    """);
+
+            loadFixture(main);
+
+            assertThat(logSession.getTrackedWarnings(), hasItem(containsString("Maximum template recursion depth")));
+        }
     }
 
     @Nested

@@ -139,20 +139,8 @@ items:
 
 ## Merge Behavior
 
-### Final Top-Level Sections
-
-A final top‑level section is the fully expanded `things:`, `items:`, or other top‑level section of the configuration that openHAB receives after all packages, templates, includes, and merges have been applied.
-Entries defined directly under these sections can merge with package‑generated entries when their identifiers match.
-Entries remain independent when their identifiers do not match.
-
-::: tip Note
-The following example uses `!insert`, but the same merge rules apply to packages sourced from `!include`.
-:::
-
-When a package is expanded, its contents are merged into the main YAML structure.
-You may customize the resulting structure by overriding, adding, or removing elements defined in the package.
-This is done by redefining the elements you want to customize in the main file.
-These redefinitions appear in the final top‑level section.
+Package merging uses the same recursive merge mechanism that is documented in the [Deep Merge](deep-merge.md) reference.
+Scalar, map, and list interactions during package expansion follow the unified deep‑merge rules.
 
 ### Default Merge Behavior
 
@@ -211,15 +199,13 @@ items:
         value: oh-card
 ```
 
-The way keys interact depends on their data type.
+## Package Merge Tags
 
-| Data Type | Behavior  | Description                                                                                              |
-|-----------|-----------|----------------------------------------------------------------------------------------------------------|
-| Scalar    | Overwrite | A scalar in the final top‑level section replaces the scalar defined at the same path inside the package. |
-| Map       | Merge     | Maps are merged key by key, recursively.                                                                 |
-| List      | Merge     | Lists are concatenated (package values first) and de-duplicated.                                         |
+Package consumers can use `!default`, `!replace` (or `!freeze`), and `!remove` to control how package values interact with main‑file values.
+The [deep‑merge](deep-merge.md) documentation contains the authoritative, consolidated definitions and examples for these tags.
+Use the deep‑merge reference when you need the precise semantics for the merge behavior during package merging.
 
-### Automatic Removal of Empty Values
+## Automatic Removal of Empty Values
 
 During merging, empty structures are automatically stripped from the final configuration.
 Empty maps (`{}`) and lists (`[]`) as well as map keys whose value is `null` or an empty string are removed.
@@ -236,168 +222,10 @@ icon: ${icon}
 
 Because `icon` evaluates to `null`, the entire `icon:` key is removed from the merged output unless the including file overrides it.
 
-### How Package Merging Differs from YAML Merge Keys
+## How Package Merging Differs from YAML Merge Keys
 
 Mappings from packages are merged recursively with the corresponding mappings in the final top‑level section.
 This differs from standard YAML merge keys, which perform only shallow merges.
-
-**Merge Key (shallow merge):**
-
-```yaml
-# merge key:
-targetkey:
-  foo:
-    bar:
-      boo: baz
-  <<: # merge `foo` into `targetkey`
-    foo:
-      bar:
-        boo: waldo
-        goo: fy
-      qux: quux
-```
-
-```yaml
-# result — the merge key's foo mapping
-# is ignored because foo already exists in main
-targetkey:
-  foo:
-    bar:
-      boo: baz
-```
-
-**Package Merging (recursive merge):**
-
-```yaml
-# main file
-targetkey:
-  foo:
-    bar:
-      boo: baz
-
-packages:
-  anyid: !include packagefile.inc.yaml
-```
-
-```yaml
-# packagefile.inc.yaml
-targetkey:
-  foo:
-    bar:
-      boo: waldo
-      goo: fy
-    qux: quux
-```
-
-```yaml
-# result:
-targetkey:
-  foo:
-    bar:
-      boo: baz  # main file overrides matching keys
-      goo: fy   # but includes additional keys...
-    qux: quux   # from the package
-```
-
-recursive merging allows customization at any depth in the mapping.
-
-### Controlling Package Merge Behavior with Tags
-
-Use these special YAML tags to explicitly override the default recursive merge behavior.
-These directives can be declared at any point in the configuration pipeline—either within the **main YAML file** or deeply embedded inside an intermediate **include file** acting as a middle-tier package.
-
-#### 1. The `!replace` Tag
-
-The `!replace` tag forces an absolute replacement for maps or lists that would otherwise merge.
-This acts as a destructive splice, completely discarding any existing inherited data structure beneath that key from upstream sources and starting fresh with the new layout provided.
-
-#### 2. The `!remove` Tag
-
-The `!remove` tag cleanly deletes the corresponding key and its entire sub-tree from the configuration hierarchy.
-It is ideal for pruning specific components, metadata keys, or configurations exposed by a baseline package that do not apply to the current downstream context.
-
----
-
-### Example: Nested Package Overrides
-
-When packages include other packages, a middle-tier file can surgically modify or strip elements declared by the core baseline configuration before it ever reaches the main composition file.
-
-#### Core Configuration (`nested-items.inc.yaml`)
-
-Provides a core item layout with deep metadata fields:
-
-```yaml
-items:
-  target_item:
-    label: base_label
-    tags:
-      - from_nested
-    metadata:
-      stateDescription:
-        value: from_nested
-      category:
-        value: from_nested
-  untouched_item:
-    label: untouched_from_nested
-```
-
-#### Middle-Tier Override Package (`pkg-with-overrides.inc.yaml`)
-
-This file consumes the core configuration via `!include`, but applies `!replace` and `!remove` tags to selectively adjust properties:
-
-```yaml
-packages:
-  nested: !include nested-items.inc.yaml
-items:
-  target_item:
-    tags: !replace         # 1. Overwrite the list, discarding 'from_nested'
-      - from_outer
-    metadata:
-      stateDescription: !remove # 2. Entirely purge this sub-tree key
-      category: !replace   # 3. Swap out the map structure with a fresh one
-        value: from_outer
-        config:
-          origin: nested_package_override
-```
-
-#### Root Configuration (`main.yaml`)
-
-Loads the middle-tier package:
-
-```yaml
-packages:
-  p1: !include pkg-with-overrides.inc.yaml
-```
-
-#### Final Merged Output
-
-When evaluated by the preprocessor, the downstream overrides successfully neutralize the deep properties inherited from the original package file.
-The `stateDescription` block is erased, lists and maps are replaced cleanly, and unrelated siblings are passed through untouched:
-
-```yaml
-items:
-  target_item:
-    label: base_label
-    tags:
-      - from_outer
-    metadata:
-      category:
-        value: from_outer
-        config:
-          origin: nested_package_override
-  untouched_item:
-    label: untouched_from_nested
-```
-
-::: tip Usage Notes
-
-- `!replace` and `!remove` are evaluated locally within each package layer before that package's content is returned and merged into the caller.
-  This allows intermediate include files to cleanly intercept, prune, or completely reset configurations inherited from deeper core packages.
-- They can be declared in the root configuration file or anywhere down an inheritance chain of nested package includes.
-- `!remove` target references apply to entire map keys; individual array elements within a list cannot be targeted for independent removal.
-- Use `!replace` on an array to drop inherited elements and start an array list with entirely new contents.
-
-:::
 
 ## Strategic Use of Package IDs
 
@@ -434,17 +262,23 @@ variables:
 | `${item_name}`  | `Living_Room_Light`            | `Kitchen_Light`            |
 | `${label}`      | `Living Room Light`            | `Kitchen Light`            |
 
-## Limitation: Top-Level Merge Keys in `packages:`
+## Limitations: Top-Level Merge Keys & Deep Merges in `packages:`
 
-Top-level YAML merge keys (for example `<<:`) inside the `packages:` map are not supported.
+Top-level YAML merge keys (`<<:`) and deep merge directives (`!deep <<:`) are not supported directly inside the `packages:` map.
+
 Each package must be declared explicitly as a direct key under `packages:`.
 
-The following pattern is **not supported**:
+The following patterns are **not supported**:
 
 ```yaml
 packages:
+  # Shallow merge in packages is NOT supported
   <<: !include common-packages.yaml
+
+  # Deep merge in packages is NOT supported
+  !deep <<: !include common-packages.yaml
 ```
 
-In this form, the merge key tries to inject package declarations into `packages:` itself.
-The composer does not expand package declarations through top-level merge keys.
+In these forms, the merge key tries to inject package declarations into `packages:` itself.
+
+The engine extracts package declarations before structural composition occurs, so merge keys cannot be used to generate top-level package mappings.

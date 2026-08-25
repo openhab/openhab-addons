@@ -138,6 +138,40 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
         }
 
         @Test
+        @DisplayName("Recursively includes the same file with updated variables")
+        void recursivelyIncludesSameFileWithUpdatedVariables() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    items: !include
+                      file: recursive.inc.yaml
+                      vars:
+                        node:
+                          nested:
+                            parent:
+                              child:
+                    """);
+            writeFixture("recursive.inc.yaml", """
+                    !for name, children in node:
+                      ${name}:
+                        foo: bar
+                        !if parent:
+                          parent: ${parent}
+                        !if children && !children.isEmpty(): !include
+                          file: recursive.inc.yaml
+                          vars:
+                            node: ${children}
+                            parent: ${name}
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "items", "nested", "foo"), equalTo("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "foo"), equalTo("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "parent"), equalTo("nested"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "child", "foo"), equalTo("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "child", "parent"), equalTo("parent"));
+        }
+
+        @Test
         @DisplayName("Detects and warns about circular inclusion loops to prevent stack overflow")
         void preventsInfiniteLoopOnCircularInclusion() throws IOException {
             Path main = writeFixture("a.yaml", "data: !include b.yaml");
@@ -146,6 +180,18 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
             loadFixture(main);
 
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("Circular inclusion detected")));
+        }
+
+        @Test
+        @DisplayName("Warns with the include location when maximum recursion depth is exceeded")
+        void warnsWhenIncludeRecursionDepthIsExceeded() throws IOException {
+            Path main = writeFixture("main.yaml", "data: !include self.inc.yaml");
+            writeFixture("self.inc.yaml", "data: !include self.inc.yaml");
+
+            loadFixture(main);
+
+            assertThat(logSession.getTrackedWarnings(),
+                    hasItem(allOf(containsString("self.inc.yaml:1:7"), containsString("Maximum recursion depth"))));
         }
     }
 

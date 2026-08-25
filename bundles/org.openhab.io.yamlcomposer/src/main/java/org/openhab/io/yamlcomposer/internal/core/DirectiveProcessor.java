@@ -14,11 +14,9 @@ package org.openhab.io.yamlcomposer.internal.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -34,7 +32,6 @@ import org.openhab.io.yamlcomposer.internal.directives.ForDirective;
 import org.openhab.io.yamlcomposer.internal.directives.IfDirective;
 import org.openhab.io.yamlcomposer.internal.directives.VarDirective;
 import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
-import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
 
 /**
  * Handles structural execution and container unrolling for {@link Directive} instances.
@@ -70,15 +67,14 @@ public class DirectiveProcessor {
     /**
      * Executes a directive within a Map context, returning the resulting object to be merged or processed.
      */
-    public @Nullable Object processMapDirective(Directive directive, @Nullable Object oldVal,
-            Map<Object, @Nullable Object> targetMap, IfChainState ifChainState, RecursiveTransformer transformer,
-            Set<Class<? extends Placeholder>> allowedTypes, IdentityHashMap<Object, Object> visited) {
+    public @Nullable Object processMapDirective(Directive directive, @Nullable Object oldVal, IfChainState ifChainState,
+            RecursiveTransformer transformer, EvaluationContext context) {
         switch (directive) {
             case IfDirective ifDirective -> {
                 ifChainState.startChain();
                 if (ifDirective.truthy()) {
                     ifChainState.matched = true;
-                    return transformer.transform(oldVal, allowedTypes, visited);
+                    return transformer.transform(oldVal, context);
                 }
             }
             case ElseIfDirective elseIfDirective -> {
@@ -92,7 +88,7 @@ public class DirectiveProcessor {
                 }
                 if (elseIfDirective.truthy()) {
                     ifChainState.matched = true;
-                    return transformer.transform(oldVal, allowedTypes, visited);
+                    return transformer.transform(oldVal, context);
                 }
             }
             case ElseDirective elseDirective -> {
@@ -105,24 +101,24 @@ public class DirectiveProcessor {
                 if (wasMatched) {
                     return null; // A previous branch in this chain already matched
                 }
-                return transformer.transform(oldVal, allowedTypes, visited);
+                return transformer.transform(oldVal, context);
             }
             case ForDirective forDirective -> {
                 ifChainState.breakChain(); // Intervening loop breaks any active if-chain
                 List<@Nullable Object> loopResults = new ArrayList<>();
-                processForDirective(forDirective, oldVal, transformer, (loopVars, rawBlock) -> {
-                    RecursiveTransformer loopTransformer = transformer.withOverrideVariables(loopVars);
-                    IdentityHashMap<Object, Object> iterationVisited = new IdentityHashMap<>(visited);
-
-                    Object newVal = loopTransformer.transform(rawBlock, allowedTypes, iterationVisited);
+                processForDirective(forDirective, oldVal, context, (loopScope, rawBlock) -> {
+                    Object newVal = transformer.transform(rawBlock, context.forIteration(loopScope));
                     loopResults.add(newVal);
                 });
                 return loopResults;
             }
             case VarDirective varDirective -> {
                 ifChainState.breakChain(); // Intervening variable declaration breaks any active if-chain
-                processVarDirective(varDirective, oldVal, transformer, allowedTypes, visited);
+                processVarDirective(varDirective, oldVal, transformer, context);
             }
+            default -> throw new IllegalArgumentException(
+                    "Structural directive must be processed by StructuralMerger. This is a bug! Directive: "
+                            + directive);
         }
         return null;
     }
@@ -133,10 +129,10 @@ public class DirectiveProcessor {
      * Otherwise, returns {@code null} to indicate it is a plain data map.
      */
     public @Nullable Object processListMap(Map<?, ?> map, IfChainState ifChainState, RecursiveTransformer transformer,
-            Set<Class<? extends Placeholder>> allowedTypes, IdentityHashMap<Object, Object> visited) {
+            EvaluationContext context) {
         boolean hasControlDirective = false;
         for (Object k : map.keySet()) {
-            Object transformedKey = transformer.transform(k, allowedTypes, visited);
+            Object transformedKey = transformer.transform(k, context);
             if (transformedKey instanceof ControlFlowDirective) {
                 hasControlDirective = true;
                 break;
@@ -149,11 +145,11 @@ public class DirectiveProcessor {
 
         List<@Nullable Object> listResults = new ArrayList<>();
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            Object newKey = transformer.transform(entry.getKey(), allowedTypes, visited);
+            Object newKey = transformer.transform(entry.getKey(), context);
 
-            if (newKey instanceof Directive directive) {
+            if (newKey instanceof ControlFlowDirective directive) {
                 Object directiveResult = processListDirective(directive, entry.getValue(), ifChainState, transformer,
-                        allowedTypes, visited);
+                        context);
                 if (directiveResult != null) {
                     if (directiveResult instanceof List<?> listVal) {
                         listResults.addAll(listVal);
@@ -163,10 +159,11 @@ public class DirectiveProcessor {
                 }
             } else {
                 ifChainState.breakChain();
-                Object newVal = transformer.transform(entry.getValue(), allowedTypes, visited);
-                if (newVal != RemovalSignal.REMOVE && newVal != null && newKey != null) {
-                    listResults.add(Map.of(Objects.requireNonNull(newKey), newVal));
+                Object newVal = transformer.transform(entry.getValue(), context);
+                if (newVal == null || newKey == null) {
+                    continue;
                 }
+                listResults.add(Map.of(Objects.requireNonNull(newKey), newVal));
             }
         }
         return listResults;
@@ -175,15 +172,14 @@ public class DirectiveProcessor {
     /**
      * Executes a directive within a List context, returning the resulting object.
      */
-    public @Nullable Object processListDirective(Directive directive, @Nullable Object oldVal,
-            IfChainState ifChainState, RecursiveTransformer transformer, Set<Class<? extends Placeholder>> allowedTypes,
-            IdentityHashMap<Object, Object> visited) {
+    public @Nullable Object processListDirective(ControlFlowDirective directive, @Nullable Object oldVal,
+            IfChainState ifChainState, RecursiveTransformer transformer, EvaluationContext context) {
         switch (directive) {
             case IfDirective ifDirective -> {
                 ifChainState.startChain();
                 if (ifDirective.truthy()) {
                     ifChainState.matched = true;
-                    return transformer.transform(oldVal, allowedTypes, visited);
+                    return transformer.transform(oldVal, context);
                 }
             }
             case ElseIfDirective elseIfDirective -> {
@@ -197,7 +193,7 @@ public class DirectiveProcessor {
                 }
                 if (elseIfDirective.truthy()) {
                     ifChainState.matched = true;
-                    return transformer.transform(oldVal, allowedTypes, visited);
+                    return transformer.transform(oldVal, context);
                 }
             }
             case ElseDirective elseDirective -> {
@@ -210,50 +206,45 @@ public class DirectiveProcessor {
                 if (wasMatched) {
                     return null;
                 }
-                return transformer.transform(oldVal, allowedTypes, visited);
+                return transformer.transform(oldVal, context);
             }
             case ForDirective forDirective -> {
                 ifChainState.breakChain();
                 List<@Nullable Object> loopResults = new ArrayList<>();
-                processForDirective(forDirective, oldVal, transformer, (loopVars, rawBlock) -> {
-                    RecursiveTransformer loopTransformer = transformer.withOverrideVariables(loopVars);
-                    IdentityHashMap<Object, Object> iterationVisited = new IdentityHashMap<>(visited);
-
-                    Object newVal = loopTransformer.transform(rawBlock, allowedTypes, iterationVisited);
-                    if (newVal != null && newVal != RemovalSignal.REMOVE) {
-                        if (newVal instanceof List<?> listVal) {
-                            loopResults.addAll(listVal);
-                        } else {
-                            loopResults.add(newVal);
-                        }
+                processForDirective(forDirective, oldVal, context, (loopScope, rawBlock) -> {
+                    Object newVal = transformer.transform(rawBlock, context.forIteration(loopScope));
+                    if (newVal == null) {
+                        return;
+                    }
+                    if (newVal instanceof List<?> listVal) {
+                        loopResults.addAll(listVal);
+                    } else {
+                        loopResults.add(newVal);
                     }
                 });
                 return loopResults;
-            }
-            case VarDirective varDirective -> {
-                ifChainState.breakChain();
-                processVarDirective(varDirective, oldVal, transformer, allowedTypes, visited);
             }
         }
         return null;
     }
 
     public void processVarDirective(VarDirective varDirective, @Nullable Object oldVal,
-            RecursiveTransformer transformer, Set<Class<? extends Placeholder>> allowedTypes,
-            IdentityHashMap<Object, Object> visited) {
+            RecursiveTransformer transformer, EvaluationContext context) {
         String varName = varDirective.variableName();
         if (VariableLoader.isSpecialVariable(varName)) {
             logger.warn("{} Cannot redefine special variable '{}'.", varDirective.sourceLocation(), varName);
             return;
         }
 
-        Object resolvedVal = transformer.transform(oldVal, allowedTypes, visited);
-        transformer.getVariables().put(varName, resolvedVal);
+        Object resolvedVal = transformer.transform(oldVal, context);
+        // A !var value is detached from the document and stored in the context scope.
+        // We need to run the finalization phase on it here so lookups see resolved values rather than placeholders.
+        Object finalVal = transformer.transform(resolvedVal, context.withProcessingPhase(ProcessingPhase.FINALIZATION));
+        context.scope().put(varName, finalVal);
     }
 
-    private void processForDirective(ForDirective forDirective, @Nullable Object oldVal,
-            RecursiveTransformer transformer,
-            BiConsumer<Map<String, @Nullable Object>, @Nullable Object> iterationConsumer) {
+    private void processForDirective(ForDirective forDirective, @Nullable Object oldVal, EvaluationContext context,
+            BiConsumer<Scope, @Nullable Object> iterationConsumer) {
         List<String> variables = forDirective.variables();
         @Nullable
         Object rawTarget = forDirective.target();
@@ -268,7 +259,7 @@ public class DirectiveProcessor {
         Object target = rawTarget;
         if (rawTarget instanceof String targetExpr) {
             String expr = targetExpr.trim();
-            Map<String, @Nullable Object> vars = transformer.getVariables();
+            Map<String, @Nullable Object> vars = context.scope().flatten();
 
             if (vars.containsKey(expr)) {
                 target = vars.get(expr);
@@ -317,23 +308,21 @@ public class DirectiveProcessor {
                 }
             }
 
-            if (shouldKeepIteration(forDirective, loopVars, transformer)) {
-                iterationConsumer.accept(loopVars, oldVal);
+            Scope loopScope = context.scope().createChild();
+            loopScope.putAll(loopVars);
+            if (shouldKeepIteration(forDirective, loopScope)) {
+                iterationConsumer.accept(loopScope, oldVal);
             }
         }
     }
 
-    private boolean shouldKeepIteration(ForDirective forDirective, Map<String, @Nullable Object> loopVars,
-            RecursiveTransformer parentTransformer) {
+    private boolean shouldKeepIteration(ForDirective forDirective, Scope loopScope) {
         String filterCondition = forDirective.filterCondition();
         if (filterCondition == null || filterCondition.isBlank()) {
             return true;
         }
-        RecursiveTransformer filterTransformer = parentTransformer.withOverrideVariables(loopVars);
-
-        Object evaluated = StringInterpolator.evaluateExpression(filterCondition.trim(),
-                filterTransformer.getVariables(), envVarCallback, logger.getLogSession(),
-                forDirective.sourceLocation());
+        Object evaluated = StringInterpolator.evaluateExpression(filterCondition.trim(), loopScope.flatten(),
+                envVarCallback, logger.getLogSession(), forDirective.sourceLocation());
         return ExpressionEvaluator.isTruthy(evaluated);
     }
 }

@@ -314,6 +314,27 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
         }
     }
 
+    @Test
+    @DisplayName("Deep merge works at variables map level")
+    void deepMergeAtVariablesMapLevel() throws IOException {
+        Map<Object, @Nullable Object> data = loadYaml("""
+                variables:
+                  settings:
+                    nested:
+                      from_base: true
+                  !deep <<:
+                    settings:
+                      nested:
+                        from_deep: true
+
+                result_base: "${settings.nested.from_base}"
+                result_deep: "${settings.nested.from_deep}"
+                """);
+
+        assertThat(data.get("result_base"), is(true));
+        assertThat(data.get("result_deep"), is(true));
+    }
+
     @Nested
     @DisplayName("Substitution Syntax")
     class SubstitutionSyntax {

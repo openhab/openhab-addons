@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal.processors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
 
@@ -28,7 +29,7 @@ import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
 public interface PlaceholderProcessor<T extends Placeholder> {
 
     @Nullable
-    Object process(T placeholder, RecursiveTransformer recursiveTransformer);
+    Object process(T placeholder, RecursiveTransformer recursiveTransformer, EvaluationContext context);
 
     Class<T> getPlaceholderType();
 }
