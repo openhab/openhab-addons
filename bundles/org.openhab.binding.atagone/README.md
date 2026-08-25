@@ -16,14 +16,17 @@ Discovery is optional — the Thing can also be created manually (see below).
 
 ## Pairing
 
-The ATAG ONE requires a one-time pairing step.
-After adding the Thing it will go `OFFLINE / CONFIGURATION_PENDING`.
+Pairing is normally automatic — no action is needed on the thermostat itself. The binding generates
+a stable client identifier on first contact and the Thing goes `ONLINE` directly.
+
+If the thermostat instead requires manual confirmation, the Thing will go
+`OFFLINE / CONFIGURATION_PENDING`. In that case:
 
 1. Open the thermostat display.
 1. Navigate to **Settings → Connected apps** and press **Accept**.
 
-The Thing transitions to `ONLINE` within a few seconds.
-On subsequent openHAB restarts the saved client ID is reused, so the press-Accept step is not repeated.
+The Thing transitions to `ONLINE` within a few seconds. On subsequent openHAB restarts the saved
+client ID is reused, so this step is not repeated.
 
 ## Thing Configuration
 
