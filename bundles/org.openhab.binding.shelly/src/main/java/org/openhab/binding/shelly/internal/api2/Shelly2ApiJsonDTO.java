@@ -123,6 +123,11 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1
     public static final String SHELLY2_PROFILE_RGBX2LIGHT = "rgbx2light"; // Pro RGBWW PM: RGB:0 + Light:0/1
 
+    // RGBCCT component runtime submode (RGBCCT.Set/GetStatus/NotifyStatus "mode" field) - distinct from the
+    // SHELLY2_PROFILE_* device profile selection above, even though the RGB value happens to coincide
+    public static final String SHELLY_RGBCCT_MODE_RGB = "rgb";
+    public static final String SHELLY_RGBCCT_MODE_CCT = "cct";
+
     // Button types/modes
     public static final String SHELLY2_BTNT_MOMENTARY = "momentary";
     public static final String SHELLY2_BTNT_FLIP = "flip";

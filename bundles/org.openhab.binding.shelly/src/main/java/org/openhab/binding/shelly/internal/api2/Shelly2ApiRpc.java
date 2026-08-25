@@ -927,7 +927,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGBCCT_STATUS).withId(0),
                         Shelly2RGBCCTStatus.class);
                 ison = ls.output;
-                boolean inColor = "rgb".equals(ls.mode);
+                boolean inColor = SHELLY_RGBCCT_MODE_RGB.equals(ls.mode);
                 profile.inColor = inColor;
                 profile.device.mode = inColor ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
                 applyBrightness(lightChannel, ls.brightness);
@@ -1361,7 +1361,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (profile.isDuo && profile.isRGBCCT) {
             Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
             params.id = 0;
-            params.mode = SHELLY_MODE_COLOR.equals(mode) ? "rgb" : "cct";
+            params.mode = SHELLY_MODE_COLOR.equals(mode) ? SHELLY_RGBCCT_MODE_RGB : SHELLY_RGBCCT_MODE_CCT;
             apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
             profile.inColor = SHELLY_MODE_COLOR.equals(mode);
             profile.device.mode = mode;
