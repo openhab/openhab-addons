@@ -16,6 +16,9 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_ACTIVATE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_EDGE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -31,6 +34,8 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.core.thing.ThingTypeUID;
@@ -430,5 +435,29 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, false, true, true, false, true), //
                 // Relay: not flood, not sensor, always-on
                 Arguments.of(THING_TYPE_SHELLYPLUS1, false, false, false, true, true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForInButtonModeWithActivateMode")
+    void inButtonModeForActivateModeDependsOnInputType(String inputBtnType, boolean expectedButtonMode) {
+        // #21420: Switch.in_mode=activate (relay.btnType) alone doesn't reveal a button input - Shelly also
+        // uses it for stateful switch/PIR inputs. Only the paired Input component's type (settings.inputs,
+        // mapped to SHELLY_BTNT_MOMENTARY for type=button and SHELLY_BTNT_EDGE otherwise) is authoritative.
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1);
+        profile.numRelays = 1;
+        ShellySettingsRelay relay = new ShellySettingsRelay();
+        relay.btnType = SHELLY_BTNT_ACTIVATE;
+        profile.settings.relays = new ArrayList<>();
+        profile.settings.relays.add(relay);
+        profile.settings.inputs = new ArrayList<>();
+        profile.settings.inputs.add(new ShellySettingsInput(inputBtnType));
+
+        assertThat(profile.inButtonMode(0), is(equalTo(expectedButtonMode)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForInButtonModeWithActivateMode() {
+        return Stream.of( //
+                Arguments.of(SHELLY_BTNT_MOMENTARY, true), // Input.type=button -> real button input
+                Arguments.of(SHELLY_BTNT_EDGE, false)); // Input.type=switch/analog -> stateful/PIR input
     }
 }

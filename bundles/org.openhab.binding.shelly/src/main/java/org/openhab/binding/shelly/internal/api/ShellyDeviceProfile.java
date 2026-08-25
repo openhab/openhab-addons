@@ -417,9 +417,15 @@ public class ShellyDeviceProfile {
             btnType = getString(light.btnType);
         }
 
+        if (btnType.equalsIgnoreCase(SHELLY_BTNT_ACTIVATE)) {
+            // Switch.in_mode=activate alone doesn't imply a button input (Shelly also uses it for stateful
+            // switch/PIR inputs); only the paired Input component (settings.inputs) reveals the real input type
+            return inputs != null && idx < inputs.size()
+                    && SHELLY_BTNT_MOMENTARY.equalsIgnoreCase(getString(inputs.get(idx).btnType));
+        }
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
-                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED) || btnType.equalsIgnoreCase(SHELLY_BTNT_ACTIVATE);
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);
     }
 
     public int getRollerFav(int id) {
