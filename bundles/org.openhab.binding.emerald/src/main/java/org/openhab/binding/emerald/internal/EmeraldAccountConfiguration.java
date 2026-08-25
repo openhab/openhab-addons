@@ -27,5 +27,4 @@ public class EmeraldAccountConfiguration {
      */
     public String email = "";
     public String password = "";
-    public int refreshInterval = 600;
 }

@@ -61,9 +61,8 @@ public class EmeraldDiscoveryService extends AbstractThingHandlerDiscoveryServic
     }
 
     private void discover() {
-        /* getapi() and parse the list..... */
         EmeraldList api = getApi();
-        int found = 0;
+
         if (api != null) {
             HashMap<String, Object> properties = new HashMap<>();
             for (int i = 0; i < api.info.property.length; i++) {

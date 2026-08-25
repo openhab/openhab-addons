@@ -19,12 +19,6 @@
 				<label>Password</label>
 				<description>The password for the supplied user account</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the account is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</bridge-type>
 

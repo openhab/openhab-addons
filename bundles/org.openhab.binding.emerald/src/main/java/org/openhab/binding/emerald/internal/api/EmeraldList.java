@@ -47,7 +47,7 @@ public class EmeraldList {
     public class Heatpump {
         public String id = "";
 
-        @SerializedName("serial_numer")
+        @SerializedName("serial_number")
         public String serialNumber = "";
         public String brand = "";
         public String model = "";

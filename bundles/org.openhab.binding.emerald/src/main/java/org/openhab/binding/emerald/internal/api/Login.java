@@ -44,7 +44,7 @@ public class Login {
         public String email = "";
 
         @SerializedName("phone_no")
-        public String phone_no = "";
+        public String phoneNo = "";
 
         @SerializedName("agent_id")
         public String agentId = "";
@@ -58,7 +58,7 @@ public class Login {
         public String status = "";
 
         @SerializedName("deleted_by")
-        public String deleted_by = "";
+        public String deletedBy = "";
 
         @SerializedName("zendesk_chat")
         public int zendeskChat;
@@ -67,7 +67,7 @@ public class Login {
         public boolean feedbackStatus;
 
         @SerializedName("weekly_report")
-        public boolean weekly_report;
+        public boolean weeklyReport;
 
         public boolean subscribe;
 

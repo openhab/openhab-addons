@@ -45,10 +45,8 @@ public class EmeraldWebTargets {
     private static final int TIMEOUT_MS = 30000;
 
     // AWS Cognito Constants (Obtain exact IDs from the emerald_hws_py script)
-    private static final String AWS_REGION = "ap-southeast-2"; // Assuming Australian region
+    private static final String AWS_REGION = "ap-southeast-2";
     private static final String IDENTITY_POOL_ID = "ap-southeast-2:f5bbb02c-c00e-4f10-acb3-e7d1b05268e8";
-    private static final String COGNITO_PROVIDER = "cognito-idp." + AWS_REGION
-            + ".amazonaws.com/ap-southeast-2:48855213-4537-caf2-7632-10e6ab7a8080";
 
     private String getTokenUri = "https://api.emerald-ems.com.au/api/v1/customer/sign-in";
     private String getListUri = "https://api.emerald-ems.com.au/api/v1/customer/property/list";
@@ -95,9 +93,13 @@ public class EmeraldWebTargets {
         JsonObject payload = new JsonObject();
         payload.addProperty("IdentityPoolId", IDENTITY_POOL_ID);
         // No Logins object passed for Unauthenticated access
-
         String response = invokeAws(uri, "AWSCognitoIdentityService.GetId", payload.toString());
         JsonObject jsonResponse = gson.fromJson(response, JsonObject.class);
+
+        if (jsonResponse == null || !jsonResponse.has("IdentityId")) {
+            throw new IllegalStateException("AWS returned an invalid or empty response for IdentityId");
+        }
+
         return jsonResponse.get("IdentityId").getAsString();
     }
 
@@ -113,6 +115,11 @@ public class EmeraldWebTargets {
 
         String response = invokeAws(uri, "AWSCognitoIdentityService.GetCredentialsForIdentity", payload.toString());
         JsonObject jsonResponse = gson.fromJson(response, JsonObject.class);
+
+        if (jsonResponse == null || !jsonResponse.has("Credentials")) {
+            throw new IllegalStateException("AWS returned an invalid or empty response for Credentials");
+        }
+
         return jsonResponse.getAsJsonObject("Credentials");
     }
 
@@ -135,6 +142,10 @@ public class EmeraldWebTargets {
             throws EmeraldCommunicationException, EmeraldAuthenticationException {
         if (token.isEmpty()) {
             Login login = getToken(email, password);
+            if (login == null) {
+                throw new EmeraldAuthenticationException(
+                        "Failed to retrieve a valid authentication token from Emerald API.");
+            }
             token = login.token;
         }
         return invoke(uri, HttpMethod.GET, "Authorization", "Bearer " + token, "");

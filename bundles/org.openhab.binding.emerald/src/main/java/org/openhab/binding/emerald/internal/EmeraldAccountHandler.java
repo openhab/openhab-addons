@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.emerald.internal;
 
-import static org.openhab.binding.emerald.internal.EmeraldBindingConstants.*;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +36,6 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -58,10 +54,10 @@ import software.amazon.awssdk.crt.mqtt5.packets.SubscribePacket;
 import software.amazon.awssdk.iot.AwsIotMqtt5ClientBuilder;
 
 /**
- * The {@link EmeraldHandler} is responsible for handling commands, which are
+ * The {@link EmeraldAccountHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author paul@smedley.id.au - Initial contribution
+ * @author Paul Smedley - Initial contribution
  */
 @NonNullByDefault
 public class EmeraldAccountHandler extends BaseBridgeHandler {
@@ -72,13 +68,10 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
     private @Nullable EmeraldAccountConfiguration config;
     protected ScheduledExecutorService executorService = this.scheduler;
-    private @Nullable ScheduledFuture<?> pollingJob;
     private @NonNullByDefault({}) EmeraldWebTargets webTargets;
-    private HttpClient httpClient = new HttpClient();
     private @Nullable EmeraldList emeraldList;
     private @Nullable Mqtt5Client mqttClient;
 
-    private final Gson gson = new Gson();
     String token = "";
 
     public EmeraldAccountHandler(Bridge bridge, HttpClient httpClient) {
@@ -90,7 +83,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
     public EmeraldList getApi() {
         EmeraldList api = emeraldList;
         if (api == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("API has not been initialized");
         }
         return api;
     }
@@ -130,11 +123,17 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
      * @return true if the configuration is ok to start polling, false otherwise
      */
     private boolean configure() {
-        if (config.email.isBlank()) {
+        EmeraldAccountConfiguration localConfig = config;
+
+        if (localConfig == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing configuration");
+            return false;
+        }
+        if (localConfig.email.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing email configuration");
             return false;
         }
-        if (config.password.isBlank()) {
+        if (localConfig.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing password configuration");
             return false;
         }
@@ -142,7 +141,6 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
     }
 
     private void setupMqttConnection() throws Exception {
-        // 1. Get Unauthenticated AWS Identity & Temporary Credentials
         String identityId = webTargets.getAwsIdentityId();
         JsonObject credentials = webTargets.getAwsCredentials(identityId);
 
@@ -155,36 +153,34 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         String awsRegion = "ap-southeast-2";
         String clientId = "emeraldhws_" + (System.currentTimeMillis() / 1000L);
 
-        // 2. Wrap the STS temporary credentials securely as byte arrays
         StaticCredentialsProvider credentialsProvider = new StaticCredentialsProvider.StaticCredentialsProviderBuilder()
                 .withAccessKeyId(accessKeyId.getBytes(StandardCharsets.UTF_8))
                 .withSecretAccessKey(secretKey.getBytes(StandardCharsets.UTF_8))
                 .withSessionToken(sessionToken.getBytes(StandardCharsets.UTF_8)).build();
 
-        // 3. Build the SigV4 Configuration Object that the Builder expects
         AwsIotMqtt5ClientBuilder.WebsocketSigv4Config sigv4Config = new AwsIotMqtt5ClientBuilder.WebsocketSigv4Config();
         sigv4Config.region = awsRegion;
         sigv4Config.credentialsProvider = credentialsProvider;
 
-        // 4. Let the AWS C-Runtime do absolutely ALL the heavy lifting
         AwsIotMqtt5ClientBuilder builder = AwsIotMqtt5ClientBuilder.newWebsocketMqttBuilderWithSigv4Auth(cleanEndpoint,
                 sigv4Config);
 
         builder.withClientId(clientId);
 
-        // 5. Handle incoming messages explicitly overriding the interface
         builder.withPublishEvents(new Mqtt5ClientOptions.PublishEvents() {
             @Override
             public void onMessageReceived(@Nullable Mqtt5Client client, @Nullable PublishReturn publishReturn) {
-                if (publishReturn == null || publishReturn.getPublishPacket() == null)
+                if (publishReturn == null || publishReturn.getPublishPacket() == null) {
                     return;
+                }
 
                 PublishPacket packet = publishReturn.getPublishPacket();
                 String topic = packet.getTopic();
                 byte[] payloadBytes = packet.getPayload();
 
-                if (topic == null || payloadBytes == null)
+                if (topic == null || payloadBytes == null) {
                     return;
+                }
 
                 String payload = new String(payloadBytes, StandardCharsets.UTF_8);
                 logger.trace("Received MQTT message on topic: {} Payload: {}", topic, payload);
@@ -192,8 +188,10 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
                 getThing().getThings().forEach(child -> {
                     EmeraldHWSHandler handler = (EmeraldHWSHandler) child.getHandler();
                     if (handler != null) {
-                        String childUuid = child.getConfiguration().as(EmeraldHWSConfiguration.class).uuid;
-                        if (topic.contains(childUuid)) {
+                        EmeraldHWSConfiguration childConfig = child.getConfiguration()
+                                .as(EmeraldHWSConfiguration.class);
+
+                        if (!childConfig.uuid.isEmpty() && topic.contains(childConfig.uuid)) {
                             handler.updateFromMqtt(payload);
                         }
                     }
@@ -201,7 +199,6 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             }
         });
 
-        // 6. Connection lifecycle events with compiler-safe @Nullable tags
         builder.withLifeCycleEvents(new Mqtt5ClientOptions.LifecycleEvents() {
             @Override
             public void onAttemptingConnect(@Nullable Mqtt5Client client,
@@ -242,18 +239,21 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             }
         });
 
-        // Build and Start
-        mqttClient = builder.build();
-        mqttClient.start();
+        Mqtt5Client localClient = builder.build();
+        localClient.start();
+        mqttClient = localClient;
     }
 
     private void subscribeToTopics() {
-        if (mqttClient == null)
+        @Nullable
+        Mqtt5Client localMqttClient = mqttClient;
+
+        if (localMqttClient == null) {
             return;
+        }
 
-        int childCount = this.getThing().getThings().size();
+        int childCount = getThing().getThings().size();
 
-        // The Race Condition Fix: Wait for openHAB to finish attaching the child Things
         if (childCount == 0) {
             logger.info(
                     "openHAB hasn't attached the child Heat Pumps to the Bridge yet. Delaying subscription by 5 seconds...");
@@ -263,33 +263,30 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
         logger.info("Attempting explicit MQTT subscriptions for {} attached Heat Pumps.", childCount);
 
-        this.getThing().getThings().forEach(child -> {
-            EmeraldHWSConfiguration config = child.getConfiguration().as(EmeraldHWSConfiguration.class);
-            if (config != null && config.uuid != null && !config.uuid.isEmpty()) {
-                String topic = "ep/heat_pump/from_gw/" + config.uuid;
+        getThing().getThings().forEach(child -> {
+            EmeraldHWSConfiguration childConfig = child.getConfiguration().as(EmeraldHWSConfiguration.class);
+
+            if (!childConfig.uuid.isEmpty()) {
+                String topic = "ep/heat_pump/from_gw/" + childConfig.uuid;
 
                 SubscribePacket.SubscribePacketBuilder subBuilder = new SubscribePacket.SubscribePacketBuilder();
                 subBuilder.withSubscription(topic, QOS.AT_LEAST_ONCE);
 
-                mqttClient.subscribe(subBuilder.build()).whenComplete((subAck, throwable) -> {
+                localMqttClient.subscribe(subBuilder.build()).whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
                         logger.error("Failed to subscribe to explicit MQTT topic: {}", topic, throwable);
                     } else {
                         logger.info("Successfully subscribed to explicit Emerald Heat Pump MQTT topic: {}", topic);
-
-                        // Fire off the status request immediately after subscribing
-                        requestStatusUpdate(config.uuid);
+                        requestStatusUpdate(childConfig.uuid);
                     }
                 });
             }
         });
     }
 
-    /**
-     * Sends a control command to a specific Heat Pump via MQTT
-     */
     public void sendControlMessage(String deviceId, JsonObject commandPayload) {
-        if (mqttClient == null) {
+        Mqtt5Client localMqttClient = mqttClient;
+        if (localMqttClient == null) {
             logger.warn("MQTT client not connected. Cannot send control message.");
             return;
         }
@@ -298,15 +295,12 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         String macAddress = null;
 
         try {
-            // Retrieve the cached REST API metadata
             EmeraldList api = getApi();
-            if (api != null) {
-                for (int i = 0; i < api.info.property.length; i++) {
-                    for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
-                        if (deviceId.equals(api.info.property[i].heatpump[j].id)) {
-                            propertyId = api.info.property[i].id;
-                            macAddress = api.info.property[i].heatpump[j].macAddress;
-                        }
+            for (int i = 0; i < api.info.property.length; i++) {
+                for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
+                    if (deviceId.equals(api.info.property[i].heatpump[j].id)) {
+                        propertyId = api.info.property[i].id;
+                        macAddress = api.info.property[i].heatpump[j].macAddress;
                     }
                 }
             }
@@ -319,22 +313,20 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             return;
         }
 
-        // Build the two-part JSON Array payload
         JsonArray payloadArray = new JsonArray();
         JsonObject metadata = new JsonObject();
-
         int msgId = new Random().nextInt(9900) + 100;
 
         metadata.addProperty("msg_id", String.valueOf(msgId));
         metadata.addProperty("namespace", "business");
         metadata.addProperty("direction", "app2gw");
-        metadata.addProperty("command", "control"); // Setting command to 'control'
+        metadata.addProperty("command", "control");
         metadata.addProperty("property_id", propertyId);
         metadata.addProperty("device_id", deviceId);
         metadata.addProperty("hw_id", macAddress);
 
         payloadArray.add(metadata);
-        payloadArray.add(commandPayload); // Injecting the actual state changes
+        payloadArray.add(commandPayload);
 
         String payload = payloadArray.toString();
         String topic = "ep/heat_pump/to_gw/" + deviceId;
@@ -344,7 +336,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         pubBuilder.withPayload(payload.getBytes(StandardCharsets.UTF_8));
         pubBuilder.withQOS(QOS.AT_LEAST_ONCE);
 
-        mqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
+        localMqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
             if (throwable != null) {
                 logger.error("Failed to send control message to HWS {}", deviceId, throwable);
             } else {
@@ -354,24 +346,21 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
     }
 
     private void requestStatusUpdate(String deviceId) {
-        if (mqttClient == null)
+        Mqtt5Client localMqttClient = mqttClient;
+        if (localMqttClient == null) {
             return;
+        }
 
         String propertyId = null;
         String macAddress = null;
 
         try {
-            // Retrieve the cached REST API response
             EmeraldList api = getApi();
-            if (api != null) {
-                for (int i = 0; i < api.info.property.length; i++) {
-                    for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
-                        if (deviceId.equals(api.info.property[i].heatpump[j].id)) {
-                            // Extract required metadata.
-                            // Verify these variable names match your POJO mapping exactly!
-                            propertyId = api.info.property[i].id;
-                            macAddress = api.info.property[i].heatpump[j].macAddress;
-                        }
+            for (int i = 0; i < api.info.property.length; i++) {
+                for (int j = 0; j < api.info.property[i].heatpump.length; j++) {
+                    if (deviceId.equals(api.info.property[i].heatpump[j].id)) {
+                        propertyId = api.info.property[i].id;
+                        macAddress = api.info.property[i].heatpump[j].macAddress;
                     }
                 }
             }
@@ -384,11 +373,9 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             return;
         }
 
-        // Build the two-part JSON Array payload
         JsonArray payloadArray = new JsonArray();
         JsonObject metadata = new JsonObject();
-
-        int msgId = new Random().nextInt(9900) + 100; // Random msg_id between 100 and 9999
+        int msgId = new Random().nextInt(9900) + 100;
 
         metadata.addProperty("msg_id", String.valueOf(msgId));
         metadata.addProperty("namespace", "business");
@@ -399,18 +386,17 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         metadata.addProperty("hw_id", macAddress);
 
         payloadArray.add(metadata);
-        payloadArray.add(new JsonObject()); // Second array element is an empty object
+        payloadArray.add(new JsonObject());
 
         String payload = payloadArray.toString();
         String topic = "ep/heat_pump/to_gw/" + deviceId;
 
-        // Construct the AWS CRT Publish Packet
         PublishPacket.PublishPacketBuilder pubBuilder = new PublishPacket.PublishPacketBuilder();
         pubBuilder.withTopic(topic);
         pubBuilder.withPayload(payload.getBytes(StandardCharsets.UTF_8));
         pubBuilder.withQOS(QOS.AT_LEAST_ONCE);
 
-        mqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
+        localMqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
             if (throwable != null) {
                 logger.error("Failed to request status update (comp_query) for HWS {}", deviceId, throwable);
             } else {
@@ -420,22 +406,31 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
     }
 
     protected void pollData() {
+        EmeraldAccountConfiguration localConfig = config;
+
+        if (localConfig == null) {
+            return;
+        }
+
         try {
             if ("".equals(token)) {
-                Login loginResponse;
-                loginResponse = webTargets.getToken(config.email, config.password);
+                Login loginResponse = webTargets.getToken(localConfig.email, localConfig.password);
                 if (loginResponse != null) {
                     token = loginResponse.token;
                 }
             }
-            emeraldList = webTargets.getList(config.email, config.password);
-            for (int i = 0; i < emeraldList.info.property.length; i++) {
-                for (int j = 0; j < emeraldList.info.property[i].heatpump.length; j++) {
-                    logger.info("Found Heat Pump id = {}", emeraldList.info.property[i].heatpump[j].id);
+            EmeraldList localList = webTargets.getList(localConfig.email, localConfig.password);
+            emeraldList = localList;
+
+            if (localList != null && localList.info != null && localList.info.property != null) {
+                for (int i = 0; i < localList.info.property.length; i++) {
+                    for (int j = 0; j < localList.info.property[i].heatpump.length; j++) {
+                        logger.info("Found Heat Pump id = {}", localList.info.property[i].heatpump[j].id);
+                    }
                 }
             }
 
-            this.getThing().getThings().forEach(thing -> {
+            getThing().getThings().forEach(thing -> {
                 EmeraldHWSHandler handler = (EmeraldHWSHandler) thing.getHandler();
                 if (handler != null) {
                     handler.updateChannels();
@@ -446,19 +441,18 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         } catch (EmeraldAuthenticationException e) {
             logger.debug("Unexpected authentication error connecting to Emerald API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
         } catch (EmeraldCommunicationException e) {
             logger.debug("Unexpected error connecting to Emerald API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return;
         }
     }
 
     @Override
     public void dispose() {
-        if (mqttClient != null) {
-            mqttClient.stop(null);
-            mqttClient.close();
+        Mqtt5Client localMqttClient = mqttClient;
+        if (localMqttClient != null) {
+            localMqttClient.stop(null);
+            localMqttClient.close();
         }
         super.dispose();
     }
