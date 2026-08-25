@@ -60,6 +60,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
+            updateChannels();
             return;
         }
 
