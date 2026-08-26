@@ -175,7 +175,12 @@ public class ShellyComponents {
             // roller has stopped. Pushing a synthetic 0/100 for the "open"/"close" (moving) states here
             // caused the position channels to flip to that endpoint and then flip again to the real
             // stopped position, even when the roller was only moving to a partial position (#14189).
-            if (SHELLY_ALWD_ROLLER_TURN_STOP.equals(state) && control.currentPos != null) {
+            // Gen1 overloads "open"/"close" for the moving direction, but Gen2+ only reports them once the
+            // roller has actually reached that end position (its own moving states are "opening"/"closing",
+            // mapped through unchanged) - so for Gen2+ currentPos is safe to trust there too (#21479).
+            boolean gen2EndPosition = profile.isGen2
+                    && (SHELLY_RSTATE_OPEN.equals(state) || SHELLY_RSTATE_CLOSE.equals(state));
+            if ((SHELLY_ALWD_ROLLER_TURN_STOP.equals(state) || gen2EndPosition) && control.currentPos != null) {
                 pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
             }
             if (pos != -1) {
