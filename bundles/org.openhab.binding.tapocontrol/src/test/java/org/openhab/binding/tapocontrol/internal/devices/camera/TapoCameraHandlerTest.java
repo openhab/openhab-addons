@@ -111,7 +111,7 @@ class TapoCameraHandlerTest {
             ThingStatusInfo info = invocation.getArgument(1);
             statuses.add(info);
             lastStatus = info;
-            // OFFLINE(NONE) is initialize()'s transient "waiting for first poll"; ignore it
+            // UNKNOWN is initialize()'s transient status until the first poll reports a real one; ignore it
             boolean terminal = info.getStatus() == ThingStatus.ONLINE
                     || info.getStatus() == ThingStatus.OFFLINE && info.getStatusDetail() != ThingStatusDetail.NONE;
             if (terminal) {
@@ -172,6 +172,7 @@ class TapoCameraHandlerTest {
         handler.simulateInitialize();
         awaitTerminalStatus();
 
+        assertEquals(ThingStatus.UNKNOWN, statuses.get(0).getStatus()); // pre-poll placeholder
         assertEquals(OnOffType.ON, updatedStates.get("privacy#privacyMode"));
         // manualAlarm reflects momentary siren commands, not the persistent alarm config polled here
         assertFalse(updatedStates.containsKey("alarm#manualAlarm"));

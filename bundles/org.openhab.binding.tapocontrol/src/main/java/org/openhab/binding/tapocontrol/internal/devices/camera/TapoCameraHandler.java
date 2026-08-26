@@ -105,7 +105,7 @@ public class TapoCameraHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ipAddress must be set");
             return;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "waiting for first poll");
+        updateStatus(ThingStatus.UNKNOWN);
         try {
             api = createApi(config);
         } catch (IllegalStateException e) {
