@@ -10,6 +10,10 @@
 		<description>Tapo IP Camera (local API). Features depend on the model and are detected automatically.</description>
 		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 
+		<!--
+			Channel groups describe the superset supported by camera models. The handler probes the local API and
+			removes unsupported groups from the individual Thing instance after the first successful poll.
+		-->
 		<channel-groups>
 			<channel-group id="alarm" typeId="cameraAlarm"/>
 			<channel-group id="privacy" typeId="cameraPrivacy"/>
