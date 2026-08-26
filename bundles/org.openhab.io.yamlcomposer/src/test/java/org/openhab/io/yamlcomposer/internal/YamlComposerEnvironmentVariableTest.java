@@ -210,6 +210,52 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
         }
 
         @Test
+        @DisplayName("Treats file without Env headers as legacy and returns true to trigger regeneration")
+        void treatsFileWithoutEnvHeadersAsLegacy() throws IOException {
+            Path main = writeFixture("legacy_main.yaml", "setting: static_value");
+            Path output = Objects.requireNonNull(sharedTempDir).resolve("legacy_output.yaml");
+
+            Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
+            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
+            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
+            }, trackedEnv::add, logSession, includeCache));
+
+            try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);
+            }
+
+            // Strip Env-Deps / Env-Hash headers to simulate a legacy file
+            removeHeaderFromFile(output, "Env-Deps");
+            removeHeaderFromFile(output, "Env-Hash");
+
+            // Legacy files without Env headers must trigger regeneration (return true)
+            boolean changed = ComposerUtils.isEnvironmentChanged(output);
+            assertThat(changed, is(true));
+        }
+
+        @Test
+        @DisplayName("Does not treat output as legacy when header exists with zero tracked environment variables")
+        void doesNotRegenerateWhenHeaderExistsWithZeroTrackedVars() throws Exception {
+            Map<String, String> envMap = Map.of("SOME_VAR", "some_val");
+
+            Path main = writeFixture("zero_tracked_main.yaml", "setting: static_value");
+            Path output = Objects.requireNonNull(sharedTempDir).resolve("zero_tracked_output.yaml");
+
+            Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
+            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
+            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
+            }, trackedEnv::add, logSession, includeCache));
+
+            // Write output with zero tracked variables in trackedEnv
+            try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv, envMap);
+            }
+
+            // File has empty/zero-variable Env header -> NOT legacy -> returns false (no regeneration)
+            assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(false));
+        }
+
+        @Test
         @DisplayName("Handles line wrapping correctly when there are many environment variables")
         void handlesWrappingWithManyEnvs() throws IOException {
             StringBuilder sb = new StringBuilder();
@@ -280,6 +326,13 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
         private void removeHeaderFromFile(Path file) throws IOException {
             List<String> lines = Files.readAllLines(file);
             List<String> cleaned = lines.stream().filter(line -> !line.startsWith("#")).toList();
+            Files.write(file, cleaned);
+        }
+
+        private void removeHeaderFromFile(Path file, String header) throws IOException {
+            List<String> lines = Files.readAllLines(file);
+            String headerPrefix = "# " + header;
+            List<String> cleaned = lines.stream().filter(line -> !line.startsWith(headerPrefix)).toList();
             Files.write(file, cleaned);
         }
     }
