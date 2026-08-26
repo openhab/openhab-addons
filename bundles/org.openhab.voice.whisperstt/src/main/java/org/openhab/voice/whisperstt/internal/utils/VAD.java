@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.givimad.libfvadjni.VoiceActivityDetector;
+import io.github.jvoiceproject.libfvadjni.VoiceActivityDetector;
 
 /**
  * The {@link VAD} class is a voice activity detector implementation over libfvad-jni.

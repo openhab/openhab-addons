@@ -215,11 +215,17 @@ public class WledApiV084 implements WledApi {
     public List<StateOption> getUpdatedFxList() {
         List<StateOption> fxOptions = new ArrayList<>();
         int counter = 0;
-        for (String value : state.jsonResponse.effects) {
-            fxOptions.add(new StateOption(Integer.toString(counter++), value));
-        }
-        if (handler.config.sortEffects) {
-            fxOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+        List<String> responseEffects = state.jsonResponse.effects;
+        if (responseEffects != null) {
+            for (String value : responseEffects) {
+                fxOptions.add(new StateOption(Integer.toString(counter++), value));
+            }
+            if (handler.config.sortEffects) {
+                fxOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+            }
+        } else {
+            logger.debug(
+                    "Effects in JSON response are missing (either bridge isn't initialized properly (yet) or WLED firmware does not return them)");
         }
         return fxOptions;
     }
@@ -228,11 +234,17 @@ public class WledApiV084 implements WledApi {
     public List<StateOption> getUpdatedPaletteList() {
         List<StateOption> palleteOptions = new ArrayList<>();
         int counter = 0;
-        for (String value : state.jsonResponse.palettes) {
-            palleteOptions.add(new StateOption(Integer.toString(counter++), value));
-        }
-        if (handler.config.sortPalettes) {
-            palleteOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+        List<String> responsePalettes = state.jsonResponse.palettes;
+        if (responsePalettes != null) {
+            for (String value : responsePalettes) {
+                palleteOptions.add(new StateOption(Integer.toString(counter++), value));
+            }
+            if (handler.config.sortPalettes) {
+                palleteOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+            }
+        } else {
+            logger.debug(
+                    "Palettes in JSON response are missing (either bridge isn't initialized properly (yet) or WLED firmware does not return them)");
         }
         return palleteOptions;
     }

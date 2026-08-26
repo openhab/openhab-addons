@@ -22,6 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class LedMode {
-    @Nullable
-    public String mode;
+
+    public @Nullable String mode;
 }

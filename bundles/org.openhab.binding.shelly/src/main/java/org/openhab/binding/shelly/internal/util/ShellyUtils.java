@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.shelly.internal.util;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,7 +31,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -204,6 +201,14 @@ public class ShellyUtils {
         return "";
     }
 
+    /**
+     * A deprecated split channel (e.g. brightness$Switch/brightness$Value) carries a $-suffix that
+     * is not part of the real ChannelUID; strip it before passing the id to core APIs like isLinked().
+     */
+    public static String stripDeprecatedSuffix(String channelId) {
+        return channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
+    }
+
     public static String getMessage(Exception e) {
         String message = e.getMessage();
         return message != null ? message : "";
@@ -233,6 +238,11 @@ public class ShellyUtils {
 
     public static DecimalType getDecimal(@Nullable Double value) {
         return new DecimalType((value != null ? value : 0));
+    }
+
+    public static DecimalType getDecimal(@Nullable Double value, int digits) {
+        BigDecimal bd = BigDecimal.valueOf(value != null ? value : 0);
+        return new DecimalType(bd.setScale(digits, RoundingMode.HALF_UP));
     }
 
     public static DecimalType getDecimal(@Nullable Integer value) {
@@ -324,23 +334,6 @@ public class ShellyUtils {
         }
         String time = DATE_TIME.format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
         return time.replace('T', ' ').replace('-', '/');
-    }
-
-    public static Integer getLightIdFromGroup(String groupName) {
-        if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
-        }
-        return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
-    }
-
-    public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return !profile.isRGBW2 || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
-    }
-
-    public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return profile.isBulb || profile.isDuo ? CHANNEL_GROUP_WHITE_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 
     public static DecimalType mapSignalStrength(int dbm) {

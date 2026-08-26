@@ -41,7 +41,7 @@ public class HwDimmerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        HwDimmerConfig config = getThing().getConfiguration().as(HwDimmerConfig.class);
+        HwDimmerConfig config = getConfigAs(HwDimmerConfig.class);
 
         address = config.getAddress();
         if (address == null || address.isEmpty()) {

@@ -68,7 +68,8 @@ public class ShellyBindingConstants {
      * CHANNEL_GROUP_LIGHT_CONTROL control Light power, color mode, timers
      * CHANNEL_GROUP_COLOR_CONTROL color HSB, RGBW values
      * CHANNEL_GROUP_WHITE_CONTROL white White brightness and temperature
-     * CHANNEL_GROUP_LIGHT_CHANNEL channel1..n RGBW2 individual white channels
+     * CHANNEL_GROUP_LIGHT_CHANNEL channel1..n RGBW2 individual white channels (deprecated, see light1..n)
+     * CHANNEL_GROUP_LIGHT_INDEX light1..n RGBW2/RGBW PM individual white channels
      * CHANNEL_GROUP_METER meter1..n Watts, kWh, voltage, current
      * CHANNEL_GROUP_NMETER nmeter 3EM neutral current
      * CHANNEL_GROUP_SENSOR sensors All environmental readings
@@ -145,7 +146,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_TILT = "tilt";
     public static final String CHANNEL_SENSOR_FLOOD = "flood";
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
-    public static final String CHANNEL_SENSOR_MUTE = "mute";
+    public static final String CHANNEL_SENSOR_MUTE = "mute"; // Smoke, Flood Gen4
     public static final String CHANNEL_SENSOR_STATE = "state";
     public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
@@ -162,15 +163,26 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
     public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote
     public static final String CHANNEL_SENSOR_DISTANCE = "distance"; // BLU DIstance
+    public static final String CHANNEL_SENSOR_RAINST = "rainStatus"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDSP = "windSpeed"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDDIR = "windDirection"; // BLU Weather
+    public static final String CHANNEL_SENSOR_GUSTSP = "gustSpeed"; // BLU Weather
+    public static final String CHANNEL_SENSOR_GUSTDIR = "gustDirection"; // BLU Weather
+    public static final String CHANNEL_SENSOR_UV = "uvIndex"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRESSURE = "pressure"; // BLU Weather
+    public static final String CHANNEL_SENSOR_DEWPOINT = "dewPoint"; // BLU Weather
+    public static final String CHANNEL_SENSOR_PRECIPITATION = "precipitation"; // BLU Weather
 
-    // TRV
-    public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp";
-    public static final String CHANNEL_CONTROL_POSITION = "position";
-    public static final String CHANNEL_CONTROL_MODE = "mode";
-    public static final String CHANNEL_CONTROL_BCONTROL = "boost";
-    public static final String CHANNEL_CONTROL_BTIMER = "boostTimer";
-    public static final String CHANNEL_CONTROL_SCHEDULE = "schedule";
-    public static final String CHANNEL_CONTROL_PROFILE = "selectedProfile";
+    // Control channels
+    public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp"; // TRV
+    public static final String CHANNEL_CONTROL_POSITION = "position"; // TRV
+    public static final String CHANNEL_CONTROL_MODE = "mode"; // TRV
+    public static final String CHANNEL_CONTROL_BCONTROL = "boost"; // TRV
+    public static final String CHANNEL_CONTROL_BTIMER = "boostTimer"; // TRV
+    public static final String CHANNEL_CONTROL_SCHEDULE = "schedule"; // TRV
+    public static final String CHANNEL_CONTROL_PROFILE = "selectedProfile"; // TRV
+    public static final String CHANNEL_CONTROL_ALARM_MODE = "alarmMode"; // Flood Gen4
+    public static final String CHANNEL_CONTROL_REPORT_HOLDOFF = "reportHoldoff"; // Flood Gen4
 
     // External sensors for Shelly1/1PM
     public static final String CHANNEL_ESENSOR_TEMP1 = CHANNEL_SENSOR_TEMP + "1";
@@ -197,6 +209,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_LIGHT_POWER = "power";
     public static final String CHANNEL_LIGHT_DEFSTATE = "defaultState";
     public static final String CHANNEL_GROUP_LIGHT_CHANNEL = "channel";
+    public static final String CHANNEL_GROUP_LIGHT_INDEX = "light";
 
     // Bulb/RGBW2 in color mode
     public static final String CHANNEL_GROUP_COLOR_CONTROL = "color";
@@ -267,6 +280,9 @@ public class ShellyBindingConstants {
     public static final String SHELLY_API_FW_110 = "v1.10"; // FW 1.10 or newer detected, activates some add feature
     public static final String SHELLY2_API_MIN_FWVERSION = "v0.10.1"; // Gen 2 minimum FW
 
+    // Unprefixed (unlike the "v"-prefixed Gen1 constants above) to match Gen2+ profile.fwVersion (e.g. "1.2.3")
+    public static final String SHELLY2_API_FW_BLEAUTOSCAN = "2.0"; // FW 2.0+: BLE.SetConfig enable flag removed
+
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
     public static final String ALARM_TYPE_RESTARTED = "RESTARTED";
@@ -277,6 +293,10 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
     public static final String ALARM_TYPE_VALVE_ERROR = "VALVE_ERROR";
+    public static final String ALARM_TYPE_BTH_ENCRYPTED = "BTH_ENCRYPTED";
+    public static final String ALARM_TYPE_BTH_UNKNOWN_TYPE = "BTH_UNKNOWN_TYPE";
+    public static final String ALARM_TYPE_FLOOD = "FLOOD";
+    public static final String ALARM_TYPE_MUTED = "ALARM_MUTED";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types
@@ -304,6 +324,10 @@ public class ShellyBindingConstants {
     public static final int DIGITS_PERCENT = 1;
     public static final int DIGITS_ROTATION = 1;
     public static final int DIGITS_DISTANCE = 0;
+    public static final int DIGITS_WIND = 2; // BTHome 0x44 Speed has 0.01 m/s resolution
+    public static final int DIGITS_PRECIPITATION = 1;
+    public static final int DIGITS_PRESSURE = 2; // BTHome 0x04 Pressure has 0.01 hPa resolution
+    public static final int DIGITS_UV = 0; // UV Index is conventionally reported as a whole number (0-11+)
 
     public static final int SHELLY_API_TIMEOUT_MS = 10000;
     public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec

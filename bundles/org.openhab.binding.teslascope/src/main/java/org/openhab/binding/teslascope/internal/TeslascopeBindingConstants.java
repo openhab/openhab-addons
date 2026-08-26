@@ -117,6 +117,9 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_USABLE_BATTERY_LEVEL = "usable-battery-level";
     public static final String CHANNEL_VALET_MODE = "valet-mode";
     public static final String CHANNEL_WIPER_BLADE_HEATER = "wiper-blade-heater";
+    public static final String CHANNEL_SELF_DRIVING_MILES_SINCE_RESET = "self-driving-miles-since-reset";
+    public static final String CHANNEL_MILES_SINCE_RESET = "miles-since-reset";
+    public static final String CHANNEL_SELF_DRIVING_PERCENTAGE = "self-driving-percentage";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT, TESLASCOPE_VEHICLE);

@@ -12,7 +12,6 @@
  */
 package org.openhab.io.yamlcomposer.internal.placeholders;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -28,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @SuppressWarnings("null")
 @NonNullByDefault
 public record ReplacePlaceholder(@Nullable Object value,
-        @NonNull String sourceLocation) implements InterpolablePlaceholder<ReplacePlaceholder> {
+        String sourceLocation) implements InterpolablePlaceholder<ReplacePlaceholder> {
 
     @Override
     public ReplacePlaceholder recreate(@Nullable Object newValue, String location) {

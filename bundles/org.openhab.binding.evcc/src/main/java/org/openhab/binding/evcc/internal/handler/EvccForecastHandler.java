@@ -66,7 +66,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                         "Unsupported forecast type: " + subType);
                 return;
             }
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            JsonObject stateOpt = handler.getCachedEvccState();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -77,8 +77,8 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                     state = stateOpt.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType).deepCopy();
                     modifyJSON(state);
                     state.addProperty("scaled", 0);
-                    state.addProperty("solar", 0);
                 }
+                state.addProperty(subType, 0);
                 commonInitialize(state);
                 isInitialized = true;
                 handler.register(this);
@@ -88,7 +88,6 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Unavailable forecast type: " + subType);
             }
-
         });
     }
 
@@ -225,9 +224,11 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_KEY_FORECAST) ? state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)
-                ? state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType)
-                : new JsonObject() : new JsonObject();
+        return JSON_KEY_SOLAR.equals(subType) && state.has(JSON_KEY_FORECAST)
+                ? state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)
+                        ? state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType)
+                        : new JsonObject()
+                : new JsonObject();
     }
 
     private record FieldMapping(String valueField, String timestampField) {

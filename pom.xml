@@ -68,16 +68,16 @@
 
     <ohc.version>5.3.0-SNAPSHOT</ohc.version>
     <asm.version>9.9.1</asm.version>
-    <bnd.version>7.3.0</bnd.version>
+    <bnd.version>7.4.0</bnd.version>
     <bouncycastle.version>1.85</bouncycastle.version>
     <commons.codec.version>1.17.1</commons.codec.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
-    <jackson.annotations.version>2.21</jackson.annotations.version>
-    <jackson.version>2.21.4</jackson.version>
+    <jackson.annotations.version>2.22</jackson.annotations.version>
+    <jackson.version>2.22.2</jackson.version>
     <jna.version>5.18.1</jna.version>
     <json.version>20251224</json.version>
-    <jsoup.version>1.22.2</jsoup.version>
+    <jsoup.version>1.23.1</jsoup.version>
     <karaf.version>4.4.11</karaf.version>
     <mockito.version>5.23.0</mockito.version>
     <netty.version>4.1.133.Final</netty.version>
@@ -440,6 +440,19 @@ Import-Package: \
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>3.6.1</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>2.0.2</version>
+          <configuration>
+            <nodeVersion>v24.18.1</nodeVersion>
+            <npmVersion>11.16.0</npmVersion>
+            <environmentVariables>
+              <NPM_CONFIG_UPDATE_NOTIFIER>false</NPM_CONFIG_UPDATE_NOTIFIER>
+            </environmentVariables>
+          </configuration>
         </plugin>
 
         <plugin>

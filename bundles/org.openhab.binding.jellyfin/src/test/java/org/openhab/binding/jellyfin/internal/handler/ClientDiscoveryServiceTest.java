@@ -28,11 +28,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.discovery.DeviceIdSanitizer;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
@@ -71,7 +71,7 @@ class ClientDiscoveryServiceTest {
         when(serverHandler.getThing()).thenReturn(bridge);
 
         // All categories enabled by default so existing tests are unaffected
-        when(bridge.getConfiguration()).thenReturn(allCategoriesEnabled());
+        when(serverHandler.getBridgeConfig()).thenReturn(allCategoriesEnabled());
 
         // Return empty collection by default so existing tests are unaffected
         when(thingRegistry.getAll()).thenReturn(Collections.emptyList());
@@ -91,13 +91,13 @@ class ClientDiscoveryServiceTest {
     private Configuration buildConfig(boolean web, boolean android, boolean androidTv, boolean ios, boolean kodi,
             boolean roku, boolean other) {
         Configuration config = new Configuration();
-        config.put("discoverWebClients", web);
-        config.put("discoverAndroidClients", android);
-        config.put("discoverAndroidTvClients", androidTv);
-        config.put("discoverIosClients", ios);
-        config.put("discoverKodiClients", kodi);
-        config.put("discoverRokuClients", roku);
-        config.put("discoverOtherClients", other);
+        config.discoverWebClients = web;
+        config.discoverAndroidClients = android;
+        config.discoverAndroidTvClients = androidTv;
+        config.discoverIosClients = ios;
+        config.discoverKodiClients = kodi;
+        config.discoverRokuClients = roku;
+        config.discoverOtherClients = other;
         return config;
     }
 
@@ -394,7 +394,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testWebClientSkippedWhenDiscoverWebClientsIsFalse() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(false, true, true, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(false, true, true, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("web-1", "Jellyfin Web")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -406,7 +406,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testWebClientDiscoveredWhenDiscoverWebClientsIsTrue() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("web-1", "Jellyfin Web")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -418,7 +418,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testAndroidClientSkippedWhenDiscoverAndroidClientsIsFalse() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, false, true, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, false, true, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("android-1", "Jellyfin for Android")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -431,7 +431,7 @@ class ClientDiscoveryServiceTest {
     @Test
     void testAndroidTvClientSkippedWhenDiscoverAndroidTvClientsIsFalse() {
         // Android TV disabled, plain Android enabled — TV client must be skipped
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, false, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, false, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("atv-1", "Jellyfin for Android TV")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -444,7 +444,7 @@ class ClientDiscoveryServiceTest {
     @Test
     void testAndroidTvClientNotMatchedByAndroidFilter() {
         // Android TV enabled, plain Android disabled — TV client must still be discovered
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, false, true, true, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, false, true, true, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("atv-1", "Jellyfin for Android TV")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -456,7 +456,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testIosClientSkippedWhenDiscoverIosClientsIsFalse() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("ios-1", "Jellyfin iOS")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -468,7 +468,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testSwiftfinMatchedAsIosCategory() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("swiftfin-1", "Swiftfin")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -480,7 +480,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testInfuseMatchedAsIosCategory() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, false, true, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("infuse-1", "Infuse")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -492,7 +492,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testKodiClientSkippedWhenDiscoverKodiClientsIsFalse() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, false, true, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, false, true, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("kodi-1", "JellyCon")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -504,7 +504,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testRokuClientSkippedWhenDiscoverRokuClientsIsFalse() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, true, false, true));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, true, false, true));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("roku-1", "Jellyfin for Roku")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -516,7 +516,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testUnknownClientSkippedWhenDiscoverOtherClientsIsFalse() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, true, true, false));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, true, true, false));
         when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("other-1", "Some Unknown App")));
 
         DiscoveryListener listener = mock(DiscoveryListener.class);
@@ -528,7 +528,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testNullClientNameFallsIntoOtherCategory() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, true, true, false));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(true, true, true, true, true, true, false));
         SessionInfoDto session = new SessionInfoDto();
         session.setDeviceId("null-client-1");
         session.setDeviceName("Unknown Device");
@@ -544,7 +544,7 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testAllFiltersDisabledResultsInNoDiscovery() {
-        when(bridge.getConfiguration()).thenReturn(buildConfig(false, false, false, false, false, false, false));
+        when(serverHandler.getBridgeConfig()).thenReturn(buildConfig(false, false, false, false, false, false, false));
 
         Map<String, SessionInfoDto> clients = new HashMap<>();
         clients.put("s1", sessionWith("web-1", "Jellyfin Web"));
@@ -572,7 +572,7 @@ class ClientDiscoveryServiceTest {
         when(thing.getThingTypeUID()).thenReturn(Constants.THING_TYPE_JELLYFIN_CLIENT);
         when(thing.getBridgeUID()).thenReturn(bridgeUID);
 
-        Configuration config = new Configuration();
+        org.openhab.core.config.core.Configuration config = new org.openhab.core.config.core.Configuration();
         config.put("serialNumber", serialNumber);
         when(thing.getConfiguration()).thenReturn(config);
 
@@ -628,7 +628,7 @@ class ClientDiscoveryServiceTest {
         when(legacyThing.getUID()).thenReturn(existingThingUID);
         when(legacyThing.getThingTypeUID()).thenReturn(Constants.THING_TYPE_JELLYFIN_CLIENT);
         when(legacyThing.getBridgeUID()).thenReturn(bridgeUID);
-        when(legacyThing.getConfiguration()).thenReturn(new Configuration());
+        when(legacyThing.getConfiguration()).thenReturn(new org.openhab.core.config.core.Configuration());
         when(legacyThing.getProperties()).thenReturn(Map.of()); // no deviceName property
 
         when(thingRegistry.getAll()).thenReturn(List.of(legacyThing));

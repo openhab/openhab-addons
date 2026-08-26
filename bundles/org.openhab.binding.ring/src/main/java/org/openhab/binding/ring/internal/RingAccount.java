@@ -66,4 +66,9 @@ public interface RingAccount {
      * @param payload to be sent to the Ring API
      */
     void sendCommand(String url, HttpMethod httpMethod, String payload);
+
+    /**
+     * @param url to be downloaded
+     */
+    byte[] downloadDirectSnapshot(String url);
 }

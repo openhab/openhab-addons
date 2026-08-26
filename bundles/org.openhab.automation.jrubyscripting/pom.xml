@@ -11,21 +11,51 @@
   </parent>
 
   <artifactId>org.openhab.automation.jrubyscripting</artifactId>
-
   <name>openHAB Add-ons :: Bundles :: Automation :: JRuby Scripting</name>
 
   <properties>
-    <bnd.importpackage>com.sun.nio.*;resolution:=optional,com.sun.security.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.bouncycastle.*;resolution:=optional,org.joda.*;resolution:=optional,sun.management.*;resolution:=optional,sun.nio.*;resolution:=optional,jakarta.annotation;resolution:=optional,jdk.crac.management;resolution:=optional</bnd.importpackage>
-    <jruby.version>10.0.6.0</jruby.version>
+    <jruby.version>10.1.1.0</jruby.version>
+
+    <bnd.importpackage><![CDATA[org.crac;resolution:=optional,\
+  com.dylibso.chicory.annotations;resolution:=optional,\
+  org.joda.convert;resolution:=optional,\
+  com.sun.nio.*;resolution:=optional,\
+  com.sun.security.*;resolution:=optional,\
+  org.apache.tools.ant.*;resolution:=optional,\
+  org.bouncycastle.*;resolution:=optional,\
+  sun.management.*;resolution:=optional,\
+  sun.nio.*;resolution:=optional,\
+  android.os;resolution:=optional,\
+  jakarta.annotation;resolution:=optional,\
+  jdk.crac.management;resolution:=optional]]></bnd.importpackage>
+
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.jruby</groupId>
-      <artifactId>jruby-complete</artifactId>
+      <artifactId>jruby</artifactId>
       <version>${jruby.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>embed-dependencies</id>
+            <configuration>
+              <!-- jruby isn't a flat jar. We want its transitive dependencies -->
+              <excludeTransitive>false</excludeTransitive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

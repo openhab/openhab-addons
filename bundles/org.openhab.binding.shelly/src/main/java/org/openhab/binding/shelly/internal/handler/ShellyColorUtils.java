@@ -137,6 +137,22 @@ public class ShellyColorUtils {
         return changed;
     }
 
+    public PercentType getPercentRed() {
+        return percentRed;
+    }
+
+    public PercentType getPercentGreen() {
+        return percentGreen;
+    }
+
+    public PercentType getPercentBlue() {
+        return percentBlue;
+    }
+
+    public PercentType getPercentWhite() {
+        return percentWhite;
+    }
+
     public HSBType toHSB() {
         return HSBType.fromRGB(red, green, blue);
     }

@@ -300,6 +300,14 @@ public class McpService {
                     .add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_AUTH_SERVER, "mcp-oauth-asmd"));
             serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_AUTH_SERVER_OIDC,
                     "mcp-oauth-asmd-oidc"));
+            // Same documents at the RFC 8414 / RFC 9728 locations, where a client that
+            // discovers metadata on its own instead of following our 401 will look.
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_PROTECTED_RESOURCE,
+                    "mcp-oauth-prm-root"));
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_AUTH_SERVER,
+                    "mcp-oauth-asmd-root"));
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_AUTH_SERVER_OIDC,
+                    "mcp-oauth-asmd-oidc-root"));
 
             OAuthTokenProxyServlet tokenProxy = new OAuthTokenProxyServlet(httpClient, localBaseUrl);
             serviceRegistrations.add(registerServlet(tokenProxy, OAuthTokenProxyServlet.PATH, "mcp-oauth-token-proxy"));
@@ -361,9 +369,12 @@ public class McpService {
             }
 
             if (config.enableScripting) {
-                ScriptTools scriptTools = new ScriptTools(scriptEngineManager, jsonMapper, true);
-                builder = builder.toolCall(scriptTools.getExecuteScriptTool(),
-                        (exchange, req) -> scriptTools.handleExecuteScript(req));
+                ScriptTools scriptTools = new ScriptTools(scriptEngineManager, jsonMapper, true, bundleContext);
+                builder = builder
+                        .toolCall(scriptTools.getExecuteScriptTool(),
+                                (exchange, req) -> scriptTools.handleExecuteScript(req))
+                        .toolCall(scriptTools.getGetOpenhabJsTypesTool(),
+                                (exchange, req) -> scriptTools.handleGetOpenhabJsTypes(req));
             }
 
             if (config.enableLoggingAccess) {

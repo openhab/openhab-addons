@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -37,7 +38,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,8 @@ import com.google.gson.Gson;
 public class ShellyDeviceProfile {
     private final Logger logger = LoggerFactory.getLogger(ShellyDeviceProfile.class);
     private static final Pattern GEN1_VERSION_PATTERN = Pattern.compile("v\\d+\\.\\d+\\.\\d+(-[a-z0-9]*)?");
-    private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]*)?");
+    private static final Pattern GEN2_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-fh-z0-9]+)?");
+    private static final Pattern APP_VERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+(-[a-z0-9]+)?");
 
     public boolean initialized; // true when initialized
 
@@ -94,7 +96,10 @@ public class ShellyDeviceProfile {
     public boolean isBulb; // true only if it is a Bulb
     public boolean isDuo; // true only if it is a Duo
     public boolean isRGBW2; // true only if it a RGBW2
+    public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
+                                 // from a Plus RGBW PM running the same rgb/rgbw/light profile)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
+    public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
 
     public boolean isSensor; // true for HT & Smoke
     public boolean hasBattery; // true if battery device
@@ -109,10 +114,14 @@ public class ShellyDeviceProfile {
     public boolean isIX; // true for a Shelly IX
     public boolean isTRV; // true for a Shelly TRV
     public boolean isSmoke; // true for Shelly Smoke
+    public boolean isFlood; // true for Shelly Flood (any generation)
     public boolean isWall; // true: Shelly Wall Display
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
+    public String floodAlarmMode = ""; // Flood Gen4: alarm mode from Flood.GetConfig
+    public int reportHoldoff = 0; // Flood Gen4: report holdoff in seconds
     public boolean isEM50; // true for Shelly Pro EM50
     public boolean isEM1; // true for em1-clamp meter devices (Plus EM, Mini EM, Pro EM50); Pro EM50 also has a relay
+    public boolean isWS90; // true for Ecowitt WS90
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -162,7 +171,7 @@ public class ShellyDeviceProfile {
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
         fwDate = substringBefore(device.fw, "-");
         fwVersion = extractFwVersion(device.fw);
-        ShellyVersionDTO version = new ShellyVersionDTO();
+        ShellyVersionComparator version = new ShellyVersionComparator();
         extFeatures = version.compare(fwVersion, SHELLY_API_FW_110) >= 0;
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
@@ -208,13 +217,14 @@ public class ShellyDeviceProfile {
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
+        isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
             maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
         }
 
-        boolean isFlood = GROUP_FLOOD_THING_TYPES.contains(thingTypeUID);
+        isFlood = GROUP_FLOOD_THING_TYPES.contains(thingTypeUID);
         boolean isGas = GROUP_GAS_THING_TYPES.contains(thingTypeUID);
         boolean isUNI = GROUP_UNI_THING_TYPES.contains(thingTypeUID);
         isSmoke = GROUP_SMOKE_THING_TYPES.contains(thingTypeUID);
@@ -232,9 +242,10 @@ public class ShellyDeviceProfile {
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
         isEM1 = GROUP_EM1_THING_TYPES.contains(thingTypeUID);
+        isWS90 = THING_TYPE_SHELLYBLUWS90.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
-                || isSense || isTRV || isWall;
+                || isSense || isTRV || isWall || isWS90;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)
@@ -319,8 +330,13 @@ public class ShellyDeviceProfile {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
             List<ShellySettingsRgbwLight> lights = settings.lights;
-            return lights == null || lights.size() <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
-                    : CHANNEL_GROUP_LIGHT_CHANNEL + idx;
+            int count = lights == null ? 0 : lights.size();
+            if (count <= 1 || (inColor && i == 0)) {
+                // count<=1: the single light/color component always lives in the bare "control" group.
+                // inColor && i==0: hybrid profile (color + secondary CCT/Light) - index 0 is the color slot.
+                return CHANNEL_GROUP_LIGHT_CONTROL;
+            }
+            return lightChannelGroupPrefix(this) + (idx - getColorComponentCount());
         } else if (isLight) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {
@@ -337,6 +353,65 @@ public class ShellyDeviceProfile {
 
     public String getMeterGroup(int idx) {
         return numMeters > 1 ? CHANNEL_GROUP_METER + (idx + 1) : CHANNEL_GROUP_METER;
+    }
+
+    /**
+     * Number of leading color-component slots in settings.lights (0 or 1 - no profile has more than one).
+     * Used to convert a device-local component id (as reported by the device, 0-based per component type,
+     * e.g. CCT:0/CCT:1 or Light:0/Light:1) into its index in the flat settings.lights list, where slot 0 is
+     * reserved for the color component (rgb0/rgbw0) whenever one is present.
+     */
+    public int getColorComponentCount() {
+        return inColor ? 1 : 0;
+    }
+
+    /**
+     * True when settings.lights[idx] is an RGB/RGBW color component, as opposed to a CCT/Light one - needed
+     * because a hybrid profile's (rgbcct, rgbx2light) secondary component(s) are not color even though the
+     * whole-profile inColor flag is true. Untagged (Gen1 RGBW2) entries fall back to that whole-profile flag.
+     */
+    public boolean hasColorTag(int idx) {
+        ShellyLightApiComponent tag = tagAt(settings.lights, idx);
+        return tag == ShellyLightApiComponent.NONE ? inColor : ShellyApiLightUtil.isColorComponent(tag);
+    }
+
+    /**
+     * True when settings.lights[idx] is a CCT (color temperature) component - Gen2 only, untagged Gen1 entries are
+     * never CCT.
+     */
+    public boolean isCctComponent(int idx) {
+        return ShellyApiLightUtil.isCctComponent(tagAt(settings.lights, idx));
+    }
+
+    /**
+     * Converts a settings.lights index into the actual Shelly RPC component id - non-color components are
+     * shifted down by the leading color slot(s) (e.g. rgbcct's CCT:0 is at settings.lights index 1).
+     */
+    public int getLightComponentId(int idx) {
+        return hasColorTag(idx) ? idx : idx - getColorComponentCount();
+    }
+
+    /**
+     * The color-temperature range to use for settings.lights[idx]: a CCT component's own ct_range when the
+     * device reported one, otherwise the profile-wide default (see initFromThingType()).
+     */
+    public int getMinTemp(int idx) {
+        Integer componentMin = componentTemp(idx, true);
+        return componentMin != null ? componentMin : minTemp;
+    }
+
+    public int getMaxTemp(int idx) {
+        Integer componentMax = componentTemp(idx, false);
+        return componentMax != null ? componentMax : maxTemp;
+    }
+
+    private @Nullable Integer componentTemp(int idx, boolean min) {
+        List<ShellySettingsRgbwLight> lights = settings.lights;
+        if (lights == null || idx < 0 || idx >= lights.size()) {
+            return null;
+        }
+        ShellySettingsRgbwLight light = lights.get(idx);
+        return min ? light.minTemp : light.maxTemp;
     }
 
     public String getInputGroup(int i) {
@@ -453,6 +528,22 @@ public class ShellyDeviceProfile {
             // Extract version from string, e.g. 20210226-091047/v1.10.0-rc2-89-g623b41ec0-master
             Matcher matcher = version.startsWith("v") ? GEN1_VERSION_PATTERN.matcher(vers)
                     : GEN2_VERSION_PATTERN.matcher(vers);
+            if (matcher.find()) {
+                return matcher.group(0);
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Extracts a semver from the human-readable "ver" field some Gen2+ devices report (e.g.
+     * "1.7.99-powerstripg4prod1"). Unlike {@link #extractFwVersion}, this doesn't exclude 'g' from the
+     * suffix - that exclusion exists to cut fw_id's trailing git-describe hash (e.g. "-gcb84623"), which
+     * would otherwise wrongly truncate a product-code suffix that happens to contain the letter 'g'.
+     */
+    public static String extractAppVersion(@Nullable String version) {
+        if (version != null) {
+            Matcher matcher = APP_VERSION_PATTERN.matcher(version);
             if (matcher.find()) {
                 return matcher.group(0);
             }

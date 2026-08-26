@@ -34,7 +34,6 @@ import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -57,9 +56,9 @@ public abstract class SmartthingsConverter {
     protected String smartthingsName;
     protected String thingTypeId;
 
-    SmartthingsConverter(Thing thing) {
-        smartthingsName = thing.getConfiguration().as(SmartthingsThingConfig.class).smartthingsName;
-        thingTypeId = thing.getThingTypeUID().getId();
+    SmartthingsConverter(SmartthingsThingConfig config, String thingTypeId) {
+        smartthingsName = config.smartthingsName;
+        this.thingTypeId = thingTypeId;
     }
 
     public abstract String convertToSmartthings(ChannelUID channelUid, Command command);

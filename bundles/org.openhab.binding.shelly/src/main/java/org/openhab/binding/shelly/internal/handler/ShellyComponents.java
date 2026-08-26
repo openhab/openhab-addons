@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.measure.MetricPrefix;
+import javax.measure.Unit;
+import javax.measure.quantity.Pressure;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -105,7 +107,8 @@ public class ShellyComponents {
         thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SLEEPTIME,
                 toQuantityType(getInteger(status.sleepTime), Units.SECOND));
 
-        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.hasUpdate));
+        // Use nested update.hasUpdate (stable-only signal) rather than top-level hasUpdate which can include betas
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.update.hasUpdate));
 
         if (profile.settings.calibrated != null) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CALIBRATED,
@@ -168,19 +171,17 @@ public class ShellyComponents {
 
             String state = getString(control.state);
             int pos = -1;
-            switch (state) {
-                case SHELLY_ALWD_ROLLER_TURN_OPEN:
-                    pos = SHELLY_MAX_ROLLER_POS;
-                    break;
-                case SHELLY_ALWD_ROLLER_TURN_CLOSE:
-                    pos = SHELLY_MIN_ROLLER_POS;
-                    break;
-                case SHELLY_ALWD_ROLLER_TURN_STOP:
-                    if (control.currentPos != null) {
-                        // only valid in stop state
-                        pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
-                    }
-                    break;
+            // The device can't report the live position while moving; only trust currentPos once the
+            // roller has stopped. Pushing a synthetic 0/100 for the "open"/"close" (moving) states here
+            // caused the position channels to flip to that endpoint and then flip again to the real
+            // stopped position, even when the roller was only moving to a partial position (#14189).
+            // Gen1 overloads "open"/"close" for the moving direction, but Gen2+ only reports them once the
+            // roller has actually reached that end position (its own moving states are "opening"/"closing",
+            // mapped through unchanged) - so for Gen2+ currentPos is safe to trust there too (#21479).
+            boolean gen2EndPosition = profile.isGen2
+                    && (SHELLY_RSTATE_OPEN.equals(state) || SHELLY_RSTATE_CLOSE.equals(state));
+            if ((SHELLY_ALWD_ROLLER_TURN_STOP.equals(state) || gen2EndPosition) && control.currentPos != null) {
+                pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
             }
             if (pos != -1) {
                 thingHandler.logger.debug("{}: Update roller position to {}/{}, state={}", thingHandler.thingName, pos,
@@ -651,7 +652,26 @@ public class ShellyComponents {
                         getOnOff(sdata.smoke));
             }
             if (sdata.mute != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE, getOnOff(sdata.mute));
+                if (profile.isSmoke) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MUTE,
+                            getOnOff(sdata.mute));
+                } else if (profile.isFlood) {
+                    // Flood Gen4 has no mute channel; report mute/unmute via the device#alarm trigger instead
+                    thingHandler.postEvent(sdata.mute ? ALARM_TYPE_MUTED : ALARM_TYPE_NONE, false);
+                }
+            }
+            if (sdata.sensor == null && (sdata.sensorError != null || (profile.isFlood && profile.isGen2))) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
+                        getStringType(sdata.sensorError));
+            }
+
+            if (profile.isFlood && profile.isGen2) {
+                if (!profile.floodAlarmMode.isEmpty()) {
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_ALARM_MODE,
+                            getStringType(profile.floodAlarmMode));
+                }
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF,
+                        toQuantityType((double) profile.reportHoldoff, DIGITS_NONE, Units.SECOND));
             }
 
             if (sdata.gasSensor != null) {
@@ -699,6 +719,46 @@ public class ShellyComponents {
             if (sdata.sensor != null && sdata.sensor.vibration != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                         OnOffType.from(sdata.sensor.vibration));
+            }
+
+            // WS90
+            if (sdata.rain != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAINST,
+                        OnOffType.from(getBool(sdata.rain)));
+            }
+            if (sdata.windSpeed != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDSP,
+                        toQuantityType(getDouble(sdata.windSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
+            }
+            if (sdata.windDirection != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR,
+                        toQuantityType(getDouble(sdata.windDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
+            }
+            if (sdata.gustSpeed != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP,
+                        toQuantityType(getDouble(sdata.gustSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
+            }
+            if (sdata.gustDirection != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTDIR,
+                        toQuantityType(getDouble(sdata.gustDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
+            }
+            if (sdata.pressure != null) {
+                Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
+                        toQuantityType(getDouble(sdata.pressure), DIGITS_PRESSURE, hpa));
+            }
+            if (sdata.precipitation != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRECIPITATION,
+                        toQuantityType(getDouble(sdata.precipitation), DIGITS_PRECIPITATION,
+                                MetricPrefix.MILLI(SIUnits.METRE)));
+            }
+            if (sdata.dewPoint != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT,
+                        toQuantityType(getDouble(sdata.dewPoint), DIGITS_TEMP, SIUnits.CELSIUS));
+            }
+            if (sdata.uvIndex != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV,
+                        getDecimal(sdata.uvIndex, DIGITS_UV));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
@@ -818,6 +878,39 @@ public class ShellyComponents {
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.percentWhite);
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER, col.toHSB());
 
+        }
+        return updated;
+    }
+
+    public static boolean updateLightMode(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+            throws ShellyApiException {
+        boolean updated = false;
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (profile.isRGBW2) {
+            if (!thingHandler.areChannelsCreated()) {
+                return false;
+            }
+            List<ShellySettingsLight> lights = orgStatus.lights;
+            for (int i = 0; i < lights.size(); i++) {
+                if (profile.hasColorTag(i)) {
+                    // color component is handled by updateRGBW(); this loop only covers CCT/Light components
+                    // (a hybrid profile's secondary component(s), or all of them for a plain white-mode RGBW2)
+                    continue;
+                }
+                ShellySettingsLight light = lights.get(i);
+                String groupName = profile.getControlGroup(i);
+                OnOffType power = getOnOff(light.ison);
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", power);
+                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                        toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
+                                Units.PERCENT));
+                if (light.temp != null) {
+                    ShellyColorUtils col = new ShellyColorUtils();
+                    col.setMinMaxTemp(profile.getMinTemp(i), profile.getMaxTemp(i));
+                    col.setTemp(getInteger(light.temp));
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
+                }
+            }
         }
         return updated;
     }

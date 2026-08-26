@@ -111,10 +111,12 @@ See section [Discovery](#discovery) for details.
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
+| shellyplusflood      | Shelly Flood Gen4 water leak sensor                      | S4SN-0071A                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
 | shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
+| shellyprorgbwwpm     | Shelly Pro RGBWW PM                                      | SPDC-0D5PE16EU                                                            |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
@@ -147,22 +149,23 @@ See section [Discovery](#discovery) for details.
 
 ### Shelly BLU
 
-| thing-type           | Model                                 | Vendor ID   |
-| -------------------- | ------------------------------------- | ----------- |
-| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough | SBBT-002C   |
-| shellyblubutton      | Shelly BLU Tough ZB                   | SBBT-102C   |
-| shellybluwallswitch4 | Shelly BLU Wallswitch 4               | SBBT-EU5027 |
-| shellyblurcbutton4   | Shelly BLU RC Button 4                | SBBT-004CUS |
-| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB             | SBBT-104CUS |
-| shellybluht          | Shelly BLU H&T                        | SBHT-003C   |
-| shellybluht          | Shelly BLU H&T ZB                     | SBHT-203C   |
-| shellybluht          | Shelly BLU H&T Display ZB             | SBHT-103C   |
-| shellybludw          | Shelly BLU Door/Windows               | SBDW-002C   |
-| shellybludw          | Shelly BLU Door/Window ZB             | SBDW-103C   |
-| shellyblumotion      | Shelly BLU Motion                     | SBMO-003Z   |
-| shellyblumotion      | Shelly BLU Motion ZB                  | SBMO-103Z   |
-| shellybludistance    | Shelly BLU Distance                   | SBDI-003E   |
-| shellybluremote      | Shelly BLU Remote Control             | SBRC-005B   |
+| thing-type           | Model                                                  | Vendor ID               |
+| -------------------- | ------------------------------------------------------ | ----------------------- |
+| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough                  | SBBT-002C               |
+| shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
+| shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4 ZB                              | SBBT-104CUS             |
+| shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
+| shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybluht          | Shelly BLU H&T Display ZB                              | SBHT-103C               |
+| shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellybludw          | Shelly BLU Door/Window ZB                              | SBDW-103C               |
+| shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellyblumotion      | Shelly BLU Motion ZB                                   | SBMO-103Z               |
+| shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
+| shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
+| shellybluws90        | Ecowitt WS90 Weather Station (Shelly BLU)              | SBWS-90CM               |
 
 ### Special Thing Types
 
@@ -251,8 +254,15 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
 - Shelly BLU Motion: It may take some time until channels like Lux show up.
+- Ecowitt WS90: The WS90 is solar-powered and broadcasts continuously — no button press is required to add it to the Inbox.
+  It will appear automatically once it is within range of a configured BLU gateway.
 
 Try moving the device to force status updates.
+
+#### Custom oh-blu-scanner.js
+
+The binding automatically manages the installation of `oh-blu-scanner.js` on the gateway device.
+See [Advanced Users](doc/AdvancedUsers.md) for how to change the script's log level (DEBUG/TRACE) or override the installed script for prototyping.
 
 Every time an event is received sensors#lastUpdate and channels are updated with the reported values.
 `device#wifiSignal` indicates the Bluetooth signal strength and gets updated when the device sends an event.
@@ -1144,6 +1154,10 @@ totalEnergy might reset on restart depending on device type and firmware version
 |          | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                      |
 | meter    | currentPower | Number  | yes       | Current power consumption in Watts (all channels)                       |
 
+`Note`:
+channel1..channel4 are deprecated, use light1..light4 instead (same channels, without the button trigger).
+Already-discovered Things get the light1..light4 channels created automatically; channel1..channel4 are kept for backward compatibility.
+
 Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
 The current firmware doesn't support the timestamp report for the meters.
 The binding emulates this by using the system time on every update.
@@ -1654,6 +1668,33 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
+### Shelly Flood Gen4 (thing-type: shellyplusflood)
+
+The Shelly Flood Gen4 (S4SN-0071A) is a battery-powered water-leak sensor with a configurable alarm mode.
+The sensor probe connects via a cable; if the cable is unplugged, the `lastError` channel is updated and a `SENSOR_ERROR` event is posted to `device#alarm`.
+
+`Note:`
+The `alarmMode` and `reportHoldoff` channels are writable but only take effect while the sensor is online (awake and connected).
+There is no API to mute a flood alarm remotely, only the physical button on the device; the mute state is reported via an `ALARM_MUTED` event on `device#alarm` rather than a dedicated channel.
+
+The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
+
+- **Rain mode** (`rain`): rain detection only — the flood alarm is inactive.
+- **Flood mode, Intense** (`intense`): loud acoustic alarm triggered by flooding (mute via physical button on device).
+- **Flood mode, Normal** (`normal`): acoustic alarm triggered by flooding (mute via physical button on device).
+- **Flood mode, Silent** (`disabled`): flood detection only, no acoustic alarm.
+
+| Group   | Channel       | Type            | read-only | Description                                                               |
+| ------- | ------------- | --------------- | --------- | ------------------------------------------------------------------------- |
+| sensors | flood         | Switch          | yes       | ON: Water/flooding detected, OFF: dry                                     |
+|         | lastUpdate    | DateTime        | yes       | Timestamp of the last update (any sensor value changed)                   |
+|         | lastError     | String          | yes       | Last device error (e.g. `cable_unplugged`)                                |
+| control | alarmMode     | String          | no        | Alarm mode: `rain`, `intense`, `normal`, `disabled` (see note above)      |
+|         | reportHoldoff | Number:Time     | no        | Minimum time (s) between consecutive flood reports                        |
+| battery | batteryLevel  | Number          | yes       | Battery level in %                                                        |
+|         | lowBattery    | Switch          | yes       | ON: Low battery alert (< 20%)                                             |
+| device  | alarm         | Trigger         | yes       | Trigger: `FLOOD` on flood alarm, `SENSOR_ERROR` on cable fault, `ALARM_MUTED` when muted via the physical button |
+
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
 | Group | Channel     | Type   | read-only | Description                                                                       |
@@ -1663,6 +1704,112 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | autoOn      | Number | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
 |       | autoOff     | Number | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive | Switch | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+
+### Shelly Plus RGBW PM (thing-type: shellyplusrgbwpm)
+
+The active device profile (`rgbw`, `rgb` or `light`) is selected in the Shelly App/device settings and determines which channel groups below are populated.
+Changing the profile requires deleting and re-discovering the Thing.
+
+In `rgbw` or `rgb` profile (color mode):
+
+| Group   | Channel       | Type     | read-only | Description                                                             |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
+| control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |
+| color   | hsb           | HSB      | r/w       | Represents the color picker (HSBType); control r/g/b, not white         |
+|         | full          | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
+|         |               |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
+|         | red           | Dimmer   | r/w       | Red brightness: 0..100% (control only the red channel)                  |
+|         | green         | Dimmer   | r/w       | Green brightness: 0..100% (control only the green channel)              |
+|         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% (control only the blue channel)                |
+|         | white         | Dimmer   | r/w       | White brightness: 0..100% (control only the white channel)              |
+| meter   | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
+|         | energyHistMin1| Number   | yes       | Total energy consumed during the previous complete minute (Wh)          |
+|         | totalEnergy   | Number   | yes       | Total energy consumption in kWh                                         |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                       |
+
+In `light` profile (white mode), each of the 4 LED output channels is exposed as its own group:
+
+| Group  | Channel     | Type   | read-only | Description                                                             |
+| ------ | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| light1 | brightness  | Dimmer | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
+|        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| light2 |             |        |           | Same for LED channel 2                                                  |
+| light3 |             |        |           | Same for LED channel 3                                                  |
+| light4 |             |        |           | Same for LED channel 4                                                  |
+| meter  |             |        |           | Same as color mode, see above                                           |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
+
+### Shelly Pro RGBWW PM (thing-type: shellyprorgbwwpm)
+
+The active device profile (`light`, `rgbcct`, `cctx2` or `rgbx2light`) is selected in the Shelly App/device settings and determines which channel groups below are populated.
+Changing the profile requires deleting and re-discovering the Thing.
+
+In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color component (color mode):
+
+| Group   | Channel       | Type     | read-only | Description                                                             |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
+| control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |
+| color   | hsb           | HSB      | r/w       | Represents the color picker (HSBType)                                   |
+|         | full          | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
+|         |               |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"    |
+|         |               |          | r/w       | "white" sets RGB to 255,255,255 (no separate white output)              |
+|         | red           | Dimmer   | r/w       | Red brightness: 0..100% (control only the red channel)                  |
+|         | green         | Dimmer   | r/w       | Green brightness: 0..100% (control only the green channel)              |
+|         | blue          | Dimmer   | r/w       | Blue brightness: 0..100% (control only the blue channel)                |
+| meter1  | currentPower  | Number   | yes       | Current power consumption in Watts                                      |
+|         | energyAvg1Min | Number   | yes       | Energy consumed in the previous minute (Wh)                             |
+|         | totalEnergy   | Number   | yes       | Total energy consumption in kWh                                         |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                       |
+
+`Note`:
+`rgbcct` and `rgbx2light` combine the RGB component above with additional CCT (`rgbcct`) or Light
+(`rgbx2light`) components. Each additional component is exposed as its own `light1`/`light2` group
+(same layout as the `light` profile below) with its own independent meter (`meter2`/`meter3`).
+Since every profile has more than one meter, the device also gets the aggregated `device#accumulatedPower`/`device#totalEnergy` channels described in the general notes on channels above.
+
+In `light` profile (white mode), each of the 5 LED output channels is exposed as its own group:
+
+| Group  | Channel     | Type   | read-only | Description                                                             |
+| ------ | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| light1 | brightness  | Dimmer | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF          |
+|        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| light2 |             |        |           | Same for LED channel 2                                                  |
+| light3 |             |        |           | Same for LED channel 3                                                  |
+| light4 |             |        |           | Same for LED channel 4                                                  |
+| light5 |             |        |           | Same for LED channel 5                                                  |
+| meter1 |             |        |           | Meter for LED channel 1, see meter group in color mode above            |
+| meter2 |             |        |           | Meter for LED channel 2 (if configured)                                 |
+| meter3 |             |        |           | Meter for LED channel 3 (if configured)                                 |
+| meter4 |             |        |           | Meter for LED channel 4 (if configured)                                 |
+| meter5 |             |        |           | Meter for LED channel 5 (if configured)                                 |
+
+In `cctx2` profile (dual color-temperature mode), the device exposes two independent CCT components (`CCT:0` and `CCT:1`), each controlling its own warm/cold white pair; they are each exposed as their own channel group, with its own independent meter:
+
+| Group  | Channel     | Type   | read-only | Description                                                             |
+| ------ | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
+| light1 | brightness  | Dimmer | r/w       | CCT channel 1: Brightness: 0..100, control power state with ON/OFF      |
+|        | colorTemp   | Dimmer | r/w       | CCT channel 1: Color temperature: 0..100% (2700K..6500K)                |
+|        | autoOn      | Number | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff     | Number | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
+| light2 |             |        |           | Same for CCT channel 2                                                  |
+| meter1 |             |        |           | Meter for CCT channel 1 (light1), see meter group above                 |
+| meter2 |             |        |           | Meter for CCT channel 2 (light2), see meter group above                 |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
 
 ## Shelly Plus Mini Series
 
@@ -2135,6 +2282,32 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Ecowitt WS90 Weather Station (Shelly BLU) (thing-type: shellybluws90)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type                 | read-only | Description                                                                         |
+| ------- | ------------- | -------------------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
+|         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
+|         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
+|         | lux           | Number:Illuminance   | yes       | Brightness in Lux (created once the device reports a value)                         |
+|         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
+|         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
+|         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
+|         | gustDirection | Number:Angle         | yes       | Wind gust direction in degrees (0-360)                                              |
+|         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
+|         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
+|         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
+|         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
+|         | lastUpdate    | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
+| battery | batteryLevel  | Number               | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch               | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+|         | firmware      | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
+
+The `rainStatus` channel latches ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
 
 ## Shelly Wall Displays
 

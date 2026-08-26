@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.core.thing.CommonTriggerEvents;
@@ -272,6 +273,8 @@ public class Shelly1ApiJsonDTO {
         public String mac;
         public String hostname;
         public String fw;
+        public String ver; // Gen2+: human-readable app version, e.g. "1.7.99-powerstripg4prod1";
+                           // fallback when fw (fw_id) has no embedded semver (newer Gen4 app builds)
         public Boolean auth;
         public Integer gen;
         public String coiot;
@@ -519,6 +522,14 @@ public class Shelly1ApiJsonDTO {
         public String outOnUrl; // output is activated
         @SerializedName("out_off_url")
         public String outOffUrl; // output is deactivated
+
+        // Gen2 (Pro RGBWW PM) only: which RPC component this entry maps to, see ShellyApiLightUtil
+        public transient ShellyLightApiComponent apiComponent = ShellyLightApiComponent.NONE;
+
+        // Gen2 CCT component only: per-component color-temperature range from ct_range; null falls back to the
+        // profile-wide default (see ShellyDeviceProfile.getMinTemp()/getMaxTemp())
+        public transient @Nullable Integer minTemp;
+        public transient @Nullable Integer maxTemp;
     }
 
     public static class ShellyFavPos { // FW 1.9.2+ in roller mode
@@ -590,15 +601,15 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsUpdate {
-        public String status;
+        public @Nullable String status;
         @SerializedName("has_update")
-        public Boolean hasUpdate;
+        public @Nullable Boolean hasUpdate;
         @SerializedName("new_version")
-        public String newVersion;
+        public @Nullable String newVersion;
         @SerializedName("old_version")
-        public String oldVersion;
+        public @Nullable String oldVersion;
         @SerializedName("beta_version")
-        public String betaVersion;
+        public @Nullable String betaVersion;
     }
 
     public static class ShellySettingsGlobal {
@@ -1216,6 +1227,17 @@ public class Shelly1ApiJsonDTO {
         public Double rotationY;
         public Double rotationZ;
         public Double distance;
+
+        // WS90 (powered by Shelly)
+        public @Nullable Boolean rain;
+        public @Nullable Double windSpeed;
+        public @Nullable Double windDirection;
+        public @Nullable Double gustSpeed;
+        public @Nullable Double gustDirection;
+        public @Nullable Double uvIndex;
+        public @Nullable Double pressure;
+        public @Nullable Double dewPoint;
+        public @Nullable Double precipitation;
     }
 
     public static class ShellySettingsSmoke {

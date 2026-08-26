@@ -70,7 +70,7 @@ public class DimmerHandler extends LutronHandler {
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration().as(DimmerConfig.class);
+        config = getConfigAs(DimmerConfig.class);
         if (config.integrationId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;
