@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>Cloud-Login</label>
-		<description>Cloud Connector. Acts as device-bridge</description>
+		<label>Tapo Cloud Account</label>
+		<description>Connects to your Tapo Cloud Account for device discovery and local device communication</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="bridge-type:tapocontrol:bridge"/>
 	</bridge-type>

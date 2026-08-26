@@ -34,7 +34,7 @@ The following Tapo-Devices are supported. For precise channel-description look a
 Before using Smart Plugs with openHAB the devices must be connected to the Wi-Fi network.
 This can be done using the Tapo provided mobile app.
 Some devices require Third-Party Compatibility to be disabled then re-enabled via the mobile app after initial installation or firmware upgrade.
-You need to setup a bridge (Cloud-Login) to communicate with your devices.
+You need to set up a bridge (Tapo Cloud Account) to communicate with your devices.
 
 **Note:** If the Tapo device is to be isolated from the internet e.g. on an IoT LAN, the P110 will not expose its energy and power data until it has successfully synchronised it's clock with an NTP server - at time of writing, this was `pool.ntp.org`.
 To satisfy this requirement while keeping the device isolated, your router should be configured to either permit `udp/123` out to the internet or a NAT rule created to redirect all internet bound NTP traffic to a local NTP server.
@@ -101,15 +101,15 @@ Video and audio streaming is intentionally out of scope — use the IP Camera bi
 
 ## Bridge Configuration
 
-The bridge needs to be configured with by `username` and `password` (Tapo-Cloud login) .
-This is used for device discovery and to create a handshake (cookie) to act with your devices over the local network.
+The bridge needs to be configured with your `username` and `password` for your Tapo Cloud Account.
+This account is used for device discovery and to create a handshake (cookie) for communication with your devices over the local network.
 
 The Thing has the following configuration parameters:
 
 | Parameter              | Description                                                                                                                                                |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| username               | Username (email) of your Tapo Cloud                                                                                                                        |
-| password               | Password of your Tapo Cloud                                                                                                                                |
+| username               | Email address of your Tapo Cloud Account                                                                                                                   |
+| password               | Password of your Tapo Cloud Account                                                                                                                        |
 | cloudDiscovery         | Use Cloud Discovery Service to get all in Tapo App registered devices. Includes device name. IP address and encryption have to be set manually             |
 | udpDiscovery           | Use UDP Discovery Service to discover online devices in the local network. Includes encryption and IP address. Results will be merged with cloud discovery |
 | onlyLocalOnlineDevices | [advanced] Uses Cloud and UDP Discovery to get more information but will only discover online devices via UDP                                              |
@@ -171,13 +171,13 @@ If any command was sent to a channel, it will do an immediate refresh of the who
 ### `tapocontrol.things` Example
 
 ```java
-tapocontrol:bridge:myTapoBridge                 "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
+tapocontrol:bridge:myTapoBridge                 "Tapo Cloud Account"               [ username="you@yourpovider.com", password="verysecret" ]
 tapocontrol:P100:myTapoBridge:mySocket          "My-Socket"     (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.150" ]
 tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", httpPort=80, pollingInterval=30, protocol="AES" ]
 tapocontrol:L530:myTapoBridge:colorBulb         "color-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.152", pollingInterval=30, protocol="KLAP" ]
 tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.153", pollingInterval=30, protocol="" ]
 
-Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ username="youtoo@anyprovider.com", password="verysecret" ] {
+Bridge tapocontrol:bridge:secondBridgeExample            "Tapo Cloud Account"        [ username="youtoo@anyprovider.com", password="verysecret" ] {
    Thing P110 mySocket   "My-Socket"          [ ipAddress="192.168.101.51", pollingInterval=30 ]
 }
 ```
