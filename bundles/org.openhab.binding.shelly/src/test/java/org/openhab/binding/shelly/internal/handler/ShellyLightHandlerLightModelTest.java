@@ -445,33 +445,33 @@ class ShellyLightHandlerLightModelTest {
     private static Stream<Arguments> lightHandlerCommandProvider() {
         return Stream.of(
         // @formatter:off
-//            Arguments.of(THING_TYPE_SHELLYBULB, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, true, true, PercentType.HUNDRED),
-//
-//            Arguments.of(THING_TYPE_SHELLYDUO, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(42), ShellyLightModel.Mode.WHITE, false, true, true, true, new PercentType(42)),
-//
-//            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(25), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(25)),
-//
-//            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL, new StringType("yellow"), ShellyLightModel.Mode.COLOR, true, false, true, true, null),
-//
-//            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, false, false, PercentType.HUNDRED),
-//                
-//            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, 0, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(73), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(73)),
-//            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 2, 1, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(61), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(61)),
-//
-//            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, false, false, PercentType.HUNDRED),
-//            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(55), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(55)),
-//            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(45), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(45)),
-//
-//            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGB, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, new PercentType(1), ShellyLightModel.Mode.COLOR, true, false, false, false, new PercentType(1)),
-//            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, new PercentType(33), ShellyLightModel.Mode.COLOR, true, false, false, false, new PercentType(33)),
-//            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(44), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(44)),
-//            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(66), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(66)),
-//            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, true, true, PercentType.HUNDRED),
-/**/            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50), ShellyLightModel.Mode.WHITE, false, true, true, true, new PercentType(50)),
+            Arguments.of(THING_TYPE_SHELLYBULB, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, true, true, PercentType.HUNDRED),
+
+            Arguments.of(THING_TYPE_SHELLYDUO, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(42), ShellyLightModel.Mode.WHITE, false, true, true, true, new PercentType(42)),
+
+            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(25), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(25)),
+
+            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL, new StringType("yellow"), ShellyLightModel.Mode.COLOR, true, false, true, true, null),
+
+            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, false, false, PercentType.HUNDRED),
+                
+            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, 0, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(73), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(73)),
+            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 2, 1, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(61), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(61)),
+
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, false, false, PercentType.HUNDRED),
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(55), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(55)),
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(45), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(45)),
+
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGB, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, new PercentType(1), ShellyLightModel.Mode.COLOR, true, false, false, false, new PercentType(1)),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, new PercentType(33), ShellyLightModel.Mode.COLOR, true, false, false, false, new PercentType(33)),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(44), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(44)),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(66), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(66)),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, true, true, PercentType.HUNDRED),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(50)),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, new PercentType(40), ShellyLightModel.Mode.COLOR, true, false, false, false, new PercentType(40)),
-/**/            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(70), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(70)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(60), ShellyLightModel.Mode.WHITE, false, true, true, true, new PercentType(60)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(35), ShellyLightModel.Mode.WHITE, false, true, true, true, new PercentType(35)),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(70), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(70)),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(60), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(60)),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(35), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(35)),
 
             Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP, new PercentType(50), ShellyLightModel.Mode.WHITE, false, true, true, true, new PercentType(50)),
 
