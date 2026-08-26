@@ -86,7 +86,21 @@ public final class TapoCameraCommands {
     public static JsonObject setLensMaskEnabled(boolean enabled) {
         JsonObject props = new JsonObject();
         props.addProperty("enabled", onOff(enabled));
-        return setSection(MODULE_LENS_MASK, SECTION_LENS_MASK_INFO, props);
+        JsonObject request = new JsonObject();
+        request.addProperty("method", "setLensMaskConfig");
+        JsonObject params = new JsonObject();
+        JsonObject lensMask = new JsonObject();
+        lensMask.add(SECTION_LENS_MASK_INFO, props);
+        params.add(MODULE_LENS_MASK, lensMask);
+        request.add("params", params);
+        JsonArray requests = new JsonArray();
+        requests.add(request);
+        JsonObject multipleParams = new JsonObject();
+        multipleParams.add("requests", requests);
+        JsonObject command = new JsonObject();
+        command.addProperty("method", "multipleRequest");
+        command.add("params", multipleParams);
+        return command;
     }
 
     public static JsonObject getAlertConfig() {

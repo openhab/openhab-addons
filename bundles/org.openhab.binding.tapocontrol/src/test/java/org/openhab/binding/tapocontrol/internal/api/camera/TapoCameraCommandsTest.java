@@ -49,6 +49,13 @@ class TapoCameraCommandsTest {
     }
 
     @Test
+    void setLensMaskUsesReferenceFunction() {
+        assertEquals(json(
+                "{\"method\":\"multipleRequest\",\"params\":{\"requests\":[{\"method\":\"setLensMaskConfig\",\"params\":{\"lens_mask\":{\"lens_mask_info\":{\"enabled\":\"on\"}}}}]}}"),
+                TapoCameraCommands.setLensMaskEnabled(true));
+    }
+
+    @Test
     void manualAlarmUsesDoMethod() {
         assertEquals(json("{\"method\":\"do\",\"msg_alarm\":{\"manual_msg_alarm\":{\"action\":\"on\"}}}"),
                 TapoCameraCommands.manualAlarm(true));

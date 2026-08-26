@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -207,7 +208,7 @@ public class TapoCameraApi {
 
     private JsonObject sendSecured(TapoCameraSession currentSession, JsonObject command) throws TapoCameraApiException {
         try {
-            String encrypted = TapoCameraCrypto.encryptBase64(command.toString(), currentSession.lsk(),
+            String encrypted = TapoCameraCrypto.encryptBase64(protocolJson(command), currentSession.lsk(),
                     currentSession.ivb());
             JsonObject requestParams = new JsonObject();
             requestParams.addProperty("request", encrypted);
@@ -215,12 +216,14 @@ public class TapoCameraApi {
             envelope.addProperty("method", "securePassthrough");
             envelope.add("params", requestParams);
 
-            long seq = ++currentSeq;
+            long seq = currentSeq++;
             Map<String, String> headers = new HashMap<>();
             headers.put("Seq", Long.toString(seq));
+            String envelopeJson = protocolJson(envelope);
             headers.put("Tapo_tag", TapoCameraCrypto.computeTapoTag(currentSession.passwordHash(),
-                    currentSession.cnonce(), envelope.toString(), seq));
-            JsonObject outerResponse = execute(baseUrl + "/stok=" + currentSession.stok() + "/ds", headers, envelope);
+                    currentSession.cnonce(), envelopeJson, seq));
+            JsonObject outerResponse = execute(baseUrl + "/stok=" + currentSession.stok() + "/ds", headers, envelope,
+                    envelopeJson);
             int errorCode = outerResponse.get("error_code").getAsInt();
             if (errorCode != 0) {
                 throw new TapoCameraApiException("secured command failed", errorCode);
@@ -249,9 +252,14 @@ public class TapoCameraApi {
     /** Merges extra headers and delegates to the overridable post seam. */
     private JsonObject execute(String url, Map<String, String> extraHeaders, JsonObject payload)
             throws TapoCameraApiException {
+        return execute(url, extraHeaders, payload, payload.toString());
+    }
+
+    private JsonObject execute(String url, Map<String, String> extraHeaders, JsonObject payload, String body)
+            throws TapoCameraApiException {
         try {
             Map<String, String> headers = new HashMap<>(extraHeaders);
-            String raw = post(url, headers, payload.toString());
+            String raw = post(url, headers, body);
             return JsonParser.parseString(raw).getAsJsonObject();
         } catch (TapoCameraApiException e) {
             throw e;
@@ -287,6 +295,34 @@ public class TapoCameraApi {
             throw new IllegalStateException("empty response body");
         }
         return content;
+    }
+
+    private String protocolJson(JsonElement element) {
+        if (element.isJsonObject()) {
+            StringBuilder result = new StringBuilder("{");
+            boolean first = true;
+            for (var entry : element.getAsJsonObject().entrySet()) {
+                if (!first) {
+                    result.append(", ");
+                }
+                result.append(gson.toJson(entry.getKey())).append(": ").append(protocolJson(entry.getValue()));
+                first = false;
+            }
+            return result.append('}').toString();
+        }
+        if (element.isJsonArray()) {
+            StringBuilder result = new StringBuilder("[");
+            boolean first = true;
+            for (JsonElement child : element.getAsJsonArray()) {
+                if (!first) {
+                    result.append(", ");
+                }
+                result.append(protocolJson(child));
+                first = false;
+            }
+            return result.append(']').toString();
+        }
+        return element.toString();
     }
 
     private String newCnonce() {

@@ -275,7 +275,8 @@ class TapoCameraHandlerTest {
         handler.processCommand(new ChannelUID(THING_UID, "privacy#privacyMode"), OnOffType.ON);
 
         var payloads = sent.stream().map(JsonObject::toString).collect(Collectors.toList());
-        assertTrue(payloads.contains("{\"method\":\"set\",\"lens_mask\":{\"lens_mask_info\":{\"enabled\":\"on\"}}}"));
+        assertTrue(payloads.contains(
+                "{\"method\":\"multipleRequest\",\"params\":{\"requests\":[{\"method\":\"setLensMaskConfig\",\"params\":{\"lens_mask\":{\"lens_mask_info\":{\"enabled\":\"on\"}}}}]}}"));
         assertTrue(payloads.stream().anyMatch(p -> p.startsWith("{\"method\":\"get\""))); // refresh read follows
     }
 
