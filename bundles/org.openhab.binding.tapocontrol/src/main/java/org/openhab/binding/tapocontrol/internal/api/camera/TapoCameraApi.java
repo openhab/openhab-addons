@@ -276,7 +276,7 @@ public class TapoCameraApi {
         Request request = client.newRequest(url).method(HttpMethod.POST).timeout(15, TimeUnit.SECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
         request.header(HttpHeader.ACCEPT, "application/json");
-        request.header(HttpHeader.CONNECTION, "close");
+        request.header(HttpHeader.CONNECTION, "keep-alive");
         request.header("requestByApp", "true");
         request.agent(USER_AGENT);
         headers.forEach(request::header);
