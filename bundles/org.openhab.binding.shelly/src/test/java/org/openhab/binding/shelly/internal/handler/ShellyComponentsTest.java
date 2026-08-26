@@ -218,8 +218,8 @@ public class ShellyComponentsTest {
         ShellyBaseHandler handler = gen2RollerUpdateHandler();
         ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_RSTATE_OPEN, 100), 0);
 
-        verify(handler).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
-        verify(handler).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+        assertEquals(100.0, lastQuantity(handler, CHANNEL_GROUP_STATUS, CHANNEL_ROL_CONTROL_POS).doubleValue());
+        assertEquals(0.0, lastQuantity(handler, CHANNEL_GROUP_STATUS, CHANNEL_ROL_CONTROL_CONTROL).doubleValue());
     }
 
     @Test
@@ -227,8 +227,8 @@ public class ShellyComponentsTest {
         ShellyBaseHandler handler = gen2RollerUpdateHandler();
         ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_RSTATE_CLOSE, 0), 0);
 
-        verify(handler).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
-        verify(handler).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+        assertEquals(0.0, lastQuantity(handler, CHANNEL_GROUP_STATUS, CHANNEL_ROL_CONTROL_POS).doubleValue());
+        assertEquals(100.0, lastQuantity(handler, CHANNEL_GROUP_STATUS, CHANNEL_ROL_CONTROL_CONTROL).doubleValue());
     }
 
     @Test
