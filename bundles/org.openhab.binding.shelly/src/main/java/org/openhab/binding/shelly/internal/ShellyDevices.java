@@ -104,6 +104,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSHTG3 = "S3SN-0U12A";
     public static final String SHELLYDT_PLUSSMOKE = "SNSN-0031Z";
     public static final String SHELLYDT_PLUSFLOODG4 = "S4SN-0071A"; // Shelly Flood Gen4
+    public static final String SHELLYDT_PLUSFLOODSG4 = "S4SN-0071Z"; // Shelly Flood S Gen4
     public static final String SHELLYDT_PLUSUNI = "SNSN-0043X";
     public static final String SHELLYDT_PLUSDIMMEREU = "SNDM-0011EU";
     public static final String SHELLYDT_PLUSDIMMERUS = "SNDM-0013US";
@@ -476,6 +477,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUSHTG3, THING_TYPE_SHELLYPLUSHT),
             Map.entry(SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE),
             Map.entry(SHELLYDT_PLUSFLOODG4, THING_TYPE_SHELLYPLUSFLOOD),
+            Map.entry(SHELLYDT_PLUSFLOODSG4, THING_TYPE_SHELLYPLUSFLOOD),
             Map.entry(SHELLYDT_PLUSUNI, THING_TYPE_SHELLYPLUSUNI),
             Map.entry(SHELLYDT_PLUSDIMMEREU, THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry(SHELLYDT_PLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMERUS),
@@ -670,6 +672,7 @@ public class ShellyDevices {
             Map.entry("shellyplussmoke", THING_TYPE_SHELLYPLUSSMOKE),
             Map.entry("shellyplusflood", THING_TYPE_SHELLYPLUSFLOOD), //
             Map.entry("shellyfloodg4", THING_TYPE_SHELLYPLUSFLOOD),
+            Map.entry("shellyfloodsg4", THING_TYPE_SHELLYPLUSFLOOD),
             Map.entry("shellyplusuni", THING_TYPE_SHELLYPLUSUNI),
             Map.entry("shellypluswdus", THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry("shellydimmerg4us", THING_TYPE_SHELLYPLUSDIMMERUS),
