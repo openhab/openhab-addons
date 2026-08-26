@@ -168,10 +168,9 @@ final class ComposerUtils {
             boolean headerStarted = false;
 
             while ((line = reader.readLine()) != null) {
-                // Check for separator lines to determine if we're in the header section
                 if (line.startsWith("# ===")) {
                     if (headerStarted) {
-                        break; // Second separator encountered, exit header scan
+                        break;
                     }
                     headerStarted = true;
                     continue;
@@ -197,7 +196,6 @@ final class ComposerUtils {
                     }
                 }
 
-                // Stop early if we have the hash and aren't collecting dependencies anymore
                 if (envHashLine != null && !collectingEnvDeps) {
                     break;
                 }
@@ -208,7 +206,6 @@ final class ComposerUtils {
                 return true;
             }
 
-            // If there are no environment variables tracked, no change occurred
             if (envVars.isEmpty()) {
                 return false;
             }
@@ -216,7 +213,7 @@ final class ComposerUtils {
             String currentHash = computeEnvHash(envVars, envMap);
             return !currentHash.equals(envHashLine);
         } catch (IOException e) {
-            return true; // Safe fallback: regenerate if unreadable
+            return true;
         }
     }
 
