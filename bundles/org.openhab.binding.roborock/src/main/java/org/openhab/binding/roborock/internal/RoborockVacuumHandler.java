@@ -342,11 +342,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 return;
             }
             if (channelUID.getId().equals(CHANNEL_CONSUMABLE_RESET)) {
-                String consumable = command.toString();
-                if (!"none".equals(consumable)) {
-                    consumable = consumable.replace('-', '_');
-                    sendRPCCommand(COMMAND_CONSUMABLES_RESET, gson.toJson(List.of(consumable)));
-                }
+                sendRPCCommand(COMMAND_CONSUMABLES_RESET, "[" + command.toString() + "]");
                 updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
             }
 
