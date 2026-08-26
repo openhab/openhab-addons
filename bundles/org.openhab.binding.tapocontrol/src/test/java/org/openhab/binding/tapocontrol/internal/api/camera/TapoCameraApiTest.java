@@ -146,6 +146,19 @@ class TapoCameraApiTest {
     }
 
     @Test
+    void deviceConfirmMismatchFailsAuthWithoutLegacyFallback() {
+        // the camera offered the secure handshake, so a mismatch means wrong credentials -
+        // it must be reported as an auth failure instead of attempting the legacy login
+        responses.add("{\"error_code\":-40413,\"result\":{\"data\":{\"code\":-40401,\"nonce\":\"" + NONCE
+                + "\",\"device_confirm\":\"INVALID\"}}}");
+        var e = assertThrows(TapoCameraApiException.class, () -> api.login());
+
+        assertEquals(TapoCameraApi.ERROR_AUTH_FAILURE, e.getErrorCode());
+        assertFalse(api.isLoggedIn());
+        assertTrue(responses.isEmpty()); // no legacy fallback request was made
+    }
+
+    @Test
     void sendCommandWithoutLoginThrows() {
         assertThrows(TapoCameraApiException.class, () -> api.sendCommand(TapoCameraCommands.getLedConfig()));
     }

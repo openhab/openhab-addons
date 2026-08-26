@@ -112,6 +112,9 @@ public class TapoCameraApi {
             throw new TapoCameraApiException("unexpected probe response", errorCode);
         }
         JsonObject data = response.getAsJsonObject("result").getAsJsonObject("data");
+        if (data.has("code") && data.get("code").getAsInt() != 0) {
+            LOGGER.debug("{}: handshake challenge reports code {}", baseUrl, data.get("code"));
+        }
         if (!data.has("nonce") || !data.has("device_confirm")) {
             throw new TapoCameraApiException("incomplete handshake data", errorCode);
         }
@@ -126,7 +129,10 @@ public class TapoCameraApi {
         } else if (TapoCameraCrypto.validateDeviceConfirm(md5Hash, cnonce, nonce, deviceConfirm)) {
             passwordHash = md5Hash;
         } else {
-            throw new TapoCameraApiException("device confirmation mismatch", errorCode);
+            // the camera supports the secure handshake, so this is a credential problem - report it as
+            // an auth failure instead of falling back to the legacy login it cannot accept anyway
+            throw new TapoCameraApiException("device confirmation mismatch - check camera account password",
+                    ERROR_AUTH_FAILURE);
         }
         JsonObject loginResponse = execute(baseUrl + "/", Map.of(),
                 buildLoginParams(true, cnonce, TapoCameraCrypto.computeDigestPasswd(passwordHash, cnonce, nonce)));

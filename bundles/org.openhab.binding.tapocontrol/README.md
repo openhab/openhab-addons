@@ -92,6 +92,10 @@ The camera needs its IP address and the **camera account credentials** configure
 Cameras are not discovered automatically — cloud discovery cannot reliably resolve their local IP
 address and they do not respond to UDP discovery. Create the camera thing manually.
 
+If authentication fails, verify the password is really the camera account password and not your
+TP-Link cloud login. After several failed attempts the camera temporarily rejects further logins —
+wait a few minutes (or power-cycle it) before retrying.
+
 Video and audio streaming is intentionally out of scope — use the IP Camera binding (ONVIF) for live views.
 
 ## Bridge Configuration
