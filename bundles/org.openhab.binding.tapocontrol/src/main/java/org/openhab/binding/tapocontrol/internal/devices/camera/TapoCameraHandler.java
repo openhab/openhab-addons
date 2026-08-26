@@ -393,18 +393,26 @@ public class TapoCameraHandler extends BaseThingHandler {
      * (e.g. after a reconnect). Called at the end of a successful poll cycle.
      */
     private void synchronizeChannels() {
-        Set<String> supportedGroups = detectedFeatures.stream().map(TapoCameraHandler::channelGroupFor)
+        Set<TapoCameraFeature> features = detectedFeatures;
+        Set<String> supportedGroups = features.stream().map(TapoCameraHandler::channelGroupFor)
                 .collect(Collectors.toSet());
         List<Channel> desiredChannels = originalChannels.stream().filter(ch -> isChannelRetained(ch, supportedGroups))
                 .toList();
         Set<ChannelUID> currentUids = thing.getChannels().stream().map(Channel::getUID).collect(Collectors.toSet());
         Set<ChannelUID> desiredUids = desiredChannels.stream().map(Channel::getUID).collect(Collectors.toSet());
+        LOGGER.trace(
+                "{}: synchronizeChannels: original={}, detectedFeatures={}, supportedGroups={}, current={}, desired={}",
+                thing.getUID(), originalChannels.stream().map(Channel::getUID).collect(Collectors.toSet()), features,
+                supportedGroups, currentUids, desiredUids);
         if (!currentUids.equals(desiredUids)) {
             LOGGER.debug("{}: synchronizing camera channels, current={}, desired={}", thing.getUID(), currentUids,
                     desiredUids);
             ThingBuilder builder = editThing();
             builder.withChannels(desiredChannels);
             updateThing(builder.build());
+            LOGGER.trace("{}: synchronizeChannels: thing update submitted", thing.getUID());
+        } else {
+            LOGGER.trace("{}: synchronizeChannels: no channel update required", thing.getUID());
         }
     }
 
