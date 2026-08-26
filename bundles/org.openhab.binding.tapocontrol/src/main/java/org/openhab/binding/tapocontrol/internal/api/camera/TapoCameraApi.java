@@ -180,6 +180,10 @@ public class TapoCameraApi {
             clearSession();
             throw new TapoCameraApiException("session expired", errorCode);
         }
+        if (errorCode != 0) {
+            // surface device-side failures to callers instead of silently returning them
+            throw new TapoCameraApiException("command rejected by camera", errorCode);
+        }
         return response;
     }
 

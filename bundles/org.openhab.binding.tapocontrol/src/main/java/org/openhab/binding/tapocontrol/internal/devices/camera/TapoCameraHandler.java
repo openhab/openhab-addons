@@ -72,6 +72,7 @@ public class TapoCameraHandler extends BaseThingHandler {
     private volatile @Nullable TapoCameraApi api;
     private volatile @Nullable ScheduledFuture<?> scheduledJob;
     private volatile @Nullable TapoPresets presets;
+    // replaced wholesale on updates so poll and command threads always see an immutable snapshot
     private volatile EnumSet<TapoCameraFeature> detectedFeatures = EnumSet.allOf(TapoCameraFeature.class);
 
     public TapoCameraHandler(Thing thing, @Nullable HttpClient httpClient) {
@@ -90,7 +91,7 @@ public class TapoCameraHandler extends BaseThingHandler {
     }
 
     EnumSet<TapoCameraFeature> getDetectedFeatures() {
-        return EnumSet.copyOf(detectedFeatures);
+        return detectedFeatures; // stored sets are never mutated in place, safe to expose directly
     }
 
     @Override
@@ -173,7 +174,8 @@ public class TapoCameraHandler extends BaseThingHandler {
     private void ensureLoggedIn(TapoCameraApi cameraApi) throws TapoCameraApiException {
         if (!cameraApi.isLoggedIn()) {
             cameraApi.login();
-            detectedFeatures = EnumSet.allOf(TapoCameraFeature.class); // features may come back after reconnect
+            // features may come back after reconnect
+            detectedFeatures = EnumSet.allOf(TapoCameraFeature.class);
             deviceInfoRead = false; // properties must be refreshed for the new session
         }
     }
@@ -217,7 +219,11 @@ public class TapoCameraHandler extends BaseThingHandler {
                 throw new StopCycleException(e);
             }
             if (feature != null) {
-                detectedFeatures.remove(feature);
+                // copy-on-write: publish a fresh set instead of mutating one readers may hold
+                var updated = EnumSet.noneOf(TapoCameraFeature.class);
+                updated.addAll(detectedFeatures);
+                updated.remove(feature);
+                detectedFeatures = updated;
             }
             LOGGER.debug("{}: {}#{} not supported (error {}), skipping", thing.getUID(), module, section,
                     e.getErrorCode());

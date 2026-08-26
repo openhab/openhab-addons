@@ -147,6 +147,28 @@ class TapoCameraApiTest {
         assertNull(api.capturedHeaders == null ? null : api.capturedHeaders.get("Seq"));
     }
 
+    @Test
+    void sendCommandThrowsOnDeviceError() throws Exception {
+        responses.add("{\"error_code\":-40413}");
+        responses.add("{\"error_code\":0,\"result\":{\"stok\":\"T\"}}");
+        api.login();
+        responses.add("{\"error_code\":-40100}");
+        var e = assertThrows(TapoCameraApiException.class, () -> api.sendCommand(TapoCameraCommands.getLedConfig()));
+        assertEquals(-40100, e.getErrorCode());
+    }
+
+    @Test
+    void sendCommandThrowsOnSecuredInnerError() throws Exception {
+        responses.add("{\"error_code\":-40413,\"result\":{\"data\":{\"nonce\":\"" + NONCE + "\",\"device_confirm\":\""
+                + DEVICE_CONFIRM + "\"}}}");
+        responses.add("{\"error_code\":0,\"result\":{\"stok\":\"SECRETTOKEN\",\"start_seq\":100}}");
+        api.login();
+        responses.add("{\"error_code\":0,\"result\":{\"response\":\"" + encryptedEnvelope("{\"error_code\":-40100}")
+                + "\"}}");
+        var e = assertThrows(TapoCameraApiException.class, () -> api.sendCommand(TapoCameraCommands.getLedConfig()));
+        assertEquals(-40100, e.getErrorCode());
+    }
+
     private static String encryptedEnvelope(String innerJson) throws Exception {
         String lsk = TapoCameraCrypto.deriveLsk(PW_HASH_SHA, CNONCE, NONCE);
         String ivb = TapoCameraCrypto.deriveIvb(PW_HASH_SHA, CNONCE, NONCE);
