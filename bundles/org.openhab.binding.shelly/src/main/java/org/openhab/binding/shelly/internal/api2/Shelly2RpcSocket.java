@@ -361,9 +361,10 @@ public class Shelly2RpcSocket implements WriteCallback {
                         if (notifyEvents == null) {
                             logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
                         } else {
+                            boolean hasRegularEvent = false;
                             for (Shelly2NotifyEvent e : notifyEvents) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    Shelly2NotifyBluEventData blu = e.blu;
+                                    Shelly2NotifyBluEventData blu = e.getBluData(gson);
                                     String address = getString(blu != null ? blu.addr : "").replace(":", "");
                                     ShellyThingInterface bluThing = thingTable.findThing(address);
                                     if (bluThing != null) {
@@ -387,10 +388,14 @@ public class Shelly2RpcSocket implements WriteCallback {
                                                     message.src, e.event, blu.addr);
                                         }
                                     }
+                                } else if (SHELLY2_EVENT_BLE_SCAN_RESULT.equals(e.event)) {
+                                    logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, e.event);
                                 } else {
-                                    // non-BLU event: always use the hub's handler, never the BLU one
-                                    handler.onNotifyEvent(receivedMessage);
+                                    hasRegularEvent = true;
                                 }
+                            }
+                            if (hasRegularEvent) {
+                                handler.onNotifyEvent(receivedMessage);
                             }
                         }
                         break;
