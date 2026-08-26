@@ -80,7 +80,8 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
         httpClient.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);
         // cameras serve self-signed TLS certificates; certificate verification is intentionally disabled
         // for this client only — a scoped requirement of these devices
-        cameraHttpClient = httpClientFactory.createHttpClient(BINDING_ID + ".camera",
+        // consumer name must be shared-client unique and must not contain characters like '.'
+        cameraHttpClient = httpClientFactory.createHttpClient(BINDING_ID + "-camera",
                 new SslContextFactory.Client(true));
         cameraHttpClient.setFollowRedirects(false);
         cameraHttpClient.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
