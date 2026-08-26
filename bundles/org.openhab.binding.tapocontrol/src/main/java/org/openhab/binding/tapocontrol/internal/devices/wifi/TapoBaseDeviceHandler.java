@@ -63,6 +63,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     protected TapoEnergyData energyData = new TapoEnergyData();
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
+    private volatile boolean disposed;
     protected @NonNullByDefault({}) TapoDeviceConnector connector;
     protected @NonNullByDefault({}) TapoBridgeHandler bridge;
 
@@ -118,6 +119,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
+        disposed = true;
         try {
             stopScheduler(this.startupJob);
             stopScheduler(this.pollingJob);
@@ -132,6 +134,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * ACTIVATE DEVICE
      */
     protected void activateDevice() {
+        disposed = false;
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -181,6 +184,11 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * delayed OneTime StartupJob
      */
     private void delayedStartUp() {
+        if (disposed) {
+            // dispose() already cancelled the jobs it knew about; running past this point would
+            // schedule a new polling job that nothing will ever cancel again
+            return;
+        }
         connect();
         startPollingScheduler();
     }
@@ -428,11 +436,13 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
             loginSuccess = connector.login();
             if (loginSuccess) {
                 queryDeviceData(true);
-            } else {
+            } else if (!disposed) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.UNKNOWN);
+            if (!disposed) {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
         }
         return loginSuccess;
     }
@@ -465,6 +475,9 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * handle device state by connector error
      */
     public void handleConnectionState() {
+        if (disposed) {
+            return; // no status updates on an already disposed handler
+        }
         ThingStatus deviceState = getThing().getStatus();
         TapoErrorCode errorCode = deviceError.getError();
 

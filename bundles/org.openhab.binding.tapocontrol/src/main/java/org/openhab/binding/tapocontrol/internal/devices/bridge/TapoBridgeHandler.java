@@ -50,6 +50,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     private final TapoErrorHandler bridgeError = new TapoErrorHandler();
     private TapoBridgeConfiguration config = new TapoBridgeConfiguration();
     private final HttpClient httpClient;
+    private volatile boolean disposed;
     private @Nullable ScheduledFuture<?> startupJob;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @NonNullByDefault({}) TapoCloudConnector cloudConnector;
@@ -78,6 +79,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * set credentials and login cloud
      */
     public void initialize() {
+        disposed = false;
         config = getConfigAs(TapoBridgeConfiguration.class);
         credentials = new TapoCredentials(config.username, config.password);
         activateBridge();
@@ -101,6 +103,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        disposed = true;
         stopScheduler(this.startupJob);
         stopScheduler(this.pollingJob);
         super.dispose();
@@ -133,6 +136,11 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * delayed OneTime StartupJob
      */
     private void delayedStartUp() {
+        if (disposed) {
+            // dispose() already cancelled the jobs it knew about; running past this point would
+            // schedule a new cloud polling job that nothing will ever cancel again
+            return;
+        }
         loginCloud();
         startCloudScheduler();
         discoveryService.startBackgroundDiscovery();
@@ -222,6 +230,9 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * Handle Connection state
      */
     private void handleConnectionState() {
+        if (disposed) {
+            return; // no status updates on an already disposed handler
+        }
         if (cloudConnector.isLoggedIn() && !bridgeError.hasError()) {
             updateStatus(ThingStatus.ONLINE);
         } else if (bridgeError.hasError()) {
