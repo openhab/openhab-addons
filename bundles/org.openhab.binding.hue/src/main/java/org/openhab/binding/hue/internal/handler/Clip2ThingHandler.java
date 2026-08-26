@@ -483,6 +483,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 putResource.setOnOff(command);
                 applyOffTransitionWorkAround(command, putResource);
+                applyColorTemperatureWorkAround(command, putResource);
                 break;
 
             case CHANNEL_2_COLOR_XY_ONLY:
@@ -755,9 +756,33 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             if (command == OnOffType.OFF && getBridgeHandler().requiresOffTransitionWorkAround(resourceId)) {
                 putResource.setDynamicsDuration(dynamicsDuration);
+                logger.debug("{} -> applyOffTransitionWorkAround() command={} dynamics.duration={}", resourceId,
+                        command, dynamicsDuration);
             }
         } catch (AssetNotLoadedException e) {
             logger.debug("{} -> applyOffTransitionWorkAround() error {}", resourceId, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Some legacy lights have a bi-stable operating mode which makes them forget color temperature
+     * commands when they are in soft-off state. This method re-applies the lost color temperature.
+     * 
+     * @param command the handled command.
+     * @param putResource the resource that will be adjusted if needed.
+     */
+    private void applyColorTemperatureWorkAround(Command command, Resource putResource) {
+        LegacyLightState legacyState = legacyLightState;
+        if (legacyState == null || legacyState.getMode() != LegacyLightState.Mode.COLOR_TEMP) {
+            return;
+        }
+        if (command != OnOffType.ON || putResource.getColorXy() != null || putResource.getColorTemperature() != null) {
+            return;
+        }
+        Long mirek = legacyState.getMirek();
+        if (mirek != null) {
+            putResource.setColorTemperature(new ColorTemperature().setMirek(mirek));
+            logger.debug("{} -> applyColorTemperatureWorkAround() mirek={}", resourceId, mirek);
         }
     }
 
@@ -1151,7 +1176,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 ColorXy color = resource.getColorXy();
                 ColorTemperature colorTemp = resource.getColorTemperature();
                 LegacyLightState legacyState = legacyLightState;
-                PairXy legacyColor = legacyState != null && colorTemp != null && color != null ? color.getXY() : null;
+                PairXy legacyColor = (legacyState != null && colorTemp != null && color != null) ? color.getXY() : null;
 
                 if (fullUpdate) {
                     updateLightProperties(resource);
