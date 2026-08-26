@@ -35,6 +35,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.net.HttpServiceUtil;
@@ -68,6 +69,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
     private final ShellyBindingRuntimeConfig bindingConfig;
+    private final LocationProvider locationProvider;
 
     /**
      * Activate the bundle: save properties
@@ -80,10 +82,12 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     public ShellyHandlerFactory(@Reference NetworkAddressService networkAddressService,
             @Reference ShellyTranslationProvider translationProvider, @Reference ShellyThingTable thingTable,
             @Reference HttpClientFactory httpClientFactory, @Reference WebSocketFactory webSocketFactory,
-            ComponentContext componentContext, Map<String, Object> configProperties) {
+            @Reference LocationProvider locationProvider, ComponentContext componentContext,
+            Map<String, Object> configProperties) {
         super.activate(componentContext);
         this.messages = translationProvider;
         this.thingTable = thingTable;
+        this.locationProvider = locationProvider;
         WebSocketClient client = Shelly2RpcSocket.createWebSocketClient(webSocketFactory, "shelly2api");
         this.webSocketClient = client;
         try {
@@ -129,22 +133,22 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyProtectedHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
-                    webSocketClient);
+                    webSocketClient, locationProvider);
         } else if (GROUP_LIGHT_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
-                    webSocketClient);
+                    webSocketClient, locationProvider);
         } else if (GROUP_BLU_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyBluSensorHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyBluHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
-                    webSocketClient);
+                    webSocketClient, locationProvider);
         } else if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyRelayHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyRelayHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
-                    webSocketClient);
+                    webSocketClient, locationProvider);
         }
 
         if (handler != null) {

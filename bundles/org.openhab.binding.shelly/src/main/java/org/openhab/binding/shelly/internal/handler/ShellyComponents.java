@@ -760,6 +760,23 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV,
                         getDecimal(sdata.uvIndex, DIGITS_UV));
             }
+            if (sdata.windDirectionStr != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR_STR,
+                        getStringType(sdata.windDirectionStr));
+            }
+            if (sdata.apparentTemp != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_APPARENT_TEMP,
+                        toQuantityType(getDouble(sdata.apparentTemp), DIGITS_TEMP, SIUnits.CELSIUS));
+            }
+            if (sdata.seaLevelPressure != null) {
+                Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SEALEVEL_PRESSURE,
+                        toQuantityType(getDouble(sdata.seaLevelPressure), DIGITS_PRESSURE, hpa));
+            }
+            if (sdata.rainSwitch != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH,
+                        OnOffType.from(getBool(sdata.rainSwitch)));
+            }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
             if ((profile.settings.externalPower != null) || (sdata.charger != null)) {

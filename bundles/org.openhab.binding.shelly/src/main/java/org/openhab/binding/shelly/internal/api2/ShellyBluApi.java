@@ -50,6 +50,8 @@ import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +90,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private static final int PACKET_TIMESTAMP_TRESHOLD = 10;
     private @Nullable Integer warnedDataVersion;
     private boolean warnedDataVersionSet;
+    // written on the BLU event thread, read on the polling thread
+    private volatile @Nullable Instant lastRainTimestamp; // WS90: timestamp of the last "rain detected" report
+    private volatile boolean lastKnownRaining; // WS90: accumulated rain flag as of the last processed packet
+    private final @Nullable LocationProvider locationProvider;
 
     /**
      * Regular constructor - called by Thing handler
@@ -96,10 +102,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @param thingTable Table of known things (build at runtime)
      * @param thing Thing Handler (ThingHandlerInterface)
      * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
+     * @param locationProvider openHAB's system location service, used as a fallback to derive the WS90
+     *            station altitude when {@code altitude} is not manually configured; may be {@code null}
      */
     public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
-            ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
+            ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler,
+            @Nullable LocationProvider locationProvider) {
         super(thingName, thingTable, thing, config, webSocketClient, scheduler);
+        this.locationProvider = locationProvider;
 
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
         profile.initializeInputs(uid, SHELLY_BTNT_MOMENTARY);
@@ -174,6 +184,20 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
         if (!connected) {
             throw new ShellyApiException("offline.status-error-blu-sensor-unavailable");
+        }
+        if (getProfile().isWS90) {
+            int holdoffMin = getThing().getThingConfig().getRainSwitchHoldoff();
+            if (holdoffMin == 0) {
+                // no holdoff configured: mirror the sensor's own latest reading with no time-based decay
+                sensorData.rainSwitch = lastKnownRaining;
+            } else {
+                // ON for holdoffMin after the last confirmed rain report; re-evaluated against the wall clock
+                // on every read (not just when a new packet arrives), so it also expires on its own once the
+                // device goes quiet instead of only reacting to the next packet
+                Instant lastRain = lastRainTimestamp;
+                sensorData.rainSwitch = lastRain != null
+                        && Instant.now().isBefore(lastRain.plusSeconds(holdoffMin * 60L));
+            }
         }
         return sensorData;
     }
@@ -349,6 +373,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         Double[] directions = blu.directions;
                         if (directions != null && directions.length >= 1) {
                             sensorData.windDirection = directions[0];
+                            sensorData.windDirectionStr = windDirectionLabel(directions[0]);
                             if (directions.length >= 2) {
                                 sensorData.gustDirection = directions[1];
                             }
@@ -364,6 +389,29 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         }
                         if (blu.precipitation != null) {
                             sensorData.precipitation = blu.precipitation;
+                        }
+                        if (profile.isWS90) {
+                            ShellySensorTmp tmp = sensorData.tmp;
+                            ShellySensorHum hum = sensorData.hum;
+                            Double tC = tmp != null ? tmp.tC : null;
+                            Double rH = hum != null ? hum.value : null;
+                            Double windSpeed = sensorData.windSpeed;
+                            if (tC != null && rH != null && windSpeed != null) {
+                                sensorData.apparentTemp = apparentTemperature(tC, rH, windSpeed * 3.6);
+                            }
+                            Double pressure = sensorData.pressure;
+                            if (pressure != null) {
+                                sensorData.seaLevelPressure = seaLevelPressure(pressure, tC,
+                                        resolveAltitude(t.getThingConfig().getAltitude()));
+                            }
+                            // sensorData is accumulated across packets, so the rain state has to be read from
+                            // there; blu.rain only tells whether this particular packet carried the field and
+                            // therefore whether it may refresh the timestamp
+                            boolean raining = Boolean.TRUE.equals(sensorData.rain);
+                            if (raining && blu.rain != null) {
+                                lastRainTimestamp = Instant.now();
+                            }
+                            lastKnownRaining = raining;
                         }
                         Long firmware32 = blu.firmware32;
                         if (firmware32 != null) {
@@ -493,5 +541,86 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                 digit2 + "." + digit3 + "." + digit4; // 24 bit
         logger.debug("{}: Detected firmware version: {}", thingName, strFirmware);
         return strFirmware;
+    }
+
+    private static final String[] COMPASS_POINTS = { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW",
+            "WSW", "W", "WNW", "NW", "NNW" };
+
+    /**
+     * Maps a wind direction in degrees to a 16-point compass rose label.
+     *
+     * @param degrees direction in degrees (0-360)
+     * @return compass label, e.g. "NNE"
+     */
+    static String windDirectionLabel(double degrees) {
+        int idx = (int) Math.floor((((degrees % 360) + 360) % 360 + 11.25) / 22.5) % 16;
+        return COMPASS_POINTS[idx];
+    }
+
+    /**
+     * Computes the "feels like" temperature: Wind Chill (JAG/TI 2001) for cold+windy conditions, Heat
+     * Index (NWS Rothfusz regression) for hot+humid conditions, otherwise Steadman (1979) Apparent
+     * Temperature.
+     *
+     * @param tC air temperature in °C
+     * @param rH relative humidity in %
+     * @param windKmh wind speed in km/h
+     * @return apparent ("feels like") temperature in °C
+     */
+    static double apparentTemperature(double tC, double rH, double windKmh) {
+        if (tC <= 10.0 && windKmh >= 4.8) {
+            double v16 = Math.pow(windKmh, 0.16);
+            return 13.12 + 0.6215 * tC - 11.37 * v16 + 0.3965 * tC * v16;
+        }
+        if (tC >= 27.0 && rH >= 40.0) {
+            double tF = tC * 9.0 / 5.0 + 32.0;
+            double hiF = -42.379 + 2.04901523 * tF + 10.14333127 * rH - 0.22475541 * tF * rH - 0.00683783 * tF * tF
+                    - 0.05481717 * rH * rH + 0.00122874 * tF * tF * rH + 0.00085282 * tF * rH * rH
+                    - 0.00000199 * tF * tF * rH * rH;
+            return (hiF - 32.0) * 5.0 / 9.0;
+        }
+        double windMs = windKmh / 3.6;
+        double e = (rH / 100.0) * 6.105 * Math.exp(17.27 * tC / (237.7 + tC));
+        return tC + 0.33 * e - 0.70 * windMs - 4.00;
+    }
+
+    /**
+     * Reduces a station-level barometric pressure reading to sea-level pressure (QNH) using the
+     * international barometric formula, so readings from stations at different altitudes become
+     * comparable.
+     *
+     * @param stationHpa measured pressure at the station, in hPa
+     * @param tC station temperature in °C, or {@code null} if unavailable (defaults to 15°C/288.15K)
+     * @param altitudeM station altitude above sea level, in meters
+     * @return sea-level pressure in hPa; unchanged from {@code stationHpa} when {@code altitudeM} is 0
+     */
+    static double seaLevelPressure(double stationHpa, @Nullable Double tC, int altitudeM) {
+        if (altitudeM == 0) {
+            return stationHpa;
+        }
+        double lapseRate = 0.0065; // K/m
+        double t0K = (tC != null ? tC : 15.0) + 273.15;
+        return stationHpa * Math.pow(1 - (lapseRate * altitudeM) / (t0K + lapseRate * altitudeM / 2.0), -5.255);
+    }
+
+    /**
+     * Falls back to openHAB's system location (if configured) when the thing's {@code altitude} is not
+     * manually set, so {@link #seaLevelPressure} can still apply an altitude correction without requiring
+     * the user to look up and enter the station altitude themselves.
+     *
+     * @param configuredAltitudeM the thing's {@code altitude} configuration value, in meters
+     * @return {@code configuredAltitudeM} if non-zero; otherwise the altitude from openHAB's system
+     *         location if available, or 0 if neither is set
+     */
+    private int resolveAltitude(int configuredAltitudeM) {
+        if (configuredAltitudeM != 0) {
+            return configuredAltitudeM;
+        }
+        LocationProvider provider = locationProvider;
+        if (provider == null) {
+            return 0;
+        }
+        PointType location = provider.getLocation();
+        return location != null ? location.getAltitude().intValue() : 0;
     }
 }
