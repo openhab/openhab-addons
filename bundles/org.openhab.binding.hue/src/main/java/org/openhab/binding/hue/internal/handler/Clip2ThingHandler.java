@@ -1126,7 +1126,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource the Resource containing the new channel state.
      * @return true if the channel was found and updated.
      */
-    private boolean updateChannels(Resource resource) {
+    boolean updateChannels(Resource resource) {
         try {
             return updateChannelsInner(resource);
         } catch (CriticalFieldMissingException e) {
@@ -1137,7 +1137,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     private boolean updateChannelsInner(Resource resource) throws CriticalFieldMissingException {
-        boolean updateChannels(Resource resource) {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
