@@ -235,6 +235,8 @@ public class ShellyChannelDefinitions {
                         ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP, "system:color-temperature",
                         ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_ABS,
+                        "system:color-temperature-abs", ITEMT_TEMP))
 
                 // RGBW2-color
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_LIGHT_POWER, "system:power", ITEMT_SWITCH))
@@ -249,6 +251,8 @@ public class ShellyChannelDefinitions {
                 // RGBW2-white / RGBW PM-white
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_COLOR_TEMP, "system:color-temperature", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_COLOR_TEMP_ABS, "system:color-temperature-abs",
+                        ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
@@ -558,7 +562,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
             addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
-            // TODO an RGBW2 in RGBxx mode needs a channel for the gain of rgb:0
+            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
             if (idx == 0 && (profile.hasColorTag(0) || profile.isBulb || profile.isDuo
                     || (profile.isRGBW2 && profile.inColor))) {

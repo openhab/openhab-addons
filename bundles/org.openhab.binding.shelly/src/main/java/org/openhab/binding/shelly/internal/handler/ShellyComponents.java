@@ -884,9 +884,7 @@ public class ShellyComponents {
                         updated = true;
                     }
                     if (value.brightness != null) {
-                        // in RGBW2+ gain and brightness are synonyms
                         model.setBrightness(Objects.requireNonNull(value.brightness));
-                        model.setGain(Objects.requireNonNull(value.brightness));
                         updated = true;
                     }
                     if (value.output != null) {
@@ -930,9 +928,7 @@ public class ShellyComponents {
                         updated = true;
                     }
                     if (value.brightness != null) {
-                        // in RGBW2+ gain and brightness are synonyms
                         model.setBrightness(Objects.requireNonNull(value.brightness));
-                        model.setGain(Objects.requireNonNull(value.brightness));
                         updated = true;
                     }
                     if (value.output != null) {

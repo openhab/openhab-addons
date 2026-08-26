@@ -737,8 +737,8 @@ public class ShellyLightModel extends LightModel {
             (isG3ColorBulb) ||
             (isProfileCCTX2) ||
             (isProfileLIGHT) ||
-            (isProfileRGBCCT && channelGroupNumber > 0) ||
-            (isProfileRGBX2LIGHT && channelGroupNumber > 0)
+            (isProfileRGBCCT) ||
+            (isProfileRGBX2LIGHT)
         // @formatter:on
         ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
     }

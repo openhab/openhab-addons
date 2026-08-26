@@ -13,8 +13,7 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
@@ -124,6 +123,7 @@ public class ShellyChannelDefinitionsLightTest {
 
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_ABS)));
     }
 
     @Test

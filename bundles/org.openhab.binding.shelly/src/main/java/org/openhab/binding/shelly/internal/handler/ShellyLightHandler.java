@@ -424,6 +424,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         logger.trace("{}: updateDirtyChannelsForLightModel() with [{}]", thingName, model);
         boolean updated = false;
         String group = null;
+        int groupNumber = model.getChannelGroupNumber();
 
         // ON-OFF:
         if ((model.supportsOnOffChannel()) && model.isOnOffDirty()) {
@@ -465,20 +466,19 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // BRIGHTNESS:
         if (model.supportsBrightnessChannel() && model.isBrightnessDirty()) {
-            group = model.getChannelGroupNumber() == 0 ? CHANNEL_GROUP_WHITE_CONTROL
-                    : CHANNEL_GROUP_LIGHT_INDEX + model.getChannelGroupNumber();
+            group = groupNumber == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupNumber;
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
         }
 
         // COLOR TEMP:
         if (model.supportsColorTempChannel() && model.isColorTempDirty()) {
-            group = model.getChannelGroupNumber() == 0 ? CHANNEL_GROUP_WHITE_CONTROL
-                    : CHANNEL_GROUP_LIGHT_INDEX + model.getChannelGroupNumber();
+            group = groupNumber == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupNumber;
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
+            updated |= updateChannel(group, CHANNEL_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
         }
 
         // PRIMARY GROUP:
-        if (model.isDirty() && model.getChannelGroupNumber() == 0 && model.supportsOnOffChannel()) {
+        if (model.isDirty() && groupNumber == 0 && model.supportsOnOffChannel()) {
             group = CHANNEL_GROUP_PRIMARY;
             if (model.configGetLightCapabilities().supportsColor()) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR, model.getColorState());
