@@ -78,23 +78,24 @@ Supported channels (availability is detected automatically per model):
 
 ### Camera Configuration
 
-The camera needs its IP address and the **camera account credentials** configured in the Tapo app
-(_Settings → Advanced Settings → Camera Account_) — these are not your Tapo cloud login.
+The camera needs its IP address and Tapo account credentials. On newer camera firmware, enable
+**Third-Party Compatibility** in the Tapo app first, then use the username `admin` and your
+**Tapo cloud account password**. This is different from the Camera Account used by ONVIF and RTSP.
 
 | Parameter       | Description                                                                        |
 |-----------------|------------------------------------------------------------------------------------|
 | ipAddress       | IP address of the camera.                                                          |
-| password        | Camera account password as set in the Tapo app.                                     |
-| username        | [optional] Camera account username. Default is `admin`                              |
+| password        | Tapo cloud account password.                                                        |
+| username        | [optional] Tapo API username. Default is `admin`                                    |
 | httpPort        | [optional] HTTPS port of the camera local API. Default is 443                        |
 | pollingInterval | [optional] Refresh interval in seconds (0=disabled). Default is 15                  |
 
 Cameras are not discovered automatically — cloud discovery cannot reliably resolve their local IP
 address and they do not respond to UDP discovery. Create the camera thing manually.
 
-If authentication fails, verify the password is really the camera account password and not your
-TP-Link cloud login. After several failed attempts the camera temporarily rejects further logins —
-wait a few minutes (or power-cycle it) before retrying.
+If authentication fails, verify that Third-Party Compatibility is enabled and that the username is
+`admin` with your Tapo cloud account password. After several failed attempts the camera temporarily
+rejects further logins — wait a few minutes (or power-cycle it) before retrying.
 
 Video and audio streaming is intentionally out of scope — use the IP Camera binding (ONVIF) for live views.
 

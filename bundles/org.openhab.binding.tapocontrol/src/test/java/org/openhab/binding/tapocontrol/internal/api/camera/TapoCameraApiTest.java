@@ -115,7 +115,7 @@ class TapoCameraApiTest {
 
     @Test
     void secureLoginSupportsMd5PasswordMethod() throws Exception {
-        // some firmware stores the camera account password MD5-hashed, revealed by device_confirm
+        // some firmware stores the Tapo API password MD5-hashed, revealed by device_confirm
         String pwHashMd5 = TapoCameraCrypto.md5HashUpper("password");
         String md5Confirm = TapoCameraCrypto.computeDeviceConfirm(pwHashMd5, CNONCE, NONCE);
         responses.add("{\"error_code\":-40413,\"result\":{\"data\":{\"nonce\":\"" + NONCE + "\",\"device_confirm\":\""
