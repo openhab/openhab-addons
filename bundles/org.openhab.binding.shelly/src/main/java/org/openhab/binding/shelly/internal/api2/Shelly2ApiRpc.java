@@ -668,6 +668,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: Flood sensor cable unplugged", thingName);
                     getThing().postEvent(ALARM_TYPE_SENSOR_ERROR, true);
                     break;
+                case SHELLY2_EVENT_BLE_SCAN_RESULT:
+                    logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, event);
+                    break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }
