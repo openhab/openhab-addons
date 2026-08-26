@@ -23,53 +23,39 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class LocalConfiguration {
 
-    @Nullable
-    public String country; // ALPHA-2 Country code
+    public @Nullable String country; // ALPHA-2 Country code
 
-    @Nullable
-    public String pmStandard; // usaqi/ugm3
+    public @Nullable String pmStandard; // usaqi/ugm3
 
-    @Nullable
-    public String ledBarMode; // off, pm, co2
+    public @Nullable String ledBarMode; // off, pm, co2
 
-    @Nullable
-    public Long abcDays; // Co2 calibration automatic baseline calibration days ( 0-200)
+    public @Nullable Long abcDays; // Co2 calibration automatic baseline calibration days ( 0-200)
 
-    @Nullable
-    public Long tvocLearningOffset; // Time constant of long-term estimator for offset. Past events will be forgotten
-                                    // after about twice the learning time. Range 1..1000 [hours]
+    public @Nullable Long tvocLearningOffset; // Time constant of long-term estimator for offset. Past events will be
+                                              // forgotten
+    // after about twice the learning time. Range 1..1000 [hours]
 
-    @Nullable
-    public Long noxLearningOffset; // Time constant of long-term estimator for offset. Past events will be forgotten
-                                   // after about twice the learning time. Range 1..1000 [hours]
+    public @Nullable Long noxLearningOffset; // Time constant of long-term estimator for offset. Past events will be
+                                             // forgotten
+    // after about twice the learning time. Range 1..1000 [hours]
 
-    @Nullable
-    public String mqttBrokerUrl;
+    public @Nullable String mqttBrokerUrl;
 
-    @Nullable
-    public String temperatureUnit; // c/f
+    public @Nullable String temperatureUnit; // c/f
 
-    @Nullable
-    public String configurationControl; // local, cloud, both
+    public @Nullable String configurationControl; // local, cloud, both
 
-    @Nullable
-    public Boolean postDataToAirGradient;
+    public @Nullable Boolean postDataToAirGradient;
 
-    @Nullable
-    public Long ledBarBrightness; // 0 - 100
+    public @Nullable Long ledBarBrightness; // 0 - 100
 
-    @Nullable
-    public Long displayBrightness; // 0 - 100
+    public @Nullable Long displayBrightness; // 0 - 100
 
-    @Nullable
-    public Boolean offlineMode; // Don't connect to wifi
+    public @Nullable Boolean offlineMode; // Don't connect to wifi
 
-    @Nullable
-    public String model;
+    public @Nullable String model;
 
-    @Nullable
-    public Boolean co2CalibrationRequested; // TRIGGER: Calibration of Co2 sensor
+    public @Nullable Boolean co2CalibrationRequested; // TRIGGER: Calibration of Co2 sensor
 
-    @Nullable
-    public Boolean ledBarTestRequested; // TRIGGER: LEDs will run test sequence
+    public @Nullable Boolean ledBarTestRequested; // TRIGGER: LEDs will run test sequence
 }
