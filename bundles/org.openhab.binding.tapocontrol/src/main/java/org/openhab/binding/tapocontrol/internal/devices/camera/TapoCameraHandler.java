@@ -206,11 +206,11 @@ public class TapoCameraHandler extends BaseThingHandler {
             @Nullable TapoCameraFeature feature, String module, String section) throws StopCycleException {
         try {
             JsonObject response = cameraApi.sendCommand(command);
+            // Some camera firmwares (e.g. C125) return secured-command results unwrapped, i.e. the
+            // module object sits at the top level instead of under a "result" key. Accept both shapes.
             JsonElement result = response.get("result");
-            if (!response.has("result") || !result.isJsonObject()) {
-                return null;
-            }
-            JsonObject moduleObj = result.getAsJsonObject().getAsJsonObject(module);
+            JsonObject root = (result != null && result.isJsonObject()) ? result.getAsJsonObject() : response;
+            JsonObject moduleObj = root.getAsJsonObject(module);
             if (moduleObj == null) {
                 return null;
             }

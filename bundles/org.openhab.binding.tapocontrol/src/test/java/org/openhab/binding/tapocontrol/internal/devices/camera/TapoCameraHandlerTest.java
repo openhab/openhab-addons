@@ -267,6 +267,30 @@ class TapoCameraHandlerTest {
     }
 
     @Test
+    void unwrappedPollResponsesUpdateChannels() throws Exception {
+        // Some firmwares (e.g. C125) return secured-command results without a "result" wrapper:
+        // the module object sits at the top level. readSection must still extract the section.
+        when(api.sendCommand(any())).thenAnswer(invocation -> {
+            JsonObject cmd = invocation.getArgument(0);
+            String method = cmd.get("method").getAsString();
+            if (!"get".equals(method)) {
+                return json("{\"error_code\":0}");
+            }
+            String module = cmd.keySet().stream().filter(k -> !"method".equals(k)).findFirst().orElseThrow();
+            String section = cmd.getAsJsonObject(module).getAsJsonArray("name").get(0).getAsString();
+            // unwrapped: module at top level, no "result" key
+            return json("{\"error_code\":0,\"" + module + "\":{\"" + section + "\":{\"enabled\":\"on\"}}}");
+        });
+        handler.simulateInitialize();
+        awaitTerminalStatus();
+
+        assertEquals(OnOffType.ON, updatedStates.get("privacy#privacyMode"));
+        assertEquals(OnOffType.ON, updatedStates.get("system#ledStatus"));
+        assertEquals(OnOffType.ON, updatedStates.get("motionDetection#enabled"));
+        assertEquals(ThingStatus.ONLINE, lastStatus.getStatus());
+    }
+
+    @Test
     void authFailureTriggersSingleReLoginThenRecovers() throws Exception {
         var calls = new AtomicInteger();
         when(api.sendCommand(any())).thenAnswer(invocation -> {
