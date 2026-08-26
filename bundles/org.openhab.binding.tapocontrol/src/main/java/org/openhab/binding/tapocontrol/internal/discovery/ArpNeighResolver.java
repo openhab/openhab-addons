@@ -73,14 +73,17 @@ public class ArpNeighResolver {
 
     private static List<String> readTable(String command) {
         try {
-            Process process = new ProcessBuilder("/bin/sh", "-c", command).start();
+            // merged stderr keeps the error pipe drained, otherwise the child can block on a full buffer
+            Process process = new ProcessBuilder("/bin/sh", "-c", command).redirectErrorStream(true).start();
             List<String> lines;
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                 lines = reader.lines().toList();
             }
-            process.waitFor(5, TimeUnit.SECONDS);
-            process.destroyForcibly();
+            if (!process.waitFor(5, TimeUnit.SECONDS)) {
+                LOGGER.debug("neighbor table lookup '{}' timed out", command);
+                process.destroyForcibly();
+            }
             return lines;
         } catch (IOException e) {
             LOGGER.debug("neighbor table lookup '{}' unavailable: {}", command, e.getMessage());

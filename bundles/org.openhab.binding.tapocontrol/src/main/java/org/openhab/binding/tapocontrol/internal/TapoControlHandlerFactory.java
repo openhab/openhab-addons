@@ -87,9 +87,13 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
         cameraHttpClient.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);
         try {
             httpClient.start();
+        } catch (Exception e) {
+            logger.error("cannot start httpClient", e);
+        }
+        try {
             cameraHttpClient.start();
         } catch (Exception e) {
-            logger.error("cannot start httpClient");
+            logger.error("cannot start cameraHttpClient", e);
         }
     }
 

@@ -37,6 +37,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.tapocontrol.internal.api.camera.TapoCameraApi;
 import org.openhab.binding.tapocontrol.internal.api.camera.TapoCameraApiException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -222,6 +223,24 @@ class TapoCameraHandlerTest {
     }
 
     @Test
+    void transientErrorAbortsCycleInsteadOfDroppingFeature() throws Exception {
+        when(api.sendCommand(any())).thenAnswer(invocation -> {
+            JsonObject cmd = invocation.getArgument(0);
+            if ("get".equals(cmd.get("method").getAsString()) && cmd.has("msg_alarm")) {
+                throw new TapoCameraApiException("device busy", -40101);
+            }
+            return json("{\"error_code\":0,\"result\":{}}");
+        });
+        handler.simulateInitialize();
+        awaitTerminalStatus();
+
+        ThingStatusInfo last = statuses.get(statuses.size() - 1);
+        assertEquals(ThingStatus.OFFLINE, last.getStatus());
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, last.getStatusDetail());
+        assertTrue(handler.getDetectedFeatures().contains(TapoCameraFeature.ALARM)); // feature not dropped
+    }
+
+    @Test
     void authFailureTriggersSingleReLoginThenRecovers() throws Exception {
         var calls = new AtomicInteger();
         when(api.sendCommand(any())).thenAnswer(invocation -> {
@@ -258,6 +277,25 @@ class TapoCameraHandlerTest {
         var payloads = sent.stream().map(JsonObject::toString).collect(Collectors.toList());
         assertTrue(payloads.contains("{\"method\":\"set\",\"lens_mask\":{\"lens_mask_info\":{\"enabled\":\"on\"}}}"));
         assertTrue(payloads.stream().anyMatch(p -> p.startsWith("{\"method\":\"get\""))); // refresh read follows
+    }
+
+    @Test
+    void motionSensitivityIgnoresNonNumericCommand() throws Exception {
+        respondWith(Map.of("lens_mask#lens_mask_info", "{}", "msg_alarm#chn1_msg_alarm_info", "{}", //
+                "system#last_alarm_info", "{}", "motion_detection#motion_det", "{}", //
+                "led#config", "{}", "preset#preset", "{}"));
+        handler.simulateInitialize();
+        awaitTerminalStatus();
+        when(api.isLoggedIn()).thenReturn(true);
+        var sent = new CopyOnWriteArrayList<JsonObject>();
+        doAnswer(invocation -> {
+            sent.add(invocation.getArgument(0));
+            return json("{\"error_code\":0}");
+        }).when(api).sendCommand(any());
+
+        handler.processCommand(new ChannelUID(THING_UID, "motionDetection#sensitivity"), IncreaseDecreaseType.INCREASE);
+
+        assertTrue(sent.isEmpty()); // no command forwarded to the camera
     }
 
     @Test

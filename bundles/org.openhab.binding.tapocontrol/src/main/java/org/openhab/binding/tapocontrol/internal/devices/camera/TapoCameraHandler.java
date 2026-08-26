@@ -194,8 +194,8 @@ public class TapoCameraHandler extends BaseThingHandler {
     }
 
     /**
-     * Executes one guarded read. Method-specific failures drop the feature for the session and yield
-     * {@code null}; auth and transport failures abort the cycle.
+     * Executes one guarded read. Failures other than the protocol's "method unsupported" code abort the cycle;
+     * an unsupported method drops the feature for the session and yields {@code null}.
      */
     private @Nullable JsonObject readSection(TapoCameraApi cameraApi, JsonObject command,
             @Nullable TapoCameraFeature feature, String module, String section) throws StopCycleException {
@@ -212,7 +212,8 @@ public class TapoCameraHandler extends BaseThingHandler {
             JsonObject sectionObj = moduleObj.getAsJsonObject(section);
             return sectionObj != null ? sectionObj : null;
         } catch (TapoCameraApiException e) {
-            if (e.getErrorCode() == ERROR_AUTH_FAILURE || e.getErrorCode() == 0) {
+            if (e.getErrorCode() != ERROR_METHOD_UNSUPPORTED) {
+                // anything but a capability boundary may be transient — abort the cycle instead of dropping the feature
                 throw new StopCycleException(e);
             }
             if (feature != null) {
@@ -442,8 +443,11 @@ public class TapoCameraHandler extends BaseThingHandler {
                 refreshGroup(cameraApi, CHANNEL_GROUP_CAMERA_MOTION);
             }
             case CHANNEL_MOTION_SENSITIVITY -> {
-                int value = ((DecimalType) command).intValue();
-                cameraApi.sendCommand(TapoCameraCommands.setDetectionConfig(null, value));
+                if (!(command instanceof DecimalType decimal)) {
+                    LOGGER.debug("{}: ignoring unsupported sensitivity command {}", thing.getUID(), command);
+                    return;
+                }
+                cameraApi.sendCommand(TapoCameraCommands.setDetectionConfig(null, decimal.intValue()));
                 refreshGroup(cameraApi, CHANNEL_GROUP_CAMERA_MOTION);
             }
             default -> LOGGER.debug("{}: ignoring unknown motion detection channel {}", thing.getUID(), id);
@@ -453,8 +457,12 @@ public class TapoCameraHandler extends BaseThingHandler {
     private void handlePresetCommand(TapoCameraApi cameraApi, Command command)
             throws TapoCameraApiException, StopCycleException {
         requireFeature(TapoCameraFeature.PRESETS);
+        if (!(command instanceof DecimalType decimal)) {
+            LOGGER.debug("{}: ignoring unsupported gotoPreset command {}", thing.getUID(), command);
+            return;
+        }
         TapoPresets currentPresets = presets;
-        int requested = ((DecimalType) command).intValue();
+        int requested = decimal.intValue();
         if (currentPresets == null || !currentPresets.ids().contains(requested)) {
             LOGGER.debug("{}: ignoring gotoPreset {}, no such preset", thing.getUID(), requested);
             return;
