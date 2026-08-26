@@ -281,10 +281,12 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 connector.sendCommand("SRC");
                                 // Delay sending number command; if movie is playing, more delay is necessary
                                 scheduler.schedule(() -> {
-                                    try {
-                                        connector.sendCommand("NU" + (Integer.parseInt(commandStr) + 1));
-                                    } catch (OppoException | NumberFormatException e) {
-                                        logger.debug("Setting input failed: {}", e.getMessage(), e);
+                                    if (connector.isConnected()) {
+                                        try {
+                                            connector.sendCommand("NU" + (Integer.parseInt(commandStr) + 1));
+                                        } catch (OppoException | NumberFormatException e) {
+                                            logger.debug("Setting input failed: {}", e.getMessage(), e);
+                                        }
                                     }
                                 }, (isStopped ? 500 : 1000), TimeUnit.MILLISECONDS);
                             }
@@ -944,7 +946,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      */
     private void updateChannelState(String channel, @Nullable String value) {
         // fix channel names from the deprecated thing type
-        final String channelName = channel.replace('_', '-');
         final String targetChannel = getChannelName(channel);
 
         if (!isLinked(targetChannel)) {
@@ -958,7 +959,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
         State state = UnDefType.UNDEF;
 
-        switch (channelName) {
+        switch (channel) {
             case CHANNEL_POWER:
             case CHANNEL_MUTE:
                 state = OnOffType.from(ON.equals(value));
@@ -997,16 +998,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     }
 
     /**
-     * Handle when a channel from the the deprecated thing is encountered
+     * Handle when a channel from the deprecated thing is encountered
      *
      * @param channel the logical channel name with dash separator
-     * @return the actual linked channel name with either dash or underscore separator
+     * @return the legacy (underscore separator) name if linked, otherwise the channel name
      */
     private String getChannelName(String channel) {
-        if (isLinked(channel.replace('-', '_'))) {
-            return channel.replace('-', '_');
-        }
-        return channel;
+        final String legacyChannel = channel.replace('-', '_');
+        return isLinked(legacyChannel) ? legacyChannel : channel;
     }
 
     /**
