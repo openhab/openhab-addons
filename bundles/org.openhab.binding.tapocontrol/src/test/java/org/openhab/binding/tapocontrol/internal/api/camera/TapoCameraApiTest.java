@@ -114,6 +114,19 @@ class TapoCameraApiTest {
     }
 
     @Test
+    void secureCommandAcceptsDirectResponse() throws Exception {
+        responses.add("{\"error_code\":-40413,\"result\":{\"data\":{\"nonce\":\"" + NONCE + "\",\"device_confirm\":\""
+                + DEVICE_CONFIRM + "\"}}}");
+        responses.add("{\"error_code\":0,\"result\":{\"stok\":\"SECRETTOKEN\",\"start_seq\":100}}");
+        api.login();
+        responses.add("{\"error_code\":0,\"led\":{\"config\":{\"enabled\":\"off\"}}}");
+
+        JsonObject answer = api.sendCommand(TapoCameraCommands.getLedConfig());
+
+        assertEquals("off", answer.getAsJsonObject("led").getAsJsonObject("config").get("enabled").getAsString());
+    }
+
+    @Test
     void secureLoginSupportsMd5PasswordMethod() throws Exception {
         // some firmware stores the Tapo API password MD5-hashed, revealed by device_confirm
         String pwHashMd5 = TapoCameraCrypto.md5HashUpper("password");

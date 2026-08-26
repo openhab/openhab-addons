@@ -225,10 +225,16 @@ public class TapoCameraApi {
             if (errorCode != 0) {
                 throw new TapoCameraApiException("secured command failed", errorCode);
             }
-            String cipher = outerResponse.getAsJsonObject("result").get("response").getAsString();
-            return JsonParser
-                    .parseString(TapoCameraCrypto.decryptBase64(cipher, currentSession.lsk(), currentSession.ivb()))
-                    .getAsJsonObject();
+            if (outerResponse.has("result") && outerResponse.get("result").isJsonObject()
+                    && outerResponse.getAsJsonObject("result").has("response")) {
+                String cipher = outerResponse.getAsJsonObject("result").get("response").getAsString();
+                return JsonParser
+                        .parseString(TapoCameraCrypto.decryptBase64(cipher, currentSession.lsk(), currentSession.ivb()))
+                        .getAsJsonObject();
+            }
+            // Some firmware returns the decrypted module response directly instead of wrapping it
+            // in result.response.
+            return outerResponse;
         } catch (TapoCameraApiException e) {
             throw e;
         } catch (InterruptedException e) {
