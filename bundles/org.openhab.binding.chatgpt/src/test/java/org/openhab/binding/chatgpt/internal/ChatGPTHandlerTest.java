@@ -16,9 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -33,8 +34,9 @@ public class ChatGPTHandlerTest {
     @BeforeEach
     public void setUp() {
         Thing thing = mock(Thing.class);
-        HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
-        handler = new ChatGPTHandler(thing, httpClientFactory);
+        HttpClient httpClient = mock(HttpClient.class);
+        TranslationProvider translationProvider = mock(TranslationProvider.class);
+        handler = new ChatGPTHandler(thing, httpClient, translationProvider);
     }
 
     @Test

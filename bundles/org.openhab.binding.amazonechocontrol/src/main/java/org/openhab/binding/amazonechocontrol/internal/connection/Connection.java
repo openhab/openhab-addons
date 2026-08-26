@@ -1390,14 +1390,10 @@ public class Connection {
         }
     }
 
-    public List<NotificationTO> getNotifications() {
-        try {
-            return requestBuilder.get(getAlexaServer() + "/api/notifications")
-                    .syncSend(NotificationListResponseTO.class).notifications;
-        } catch (ConnectionException e) {
-            logger.warn("Failed to get notifications: {}", e.getMessage());
-        }
-        return List.of();
+    public List<NotificationTO> getNotifications() throws ConnectionException {
+        // propagates the exception: an empty list is indistinguishable from "no notifications set"
+        return requestBuilder.get(getAlexaServer() + "/api/notifications")
+                .syncSend(NotificationListResponseTO.class).notifications;
     }
 
     public NotificationTO getNotification(String notificationId) throws ConnectionException {

@@ -13,13 +13,13 @@
 package org.openhab.binding.chatgpt.internal.hli;
 
 import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.DEFAULT_SYSTEM_MESSAGE;
-import static org.openhab.binding.chatgpt.internal.hli.ChatGPTHLIConstants.SERVICE_ID;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,7 +33,6 @@ import org.openhab.binding.chatgpt.internal.api.dto.ChatFunctionCall;
 import org.openhab.binding.chatgpt.internal.api.dto.ChatMessage;
 import org.openhab.binding.chatgpt.internal.api.dto.ChatResponse;
 import org.openhab.binding.chatgpt.internal.api.dto.ChatToolCalls;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
@@ -45,10 +44,9 @@ import org.openhab.core.voice.text.conversation.ConversationRole;
 import org.openhab.core.voice.text.interpreter.llm.LLMTool;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolException;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,24 +60,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Artur Fedjukevits - Initial contribution
  * @author Florian Hotze - Simplified using ChatGPTApiClient & added localized messages
  */
-@Component(service = { ChatGPTHLIService.class, HumanLanguageInterpreter.class })
+@Component(scope = ServiceScope.PROTOTYPE, service = ChatGPTHLIService.class)
 @NonNullByDefault
 public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInterpreter {
+    private static final String HLI_SERVICE_ID = "chatgpt";
+    private static final String HLI_SERVICE_LABEL = "ChatGPT Interpreter";
+
     private static final String ERROR_KEY_MISSING_CONFIG = "hli.error.missing-configuration";
     private static final String ERROR_KEY_TECHNICAL_PROBLEM = "hli.error.technical-problem";
     private static final String DEFAULT_ERROR_MISSING_CONFIG = "Cannot interpret due to missing configuration.";
     private static final String DEFAULT_ERROR_TECHNICAL_PROBLEM = "Cannot interpret due to a technical problem.";
 
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHLIService.class);
-    private final TranslationProvider i18nProvider;
     private final Bundle bundle;
 
     private @Nullable ChatGPTHandler handler;
 
-    @Activate
-    public ChatGPTHLIService(final @Reference TranslationProvider i18nProvider, BundleContext context) {
-        this.i18nProvider = i18nProvider;
-        this.bundle = context.getBundle();
+    public ChatGPTHLIService() {
+        this.bundle = FrameworkUtil.getBundle(ChatGPTHLIService.class);
         logger.debug("ChatGPTHLIService activated");
     }
 
@@ -99,12 +97,22 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
     @Override
     public String getId() {
-        return SERVICE_ID;
+        ChatGPTHandler chatGPTHandler = this.handler;
+        if (chatGPTHandler != null) {
+            return HLI_SERVICE_ID + ":" + chatGPTHandler.getThing().getUID().getId();
+        }
+        return HLI_SERVICE_ID;
     }
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "ChatGPT Human Language Interpreter";
+        ChatGPTHandler chatGPTHandler = this.handler;
+        if (chatGPTHandler != null) {
+            String label = chatGPTHandler.getThing().getLabel();
+            return HLI_SERVICE_LABEL + " ("
+                    + Objects.requireNonNullElseGet(label, () -> chatGPTHandler.getThing().getUID().getId()) + ")";
+        }
+        return HLI_SERVICE_LABEL;
     }
 
     @Override
@@ -123,7 +131,11 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     }
 
     private String getLocalizedMessage(String key, String defaultText, Locale locale) {
-        String message = i18nProvider.getText(bundle, key, defaultText, locale);
+        ChatGPTHandler handler = this.handler;
+        if (handler == null) {
+            return defaultText;
+        }
+        String message = handler.getTranslationProvider().getText(bundle, key, defaultText, locale);
         return message != null ? message : defaultText;
     }
 

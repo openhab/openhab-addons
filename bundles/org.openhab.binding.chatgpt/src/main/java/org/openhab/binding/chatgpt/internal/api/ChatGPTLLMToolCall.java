@@ -13,6 +13,7 @@
 package org.openhab.binding.chatgpt.internal.api;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +41,7 @@ public class ChatGPTLLMToolCall extends LLMToolCall {
         if (call == null) {
             throw new JsonSyntaxException("Deserialized ChatGPTLLMToolCall is null.");
         }
-        if (call.tool == null || call.params == null) {
+        if (Objects.isNull(call.tool) || Objects.isNull(call.params)) {
             throw new JsonSyntaxException("Deserialized ChatGPTLLMToolCall has null tool or params.");
         }
         return call;
