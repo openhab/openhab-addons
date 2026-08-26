@@ -265,6 +265,8 @@ class TapoCameraHandlerTest {
         assertEquals(ThingStatus.ONLINE, lastStatus.getStatus());
         assertFalse(handler.getDetectedFeatures().contains(TapoCameraFeature.PRESETS));
         assertTrue(handler.getDetectedFeatures().contains(TapoCameraFeature.PRIVACY));
+        verify(callback).thingUpdated(argThat(updatedThing -> updatedThing.getChannels().stream()
+                .noneMatch(channel -> "presets".equals(channel.getUID().getGroupId()))));
     }
 
     @Test

@@ -83,6 +83,7 @@ public class TapoCameraHandler extends BaseThingHandler {
     private volatile EnumSet<TapoCameraFeature> detectedFeatures = EnumSet.allOf(TapoCameraFeature.class);
     // snapshot of the channels defined by the thing-type, used to add/remove channels as features are detected
     private List<Channel> originalChannels = List.of();
+    private boolean originalChannelsInitialized;
 
     public TapoCameraHandler(Thing thing, @Nullable HttpClient httpClient) {
         super(thing);
@@ -111,7 +112,10 @@ public class TapoCameraHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ipAddress must be set");
             return;
         }
-        originalChannels = List.copyOf(thing.getChannels());
+        if (!originalChannelsInitialized) {
+            originalChannels = List.copyOf(thing.getChannels());
+            originalChannelsInitialized = true;
+        }
         updateStatus(ThingStatus.UNKNOWN);
         try {
             api = createApi(config);
@@ -396,6 +400,8 @@ public class TapoCameraHandler extends BaseThingHandler {
         Set<ChannelUID> currentUids = thing.getChannels().stream().map(Channel::getUID).collect(Collectors.toSet());
         Set<ChannelUID> desiredUids = desiredChannels.stream().map(Channel::getUID).collect(Collectors.toSet());
         if (!currentUids.equals(desiredUids)) {
+            LOGGER.debug("{}: synchronizing camera channels, current={}, desired={}", thing.getUID(), currentUids,
+                    desiredUids);
             ThingBuilder builder = editThing();
             builder.withChannels(desiredChannels);
             updateThing(builder.build());
