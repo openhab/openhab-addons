@@ -89,8 +89,8 @@ The camera needs its IP address and the **camera account credentials** configure
 | httpPort        | [optional] HTTPS port of the camera local API. Default is 443                        |
 | pollingInterval | [optional] Refresh interval in seconds (0=disabled). Default is 15                  |
 
-Cloud discovery (via an existing bridge) finds registered cameras and tries to resolve their local IP address
-automatically; if your network setup prevents resolution, add the thing manually.
+Cameras are not discovered automatically — cloud discovery cannot reliably resolve their local IP
+address and they do not respond to UDP discovery. Create the camera thing manually.
 
 Video and audio streaming is intentionally out of scope — use the IP Camera binding (ONVIF) for live views.
 

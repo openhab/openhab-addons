@@ -53,7 +53,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     private final Logger logger = LoggerFactory.getLogger(TapoDiscoveryService.class);
     private final String uid;
-    private final ArpNeighResolver arpNeighResolver = new ArpNeighResolver();
     protected @NonNullByDefault({}) TapoBridgeHandler bridge;
     protected @NonNullByDefault({}) TapoUdpDiscovery udpDiscovery;
     protected @NonNullByDefault({}) TapoCloudConnector cloudConnector;
@@ -223,7 +222,9 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         try {
             for (TapoDiscoveryResult deviceElement : deviceList) {
                 if (deviceElement.deviceType().toUpperCase(Locale.ROOT).contains(CLOUD_DEVICE_TYPE_CAMERA)) {
-                    addCameraScanResult(deviceElement);
+                    // cameras are not discoverable - neither via UDP nor reliably from cloud records
+                    logger.debug("{} camera '{}' discovered but not auto-discoverable - add it manually", uid,
+                            deviceElement.alias());
                     continue;
                 }
                 if (!deviceElement.deviceMac().isBlank()) {
@@ -247,29 +248,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         } catch (Exception e) {
             logger.debug("({}) error handle DiscoveryResult", uid, e);
         }
-    }
-
-    /**
-     * Cloud results for cameras contain no usable local endpoint. Emit a standalone camera
-     * thing when the IP can be taken from the cloud record or resolved via the OS neighbor
-     * table; otherwise skip with a debug hint (manual creation always works).
-     */
-    private void addCameraScanResult(TapoDiscoveryResult device) {
-        String mac = device.deviceMac();
-        String ip = device.ip().length() >= 7 ? device.ip() : arpNeighResolver.resolveMac(mac).orElse("");
-        if (mac.isBlank() || ip.isBlank()) {
-            logger.debug("{} cloud camera '{}' discovered but no local IP resolvable - add it manually", uid,
-                    device.alias());
-            return;
-        }
-        ThingUID thingUID = new ThingUID(CAMERA_THING_TYPE, mac);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, formatMac(mac, MAC_DIVISION_CHAR));
-        properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, ip);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY)
-                .withLabel(device.alias().isBlank() ? "Tapo Camera" : device.alias()).build();
-        thingDiscovered(discoveryResult);
     }
 
     /**
