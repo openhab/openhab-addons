@@ -86,7 +86,16 @@ Variables provided in the `vars` section of an `!include` directive are visible 
 Local variables defined inside an include file can act as default values when they are not provided in the `!include` directive.
 This allows include files to be reused with different parameters while keeping sensible defaults inside the file itself.
 
-**Example:**
+### Strict Isolation with `ARGS`
+
+Explicitly passed variables are merged into the normal evaluation context, but they are also exposed separately through a predefined map named **`ARGS`**.
+
+`ARGS` contains **only** the variables provided at the include call site (via `vars:` or URL query parameters).
+It does **not** include global variables, inherited variables, or local defaults inside the include file.
+
+This allows include files to inspect exactly what the caller passed, without any inherited or default values.
+
+#### Example
 
 `main.yaml`:
 
@@ -106,7 +115,7 @@ things:
     vars:
       label: Bedroom Window
       id: bedroom-window
-      broker: mqtt:broker:external # override the global broker variable
+      broker: mqtt:broker:external
 ```
 
 `mqtt_contact.inc.yaml`:
@@ -118,9 +127,12 @@ config:
   availabilityTopic: ${id}/availability
   payloadAvailable: online
   payloadNotAvailable: offline
+
+debug:
+  args: ${ARGS}
 ```
 
-Resulting configuration:
+Result:
 
 ```yaml
 things:
@@ -131,6 +143,10 @@ things:
       availabilityTopic: livingroom-window/availability
       payloadAvailable: online
       payloadNotAvailable: offline
+    debug:
+      args:
+        label: Living Room Window
+        id: livingroom-window
 
   mqtt:topic:bedroom-window:
     bridge: mqtt:broker:external
@@ -139,6 +155,11 @@ things:
       availabilityTopic: bedroom-window/availability
       payloadAvailable: online
       payloadNotAvailable: offline
+    debug:
+      args:
+        label: Bedroom Window
+        id: bedroom-window
+        broker: mqtt:broker:external
 ```
 
 ## File Naming & Reload Behavior

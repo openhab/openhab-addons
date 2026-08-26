@@ -169,6 +169,47 @@ Inside a template:
 - `${var}` resolves using the combined variable context described above.
 - Each `!insert` call is isolated — variables from one invocation do not leak into another.
 
+### Strict Isolation with `ARGS`
+
+Just like `!include`, each `!insert` call exposes a predefined map named **`ARGS`** containing **only** the variables explicitly passed to that invocation (via `vars:` or URL query parameters).
+
+`ARGS` does **not** include:
+
+- variables defined elsewhere in the file
+- variables inherited from parent includes
+- local defaults inside the template
+
+Normal variable substitution uses the merged context, but `ARGS` shows only what the caller actually passed.
+
+#### Example
+
+```yaml
+templates:
+  greeting:
+    message: "Hello, ${name}!"
+    debug: ${ARGS}
+
+welcome:
+  user1: !insert { template: greeting, vars: { name: Alice } }
+  user2: !insert greeting?name=Bob&lang=en
+```
+
+Result:
+
+```yaml
+welcome:
+  user1:
+    message: "Hello, Alice!"
+    debug:
+      name: Alice
+
+  user2:
+    message: "Hello, Bob!"
+    debug:
+      name: Bob
+      lang: true
+```
+
 ## Limitations
 
 - Templates must be defined under the top‑level `templates:` section.

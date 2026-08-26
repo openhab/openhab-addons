@@ -249,5 +249,107 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
 
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("template not found")));
         }
+
+        @Test
+        @DisplayName("ARGS exists in the template context and contains ONLY the variables explicitly passed to the insert")
+        void argsKeywordReferencesOnlyInjectedVariableSet() throws IOException {
+            String yaml = """
+                    variables:
+                      global_var: "global_value"
+
+                    templates:
+                      mytpl:
+                        # ARGS isolated access
+                        args_global: ${ARGS.global_var | default('missing')}
+                        args_injected: ${ARGS.injected_var | default('missing')}
+
+                    target: !insert
+                      template: mytpl
+                      vars:
+                        injected_var: "injected_value"
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            // ARGS isolation works
+            assertThat("ARGS MUST contain explicitly injected variables",
+                    getNestedValue(data, "target", "args_injected"), equalTo("injected_value"));
+
+            assertThat("ARGS should NOT contain variables inherited from the parent file",
+                    getNestedValue(data, "target", "args_global"), equalTo("missing"));
+        }
+
+        @Test
+        @DisplayName("ARGS in nested inserts isolates variables to the immediate call site, excluding parent explicitly passed vars")
+        void argsKeywordStrictlyIsolatesNestedInserts() throws IOException {
+            String yaml = """
+                    templates:
+                      level1_tpl:
+                        level2_data: !insert
+                          template: level2_tpl
+                          vars:
+                            level2_var: "val2"
+
+                      level2_tpl:
+                        args_l1: ${ARGS.level1_var | default('missing')}
+                        args_l2: ${ARGS.level2_var | default('missing')}
+
+                    target: !insert
+                      template: level1_tpl
+                      vars:
+                        level1_var: "val1"
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            // ARGS isolation strictly prevents inheritance from parent inserts
+            assertThat("ARGS MUST contain explicitly injected variables for this specific insert",
+                    getNestedValue(data, "target", "level2_data", "args_l2"), equalTo("val2"));
+
+            assertThat("ARGS should NOT contain variables injected by the parent insert",
+                    getNestedValue(data, "target", "level2_data", "args_l1"), equalTo("missing"));
+        }
+
+        @Test
+        @DisplayName("ARGS inside templates strictly isolates to insert-level vars and excludes parent include-level args")
+        void templateInsideIncludeIsolatesArgsExcludingIncludeArgs() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    data: !include
+                      file: child.inc.yaml
+                      vars:
+                        shared_key: "value_from_include"
+                    """);
+
+            writeFixture("child.inc.yaml", """
+                    # Outside template: ARGS at the include level *does* contain shared_key
+                    include_level_args_check: ${ARGS.shared_key}
+
+                    templates:
+                      mytpl:
+                        # Inside template: ARGS should NOT see the include's 'shared_key'
+                        args_shared: ${ARGS.shared_key | default('missing')}
+                        # Inside template: ARGS must see its own insert-level arg
+                        args_insert: ${ARGS.insert_only | default('missing')}
+
+                    result: !insert
+                      template: mytpl
+                      vars:
+                        insert_only: "value_from_insert"
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            // Contrast check: ARGS at the include level has it
+            assertThat("ARGS at the include level contains the variable",
+                    getNestedValue(data, "data", "include_level_args_check"), equalTo("value_from_include"));
+
+            // Isolation check: ARGS inside the template does NOT have it
+            assertThat("ARGS inside template should NOT contain parent include-level arguments",
+                    getNestedValue(data, "data", "result", "args_shared"), equalTo("missing"));
+
+            // Local check: ARGS inside the template has its own arg
+            assertThat("ARGS inside template must contain its own immediate insert-level arguments",
+                    getNestedValue(data, "data", "result", "args_insert"), equalTo("value_from_insert"));
+        }
     }
 }
