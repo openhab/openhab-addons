@@ -98,9 +98,13 @@ import com.google.gson.JsonSyntaxException;
  * The {@link EchoHandler} is responsible for the handling of the echo device
  *
  * @author Michael Geramb - Initial contribution
+ * @author Martin Littkovsky - Report linked notification channels, so the account only polls for a consumer
  */
 @NonNullByDefault
 public class EchoHandler extends BaseThingHandler {
+    private static final Set<String> NOTIFICATION_CHANNELS = Set.of(CHANNEL_NEXT_ALARM, CHANNEL_NEXT_MUSIC_ALARM,
+            CHANNEL_NEXT_REMINDER, CHANNEL_NEXT_TIMER);
+
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private final Gson gson;
     private final AmazonEchoControlStateDescriptionProvider dynamicStateDescriptionProvider;
@@ -203,6 +207,29 @@ public class EchoHandler extends BaseThingHandler {
 
     public String getSerialNumber() {
         return Objects.requireNonNullElse((String) getConfig().get(DEVICE_PROPERTY_SERIAL_NUMBER), "");
+    }
+
+    boolean hasLinkedNotificationChannel() {
+        if (getCallback() == null) {
+            return false;
+        }
+        return NOTIFICATION_CHANNELS.stream().anyMatch(this::isLinked);
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        if (NOTIFICATION_CHANNELS.contains(channelUID.getId())) {
+            getAccountHandler().ifPresent(AccountHandler::notificationChannelLinked);
+        }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        if (NOTIFICATION_CHANNELS.contains(channelUID.getId())) {
+            getAccountHandler().ifPresent(AccountHandler::notificationChannelUnlinked);
+        }
     }
 
     @Override
