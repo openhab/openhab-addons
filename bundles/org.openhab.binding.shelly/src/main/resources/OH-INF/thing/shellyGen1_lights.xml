@@ -82,6 +82,7 @@
 			<channel-group id="primary" typeId="primary-group"/>
 			<channel-group id="control" typeId="rgbw2ColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBW2"/>
+			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>

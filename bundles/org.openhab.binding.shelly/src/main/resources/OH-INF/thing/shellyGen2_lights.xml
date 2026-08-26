@@ -13,6 +13,7 @@
 			<channel-group id="primary" typeId="primary-group"/>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
+			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="light1" typeId="rgbwChannel">
 				<label>LED Channel 1</label>
 			</channel-group>
@@ -42,6 +43,7 @@
 			<channel-group id="primary" typeId="primary-group"/>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGB"/>
+			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="light1" typeId="rgbwChannel">
 				<label>LED Channel 1</label>
 			</channel-group>
