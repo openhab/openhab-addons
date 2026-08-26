@@ -478,7 +478,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
 
         // PRIMARY GROUP:
-        if (model.isDirty()) {
+        if (model.isDirty() && model.getChannelGroupNumber() == 0 && model.supportsOnOffChannel()) {
             group = CHANNEL_GROUP_PRIMARY;
             if (model.configGetLightCapabilities().supportsColor()) {
                 updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR, model.getColorState());
