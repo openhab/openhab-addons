@@ -23,7 +23,6 @@ import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -45,7 +44,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Discovery class for the Oppo Blu-ray Player line.
- * The player sends SDDP packets continuously for us to discover.
+ * The player sends what it calls SDDP packets continuously for us to discover.
+ * The format is not compatible with OH core SDDP discovery (Control4 SDDP packets).
  *
  * @author Tim Roberts - Initial contribution
  * @author Michael Lobstein - Adapted for the Oppo binding
@@ -54,7 +54,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.oppo")
 public class OppoDiscoveryService extends AbstractDiscoveryService {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLAYER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BDP83, THING_TYPE_BDP93,
+            THING_TYPE_BDP103, THING_TYPE_BDP105, THING_TYPE_UDP203, THING_TYPE_UDP205);
 
     private final Logger logger = LoggerFactory.getLogger(OppoDiscoveryService.class);
 
@@ -88,7 +89,8 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
      */
     private @Nullable ExecutorService executorService;
 
-    private static final String DISPLAY_NAME_83 = "OPPO BDP-83/93/95";
+    private static final String DISPLAY_NAME_83 = "OPPO BDP-83";
+    private static final String DISPLAY_NAME_93 = "OPPO BDP-93/95";
     private static final String DISPLAY_NAME_103 = "OPPO BDP-103";
     private static final String DISPLAY_NAME_105 = "OPPO BDP-105";
 
@@ -112,10 +114,8 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
      * <li>Request all the network interfaces</li>
      * <li>For each network interface, create a listening thread using {@link #executorService}</li>
      * <li>Each listening thread will open up a {@link MulticastSocket} using {@link #SDDP_ADDR} and {@link #SDDP_PORT}
-     * and
-     * will receive any {@link DatagramPacket} that comes in</li>
-     * <li>The {@link DatagramPacket} is then investigated to see if is a SDDP packet and will create a new thing from
-     * it</li>
+     * and will receive any {@link DatagramPacket} that comes in</li>
+     * <li>If the {@link DatagramPacket} is an Oppo SDDP packet, a new thing will be created from it</li>
      * </ul>
      * The process will continue until {@link #stopScan()} is called.
      */
@@ -138,18 +138,19 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
 
                 service.execute(() -> {
                     try {
-                        MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
-                        InetSocketAddress inetSocketAddress = new InetSocketAddress(addr, SDDP_PORT);
+                        final MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
+                        final InetSocketAddress inetSocketAddress = new InetSocketAddress(addr, SDDP_PORT);
                         multiSocket.setSoTimeout(TIMEOUT_MS);
                         multiSocket.setNetworkInterface(netint);
                         multiSocket.joinGroup(inetSocketAddress, null);
 
                         while (scanning) {
-                            DatagramPacket receivePacket = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
+                            final DatagramPacket packet = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
                             try {
-                                multiSocket.receive(receivePacket);
+                                multiSocket.receive(packet);
 
-                                String message = new String(receivePacket.getData(), StandardCharsets.US_ASCII).trim();
+                                final String message = new String(packet.getData(), 0, packet.getLength(),
+                                        StandardCharsets.US_ASCII).trim();
                                 if (message.length() > 0) {
                                     messageReceive(message);
                                 }
@@ -185,20 +186,16 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
      * </pre>
      *
      *
-     * @param message possibly null, possibly empty SDDP message
+     * @param message the SDDP message from the Oppo player
      */
     private void messageReceive(String message) {
-        if (message.trim().length() == 0) {
-            return;
-        }
-
+        ThingTypeUID thingTypeUID = null;
         String host = null;
         String port = null;
-        Integer model = null;
         String displayName = null;
 
-        for (String msg : message.split("\n")) {
-            String[] line = msg.split(":");
+        for (final String msg : message.split("\n")) {
+            final String[] line = msg.split(":", 2);
 
             if (line.length == 2) {
                 if (line[0].contains("Server IP")) {
@@ -222,50 +219,47 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
         // by looking at the port number we can mostly determine what the model number is
         if (host != null && port != null) {
             if (BDP83_PORT.toString().equals(port)) {
-                model = MODEL83;
+                thingTypeUID = THING_TYPE_BDP83;
                 displayName = DISPLAY_NAME_83;
             } else if (BDP10X_PORT.toString().equals(port)) {
                 // The older models do not have the "Server Name" in the discovery packet
                 // for the 10x we need to get the DLNA service list page and find modelNumber there
                 // in order to determine if this is a BDP-103 or BDP-105
+                // It is not known if the BDP-9x has this page so a failure will default to THING_TYPE_BDP93
                 try {
-                    String result = HttpUtil.executeUrl("GET", "http://" + host + ":2870/dmr.xml", 5000);
+                    final String result = HttpUtil.executeUrl("GET", "http://" + host + ":2870/dmr.xml", 5000);
 
-                    if (result != null && result.contains("<modelName>OPPO BDP-103</modelName>")) {
-                        model = MODEL103;
+                    if (result != null && result.contains("BDP-103")) {
+                        thingTypeUID = THING_TYPE_BDP103;
                         displayName = DISPLAY_NAME_103;
-                    } else if (result != null && result.contains("<modelName>OPPO BDP-105</modelName>")) {
-                        model = MODEL105;
+                    } else if (result != null && result.contains("BDP-105")) {
+                        thingTypeUID = THING_TYPE_BDP105;
                         displayName = DISPLAY_NAME_105;
                     } else {
-                        model = MODEL103;
-                        displayName = DISPLAY_NAME_103;
+                        thingTypeUID = THING_TYPE_BDP93;
+                        displayName = DISPLAY_NAME_93;
                     }
                 } catch (IOException e) {
                     logger.debug("Error getting player DLNA info page: {}", e.getMessage());
-                    // the call failed for some reason, just assume we are a 103
-                    model = MODEL103;
-                    displayName = DISPLAY_NAME_103;
+                    // the call failed, just assume we are a 93
+                    thingTypeUID = THING_TYPE_BDP93;
+                    displayName = DISPLAY_NAME_93;
                 }
             } else if (UDP20X_PORT.toString().equals(port)) {
                 if (displayName != null && displayName.contains(Integer.toString(MODEL203))) {
-                    model = MODEL203;
+                    thingTypeUID = THING_TYPE_UDP203;
                 } else if (displayName != null && displayName.contains(Integer.toString(MODEL205))) {
-                    model = MODEL205;
+                    thingTypeUID = THING_TYPE_UDP205;
                 } else {
-                    model = MODEL203;
-                    displayName = "Unknown OPPO UDP player";
+                    thingTypeUID = THING_TYPE_UDP203;
+                    displayName = "OPPO UDP-20X";
                 }
             }
 
-            if (model != null) {
-                ThingUID uid = new ThingUID(THING_TYPE_PLAYER, host.replace(".", "_"));
-                HashMap<String, Object> properties = new HashMap<>();
-                properties.put("model", model);
-                properties.put("host", host);
-
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty("host").withLabel(displayName + " (" + host + ")").build();
+            if (thingTypeUID != null) {
+                final ThingUID uid = new ThingUID(thingTypeUID, host.replace(".", "_"));
+                final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperty("host", host)
+                        .withRepresentationProperty("host").withLabel(displayName).build();
 
                 this.thingDiscovered(result);
             }
