@@ -36,7 +36,7 @@ class NotificationCommitStructureTest {
 
     private static String refreshNotifications() throws IOException {
         String source = Files.readString(SOURCE);
-        int start = source.indexOf("private void refreshNotifications()");
+        int start = source.indexOf("void refreshNotifications()");
         assertTrue(start > 0, "refreshNotifications() not found - this test cannot guard what it cannot read");
         return source.substring(start, source.indexOf("\n    private void refreshData()", start));
     }
