@@ -115,6 +115,11 @@ public class TapoCameraApi {
         if (data.has("code") && data.get("code").getAsInt() != 0) {
             LOGGER.debug("{}: handshake challenge reports code {}", baseUrl, data.get("code"));
         }
+        if (data.has("sec_left") && data.get("sec_left").getAsInt() > 0) {
+            throw new TapoCameraApiException(
+                    "camera temporarily locked, retry in " + data.get("sec_left").getAsInt() + " seconds",
+                    ERROR_AUTH_FAILURE);
+        }
         if (!data.has("nonce") || !data.has("device_confirm")) {
             throw new TapoCameraApiException("incomplete handshake data", errorCode);
         }

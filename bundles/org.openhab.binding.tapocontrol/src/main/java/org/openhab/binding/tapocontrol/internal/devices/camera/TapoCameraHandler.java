@@ -233,7 +233,7 @@ public class TapoCameraHandler extends BaseThingHandler {
 
     private void offlineFromCause(TapoCameraApiException e) {
         if (e.getErrorCode() == ERROR_AUTH_FAILURE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "authentication failed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } else if (e.getErrorCode() == 0) {
             LOGGER.debug("{}: communication problem: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

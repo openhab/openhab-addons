@@ -159,6 +159,17 @@ class TapoCameraApiTest {
     }
 
     @Test
+    void cameraLockoutIsReportedAsAuthFailure() {
+        // after too many failed attempts the camera signals a temporary lockout
+        responses.add("{\"error_code\":-40413,\"result\":{\"data\":{\"sec_left\":30}}}");
+        var e = assertThrows(TapoCameraApiException.class, () -> api.login());
+
+        assertEquals(TapoCameraApi.ERROR_AUTH_FAILURE, e.getErrorCode());
+        assertTrue(e.getMessage().contains("30"));
+        assertTrue(responses.isEmpty());
+    }
+
+    @Test
     void sendCommandWithoutLoginThrows() {
         assertThrows(TapoCameraApiException.class, () -> api.sendCommand(TapoCameraCommands.getLedConfig()));
     }
