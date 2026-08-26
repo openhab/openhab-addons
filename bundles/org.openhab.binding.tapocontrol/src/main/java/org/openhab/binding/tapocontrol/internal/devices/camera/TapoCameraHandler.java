@@ -62,7 +62,10 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class TapoCameraHandler extends BaseThingHandler {
     private static final int ERROR_AUTH_FAILURE = TapoCameraApi.ERROR_AUTH_FAILURE;
+    // device-side codes signalling that a module, method or parameter is not implemented by this model
     private static final int ERROR_METHOD_UNSUPPORTED = -40100;
+    private static final int ERROR_PARAM_UNSUPPORTED = -40101;
+    private static final int ERROR_METHOD_NOT_EXIST = -40105;
     private static final Logger LOGGER = LoggerFactory.getLogger(TapoCameraHandler.class);
 
     private final @Nullable HttpClient httpClient; // may be null only in unit tests
@@ -214,7 +217,7 @@ public class TapoCameraHandler extends BaseThingHandler {
             JsonObject sectionObj = moduleObj.getAsJsonObject(section);
             return sectionObj != null ? sectionObj : null;
         } catch (TapoCameraApiException e) {
-            if (e.getErrorCode() != ERROR_METHOD_UNSUPPORTED) {
+            if (!isCapabilityBoundary(e.getErrorCode())) {
                 // anything but a capability boundary may be transient — abort the cycle instead of dropping the feature
                 throw new StopCycleException(e);
             }
@@ -229,6 +232,16 @@ public class TapoCameraHandler extends BaseThingHandler {
                     e.getErrorCode());
             return null;
         }
+    }
+
+    /**
+     * Capability-boundary codes indicate that the camera model does not implement a module, method or parameter.
+     * They are returned by various firmware versions as -40100, -40101 or -40105; none of them invalidates the
+     * session, so the poll drops just the affected feature instead of aborting the whole cycle.
+     */
+    private static boolean isCapabilityBoundary(int errorCode) {
+        return errorCode == ERROR_METHOD_UNSUPPORTED || errorCode == ERROR_PARAM_UNSUPPORTED
+                || errorCode == ERROR_METHOD_NOT_EXIST;
     }
 
     private void offlineFromCause(TapoCameraApiException e) {

@@ -227,7 +227,8 @@ class TapoCameraHandlerTest {
         when(api.sendCommand(any())).thenAnswer(invocation -> {
             JsonObject cmd = invocation.getArgument(0);
             if ("get".equals(cmd.get("method").getAsString()) && cmd.has("msg_alarm")) {
-                throw new TapoCameraApiException("device busy", -40101);
+                // a non-capability, non-auth failure (e.g. device busy) must abort the cycle, not drop the feature
+                throw new TapoCameraApiException("device busy", -40301);
             }
             return json("{\"error_code\":0,\"result\":{}}");
         });
@@ -238,6 +239,31 @@ class TapoCameraHandlerTest {
         assertEquals(ThingStatus.OFFLINE, last.getStatus());
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, last.getStatusDetail());
         assertTrue(handler.getDetectedFeatures().contains(TapoCameraFeature.ALARM)); // feature not dropped
+    }
+
+    @Test
+    void unsupportedParameterDropsFeatureAndStaysOnline() throws Exception {
+        when(api.sendCommand(any())).thenAnswer(invocation -> {
+            JsonObject cmd = invocation.getArgument(0);
+            String method = cmd.get("method").getAsString();
+            if (!"get".equals(method)) {
+                return json("{\"error_code\":0}");
+            }
+            // C125 (no pan/tilt) rejects the preset module with -40101 ("parameter does not exist")
+            if (cmd.has("preset")) {
+                throw new TapoCameraApiException("parameter does not exist", -40101);
+            }
+            String module = cmd.keySet().stream().filter(k -> !"method".equals(k)).findFirst().orElseThrow();
+            String section = cmd.getAsJsonObject(module).getAsJsonArray("name").get(0).getAsString();
+            return json(
+                    "{\"error_code\":0,\"result\":{\"" + module + "\":{\"" + section + "\":{\"enabled\":\"on\"}}}}");
+        });
+        handler.simulateInitialize();
+        awaitTerminalStatus();
+
+        assertEquals(ThingStatus.ONLINE, lastStatus.getStatus());
+        assertFalse(handler.getDetectedFeatures().contains(TapoCameraFeature.PRESETS));
+        assertTrue(handler.getDetectedFeatures().contains(TapoCameraFeature.PRIVACY));
     }
 
     @Test
