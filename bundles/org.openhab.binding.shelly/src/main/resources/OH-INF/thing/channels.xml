@@ -120,4 +120,54 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="sensorWindDirectionStr">
+		<item-type>String</item-type>
+		<label>Wind Direction (Compass)</label>
+		<description>Wind direction as 16-point compass label (e.g. NNE)</description>
+		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensorApparentTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Apparent Temperature</label>
+		<description>Perceived "feels like" temperature, combining air temperature, humidity and wind speed</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorSeaLevelPressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Sea Level Pressure</label>
+		<description>Atmospheric pressure reduced to sea level (QNH), based on the configured station altitude</description>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorRainSwitch">
+		<item-type>Switch</item-type>
+		<label>Rain Switch</label>
+		<description>ON while rain is detected and for a configurable holdoff period after the last report</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

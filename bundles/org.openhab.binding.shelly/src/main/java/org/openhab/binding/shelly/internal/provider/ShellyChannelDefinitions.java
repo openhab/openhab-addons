@@ -313,6 +313,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DEWPOINT, "sensorDewPoint", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRECIPITATION, "sensorPrecipitation",
                         ITEMT_DISTANCE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDDIR_STR, "sensorWindDirectionStr",
+                        ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_APPARENT_TEMP, "sensorApparentTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SEALEVEL_PRESSURE, "sensorSeaLevelPressure",
+                        ITEMT_PRESSURE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, "sensorRainSwitch", ITEMT_SWITCH))
 
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEMT_STRING))
@@ -788,6 +794,14 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, ws90 || sdata.dewPoint != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT);
         addChannel(thing, newChannels, ws90 || sdata.precipitation != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_PRECIPITATION);
+        addChannel(thing, newChannels, ws90 || sdata.windDirectionStr != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_WINDDIR_STR);
+        addChannel(thing, newChannels, ws90 || sdata.apparentTemp != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_APPARENT_TEMP);
+        addChannel(thing, newChannels, ws90 || sdata.seaLevelPressure != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_SEALEVEL_PRESSURE);
+        addChannel(thing, newChannels, ws90 || sdata.rainSwitch != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_RAIN_SWITCH);
 
         // Flood Gen4
         if (profile.isFlood && profile.isGen2) {
