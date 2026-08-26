@@ -100,8 +100,8 @@ import com.google.gson.JsonSyntaxException;
  * Handles the connection to the amazon server.
  *
  * @author Michael Geramb - Initial Contribution
- * @author Martin Littkovsky - Backoff for failed notification polls, skip polls while no notification channel is
- *         linked
+ * @author Martin Littkovsky - Backoff for failed notification polls
+ * @author Martin Littkovsky - Skip polls while no notification channel is linked
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements PushConnection.Listener {
@@ -440,11 +440,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             return;
         }
         if (!hasLinkedNotificationTargets()) {
-            if (!notificationPollSuspended) {
-                notificationPollSuspended = true;
-                logger.debug("Skipping notification polls for {}: no echo thing has a notification channel linked",
-                        getThing().getUID().getAsString());
-            }
+            suspendNotificationPolls();
             return;
         }
         if (notificationPollSuspended) {
@@ -538,6 +534,21 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     void notificationChannelLinked() {
         if (notificationPollSuspended) {
             nextRefreshNotifications = 0;
+        }
+    }
+
+    /** The link is already gone when the core calls this, so the check sees the state that remains. */
+    void notificationChannelUnlinked() {
+        if (!hasLinkedNotificationTargets()) {
+            suspendNotificationPolls();
+        }
+    }
+
+    private void suspendNotificationPolls() {
+        if (!notificationPollSuspended) {
+            notificationPollSuspended = true;
+            logger.debug("Skipping notification polls for {}: no echo thing has a notification channel linked",
+                    getThing().getUID().getAsString());
         }
     }
 

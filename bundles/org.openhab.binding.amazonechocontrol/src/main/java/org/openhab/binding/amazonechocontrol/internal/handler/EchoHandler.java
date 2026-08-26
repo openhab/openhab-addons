@@ -225,6 +225,14 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        if (NOTIFICATION_CHANNELS.contains(channelUID.getId())) {
+            getAccountHandler().ifPresent(AccountHandler::notificationChannelUnlinked);
+        }
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             State state = stateCache.get(channelUID.getId());

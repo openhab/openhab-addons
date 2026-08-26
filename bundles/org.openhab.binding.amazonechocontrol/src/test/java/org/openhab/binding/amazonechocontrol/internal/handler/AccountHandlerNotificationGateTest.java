@@ -207,6 +207,22 @@ public class AccountHandlerNotificationGateTest {
     }
 
     @Test
+    public void testRelinkBeforeTheNextAttemptStillWakesTheTick() throws ConnectionException {
+        registerEchoHandler();
+        linkChannel(CHANNEL_NEXT_ALARM);
+        accountHandler.refreshNotifications();
+        verify(connection, times(1)).getNotifications();
+
+        when(echoCallback.isChannelLinked(any(ChannelUID.class))).thenReturn(false);
+        echoHandler.channelUnlinked(new ChannelUID(ECHO_UID, CHANNEL_NEXT_ALARM));
+        linkChannel(CHANNEL_NEXT_ALARM);
+        echoHandler.channelLinked(new ChannelUID(ECHO_UID, CHANNEL_NEXT_ALARM));
+
+        accountHandler.refreshNotificationsIfDue(System.currentTimeMillis());
+        verify(connection, times(2)).getNotifications();
+    }
+
+    @Test
     public void testChannelLinkBurstWakesExactlyOnePoll() throws ConnectionException {
         registerEchoHandler();
         accountHandler.refreshNotifications();
