@@ -58,6 +58,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     protected @NonNullByDefault({}) TapoCloudConnector cloudConnector;
     private @NonNullByDefault({}) TapoBridgeConfiguration config;
     private @Nullable ScheduledFuture<?> discoveryJob;
+    private volatile boolean disposed;
     private TapoDiscoveryResultList discoveryResultList = new TapoDiscoveryResultList();
 
     /***********************************
@@ -73,6 +74,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void activate() {
+        disposed = false;
         config = bridge.getBridgeConfig();
         if (config.cloudDiscovery || config.udpDiscovery) {
             startBackgroundDiscovery();
@@ -81,13 +83,16 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void deactivate() {
-        super.deactivate();
+        disposed = true;
         stopScheduler(discoveryJob);
+        super.deactivate();
     }
 
     @Override
     public void startBackgroundDiscovery() {
-        startDiscoveryScheduler();
+        if (!disposed) {
+            startDiscoveryScheduler();
+        }
     }
 
     @Override
@@ -121,12 +126,15 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      * Start DeviceDiscovery Scheduler
      */
     protected void startDiscoveryScheduler() {
+        if (disposed) {
+            return;
+        }
         config = bridge.getBridgeConfig();
         int pollingInterval = config.discoveryInterval;
         TimeUnit timeUnit = TimeUnit.MINUTES;
         if ((config.cloudDiscovery || config.udpDiscovery) && pollingInterval > 0) {
             logger.debug("{} starting discoveryScheduler with interval {} {}", this.uid, pollingInterval, timeUnit);
-
+            stopScheduler(discoveryJob);
             this.discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, pollingInterval, timeUnit);
         } else {
             logger.debug("({}) discoveryScheduler disabled with config '0'", uid);
@@ -157,6 +165,9 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      */
     @Override
     public void startScan() {
+        if (disposed) {
+            return;
+        }
         logger.trace("{} starting scan", this.uid);
         removeOlderResults(getTimestampOfLastScan());
         discoveryResultList.clear();

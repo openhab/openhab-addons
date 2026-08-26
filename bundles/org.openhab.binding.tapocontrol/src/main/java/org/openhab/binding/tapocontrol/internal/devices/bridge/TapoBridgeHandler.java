@@ -54,7 +54,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> startupJob;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @NonNullByDefault({}) TapoCloudConnector cloudConnector;
-    private @NonNullByDefault({}) TapoDiscoveryService discoveryService;
+    private @Nullable TapoDiscoveryService discoveryService;
     private TapoCredentials credentials;
 
     private String uid;
@@ -106,6 +106,10 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
         disposed = true;
         stopScheduler(this.startupJob);
         stopScheduler(this.pollingJob);
+        TapoDiscoveryService discovery = discoveryService;
+        if (discovery != null) {
+            discovery.stopBackgroundDiscovery();
+        }
         super.dispose();
     }
 
@@ -143,7 +147,10 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
         }
         loginCloud();
         startCloudScheduler();
-        discoveryService.startBackgroundDiscovery();
+        TapoDiscoveryService discovery = discoveryService;
+        if (discovery != null) {
+            discovery.startBackgroundDiscovery();
+        }
     }
 
     /**
@@ -212,6 +219,9 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * @return
      */
     public boolean loginCloud() {
+        if (disposed) {
+            return false;
+        }
         bridgeError.reset(); // reset ErrorHandler
         if (credentials.areSet()) {
             try {
@@ -229,7 +239,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     /**
      * Handle Connection state
      */
-    private void handleConnectionState() {
+    private synchronized void handleConnectionState() {
         if (disposed) {
             return; // no status updates on an already disposed handler
         }
@@ -269,7 +279,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
         return cloudConnector;
     }
 
-    public TapoDiscoveryService getDiscoveryService() {
+    public @Nullable TapoDiscoveryService getDiscoveryService() {
         return discoveryService;
     }
 
