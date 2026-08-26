@@ -114,6 +114,31 @@ class TapoCameraApiTest {
     }
 
     @Test
+    void secureLoginSupportsMd5PasswordMethod() throws Exception {
+        // some firmware stores the camera account password MD5-hashed, revealed by device_confirm
+        String pwHashMd5 = TapoCameraCrypto.md5HashUpper("password");
+        String md5Confirm = TapoCameraCrypto.computeDeviceConfirm(pwHashMd5, CNONCE, NONCE);
+        responses.add("{\"error_code\":-40413,\"result\":{\"data\":{\"nonce\":\"" + NONCE + "\",\"device_confirm\":\""
+                + md5Confirm + "\"}}}");
+        responses.add("{\"error_code\":0,\"result\":{\"stok\":\"MD5TOKEN\",\"start_seq\":7}}");
+
+        api.login();
+
+        TapoCameraSession session = api.getSession();
+        assertTrue(session.secure());
+        assertEquals("MD5TOKEN", session.stok());
+        assertEquals(pwHashMd5, session.passwordHash());
+        assertTrue(api.capturedBody.contains(
+                "\"digest_passwd\":\"" + TapoCameraCrypto.computeDigestPasswd(pwHashMd5, CNONCE, NONCE) + "\""));
+
+        // secured commands must be encrypted with keys derived from the matched hash
+        responses.add("{\"error_code\":0,\"result\":{\"response\":\"" + encryptedEnvelope(
+                "{\"error_code\":0,\"result\":{\"led\":{\"config\":{\"enabled\":\"on\"}}}}", pwHashMd5) + "\"}}");
+        JsonObject answer = api.sendCommand(TapoCameraCommands.getLedConfig());
+        assertEquals(0, answer.get("error_code").getAsInt());
+    }
+
+    @Test
     void authFailureThrowsWithErrorCode() {
         responses.add("{\"error_code\":-40401}");
         assertThrows(TapoCameraApiException.class, () -> api.login());
@@ -170,8 +195,12 @@ class TapoCameraApiTest {
     }
 
     private static String encryptedEnvelope(String innerJson) throws Exception {
-        String lsk = TapoCameraCrypto.deriveLsk(PW_HASH_SHA, CNONCE, NONCE);
-        String ivb = TapoCameraCrypto.deriveIvb(PW_HASH_SHA, CNONCE, NONCE);
+        return encryptedEnvelope(innerJson, PW_HASH_SHA);
+    }
+
+    private static String encryptedEnvelope(String innerJson, String passwordHash) throws Exception {
+        String lsk = TapoCameraCrypto.deriveLsk(passwordHash, CNONCE, NONCE);
+        String ivb = TapoCameraCrypto.deriveIvb(passwordHash, CNONCE, NONCE);
         return TapoCameraCrypto.encryptBase64(innerJson, lsk, ivb);
     }
 }

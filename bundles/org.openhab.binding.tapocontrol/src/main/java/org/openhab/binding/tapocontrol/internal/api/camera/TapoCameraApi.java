@@ -95,7 +95,7 @@ public class TapoCameraApi {
             if (e.getErrorCode() != ERROR_ENCRYPT_UNSUPPORTED) {
                 throw e;
             }
-            LOGGER.debug("{}: secure handshake not supported, falling back to legacy login", baseUrl);
+            LOGGER.debug("{}: secure handshake failed ({}), falling back to legacy login", baseUrl, e.getMessage());
             loginLegacy();
         }
     }
@@ -116,9 +116,16 @@ public class TapoCameraApi {
             throw new TapoCameraApiException("incomplete handshake data", errorCode);
         }
         String nonce = data.get("nonce").getAsString();
-        String passwordHash = TapoCameraCrypto.securePasswordHash(password);
-        if (!TapoCameraCrypto.validateDeviceConfirm(passwordHash, cnonce, nonce,
-                data.get("device_confirm").getAsString())) {
+        String deviceConfirm = data.get("device_confirm").getAsString();
+        // cameras store the account password either SHA-256- or MD5-hashed; device_confirm reveals which
+        String sha256Hash = TapoCameraCrypto.securePasswordHash(password);
+        String md5Hash = TapoCameraCrypto.md5HashUpper(password);
+        String passwordHash;
+        if (TapoCameraCrypto.validateDeviceConfirm(sha256Hash, cnonce, nonce, deviceConfirm)) {
+            passwordHash = sha256Hash;
+        } else if (TapoCameraCrypto.validateDeviceConfirm(md5Hash, cnonce, nonce, deviceConfirm)) {
+            passwordHash = md5Hash;
+        } else {
             throw new TapoCameraApiException("device confirmation mismatch", errorCode);
         }
         JsonObject loginResponse = execute(baseUrl + "/", Map.of(),
