@@ -324,7 +324,6 @@ public class HttpRequestBuilder {
         private static final int MAX_REDIRECTS = 30;
         private static final int MAX_RETRIES = 3;
 
-        private final Logger logger = LoggerFactory.getLogger(HttpResponseListener.class);
         private final CompletableFuture<HttpResponse> httpResponse;
         private final RequestParams params;
         private final boolean autoRedirect;
