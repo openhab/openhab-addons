@@ -19,8 +19,10 @@ import java.time.ZonedDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,11 +42,13 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -77,6 +81,8 @@ public class TapoCameraHandler extends BaseThingHandler {
     private volatile @Nullable TapoPresets presets;
     // replaced wholesale on updates so poll and command threads always see an immutable snapshot
     private volatile EnumSet<TapoCameraFeature> detectedFeatures = EnumSet.allOf(TapoCameraFeature.class);
+    // snapshot of the channels defined by the thing-type, used to add/remove channels as features are detected
+    private List<Channel> originalChannels = List.of();
 
     public TapoCameraHandler(Thing thing, @Nullable HttpClient httpClient) {
         super(thing);
@@ -105,6 +111,7 @@ public class TapoCameraHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ipAddress must be set");
             return;
         }
+        originalChannels = List.copyOf(thing.getChannels());
         updateStatus(ThingStatus.UNKNOWN);
         try {
             api = createApi(config);
@@ -155,6 +162,7 @@ public class TapoCameraHandler extends BaseThingHandler {
                 readLed(cameraApi);
                 readPresets(cameraApi);
                 updateStatus(ThingStatus.ONLINE);
+                synchronizeChannels();
                 break;
             } catch (StopCycleException e) {
                 TapoCameraApiException cause = e.cause();
@@ -374,6 +382,39 @@ public class TapoCameraHandler extends BaseThingHandler {
         if (json != null) {
             presets = TapoPresets.fromJson(json);
         }
+    }
+
+    /**
+     * Removes channels for features the camera does not support and restores them when features come back
+     * (e.g. after a reconnect). Called at the end of a successful poll cycle.
+     */
+    private void synchronizeChannels() {
+        Set<String> supportedGroups = detectedFeatures.stream().map(TapoCameraHandler::channelGroupFor)
+                .collect(Collectors.toSet());
+        List<Channel> desiredChannels = originalChannels.stream().filter(ch -> isChannelRetained(ch, supportedGroups))
+                .toList();
+        Set<ChannelUID> currentUids = thing.getChannels().stream().map(Channel::getUID).collect(Collectors.toSet());
+        Set<ChannelUID> desiredUids = desiredChannels.stream().map(Channel::getUID).collect(Collectors.toSet());
+        if (!currentUids.equals(desiredUids)) {
+            ThingBuilder builder = editThing();
+            builder.withChannels(desiredChannels);
+            updateThing(builder.build());
+        }
+    }
+
+    private static boolean isChannelRetained(Channel channel, Set<String> supportedGroups) {
+        String groupId = channel.getUID().getGroupId();
+        return groupId == null || supportedGroups.contains(groupId);
+    }
+
+    private static String channelGroupFor(TapoCameraFeature feature) {
+        return switch (feature) {
+            case ALARM -> CHANNEL_GROUP_CAMERA_ALARM;
+            case PRIVACY -> CHANNEL_GROUP_CAMERA_PRIVACY;
+            case MOTION_DETECTION -> CHANNEL_GROUP_CAMERA_MOTION;
+            case PRESETS -> CHANNEL_GROUP_CAMERA_PRESETS;
+            case LED -> CHANNEL_GROUP_CAMERA_SYSTEM;
+        };
     }
 
     private ChannelUID channel(String group, String id) {
