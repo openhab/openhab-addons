@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.oppo.internal;
 
-import java.util.Map;
 import java.util.Set;
 
 import javax.measure.Unit;
@@ -44,17 +43,6 @@ public class OppoBindingConstants {
 
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
     public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
-
-    public static final int MODEL83 = 83;
-    public static final int MODEL93 = 93;
-    public static final int MODEL103 = 103;
-    public static final int MODEL105 = 105;
-    public static final int MODEL203 = 203;
-    public static final int MODEL205 = 205;
-
-    public static final Map<ThingTypeUID, Integer> THING_TYPE_TO_MODEL = Map.of(THING_TYPE_BDP83, MODEL83,
-            THING_TYPE_BDP93, MODEL93, THING_TYPE_BDP103, MODEL103, THING_TYPE_BDP105, MODEL105, THING_TYPE_UDP203,
-            MODEL203, THING_TYPE_UDP205, MODEL205);
 
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
