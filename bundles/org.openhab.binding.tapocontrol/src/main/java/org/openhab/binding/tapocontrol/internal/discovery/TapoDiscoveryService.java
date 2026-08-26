@@ -18,6 +18,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -48,8 +49,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TapoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+    private static final String CLOUD_DEVICE_TYPE_CAMERA = "IPCAMERA";
+
     private final Logger logger = LoggerFactory.getLogger(TapoDiscoveryService.class);
     private final String uid;
+    private final ArpNeighResolver arpNeighResolver = new ArpNeighResolver();
     protected @NonNullByDefault({}) TapoBridgeHandler bridge;
     protected @NonNullByDefault({}) TapoUdpDiscovery udpDiscovery;
     protected @NonNullByDefault({}) TapoCloudConnector cloudConnector;
@@ -218,6 +222,10 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         logger.trace("{} handle discovery result", this.uid);
         try {
             for (TapoDiscoveryResult deviceElement : deviceList) {
+                if (deviceElement.deviceType().toUpperCase(Locale.ROOT).contains(CLOUD_DEVICE_TYPE_CAMERA)) {
+                    addCameraScanResult(deviceElement);
+                    continue;
+                }
                 if (!deviceElement.deviceMac().isBlank()) {
                     String deviceModel = getDeviceModel(deviceElement);
                     String deviceLabel = getDeviceLabel(deviceElement);
@@ -239,6 +247,29 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         } catch (Exception e) {
             logger.debug("({}) error handle DiscoveryResult", uid, e);
         }
+    }
+
+    /**
+     * Cloud results for cameras contain no usable local endpoint. Emit a standalone camera
+     * thing when the IP can be taken from the cloud record or resolved via the OS neighbor
+     * table; otherwise skip with a debug hint (manual creation always works).
+     */
+    private void addCameraScanResult(TapoDiscoveryResult device) {
+        String mac = device.deviceMac();
+        String ip = device.ip().length() >= 7 ? device.ip() : arpNeighResolver.resolveMac(mac).orElse("");
+        if (mac.isBlank() || ip.isBlank()) {
+            logger.debug("{} cloud camera '{}' discovered but no local IP resolvable - add it manually", uid,
+                    device.alias());
+            return;
+        }
+        ThingUID thingUID = new ThingUID(CAMERA_THING_TYPE, mac);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, formatMac(mac, MAC_DIVISION_CHAR));
+        properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, ip);
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY)
+                .withLabel(device.alias().isBlank() ? "Tapo Camera" : device.alias()).build();
+        thingDiscovered(discoveryResult);
     }
 
     /**

@@ -56,6 +56,44 @@ If you enable setting 'onlyLocalOnlineDevices' results will only be generated fo
 RF devices will be discovered by the hub they are connected to.
 You can discover them manually or use `backgroundDiscovery`
 
+## Tapo IP Cameras
+
+The binding supports Tapo IP cameras (e.g. C200, C210, C310, C320WS, C520WS, TC60) as standalone things
+(`tapocontrol:camera`) through their local HTTPS API, covering features that ONVIF does not expose.
+Cameras do not require a bridge.
+
+Supported channels (availability is detected automatically per model):
+
+| group           | channel      | type   | description                                        |
+|-----------------|--------------|--------|----------------------------------------------------|
+| alarm           | manualAlarm  | Switch | Siren on or off                                    |
+|                 | alarmMode    | String | Alarm mode (`sound`, `light`, `both`, `off`)       |
+|                 | lastAlarmType| String | Type of the last alarm (read-only)                 |
+|                 | lastAlarmTime| DateTime | Time of the last alarm (read-only)            |
+| privacy         | privacyMode  | Switch | Privacy shutter open (`OFF`) or closed (`ON`)      |
+| motionDetection | enabled      | Switch | Motion detection on or off                         |
+|                 | sensitivity  | Dimmer | Numeric motion detection sensitivity               |
+| presets         | gotoPreset   | Number | Move to stored preset position                     |
+| system          | ledStatus    | Switch | Status LED on or off                               |
+
+### Camera Configuration
+
+The camera needs its IP address and the **camera account credentials** configured in the Tapo app
+(_Settings → Advanced Settings → Camera Account_) — these are not your Tapo cloud login.
+
+| Parameter       | Description                                                                        |
+|-----------------|------------------------------------------------------------------------------------|
+| ipAddress       | IP address of the camera.                                                          |
+| password        | Camera account password as set in the Tapo app.                                     |
+| username        | [optional] Camera account username. Default is `admin`                              |
+| httpPort        | [optional] HTTPS port of the camera local API. Default is 443                        |
+| pollingInterval | [optional] Refresh interval in seconds (0=disabled). Default is 15                  |
+
+Cloud discovery (via an existing bridge) finds registered cameras and tries to resolve their local IP address
+automatically; if your network setup prevents resolution, add the thing manually.
+
+Video and audio streaming is intentionally out of scope — use the IP Camera binding (ONVIF) for live views.
+
 ## Bridge Configuration
 
 The bridge needs to be configured with by `username` and `password` (Tapo-Cloud login) .

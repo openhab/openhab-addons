@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- CAMERA THING-TYPE (standalone IP camera, no bridge required) -->
+	<thing-type id="camera">
+		<label>IP Camera</label>
+		<description>Tapo IP Camera (local API). Features depend on the model and are detected automatically.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="alarm" typeId="cameraAlarm"/>
+			<channel-group id="privacy" typeId="cameraPrivacy"/>
+			<channel-group id="motionDetection" typeId="cameraMotion"/>
+			<channel-group id="presets" typeId="cameraPresets"/>
+			<channel-group id="system" typeId="cameraSystem"/>
+		</channel-groups>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:camera"/>
+	</thing-type>
+</thing:thing-descriptions>
