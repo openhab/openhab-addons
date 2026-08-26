@@ -558,9 +558,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     /**
-     * Computes the "feels like" temperature: Wind Chill (JAG/TI 2001) for cold+windy conditions, Heat
-     * Index (NWS Rothfusz regression) for hot+humid conditions, otherwise Steadman (1979) Apparent
-     * Temperature.
+     * Computes the "feels like" temperature using the Australian Bureau of Meteorology's Steadman
+     * Apparent Temperature formula, applied continuously across the full range so the result never
+     * jumps at a threshold (unlike switching between Wind Chill/Heat Index/Steadman by condition).
      *
      * @param tC air temperature in °C
      * @param rH relative humidity in %
@@ -568,17 +568,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @return apparent ("feels like") temperature in °C
      */
     static double apparentTemperature(double tC, double rH, double windKmh) {
-        if (tC <= 10.0 && windKmh >= 4.8) {
-            double v16 = Math.pow(windKmh, 0.16);
-            return 13.12 + 0.6215 * tC - 11.37 * v16 + 0.3965 * tC * v16;
-        }
-        if (tC >= 27.0 && rH >= 40.0) {
-            double tF = tC * 9.0 / 5.0 + 32.0;
-            double hiF = -42.379 + 2.04901523 * tF + 10.14333127 * rH - 0.22475541 * tF * rH - 0.00683783 * tF * tF
-                    - 0.05481717 * rH * rH + 0.00122874 * tF * tF * rH + 0.00085282 * tF * rH * rH
-                    - 0.00000199 * tF * tF * rH * rH;
-            return (hiF - 32.0) * 5.0 / 9.0;
-        }
         double windMs = windKmh / 3.6;
         double e = (rH / 100.0) * 6.105 * Math.exp(17.27 * tC / (237.7 + tC));
         return tC + 0.33 * e - 0.70 * windMs - 4.00;

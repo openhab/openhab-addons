@@ -2303,7 +2303,7 @@ See notes on discovery of Shelly BLU devices above.
 |         | pressure         | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
 |         | seaLevelPressure | Number:Pressure      | yes       | Atmospheric pressure reduced to sea level using the `altitude` configuration        |
 |         | dewPoint         | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
-|         | apparentTemp     | Number:Temperature   | yes       | Perceived ("feels like") temperature, combining wind chill/heat index/humidity      |
+|         | apparentTemp     | Number:Temperature   | yes       | Perceived ("feels like") temperature (Steadman apparent temperature, combining temperature/humidity/wind) |
 |         | rainStatus       | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
 |         | rainSwitch       | Switch               | yes       | ON: Rain detected within the last `rainSwitchHoldoff` minutes, OFF otherwise        |
 |         | precipitation    | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
