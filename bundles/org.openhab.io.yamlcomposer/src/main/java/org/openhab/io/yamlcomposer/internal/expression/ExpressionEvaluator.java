@@ -175,10 +175,27 @@ public class ExpressionEvaluator {
         @Override
         public @Nullable String get(@Nullable Object key) {
             if (key instanceof String varName) {
+                // Special case: Ignore "containsKey" during EL property probing so EL falls back
+                // to calling TrackingEnvMap.containsKey("VAR") instead of tracking "containsKey".
+                // Caveat: Fetching the value of an actual env var named "containsKey" (${ENV.containsKey})
+                // will return the value, but it won't be tracked.
+                // (Existence checks like `'containsKey' in ENV` still work).
+                if ("containsKey".equals(varName)) {
+                    return null;
+                }
+
                 callback.accept(varName);
                 return System.getenv(varName);
             }
             return null;
+        }
+
+        @Override
+        public boolean containsKey(@Nullable Object key) {
+            if (key instanceof String varName) {
+                callback.accept(varName);
+            }
+            return System.getenv().containsKey(key);
         }
 
         @Override

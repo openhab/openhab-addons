@@ -69,6 +69,23 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
         }
 
         @Test
+        @DisplayName("Tracks environment variables using containsKey() method in expressions")
+        void tracksReferencedEnvironmentVariablesUsingContainsKey() throws IOException {
+            Path main = writeFixture("env_main.yaml", """
+                    setting: ${ENV.containsKey('APP_CONFIG')}
+                    in_check: ${'IN_VAR' in ENV}
+                    """);
+
+            Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
+            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
+
+            YamlComposer.load(main, p -> {
+            }, trackedEnv::add, logSession, includeCache);
+
+            assertThat(trackedEnv, containsInAnyOrder(equalTo("APP_CONFIG"), equalTo("IN_VAR")));
+        }
+
+        @Test
         @DisplayName("Tracks environment variables referenced inside included files")
         void tracksEnvironmentVariablesInIncludedFiles() throws IOException {
             writeFixture("env_include.yaml", "nested_setting: ${ENV.INCLUDED_SETTING}");
