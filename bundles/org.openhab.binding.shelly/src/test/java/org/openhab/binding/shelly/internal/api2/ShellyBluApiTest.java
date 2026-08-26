@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +23,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELL
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYBLUWS90;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -40,6 +42,9 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
@@ -115,6 +120,132 @@ public class ShellyBluApiTest {
         assertThat("uvIndex from second packet added", sensorData.uvIndex, is(equalTo(3.7)));
         assertThat("precipitation from second packet added", sensorData.precipitation, is(equalTo(0.5)));
         assertThat("rain from second packet added", sensorData.rain, is(equalTo(false)));
+        assertThat("windDirectionStr derived from windDirection", sensorData.windDirectionStr, is(equalTo("SE")));
+        assertThat("apparentTemp derived once temp/humidity/wind are all present", sensorData.apparentTemp,
+                is(notNullValue()));
+        assertThat("seaLevelPressure defaults to station pressure when altitude is unconfigured",
+                sensorData.seaLevelPressure, is(equalTo(1008.5)));
+    }
+
+    @Test
+    void onNotifyEventFallsBackToSystemLocationAltitudeWhenUnconfigured() throws Exception {
+        LocationProvider locationProvider = mock(LocationProvider.class);
+        when(locationProvider.getLocation()).thenReturn(new PointType("52.5,13.4,80"));
+        ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90, locationProvider);
+
+        String atmosphericPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1,
+                          "Temperature": [18.0], "Humidity": 72.0, "Pressure": 1008.5}}]}}
+                """;
+
+        api.onNotifyEvent(atmosphericPacket);
+
+        double expected = ShellyBluApi.seaLevelPressure(1008.5, 18.0, 80);
+        assertThat("seaLevelPressure uses the system location's altitude when altitude is unconfigured",
+                api.getSensorStatus().seaLevelPressure, is(equalTo(expected)));
+    }
+
+    @Test
+    void onNotifyEventIgnoresSystemLocationAltitudeWhenAtDefaultZero() throws Exception {
+        LocationProvider locationProvider = mock(LocationProvider.class);
+        when(locationProvider.getLocation()).thenReturn(new PointType("52.5,13.4"));
+        ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90, locationProvider);
+
+        String atmosphericPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1,
+                          "Temperature": [18.0], "Humidity": 72.0, "Pressure": 1008.5}}]}}
+                """;
+
+        api.onNotifyEvent(atmosphericPacket);
+
+        assertThat("a location without an altitude leaves the station pressure unchanged",
+                api.getSensorStatus().seaLevelPressure, is(equalTo(1008.5)));
+    }
+
+    @Test
+    void onNotifyEventComputesRainSwitchWithHoldoff() throws Exception {
+        ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
+
+        String rainPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Moisture": 1.0}}]}}
+                """;
+        String dryPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 2, "Moisture": 0.0}}]}}
+                """;
+
+        api.onNotifyEvent(rainPacket);
+        assertThat("rainSwitch turns ON once rain is detected", api.getSensorStatus().rainSwitch, is(equalTo(true)));
+
+        api.onNotifyEvent(dryPacket);
+        assertThat("rainSwitch stays ON within the holdoff window after rain stops", api.getSensorStatus().rainSwitch,
+                is(equalTo(true)));
+    }
+
+    @Test
+    void onNotifyEventRainSwitchFollowsRainStatusWithZeroHoldoff() throws Exception {
+        ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
+        when(thingMock.getThingConfig())
+                .thenReturn(new Configuration(Map.of("rainSwitchHoldoff", 0)).as(ShellyThingConfiguration.class));
+
+        String rainPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Moisture": 1.0}}]}}
+                """;
+        String dryPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 2, "Moisture": 0.0}}]}}
+                """;
+
+        api.onNotifyEvent(rainPacket);
+        assertThat(api.getSensorStatus().rainSwitch, is(equalTo(true)));
+
+        api.onNotifyEvent(dryPacket);
+        assertThat(api.getSensorStatus().rainSwitch, is(equalTo(false)));
+    }
+
+    @Test
+    void onNotifyEventRainSwitchSurvivesPacketWithoutMoistureWithZeroHoldoff() throws Exception {
+        ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
+        when(thingMock.getThingConfig())
+                .thenReturn(new Configuration(Map.of("rainSwitchHoldoff", 0)).as(ShellyThingConfiguration.class));
+
+        String rainPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Moisture": 1.0}}]}}
+                """;
+        String atmosphericPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 2, "Temperature": 18.5, "Humidity": 62.0,
+                 "Pressure": 1004.2}}]}}
+                """;
+
+        api.onNotifyEvent(rainPacket);
+        assertThat("rainSwitch turns ON once rain is detected", api.getSensorStatus().rainSwitch, is(equalTo(true)));
+
+        api.onNotifyEvent(atmosphericPacket);
+        assertThat("rainSwitch stays ON when a follow-up packet simply omits the moisture field",
+                api.getSensorStatus().rainSwitch, is(equalTo(true)));
+    }
+
+    @Test
+    void rainSwitchExpiresOnNextStatusPollEvenWithoutANewPacket() throws Exception {
+        ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
+
+        String rainPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Moisture": 1.0}}]}}
+                """;
+        api.onNotifyEvent(rainPacket);
+        assertThat("rainSwitch turns ON once rain is detected", api.getSensorStatus().rainSwitch, is(equalTo(true)));
+
+        setField(api, "lastRainTimestamp", Instant.now().minusSeconds(11 * 60L));
+
+        assertThat("rainSwitch times out on the next status read alone", api.getSensorStatus().rainSwitch,
+                is(equalTo(false)));
     }
 
     @Test
@@ -207,6 +338,10 @@ public class ShellyBluApiTest {
     }
 
     private ShellyBluApi buildBluApi(ThingTypeUID thingTypeUID) {
+        return buildBluApi(thingTypeUID, null);
+    }
+
+    private ShellyBluApi buildBluApi(ThingTypeUID thingTypeUID, @Nullable LocationProvider locationProvider) {
         Thing ohThing = mock(Thing.class);
         when(ohThing.getThingTypeUID()).thenReturn(thingTypeUID);
 
@@ -228,7 +363,7 @@ public class ShellyBluApiTest {
         ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig, "test-blu", "");
 
         ShellyBluApi api = new ShellyBluApi("test-blu", mock(ShellyThingTable.class), thing, config,
-                mock(WebSocketClient.class), mock(ScheduledExecutorService.class));
+                mock(WebSocketClient.class), mock(ScheduledExecutorService.class), locationProvider);
         when(thing.getApi()).thenReturn(api);
         return api;
     }
