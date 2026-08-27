@@ -18,7 +18,6 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TapoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private static final String CLOUD_DEVICE_TYPE_CAMERA = "IPCAMERA";
-
     private final Logger logger = LoggerFactory.getLogger(TapoDiscoveryService.class);
     private final String uid;
     protected @NonNullByDefault({}) TapoBridgeHandler bridge;
@@ -58,7 +55,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     protected @NonNullByDefault({}) TapoCloudConnector cloudConnector;
     private @NonNullByDefault({}) TapoBridgeConfiguration config;
     private @Nullable ScheduledFuture<?> discoveryJob;
-    private volatile boolean disposed;
     private TapoDiscoveryResultList discoveryResultList = new TapoDiscoveryResultList();
 
     /***********************************
@@ -74,7 +70,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void activate() {
-        disposed = false;
         config = bridge.getBridgeConfig();
         if (config.cloudDiscovery || config.udpDiscovery) {
             startBackgroundDiscovery();
@@ -83,16 +78,13 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void deactivate() {
-        disposed = true;
         stopScheduler(discoveryJob);
         super.deactivate();
     }
 
     @Override
     public void startBackgroundDiscovery() {
-        if (!disposed) {
-            startDiscoveryScheduler();
-        }
+        startDiscoveryScheduler();
     }
 
     @Override
@@ -126,15 +118,11 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      * Start DeviceDiscovery Scheduler
      */
     protected void startDiscoveryScheduler() {
-        if (disposed) {
-            return;
-        }
         config = bridge.getBridgeConfig();
         int pollingInterval = config.discoveryInterval;
         TimeUnit timeUnit = TimeUnit.MINUTES;
         if ((config.cloudDiscovery || config.udpDiscovery) && pollingInterval > 0) {
             logger.debug("{} starting discoveryScheduler with interval {} {}", this.uid, pollingInterval, timeUnit);
-            stopScheduler(discoveryJob);
             this.discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, pollingInterval, timeUnit);
         } else {
             logger.debug("({}) discoveryScheduler disabled with config '0'", uid);
@@ -165,9 +153,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      */
     @Override
     public void startScan() {
-        if (disposed) {
-            return;
-        }
         logger.trace("{} starting scan", this.uid);
         removeOlderResults(getTimestampOfLastScan());
         discoveryResultList.clear();
@@ -232,12 +217,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         logger.trace("{} handle discovery result", this.uid);
         try {
             for (TapoDiscoveryResult deviceElement : deviceList) {
-                if (deviceElement.deviceType().toUpperCase(Locale.ROOT).contains(CLOUD_DEVICE_TYPE_CAMERA)) {
-                    // cameras are not discoverable - neither via UDP nor reliably from cloud records
-                    logger.debug("{} camera '{}' discovered but not auto-discoverable - add it manually", uid,
-                            deviceElement.alias());
-                    continue;
-                }
                 if (!deviceElement.deviceMac().isBlank()) {
                     String deviceModel = getDeviceModel(deviceElement);
                     String deviceLabel = getDeviceLabel(deviceElement);

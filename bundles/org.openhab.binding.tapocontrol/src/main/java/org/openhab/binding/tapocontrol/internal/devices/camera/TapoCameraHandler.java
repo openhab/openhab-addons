@@ -123,12 +123,10 @@ public class TapoCameraHandler extends BaseThingHandler {
             LOGGER.debug("{}: cannot create camera api", thing.getUID(), e);
             return;
         }
-        armJob(0);
-    }
-
-    private void armJob(long delaySeconds) {
-        cancelJob();
-        scheduledJob = scheduler.schedule(this::runPollCycle, delaySeconds, TimeUnit.SECONDS);
+        int pollingInterval = config.pollingInterval();
+        scheduledJob = pollingInterval > 0
+                ? scheduler.scheduleWithFixedDelay(this::poll, 0, pollingInterval, TimeUnit.SECONDS)
+                : scheduler.schedule(this::poll, 0, TimeUnit.SECONDS);
     }
 
     private void cancelJob() {
@@ -136,17 +134,6 @@ public class TapoCameraHandler extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
             scheduledJob = null;
-        }
-    }
-
-    private synchronized void runPollCycle() {
-        if (disposed) {
-            return;
-        }
-        poll();
-        long interval = TapoCameraConfiguration.from(thing).pollingInterval();
-        if (!disposed && interval > 0) {
-            armJob(interval);
         }
     }
 
@@ -257,14 +244,17 @@ public class TapoCameraHandler extends BaseThingHandler {
     }
 
     private void offlineFromCause(TapoCameraApiException e) {
-        if (e.getErrorCode() == ERROR_AUTH_FAILURE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } else if (e.getErrorCode() == 0) {
-            LOGGER.debug("{}: communication problem: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } else {
-            LOGGER.debug("{}: request failed (error {}): {}", thing.getUID(), e.getErrorCode(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        switch (e.getErrorCode()) {
+            case ERROR_AUTH_FAILURE ->
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            case 0 -> {
+                LOGGER.debug("{}: communication problem: {}", thing.getUID(), e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+            default -> {
+                LOGGER.debug("{}: request failed (error {}): {}", thing.getUID(), e.getErrorCode(), e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 
@@ -400,19 +390,12 @@ public class TapoCameraHandler extends BaseThingHandler {
                 .toList();
         Set<ChannelUID> currentUids = thing.getChannels().stream().map(Channel::getUID).collect(Collectors.toSet());
         Set<ChannelUID> desiredUids = desiredChannels.stream().map(Channel::getUID).collect(Collectors.toSet());
-        LOGGER.trace(
-                "{}: synchronizeChannels: original={}, detectedFeatures={}, supportedGroups={}, current={}, desired={}",
-                thing.getUID(), originalChannels.stream().map(Channel::getUID).collect(Collectors.toSet()), features,
-                supportedGroups, currentUids, desiredUids);
         if (!currentUids.equals(desiredUids)) {
             LOGGER.debug("{}: synchronizing camera channels, current={}, desired={}", thing.getUID(), currentUids,
                     desiredUids);
             ThingBuilder builder = editThing();
             builder.withChannels(desiredChannels);
             updateThing(builder.build());
-            LOGGER.trace("{}: synchronizeChannels: thing update submitted", thing.getUID());
-        } else {
-            LOGGER.trace("{}: synchronizeChannels: no channel update required", thing.getUID());
         }
     }
 

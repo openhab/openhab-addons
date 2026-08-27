@@ -57,6 +57,7 @@ import com.google.gson.GsonBuilder;
  * sent to one of the channels.
  *
  * @author Christian Wild - Initial contribution
+ * @author Kai Kreuzer - Added support for Tapo cameras
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tapocontrol")
 @NonNullByDefault
@@ -64,7 +65,7 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
             .create();
     private final Logger logger = LoggerFactory.getLogger(TapoControlHandlerFactory.class);
-    private final Set<TapoBridgeHandler> accountHandlers = new HashSet<>();
+    private final Set<ThingHandler> handlersWithHttpClient = new HashSet<>();
     private final HttpClient httpClient;
     private final HttpClient cameraHttpClient;
     private final TapoStateDescriptionProvider stateDescriptionProvider;
@@ -73,14 +74,15 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     public TapoControlHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference TapoStateDescriptionProvider tapoStateDescriptionProvider) {
         this.stateDescriptionProvider = tapoStateDescriptionProvider;
+
         // create new httpClient
         httpClient = httpClientFactory.createHttpClient(BINDING_ID, new SslContextFactory.Client());
         httpClient.setFollowRedirects(false);
         httpClient.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
         httpClient.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);
+
         // cameras serve self-signed TLS certificates; certificate verification is intentionally disabled
         // for this client only — a scoped requirement of these devices
-        // consumer name must be shared-client unique and must not contain characters like '.'
         cameraHttpClient = httpClientFactory.createHttpClient(BINDING_ID + "-camera",
                 new SslContextFactory.Client(true));
         cameraHttpClient.setFollowRedirects(false);
@@ -102,6 +104,10 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
+        for (ThingHandler handler : handlersWithHttpClient) {
+            handler.dispose();
+        }
+        handlersWithHttpClient.clear();
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -134,7 +140,7 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
 
         if (SUPPORTED_BRIDGE_UIDS.contains(thingTypeUID)) {
             TapoBridgeHandler bridgeHandler = new TapoBridgeHandler((Bridge) thing, httpClient);
-            accountHandlers.add(bridgeHandler);
+            handlersWithHttpClient.add(bridgeHandler);
             return bridgeHandler;
         } else if (SUPPORTED_HUB_UIDS.contains(thingTypeUID)) {
             return new TapoHubHandler(thing);
