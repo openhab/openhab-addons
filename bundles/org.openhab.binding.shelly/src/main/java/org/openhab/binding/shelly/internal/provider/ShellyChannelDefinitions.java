@@ -243,11 +243,13 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
+
                 // RGBW2-white
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
+
                 // RGBW2-white / RGBW PM-white
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_COLOR_TEMP, "system:color-temperature", ITEMT_DIMMER))
@@ -256,6 +258,19 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
+
+                // Color control group channels
+                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER, "system:color",
+                        ITEMT_COLOR))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL, "colorFull", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, "colorRed", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, "colorGreen", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, "colorBlue", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, "colorWhite", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT, "lightEffect",
+                        ITEMT_STRING))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, "whiteGain", ITEMT_DIMMER))
+
                 // Primary light channels
                 .add(new ShellyChannel(m, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_COLOR, "system:color", ITEMT_COLOR))
                 .add(new ShellyChannel(m, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_BRIGHTNESS, "system:brightness",
@@ -548,36 +563,48 @@ public class ShellyChannelDefinitions {
 
     public static Map<String, Channel> createLightChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellyStatusLightChannel status, int idx) {
-        Map<String, Channel> add = new LinkedHashMap<>();
+        Map<String, Channel> added = new LinkedHashMap<>();
         String group = profile.getControlGroup(idx);
 
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
-            boolean isRgb = profile.hasColorTag(idx) || (profile.isRGBW2 && profile.inColor);
-            addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
-            addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
-            addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-            addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
-            addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            addChannel(thing, add, status.temp != null || isRgb, whiteGroup, CHANNEL_COLOR_TEMP);
-            addChannel(thing, add, status.temp != null || isRgb, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
+            boolean supportsColorTemp = status.temp != null || profile.hasColorTag(idx);
 
-            // TODO perhaps we don't need these primary channels ??
-            if (idx == 0 && (profile.hasColorTag(0) || profile.isBulb || profile.isDuo
-                    || (profile.isRGBW2 && profile.inColor))) {
-                if (profile.hasColorTag(0)) {
-                    addChannel(thing, add, true, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_COLOR);
-                } else {
-                    addChannel(thing, add, true, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_BRIGHTNESS);
-                }
-                addChannel(thing, add, status.temp != null, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_COLOR_TEMP);
-                addChannel(thing, add, status.temp != null, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_COLOR_TEMP_ABS);
+            addChannel(thing, added, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
+            addChannel(thing, added, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
+            addChannel(thing, added, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
+            addChannel(thing, added, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            addChannel(thing, added, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
+            addChannel(thing, added, supportsColorTemp, whiteGroup, CHANNEL_COLOR_TEMP);
+            addChannel(thing, added, supportsColorTemp, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
+
+            if (profile.hasColorTag(idx)) {
+                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER);
+                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL);
+                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED);
+                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN);
+                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE);
+                addChannel(thing, added, status.white != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE);
+                addChannel(thing, added, status.gain != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN);
+                addChannel(thing, added, status.effect != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT);
             }
         }
 
-        return add;
+        // TODO perhaps we don't need these primary channels ??
+        if (idx == 0 && (profile.hasColorTag(0) || profile.isBulb || profile.isDuo
+                || (profile.isRGBW2 && profile.inColor))) {
+            if (profile.hasColorTag(0)) {
+                addChannel(thing, added, true, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_COLOR);
+            } else {
+                addChannel(thing, added, true, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_BRIGHTNESS);
+            }
+            addChannel(thing, added, status.temp != null, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_COLOR_TEMP);
+            addChannel(thing, added, status.temp != null, CHANNEL_GROUP_PRIMARY, CHANNEL_PRIMARY_COLOR_TEMP_ABS);
+        }
+
+        return added;
     }
 
     public static Map<String, Channel> createInputChannels(final Thing thing, final ShellyDeviceProfile profile,
