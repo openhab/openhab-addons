@@ -29,7 +29,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
-import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.ComponentContext;
@@ -41,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AVMFritzUpnpDiscoveryParticipant} is responsible for discovering new and removed FRITZ!Box devices. It
- * uses the central {@link UpnpDiscoveryService}.
+ * uses the central {@link org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService}.
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
