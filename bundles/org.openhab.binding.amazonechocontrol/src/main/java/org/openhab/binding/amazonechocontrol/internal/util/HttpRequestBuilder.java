@@ -61,6 +61,7 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Jan N. Klug - Initial contribution
  * @author Martin Littkovsky - Fail fast on throttled requests
+ * @author Martin Littkovsky - Let a custom user agent replace the client agent instead of adding a second one
  */
 @NonNullByDefault
 public class HttpRequestBuilder {
@@ -109,10 +110,10 @@ public class HttpRequestBuilder {
         request.header(ACCEPT_LANGUAGE, "en-US");
         request.header("DNT", "1");
         request.header("Upgrade-Insecure-Requests", "1");
-        if (!params.customHeaders().containsKey(USER_AGENT.toString())) {
-            request.agent(DEFAULT_USER_AGENT);
-        }
-        params.customHeaders().entrySet().stream().filter(h -> !h.getValue().isBlank())
+        String customUserAgent = params.customHeaders().get(USER_AGENT.toString());
+        request.agent(customUserAgent == null || customUserAgent.isBlank() ? DEFAULT_USER_AGENT : customUserAgent);
+        params.customHeaders().entrySet().stream()
+                .filter(h -> !h.getValue().isBlank() && !USER_AGENT.toString().equals(h.getKey()))
                 .forEach(h -> request.header(h.getKey(), h.getValue()));
 
         // handle re-directs in response listener manually
