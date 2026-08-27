@@ -259,8 +259,6 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
                         injected_var: "injected"
                     """);
 
-            // The included file has a local variable block, inherits the global variable,
-            // and receives the injected variable. We test that ARGS only sees the injected one.
             writeFixture("included.inc.yaml", """
                     variables:
                       local_var: "local"
@@ -307,7 +305,6 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
 
             Map<Object, @Nullable Object> data = loadFixture(main);
 
-            // ARGS isolation strictly prevents inheritance from parent includes
             assertThat("ARGS MUST contain explicitly injected variables for this specific include",
                     getNestedValue(data, "data", "level2_data", "args_l2"), equalTo("val2"));
 

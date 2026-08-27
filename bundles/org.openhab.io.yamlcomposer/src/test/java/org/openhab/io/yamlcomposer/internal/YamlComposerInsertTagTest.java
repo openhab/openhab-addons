@@ -271,7 +271,6 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
 
             Map<Object, @Nullable Object> data = loadYaml(yaml);
 
-            // ARGS isolation works
             assertThat("ARGS MUST contain explicitly injected variables",
                     getNestedValue(data, "target", "args_injected"), equalTo("injected_value"));
 
@@ -302,7 +301,6 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
 
             Map<Object, @Nullable Object> data = loadYaml(yaml);
 
-            // ARGS isolation strictly prevents inheritance from parent inserts
             assertThat("ARGS MUST contain explicitly injected variables for this specific insert",
                     getNestedValue(data, "target", "level2_data", "args_l2"), equalTo("val2"));
 
@@ -339,15 +337,12 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
 
             Map<Object, @Nullable Object> data = loadFixture(main);
 
-            // Contrast check: ARGS at the include level has it
             assertThat("ARGS at the include level contains the variable",
                     getNestedValue(data, "data", "include_level_args_check"), equalTo("value_from_include"));
 
-            // Isolation check: ARGS inside the template does NOT have it
             assertThat("ARGS inside template should NOT contain parent include-level arguments",
                     getNestedValue(data, "data", "result", "args_shared"), equalTo("missing"));
 
-            // Local check: ARGS inside the template has its own arg
             assertThat("ARGS inside template must contain its own immediate insert-level arguments",
                     getNestedValue(data, "data", "result", "args_insert"), equalTo("value_from_insert"));
         }
