@@ -88,6 +88,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private static final int PID_CYCLE_TRESHOLD = 50;
     private long lastTimeStampPacket = 0;
     private static final int PACKET_TIMESTAMP_TRESHOLD = 10;
+    private static final String[] COMPASS_POINTS = { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW",
+            "WSW", "W", "WNW", "NW", "NNW" };
     private @Nullable Integer warnedDataVersion;
     private boolean warnedDataVersionSet;
     // written on the BLU event thread, read on the polling thread
@@ -397,7 +399,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             Double rH = hum != null ? hum.value : null;
                             Double windSpeed = sensorData.windSpeed;
                             if (tC != null && rH != null && windSpeed != null) {
-                                sensorData.apparentTemp = apparentTemperature(tC, rH, windSpeed * 3.6);
+                                sensorData.apparentTemp = apparentTemperature(tC, rH, windSpeed);
                             }
                             Double pressure = sensorData.pressure;
                             if (pressure != null) {
@@ -543,9 +545,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         return strFirmware;
     }
 
-    private static final String[] COMPASS_POINTS = { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW",
-            "WSW", "W", "WNW", "NW", "NNW" };
-
     /**
      * Maps a wind direction in degrees to a 16-point compass rose label.
      *
@@ -564,11 +563,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      *
      * @param tC air temperature in °C
      * @param rH relative humidity in %
-     * @param windKmh wind speed in km/h
+     * @param windMs wind speed in m/s
      * @return apparent ("feels like") temperature in °C
      */
-    static double apparentTemperature(double tC, double rH, double windKmh) {
-        double windMs = windKmh / 3.6;
+    static double apparentTemperature(double tC, double rH, double windMs) {
         double e = (rH / 100.0) * 6.105 * Math.exp(17.27 * tC / (237.7 + tC));
         return tC + 0.33 * e - 0.70 * windMs - 4.00;
     }

@@ -53,36 +53,36 @@ public class ShellyBluApiWs90DerivedValuesTest {
 
     @Test
     void apparentTemperatureLowersPerceivedTemperatureWhenColdAndWindy() {
-        double result = ShellyBluApi.apparentTemperature(0.0, 50.0, 20.0);
+        double result = ShellyBluApi.apparentTemperature(0.0, 50.0, 5.56);
         assertThat("wind lowers the perceived temperature below the actual air temperature", result,
                 closeTo(-6.88, DELTA));
     }
 
     @Test
     void apparentTemperatureRaisesPerceivedTemperatureWhenHotAndHumid() {
-        double result = ShellyBluApi.apparentTemperature(32.0, 70.0, 5.0);
+        double result = ShellyBluApi.apparentTemperature(32.0, 70.0, 1.39);
         assertThat("humidity raises the perceived temperature above the actual air temperature", result,
                 closeTo(37.97, DELTA));
     }
 
     @Test
     void apparentTemperatureStaysCloseToAirTemperatureForMildConditions() {
-        double result = ShellyBluApi.apparentTemperature(20.0, 50.0, 10.0);
+        double result = ShellyBluApi.apparentTemperature(20.0, 50.0, 2.78);
         assertThat("mild conditions stay close to the actual air temperature", result, closeTo(17.90, DELTA));
     }
 
     @Test
     void apparentTemperatureHasNoDiscontinuityAcrossFormerWindChillThreshold() {
-        double justBelow = ShellyBluApi.apparentTemperature(9.9, 50.0, 5.0);
-        double justAbove = ShellyBluApi.apparentTemperature(10.1, 50.0, 5.0);
+        double justBelow = ShellyBluApi.apparentTemperature(9.9, 50.0, 1.39);
+        double justAbove = ShellyBluApi.apparentTemperature(10.1, 50.0, 1.39);
         assertThat("crossing the former wind-chill threshold changes the result smoothly", justAbove - justBelow,
                 closeTo(0.2, 0.5));
     }
 
     @Test
     void apparentTemperatureHasNoDiscontinuityAcrossFormerHeatIndexThreshold() {
-        double justBelow = ShellyBluApi.apparentTemperature(26.9, 45.0, 3.0);
-        double justAbove = ShellyBluApi.apparentTemperature(27.1, 45.0, 3.0);
+        double justBelow = ShellyBluApi.apparentTemperature(26.9, 45.0, 0.83);
+        double justAbove = ShellyBluApi.apparentTemperature(27.1, 45.0, 0.83);
         assertThat("crossing the former heat-index threshold changes the result smoothly", justAbove - justBelow,
                 closeTo(0.2, 0.5));
     }

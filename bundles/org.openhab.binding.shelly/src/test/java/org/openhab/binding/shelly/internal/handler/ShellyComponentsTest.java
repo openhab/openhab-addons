@@ -668,6 +668,37 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateSensorsWs90PushesDerivedChannels() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.windDirectionStr = "SE";
+        sdata.apparentTemp = 17.9;
+        sdata.seaLevelPressure = 1013.25;
+        sdata.rainSwitch = true;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR_STR, new StringType("SE"));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_APPARENT_TEMP),
+                argThat(s -> closeTo(s, 17.9)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_SEALEVEL_PRESSURE),
+                argThat(s -> closeTo(s, 1013.25)));
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.ON);
+    }
+
+    @Test
+    void updateSensorsWs90WithoutDerivedValuesSkipsDerivedChannels() throws Exception {
+        ShellyThingInterface handler = ws90HandlerWith(new ShellyStatusSensor());
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR_STR), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_APPARENT_TEMP), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_SEALEVEL_PRESSURE), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_RAIN_SWITCH), any());
+    }
+
+    @Test
     void updateSensorsWs90WindSpeedPublishesQuantityType() throws Exception {
         ShellyStatusSensor sdata = new ShellyStatusSensor();
         sdata.windSpeed = 3.5;
@@ -820,7 +851,9 @@ public class ShellyComponentsTest {
 
         for (String channelId : new String[] { CHANNEL_SENSOR_TEMP, CHANNEL_SENSOR_HUM, CHANNEL_SENSOR_RAINST,
                 CHANNEL_SENSOR_WINDSP, CHANNEL_SENSOR_WINDDIR, CHANNEL_SENSOR_GUSTSP, CHANNEL_SENSOR_GUSTDIR,
-                CHANNEL_SENSOR_UV, CHANNEL_SENSOR_PRESSURE, CHANNEL_SENSOR_DEWPOINT, CHANNEL_SENSOR_PRECIPITATION }) {
+                CHANNEL_SENSOR_UV, CHANNEL_SENSOR_PRESSURE, CHANNEL_SENSOR_DEWPOINT, CHANNEL_SENSOR_PRECIPITATION,
+                CHANNEL_SENSOR_WINDDIR_STR, CHANNEL_SENSOR_APPARENT_TEMP, CHANNEL_SENSOR_SEALEVEL_PRESSURE,
+                CHANNEL_SENSOR_RAIN_SWITCH }) {
             assertThat(channelId + " channel created",
                     channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelId),
                     is(true));
