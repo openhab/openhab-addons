@@ -103,6 +103,7 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
         // Handle parameters and variables
         Map<String, @Nullable Object> includeVariables = new HashMap<>(recursiveTransformer.getVariables());
         includeVariables.putAll(params.varsMap()); // params override current variables
+        includeVariables.put("ARGS", params.varsMap());
 
         try {
             YamlComposer includeComposer = new YamlComposer(includePath, includeVariables, includeStack,

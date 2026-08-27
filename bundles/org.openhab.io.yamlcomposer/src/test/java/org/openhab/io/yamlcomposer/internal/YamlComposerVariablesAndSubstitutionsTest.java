@@ -145,6 +145,47 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
                     getNestedValue(data, "include", "filename"), is("predefinedVarsOverride.inc"));
         }
 
+        @ParameterizedTest
+        // We specifically allow package_id to be overridden, so it is not included in this test
+        @ValueSource(strings = { "OPENHAB_CONF", "OPENHAB_USERDATA", "__FILE__", "__FILE_NAME__", "__FILE_EXT__",
+                "__DIRECTORY__", "__DIR__", "ENV", "VARS", "ARGS" })
+        @DisplayName("Logs a warning when attempting to override predefined variables")
+        void logsWarningWhenOverridingPredefinedVariables(String varName) throws IOException {
+            String assertionMessage = "Attempting to override a predefined variable %s within a variables: block should log a warning"
+                    .formatted(varName);
+
+            // 1. Test top-level variables block
+            Path mainFile = writeFixture("predefinedVarsOverride.yaml", """
+                    variables:
+                      %s: "invalid"
+
+                    foo: ${%s}
+                    """.formatted(varName, varName));
+            Map<Object, @Nullable Object> result = loadFixture(mainFile);
+
+            assertThat(assertionMessage, logSession.getTrackedWarnings(),
+                    hasItem(containsString("Cannot redefine special variable")));
+
+            assertThat(getNestedValue(result, "foo"), is(not("invalid")));
+
+            // Clear the log session to ensure the next assertion is testing the new composition
+            logSession.flush();
+
+            // 2. Test inline !var directive
+            mainFile = writeFixture("predefinedVarsInlineOverride.yaml", """
+                    !var %s: "invalid"
+                    foo: ${%s}
+                    """.formatted(varName, varName));
+            result = loadFixture(mainFile);
+
+            assertionMessage = "Attempting to override a predefined variable %s with !var should log a warning"
+                    .formatted(varName);
+            assertThat(assertionMessage, logSession.getTrackedWarnings(),
+                    hasItem(containsString("Cannot redefine special variable")));
+
+            assertThat(getNestedValue(result, "foo"), is(not("invalid")));
+        }
+
         @Test
         @DisplayName("Loads entire variables block from an !include file")
         void loadsEntireVariablesBlockFromInclude() throws IOException {

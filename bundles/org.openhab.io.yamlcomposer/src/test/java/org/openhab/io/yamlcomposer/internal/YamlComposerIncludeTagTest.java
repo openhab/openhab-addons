@@ -246,6 +246,71 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
             assertThat(getNestedValue(data, "data", "var2"), equalTo("value2"));
             assertThat(getNestedValue(data, "data", "var3"), equalTo("local_value"));
         }
+
+        @Test
+        @DisplayName("ARGS exists in the included file context and contains ONLY the variables explicitly passed to the include")
+        void argsKeywordReferencesOnlyInjectedVariableSet() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    variables:
+                      global_var: "global"
+                    data: !include
+                      file: included.inc.yaml
+                      vars:
+                        injected_var: "injected"
+                    """);
+
+            writeFixture("included.inc.yaml", """
+                    variables:
+                      local_var: "local"
+
+                    # Verify ARGS strictly isolates the injected variables
+                    args_global: ${ARGS.global_var | default('missing')}
+                    args_injected: ${ARGS.injected_var | default('missing')}
+                    args_local: ${ARGS.local_var | default('missing')}
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat("ARGS MUST contain explicitly injected variables", getNestedValue(data, "data", "args_injected"),
+                    equalTo("injected"));
+
+            assertThat("ARGS should NOT contain inherited global variables",
+                    getNestedValue(data, "data", "args_global"), equalTo("missing"));
+
+            assertThat("ARGS should NOT contain variables defined locally in the include",
+                    getNestedValue(data, "data", "args_local"), equalTo("missing"));
+        }
+
+        @Test
+        @DisplayName("ARGS in nested includes isolates variables to the immediate call site, excluding parent explicitly passed vars")
+        void argsKeywordStrictlyIsolatesNestedIncludes() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    data: !include
+                      file: level1.inc.yaml
+                      vars:
+                        level1_var: "val1"
+                    """);
+
+            writeFixture("level1.inc.yaml", """
+                    level2_data: !include
+                      file: level2.inc.yaml
+                      vars:
+                        level2_var: "val2"
+                    """);
+
+            writeFixture("level2.inc.yaml", """
+                    args_l1: ${ARGS.level1_var | default('missing')}
+                    args_l2: ${ARGS.level2_var | default('missing')}
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat("ARGS MUST contain explicitly injected variables for this specific include",
+                    getNestedValue(data, "data", "level2_data", "args_l2"), equalTo("val2"));
+
+            assertThat("ARGS should NOT contain variables injected by the parent include",
+                    getNestedValue(data, "data", "level2_data", "args_l1"), equalTo("missing"));
+        }
     }
 
     @Nested
