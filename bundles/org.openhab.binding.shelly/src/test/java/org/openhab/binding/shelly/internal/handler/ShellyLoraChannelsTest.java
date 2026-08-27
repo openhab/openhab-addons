@@ -21,6 +21,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELL
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
@@ -195,6 +196,71 @@ public class ShellyLoraChannelsTest {
         ShellyComponents.updateLoraStatus(handler, status);
 
         verify(handler, never()).updateChannel(anyString(), anyString(), any());
+    }
+
+    @Test
+    void getObsoleteLoraChannelIdsDetectedAndRxEnabledReturnsEmpty() {
+        assertThat(ShellyChannelDefinitions.getObsoleteLoraChannelIds(loraProfile(true)).isEmpty(), is(true));
+    }
+
+    @Test
+    void getObsoleteLoraChannelIdsRxDisabledReturnsRxOnlyChannels() {
+        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteLoraChannelIds(loraProfile(false));
+
+        assertThat(obsolete.contains("lora#" + CHANNEL_LORA_RXDATA), is(true));
+        assertThat(obsolete.contains("lora#" + CHANNEL_LORA_TXDATA), is(false));
+    }
+
+    @Test
+    void getObsoleteLoraChannelIdsNotDetectedReturnsAllChannels() {
+        Set<String> obsolete = ShellyChannelDefinitions
+                .getObsoleteLoraChannelIds(new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1));
+
+        assertThat(obsolete.contains("lora#" + CHANNEL_LORA_RXDATA), is(true));
+        assertThat(obsolete.contains("lora#" + CHANNEL_LORA_TXDATA), is(true));
+    }
+
+    @Test
+    void updateDeviceStatusRemovesLoraChannelsAndFirmwarePropertyWhenAddonRemoved() {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1);
+        profile.addOnFw = "1.11.1";
+        when(handler.getProfile()).thenReturn(profile);
+        Thing thing = thing();
+        when(handler.getThing()).thenReturn(thing);
+        when(handler.areChannelsCreated()).thenReturn(true);
+
+        ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
+
+        verify(handler).removeChannels(argThat(ids -> ids.contains("lora#" + CHANNEL_LORA_TXDATA)));
+        verify(handler).removeProperty(PROPERTY_ADDON_FIRMWARE);
+    }
+
+    @Test
+    void updateDeviceStatusRemovesRxChannelsWhenRxDisabled() {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(loraProfile(false));
+        Thing thing = thing();
+        when(handler.getThing()).thenReturn(thing);
+        when(handler.areChannelsCreated()).thenReturn(true);
+
+        ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
+
+        verify(handler).removeChannels(argThat(ids -> ids.contains("lora#" + CHANNEL_LORA_RXDATA)));
+        verify(handler, never()).removeProperty(PROPERTY_ADDON_FIRMWARE);
+    }
+
+    @Test
+    void updateDeviceStatusKeepsLoraChannelsWhenDetectedAndRxEnabled() {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(loraProfile(true));
+        Thing thing = thing();
+        when(handler.getThing()).thenReturn(thing);
+        when(handler.areChannelsCreated()).thenReturn(true);
+
+        ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).removeChannels(any());
     }
 
     @Test

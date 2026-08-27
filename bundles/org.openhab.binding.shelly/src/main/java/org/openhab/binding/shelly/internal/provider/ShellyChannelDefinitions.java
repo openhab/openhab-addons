@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -496,6 +497,26 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_AIRTIME);
 
         return add;
+    }
+
+    private static final Set<String> LORA_RX_ONLY_CHANNELS = Set.of(CHGR_LORA + "#" + CHANNEL_LORA_RXDATA,
+            CHGR_LORA + "#" + CHANNEL_LORA_RXDATARAW, CHGR_LORA + "#" + CHANNEL_LORA_RXBYTES,
+            CHGR_LORA + "#" + CHANNEL_LORA_RSSI, CHGR_LORA + "#" + CHANNEL_LORA_SNR);
+    private static final Set<String> LORA_ALL_CHANNELS = Set.of(CHGR_LORA + "#" + CHANNEL_LORA_RXDATA,
+            CHGR_LORA + "#" + CHANNEL_LORA_RXDATARAW, CHGR_LORA + "#" + CHANNEL_LORA_RXBYTES,
+            CHGR_LORA + "#" + CHANNEL_LORA_RSSI, CHGR_LORA + "#" + CHANNEL_LORA_SNR,
+            CHGR_LORA + "#" + CHANNEL_LORA_TXDATA, CHGR_LORA + "#" + CHANNEL_LORA_TXDATARAW,
+            CHGR_LORA + "#" + CHANNEL_LORA_TXBYTES, CHGR_LORA + "#" + CHANNEL_LORA_TXERRORS,
+            CHGR_LORA + "#" + CHANNEL_LORA_AIRTIME);
+
+    /**
+     * @return LoRa channel ids ("group#channel") stale for the current profile and to be removed
+     */
+    public static Set<String> getObsoleteLoraChannelIds(final ShellyDeviceProfile profile) {
+        if (!profile.settings.loraDetected) {
+            return LORA_ALL_CHANNELS;
+        }
+        return profile.settings.loraRxEnabled ? Set.of() : LORA_RX_ONLY_CHANNELS;
     }
 
     /**

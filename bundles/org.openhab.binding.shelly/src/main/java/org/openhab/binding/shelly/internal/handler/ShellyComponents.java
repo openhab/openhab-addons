@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.measure.MetricPrefix;
 import javax.measure.Unit;
@@ -88,9 +89,11 @@ public class ShellyComponents {
         if (!thingHandler.areChannelsCreated()) {
             thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createDeviceChannels(thingHandler.getThing(),
                     thingHandler.getProfile(), status));
-            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createLoraChannels(thingHandler.getThing(),
-                    thingHandler.getProfile(), status));
         }
+        // not gated on areChannelsCreated(): reconciled every cycle so add-on/rx_enable changes apply live
+        thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createLoraChannels(thingHandler.getThing(),
+                thingHandler.getProfile(), status));
+        reconcileLoraChannels(thingHandler, profile);
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
         if (!profile.gateway.isEmpty()) {
@@ -987,6 +990,17 @@ public class ShellyComponents {
     public static boolean hasAddon(ShellySettingsStatus status) {
         return status.extTemperature != null || status.extHumidity != null || status.extVoltage != null
                 || status.extDigitalInput != null || status.extAnalogInput != null;
+    }
+
+    private static void reconcileLoraChannels(ShellyThingInterface thingHandler, ShellyDeviceProfile profile) {
+        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteLoraChannelIds(profile);
+        if (!obsolete.isEmpty()) {
+            thingHandler.removeChannels(obsolete);
+        }
+        if (!profile.settings.loraDetected && !profile.addOnFw.isEmpty()) {
+            profile.addOnFw = "";
+            thingHandler.removeProperty(PROPERTY_ADDON_FIRMWARE);
+        }
     }
 
     public static void handleLoraCommand(ShellyThingInterface thingHandler, String channelId, Command command)
