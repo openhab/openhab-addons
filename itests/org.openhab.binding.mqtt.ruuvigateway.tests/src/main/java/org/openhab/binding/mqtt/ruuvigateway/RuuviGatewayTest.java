@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.HECTO;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -290,17 +291,25 @@ public class RuuviGatewayTest extends MqttOSGiTest {
     @Override
     @AfterEach
     public void afterEach() throws Exception {
-        unregisterService(statusSubscriber);
-        removeThings();
-        if (mqttConnection != null) {
-            mqttConnection.removeConnectionObserver(failIfChange);
-            mqttConnection.stop().get(5, TimeUnit.SECONDS);
+        try {
+            unregisterService(statusSubscriber);
+            removeThings();
+        } finally {
+            try {
+                if (mqttConnection != null) {
+                    mqttConnection.removeConnectionObserver(failIfChange);
+                    mqttConnection.stop().get(5, TimeUnit.SECONDS);
+                }
+            } finally {
+                try {
+                    if (scheduler != null) {
+                        scheduler.shutdownNow();
+                    }
+                } finally {
+                    super.afterEach();
+                }
+            }
         }
-
-        if (scheduler != null) {
-            scheduler.shutdownNow();
-        }
-        super.afterEach();
     }
 
     /**
@@ -325,6 +334,30 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         mqttConnection.subscribe(BASE_TOPIC_RUUVI + "/#", (topic, payload) -> c.countDown()).get(5, TimeUnit.SECONDS);
         assertTrue(c.await(5, TimeUnit.SECONDS),
                 "Connection " + mqttConnection.getClientId() + " not retrieving all topics ");
+    }
+
+    @Test
+    public void unsubscribeAllCompletesNormally() throws Exception {
+        String topic = BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:AA:01";
+        Thing ruuviThing = createRuuviThing("mygwid", topic, null);
+        waitForAssert(() -> assertEquals(ThingStatus.ONLINE, ruuviThing.getStatus()));
+
+        RuuviHandler handler = assertInstanceOf(RuuviHandler.class, ruuviThing.getHandler());
+        MqttBrokerConnection connection = Objects.requireNonNull(handler.getConnection());
+        assertTrue(hasSubscription(connection, topic));
+
+        handler.unsubscribeAll().get(5, TimeUnit.SECONDS);
+
+        assertFalse(hasSubscription(connection, topic));
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean hasSubscription(MqttBrokerConnection connection, String topic)
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field subscribersField = MqttBrokerConnection.class.getDeclaredField("subscribers");
+        subscribersField.setAccessible(true);
+        Map<String, ?> subscribers = Objects.requireNonNull((Map<String, ?>) subscribersField.get(connection));
+        return subscribers.containsKey(topic);
     }
 
     /**
