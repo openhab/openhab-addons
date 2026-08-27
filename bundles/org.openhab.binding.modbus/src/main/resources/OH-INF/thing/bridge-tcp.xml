@@ -79,6 +79,13 @@
 				<default>10000</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="receiveTimeoutMillis" type="integer" min="1" unit="ms">
+				<label>Timeout for Sending and Receiving data</label>
+				<description>The maximum time that is waited when sending or receiving data. Should be lower than the timeout for
+					the connection. In milliseconds.</description>
+				<default>3000</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>
