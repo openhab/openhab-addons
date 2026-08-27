@@ -74,6 +74,7 @@ Each span carries the following attributes:
 | `event.source` | The event source identifier |
 
 Use `tracesSamplingRatio` to limit the exported volume on busy instances (e.g. `0.1` to export 10% of events).
+This setting has no effect when the OTel Java agent supplies the tracer, see [Coexistence with the OTel Java Agent](#coexistence-with-the-otel-java-agent).
 
 ## Deployment
 
@@ -181,6 +182,10 @@ Its HTTP spans have kind `server`, so backends can build RED metrics from them.
 
 If the agent is present at startup, the bundle sends its event-bus spans through the agent's `GlobalOpenTelemetry` instead of setting up its own tracer provider.
 Both then appear under the same service in the backend.
+
+`tracesSamplingRatio` is ignored in this mode.
+Sampling is controlled by the agent's own `SdkTracerProvider`.
+Set `-Dotel.traces.sampler=traceidratio -Dotel.traces.sampler.arg=0.1` on the agent for 10% sampling.
 
 To run the agent alongside openHAB, add to `/etc/default/openhab` (or the equivalent for your installation):
 
