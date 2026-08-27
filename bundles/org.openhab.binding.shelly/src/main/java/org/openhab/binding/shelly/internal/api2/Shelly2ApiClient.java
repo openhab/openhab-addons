@@ -1434,7 +1434,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
     /**
      * Copies the Gen2 temperature payload into the Gen1-compatible {@code status.tmp} field.
-     * Keeps the highest observed temperature when multiple components report readings.
+     * Keeps the highest observed temperature only for the aggregate {@code status.temperature} field.
      */
     private void updateDeviceInnerTemp(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusTemp temperature) {
         if (temperature == null) {
@@ -1449,13 +1449,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             tmp = new ShellySensorTmp();
             status.tmp = tmp;
         }
-        Double currentTc = tmp.tC;
-        if (!getBool(tmp.isValid) || currentTc == null || tC > currentTc) {
-            tmp.isValid = true;
-            tmp.tC = tC;
-            tmp.tF = temperature.tF;
-            tmp.units = "C";
-        }
+        tmp.isValid = true;
+        tmp.tC = tC;
+        tmp.tF = temperature.tF;
+        tmp.units = "C";
         if (status.temperature == null || tC > status.temperature) {
             status.temperature = tC;
         }

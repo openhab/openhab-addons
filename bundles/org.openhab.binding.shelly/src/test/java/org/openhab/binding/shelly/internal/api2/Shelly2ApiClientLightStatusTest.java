@@ -194,6 +194,32 @@ public class Shelly2ApiClientLightStatusTest {
     }
 
     @Test
+    void dimmerInnerTempReflectsLatestReadingNotHistoricalMaximum() throws ShellyApiException {
+        ShellyDeviceProfile profile = dimmerProfile(1);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusLight hot = lightStatus(0, true, 55.0);
+        hot.temperature = deviceTemp(50.0);
+        Shelly2DeviceStatusResult resultHot = new Shelly2DeviceStatusResult();
+        resultHot.light0 = hot;
+        client.fillDeviceStatus(profile.status, resultHot, false);
+
+        Shelly2DeviceStatusLight cooler = lightStatus(0, true, 55.0);
+        cooler.temperature = deviceTemp(40.0);
+        Shelly2DeviceStatusResult resultCooler = new Shelly2DeviceStatusResult();
+        resultCooler.light0 = cooler;
+        client.fillDeviceStatus(profile.status, resultCooler, false);
+
+        assertThat(profile.status.tmp.tC, is(40.0));
+    }
+
+    private Shelly2DeviceStatusTemp deviceTemp(double tC) {
+        Shelly2DeviceStatusTemp temp = new Shelly2DeviceStatusTemp();
+        temp.tC = tC;
+        return temp;
+    }
+
+    @Test
     void lightProfileUpdatesBrightnessAndOnStatePerChannel() throws ShellyApiException {
         ShellyDeviceProfile profile = lightModeProfile(4);
         Shelly2ApiClient client = newClient(profile);
