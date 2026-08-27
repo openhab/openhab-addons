@@ -100,8 +100,9 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
             }
             // a message can be split over several DATA frames and a frame can contain several messages,
             // so bytes are collected until the trailing boundary marker completes a part
+            int bytesCarriedOver = buffer.size();
             buffer.write(contentBuffer, 0, contentBuffer.length);
-            processBuffer();
+            processBuffer(bytesCarriedOver);
         } catch (RuntimeException e) {
             logger.warn("Exception while processing message", e);
         } finally {
@@ -111,14 +112,25 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
         }
     }
 
-    private void processBuffer() {
+    /** A completed part spanned frames when it used bytes an earlier frame had left in the buffer. */
+    static boolean spannedFrames(boolean firstCompletedPart, int bytesCarriedOver) {
+        return firstCompletedPart && bytesCarriedOver > 0;
+    }
+
+    private void processBuffer(int bytesCarriedOver) {
         byte[] data = buffer.toByteArray();
         int consumed = 0;
         int boundaryPos;
+        boolean firstCompletedPart = true;
         while ((boundaryPos = indexOf(data, boundaryBytes, consumed)) != -1) {
             String part = new String(data, consumed, boundaryPos - consumed, StandardCharsets.UTF_8);
             // the part counts as consumed even if it fails, a bad message must not wedge the stream
             consumed = boundaryPos + boundaryBytes.length;
+            if (spannedFrames(firstCompletedPart, bytesCarriedOver)) {
+                logger.debug("Completed a message of {} characters that arrived split over several frames",
+                        part.length());
+            }
+            firstCompletedPart = false;
             try {
                 handlePart(part);
             } catch (RuntimeException e) {

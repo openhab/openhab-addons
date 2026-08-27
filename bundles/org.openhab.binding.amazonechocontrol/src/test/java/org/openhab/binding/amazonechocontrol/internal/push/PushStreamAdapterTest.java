@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.openhab.binding.amazonechocontrol.internal.push.PushStreamAdapter.spannedFrames;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -279,6 +280,21 @@ public class PushStreamAdapterTest {
                 + "\"messageId\":\"11111111-2222-3333-4444-555555555555\"},\"payload\":{\"renderingUpdates\":"
                 + "[{\"route\":\"DeeAppMessage\",\"resourceId\":\"resource-id\",\"resourceMetadata\":"
                 + new Gson().toJson(resourceMetadata) + "}]}}}";
+    }
+
+    @Test
+    public void aPartUsingBytesFromAnEarlierFrameCountsAsSpanningFrames() {
+        assertThat(spannedFrames(true, 42), is(true));
+    }
+
+    @Test
+    public void aPartAfterTheFirstOneOfAFrameNeverCountsAsSpanningFrames() {
+        assertThat(spannedFrames(false, 42), is(false));
+    }
+
+    @Test
+    public void aPartFromAnEmptyBufferDoesNotCountAsSpanningFrames() {
+        assertThat(spannedFrames(true, 0), is(false));
     }
 
     private static byte[] slice(byte[] data, int from, int to) {
