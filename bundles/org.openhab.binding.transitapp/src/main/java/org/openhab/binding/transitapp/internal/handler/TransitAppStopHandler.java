@@ -141,7 +141,6 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
             int groupIdx = processDepartures(result.getRouteDepartures(), nowSeconds);
             clearRemainingDepartures(groupIdx);
-
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception e) {
