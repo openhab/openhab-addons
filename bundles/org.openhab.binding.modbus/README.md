@@ -120,7 +120,7 @@ Advanced parameters
 | `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds.                            |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                                                   |
 | `enableDiscovery`               |          | boolean | false              | Enable auto-discovery feature. Effective only if a supporting extension has been installed.                                                                                                   |
-| `receiveTimeoutMillis`          |          | integer | `3000`             | The maximum time that is waited when sending or receiving data. Should be lower than `connectTimeoutMillis`. In milliseconds.                                                                 |
+| `receiveTimeoutMillis`          |          | integer | `3000`             | Maximum time to wait for data to be received, in milliseconds. A value of zero disables the timeout.                                                                                          |
 
 **Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
