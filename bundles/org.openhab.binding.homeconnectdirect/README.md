@@ -86,6 +86,18 @@ These channels provide immediate access to common functions. Available channels 
 | `command`                      | String               | W      | Send specific operation commands to the appliance.                                                                                                      | All                                                                                                        |
 | `raw-message`                  | String               | W      | Advanced: Send raw JSON payloads.<br>Example (Start coffee program): `{"action": "POST", "resource": "/ro/activeProgram", "data": [{"program": 8217}]}` | All                                                                                                        |
 
+> **NOTE: Remote start**
+>
+> Whether program commands (`start`, `pause`, `resume`, `stop`) are accepted depends on the appliance type and its remote start setting.
+> Some appliances accept them right away, others only after remote start has been granted.
+> If the commands have no effect, check the following:
+>
+> - Look for a **Remote Start** button on the appliance panel and press it (many washers, dryers and dishwashers require this before every program).
+> - Check the appliance settings in the official Home Connect app. Some appliances (e.g. ovens) allow remote start to be set to "always allowed".
+>
+> The `remote-control-start-allowed` channel reflects this state.
+> As long as remote start is not granted, the appliance reports its command list as not accessible and the program commands are not available.
+
 #### Dishwasher Channels
 
 | Channel ID                    | Item Type | Access | Description                                              |
@@ -310,6 +322,9 @@ The binding offers global settings to secure the web console and manage the inte
 
 **Q: How do I find the `haId` of my device?**  
 **A:** You can find it via the openHAB Inbox scan (Discovery). Alternatively, open the binding's web console and navigate to the **Profiles** tab. After importing a profile, the specific Device ID is displayed there.
+
+**Q: The program commands (`start`, `pause`, `resume`, `stop`) do not work.**  
+**A:** This depends on the appliance type. Some appliances accept program commands right away, others require remote start to be granted first: either by pressing the **Remote Start** button on the appliance panel, or by allowing remote start in the appliance settings of the official Home Connect app. See the note in [General Channels](#general-channels).
 
 **Q: I have a problem or found a bug.**  
 **A:** Please use the openHAB Community channels. It is helpful to create a log file using the **Logs** feature in the binding's web console, which you can provide for troubleshooting.
