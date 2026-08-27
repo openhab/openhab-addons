@@ -78,7 +78,7 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
         this.stateDescriptionProvider = tapoStateDescriptionProvider;
     }
 
-    private HttpClient getHttpClient() {
+    private synchronized HttpClient getHttpClient() {
         HttpClient client = httpClient;
         if (client == null) {
             client = createHttpClient(BINDING_ID, new SslContextFactory.Client());
@@ -87,7 +87,7 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
         return client;
     }
 
-    private HttpClient getCameraHttpClient() {
+    private synchronized HttpClient getCameraHttpClient() {
         HttpClient client = cameraHttpClient;
         if (client == null) {
             // Cameras serve self-signed TLS certificates; certificate verification is intentionally disabled
@@ -180,7 +180,9 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
         } else if (SUPPORTED_LIGHT_SWITCH_UIDS.contains(thingTypeUID)) {
             return new TapoLightSwitchHandler(thing);
         } else if (SUPPORTED_CAMERA_UIDS.contains(thingTypeUID)) {
-            return new TapoCameraHandler(thing, getCameraHttpClient());
+            TapoCameraHandler cameraHandler = new TapoCameraHandler(thing, getCameraHttpClient());
+            handlersWithHttpClient.add(cameraHandler);
+            return cameraHandler;
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
             return new TapoUniversalDeviceHandler(thing);
         }
