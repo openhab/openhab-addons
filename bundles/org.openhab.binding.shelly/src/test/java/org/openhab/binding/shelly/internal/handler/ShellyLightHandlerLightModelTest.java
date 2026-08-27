@@ -53,6 +53,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Tests for {@link ShellyLightHandler} and {@link ShellyLightModel} classes.
@@ -103,7 +104,7 @@ class ShellyLightHandlerLightModelTest {
                 PercentType.HUNDRED);
 
         Map<String, State> updates = handler.getChannelUpdates();
-        assertEquals(9, updates.size());
+        assertEquals(6, updates.size());
         assertEquals(PercentType.HUNDRED, updates.get("color#red"));
         assertEquals(PercentType.ZERO, updates.get("color#green"));
         assertEquals(PercentType.ZERO, updates.get("color#blue"));
@@ -114,9 +115,6 @@ class ShellyLightHandlerLightModelTest {
         assertEquals(0, ((HSBType) obj).getHue().intValue());
         assertEquals(100, ((HSBType) obj).getSaturation().intValue());
         assertEquals(0, ((HSBType) obj).getBrightness().intValue());
-        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR));
-        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP));
-        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP_ABS));
 
         try {
             handler.acquireLock();
@@ -297,33 +295,11 @@ class ShellyLightHandlerLightModelTest {
         assertNotNull(handler.getLightModelByIndex(0));
 
         assertEquals(new PercentType(80), updates.get("white#brightness"));
-        assertEquals(QuantityType.valueOf(4000, Units.KELVIN), updates.get("primary#primary-color-temp-abs"));
+        assertEquals(QuantityType.valueOf(4000, Units.KELVIN), updates.get("white#temperature-abs"));
 
-        Object ct = updates.get("primary#primary-color-temp");
+        Object ct = updates.get("white#temperature");
         assertTrue(ct instanceof PercentType);
         assertEquals(54, Math.round(((PercentType) ct).doubleValue()));
-
-        ct = updates.get("white#temperature");
-        assertTrue(ct instanceof PercentType);
-        assertEquals(54, Math.round(((PercentType) ct).doubleValue()));
-    }
-
-    @Test
-    void updateDeviceStatusUpdatesPrimaryChannelsWhenAvailable() throws Exception {
-        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
-        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
-        assertNotNull(api);
-
-        ShellyStatusLightChannel dto = lightChannel(true, 255, 0, 0, 0, 75, 60, 3500, 0, false);
-        when(api.getLightStatus()).thenReturn(singleLightStatus(dto));
-
-        boolean updated = handler.updateDeviceStatus(new ShellySettingsStatus());
-
-        assertTrue(updated);
-        Map<String, State> updates = handler.getChannelUpdates();
-        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR));
-        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP));
-        assertTrue(updates.containsKey(CHANNEL_GROUP_PRIMARY + "#" + CHANNEL_PRIMARY_COLOR_TEMP_ABS));
     }
 
     @Test
@@ -375,109 +351,6 @@ class ShellyLightHandlerLightModelTest {
         sec = ((QuantityType<?>) qty).toUnit(Units.SECOND);
         assertNotNull(sec);
         assertEquals(10, sec.intValue());
-    }
-
-    @ParameterizedTest
-    @MethodSource("lightHandlerCommandProvider")
-    void parameterizedLightHandlerCoverage(ThingTypeUID thingTypeUID, int channelGroupNo, int expectedApiLightIndex,
-            @Nullable String profileOverride, String commandGroup, String commandChannel, Command command,
-            ShellyLightModel.Mode expectedMode, boolean expectPrimaryColor, boolean expectPrimaryBrightness,
-            boolean expectPrimaryColorTemp, boolean expectPrimaryColorTempAbs, @Nullable State expectedCommandState) {
-
-        ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
-        handler.profile.device.profile = profileOverride;
-        handler.profile.maxTemp = 6500;
-        handler.profile.minTemp = 2700;
-
-        if (THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID) || THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = List
-                    .of(SHELLY2_PROFILE_RGB, SHELLY2_PROFILE_RGBW, SHELLY2_PROFILE_RGBCCT, SHELLY2_PROFILE_RGBX2LIGHT)
-                    .contains(profileOverride) && channelGroupNo == 0;
-        } else if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = true;
-        } else if (THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = false;
-        }
-
-        String actualGroup = commandGroup;
-        if (CHANNEL_GROUP_LIGHT_INDEX.equals(commandGroup)) {
-            actualGroup = CHANNEL_GROUP_LIGHT_INDEX + channelGroupNo;
-        }
-
-        ChannelUID channelUID = new ChannelUID(new ChannelGroupUID(new ThingUID(thingTypeUID, "test"), actualGroup),
-                commandChannel);
-
-        boolean handled = handler.handleDeviceCommand(channelUID, command);
-
-        assertTrue(handled, "command should be handled for " + thingTypeUID + " / " + profileOverride);
-
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByGroupNumber(channelGroupNo);
-            assertNotNull(model, "expected light model for lightId " + channelGroupNo);
-            assertEquals(expectedMode, model.getMode(), "unexpected operating mode");
-            assertEquals(expectedApiLightIndex, model.getApiLightIndex(), "unexpected operating mode");
-        } finally {
-            handler.releaseLock();
-        }
-
-        Map<String, State> updates = handler.getChannelUpdates();
-        String primaryPrefix = CHANNEL_GROUP_PRIMARY + "#";
-
-        assertEquals(expectPrimaryColor, updates.containsKey(primaryPrefix + CHANNEL_PRIMARY_COLOR),
-                "primary color presence mismatch");
-        assertEquals(expectPrimaryBrightness, updates.containsKey(primaryPrefix + CHANNEL_PRIMARY_BRIGHTNESS),
-                "primary brightness presence mismatch");
-        assertEquals(expectPrimaryColorTemp, updates.containsKey(primaryPrefix + CHANNEL_PRIMARY_COLOR_TEMP),
-                "primary color temp presence mismatch");
-        assertEquals(expectPrimaryColorTempAbs, updates.containsKey(primaryPrefix + CHANNEL_PRIMARY_COLOR_TEMP_ABS),
-                "primary absolute color temp presence mismatch");
-
-        if (expectedCommandState != null) {
-            assertEquals(expectedCommandState, updates.get(actualGroup + "#" + commandChannel),
-                    "unexpected command channel state");
-        }
-    }
-
-    private static Stream<Arguments> lightHandlerCommandProvider() {
-        return Stream.of(
-        // @formatter:off
-            Arguments.of(THING_TYPE_SHELLYBULB, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, true, true, PercentType.HUNDRED),
-
-            Arguments.of(THING_TYPE_SHELLYDUO, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(42), ShellyLightModel.Mode.WHITE, false, true, true, true, new PercentType(42)),
-
-            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(25), ShellyLightModel.Mode.WHITE, false, true, false, false, new PercentType(25)),
-
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL, new StringType("yellow"), ShellyLightModel.Mode.COLOR, true, false, true, true, null),
-
-            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, false, false, PercentType.HUNDRED),
-                
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, 0, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(73), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(73)),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 2, 1, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(61), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(61)),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, true, true,  PercentType.HUNDRED),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(55), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(55)),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(45), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(45)),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGB, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, new PercentType(1), ShellyLightModel.Mode.COLOR, true, false, true, true, new PercentType(1)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, new PercentType(33), ShellyLightModel.Mode.COLOR, true, false, true, true, new PercentType(33)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(44), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(44)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(66), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(66)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, true, true, PercentType.HUNDRED),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(50)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, new PercentType(40), ShellyLightModel.Mode.COLOR, true, false, true, true, new PercentType(40)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(70), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(70)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(60), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(60)),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(35), ShellyLightModel.Mode.WHITE, false, false, false, false, new PercentType(35)),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP, new PercentType(50), ShellyLightModel.Mode.WHITE, false, true, true, true, new PercentType(50)),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, PercentType.HUNDRED, ShellyLightModel.Mode.COLOR, true, false, true, true, PercentType.HUNDRED)
-        // @formatter:on
-        );
     }
 
     @ParameterizedTest
@@ -581,7 +454,7 @@ class ShellyLightHandlerLightModelTest {
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(66), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "66", SHELLY_LIGHT_TURN, "on"), null),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, null, true, Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "255"), null),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50), null, true, Map.of( SHELLY_COLOR_TEMP, avgColorTemp), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, new PercentType(40), null, true, Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "102", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_TEMP,"6500"), null),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, new PercentType(40), null, true, Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "102", SHELLY_COLOR_BLUE, "0"), null),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 2, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(70), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "70", SHELLY_LIGHT_TURN, "on"), null),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50), null, true, Map.of(SHELLY_COLOR_TEMP, avgColorTemp), null),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(35), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "35", SHELLY_LIGHT_TURN, "on"), null),
@@ -854,6 +727,424 @@ class ShellyLightHandlerLightModelTest {
             
             Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, CHANNEL_GROUP_COLOR_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
             Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, CHANNEL_GROUP_COLOR_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF)
+        // @formatter:on
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("rgbwHsbCommandProvider")
+    void parameterizedHsbCommandOnRgbwDeviceSendsExpectedRgbw(HSBType command, String expectedRed, String expectedGreen,
+            String expectedBlue, String expectedWhite) throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPRORGBWWPM);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
+
+        handler.profile.device.profile = SHELLY2_PROFILE_RGBW;
+        handler.profile.maxTemp = 6500;
+        handler.profile.minTemp = 2700;
+        handler.profile.isRGBW2 = true;
+        handler.profile.inColor = true;
+
+        doNothing().when(api).setLightParms(anyInt(), anyMap());
+        doNothing().when(api).setLightMode(anyString());
+
+        // Seed the model with a prior RGBW state
+        ShellyLightModel model = ShellyLightModel.create(handler, 0, handler.profile, DIM_STEPSIZE);
+        model.acquire();
+        try {
+            model.setRGBX(new int[] { 12, 34, 56, 78 });
+            model.setOnOff(true);
+        } finally {
+            model.release();
+        }
+        handler.lightModels.put(0, model);
+
+        clearInvocations(api);
+
+        ChannelUID channelUID = new ChannelUID(
+                new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYPRORGBWWPM, "test"), CHANNEL_GROUP_COLOR_CONTROL),
+                CHANNEL_COLOR_PICKER);
+
+        boolean handled = handler.handleDeviceCommand(channelUID, command);
+
+        assertTrue(handled, "HSB command should be handled");
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> parmsCaptor = ArgumentCaptor
+                .forClass((Class<Map<String, String>>) (Class<?>) Map.class);
+
+        verify(api).setLightParms(eq(0), parmsCaptor.capture());
+
+        Map<String, String> parms = parmsCaptor.getValue();
+        assertEquals(expectedRed, parms.get(SHELLY_COLOR_RED));
+        assertEquals(expectedGreen, parms.get(SHELLY_COLOR_GREEN));
+        assertEquals(expectedBlue, parms.get(SHELLY_COLOR_BLUE));
+        assertEquals(expectedWhite, parms.get(SHELLY_COLOR_WHITE));
+    }
+
+    private static Stream<Arguments> rgbwHsbCommandProvider() {
+        PercentType fifty = new PercentType(50);
+        return Stream.of(
+        // @formatter:off
+            Arguments.of(HSBType.RED, "255", "0", "0", "0"),
+            Arguments.of(HSBType.GREEN, "0", "255", "0", "0"), 
+            Arguments.of(HSBType.BLUE, "0", "0", "255", "0"),
+            Arguments.of(HSBType.WHITE, "0", "0", "0", "255"), 
+            Arguments.of(HSBType.BLACK, "0", "0", "0", "255"),
+            Arguments.of(new HSBType(new DecimalType(180), PercentType.HUNDRED, PercentType.HUNDRED), "0", "255", "255", "0"), // cyan
+            Arguments.of(new HSBType(new DecimalType(300), PercentType.HUNDRED, PercentType.HUNDRED), "255", "0", "255", "0"), // magenta
+            Arguments.of(new HSBType(new DecimalType(60), PercentType.HUNDRED, PercentType.HUNDRED), "255", "255", "0", "0"),  // yellow
+            Arguments.of(new HSBType(new DecimalType(180), fifty, PercentType.HUNDRED), "0", "128", "128", "128"), // pastel cyan
+            Arguments.of(new HSBType(new DecimalType(300), fifty, PercentType.HUNDRED), "128", "0", "128", "128"), // pastel magenta
+            Arguments.of(new HSBType(new DecimalType(60), fifty, PercentType.HUNDRED), "128", "128", "0", "128") // pastel yellow
+        // @formatter:on
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("rgbHsbCommandProvider")
+    void parameterizedHsbCommandOnRgbDeviceSendsExpectedRgb(HSBType command, String expectedRed, String expectedGreen,
+            String expectedBlue) throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPRORGBWWPM);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
+
+        handler.profile.device.profile = SHELLY2_PROFILE_RGB;
+        handler.profile.maxTemp = 6500;
+        handler.profile.minTemp = 2700;
+        handler.profile.isRGBW2 = true;
+        handler.profile.inColor = true;
+
+        doNothing().when(api).setLightParms(anyInt(), anyMap());
+        doNothing().when(api).setLightMode(anyString());
+
+        // Seed the model with a prior RGB state
+        ShellyLightModel model = ShellyLightModel.create(handler, 0, handler.profile, DIM_STEPSIZE);
+        model.acquire();
+        try {
+            model.setRGBX(new int[] { 12, 34, 56 });
+            model.setOnOff(true);
+        } finally {
+            model.release();
+        }
+        handler.lightModels.put(0, model);
+
+        clearInvocations(api);
+
+        ChannelUID channelUID = new ChannelUID(
+                new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYPRORGBWWPM, "test"), CHANNEL_GROUP_COLOR_CONTROL),
+                CHANNEL_COLOR_PICKER);
+
+        boolean handled = handler.handleDeviceCommand(channelUID, command);
+
+        assertTrue(handled, "HSB command should be handled");
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> parmsCaptor = ArgumentCaptor
+                .forClass((Class<Map<String, String>>) (Class<?>) Map.class);
+
+        verify(api).setLightParms(eq(0), parmsCaptor.capture());
+
+        Map<String, String> parms = parmsCaptor.getValue();
+        assertEquals(expectedRed, parms.get(SHELLY_COLOR_RED));
+        assertEquals(expectedGreen, parms.get(SHELLY_COLOR_GREEN));
+        assertEquals(expectedBlue, parms.get(SHELLY_COLOR_BLUE));
+        assertFalse(parms.containsKey(SHELLY_COLOR_WHITE), "white should not be sent for RGB-only devices");
+    }
+
+    private static Stream<Arguments> rgbHsbCommandProvider() {
+        PercentType fifty = new PercentType(50);
+        return Stream.of(
+        // @formatter:off
+            Arguments.of(HSBType.RED, "255", "0", "0"),
+            Arguments.of(HSBType.GREEN, "0", "255", "0"),
+            Arguments.of(HSBType.BLUE, "0", "0", "255"),
+            Arguments.of(HSBType.WHITE, "255", "255", "255"),
+            Arguments.of(HSBType.BLACK, "255", "255", "255"),
+            Arguments.of(new HSBType(new DecimalType(180), PercentType.HUNDRED, PercentType.HUNDRED), "0", "255", "255"), // cyan
+            Arguments.of(new HSBType(new DecimalType(300), PercentType.HUNDRED, PercentType.HUNDRED), "255", "0", "255"), // magenta
+            Arguments.of(new HSBType(new DecimalType(60), PercentType.HUNDRED, PercentType.HUNDRED), "255", "255", "0"),  // yellow
+            Arguments.of(new HSBType(new DecimalType(180), fifty, PercentType.HUNDRED), "128", "255", "255"), // pastel cyan
+            Arguments.of(new HSBType(new DecimalType(300), fifty, PercentType.HUNDRED), "255", "128", "255"), // pastel magenta
+            Arguments.of(new HSBType(new DecimalType(60), fifty, PercentType.HUNDRED), "255", "255", "128") // pastel yellow
+        // @formatter:on
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("lightHandlerNonPrimaryChannelUpdateProvider")
+    void parameterizedLightHandlerNonPrimaryChannelUpdates(ThingTypeUID thingTypeUID, int channelGroupNo,
+            int expectedApiLightIndex, @Nullable String profileOverride, String commandGroup, String commandChannel,
+            Command command, ShellyLightModel.Mode expectedMode, Map<String, State> expectedUpdates) {
+
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
+        handler.profile.device.profile = profileOverride;
+        handler.profile.maxTemp = 6500;
+        handler.profile.minTemp = 2700;
+
+        if (THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID) || THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
+            handler.profile.isRGBW2 = true;
+            handler.profile.inColor = List
+                    .of(SHELLY2_PROFILE_RGB, SHELLY2_PROFILE_RGBW, SHELLY2_PROFILE_RGBCCT, SHELLY2_PROFILE_RGBX2LIGHT)
+                    .contains(profileOverride) && channelGroupNo == 0;
+        } else if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
+            handler.profile.isRGBW2 = true;
+            handler.profile.inColor = true;
+        } else if (THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID)) {
+            handler.profile.isRGBW2 = true;
+            handler.profile.inColor = false;
+        }
+
+        String actualGroup = commandGroup;
+        if (CHANNEL_GROUP_LIGHT_INDEX.equals(commandGroup)) {
+            actualGroup = CHANNEL_GROUP_LIGHT_INDEX + channelGroupNo;
+        }
+
+        ChannelUID channelUID = new ChannelUID(new ChannelGroupUID(new ThingUID(thingTypeUID, "test"), actualGroup),
+                commandChannel);
+
+        boolean handled = handler.handleDeviceCommand(channelUID, command);
+
+        assertTrue(handled, "command should be handled for " + thingTypeUID + " / " + profileOverride);
+
+        try {
+            handler.acquireLock();
+            ShellyLightModel model = handler.getLightModelByGroupNumber(channelGroupNo);
+            assertNotNull(model, "expected light model for lightId " + channelGroupNo);
+            assertEquals(expectedMode, model.getMode(), "unexpected operating mode");
+            assertEquals(expectedApiLightIndex, model.getApiLightIndex(), "unexpected API light index");
+        } finally {
+            handler.releaseLock();
+        }
+
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        for (Map.Entry<String, State> entry : expectedUpdates.entrySet()) {
+            assertTrue(updates.containsKey(entry.getKey()), "missing update for " + entry.getKey());
+            assertEquals(entry.getValue(), updates.get(entry.getKey()), "unexpected value for " + entry.getKey());
+        }
+    }
+
+    private static Stream<Arguments> lightHandlerNonPrimaryChannelUpdateProvider() {
+        return Stream.of(
+        // @formatter:off
+            Arguments.of(
+                THING_TYPE_SHELLYBULB, 0, 0, null,
+                CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, PercentType.HUNDRED,
+                ShellyLightModel.Mode.COLOR,
+                Map.of(
+                    "color#red", PercentType.HUNDRED,
+                    "color#green", PercentType.ZERO,
+                    "color#blue", PercentType.ZERO,
+                    "color#white", PercentType.ZERO,
+                    "color#full", new StringType("red")
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYDUO, 0, 0, null,
+                CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(42),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "white#brightness", new PercentType(42)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYVINTAGE, 0, 0, null,
+                CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(25),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "white#brightness", new PercentType(25)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYRGBW2_COLOR, 0, 0, null,
+                CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED,
+                ShellyLightModel.Mode.COLOR,
+                Map.of(
+                    "color#red", PercentType.ZERO,
+                    "color#green", PercentType.ZERO,
+                    "color#blue", PercentType.HUNDRED,
+                    "color#white", PercentType.ZERO,
+                    "color#full", new StringType("blue")
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYRGBW2_WHITE, 1, 0, null,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(73),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light1#brightness", new PercentType(73)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYRGBW2_WHITE, 2, 1, null,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(61),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light2#brightness", new PercentType(61)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPLUSRGBWPM, 0, 0, SHELLY2_PROFILE_RGBW,
+                CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, PercentType.HUNDRED,
+                ShellyLightModel.Mode.COLOR,
+                Map.of(
+                    "color#red", PercentType.ZERO,
+                    "color#green", PercentType.HUNDRED,
+                    "color#blue", PercentType.ZERO,
+                    "color#white", PercentType.ZERO,
+                    "color#full", new StringType("green")
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPLUSRGBWPM, 1, 0, SHELLY2_PROFILE_LIGHT,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(55),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light1#brightness", new PercentType(55)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPLUSRGBWPM, 2, 1, SHELLY2_PROFILE_LIGHT,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(45),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light2#brightness", new PercentType(45)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGB,
+                CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, new PercentType(1),
+                ShellyLightModel.Mode.COLOR,
+                Map.of(
+                    "color#red", new PercentType(1),
+                    "color#green", PercentType.ZERO,
+                    "color#blue", PercentType.ZERO,
+                    "color#full", UnDefType.UNDEF
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBW,
+                CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, new PercentType(33),
+                ShellyLightModel.Mode.COLOR,
+                Map.of(
+                    "color#red", PercentType.ZERO,
+                    "color#green", PercentType.ZERO,
+                    "color#blue", PercentType.ZERO,
+                    "color#white", new PercentType(33),
+                    "color#full", UnDefType.UNDEF
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_LIGHT,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(44),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light1#brightness", new PercentType(44)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_LIGHT,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(66),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light2#brightness", new PercentType(66)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBCCT,
+                CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED,
+                ShellyLightModel.Mode.COLOR,
+                Map.of(
+                    "color#red", PercentType.ZERO,
+                    "color#green", PercentType.ZERO,
+                    "color#blue", PercentType.HUNDRED,
+                    "color#full", new StringType("blue")
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBCCT,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light1#temperature", new PercentType(50)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBX2LIGHT,
+                CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, new PercentType(40),
+                ShellyLightModel.Mode.COLOR,
+                Map.of(
+                    "color#red", PercentType.ZERO,
+                    "color#green", new PercentType(40),
+                    "color#blue", PercentType.ZERO,
+                    "color#full", UnDefType.UNDEF
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBX2LIGHT,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(70),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light1#brightness", new PercentType(70)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_CCTX2,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(60),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light2#temperature", new PercentType(60)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_CCTX2,
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(35),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "light1#brightness", new PercentType(35)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPLUSDUOBULB, 0, 0, null,
+                CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP, new PercentType(50),
+                ShellyLightModel.Mode.WHITE,
+                Map.of(
+                    "white#temperature", new PercentType(50)
+                )
+            ),
+
+            Arguments.of(
+                THING_TYPE_SHELLYPLUSCOLORBULB, 0, 0, null,
+                CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, PercentType.HUNDRED,
+                ShellyLightModel.Mode.COLOR,
+                Map.of(
+                    "color#red", PercentType.HUNDRED,
+                    "color#green", PercentType.ZERO,
+                    "color#blue", PercentType.ZERO,
+                    "color#white", PercentType.ZERO,
+                    "color#full", new StringType("red")
+                )
+            )
         // @formatter:on
         );
     }

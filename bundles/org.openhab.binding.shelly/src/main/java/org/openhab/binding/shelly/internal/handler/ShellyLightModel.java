@@ -190,7 +190,7 @@ public class ShellyLightModel extends LightModel {
                 return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
             }
             if (SHELLY2_PROFILE_RGBW.equals(configProfile)) {
-                return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
+                return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
             }
             if (SHELLY2_PROFILE_LIGHT.equals(configProfile)) {
                 return new Parameters(BRIGHTNESS, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
@@ -199,23 +199,21 @@ public class ShellyLightModel extends LightModel {
 
         if (THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
             if (SHELLY2_PROFILE_RGB.equals(configProfile)) {
-                return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
+                return new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true);
             }
             if (SHELLY2_PROFILE_RGBW.equals(configProfile)) {
-                return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
+                return new Parameters(COLOR, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, true);
             }
             if (SHELLY2_PROFILE_LIGHT.equals(configProfile)) {
                 return new Parameters(BRIGHTNESS, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
             }
             if (SHELLY2_PROFILE_RGBCCT.equals(configProfile)) {
-                return componentIndex == 0
-                        ? new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true)
+                return componentIndex == 0 ? new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true)
                         : new Parameters(BRIGHTNESS_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE,
                                 true);
             }
             if (SHELLY2_PROFILE_RGBX2LIGHT.equals(configProfile)) {
-                return componentIndex == 0
-                        ? new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true)
+                return componentIndex == 0 ? new Parameters(COLOR, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, true)
                         : new Parameters(BRIGHTNESS, RGB_W_NO_BRIGHTNESS, WHITE_ONLY, Mode.WHITE, true);
             }
             if (SHELLY2_PROFILE_CCTX2.equals(configProfile)) {
@@ -786,8 +784,7 @@ public class ShellyLightModel extends LightModel {
             (isG3DuoBulb) || 
             (isG3ColorBulb) || 
             (isProfileCCTX2) ||
-            (isProfileRGBCCT) || 
-            (isProfileRGBX2LIGHT && channelGroupNumber == 0)
+            (isProfileRGBCCT && channelGroupNumber > 0) 
         // @formatter:on
         ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
     }

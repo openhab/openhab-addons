@@ -182,16 +182,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         logger.trace("{}: updateLightModelFromChannelCommand() channel {}, command {})", thingName, channelUID,
                 command);
         switch (channelUID.getIdWithoutGroup()) {
-            case CHANNEL_PRIMARY_COLOR:
-            case CHANNEL_PRIMARY_BRIGHTNESS:
-                model.handleCommand(command);
-                return WhatUpdated.LIGHT_MODEL;
-
-            case CHANNEL_PRIMARY_COLOR_TEMP:
-            case CHANNEL_PRIMARY_COLOR_TEMP_ABS:
-                model.handleColorTemperatureCommand(command);
-                return WhatUpdated.LIGHT_MODEL;
-
             case CHANNEL_LIGHT_POWER:
                 model.handleCommand(command);
                 return WhatUpdated.LIGHT_MODEL;
@@ -233,6 +223,10 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_COLOR_TEMP:
+                model.handleColorTemperatureCommand(command);
+                return WhatUpdated.LIGHT_MODEL;
+
+            case CHANNEL_COLOR_TEMP_ABS:
                 model.handleColorTemperatureCommand(command);
                 return WhatUpdated.LIGHT_MODEL;
 
@@ -477,22 +471,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             group = groupNumber == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupNumber;
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
-        }
-
-        // PRIMARY GROUP:
-        // TODO perhaps we don't need these primary channels ??
-        if (model.isDirty() && groupNumber == 0 && model.supportsOnOffChannel()) {
-            group = CHANNEL_GROUP_PRIMARY;
-            if (model.configGetLightCapabilities().supportsColor()) {
-                updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR, model.getColorState());
-            } else if (model.configGetLightCapabilities().supportsBrightness()) {
-                updated |= updateChannel(group, CHANNEL_PRIMARY_BRIGHTNESS, model.getBrightnessState());
-            }
-            if (model.configGetLightCapabilities().supportsColorTemperature()) {
-                updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP, model.getColorTemperaturePercentState());
-                updated |= updateChannel(group, CHANNEL_PRIMARY_COLOR_TEMP_ABS,
-                        model.getColorTemperatureAbsoluteState());
-            }
         }
 
         return updated;
