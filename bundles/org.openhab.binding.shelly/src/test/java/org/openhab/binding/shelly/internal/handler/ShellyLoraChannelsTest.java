@@ -18,18 +18,22 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -191,5 +195,66 @@ public class ShellyLoraChannelsTest {
         ShellyComponents.updateLoraStatus(handler, status);
 
         verify(handler, never()).updateChannel(anyString(), anyString(), any());
+    }
+
+    @Test
+    void handleLoraCommandTxDataEncodesTextAsBase64AndSends() throws ShellyApiException {
+        ShellyThingInterface handler = loraCommandHandler();
+
+        ShellyComponents.handleLoraCommand(handler, CHANNEL_LORA_TXDATA, new StringType("Hello"));
+
+        verify(handler.getApi()).loraSendData(0, "SGVsbG8=");
+        verify(handler).updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATARAW, new StringType("SGVsbG8="));
+    }
+
+    @Test
+    void handleLoraCommandTxDataRawSendsAndDecodesValidUtf8Payload() throws ShellyApiException {
+        ShellyThingInterface handler = loraCommandHandler();
+
+        ShellyComponents.handleLoraCommand(handler, CHANNEL_LORA_TXDATARAW, new StringType("SGVsbG8="));
+
+        verify(handler.getApi()).loraSendData(0, "SGVsbG8=");
+        verify(handler).updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATA, new StringType("Hello"));
+    }
+
+    @Test
+    void handleLoraCommandTxDataRawSendsRawButSkipsTextChannelOnNonUtf8Payload() throws ShellyApiException {
+        ShellyThingInterface handler = loraCommandHandler();
+
+        // base64("ÿþ") — not a valid UTF-8 sequence
+        ShellyComponents.handleLoraCommand(handler, CHANNEL_LORA_TXDATARAW, new StringType("//4="));
+
+        verify(handler.getApi()).loraSendData(0, "//4=");
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_TXDATA), any());
+    }
+
+    @Test
+    void handleLoraCommandTxDataRawSkipsSendOnInvalidBase64() throws ShellyApiException {
+        ShellyThingInterface handler = loraCommandHandler();
+
+        ShellyComponents.handleLoraCommand(handler, CHANNEL_LORA_TXDATARAW, new StringType("not base64!!"));
+
+        verify(handler.getApi(), never()).loraSendData(anyInt(), anyString());
+        verify(handler, never()).updateChannel(anyString(), anyString(), any());
+    }
+
+    @Test
+    void handleLoraCommandWorksForLoraEquippedLightHandler() throws ShellyApiException {
+        ShellyThingInterface handler = loraCommandHandler();
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        profile.settings.loraDetected = true;
+        profile.settings.loraRxEnabled = true;
+        when(handler.getProfile()).thenReturn(profile);
+
+        ShellyComponents.handleLoraCommand(handler, CHANNEL_LORA_TXDATA, new StringType("Hello"));
+
+        verify(handler.getApi()).loraSendData(0, "SGVsbG8=");
+    }
+
+    private static ShellyThingInterface loraCommandHandler() throws ShellyApiException {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getThingName()).thenReturn("test-lora");
+        when(handler.getApi()).thenReturn(mock(ShellyApiInterface.class));
+        return handler;
     }
 }

@@ -27,7 +27,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Verifies the BASE64 encode/decode logic used for LoRa TX/RX channels in
- * {@link ShellyRelayHandler} and {@code Shelly2ApiRpc}.
+ * {@link ShellyComponents#handleLoraCommand} and {@code Shelly2ApiRpc}.
  *
  * <p>
  * The encode path (CHANNEL_LORA_TXDATA) produces standard padded base64.
@@ -38,15 +38,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 @NonNullByDefault
 class ShellyLoraBase64Test {
 
-    /** Mirrors ShellyRelayHandler: text → padded base64 sent to device. */
     private static String encode(String text) {
         return Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
     }
 
-    /**
-     * Mirrors the pad-then-decode pattern in ShellyRelayHandler (CHANNEL_LORA_TXDATARAW)
-     * and Shelly2ApiRpc ("lora" event), now delegating padding to ShellyUtils.
-     */
     private static String decode(String b64) {
         return new String(Base64.getDecoder().decode(fixBase64Padding(b64)), StandardCharsets.UTF_8);
     }

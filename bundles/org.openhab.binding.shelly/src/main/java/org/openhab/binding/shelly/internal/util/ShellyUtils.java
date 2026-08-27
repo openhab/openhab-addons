@@ -16,6 +16,10 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -404,5 +408,22 @@ public class ShellyUtils {
             return b64 + "=";
         }
         return b64;
+    }
+
+    /**
+     * Decodes a byte array as UTF-8, rejecting malformed or unmappable sequences instead of silently
+     * replacing them (as {@code new String(bytes, UTF_8)} does).
+     *
+     * @param bytes the bytes to decode
+     * @return the decoded string, or null when {@code bytes} is not valid UTF-8
+     */
+    public static @Nullable String decodeUtf8Strict(byte[] bytes) {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        try {
+            return decoder.decode(ByteBuffer.wrap(bytes)).toString();
+        } catch (CharacterCodingException e) {
+            return null;
+        }
     }
 }

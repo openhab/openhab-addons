@@ -16,6 +16,8 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,8 +58,11 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -69,6 +74,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ShellyComponents {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyComponents.class);
 
     /**
      * Update device status
@@ -981,6 +987,41 @@ public class ShellyComponents {
     public static boolean hasAddon(ShellySettingsStatus status) {
         return status.extTemperature != null || status.extHumidity != null || status.extVoltage != null
                 || status.extDigitalInput != null || status.extAnalogInput != null;
+    }
+
+    public static void handleLoraCommand(ShellyThingInterface thingHandler, String channelId, Command command)
+            throws ShellyApiException {
+        String thingName = thingHandler.getThingName();
+        switch (channelId) {
+            case CHANNEL_LORA_TXDATA:
+                String data = getString(command);
+                if (!data.isEmpty()) {
+                    String rawData = Base64.getEncoder().encodeToString(data.getBytes(StandardCharsets.UTF_8));
+                    thingHandler.getApi().loraSendData(0, rawData);
+                    thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATARAW, getStringType(rawData));
+                }
+                break;
+            case CHANNEL_LORA_TXDATARAW:
+                String txRawData = getString(command);
+                if (!txRawData.isEmpty()) {
+                    try {
+                        String txPadded = fixBase64Padding(txRawData);
+                        byte[] txBytes = Base64.getDecoder().decode(txPadded);
+                        thingHandler.getApi().loraSendData(0, txPadded);
+                        String txData = decodeUtf8Strict(txBytes);
+                        if (txData != null) {
+                            thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATA, getStringType(txData));
+                        } else {
+                            LOGGER.debug("{}: LoRa TX payload is not valid UTF-8, dataTx channel not updated",
+                                    thingName);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        LOGGER.warn("{}: LoRa data not sent, payload is not valid Base64: {}", thingName,
+                                e.getMessage());
+                    }
+                }
+                break;
+        }
     }
 
     public static boolean updateLoraStatus(ShellyThingInterface thingHandler, Shelly2DeviceStatusLora status) {

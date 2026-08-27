@@ -689,9 +689,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     if (loraRaw != null) {
                         updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(loraRaw));
                         try {
-                            String rxData = new String(Base64.getDecoder().decode(fixBase64Padding(loraRaw)),
-                                    StandardCharsets.UTF_8);
-                            updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(rxData));
+                            byte[] rxBytes = Base64.getDecoder().decode(fixBase64Padding(loraRaw));
+                            String rxData = decodeUtf8Strict(rxBytes);
+                            if (rxData != null) {
+                                updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(rxData));
+                            } else {
+                                logger.debug("{}: LoRa RX payload is not valid UTF-8, dataRx channel not updated",
+                                        thingName);
+                            }
                         } catch (IllegalArgumentException ex) {
                             logger.debug("{}: LoRa RX payload is not valid Base64: {}", thingName, ex.getMessage());
                         }

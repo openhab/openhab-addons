@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -583,6 +584,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         // force: republish OFF even if the cache already holds OFF from a previous reset
                         updateChannel(mkChannelId(group, CHANNEL_EMETER_RESETTOTAL), OnOffType.OFF, true);
                     }
+                    break;
+                case CHANNEL_LORA_TXDATA:
+                case CHANNEL_LORA_TXDATARAW:
+                    ShellyComponents.handleLoraCommand(this, channelUID.getIdWithoutGroup(), command);
                     break;
                 default:
                     update = handleDeviceCommand(channelUID, command);
@@ -1557,6 +1562,33 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
+    public boolean removeChannels(Set<String> channelIds) {
+        if (channelIds.isEmpty()) {
+            return false;
+        }
+        try {
+            List<Channel> existingChannels = getThing().getChannels();
+            ThingBuilder thingBuilder = editThing();
+            boolean changed = false;
+            for (Channel channel : existingChannels) {
+                if (channelIds.contains(channel.getUID().getId())) {
+                    logger.debug("{}: Removing channel {}", thingName, channel.getUID().getId());
+                    thingBuilder.withoutChannel(channel.getUID());
+                    changed = true;
+                }
+            }
+            if (changed) {
+                updateThing(thingBuilder.build());
+                logger.debug("{}: Channel definitions updated", thingName);
+            }
+            return changed;
+        } catch (IllegalArgumentException e) {
+            logger.debug("{}: Unable to remove channel definitions", thingName, e);
+        }
+        return false;
+    }
+
+    @Override
     public boolean areChannelsCreated() {
         return channelsCreated;
     }
@@ -1603,6 +1635,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         thingProperties.put(key, value);
         updateProperties(thingProperties);
         logger.trace("{}: Properties updated", thingName);
+    }
+
+    @Override
+    public void removeProperty(String key) {
+        Map<String, String> thingProperties = editProperties();
+        if (thingProperties.remove(key) != null) {
+            updateProperties(thingProperties);
+            logger.trace("{}: Property {} removed", thingName, key);
+        }
     }
 
     public void flushProperties(Map<String, String> propertyUpdates) {

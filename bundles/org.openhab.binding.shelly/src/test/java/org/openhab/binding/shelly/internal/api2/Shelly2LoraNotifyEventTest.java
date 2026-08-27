@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -73,6 +74,19 @@ public class Shelly2LoraNotifyEventTest {
                 eq(new QuantityType<>(-97, Units.DECIBEL_MILLIWATTS)));
         verify(f.thing).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_SNR),
                 eq(new QuantityType<>(8, Units.DECIBEL)));
+    }
+
+    @Test
+    void loraEventWithNonUtf8PayloadUpdatesRawChannelOnlyNotText() throws ShellyApiException {
+        Fixture f = build();
+        // base64("ÿþ") — not a valid UTF-8 sequence
+        f.rpc.onNotifyEvent("""
+                {"src":"shellypro1-test","params":{"ts":1.0,"events":[{"id":0,"component":"lora:0","event":"lora",
+                "info":{"data":"//4=","rssi":-97,"snr":8,"tsu":123456}}]}}
+                """);
+
+        verify(f.thing).updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, new StringType("//4="));
+        verify(f.thing, times(0)).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_RXDATA), any());
     }
 
     @Test
