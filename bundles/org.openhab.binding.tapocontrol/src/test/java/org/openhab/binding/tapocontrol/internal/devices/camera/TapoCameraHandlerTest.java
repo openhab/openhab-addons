@@ -74,6 +74,7 @@ class TapoCameraHandlerTest {
     private volatile ThingStatusInfo lastStatus;
     private final Map<String, State> updatedStates = new ConcurrentHashMap<>();
     private final CountDownLatch terminalStatus = new CountDownLatch(1);
+    private final CountDownLatch thingUpdate = new CountDownLatch(1);
 
     /** Subclass exposing the api injection point and lifecycle control. */
     class HandlerUnderTest extends TapoCameraHandler {
@@ -119,6 +120,10 @@ class TapoCameraHandlerTest {
             }
             return null;
         }).when(callback).statusUpdated(any(), any());
+        doAnswer(invocation -> {
+            thingUpdate.countDown();
+            return null;
+        }).when(callback).thingUpdated(any());
         thing = ThingBuilder.create(new ThingTypeUID("tapocontrol:camera"), THING_UID)
                 .withConfiguration(new Configuration(Map.of("ipAddress", "192.168.1.50", "httpPort", 443, "username",
                         "admin", "password", "password", "pollingInterval", 0)))
@@ -260,6 +265,7 @@ class TapoCameraHandlerTest {
                     "{\"error_code\":0,\"result\":{\"" + module + "\":{\"" + section + "\":{\"enabled\":\"on\"}}}}");
         });
         handler.simulateInitialize();
+        assertTrue(thingUpdate.await(10, TimeUnit.SECONDS), "channel update did not complete");
         awaitTerminalStatus();
 
         assertEquals(ThingStatus.ONLINE, lastStatus.getStatus());
