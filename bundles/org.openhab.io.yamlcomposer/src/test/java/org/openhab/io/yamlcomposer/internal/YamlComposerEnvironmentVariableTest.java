@@ -210,6 +210,35 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
         }
 
         @Test
+        @DisplayName("Detects change when a tracked environment variable transitions from absent to empty string")
+        void detectsChangeWhenTrackedVariableChangesFromAbsentToEmpty() throws Exception {
+            String envName = "ABSENT_TO_EMPTY_VAR";
+            Map<String, String> envMap = new HashMap<>(); // Variable is absent (not present in envMap)
+
+            Path main = writeFixture("env_absent_main.yaml", "setting: ${ENV.ABSENT_TO_EMPTY_VAR}");
+            Path output = Objects.requireNonNull(sharedTempDir).resolve("env_absent_output.yaml");
+
+            Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
+            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
+            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
+            }, trackedEnv::add, logSession, includeCache));
+
+            // Write compiled output header while the variable is absent (un-set)
+            try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv, envMap);
+            }
+
+            // Verify isEnvironmentChanged() returns false while the variable remains absent
+            assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(false));
+
+            // Add the variable to the map with an empty string value ("")
+            envMap.put(envName, "");
+
+            // Verify that the transition from absent (null) to empty string ("") returns true
+            assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(true));
+        }
+
+        @Test
         @DisplayName("Treats file without Env headers as legacy and returns true to trigger regeneration")
         void treatsFileWithoutEnvHeadersAsLegacy() throws IOException {
             Path main = writeFixture("legacy_main.yaml", "setting: static_value");
