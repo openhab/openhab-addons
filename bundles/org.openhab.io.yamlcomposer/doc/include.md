@@ -100,66 +100,44 @@ This allows include files to inspect exactly what the caller passed, without any
 `main.yaml`:
 
 ```yaml
-variables:
-  broker: mqtt:broker:main
-
 things:
-  mqtt:topic:livingroom-window: !include
-    file: mqtt_contact.inc.yaml
+  exec:command:apc: !include
+    file: exec.inc.yaml
     vars:
-      label: Living Room Window
-      id: livingroom-window
+      command: /usr/local/bin/apcaccess status
 
-  mqtt:topic:bedroom-window: !include
-    file: mqtt_contact.inc.yaml
+  exec:command:myscript: !include
+    file: exec.inc.yaml
     vars:
-      label: Bedroom Window
-      id: bedroom-window
-      broker: mqtt:broker:external
+      command: "php ./configurations/scripts/script.php %2$s"
+      transform: "REGEX((.*?))"
 ```
 
-`mqtt_contact.inc.yaml`:
+`exec.inc.yaml`:
 
 ```yaml
-bridge: ${broker}
-label: ${label}
 config:
-  availabilityTopic: ${id}/availability
-  payloadAvailable: online
-  payloadNotAvailable: offline
-
-debug:
-  args: ${ARGS}
+  autorun: false
+  timeout: 10
+  <<: ${ARGS}
 ```
 
 Result:
 
 ```yaml
 things:
-  mqtt:topic:livingroom-window:
-    bridge: mqtt:broker:main
-    label: Living Room Window
+  exec:command:apc:
     config:
-      availabilityTopic: livingroom-window/availability
-      payloadAvailable: online
-      payloadNotAvailable: offline
-    debug:
-      args:
-        label: Living Room Window
-        id: livingroom-window
+      autorun: false
+      timeout: 10
+      command: /usr/local/bin/apcaccess status
 
-  mqtt:topic:bedroom-window:
-    bridge: mqtt:broker:external
-    label: Bedroom Window
+  exec:command:myscript:
     config:
-      availabilityTopic: bedroom-window/availability
-      payloadAvailable: online
-      payloadNotAvailable: offline
-    debug:
-      args:
-        label: Bedroom Window
-        id: bedroom-window
-        broker: mqtt:broker:external
+      autorun: false
+      timeout: 10
+      command: php ./configurations/scripts/script.php %2$s
+      transform: REGEX((.*?))
 ```
 
 ## File Naming & Reload Behavior
