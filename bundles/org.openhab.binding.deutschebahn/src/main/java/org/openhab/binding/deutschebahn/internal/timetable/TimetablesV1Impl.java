@@ -15,7 +15,6 @@ package org.openhab.binding.deutschebahn.internal.timetable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -75,12 +74,10 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
     private static final String DB_CLIENT_SECRET_HEADER_NAME = "DB-Api-Key";
 
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyMMdd");
-    private static final SimpleDateFormat HOUR_FORMAT = new SimpleDateFormat("HH");
-
     private final String clientId;
     private final String clientSecret;
     private final HttpCallable httpCallable;
+    private final TimetableTimeConverter timeConverter;
 
     private final Logger logger = LoggerFactory.getLogger(TimetablesV1Impl.class);
     private final JAXBContext jaxbContext;
@@ -94,10 +91,12 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
     public TimetablesV1Impl( //
             final String clientId, //
             final String clientSecret, //
-            final HttpCallable httpCallable) throws JAXBException {
+            final HttpCallable httpCallable, //
+            final TimetableTimeConverter timeConverter) throws JAXBException {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.httpCallable = httpCallable;
+        this.timeConverter = timeConverter;
 
         // The results from webservice does not conform to the schema provided. The triplabel-Element (tl) is expected
         // to occour as
@@ -193,17 +192,14 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
     /**
      * Build rest endpoint URL for request the planned timetable.
      */
-    @SuppressWarnings("PMD.UnsynchronizedStaticFormatter")
     private String buildPlanRequestURL(final String evaNr, final Date date) {
-        synchronized (this) {
-            final String dateParam = DATE_FORMAT.format(date);
-            final String hourParam = HOUR_FORMAT.format(date);
+        final String dateParam = timeConverter.formatPlanDate(date);
+        final String hourParam = timeConverter.formatPlanHour(date);
 
-            return PLAN_URL //
-                    .replace("%evaNo%", evaNr) //
-                    .replace("%date%", dateParam) //
-                    .replace("%hour%", hourParam);
-        }
+        return PLAN_URL //
+                .replace("%evaNo%", evaNr) //
+                .replace("%date%", dateParam) //
+                .replace("%hour%", hourParam);
     }
 
     /**

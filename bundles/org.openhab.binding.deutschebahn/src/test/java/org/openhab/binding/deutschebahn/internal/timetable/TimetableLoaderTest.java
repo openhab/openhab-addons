@@ -16,14 +16,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.deutschebahn.internal.EventType;
 import org.openhab.binding.deutschebahn.internal.TimetableStopFilter;
+import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
+import org.openhab.binding.deutschebahn.internal.timetable.dto.Timetable;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 
 /**
@@ -39,9 +39,9 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         final TimetablesApiTestModule timeTableTestModule = this.createApiWithTestdata();
         final TimeproviderStub timeProvider = new TimeproviderStub();
         final TimetableLoader loader = new TimetableLoader(timeTableTestModule.getApi(), TimetableStopFilter.ALL,
-                EventType.DEPARTURE, timeProvider, EVA_LEHRTE, 20);
+                EventType.DEPARTURE, timeProvider, TIME_CONVERTER, EVA_LEHRTE, 20);
 
-        timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 30);
+        timeProvider.time = createCalendar(2021, 8, 16, 9, 30);
 
         final List<TimetableStop> stops = loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
@@ -69,9 +69,9 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         final TimetablesApiTestModule timeTableTestModule = this.createApiWithTestdata();
         final TimeproviderStub timeProvider = new TimeproviderStub();
         final TimetableLoader loader = new TimetableLoader(timeTableTestModule.getApi(), TimetableStopFilter.ALL,
-                EventType.DEPARTURE, timeProvider, EVA_LEHRTE, 8);
+                EventType.DEPARTURE, timeProvider, TIME_CONVERTER, EVA_LEHRTE, 8);
 
-        timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 0);
+        timeProvider.time = createCalendar(2021, 8, 16, 9, 0);
 
         final List<TimetableStop> stops = loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
@@ -107,9 +107,9 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         final TimetablesApiTestModule timeTableTestModule = this.createApiWithTestdata();
         final TimeproviderStub timeProvider = new TimeproviderStub();
         final TimetableLoader loader = new TimetableLoader(timeTableTestModule.getApi(), TimetableStopFilter.ALL,
-                EventType.DEPARTURE, timeProvider, EVA_LEHRTE, 1);
+                EventType.DEPARTURE, timeProvider, TIME_CONVERTER, EVA_LEHRTE, 1);
 
-        timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 30);
+        timeProvider.time = createCalendar(2021, 8, 16, 9, 30);
 
         // First call - plan and full changes are requested.
         loader.getTimetableStops();
@@ -168,13 +168,13 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         final TimetablesApiTestModule timeTableTestModule = this.createApiWithTestdata();
         final TimeproviderStub timeProvider = new TimeproviderStub();
         final TimetableLoader loader = new TimetableLoader(timeTableTestModule.getApi(), TimetableStopFilter.ARRIVALS,
-                EventType.ARRIVAL, timeProvider, EVA_LEHRTE, 20);
+                EventType.ARRIVAL, timeProvider, TIME_CONVERTER, EVA_LEHRTE, 20);
 
         // Simulate that only one url is available
         timeTableTestModule.addAvailableUrl(
                 "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09");
 
-        timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 0);
+        timeProvider.time = createCalendar(2021, 8, 16, 9, 0);
 
         final List<TimetableStop> stops = loader.getTimetableStops();
 
@@ -189,13 +189,13 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         final TimetablesApiTestModule timeTableTestModule = this.createApiWithTestdata();
         final TimeproviderStub timeProvider = new TimeproviderStub();
         final TimetableLoader loader = new TimetableLoader(timeTableTestModule.getApi(), TimetableStopFilter.DEPARTURES,
-                EventType.DEPARTURE, timeProvider, EVA_LEHRTE, 20);
+                EventType.DEPARTURE, timeProvider, TIME_CONVERTER, EVA_LEHRTE, 20);
 
         // Simulate that only one url is available
         timeTableTestModule.addAvailableUrl(
                 "https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/plan/8000226/210816/09");
 
-        timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 0);
+        timeProvider.time = createCalendar(2021, 8, 16, 9, 0);
 
         final List<TimetableStop> stops = loader.getTimetableStops();
 
@@ -210,9 +210,9 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         final TimetablesApiTestModule timeTableTestModule = this.createApiWithTestdata();
         final TimeproviderStub timeProvider = new TimeproviderStub();
         final TimetableLoader loader = new TimetableLoader(timeTableTestModule.getApi(), TimetableStopFilter.DEPARTURES,
-                EventType.DEPARTURE, timeProvider, EVA_LEHRTE, 1);
+                EventType.DEPARTURE, timeProvider, TIME_CONVERTER, EVA_LEHRTE, 1);
 
-        timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 35);
+        timeProvider.time = createCalendar(2021, 8, 16, 9, 35);
 
         final List<TimetableStop> stops = loader.getTimetableStops();
         assertThat(timeTableTestModule.getRequestedPlanUrls(),
@@ -227,5 +227,24 @@ public class TimetableLoaderTest implements TimetablesV1ImplTestHelper {
         assertEquals("-5296516961807204721-2108160906-5", stops.get(0).getId());
         assertEquals("2108160942", stops.get(0).getDp().getCt());
         assertEquals("8681599812964340829-2108160955-1", stops.get(3).getId());
+    }
+
+    @Test
+    public void testKeepDepartureIfChangedTimeIsInFuture() throws Exception {
+        final Timetable timetable = new Timetable();
+        final TimetableStop stop = new TimetableStop();
+        stop.setId("delayed-departure");
+        final Event departure = new Event();
+        departure.setPt("2108160930");
+        departure.setCt("2108160940");
+        stop.setDp(departure);
+        timetable.getS().add(stop);
+
+        final TimeproviderStub timeProvider = new TimeproviderStub();
+        timeProvider.time = createCalendar(2021, 8, 16, 9, 35);
+        final TimetableLoader loader = new TimetableLoader(TimetablesV1ApiStub.createWithResult(timetable),
+                TimetableStopFilter.DEPARTURES, EventType.DEPARTURE, timeProvider, TIME_CONVERTER, EVA_LEHRTE, 1);
+
+        assertThat(loader.getTimetableStops(), contains(stop));
     }
 }
