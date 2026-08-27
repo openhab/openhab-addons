@@ -60,7 +60,7 @@ You can discover them manually or use `backgroundDiscovery`.
 ## Tapo IP Cameras
 
 The binding supports Tapo IP cameras (e.g. C200, C210, C310, C320WS, C520WS, TC60) as standalone things
-(`tapocontrol:camera`) through their local HTTPS API, covering features that ONVIF does not expose. 
+(`tapocontrol:camera`) through their local HTTPS API, covering features that ONVIF does not expose.
 For any camera features related to video and audio streaming, use the IP Camera binding (ONVIF) instead.
 Cameras do not require a bridge and are not discovered automatically — create the camera thing manually.
 
