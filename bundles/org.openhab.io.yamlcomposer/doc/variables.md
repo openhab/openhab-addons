@@ -474,19 +474,30 @@ If the list item must remain a scalar, declare the variable in the parent mappin
 The Composer injects environmental and file-system context automatically.
 These variables can be interpolated just like regular ones and are helpful when constructing paths for directives.
 
-| Variable           | Description                                                             |
-|:-------------------|:------------------------------------------------------------------------|
-| `OPENHAB_CONF`     | Absolute path to openHAB's main configuration directory.                |
-| `OPENHAB_USERDATA` | Absolute path to openHAB's userdata directory.                          |
-| `__FILE__`         | Absolute path to the current file.                                      |
-| `__FILE_NAME__`    | Filename portion without the extension or leading path.                 |
-| `__FILE_EXT__`     | File extension portion of the current file name.                        |
-| `__DIRECTORY__`    | Directory portion of the current file.                                  |
-| `__DIR__`          | Alias for `__DIRECTORY__`.                                              |
-| `package_id`       | Automatically resolved to the Package ID within included package files. |
+| Variable           | Description                                                          |
+|:-------------------|:---------------------------------------------------------------------|
+| `OPENHAB_CONF`     | Absolute path to openHAB's main configuration directory.             |
+| `OPENHAB_USERDATA` | Absolute path to openHAB's userdata directory.                       |
+| `__FILE__`         | Absolute path to the current file.                                   |
+| `__FILE_NAME__`    | Filename portion without the extension or leading path.              |
+| `__FILE_EXT__`     | File extension portion of the current file name.                     |
+| `__DIRECTORY__`    | Directory portion of the current file.                               |
+| `__DIR__`          | Alias for `__DIRECTORY__`.                                           |
+| `VARS`             | Map containing all variables currently visible in the current scope. |
 
-::: warning System Variable Protection
-System variables (`OPENHAB_CONF`, `__FILE__`, etc.) cannot be overridden or redefined by `!var` directives or `variables:` blocks. Attempting to redefine a system variable logs a warning and leaves the system value intact.
+#### Contextual / Special Variables
+
+These variables are dynamically populated based on the current execution context and are not always present.
+
+| Variable     | Description                                                                                                                                                          |
+|:-------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ARGS`       | Map containing only variables explicitly injected at the immediate `!include`/`!insert` call site (excludes global variables and those injected by parent includes). |
+| `package_id` | Automatically resolved to the Package ID within included package context.                                                                                            |
+
+::: warning Predefined Variable Protection
+With the exception of `package_id`, all predefined and contextual variables listed above are reserved by the Composer.
+They cannot be overridden or redefined by `!var` directives or `variables:` blocks.
+Attempting to redefine any of these protected variables logs a warning and leaves the system value intact.
 :::
 
 ### Handling Reserved Keywords

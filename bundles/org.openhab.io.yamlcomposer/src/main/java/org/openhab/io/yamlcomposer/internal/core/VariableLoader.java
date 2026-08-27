@@ -36,7 +36,7 @@ import org.openhab.io.yamlcomposer.internal.placeholders.MergeKeyPlaceholder;
 public class VariableLoader {
 
     public static final Set<String> SPECIAL_VARIABLES = Set.of("OPENHAB_CONF", "OPENHAB_USERDATA", "__FILE__",
-            "__FILE_NAME__", "__FILE_EXT__", "__DIRECTORY__", "__DIR__");
+            "__FILE_NAME__", "__FILE_EXT__", "__DIRECTORY__", "__DIR__", "ENV", "VARS", "ARGS");
 
     private final Map<String, @Nullable Object> variables;
     private final Path absolutePath;
