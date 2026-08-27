@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="bridge-type:tapocontrol:bridge">
+	<config-description uri="bridge-type:tapo:bridge">
 		<parameter name="username" type="text" required="true">
 			<context>email</context>
 			<label>Username</label>

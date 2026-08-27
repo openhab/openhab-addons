@@ -8,6 +8,6 @@
 		<label>Tapo Cloud Account</label>
 		<description>Connects to your Tapo Cloud Account for device discovery and local device communication</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
-		<config-description-ref uri="bridge-type:tapocontrol:bridge"/>
+		<config-description-ref uri="bridge-type:tapo:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>

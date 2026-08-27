@@ -20,6 +20,6 @@
 		</channel-groups>
 		<representation-property>macAddress</representation-property>
 
-		<config-description-ref uri="thing-type:tapocontrol:device"/>
+		<config-description-ref uri="thing-type:tapo:device"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -19,6 +19,6 @@
 
 		<representation-property>macAddress</representation-property>
 
-		<config-description-ref uri="bridge-type:tapocontrol:hub"/>
+		<config-description-ref uri="bridge-type:tapo:hub"/>
 	</bridge-type>
 </thing:thing-descriptions>
