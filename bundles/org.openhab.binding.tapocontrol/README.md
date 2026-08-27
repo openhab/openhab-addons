@@ -1,6 +1,6 @@
 # TapoControl Binding
 
-This binding adds support to control Tapo (Copyright © TP-Link Corporation Limited) Smart Home Devices from your local openHAB system.
+This binding adds support to control Tapo (Copyright © TP-Link Corporation Limited) Smart Home devices and for IP cameras from your local openHAB system.
 
 ## Supported Things
 
@@ -28,20 +28,21 @@ The following Tapo-Devices are supported. For precise channel-description look a
 | Smart Switch (RF)                  | S220      | Wall switch with 2 contacts                   |
 | Smart Light Switch (Wi-Fi)         | HS200     | Wall switch with 1 contact                    |
 | Smart Dimmer Switch (Wi-Fi)        | HS220     | Dimmable wall switch                          |
+| IP Camera (Wi-Fi)                  | camera    | Wi-Fi IP Camera                               |
 
 ## Prerequisites
 
-Before using Smart Plugs with openHAB the devices must be connected to the Wi-Fi network.
+Before using Tapo devices with openHAB the devices must be connected to the Wi-Fi network.
 This can be done using the Tapo provided mobile app.
 Some devices require Third-Party Compatibility to be disabled then re-enabled via the mobile app after initial installation or firmware upgrade.
-You need to set up a bridge (Tapo Cloud Account) to communicate with your devices.
+For Smart Home devices, you need to set up a bridge (Tapo Cloud Account) to communicate with your devices.
 
 **Note:** If the Tapo device is to be isolated from the internet e.g. on an IoT LAN, the P110 will not expose its energy and power data until it has successfully synchronised it's clock with an NTP server - at time of writing, this was `pool.ntp.org`.
 To satisfy this requirement while keeping the device isolated, your router should be configured to either permit `udp/123` out to the internet or a NAT rule created to redirect all internet bound NTP traffic to a local NTP server.
 
 ## Discovery
 
-For Wi-Fi devices, discovery is done by connecting to the Tapo Cloud Service or use local UDP discovery.
+For Wi-Fi Smart Home devices, discovery is done by connecting to the Tapo Cloud Service or use local UDP discovery.
 If enabled, all devices stored in your cloud account will be detected even if they are not in your local network.
 From cloud you can get more information such as "Device-Alias" than from UDP discovery.
 But you need to know the IP address of your device. This must be set manually in the Thing configuration.
@@ -54,13 +55,14 @@ Default is '255.255.255.255'
 You can combine both discovery methods to get any information from local devices.
 If you enable setting 'onlyLocalOnlineDevices' results will only be generated for local online devices but with the combined data of cloud discovery.
 RF devices will be discovered by the hub they are connected to.
-You can discover them manually or use `backgroundDiscovery`
+You can discover them manually or use `backgroundDiscovery`.
 
 ## Tapo IP Cameras
 
 The binding supports Tapo IP cameras (e.g. C200, C210, C310, C320WS, C520WS, TC60) as standalone things
-(`tapocontrol:camera`) through their local HTTPS API, covering features that ONVIF does not expose.
-Cameras do not require a bridge.
+(`tapocontrol:camera`) through their local HTTPS API, covering features that ONVIF does not expose. 
+For any camera features related to video and audio streaming, use the IP Camera binding (ONVIF) instead.
+Cameras do not require a bridge and are not discovered automatically — create the camera thing manually.
 
 Supported channels (availability is detected automatically per model):
 
@@ -85,10 +87,10 @@ The camera needs its IP address and Tapo account credentials. On newer camera fi
 | Parameter       | Description                                                                        |
 |-----------------|------------------------------------------------------------------------------------|
 | ipAddress       | IP address of the camera.                                                          |
-| password        | Tapo cloud account password.                                                        |
-| username        | [optional] Tapo API username. Default is `admin`                                    |
-| httpPort        | [optional] HTTPS port of the camera local API. Default is 443                        |
-| pollingInterval | [optional] Refresh interval in seconds (0=disabled). Default is 15                  |
+| password        | Tapo cloud account password.                                                       |
+| username        | [optional] Tapo API username. Default is `admin`                                   |
+| httpPort        | [optional] HTTPS port of the camera local API. Default is 443                      |
+| pollingInterval | [optional] Refresh interval in seconds (0=disabled). Default is 15                 |
 
 Cameras are not discovered automatically — cloud discovery cannot reliably resolve their local IP
 address and they do not respond to UDP discovery. Create the camera thing manually.
@@ -96,8 +98,6 @@ address and they do not respond to UDP discovery. Create the camera thing manual
 If authentication fails, verify that Third-Party Compatibility is enabled and that the username is
 `admin` with your Tapo cloud account password. After several failed attempts the camera temporarily
 rejects further logins — wait a few minutes (or power-cycle it) before retrying.
-
-Video and audio streaming is intentionally out of scope — use the IP Camera binding (ONVIF) for live views.
 
 ## Bridge Configuration
 
@@ -180,6 +180,8 @@ tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bri
 Bridge tapocontrol:bridge:secondBridgeExample            "Tapo Cloud Account"        [ username="youtoo@anyprovider.com", password="verysecret" ] {
    Thing P110 mySocket   "My-Socket"          [ ipAddress="192.168.101.51", pollingInterval=30 ]
 }
+
+tapocontrol:camera:myCamera "My Camera" [ ipAddress="192.168.178.154", httpPort=443, username="admin", password="verysecret"]
 ```
 
 ### `tapocontrol.items` Example
