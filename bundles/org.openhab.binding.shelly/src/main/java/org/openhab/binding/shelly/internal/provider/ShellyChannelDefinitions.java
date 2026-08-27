@@ -555,15 +555,16 @@ public class ShellyChannelDefinitions {
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
-            // Create power channel in color mode and brightness channel in white mode
+            boolean isRgb = profile.hasColorTag(idx) || (profile.isRGBW2 && profile.inColor);
             addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
-            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
+            addChannel(thing, add, status.temp != null || isRgb, whiteGroup, CHANNEL_COLOR_TEMP);
+            addChannel(thing, add, status.temp != null || isRgb, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
+            // TODO perhaps we don't need these primary channels ??
             if (idx == 0 && (profile.hasColorTag(0) || profile.isBulb || profile.isDuo
                     || (profile.isRGBW2 && profile.inColor))) {
                 if (profile.hasColorTag(0)) {

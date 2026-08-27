@@ -94,8 +94,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 ShellyLightModel model = lightModels.get(channelGroupNumber);
                 if (model == null) {
                     model = ShellyLightModel.create(this, channelGroupNumber, profile, DIM_STEPSIZE);
-                    model.acquire();
                     lightModels.put(channelGroupNumber, model);
+                    model.acquire();
                 }
                 WhatUpdated whatUpdated = updateLightModelFromChannelCommand(model, channelUID, command);
                 switch (whatUpdated) {
@@ -137,11 +137,11 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 ShellyLightModel model = lightModels.get(groupNo);
                 if (model == null) {
                     model = ShellyLightModel.create(this, groupNo, profile, DIM_STEPSIZE);
-                    model.acquire();
                     lightModels.put(groupNo, model);
+                    model.acquire();
                 }
                 updateLightModelFromStatus(model, light);
-                updated |= updateChannelsFromLightStatusDTO(light, groupNo);
+                updated |= updateChannelsFromLightStatusDTO(light, i, groupNo);
             }
         } finally {
             updated |= releaseLock();
@@ -386,20 +386,22 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * PHASE 2: Updates the channels from the incoming light status DTO (write before read)
      *
      * @param light the incoming light status DTO
-     * @param lightId the light Id
+     * @param lightIndex the light Index
+     * @param groupNo the channel group number
      * @return true if any channel was updated, false otherwise
      */
-    private boolean updateChannelsFromLightStatusDTO(ShellyStatusLightChannel light, int lightId) {
+    private boolean updateChannelsFromLightStatusDTO(ShellyStatusLightChannel light, int lightIndex, int groupNo) {
         if (logger.isTraceEnabled()) {
             logger.trace("{}: updateChannelsFromLightStatusDTO() with {}", thingName, new Gson().toJson(light));
         }
         boolean updated = false;
-        createLightChannels(light, lightId);
+        createLightChannels(light, lightIndex);
 
         // TIMERS:
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
-        if (lights != null && lightId < lights.size() && lights.get(lightId) instanceof ShellySettingsRgbwLight ls) {
-            String group = profile.getControlGroup(lightId);
+        if (lights != null && lightIndex < lights.size()
+                && lights.get(lightIndex) instanceof ShellySettingsRgbwLight ls) {
+            String group = groupNo == 0 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupNo;
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOON, toQuantityType(getDouble(ls.autoOn), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOOFF, toQuantityType(getDouble(ls.autoOff), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
@@ -478,6 +480,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
 
         // PRIMARY GROUP:
+        // TODO perhaps we don't need these primary channels ??
         if (model.isDirty() && groupNumber == 0 && model.supportsOnOffChannel()) {
             group = CHANNEL_GROUP_PRIMARY;
             if (model.configGetLightCapabilities().supportsColor()) {
