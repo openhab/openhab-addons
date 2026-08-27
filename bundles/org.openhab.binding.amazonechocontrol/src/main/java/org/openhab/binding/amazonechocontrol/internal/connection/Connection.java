@@ -628,7 +628,7 @@ public class Connection {
     public List<CustomerHistoryRecordTO> getActivities(long startTime, long endTime) {
         try {
             String url = getRetailUrl() + "/alexa-privacy/apd/rvh/customer-history-records?startTime=" + startTime
-                    + "&endTime=" + endTime + "&maxRecordSize=1";
+                    + "&endTime=" + endTime;
             CustomerHistoryRecordsTO customerHistoryRecords = requestBuilder.get(url)
                     .syncSend(CustomerHistoryRecordsTO.class);
             return customerHistoryRecords.customerHistoryRecords.stream()

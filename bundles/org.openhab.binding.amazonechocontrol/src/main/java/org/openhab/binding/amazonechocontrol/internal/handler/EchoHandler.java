@@ -99,6 +99,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Michael Geramb - Initial contribution
  * @author Martin Littkovsky - Report linked notification channels, so the account only polls for a consumer
+ * @author Martin Littkovsky - Deliver requested activity from before the handler started
  */
 @NonNullByDefault
 public class EchoHandler extends BaseThingHandler {
@@ -963,6 +964,16 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    /**
+     * An explicit refresh also delivers records from before the handler started, which the startup guard in
+     * {@link #handlePushActivity(CustomerHistoryRecordTO)} would otherwise drop.
+     */
+    public synchronized void handleRequestedActivity(CustomerHistoryRecordTO customerHistoryRecord) {
+        lastCustomerHistoryRecordTimestamp = Math.min(lastCustomerHistoryRecordTimestamp,
+                customerHistoryRecord.timestamp - 1);
+        handlePushActivity(customerHistoryRecord);
     }
 
     public synchronized void handlePushActivity(CustomerHistoryRecordTO customerHistoryRecord) {

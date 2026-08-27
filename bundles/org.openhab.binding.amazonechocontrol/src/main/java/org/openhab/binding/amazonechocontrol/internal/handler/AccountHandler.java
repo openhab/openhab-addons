@@ -102,6 +102,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial Contribution
  * @author Martin Littkovsky - Backoff for failed notification polls
  * @author Martin Littkovsky - Skip polls while no notification channel is linked
+ * @author Martin Littkovsky - Configurable activity request window, optional voice history polling
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements PushConnection.Listener {
@@ -125,6 +126,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private @Nullable ScheduledFuture<?> checkDataJob;
     private @Nullable ScheduledFuture<?> updateSmartHomeStateJob;
     private @Nullable ScheduledFuture<?> refreshActivityJob;
+    private @Nullable ScheduledFuture<?> activityPollingJob;
     private @Nullable ScheduledFuture<?> refreshSmartHomeAfterCommandJob;
     private final Object synchronizeSmartHomeJobScheduler = new Object();
 
@@ -165,6 +167,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         handlerConfig = getConfig().as(AccountHandlerConfig.class);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
+        updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.OFF);
 
         nextDataRefresh = 0;
         nextLoginCheck = 0;
@@ -178,6 +181,17 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 pollingIntervalSkills);
         updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(() -> updateSmartHomeState(null), 20, 10,
                 TimeUnit.SECONDS);
+
+        int pollingInterval = handlerConfig.activityPollingInterval;
+        if (pollingInterval > 0) {
+            if (handlerConfig.activityRequestWindow < pollingInterval) {
+                logger.warn(
+                        "activityRequestWindow ({}s) is smaller than activityPollingInterval ({}s) - commands between two polls will be missed",
+                        handlerConfig.activityRequestWindow, pollingInterval);
+            }
+            activityPollingJob = scheduler.scheduleWithFixedDelay(this::pollActivity, pollingInterval, pollingInterval,
+                    TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -190,13 +204,15 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             }
             String channelId = channelUID.getId();
             if (channelId.equals(CHANNEL_REFRESH_ACTIVITY) && command instanceof OnOffType) {
-                for (CustomerHistoryRecordTO record : getCustomerActivity(null)) {
-                    String[] keyParts = record.recordKey.split("#");
-                    String serialNumber = keyParts[keyParts.length - 1];
-                    EchoHandler echoHandler = echoHandlers.get(serialNumber);
-                    if (echoHandler != null) {
-                        echoHandler.handlePushActivity(record);
-                    }
+                if (command != OnOffType.ON) {
+                    updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.OFF);
+                    return;
+                }
+                updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.ON);
+                try {
+                    dispatchActivityRecords(true);
+                } finally {
+                    updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.OFF);
                 }
             } else if (channelId.equals(CHANNEL_SEND_MESSAGE) && command instanceof StringType) {
                 String commandValue = command.toFullString();
@@ -307,6 +323,11 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
     private void cleanup() {
         logger.debug("cleanup {}", getThing().getUID().getAsString());
+        ScheduledFuture<?> activityPollingJob = this.activityPollingJob;
+        if (activityPollingJob != null) {
+            activityPollingJob.cancel(true);
+            this.activityPollingJob = null;
+        }
         ScheduledFuture<?> updateSmartHomeStateJob = this.updateSmartHomeStateJob;
         if (updateSmartHomeStateJob != null) {
             updateSmartHomeStateJob.cancel(true);
@@ -782,12 +803,54 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         }
     }
 
+    private void pollActivity() {
+        if (disposing) {
+            return;
+        }
+        dispatchActivityRecords(false);
+    }
+
+    private void dispatchActivityRecords(boolean replayHistory) {
+        List<CustomerHistoryRecordTO> records = getCustomerActivity(null);
+        if (disposing) {
+            return;
+        }
+        logger.debug("Activity request returned {} record(s), {} echo handler(s) registered", records.size(),
+                echoHandlers.size());
+        for (CustomerHistoryRecordTO record : replayHistory ? newestRecordPerDevice(records) : records) {
+            String serialNumber = deviceSerialOf(record);
+            EchoHandler echoHandler = echoHandlers.get(serialNumber);
+            if (echoHandler == null) {
+                logger.debug("No echo handler for activity record of device ...{}",
+                        serialNumber.substring(Math.max(0, serialNumber.length() - 6)));
+                continue;
+            }
+            if (replayHistory) {
+                echoHandler.handleRequestedActivity(record);
+            } else {
+                echoHandler.handlePushActivity(record);
+            }
+        }
+    }
+
+    private static Collection<CustomerHistoryRecordTO> newestRecordPerDevice(List<CustomerHistoryRecordTO> records) {
+        Map<String, CustomerHistoryRecordTO> newest = new HashMap<>();
+        records.forEach(record -> newest.merge(deviceSerialOf(record), record,
+                (known, candidate) -> known.timestamp >= candidate.timestamp ? known : candidate));
+        return newest.values();
+    }
+
+    private static String deviceSerialOf(CustomerHistoryRecordTO record) {
+        String[] keyParts = record.recordKey.split("#");
+        return keyParts[keyParts.length - 1];
+    }
+
     private List<CustomerHistoryRecordTO> getCustomerActivity(@Nullable Long timestamp) {
         if (!connection.isLoggedIn()) {
             return List.of();
         }
         long realTimestamp = Objects.requireNonNullElse(timestamp, System.currentTimeMillis());
-        long startTimestamp = realTimestamp - 120000;
+        long startTimestamp = realTimestamp - handlerConfig.activityRequestWindow * 1000L;
         long endTimestamp = realTimestamp + 30000;
 
         return connection.getActivities(startTimestamp, endTimestamp);
