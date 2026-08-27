@@ -107,7 +107,7 @@ class TapoCameraApiTest {
         assertEquals("100", api.capturedHeaders.get("Seq"));
         assertNotNull(api.capturedHeaders.get("Tapo_tag"));
         String wrapped = api.capturedBody;
-        assertTrue(wrapped.contains("\"method\": \"securePassthrough\""));
+        assertTrue(wrapped.contains("\"method\":\"securePassthrough\""));
 
         // next sequence number: login set 100, first secured command consumed 101
         assertEquals(101, api.getCurrentSeq());

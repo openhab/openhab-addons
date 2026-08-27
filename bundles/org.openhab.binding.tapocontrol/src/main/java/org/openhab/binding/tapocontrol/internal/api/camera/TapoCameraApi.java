@@ -303,9 +303,9 @@ public class TapoCameraApi {
             boolean first = true;
             for (var entry : element.getAsJsonObject().entrySet()) {
                 if (!first) {
-                    result.append(", ");
+                    result.append(',');
                 }
-                result.append(gson.toJson(entry.getKey())).append(": ").append(protocolJson(entry.getValue()));
+                result.append(gson.toJson(entry.getKey())).append(':').append(protocolJson(entry.getValue()));
                 first = false;
             }
             return result.append('}').toString();
@@ -315,7 +315,7 @@ public class TapoCameraApi {
             boolean first = true;
             for (JsonElement child : element.getAsJsonArray()) {
                 if (!first) {
-                    result.append(", ");
+                    result.append(',');
                 }
                 result.append(protocolJson(child));
                 first = false;
