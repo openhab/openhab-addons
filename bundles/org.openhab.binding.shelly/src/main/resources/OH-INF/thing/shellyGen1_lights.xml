@@ -10,7 +10,6 @@
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="primary" typeId="primary-group"/>
 			<channel-group id="control" typeId="bulbControl"/>
 			<channel-group id="color" typeId="colorSettingsBulb"/>
 			<channel-group id="white" typeId="whiteSettings"/>
@@ -27,7 +26,6 @@
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="primary" typeId="primary-group"/>
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -44,7 +42,6 @@
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="primary" typeId="primary-group"/>
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="color" typeId="colorSettingsBulb"/>
 			<channel-group id="white" typeId="whiteSettings"/>
@@ -62,7 +59,6 @@
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="primary" typeId="primary-group"/>
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -79,7 +75,6 @@
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="primary" typeId="primary-group"/>
 			<channel-group id="control" typeId="rgbw2ColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBW2"/>
 			<channel-group id="white" typeId="whiteSettings"/>
