@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="emerald"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Emerald Account</label>
+		<description>Emerald Account</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>Email Address</label>
+				<description>The email address for logging into the Emerald app</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password for the supplied user account</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="hws">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Emerald HWS</label>
+		<description>Thing for Emerald HWS</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="current-temperature" typeId="current-temperature"/>
+			<channel id="set-temperature" typeId="set-temperature"/>
+			<channel id="fault" typeId="fault"/>
+			<channel id="defrost" typeId="defrost"/>
+			<channel id="work-state" typeId="work-state"/>
+			<channel id="tank-capacity" typeId="tank-capacity"/>
+		</channels>
+
+		<config-description>
+			<parameter name="uuid" type="text" required="true">
+				<context>uuid</context>
+				<label>UUID of HWS</label>
+				<description>The UUID associated with the HWS</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Turns on/off the Hot Water Service</description>
+		<state/>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Mode the HWS is set to</description>
+		<state pattern="%.0f %unit%">
+			<options>
+				<option value="0">Boost</option>
+				<option value="1">Normal</option>
+				<option value="2">Quiet</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="fault">
+		<item-type>Number</item-type>
+		<label>Fault Status</label>
+		<description>Report any current Faults from HWS</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="defrost">
+		<item-type>Switch</item-type>
+		<label>Defrost</label>
+		<description>Is the defrost cycle running</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="work-state">
+		<item-type>Number</item-type>
+		<label>Work State</label>
+		<description>Report the current workstate of the HWS</description>
+		<state readOnly="true" pattern="%.0f %unit%">
+			<options>
+				<option value="0">Idle</option>
+				<option value="1">Heating</option>
+				<option value="2">On but not heating</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="current-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>Current Temperature of Hot Water</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="set-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Temperature</label>
+		<description>Set Temperature of Hot Water</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="tank-capacity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Tank Capacity</label>
+		<description>Report the current hot water capacity of the HWS</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>
