@@ -69,7 +69,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
         }
 
         @Test
-        @DisplayName("Tracks only direct environment variable access, ignoring existence checks")
+        @DisplayName("Tracks only direct environment variable access, ignoring method calls")
         void tracksOnlyDirectEnvironmentVariableAccess() throws IOException {
             Path main = writeFixture("env_main.yaml", """
                     tracked_access:
