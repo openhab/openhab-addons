@@ -12,7 +12,6 @@
  */
 package org.openhab.io.opentelemetry.internal;
 
-import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
@@ -299,10 +298,9 @@ public class OpenTelemetryService {
         return Double.isNaN(raw) ? 1.0 : Math.max(0.0, Math.min(1.0, raw));
     }
 
-    /** Returns true when the OTel Java agent is running (detected via JVM arguments). */
-    static boolean isAgentPresent() {
-        return ManagementFactory.getRuntimeMXBean().getInputArguments().stream()
-                .anyMatch(arg -> arg.contains("opentelemetry-javaagent"));
+    /** Returns true when a global OpenTelemetry is already installed, e.g. by the OTel Java agent. */
+    static boolean isGlobalOpenTelemetrySet() {
+        return GlobalOpenTelemetry.isSet();
     }
 
     private synchronized void initializeSdk(OpenTelemetryConfiguration config, Map<String, String> headers) {
@@ -325,9 +323,9 @@ public class OpenTelemetryService {
         SdkTracerProvider tracerProvider = null;
         Tracer tracer = null;
         if (config.tracesEnabled) {
-            if (isAgentPresent()) {
+            if (isGlobalOpenTelemetrySet()) {
                 logger.info(
-                        "OTel Java agent detected — event-bus spans will join the agent's pipeline (read-only GlobalOpenTelemetry).");
+                        "Global OpenTelemetry already installed — event-bus spans will join its pipeline (read-only GlobalOpenTelemetry).");
                 tracer = GlobalOpenTelemetry.get().getTracer("org.openhab.io.opentelemetry");
             } else {
                 tracerProvider = createSdkTracerProvider(config, resource, headers);

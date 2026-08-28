@@ -23,6 +23,8 @@ import org.openhab.core.id.InstanceUUID;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Tags;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.sdk.resources.Resource;
 
 /**
@@ -220,6 +222,17 @@ public class OpenTelemetryServiceTest {
         assertEquals(0.0, OpenTelemetryService.clampSamplingRatio(-0.5), 0.0001);
         assertEquals(1.0, OpenTelemetryService.clampSamplingRatio(1.5), 0.0001);
         assertEquals(0.5, OpenTelemetryService.clampSamplingRatio(0.5), 0.0001);
+    }
+
+    @Test
+    public void testIsGlobalOpenTelemetrySetReflectsGlobalState() {
+        assertFalse(OpenTelemetryService.isGlobalOpenTelemetrySet());
+        GlobalOpenTelemetry.set(OpenTelemetry.noop());
+        try {
+            assertTrue(OpenTelemetryService.isGlobalOpenTelemetrySet());
+        } finally {
+            GlobalOpenTelemetry.resetForTest();
+        }
     }
 
     @Test
