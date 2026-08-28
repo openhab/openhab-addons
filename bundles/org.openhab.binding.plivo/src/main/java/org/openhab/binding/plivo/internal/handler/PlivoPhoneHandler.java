@@ -210,7 +210,9 @@ public class PlivoPhoneHandler extends BaseThingHandler {
      */
     public void handleIncomingSms(Map<String, String> params) {
         String from = params.getOrDefault("From", "");
-        String body = params.getOrDefault("Text", "");
+        // Plivo sends SMS text in "Text", while WhatsApp (and MMS body text) use "Body".
+        String bodyParam = params.get("Body");
+        String body = bodyParam != null && !bodyParam.isBlank() ? bodyParam : params.getOrDefault("Text", "");
         String messageUuid = params.getOrDefault("MessageUUID", "");
         String type = params.getOrDefault("Type", "sms");
 

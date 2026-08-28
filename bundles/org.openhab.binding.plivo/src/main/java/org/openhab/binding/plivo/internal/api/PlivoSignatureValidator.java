@@ -75,11 +75,17 @@ public class PlivoSignatureValidator {
     /**
      * Computes the expected V3 signature for a POST callback.
      * <p>
-     * The signed string is the request URL with its query string removed, followed by a literal
-     * {@code ?}. When the URL had a query string, its parameters are appended sorted by key as
-     * {@code key=value} pairs joined by {@code &}, followed by a {@code .} separator. The POST body
-     * parameters are then appended sorted by key as a {@code key}+{@code value} concatenation with
-     * no separators, and finally a {@code .} and the nonce are appended.
+     * The signed string starts with the request URL, its query string sorted by key and rewritten as
+     * {@code key=value} pairs joined by {@code &}. The POST body parameters are then appended sorted
+     * by key as a {@code key}+{@code value} concatenation with no separators, and finally a
+     * {@code .} and the nonce are appended.
+     * <p>
+     * Separators are only emitted when the part they introduce is actually present, mirroring
+     * Plivo's {@code construct_post_url()}: the {@code ?} is omitted entirely when there is neither
+     * a query string nor a body parameter, and the {@code .} between the query and the body
+     * parameters is omitted when there are no body parameters. An empty POST body therefore signs
+     * {@code base.nonce} (no query) or {@code base?query.nonce} (with a query) rather than the
+     * {@code base?.nonce} / {@code base?query..nonce} that an unconditional separator would give.
      *
      * @param url the full URL Plivo requested
      * @param params the POST parameters
@@ -92,13 +98,24 @@ public class PlivoSignatureValidator {
         String base = queryIndex >= 0 ? url.substring(0, queryIndex) : url;
         String query = queryIndex >= 0 ? url.substring(queryIndex + 1) : "";
 
-        StringBuilder data = new StringBuilder(base).append('?');
-        if (!query.isEmpty()) {
-            data.append(sortedQueryString(query)).append('.');
+        boolean hasQuery = !query.isEmpty();
+        boolean hasParams = !params.isEmpty();
+
+        StringBuilder data = new StringBuilder(base);
+        if (hasQuery || hasParams) {
+            data.append('?');
         }
-        TreeMap<String, String> sorted = new TreeMap<>(params);
-        for (Map.Entry<String, String> entry : sorted.entrySet()) {
-            data.append(entry.getKey()).append(entry.getValue());
+        if (hasQuery) {
+            data.append(sortedQueryString(query));
+        }
+        if (hasParams) {
+            if (hasQuery) {
+                data.append('.');
+            }
+            TreeMap<String, String> sorted = new TreeMap<>(params);
+            for (Map.Entry<String, String> entry : sorted.entrySet()) {
+                data.append(entry.getKey()).append(entry.getValue());
+            }
         }
         data.append('.').append(nonce);
 

@@ -26,10 +26,12 @@ import org.junit.jupiter.api.Test;
  * <p>
  * The reference signatures below were produced with Plivo's published V3 algorithm (the same
  * {@code construct_post_url} / {@code get_signature_v3} logic used by the plivo-python SDK):
- * take the URL without its query string, append {@code ?}, then the sorted query parameters as
- * {@code key=value} pairs joined by {@code &} plus a {@code .} when a query is present, then the
- * sorted POST body parameters as a {@code key}+{@code value} concatenation, then {@code .} and the
- * nonce, and finally {@code Base64(HMAC-SHA256(authToken, ...))}.
+ * take the URL without its query string, then the sorted query parameters as {@code key=value}
+ * pairs joined by {@code &}, then the sorted POST body parameters as a {@code key}+{@code value}
+ * concatenation, then {@code .} and the nonce, and finally
+ * {@code Base64(HMAC-SHA256(authToken, ...))}. Separators are only emitted for parts that are
+ * actually present: the {@code ?} is dropped when there is neither a query nor a body parameter,
+ * and the {@code .} between query and body parameters is dropped when the body is empty.
  * <p>
  * The V2 reference signature was produced with Plivo's V2 algorithm ({@code validate_signature} in
  * the plivo-python SDK): the URL with its query string removed, followed by the nonce, then
@@ -57,6 +59,12 @@ public class PlivoSignatureValidatorTest {
     // Reference V2 signature (canonical string https://example.com/answer12345). Plivo V2 strips the
     // query string, so both URLs above produce this same signature.
     private static final String SIG_V2 = "JTLtnh4xskVxvDEWnLeMYs8IkO4HTZJ8JPdRAmNGgso=";
+
+    // Reference V3 signatures for an empty POST body. Plivo only emits a separator for a part that
+    // is present, so the canonical strings are https://example.com/answer.12345 and
+    // https://example.com/answer?token=xyz.12345 -- not answer?.12345 / answer?token=xyz..12345.
+    private static final String SIG_EMPTY_BODY_NO_QUERY = "0yCSTcpk0g5MyH+eKhYi02RUlMZ/VPnJKABuBXoajUc=";
+    private static final String SIG_EMPTY_BODY_WITH_QUERY = "aTkESVixprLGVxJeYf1Uw0FcHSOsZ6SnhyPAXbtGJ0U=";
 
     @Test
     public void computeSignatureMatchesPlivoReferenceWithoutQuery() {
@@ -159,5 +167,40 @@ public class PlivoSignatureValidatorTest {
     public void validateCallbackRejectsWhenNoSignatures() {
         assertFalse(PlivoSignatureValidator.validateCallback(false, URL_NO_QUERY, PARAMS, AUTH_TOKEN, null, null, null,
                 null, null, null));
+    }
+
+    @Test
+    public void computeSignatureWithEmptyBodyAndNoQueryOmitsQuestionMark() {
+        assertEquals(SIG_EMPTY_BODY_NO_QUERY,
+                PlivoSignatureValidator.computeV3Signature(URL_NO_QUERY, Map.of(), NONCE, AUTH_TOKEN));
+    }
+
+    @Test
+    public void computeSignatureWithEmptyBodyAndQueryOmitsExtraSeparator() {
+        assertEquals(SIG_EMPTY_BODY_WITH_QUERY,
+                PlivoSignatureValidator.computeV3Signature(URL_WITH_QUERY, Map.of(), NONCE, AUTH_TOKEN));
+    }
+
+    @Test
+    public void validateAcceptsEmptyBodySignatures() {
+        assertTrue(
+                PlivoSignatureValidator.validateV3(URL_NO_QUERY, Map.of(), SIG_EMPTY_BODY_NO_QUERY, NONCE, AUTH_TOKEN));
+        assertTrue(PlivoSignatureValidator.validateV3(URL_WITH_QUERY, Map.of(), SIG_EMPTY_BODY_WITH_QUERY, NONCE,
+                AUTH_TOKEN));
+    }
+
+    @Test
+    public void emptyBodySignatureDiffersFromPopulatedBodySignature() {
+        // Guards against a canonicalization that collapses the empty-body and populated-body cases.
+        assertFalse(PlivoSignatureValidator.validateV3(URL_NO_QUERY, Map.of(), SIG_NO_QUERY, NONCE, AUTH_TOKEN));
+        assertFalse(
+                PlivoSignatureValidator.validateV3(URL_NO_QUERY, PARAMS, SIG_EMPTY_BODY_NO_QUERY, NONCE, AUTH_TOKEN));
+    }
+
+    @Test
+    public void validateCallbackAcceptsEmptyBodyVoiceCallback() {
+        // A voice/answer callback can legitimately arrive with no POST parameters.
+        assertTrue(PlivoSignatureValidator.validateCallback(false, URL_WITH_QUERY, Map.of(), AUTH_TOKEN,
+                SIG_EMPTY_BODY_WITH_QUERY, null, NONCE, null, null, null));
     }
 }

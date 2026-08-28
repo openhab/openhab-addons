@@ -388,7 +388,10 @@ public class PlivoCallbackServlet extends HttpServlet {
                 }
                 sendXmlResponse((HttpServletResponse) asyncContext.getResponse(), handler, xml, endpoint);
             } finally {
-                pendingResponses.remove(callUuid);
+                // Remove only this request's entry. A retry for the same CallUUID may already have
+                // replaced it, and dropping that newer future would leave respondWithXml unable to
+                // answer the retried request.
+                pendingResponses.remove(callUuid, future);
                 asyncContext.complete();
             }
         });

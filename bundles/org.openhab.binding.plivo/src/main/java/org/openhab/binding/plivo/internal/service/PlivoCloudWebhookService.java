@@ -150,14 +150,7 @@ public class PlivoCloudWebhookService {
             }
         }
         if (removeNeeded && ws != null) {
-            try {
-                ws.removeWebhook(SERVLET_PATH).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-                logger.debug("Cloud webhook removed for {}", SERVLET_PATH);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (Exception e) {
-                logger.debug("Failed to remove cloud webhook for {}: {}", SERVLET_PATH, e.getMessage());
-            }
+            removeWebhook(ws, "last requestor unregistered");
         }
     }
 
@@ -165,7 +158,9 @@ public class PlivoCloudWebhookService {
      * @return the current cloud webhook base URL, or {@code null} if not yet registered.
      */
     public @Nullable String getBaseUrl() {
-        return baseUrl;
+        synchronized (lock) {
+            return baseUrl;
+        }
     }
 
     /**
@@ -188,28 +183,35 @@ public class PlivoCloudWebhookService {
         availabilityListeners.remove(listener);
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private @Nullable String doRegister() {
+        WebhookService requestService;
         synchronized (lock) {
-            if (baseUrl != null) {
-                return baseUrl;
+            String current = baseUrl;
+            if (current != null) {
+                return current;
             }
-            if (webhookService == null || requestors.isEmpty()) {
+            WebhookService ws = webhookService;
+            if (ws == null || requestors.isEmpty()) {
                 return null;
             }
+            // Capture the service this registration is made through, so a replacement that binds
+            // while the request is in flight cannot be mistaken for the one that created the result.
+            requestService = ws;
         }
-        String url = fetchWebhookUrl();
+        String url = fetchWebhookUrl(requestService);
         if (url == null) {
             return null;
         }
-        WebhookService orphanedService = null;
         boolean newlyRegistered = false;
         synchronized (lock) {
-            if (baseUrl != null) {
-                return baseUrl;
+            String current = baseUrl;
+            if (current != null) {
+                // Another thread registered the same path while this request was in flight. Both
+                // asked the service for SERVLET_PATH, so there is nothing orphaned to clean up.
+                return current;
             }
-            if (requestors.isEmpty()) {
-                orphanedService = webhookService;
-            } else {
+            if (webhookService == requestService && !requestors.isEmpty()) {
                 baseUrl = url;
                 newlyRegistered = true;
                 logger.debug("Cloud webhook base URL: {}", url);
@@ -223,16 +225,10 @@ public class PlivoCloudWebhookService {
             notifyAvailabilityListeners();
             return url;
         }
-        if (orphanedService != null) {
-            try {
-                orphanedService.removeWebhook(SERVLET_PATH).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-                logger.debug("Removed orphaned cloud webhook for {} (no requestors after registration)", SERVLET_PATH);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (Exception e) {
-                logger.debug("Failed to remove orphaned cloud webhook for {}: {}", SERVLET_PATH, e.getMessage());
-            }
-        }
+        // The last requestor unregistered, or the service was replaced, while the request was in
+        // flight. Publishing now would resurrect a registration nobody wants, so drop it through the
+        // same service that created it.
+        removeWebhook(requestService, "no longer required after registration");
         return null;
     }
 
@@ -246,21 +242,38 @@ public class PlivoCloudWebhookService {
         }
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private void refresh() {
-        String url = fetchWebhookUrl();
-        if (url != null) {
-            baseUrl = url;
-            logger.trace("Cloud webhook refreshed: {}", url);
+        WebhookService requestService;
+        synchronized (lock) {
+            WebhookService ws = webhookService;
+            if (ws == null || requestors.isEmpty() || baseUrl == null) {
+                return;
+            }
+            requestService = ws;
+        }
+        String url = fetchWebhookUrl(requestService);
+        if (url == null) {
+            return;
+        }
+        boolean refreshed = false;
+        synchronized (lock) {
+            // Only keep the refreshed URL while the registration it belongs to is still live;
+            // otherwise an in-flight refresh would restore a URL that unregister() just cleared.
+            if (webhookService == requestService && !requestors.isEmpty() && baseUrl != null) {
+                baseUrl = url;
+                refreshed = true;
+                logger.trace("Cloud webhook refreshed: {}", url);
+            }
+        }
+        if (!refreshed) {
+            removeWebhook(requestService, "registration torn down during refresh");
         }
     }
 
-    private @Nullable String fetchWebhookUrl() {
-        WebhookService ws = webhookService;
-        if (ws == null) {
-            return null;
-        }
+    private @Nullable String fetchWebhookUrl(WebhookService service) {
         try {
-            Webhook hook = ws.requestWebhook(SERVLET_PATH).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Webhook hook = service.requestWebhook(SERVLET_PATH).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             return hook.url().toString();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -268,6 +281,17 @@ public class PlivoCloudWebhookService {
         } catch (Exception e) {
             logger.debug("Failed to request cloud webhook for {}: {}", SERVLET_PATH, e.getMessage());
             return null;
+        }
+    }
+
+    private void removeWebhook(WebhookService service, String reason) {
+        try {
+            service.removeWebhook(SERVLET_PATH).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            logger.debug("Cloud webhook removed for {} ({})", SERVLET_PATH, reason);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            logger.debug("Failed to remove cloud webhook for {} ({}): {}", SERVLET_PATH, reason, e.getMessage());
         }
     }
 }
