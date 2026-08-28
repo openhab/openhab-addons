@@ -227,7 +227,8 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             // Snap to the nearest 20% step just like the Emerald app
             int rounded = (int) (Math.round(clamped / 20.0) * 20);
 
-            updateState(EmeraldBindingConstants.CHANNEL_TANK_CAPACITY, new DecimalType(rounded));
+            updateState(EmeraldBindingConstants.CHANNEL_TANK_CAPACITY,
+                    new QuantityType<>(rounded, org.openhab.core.library.unit.Units.PERCENT));
         }
     }
 
