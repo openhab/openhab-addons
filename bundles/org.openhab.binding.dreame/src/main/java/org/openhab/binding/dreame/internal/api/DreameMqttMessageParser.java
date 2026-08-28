@@ -74,6 +74,8 @@ final class DreameMqttMessageParser {
             parseHeartbeat(value.getAsJsonArray(), requested, status);
         } else if (serviceId == 1 && propertyId == 4 && value.isJsonArray()) {
             parsePose(value.getAsJsonArray(), status);
+        } else if (serviceId == 1 && propertyId == 50 && value.isJsonObject()) {
+            status.setMapChanged();
         } else if (serviceId == 2 && propertyId == 50 && value.isJsonObject()) {
             parseTaskStatus(value.getAsJsonObject(), status);
         } else if (serviceId == 2 && propertyId == 56 && value.isJsonObject()) {

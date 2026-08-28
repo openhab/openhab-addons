@@ -47,6 +47,7 @@ import org.openhab.binding.dreame.internal.model.DreameMqttConfiguration;
 import org.openhab.binding.dreame.internal.model.DreameProperty;
 import org.openhab.binding.dreame.internal.model.DreameStatus;
 import org.openhab.binding.dreame.internal.util.DreameDiagnostics;
+import org.openhab.binding.dreame.internal.util.DreameMapPngRenderer;
 import org.openhab.binding.dreame.internal.util.DreameMapSvgRenderer;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -85,6 +86,7 @@ public class DreameMowerHandler extends BaseThingHandler {
             DreameProperty.BATTERY_LEVEL, DreameProperty.CHARGING_STATUS, DreameProperty.STATUS, DreameProperty.DND);
     private static final Duration STATISTICS_REFRESH_INTERVAL = Duration.ofMinutes(15);
     private static final Duration MAP_REFRESH_INTERVAL = Duration.ofMinutes(15);
+    private static final Duration PNG_REFRESH_INTERVAL = Duration.ofSeconds(10);
     private static final long STATISTICS_EVENT_DELAY_SECONDS = 2;
     private static final long STATISTICS_DOCKED_DELAY_SECONDS = 5;
 
@@ -102,6 +104,7 @@ public class DreameMowerHandler extends BaseThingHandler {
     private volatile @Nullable DreameMowerPose mowerPose;
     private Instant nextStatisticsRefresh = Instant.EPOCH;
     private Instant nextMapRefresh = Instant.EPOCH;
+    private Instant nextPngRefresh = Instant.EPOCH;
     private final Gson gson = new Gson();
 
     public DreameMowerHandler(Thing thing) {
@@ -154,11 +157,15 @@ public class DreameMowerHandler extends BaseThingHandler {
             } else if (CHANNEL_DND.equals(channelUID.getId()) && command instanceof OnOffType onOff) {
                 account.getApiClient().setProperty(device, DreameProperty.DND, onOff == OnOffType.ON);
             } else if (CHANNEL_CUTTING_HEIGHT.equals(channelUID.getId()) && command instanceof DecimalType decimal) {
+                if (!supportsElectronicCuttingHeight(device.model())) {
+                    throw new IllegalArgumentException(
+                            "Electronic cutting-height control is not supported by " + device.model());
+                }
                 setCuttingHeight(account, device, decimal.toBigDecimal());
             }
             poll();
         } catch (DreameCloudException | IllegalArgumentException e) {
-            logger.debug("Dreamehome command failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
+            logger.debug("Cloud command failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
                     e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -241,7 +248,7 @@ public class DreameMowerHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             ensureMqtt(account, device);
         } catch (DreameCloudException e) {
-            logger.debug("Dreamehome polling failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
+            logger.debug("Cloud polling failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
                     e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -264,24 +271,34 @@ public class DreameMowerHandler extends BaseThingHandler {
             updateState(CHANNEL_ZONES, new StringType(gson.toJson(mapData.zones())));
             mapData.maps().stream().filter(map -> map.id() == mapData.currentMapId()).findFirst()
                     .ifPresent(map -> refreshCuttingHeight(account, device, map.index()));
+            nextPngRefresh = Instant.EPOCH;
             updateMapImage();
         } catch (DreameCloudException e) {
-            logger.debug("Dreamehome map query failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
+            logger.debug("Cloud map query failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
                     e.getMessage());
         }
     }
 
     private void refreshCuttingHeight(DreameAccountHandler account, DreameDevice device, int mapIndex) {
+        if (!supportsElectronicCuttingHeight(device.model())) {
+            logger.debug("Electronic cutting-height control is not supported by mower model {}", device.model());
+            updateState(CHANNEL_CUTTING_HEIGHT, UnDefType.UNDEF);
+            return;
+        }
         try {
             BigDecimal cuttingHeight = account.getApiClient().getCuttingHeight(device, mapIndex);
             logger.debug("Received cutting height {} cm for map index {} of device {}", cuttingHeight, mapIndex,
                     DreameDiagnostics.maskIdentifier(device.id()));
             updateState(CHANNEL_CUTTING_HEIGHT, new DecimalType(cuttingHeight));
         } catch (DreameCloudException e) {
-            logger.debug("Dreamehome cutting-height query failed for device {}: {}",
+            logger.debug("Cloud cutting-height query failed for device {}: {}",
                     DreameDiagnostics.maskIdentifier(device.id()), e.getMessage());
             updateState(CHANNEL_CUTTING_HEIGHT, UnDefType.UNDEF);
         }
+    }
+
+    static boolean supportsElectronicCuttingHeight(String model) {
+        return !"mova.mower.g2405c".equals(model);
     }
 
     private void setCuttingHeight(DreameAccountHandler account, DreameDevice device, BigDecimal height)
@@ -310,7 +327,7 @@ public class DreameMowerHandler extends BaseThingHandler {
             updateState(CHANNEL_TOTAL_MOWING_TIME, new QuantityType<>(statistics.totalMinutes(), Units.MINUTE));
             updateState(CHANNEL_TOTAL_MOWED_AREA, new QuantityType<>(statistics.totalArea(), SIUnits.SQUARE_METRE));
         } catch (DreameCloudException e) {
-            logger.debug("Dreamehome statistics query failed for device {}: {}",
+            logger.debug("Cloud statistics query failed for device {}: {}",
                     DreameDiagnostics.maskIdentifier(device.id()), e.getMessage());
         }
     }
@@ -351,6 +368,12 @@ public class DreameMowerHandler extends BaseThingHandler {
                     scheduler.execute(() -> {
                         if (active) {
                             updateChannelsFromMqtt(status);
+                            if (status.mapChanged()) {
+                                logger.debug("Refreshing map data after MQTT change notification for device {}",
+                                        DreameDiagnostics.maskIdentifier(device.id()));
+                                nextMapRefresh = Instant.EPOCH;
+                                refreshMapData(account, device);
+                            }
                             if (status.missionCompleted()) {
                                 scheduleStatisticsRefresh(account, device, STATISTICS_EVENT_DELAY_SECONDS);
                             } else if (status.contains(DreameProperty.STATE)
@@ -374,9 +397,9 @@ public class DreameMowerHandler extends BaseThingHandler {
     }
 
     private void updateChannelsFromMqtt(DreameStatus status) {
-        logger.trace("Received MQTT properties {} position={} task={} taskActive={} missionCompleted={}",
+        logger.trace("Received MQTT properties {} position={} task={} taskActive={} missionCompleted={} mapChanged={}",
                 status.properties(), status.mowerPose() != null, status.mowerTaskStatus() != null,
-                status.mowerTaskActive(), status.missionCompleted());
+                status.mowerTaskActive(), status.missionCompleted(), status.mapChanged());
         updateStatusChannels(status, false, null);
         DreameMowerPose pose = status.mowerPose();
         if (pose != null) {
@@ -424,9 +447,19 @@ public class DreameMowerHandler extends BaseThingHandler {
         if (currentMapData == null) {
             return;
         }
-        String svg = DreameMapSvgRenderer.render(currentMapData.geometries(), currentMapData.currentMapId(), mowerPose);
+        DreameDevice device = device(accountHandler());
+        boolean rotateClockwise = device != null && device.model().startsWith("mova.mower.");
+        String svg = DreameMapSvgRenderer.render(currentMapData.geometries(), currentMapData.currentMapId(), mowerPose,
+                rotateClockwise);
         updateState(CHANNEL_MAP_SVG,
                 svg == null ? UnDefType.UNDEF : new RawType(svg.getBytes(StandardCharsets.UTF_8), "image/svg+xml"));
+        Instant now = Instant.now();
+        if (isLinked(CHANNEL_MAP_PNG) && !now.isBefore(nextPngRefresh)) {
+            nextPngRefresh = now.plus(PNG_REFRESH_INTERVAL);
+            byte[] png = DreameMapPngRenderer.render(currentMapData.geometries(), currentMapData.currentMapId(),
+                    mowerPose, rotateClockwise);
+            updateState(CHANNEL_MAP_PNG, png == null ? UnDefType.UNDEF : new RawType(png, "image/png"));
+        }
     }
 
     private void updateStatusChannels(DreameStatus status, boolean clearMissing, @Nullable Long pollRevision) {

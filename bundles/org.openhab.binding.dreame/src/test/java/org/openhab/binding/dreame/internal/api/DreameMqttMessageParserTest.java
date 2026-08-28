@@ -87,6 +87,20 @@ class DreameMqttMessageParserTest {
     }
 
     @Test
+    void mqttParserRecognizesMapChangeNotification() throws DreameCloudException {
+        String payload = """
+                {"data":{"method":"properties_changed","params":[
+                  {"did":"123","siid":1,"piid":50,"value":{}}
+                ]}}
+                """;
+
+        DreameStatus status = new DreameMqttMessageParser().parse(payload, List.of());
+
+        assertTrue(status.mapChanged());
+        assertTrue(status.hasUpdates());
+    }
+
+    @Test
     void mqttParserDecodesMowerHeartbeatBatteryAndChargingState() throws DreameCloudException {
         String payload = """
                 {"data":{"method":"properties_changed","params":[

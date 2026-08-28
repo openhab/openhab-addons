@@ -72,15 +72,20 @@ An unsupported property is reported as `UNDEF`.
 | `task-time`             | Number               | R      | Raw undocumented task time field                  |
 | `current-map-id`        | Number               | R      | Identifier of the active map                      |
 | `maps`                  | String               | R      | Available map descriptors as JSON                 |
-| `zones`                 | String               | R      | Mowing-zone descriptors as JSON                   |
+| `zones`                 | String               | R      | Active-map mowing-zone descriptors as JSON        |
 | `map-svg`               | Image                | R      | Rendered SVG image of the active map              |
+| `map-png`               | Image                | R      | PNG map for mobile and Basic UI clients            |
 | `zone-mowing`           | String               | W      | Start selective mowing using zone IDs              |
-| `cutting-height`        | Number (cm)          | R/W    | Map-wide cutting height in 0.5 cm steps            |
+| `cutting-height`        | Number (cm)          | R/W    | Electronic map-wide cutting height; model-dependent |
 | `mowing-sessions`       | Number               | R      | Lifetime mowing sessions; model-dependent        |
 | `total-mowing-time`     | Number:Time          | R      | Lifetime mowing time; model-dependent            |
 | `total-mowed-area`      | Number:Area          | R      | Lifetime mowed area; model-dependent             |
 
 The `command` channel is stateless and therefore normally displays `NULL`.
+Map IDs exposed by openHAB start at one. When the cloud reports a map change through MQTT, the binding reloads the
+active map, mowing zones, rendered map and map-specific settings immediately.
+The binding exposes the same rendered map as SVG and PNG. Use `map-svg` in clients with reliable SVG support and
+`map-png` in the openHAB mobile apps or Basic UI if SVG rendering is unavailable or unstable.
 The `zone-mowing` channel is also stateless. Send one or more positive zone IDs separated by commas, for example `1`
 or `1,2`. Before sending the task to the mower, the binding removes duplicate IDs and verifies every ID against the
 zones of the active map. Empty, non-numeric, non-positive and unknown zone IDs are rejected.
@@ -94,6 +99,7 @@ The `map-svg` channel contains a rendered SVG of the active map, including mowin
 the charging station, the mower position and its mowing path when those elements are supplied by the mower.
 The `cutting-height` channel controls the map-wide cutting height from 3.0 cm to 7.0 cm in 0.5 cm steps. The binding
 preserves unknown fields in the mower's map preferences and confirms a change by reading the value back from the device.
+It is `UNDEF` for the MOVA 1000 (`mova.mower.g2405c`), which uses a mechanical cutting-height control.
 
 ## Full Example
 

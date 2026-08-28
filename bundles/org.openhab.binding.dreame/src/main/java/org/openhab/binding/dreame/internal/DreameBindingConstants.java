@@ -59,6 +59,7 @@ public final class DreameBindingConstants {
     public static final String CHANNEL_MAPS = "maps";
     public static final String CHANNEL_ZONES = "zones";
     public static final String CHANNEL_MAP_SVG = "map-svg";
+    public static final String CHANNEL_MAP_PNG = "map-png";
     public static final String CHANNEL_ZONE_MOWING = "zone-mowing";
     public static final String CHANNEL_CUTTING_HEIGHT = "cutting-height";
 

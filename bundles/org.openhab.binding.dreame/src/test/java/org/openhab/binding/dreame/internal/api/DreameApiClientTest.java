@@ -204,6 +204,43 @@ class DreameApiClientTest {
     }
 
     @Test
+    void mapParserFiltersEmptyMapPlaceholders() throws DreameCloudException {
+        String activeMap = "{\"mapIndex\":0,\"name\":\"Garden\",\"totalArea\":152.5,"
+                + "\"boundary\":{\"x1\":0,\"y1\":0,\"x2\":100,\"y2\":200}}";
+        String placeholder = "{\"mapIndex\":1,\"name\":\"\",\"totalArea\":0,"
+                + "\"boundary\":{\"x1\":0,\"y1\":0,\"x2\":0,\"y2\":0}}";
+        com.google.gson.JsonObject batch = new com.google.gson.JsonObject();
+        batch.addProperty("MAP.0", new com.google.gson.Gson().toJson(List.of(activeMap, placeholder)));
+
+        DreameMapData data = new DreameApiResponseParser().parseMapData(batch, JsonParser.parseString("""
+                {"code":0,"out":[{"r":0,"d":[[0,1],[1,0]]}]}
+                """));
+
+        assertEquals(1, data.maps().size());
+        assertEquals("Garden", data.maps().get(0).name());
+        assertEquals(1, data.geometries().size());
+    }
+
+    @Test
+    void mapParserExposesOnlyZonesOfActiveMap() throws DreameCloudException {
+        String firstMap = "{\"mapIndex\":0,\"name\":\"Garden\",\"totalArea\":100,"
+                + "\"boundary\":{\"x1\":0,\"y1\":0,\"x2\":100,\"y2\":100},"
+                + "\"mowingAreas\":{\"value\":[[1,{\"name\":\"Front\",\"area\":40}]]}}";
+        String secondMap = "{\"mapIndex\":1,\"name\":\"Neighbour\",\"totalArea\":80,"
+                + "\"boundary\":{\"x1\":0,\"y1\":0,\"x2\":80,\"y2\":80},"
+                + "\"mowingAreas\":{\"value\":[[1,{\"name\":\"Back\",\"area\":30}],[2,{\"name\":\"Side\",\"area\":20}]]}}";
+        com.google.gson.JsonObject batch = new com.google.gson.JsonObject();
+        batch.addProperty("MAP.0", new com.google.gson.Gson().toJson(List.of(firstMap, secondMap)));
+
+        DreameMapData data = new DreameApiResponseParser().parseMapData(batch, JsonParser.parseString("""
+                {"code":0,"out":[{"r":0,"d":[[0,0],[1,1]]}]}
+                """));
+
+        assertEquals(2, data.currentMapId());
+        assertEquals(List.of("Back", "Side"), data.zones().stream().map(zone -> zone.name()).toList());
+    }
+
+    @Test
     void parsesCuttingHeightFromMowingPreferenceRecord() throws DreameCloudException {
         assertEquals(new java.math.BigDecimal("5.0"), DreameApiClient.parseCuttingHeight(JsonParser.parseString("""
                 {"aiid":50,"code":0,"out":[{"m":"r","r":0,"d":[7,0,0,1,50,2,3]}],"siid":2}
