@@ -356,13 +356,14 @@ public class Setters {
     }
 
     /**
-     * Create an OnOffType command based on the given brightness or delta value, considering the minimum dimming level
-     * from the cache if available. The purpose is to send a "hard" ON if the lamp is definitely ON and a hard "OFF" if
-     * it is definitely OFF, and thus avoiding sending "soft off" commands to the light.
+     * Create an OnOffType command based on the given brightness (absolute) or brightness delta (relative to cached
+     * value). The purpose is to send a "hard" ON if the lamp is definitely ON and a hard "OFF" if it is definitely OFF,
+     * and thus avoiding sending "soft off" commands to the light.
+     *
      * 
      * @param brightnessValue the target brightness or the delta to be added to the prior cached value.
      * @param valueIsAbsolute true if the brightnessValue is an absolute value, false if it is a delta.
-     * @param source the cached resource to get the minimum dimming level from (may be null).
+     * @param source the cached resource to get the prior brightness from when valueIsAbsolute is false (may be null).
      * @return the OnOffType command to be sent.
      * @throws CriticalFieldMissingException if there is not enough data to create the command.
      */

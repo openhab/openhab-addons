@@ -647,7 +647,7 @@ public class Resource {
             // simple on/off device so if not off it is on
             return OnOffType.ON;
         }
-        // we have dimming so handle "soft off" by comparing brightness to minimum dimming level
+        // we have dimming so handle "soft off" by treating brightness > 0.0 as ON
         Double brightness = dimming.getBrightness();
         if (brightness == null) {
             throw new CriticalFieldMissingException("'brightness' missing");
