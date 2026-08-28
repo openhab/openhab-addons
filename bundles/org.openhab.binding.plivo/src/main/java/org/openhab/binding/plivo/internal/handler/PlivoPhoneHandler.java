@@ -61,8 +61,8 @@ public class PlivoPhoneHandler extends BaseThingHandler {
     private final PlivoCallbackServlet callbackServlet;
     private final ItemRegistry itemRegistry;
 
-    private PlivoPhoneConfiguration config = new PlivoPhoneConfiguration();
-    private String phoneNumber = "";
+    private volatile PlivoPhoneConfiguration config = new PlivoPhoneConfiguration();
+    private volatile String phoneNumber = "";
     private volatile @Nullable Future<?> initializeTask;
 
     public PlivoPhoneHandler(Thing thing, PlivoCallbackServlet callbackServlet, ItemRegistry itemRegistry) {
@@ -387,7 +387,13 @@ public class PlivoPhoneHandler extends BaseThingHandler {
             ThingStatusDetail detail = e.isConfigurationError() ? ThingStatusDetail.CONFIGURATION_ERROR
                     : ThingStatusDetail.COMMUNICATION_ERROR;
             updateStatus(ThingStatus.OFFLINE, detail, e.getMessage());
-            logger.debug("Failed to auto-configure Plivo application for {}: {}", phoneNumber, e.getMessage());
+            logger.warn("Could not auto-configure the Plivo application for {}: {}", phoneNumber, e.getMessage());
+            return;
+        } catch (RuntimeException e) {
+            // Guard the scheduler task: an unchecked exception here would be swallowed by the Future
+            // and leave the Thing stuck in UNKNOWN with nothing in the log.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.warn("Unexpected error initializing the Plivo phone Thing for {}", phoneNumber, e);
             return;
         }
 

@@ -279,7 +279,7 @@ public class PlivoCloudWebhookService {
             Thread.currentThread().interrupt();
             return null;
         } catch (Exception e) {
-            logger.debug("Failed to request cloud webhook for {}: {}", SERVLET_PATH, e.getMessage());
+            logger.warn("Failed to request an openHAB Cloud webhook for {}: {}", SERVLET_PATH, e.getMessage());
             return null;
         }
     }

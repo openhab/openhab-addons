@@ -39,6 +39,9 @@ The account bridge itself must be created manually with your [Plivo console](htt
 
 The Auth ID and Auth Token can be found in the [Plivo console](https://cx.plivo.com/).
 
+Use main account credentials (an Auth ID starting with `MA`).
+Plivo signs the `Ma-V2` and `Ma-V3` callback signatures with the main account Auth Token, so a subaccount (`SA`) can send messages and calls but cannot validate incoming callbacks.
+
 To receive incoming messages and calls, and to place outbound voice calls, you need **one** of the following:
 
 - **openHAB Cloud Webhooks** (recommended): Set `useCloudWebhook` to `true`. Requires the openHAB Cloud Connector add-on to be installed and connected. No port forwarding or reverse proxy needed.
@@ -120,6 +123,8 @@ Actions are available on `phone` things under the `plivo` scope.
 | `sendWhatsApp` | `String to, String message, String mediaUrl` | Send WhatsApp with media. `message` is optional (may be `null`) to send media only.  |
 
 WhatsApp freeform messages are only delivered within the 24-hour customer service window; the first contact (and any message outside that window) must use a pre-approved template configured in the Plivo console.
+The binding sends freeform messages only and does not support template messages, so outbound WhatsApp works for replies inside that window.
+Incoming WhatsApp messages are not affected and always trigger the `whatsapp-received` channel.
 
 ### Voice Actions
 

@@ -52,9 +52,9 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final PlivoCloudWebhookService cloudWebhookService;
     private final Runnable webhookAvailabilityListener = this::onCloudWebhookAvailable;
-    private @Nullable PlivoApiClient apiClient;
-    private PlivoAccountConfiguration config = new PlivoAccountConfiguration();
-    private @Nullable Future<?> validateTask;
+    private volatile @Nullable PlivoApiClient apiClient;
+    private volatile PlivoAccountConfiguration config = new PlivoAccountConfiguration();
+    private volatile @Nullable Future<?> validateTask;
 
     public PlivoAccountHandler(Bridge bridge, HttpClient httpClient, PlivoCloudWebhookService cloudWebhookService) {
         super(bridge);
@@ -230,7 +230,12 @@ public class PlivoAccountHandler extends BaseBridgeHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-            logger.debug("Failed to validate Plivo account: {}", e.getMessage());
+            logger.warn("Could not validate the Plivo account for {}: {}", getThing().getUID(), e.getMessage());
+        } catch (RuntimeException e) {
+            // This runs on the scheduler, where an unchecked exception would otherwise be swallowed
+            // by the Future and leave the bridge stuck in UNKNOWN with nothing in the log.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            logger.warn("Unexpected error validating the Plivo account for {}", getThing().getUID(), e);
         }
     }
 }

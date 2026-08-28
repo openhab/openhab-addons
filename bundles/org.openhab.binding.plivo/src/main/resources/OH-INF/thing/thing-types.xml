@@ -13,8 +13,9 @@
 		<config-description>
 			<parameter name="authId" type="text" required="true">
 				<label>Auth ID</label>
-				<description>Your Plivo Auth ID (starts with MA or SA). Found in the Plivo console dashboard at
-					https://cx.plivo.com.</description>
+				<description>Your Plivo Auth ID, found in the Plivo console dashboard at https://cx.plivo.com. Use main account
+					credentials (Auth ID starting with MA): Plivo signs the Ma-V2 and Ma-V3 callback signatures with the main account
+					Auth Token, so a subaccount (SA) can send messages and calls but cannot validate inbound callbacks.</description>
 			</parameter>
 			<parameter name="authToken" type="text" required="true">
 				<context>password</context>

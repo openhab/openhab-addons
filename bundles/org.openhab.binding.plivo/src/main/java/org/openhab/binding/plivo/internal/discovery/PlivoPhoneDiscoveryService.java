@@ -92,7 +92,9 @@ public class PlivoPhoneDiscoveryService extends AbstractThingHandlerDiscoverySer
 
             logger.debug("Discovered {} Plivo phone numbers", phoneNumbers.size());
         } catch (PlivoApiException e) {
-            logger.debug("Failed to discover phone numbers: {}", e.getMessage());
+            logger.warn("Could not discover Plivo phone numbers: {}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.warn("Unexpected error discovering Plivo phone numbers", e);
         }
     }
 

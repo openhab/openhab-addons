@@ -77,14 +77,14 @@ public class PlivoActions implements ThingActions {
         }
         PlivoApiClient client = getApiClient(handler);
         if (client == null) {
-            logger.debug("Cannot send message: API client not available");
+            logger.warn("Cannot send message: the Plivo account is not available");
             return false;
         }
         try {
             client.sendMessage(handler.getPhoneNumber(), to, message, mediaUrl, handler.getStatusCallbackUrl());
             return true;
         } catch (PlivoApiException e) {
-            logger.debug("Failed to send message: {}", e.getMessage());
+            logger.warn("Failed to send message to {}: {}", to, e.getMessage());
             return false;
         }
     }
@@ -117,14 +117,14 @@ public class PlivoActions implements ThingActions {
         }
         PlivoApiClient client = getApiClient(handler);
         if (client == null) {
-            logger.debug("Cannot send WhatsApp message: API client not available");
+            logger.warn("Cannot send WhatsApp message: the Plivo account is not available");
             return false;
         }
         try {
             client.sendWhatsApp(handler.getPhoneNumber(), to, message, mediaUrl, handler.getStatusCallbackUrl());
             return true;
         } catch (PlivoApiException e) {
-            logger.debug("Failed to send WhatsApp message: {}", e.getMessage());
+            logger.warn("Failed to send WhatsApp message to {}: {}", to, e.getMessage());
             return false;
         }
     }
@@ -146,13 +146,14 @@ public class PlivoActions implements ThingActions {
         }
         PlivoApiClient client = getApiClient(handler);
         if (client == null) {
-            logger.debug("Cannot make call: API client not available");
+            logger.warn("Cannot make call: the Plivo account is not available");
             return false;
         }
 
         String answerBaseUrl = handler.getWebhookUrl(WEBHOOK_ANSWER);
         if (answerBaseUrl == null) {
-            logger.debug("Cannot make call: no public URL is configured to host the answer XML");
+            logger.warn(
+                    "Cannot make call: configure publicUrl or useCloudWebhook on the bridge so Plivo can fetch the answer XML");
             return false;
         }
 
@@ -164,7 +165,7 @@ public class PlivoActions implements ThingActions {
             client.makeCall(handler.getPhoneNumber(), to, answerUrl, handler.getStatusCallbackUrl());
             return true;
         } catch (PlivoApiException e) {
-            logger.debug("Failed to make call: {}", e.getMessage());
+            logger.warn("Failed to make call to {}: {}", to, e.getMessage());
             return false;
         }
     }
@@ -222,12 +223,12 @@ public class PlivoActions implements ThingActions {
                 String uuid = handler.getCallbackServlet().createMediaEntry(rawType.getBytes(), rawType.getMimeType());
                 return mediaBaseUrl + "/" + uuid;
             } else {
-                logger.debug("Item '{}' state is not RawType (Image), got: {}", itemName,
+                logger.warn("Cannot create a media URL: item '{}' is not an Image item (state is {})", itemName,
                         state.getClass().getSimpleName());
                 return null;
             }
         } catch (ItemNotFoundException e) {
-            logger.debug("Item '{}' not found", itemName);
+            logger.warn("Cannot create a media URL: item '{}' was not found", itemName);
             return null;
         }
     }
@@ -272,7 +273,7 @@ public class PlivoActions implements ThingActions {
         if (future != null) {
             future.complete(xml);
         } else {
-            logger.debug("No pending response found for CallUUID {}. The response timeout may have elapsed.", callUuid);
+            logger.warn("No pending response for CallUUID {}; the responseTimeout may have elapsed already.", callUuid);
         }
     }
 
@@ -295,7 +296,7 @@ public class PlivoActions implements ThingActions {
     private @Nullable PlivoPhoneHandler getHandler() {
         PlivoPhoneHandler handler = phoneHandler;
         if (handler == null) {
-            logger.debug("Plivo action invoked but thing handler is not set");
+            logger.warn("Plivo action invoked but the Thing handler is not set");
         }
         return handler;
     }

@@ -279,7 +279,7 @@ public class PlivoCallbackServlet extends HttpServlet {
             }
             String answerUrl = getExternalRequestUrl(req, handler, WEBHOOK_ANSWER, true);
             if (!validateSignature(req, extractBodyParameters(req), answerUrl, client.getAuthToken(), false)) {
-                logger.debug("Invalid or missing Plivo signature for answer request to {}", answerUrl);
+                logger.warn("Rejected Plivo answer callback with an invalid or missing signature for {}", answerUrl);
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid signature");
                 return;
             }
@@ -299,7 +299,7 @@ public class PlivoCallbackServlet extends HttpServlet {
                 || (WEBHOOK_STATUS.equals(endpoint) && params.containsKey("MessageUUID"));
         String requestUrl = getExternalRequestUrl(req, handler, endpoint, false);
         if (!validateSignature(req, extractBodyParameters(req), requestUrl, client.getAuthToken(), messaging)) {
-            logger.debug("Invalid Plivo signature for request to {}", requestUrl);
+            logger.warn("Rejected Plivo callback with an invalid signature for {}", requestUrl);
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid signature");
             return;
         }

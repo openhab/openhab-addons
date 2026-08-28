@@ -79,7 +79,7 @@ public class PlivoApiClient {
      */
     public boolean validateAccount() throws PlivoApiException {
         String response = get(baseUrl);
-        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+        JsonObject json = parseObject(response);
         JsonElement authIdElement = json.get("auth_id");
         return authIdElement != null && authId.equals(authIdElement.getAsString());
     }
@@ -169,7 +169,7 @@ public class PlivoApiClient {
             body.addProperty("hangup_method", ANSWER_METHOD_POST);
         }
         String response = post(baseUrl + "Call/", body.toString());
-        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+        JsonObject json = parseObject(response);
         JsonElement requestUuid = json.get("request_uuid");
         return requestUuid != null && !requestUuid.isJsonNull() ? requestUuid.getAsString() : "";
     }
@@ -220,7 +220,7 @@ public class PlivoApiClient {
         }
         body.addProperty("app_name", appName);
         String response = post(baseUrl + "Application/", body.toString());
-        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+        JsonObject json = parseObject(response);
         return getJsonString(json, "app_id");
     }
 
@@ -272,7 +272,7 @@ public class PlivoApiClient {
         int offset = 0;
         while (true) {
             String url = baseUrl + resourcePath + "?limit=" + PAGE_LIMIT + "&offset=" + offset;
-            JsonObject json = JsonParser.parseString(get(url)).getAsJsonObject();
+            JsonObject json = parseObject(get(url));
             JsonArray objects = json.getAsJsonArray("objects");
             int fetched = objects != null ? objects.size() : 0;
             if (objects != null) {
@@ -288,8 +288,8 @@ public class PlivoApiClient {
         return all;
     }
 
-    private String firstMessageUuid(String response) {
-        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+    private String firstMessageUuid(String response) throws PlivoApiException {
+        JsonObject json = parseObject(response);
         JsonArray uuids = json.getAsJsonArray("message_uuid");
         if (uuids != null && uuids.size() > 0) {
             return uuids.get(0).getAsString();
@@ -365,6 +365,29 @@ public class PlivoApiClient {
             logger.trace("Could not parse Plivo error body: {}", e.getMessage());
         }
         return content;
+    }
+
+    /**
+     * Parses a Plivo response body into a JSON object. A response can carry a non-JSON body even
+     * with a 2xx status (for example an HTML error page from an intermediate proxy), so a parse
+     * failure is reported as a {@link PlivoApiException} instead of escaping as an unchecked
+     * exception that callers do not expect.
+     *
+     * @param content the raw response body
+     * @return the parsed JSON object
+     * @throws PlivoApiException if the body is not a JSON object
+     */
+    private JsonObject parseObject(String content) throws PlivoApiException {
+        try {
+            return JsonParser.parseString(content).getAsJsonObject();
+        } catch (RuntimeException e) {
+            throw new PlivoApiException("Unexpected Plivo response body: " + abbreviate(content), e);
+        }
+    }
+
+    private static String abbreviate(String content) {
+        String trimmed = content.strip();
+        return trimmed.length() <= 200 ? trimmed : trimmed.substring(0, 200) + "...";
     }
 
     private String getJsonString(JsonObject obj, String key) {
