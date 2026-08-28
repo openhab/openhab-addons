@@ -133,6 +133,17 @@ public abstract class BluetoothDevice {
     }
 
     /**
+     * The reason the last connection to this device was dropped, if the transport reports one (e.g. the HCI
+     * disconnect status). Used to enrich an OFFLINE/COMMUNICATION_ERROR Thing status with a human-readable
+     * cause instead of a bare error.
+     *
+     * @return the last disconnect reason, or {@code null} if none is known / the transport does not report it
+     */
+    public @Nullable String getDisconnectReason() {
+        return null;
+    }
+
+    /**
      * Returns the last Receive Signal Strength Indicator (RSSI) value or null if no RSSI has been received
      *
      * @return the last RSSI value in dBm

@@ -67,6 +67,12 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
+    public @Nullable String getDisconnectReason() {
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.getDisconnectReason() : null;
+    }
+
+    @Override
     public @Nullable BluetoothService getServices(UUID uuid) {
         BluetoothDevice delegate = getDelegate();
         return delegate != null ? delegate.getServices(uuid) : null;
