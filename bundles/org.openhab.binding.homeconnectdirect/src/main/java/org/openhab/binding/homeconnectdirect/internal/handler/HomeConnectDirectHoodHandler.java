@@ -124,9 +124,11 @@ public class HomeConnectDirectHoodHandler extends BaseHomeConnectDirectHandler {
             switch (key) {
                 case HOOD_VENTING_LEVEL_KEY -> updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_VENTING_LEVEL, key);
                 case HOOD_INTENSIVE_LEVEL_KEY -> updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_INTENSIVE_LEVEL, key);
+                // A change of the option list container implies that the options below it may have changed as well,
+                // without being reported individually.
                 case ROOT_OPTION_LIST_KEY -> {
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_VENTING_LEVEL, key);
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_INTENSIVE_LEVEL, key);
+                    updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_VENTING_LEVEL, HOOD_VENTING_LEVEL_KEY);
+                    updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_INTENSIVE_LEVEL, HOOD_INTENSIVE_LEVEL_KEY);
                 }
             }
         });
