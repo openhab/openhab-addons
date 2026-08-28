@@ -94,8 +94,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 ShellyLightModel model = lightModels.get(channelGroupNumber);
                 if (model == null) {
                     model = ShellyLightModel.create(this, channelGroupNumber, profile, DIM_STEPSIZE);
-                    lightModels.put(channelGroupNumber, model);
                     model.acquire();
+                    lightModels.put(channelGroupNumber, model);
                 }
                 WhatUpdated whatUpdated = updateLightModelFromChannelCommand(model, channelUID, command);
                 switch (whatUpdated) {
@@ -137,8 +137,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 ShellyLightModel model = lightModels.get(groupNo);
                 if (model == null) {
                     model = ShellyLightModel.create(this, groupNo, profile, DIM_STEPSIZE);
-                    lightModels.put(groupNo, model);
                     model.acquire();
+                    lightModels.put(groupNo, model);
                 }
                 updateLightModelFromStatus(model, light);
                 updated |= updateChannelsFromLightStatusDTO(light, i, groupNo);
@@ -254,7 +254,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @throws ShellyApiException if the API call fails
      */
     public void updateRemoteDeviceFromLightModel(ShellyLightModel model) throws ShellyApiException {
-        logger.trace("{}: updateRemoteDeviceFromLightModel() with [{}]", thingName, model);
+        logger.trace("{}: updateRemoteDeviceFromLightModel({})", thingName, model);
         boolean apiCommandSent = false;
 
         // ON-OFF (via own channel): send first as it may affect the processing of subsequent parameters
@@ -417,7 +417,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @return true if any channel was updated, false otherwise
      */
     public boolean updateChannelsFromLightModel(ShellyLightModel model) {
-        logger.trace("{}: updateDirtyChannelsForLightModel() with [{}]", thingName, model);
+        logger.trace("{}: updateDirtyChannelsForLightModel({})", thingName, model);
         boolean updated = false;
         String group = null;
         int groupNumber = model.getChannelGroupNumber();
@@ -478,15 +478,12 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
     @Override
     public @Nullable ShellyLightModel getLightModelByIndex(int apiLightIndex) {
-        ShellyLightModel model = lightModels.values().stream().filter(m -> m.getApiLightIndex() == apiLightIndex)
-                .findFirst().orElse(null);
-        logger.debug("{}: getLightModelByIndex({}) returns {}", thingName, apiLightIndex, model);
-        return model;
+        return lightModels.values().stream().filter(m -> m.getApiLightIndex() == apiLightIndex).findFirst()
+                .orElse(null);
     }
 
     public @Nullable ShellyLightModel getLightModelByGroupNumber(int groupNumber) {
         ShellyLightModel model = lightModels.get(groupNumber);
-        logger.debug("{}: getLightModelByGroupNumber({}) returns {}", thingName, groupNumber, model);
         return model;
     }
 
