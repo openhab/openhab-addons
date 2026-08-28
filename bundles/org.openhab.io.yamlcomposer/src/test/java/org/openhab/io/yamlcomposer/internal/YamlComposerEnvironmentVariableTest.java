@@ -194,6 +194,33 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
         }
 
         @Test
+        @DisplayName("Env-Deps header round-trips environment variables containing commas accurately")
+        void envDepsRoundTripsCommasInVarNames() throws IOException {
+            Path main = writeFixture("env_comma_main.yaml", """
+                    setting: ${ENV['YAML_COMPOSER,REVIEW']}
+                    another: ${ENV['VAR_WITH_BACKSLASH\\,AND_COMMA']}
+                    """);
+            Path output = Objects.requireNonNull(sharedTempDir).resolve("compiled_comma.yaml");
+
+            Map<String, String> envMap = Map.of("YAML_COMPOSER,REVIEW", "value1", "VAR_WITH_BACKSLASH\\,AND_COMMA",
+                    "value2");
+
+            Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
+            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
+
+            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
+            }, trackedEnv::add, logSession, includeCache));
+
+            try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv, envMap);
+            }
+
+            // Environment should register as UNCHANGED when checked against the same environment map
+            boolean changed = ComposerUtils.isEnvironmentChanged(output, envMap);
+            assertThat(changed, is(false));
+        }
+
+        @Test
         @DisplayName("Returns false initially and true when a tracked environment variable value changes")
         void returnsFalseInitiallyAndTrueWhenEnvironmentValueChanged() throws Exception {
             String envName = "DYNAMIC_TEST_VAR";

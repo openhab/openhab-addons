@@ -15,6 +15,8 @@ package org.openhab.io.yamlcomposer.internal;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -221,7 +223,11 @@ final class ComposerUtils {
         if (content.isEmpty()) {
             return List.of();
         }
-        return Arrays.stream(content.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+        return Arrays.stream(content.split(",")) //
+                .map(String::trim) //
+                .filter(s -> !s.isEmpty()) //
+                .map(token -> URLDecoder.decode(token, StandardCharsets.UTF_8)) //
+                .toList();
     }
 
     /**
@@ -236,13 +242,16 @@ final class ComposerUtils {
             return "";
         }
 
+        List<String> encodedVars = envVars.stream() //
+                .map(v -> URLEncoder.encode(v, StandardCharsets.UTF_8)) //
+                .toList();
+
         List<String> lines = new ArrayList<>();
         StringBuilder currentLine = new StringBuilder();
-        int maxContentLength = 75; // Keeps total line length comfortable
+        int maxContentLength = 75;
 
-        for (int i = 0; i < envVars.size(); i++) {
-            String var = envVars.get(i);
-            String item = var + (i < envVars.size() - 1 ? ", " : "");
+        for (int i = 0; i < encodedVars.size(); i++) {
+            String item = encodedVars.get(i) + (i < encodedVars.size() - 1 ? ", " : "");
 
             if (currentLine.length() + item.length() > maxContentLength && currentLine.length() > 0) {
                 lines.add(currentLine.toString().stripTrailing());
