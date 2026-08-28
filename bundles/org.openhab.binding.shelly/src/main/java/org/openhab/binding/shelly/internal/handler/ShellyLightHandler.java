@@ -257,24 +257,23 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         logger.trace("{}: updateRemoteDeviceFromLightModel({})", thingName, model);
         boolean apiCommandSent = false;
 
-        // ON-OFF (via own channel): send first as it may affect the processing of subsequent parameters
-        if (model.supportsOnOffChannel() && model.isOnOffDirty()) { // config.getBrightnessAutoOn() not used
-            api.setLightTurn(model.getApiLightIndex(),
-                    OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF);
-            apiCommandSent = true;
-        }
-
-        // MODE: send this next as it also may affect the processing of subsequent parameters
-        if (model.isModeDirty()) {
-            api.setLightMode(Mode.COLOR == model.getMode() ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE);
-            apiCommandSent = true;
-        }
-
         // map of changed light parameters to send to the device
         Map<String, String> parms = new TreeMap<>();
 
-        // ON-OFF (via white channel):
-        if (model.supportsOnOffViaBrightnessChannel() && model.isOnOffDirty()) {
+        // MODE:
+        if (model.isModeDirty()) {
+            String newMode = Mode.COLOR == model.getMode() ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
+            if (!profile.isGen2) {
+                // API Gen 1 requires sending the mode separately first as it affects processing of other parameters
+                api.setLightMode(Mode.COLOR == model.getMode() ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE);
+                apiCommandSent = true;
+            } else {
+                parms.put(SHELLY_API_MODE, newMode);
+            }
+        }
+
+        // ON-OFF:
+        if ((model.supportsOnOffChannel() || model.supportsOnOffViaBrightnessChannel()) && model.isOnOffDirty()) {
             parms.put(SHELLY_LIGHT_TURN, OnOffType.ON == model.getOnOff(true) ? SHELLY_API_ON : SHELLY_API_OFF);
         }
 
@@ -319,7 +318,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
 
         /*
-         * always request a status update after sending a command to ensure the model is in sync with the
+         * request a status update after sending a command to ensure the model is in sync with the
          * device, and to update any related cross linked channels that may need to be changed
          */
         if (apiCommandSent) {

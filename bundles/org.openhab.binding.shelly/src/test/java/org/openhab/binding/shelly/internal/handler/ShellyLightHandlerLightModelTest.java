@@ -36,7 +36,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
@@ -355,10 +354,19 @@ class ShellyLightHandlerLightModelTest {
 
     @ParameterizedTest
     @MethodSource("lightHandlerRemoteApiProvider")
-    void parameterizedUpdateRemoteDeviceFromLightModelCallsExpectedApi(ThingTypeUID thingTypeUID, int channelGroupNo,
-            int expectedApiLightIndex, @Nullable String profileOverride, String commandGroup, String commandChannel,
-            Command command, @Nullable String expectedMode, boolean expectSetLightParms,
-            Map<String, String> expectedParms, @Nullable String expectedTurn) throws Exception {
+    void parameterizedUpdateRemoteDeviceFromLightModelCallsExpectedApiAndProducesExpectedParameters(
+    // @formatter:off
+            ThingTypeUID thingTypeUID,
+            int channelGroupNo,
+            int expectedApiLightIndex, 
+            @Nullable String profileOverride,
+            String commandGroup,
+            String commandChannel,
+            Command command,
+            @Nullable String expectedMode,
+            boolean expectedSetLightParms,
+            Map<String, String> expectedParms) throws Exception {
+    // @formatter:on
 
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
         Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
@@ -407,7 +415,7 @@ class ShellyLightHandlerLightModelTest {
             verify(api, never()).setLightMode(anyString());
         }
 
-        if (expectSetLightParms) {
+        if (expectedSetLightParms) {
             @SuppressWarnings("unchecked")
             ArgumentCaptor<Map<String, String>> parmsCaptor = ArgumentCaptor
                     .forClass((Class<Map<String, String>>) (Class<?>) Map.class);
@@ -417,12 +425,6 @@ class ShellyLightHandlerLightModelTest {
             verify(api, never()).setLightParms(anyInt(), anyMap());
         }
 
-        if (expectedTurn != null) {
-            verify(api).setLightTurn(expectedApiLightIndex, expectedTurn);
-        } else {
-            verify(api, never()).setLightTurn(anyInt(), anyString());
-        }
-
         verifyNoMoreInteractions(api);
     }
 
@@ -430,303 +432,292 @@ class ShellyLightHandlerLightModelTest {
         String avgColorTemp = String.valueOf(Math.round(1000000.0 / (((1000000.0 / 6500) + (1000000.0 / 2700)) / 2)));
         return Stream.of(
         // @formatter:off
-            Arguments.of(THING_TYPE_SHELLYBULB, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, PercentType.HUNDRED, null, true, Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0"), null),
+            Arguments.of(THING_TYPE_SHELLYBULB, 
+                    0,
+                    0,
+                    null,
+                    CHANNEL_GROUP_COLOR_CONTROL, 
+                    CHANNEL_COLOR_RED,
+                    PercentType.HUNDRED, 
+                    null, 
+                    true, 
+                    Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0")
+                    ),
 
-            Arguments.of(THING_TYPE_SHELLYDUO, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(42), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "42"), "on"),
+            Arguments.of(THING_TYPE_SHELLYDUO,
+                    0,
+                    0,
+                    null,
+                    CHANNEL_GROUP_WHITE_CONTROL,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(42),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "42", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
 
-            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, new PercentType(25), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "25"), "on"),
+            Arguments.of(THING_TYPE_SHELLYVINTAGE,
+                    0,
+                    0,
+                    null,
+                    CHANNEL_GROUP_WHITE_CONTROL,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(25),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "25", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
 
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL, new StringType("yellow"), null, false, Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "255", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0"), null),
+            Arguments.of(THING_TYPE_SHELLYDUORGBW,
+                    0,
+                    0,
+                    null,
+                    CHANNEL_GROUP_COLOR_CONTROL,
+                    CHANNEL_COLOR_FULL,
+                    new StringType("yellow"),
+                    null,
+                    false,
+                    Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "255", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0")
+                    ),
 
-            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, null, true, Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "255", SHELLY_COLOR_WHITE, "0"), null),
+            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR,
+                    0,
+                    0,
+                    null,
+                    CHANNEL_GROUP_COLOR_CONTROL,
+                    CHANNEL_COLOR_BLUE,
+                    PercentType.HUNDRED,
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "255", SHELLY_COLOR_WHITE, "0")
+                    ),
 
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, 0, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(73), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "73", SHELLY_LIGHT_TURN, "on"), null),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 2, 1, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(61), null, true, Map.of( SHELLY_COLOR_BRIGHTNESS, "61", SHELLY_LIGHT_TURN, "on"), null),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, PercentType.HUNDRED, null, true, Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "255", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0"), null),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(55), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "55", SHELLY_LIGHT_TURN, "on"), null),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(45), null, true, Map.of( SHELLY_COLOR_BRIGHTNESS, "45", SHELLY_LIGHT_TURN, "on"), null),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGB, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, new PercentType(1), null, true, Map.of(SHELLY_COLOR_RED, "3", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0"), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, new PercentType(33), null, true, Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "84"), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(44), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "44", SHELLY_LIGHT_TURN, "on"), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(66), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "66", SHELLY_LIGHT_TURN, "on"), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, PercentType.HUNDRED, null, true, Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "255"), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50), null, true, Map.of( SHELLY_COLOR_TEMP, avgColorTemp), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, new PercentType(40), null, true, Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "102", SHELLY_COLOR_BLUE, "0"), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 2, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(70), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "70", SHELLY_LIGHT_TURN, "on"), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50), null, true, Map.of(SHELLY_COLOR_TEMP, avgColorTemp), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(35), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "35", SHELLY_LIGHT_TURN, "on"), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50), null, true, Map.of(SHELLY_COLOR_TEMP, avgColorTemp), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, new PercentType(35), null, true, Map.of(SHELLY_COLOR_BRIGHTNESS, "35", SHELLY_LIGHT_TURN, "on"), null),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP, new PercentType(50), null, true, Map.of(SHELLY_COLOR_TEMP, avgColorTemp), null),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, PercentType.HUNDRED, null, true, Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0"), null)
-        // @formatter:on
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("lightHandlerTurnFromZeroProvider")
-    void parameterizedLevelChangesToOrFromZeroCauseSetLightTurn(ThingTypeUID thingTypeUID, int channelGroupNo,
-            @Nullable String profileOverride, String commandGroup, String commandChannel, int initialLevel,
-            Command command, @Nullable String expectedTurn) throws Exception {
-
-        ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
-        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
-        assertNotNull(api);
-
-        handler.profile.device.profile = profileOverride;
-        handler.profile.maxTemp = 6500;
-        handler.profile.minTemp = 2700;
-
-        if (THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID) || THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = List
-                    .of(SHELLY2_PROFILE_RGB, SHELLY2_PROFILE_RGBW, SHELLY2_PROFILE_RGBCCT, SHELLY2_PROFILE_RGBX2LIGHT)
-                    .contains(profileOverride) && channelGroupNo == 0;
-        } else if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = true;
-        } else if (THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = false;
-        }
-
-        String actualGroup = commandGroup;
-        if (CHANNEL_GROUP_LIGHT_INDEX.equals(commandGroup)) {
-            actualGroup = CHANNEL_GROUP_LIGHT_INDEX + channelGroupNo;
-        }
-
-        ShellyShortLightStatus turnStatus = new ShellyShortLightStatus();
-        when(api.setLightTurn(anyInt(), anyString())).thenReturn(turnStatus);
-        doNothing().when(api).setLightParms(anyInt(), anyMap());
-        doNothing().when(api).setLightMode(anyString());
-
-        ChannelUID channelUID = new ChannelUID(new ChannelGroupUID(new ThingUID(thingTypeUID, "test"), actualGroup),
-                commandChannel);
-
-        ShellyLightModel model = ShellyLightModel.create(handler, channelGroupNo, handler.profile, DIM_STEPSIZE);
-        model.acquire();
-        try {
-            if (CHANNEL_COLOR_GAIN.equals(commandChannel)) {
-                model.setGain(initialLevel);
-                model.setOnOff(initialLevel > 0);
-            } else {
-                model.setBrightness(initialLevel);
-                model.setOnOff(initialLevel > 0);
-            }
-        } finally {
-            model.release();
-        }
-        handler.lightModels.put(channelGroupNo, model);
-
-        clearInvocations(api);
-
-        boolean handled = handler.handleDeviceCommand(channelUID, command);
-        assertTrue(handled, "command should be handled for " + thingTypeUID + " / " + profileOverride);
-
-        if (expectedTurn != null) {
-            verify(api).setLightTurn(channelGroupNo, expectedTurn);
-        } else {
-            verify(api, never()).setLightTurn(anyInt(), anyString());
-        }
-    }
-
-    private static Stream<Arguments> lightHandlerTurnFromZeroProvider() {
-        return Stream.of(
-        // @formatter:off
-            Arguments.of(THING_TYPE_SHELLYDUO, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, 0, new PercentType(42), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYDUO, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, 42, PercentType.ZERO, SHELLY_API_OFF),
-
-            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, 0, new PercentType(25), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, 25, PercentType.ZERO, SHELLY_API_OFF),
-
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 0, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 0, new PercentType(73), null),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 0, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 73, PercentType.ZERO, null),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 0, new PercentType(61), null),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, null, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 61, PercentType.ZERO, null),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 0, new PercentType(55), null),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 55, PercentType.ZERO, null),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 0, new PercentType(45), null),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 45, PercentType.ZERO, null),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 0, new PercentType(35), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 35, PercentType.ZERO, null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 0, new PercentType(35), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 35, PercentType.ZERO, null),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS, 0, new PercentType(70), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS, 70, PercentType.ZERO, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 0, new PercentType(70), null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_BRIGHTNESS, 70, PercentType.ZERO, null),
+            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE,
+                    1,
+                    0,
+                    null,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(73),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "73", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
             
-            Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, 0, new PercentType(50), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, null, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, 50,PercentType.ZERO, SHELLY_API_OFF),
+            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE,
+                    2,
+                    1,
+                    null,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(61),
+                    null,
+                    true,
+                    Map.of( SHELLY_COLOR_BRIGHTNESS, "61", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
 
-            Arguments.of(THING_TYPE_SHELLYBULB, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYBULB, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF),
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM,
+                    0,
+                    0,
+                    SHELLY2_PROFILE_RGBW,
+                    CHANNEL_GROUP_COLOR_CONTROL,
+                    CHANNEL_COLOR_GREEN,
+                    PercentType.HUNDRED,
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "255", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0")
+                    ),
+
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM,
+                    1,
+                    0,
+                    SHELLY2_PROFILE_LIGHT,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(55),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "55", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
             
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF),
+            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM,
+                    2,
+                    1,
+                    SHELLY2_PROFILE_LIGHT,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(45),
+                    null,
+                    true,
+                    Map.of( SHELLY_COLOR_BRIGHTNESS, "45", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
+
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    0,
+                    0,
+                    SHELLY2_PROFILE_RGB,
+                    CHANNEL_GROUP_COLOR_CONTROL,
+                    CHANNEL_COLOR_RED,
+                    new PercentType(1),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_RED, "3", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0")
+                    ),
+
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    0,
+                    0,
+                    SHELLY2_PROFILE_RGBW,
+                    CHANNEL_GROUP_COLOR_CONTROL,
+                    CHANNEL_COLOR_WHITE,
+                    new PercentType(33),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "84")
+                    ),
             
-            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    1,
+                    0,
+                    SHELLY2_PROFILE_LIGHT,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(44),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "44", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
             
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    2,
+                    1,
+                    SHELLY2_PROFILE_LIGHT,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(66),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "66", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
             
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGB, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGB, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    0,
+                    0,
+                    SHELLY2_PROFILE_RGBCCT,
+                    CHANNEL_GROUP_COLOR_CONTROL,
+                    CHANNEL_COLOR_BLUE,
+                    PercentType.HUNDRED,
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "255")
+                    ),
             
-            Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 0, new PercentType(80), SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, 80, PercentType.ZERO, SHELLY_API_OFF)
-        // @formatter:on
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("lightHandlerOnOffApiProvider")
-    void parameterizedOnOffCommandCallsSetLightTurnWhenExpected(ThingTypeUID thingTypeUID, int channelGroupNo,
-            @Nullable String profileOverride, String commandGroup, OnOffType initialOnOff, OnOffType command,
-            @Nullable String expectedTurn) throws Exception {
-
-        ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
-        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
-        assertNotNull(api);
-
-        handler.profile.device.profile = profileOverride;
-        handler.profile.maxTemp = 6500;
-        handler.profile.minTemp = 2700;
-
-        if (THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID) || THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = List
-                    .of(SHELLY2_PROFILE_RGB, SHELLY2_PROFILE_RGBW, SHELLY2_PROFILE_RGBCCT, SHELLY2_PROFILE_RGBX2LIGHT)
-                    .contains(profileOverride) && channelGroupNo == 0;
-        } else if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = true;
-        } else if (THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID)) {
-            handler.profile.isRGBW2 = true;
-            handler.profile.inColor = false;
-        }
-
-        String actualGroup = commandGroup;
-        if (CHANNEL_GROUP_LIGHT_INDEX.equals(commandGroup)) {
-            actualGroup = CHANNEL_GROUP_LIGHT_INDEX + channelGroupNo;
-        }
-
-        ShellyShortLightStatus turnStatus = new ShellyShortLightStatus();
-        when(api.setLightTurn(anyInt(), anyString())).thenReturn(turnStatus);
-        doNothing().when(api).setLightParms(anyInt(), anyMap());
-        doNothing().when(api).setLightMode(anyString());
-
-        ChannelUID channelUID = new ChannelUID(new ChannelGroupUID(new ThingUID(thingTypeUID, "test"), actualGroup),
-                CHANNEL_LIGHT_POWER);
-
-        // Seed initial model state
-        ShellyLightModel model = ShellyLightModel.create(handler, channelGroupNo, handler.profile, DIM_STEPSIZE);
-        model.acquire();
-        try {
-            model.setOnOff(true);
-            model.setBrightness(50);
-            model.setOnOff(initialOnOff == OnOffType.ON);
-        } finally {
-            model.release();
-        }
-        handler.lightModels.put(channelGroupNo, model);
-
-        clearInvocations(api);
-
-        boolean handled = handler.handleDeviceCommand(channelUID, command);
-        assertTrue(handled, "on/off command should be handled for " + thingTypeUID + " / " + profileOverride);
-
-        if (expectedTurn != null) {
-            verify(api).setLightTurn(channelGroupNo, expectedTurn);
-        } else {
-            verify(api, never()).setLightTurn(anyInt(), anyString());
-        }
-    }
-
-    private static Stream<Arguments> lightHandlerOnOffApiProvider() {
-        return Stream.of(
-        // @formatter:off
-            Arguments.of(THING_TYPE_SHELLYBULB, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYBULB, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYBULB, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYBULB, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYDUO, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYDUO, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYDUO, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYDUO, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.OFF, null),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    1,
+                    1,
+                    SHELLY2_PROFILE_RGBCCT,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_COLOR_TEMP,
+                    new PercentType(50),
+                    null,
+                    true,
+                    Map.of( SHELLY_COLOR_TEMP, avgColorTemp)
+                    ),
             
-            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 0, null, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.OFF, OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 0, null, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.ON,  OnOffType.OFF, null),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, null, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.OFF, OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, null, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.ON,  OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.OFF, OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 0, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.ON,  OnOffType.OFF, null),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.OFF, OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, 1, SHELLY2_PROFILE_LIGHT, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.ON,  OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGB, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGB, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBW, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.OFF, OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBCCT, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.ON,  OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.OFF, OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.ON,  OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.OFF, OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.ON,  OnOffType.OFF, null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.OFF, OnOffType.ON,  null),
-            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 2, SHELLY2_PROFILE_CCTX2, CHANNEL_GROUP_LIGHT_INDEX, OnOffType.ON,  OnOffType.OFF, null),
-
-            Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, null, CHANNEL_GROUP_LIGHT_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF),
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    0,
+                    0,
+                    SHELLY2_PROFILE_RGBX2LIGHT,
+                    CHANNEL_GROUP_COLOR_CONTROL,
+                    CHANNEL_COLOR_GREEN,
+                    new PercentType(40),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_RED, "0", SHELLY_COLOR_GREEN, "102", SHELLY_COLOR_BLUE, "0")
+                    ),
             
-            Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, CHANNEL_GROUP_COLOR_CONTROL, OnOffType.OFF, OnOffType.ON,  SHELLY_API_ON),
-            Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, CHANNEL_GROUP_COLOR_CONTROL, OnOffType.ON,  OnOffType.OFF, SHELLY_API_OFF)
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    2,
+                    2,
+                    SHELLY2_PROFILE_RGBX2LIGHT,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(70),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "70", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
+            
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    1,
+                    0,
+                    SHELLY2_PROFILE_CCTX2,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_COLOR_TEMP,
+                    new PercentType(50),
+                    null,
+                    true, Map.of(SHELLY_COLOR_TEMP, avgColorTemp)
+                    ),
+            
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    1,
+                    0,
+                    SHELLY2_PROFILE_CCTX2,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(35),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "35", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
+            
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    2,
+                    1,
+                    SHELLY2_PROFILE_CCTX2,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_COLOR_TEMP,
+                    new PercentType(50),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_TEMP, avgColorTemp)
+                    ),
+            
+            Arguments.of(THING_TYPE_SHELLYPRORGBWWPM,
+                    2,
+                    1,
+                    SHELLY2_PROFILE_CCTX2,
+                    CHANNEL_GROUP_LIGHT_INDEX,
+                    CHANNEL_BRIGHTNESS,
+                    new PercentType(35),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_BRIGHTNESS, "35", SHELLY_LIGHT_TURN, SHELLY_API_ON)
+                    ),
+
+            Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB,
+                    0,
+                    0,
+                    null,
+                    CHANNEL_GROUP_WHITE_CONTROL,
+                    CHANNEL_COLOR_TEMP,
+                    new PercentType(50),
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_TEMP, avgColorTemp)
+                    ),
+
+            Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB,
+                    0,
+                    0,
+                    null,
+                    CHANNEL_GROUP_COLOR_CONTROL,
+                    CHANNEL_COLOR_RED,
+                    PercentType.HUNDRED,
+                    null,
+                    true,
+                    Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0")
+                    )
         // @formatter:on
         );
     }
@@ -872,8 +863,8 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @ParameterizedTest
-    @MethodSource("lightHandlerNonPrimaryChannelUpdateProvider")
-    void parameterizedLightHandlerNonPrimaryChannelUpdates(ThingTypeUID thingTypeUID, int channelGroupNo,
+    @MethodSource("lightHandlerChannelUpdateProvider")
+    void parameterizedLightHandlerChannelUpdates(ThingTypeUID thingTypeUID, int channelGroupNo,
             int expectedApiLightIndex, @Nullable String profileOverride, String commandGroup, String commandChannel,
             Command command, ShellyLightModel.Mode expectedMode, Map<String, State> expectedUpdates) {
 
@@ -925,7 +916,7 @@ class ShellyLightHandlerLightModelTest {
         }
     }
 
-    private static Stream<Arguments> lightHandlerNonPrimaryChannelUpdateProvider() {
+    private static Stream<Arguments> lightHandlerChannelUpdateProvider() {
         return Stream.of(
         // @formatter:off
             Arguments.of(

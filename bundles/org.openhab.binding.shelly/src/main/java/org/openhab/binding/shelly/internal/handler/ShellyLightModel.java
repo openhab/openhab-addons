@@ -117,12 +117,12 @@ public class ShellyLightModel extends LightModel {
     private int effect = 0;
 
     // initial values used to determine if the model dirty state changes
-    private volatile Mode baselineOperatingMode;
-    private volatile int baselineEffect;
-    private volatile int[] baselineRGBX;
-    private volatile @Nullable PercentType baselineBrightness;
-    private volatile @Nullable OnOffType baselineOnOff;
-    private volatile @Nullable QuantityType<?> baselineColorTemperature;
+    private volatile @Nullable Mode baselineOperatingMode = null;
+    private volatile @Nullable Integer baselineEffect = null;
+    private volatile int[] baselineRGBX = new int[0];
+    private volatile @Nullable PercentType baselineBrightness = null;
+    private volatile @Nullable OnOffType baselineOnOff = null;
+    private volatile @Nullable QuantityType<?> baselineColorTemperature = null;
 
     /**
      * Public static class factory that creates a {@link ShellyLightModel} with the correct parameters based on the
@@ -285,8 +285,7 @@ public class ShellyLightModel extends LightModel {
         apiLightIndex = noPrimary ? channelGroupNumber - 1 : channelGroupNumber;
 
         rgbxLength = super.getRGBx().length;
-        baselineRGBX = new int[rgbxLength];
-        cacheRGBX = Arrays.copyOf(baselineRGBX, rgbxLength);
+        cacheRGBX = new int[rgbxLength];
         super.setRGBx(Arrays.stream(cacheRGBX).mapToDouble(i -> (double) i).toArray());
 
         logger.debug(
@@ -399,7 +398,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the color has been changed since lock() was called.
      */
     public boolean isColorDirty() {
-        return !Arrays.equals(baselineRGBX, 0, rgbxLength, cacheRGBX, 0, rgbxLength);
+        return !Arrays.equals(baselineRGBX, cacheRGBX);
     }
 
     /**
@@ -574,7 +573,7 @@ public class ShellyLightModel extends LightModel {
      * Check if the mode has been changed since lock() was called.
      */
     public boolean isModeDirty() {
-        return baselineOperatingMode != operatingMode;
+        return !Objects.equals(baselineOperatingMode, operatingMode);
     }
 
     public State getOnOffState() {
