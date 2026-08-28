@@ -115,16 +115,42 @@ public class HomeConnectDirectWasherDryerHandler extends BaseHomeConnectDirectHa
                 case DRYER_DRYING_TARGET_KEY -> updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_DRYING_TARGET, key);
                 case DRYER_WRINKLE_GUARD_KEY -> updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_WRINKLE_GUARD, key);
                 case ROOT_OPTION_LIST_KEY, LAUNDRY_CARE_OPTION_LIST_KEY -> {
-                    updateReadonlyEnumOptionDescriptionIfLinked(CHANNEL_LAUNDRY_CARE_PROCESS_PHASE, key);
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_TEMPERATURE, key);
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_SPIN_SPEED, key);
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_RINSE_PLUS, key);
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_STAINS, key);
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_DRYING_TARGET, key);
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_WRINKLE_GUARD, key);
+                    getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
+                        if (!keyFoundInList(deviceDescriptionChanges, LAUNDRY_CARE_PROCESS_PHASE_KEY)
+                                && optionKeyExists(deviceDescriptionService, LAUNDRY_CARE_PROCESS_PHASE_KEY)) {
+                            updateReadonlyEnumOptionDescriptionIfLinked(CHANNEL_LAUNDRY_CARE_PROCESS_PHASE,
+                                    LAUNDRY_CARE_PROCESS_PHASE_KEY);
+                        } else if (!keyFoundInList(deviceDescriptionChanges, DRYER_PROCESS_PHASE_KEY)
+                                && optionKeyExists(deviceDescriptionService, DRYER_PROCESS_PHASE_KEY)) {
+                            updateReadonlyEnumOptionDescriptionIfLinked(CHANNEL_LAUNDRY_CARE_PROCESS_PHASE,
+                                    DRYER_PROCESS_PHASE_KEY);
+                        }
+                    });
+                    if (!keyFoundInList(deviceDescriptionChanges, WASHER_TEMPERATURE_KEY)) {
+                        updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_TEMPERATURE, WASHER_TEMPERATURE_KEY);
+                    }
+                    if (!keyFoundInList(deviceDescriptionChanges, WASHER_SPIN_SPEED_KEY)) {
+                        updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_SPIN_SPEED, WASHER_SPIN_SPEED_KEY);
+                    }
+                    if (!keyFoundInList(deviceDescriptionChanges, WASHER_RINSE_PLUS_KEY)) {
+                        updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_RINSE_PLUS, WASHER_RINSE_PLUS_KEY);
+                    }
+                    if (!keyFoundInList(deviceDescriptionChanges, WASHER_STAINS_KEY)) {
+                        updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_STAINS, WASHER_STAINS_KEY);
+                    }
+                    if (!keyFoundInList(deviceDescriptionChanges, DRYER_DRYING_TARGET_KEY)) {
+                        updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_DRYING_TARGET, DRYER_DRYING_TARGET_KEY);
+                    }
+                    if (!keyFoundInList(deviceDescriptionChanges, DRYER_WRINKLE_GUARD_KEY)) {
+                        updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_WRINKLE_GUARD, DRYER_WRINKLE_GUARD_KEY);
+                    }
                 }
             }
         });
+    }
+
+    private boolean keyFoundInList(List<DeviceDescriptionChange> deviceDescriptionChanges, String key) {
+        return deviceDescriptionChanges.stream().filter(c -> c.key().equals(key)).findFirst().isPresent();
     }
 
     @Override
