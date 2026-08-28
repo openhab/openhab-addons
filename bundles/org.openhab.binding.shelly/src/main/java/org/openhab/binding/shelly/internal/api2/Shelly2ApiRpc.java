@@ -245,6 +245,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             getThing().reinitializeThing();
                         }
                     }
+                } else {
+                    installScript(SHELLY2_BLU_GWSCRIPT, false);
                 }
             }
         } catch (ShellyApiException e) {
