@@ -75,6 +75,7 @@
 			<channel id="maps" typeId="maps"/>
 			<channel id="zones" typeId="zones"/>
 			<channel id="map-svg" typeId="map-svg"/>
+			<channel id="map-png" typeId="map-png"/>
 			<channel id="zone-mowing" typeId="zone-mowing"/>
 			<channel id="cutting-height" typeId="cutting-height"/>
 		</channels>
@@ -159,7 +160,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Mowing Time</label>
 		<description>Total time spent mowing</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.1f h" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="total-mowed-area">
@@ -284,7 +285,7 @@
 	<channel-type id="current-map-id">
 		<item-type>Number</item-type>
 		<label>Current Map ID</label>
-		<description>Identifier of the currently active map</description>
+		<description>Identifier of the active map</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -298,14 +299,21 @@
 	<channel-type id="zones">
 		<item-type>String</item-type>
 		<label>Mowing Zones</label>
-		<description>Mowing zones as a JSON array containing ID, name and area</description>
+		<description>Mowing zones of the active map as a JSON array containing ID, name and area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="map-svg">
 		<item-type>Image</item-type>
-		<label>Map</label>
-		<description>Rendered vector map of the active mowing area</description>
+		<label>Map (SVG)</label>
+		<description>Rendered vector map of the active mowing area for SVG-capable clients</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="map-png">
+		<item-type>Image</item-type>
+		<label>Map (PNG)</label>
+		<description>Rendered PNG map of the active mowing area for mobile and Basic UI clients</description>
 		<state readOnly="true"/>
 	</channel-type>
 

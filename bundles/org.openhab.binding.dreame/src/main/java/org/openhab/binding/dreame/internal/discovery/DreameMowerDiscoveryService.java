@@ -71,8 +71,7 @@ public class DreameMowerDiscoveryService extends AbstractThingHandlerDiscoverySe
                     .create(thingUID).withBridge(bridgeUID).withLabel(device.name()).withProperties(Map.of("deviceId",
                             device.id(), "model", device.model(), "firmwareVersion", device.version()))
                     .withRepresentationProperty("deviceId").build());
-            logger.debug("Discovered Dreame mower {} ({})", DreameDiagnostics.maskIdentifier(device.id()),
-                    device.model());
+            logger.debug("Discovered mower {} ({})", DreameDiagnostics.maskIdentifier(device.id()), device.model());
         }
     }
 

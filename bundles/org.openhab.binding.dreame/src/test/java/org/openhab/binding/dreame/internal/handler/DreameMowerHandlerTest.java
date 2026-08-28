@@ -41,4 +41,10 @@ class DreameMowerHandlerTest {
         assertTrue(DreameMowerHandler.isPollPropertyCurrent(10, 10L));
         assertFalse(DreameMowerHandler.isPollPropertyCurrent(10, 11L));
     }
+
+    @Test
+    void identifiesMova1000MechanicalCuttingHeight() {
+        assertFalse(DreameMowerHandler.supportsElectronicCuttingHeight("mova.mower.g2405c"));
+        assertTrue(DreameMowerHandler.supportsElectronicCuttingHeight("dreame.mower.g2540d"));
+    }
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.dreame.internal.api;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -133,7 +134,7 @@ final class DreameApiResponseParser {
             raw.setLength(Integer.parseInt(info));
         }
         List<DreameMap> maps = new ArrayList<>();
-        List<DreameZone> zones = new ArrayList<>();
+        Map<Integer, List<DreameZone>> zonesByMapId = new LinkedHashMap<>();
         List<DreameMapGeometry> geometries = new ArrayList<>();
         try {
             JsonElement assembled = raw.isEmpty() ? new JsonArray() : JsonParser.parseString(raw.toString());
@@ -141,14 +142,16 @@ final class DreameApiResponseParser {
                 for (JsonElement mapEntry : mapEntries) {
                     JsonObject map = JsonParser.parseString(mapEntry.getAsString()).getAsJsonObject();
                     int index = map.has("mapIndex") ? map.get("mapIndex").getAsInt() : maps.size();
-                    maps.add(new DreameMap(index + 1, index, stringValue(map, "name"), decimalValue(map, "totalArea")));
+                    DreameMap descriptor = new DreameMap(index + 1, index, stringValue(map, "name"),
+                            decimalValue(map, "totalArea"));
                     List<DreameMapZoneGeometry> mapZones = new ArrayList<>();
+                    List<DreameZone> mapZoneDescriptors = new ArrayList<>();
                     if (map.get("mowingAreas") instanceof JsonObject areas
                             && areas.get("value") instanceof JsonArray values) {
                         for (JsonElement value : values) {
                             if (value instanceof JsonArray pair && pair.size() >= 2
                                     && pair.get(1) instanceof JsonObject zone) {
-                                zones.add(new DreameZone(pair.get(0).getAsInt(), stringValue(zone, "name"),
+                                mapZoneDescriptors.add(new DreameZone(pair.get(0).getAsInt(), stringValue(zone, "name"),
                                         decimalValue(zone, "area")));
                                 mapZones.add(new DreameMapZoneGeometry(pair.get(0).getAsInt(),
                                         stringValue(zone, "name"), parsePoints(zone.get("path"))));
@@ -157,13 +160,25 @@ final class DreameApiResponseParser {
                     }
                     List<DreameMapZoneGeometry> forbiddenAreas = parseZoneGeometries(map, "forbiddenAreas");
                     List<DreameMapPathGeometry> paths = parsePathGeometries(map);
-                    geometries.add(parseGeometry(index + 1, map, mapZones, forbiddenAreas, paths));
+                    DreameMapGeometry geometry = parseGeometry(index + 1, map, mapZones, forbiddenAreas, paths);
+                    if (!isEmptyMapPlaceholder(descriptor, geometry)) {
+                        maps.add(descriptor);
+                        zonesByMapId.put(descriptor.id(), mapZoneDescriptors);
+                        geometries.add(geometry);
+                    }
                 }
             }
         } catch (JsonParseException | IllegalStateException | NumberFormatException e) {
-            throw new DreameCloudException("Dreamehome returned invalid map data", e);
+            throw new DreameCloudException("Cloud service returned invalid map data", e);
         }
-        return new DreameMapData(currentMapId(mapListResult), maps, zones, geometries);
+        int currentMapId = currentMapId(mapListResult);
+        List<DreameZone> activeMapZones = zonesByMapId.getOrDefault(currentMapId, List.of());
+        return new DreameMapData(currentMapId, maps, activeMapZones, geometries);
+    }
+
+    private boolean isEmptyMapPlaceholder(DreameMap map, DreameMapGeometry geometry) {
+        return map.name().isBlank() && map.area().signum() == 0 && geometry.zones().isEmpty()
+                && geometry.forbiddenAreas().isEmpty() && geometry.paths().isEmpty();
     }
 
     private DreameMapGeometry parseGeometry(int mapId, JsonObject map, List<DreameMapZoneGeometry> zones,
@@ -280,7 +295,7 @@ final class DreameApiResponseParser {
         if (object.has(name) && object.get(name) instanceof JsonObject value) {
             return value;
         }
-        throw new DreameCloudException("Dreamehome response is missing " + name);
+        throw new DreameCloudException("Cloud response is missing " + name);
     }
 
     private String stringValue(JsonObject object, String name) {

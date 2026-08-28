@@ -97,7 +97,7 @@ public class DreameApiClient implements DreameMowerApi {
         }
         JsonElement result = sendCommand(device, "get_properties", parameters);
         if (!result.isJsonArray()) {
-            throw new DreameCloudException("Dreamehome returned invalid property data");
+            throw new DreameCloudException("Cloud service returned invalid property data");
         }
         return responseParser.parseProperties(result.getAsJsonArray(), properties);
     }
@@ -115,7 +115,7 @@ public class DreameApiClient implements DreameMowerApi {
         request.addProperty("eiid", 1);
 
         JsonObject response = transport.post(HISTORY_PATH, gson.toJson(request), true);
-        assertSuccess(response, "Dreamehome history query failed");
+        assertSuccess(response, "Cloud history query failed");
         return responseParser.parseMowingStatistics(response);
     }
 
@@ -125,7 +125,7 @@ public class DreameApiClient implements DreameMowerApi {
         request.addProperty("did", device.id());
         request.add("model", new JsonArray());
         JsonObject response = transport.post(DEVICE_DATA_PATH, gson.toJson(request), true);
-        assertSuccess(response, "Dreamehome map query failed");
+        assertSuccess(response, "Cloud map query failed");
 
         JsonObject action = new JsonObject();
         action.addProperty("did", device.id());
@@ -181,14 +181,14 @@ public class DreameApiClient implements DreameMowerApi {
         parameters.add("in", input);
         JsonElement result = sendCommand(device, "action", parameters);
         if (result instanceof JsonObject object && object.has("code") && object.get("code").getAsInt() != 0) {
-            throw new DreameCloudException("Dreamehome rejected zone mowing");
+            throw new DreameCloudException("Cloud service rejected zone mowing");
         }
     }
 
     public synchronized BigDecimal getCuttingHeight(DreameDevice device, int mapIndex) throws DreameCloudException {
         JsonArray record = getMowingPreference(device, mapIndex);
         if (record.size() <= 4) {
-            throw new DreameCloudException("Dreamehome returned no cutting height");
+            throw new DreameCloudException("Cloud service returned no cutting height");
         }
         return BigDecimal.valueOf(record.get(4).getAsInt(), 1);
     }
@@ -205,7 +205,7 @@ public class DreameApiClient implements DreameMowerApi {
             status = setMowingPreference(device, legacyRecord);
         }
         if (status != 0) {
-            throw new DreameCloudException("Dreamehome rejected cutting height with status " + status);
+            throw new DreameCloudException("Cloud service rejected cutting height with status " + status);
         }
     }
 
@@ -230,7 +230,7 @@ public class DreameApiClient implements DreameMowerApi {
     static BigDecimal parseCuttingHeight(JsonElement result) throws DreameCloudException {
         JsonArray record = parseMowingPreference(result);
         if (record.size() <= 4) {
-            throw new DreameCloudException("Dreamehome returned no cutting height");
+            throw new DreameCloudException("Cloud service returned no cutting height");
         }
         return BigDecimal.valueOf(record.get(4).getAsInt(), 1);
     }
@@ -238,7 +238,7 @@ public class DreameApiClient implements DreameMowerApi {
     private static JsonArray parseMowingPreference(JsonElement result) throws DreameCloudException {
         if (!(result instanceof JsonObject object) || object.has("code") && object.get("code").getAsInt() != 0
                 || !(object.get("out") instanceof JsonArray output)) {
-            throw new DreameCloudException("Dreamehome returned invalid mowing preferences");
+            throw new DreameCloudException("Cloud service returned invalid mowing preferences");
         }
         for (JsonElement element : output) {
             if (element instanceof JsonObject entry && (!entry.has("r") || entry.get("r").getAsInt() == 0)
@@ -246,7 +246,7 @@ public class DreameApiClient implements DreameMowerApi {
                 return record.deepCopy();
             }
         }
-        throw new DreameCloudException("Dreamehome returned no cutting height");
+        throw new DreameCloudException("Cloud service returned no cutting height");
     }
 
     static JsonArray updatedCuttingHeightRecord(JsonArray source, int mapIndex, BigDecimal height)
@@ -256,7 +256,7 @@ public class DreameApiClient implements DreameMowerApi {
             throw new DreameCloudException("Cutting height must be between 3 and 7 cm in 0.5 cm steps");
         }
         if (source.size() <= 4) {
-            throw new DreameCloudException("Dreamehome returned invalid mowing preferences");
+            throw new DreameCloudException("Cloud service returned invalid mowing preferences");
         }
         JsonArray updated = source.deepCopy();
         updated.set(0, new com.google.gson.JsonPrimitive(0));
@@ -286,7 +286,7 @@ public class DreameApiClient implements DreameMowerApi {
                 }
             }
         }
-        throw new DreameCloudException("Dreamehome returned invalid cutting-height confirmation");
+        throw new DreameCloudException("Cloud service returned invalid cutting-height confirmation");
     }
 
     public synchronized void logout() {
@@ -313,15 +313,15 @@ public class DreameApiClient implements DreameMowerApi {
         request.addProperty("id", id);
         request.add("data", data);
 
-        logger.debug("Sending Dreamehome method {} with request id {} to device {}", method, id,
+        logger.debug("Sending cloud method {} with request id {} to device {}", method, id,
                 DreameDiagnostics.maskIdentifier(device.id()));
 
         JsonObject response = transport.post(commandPath(device), gson.toJson(request), true);
-        assertSuccess(response, "Dreamehome command failed");
+        assertSuccess(response, "Cloud command failed");
         JsonObject responseData = objectValue(response, "data");
         JsonElement result = responseData.get("result");
         if (result == null || result.isJsonNull()) {
-            throw new DreameCloudException("Dreamehome command returned no result");
+            throw new DreameCloudException("Cloud command returned no result");
         }
         return result;
     }
@@ -329,18 +329,18 @@ public class DreameApiClient implements DreameMowerApi {
     public synchronized DreameMqttConfiguration mqttConfiguration(DreameDevice device) throws DreameCloudException {
         ensureAuthenticated();
         if (authentication.userId().isBlank() || device.masterUid().isBlank() || device.bindDomain().isBlank()) {
-            throw new DreameCloudException("Dreamehome did not provide MQTT connection data");
+            throw new DreameCloudException("Cloud service did not provide MQTT connection data");
         }
         int separator = device.bindDomain().lastIndexOf(':');
         if (separator < 1 || separator == device.bindDomain().length() - 1) {
-            throw new DreameCloudException("Dreamehome returned an invalid MQTT endpoint");
+            throw new DreameCloudException("Cloud service returned an invalid MQTT endpoint");
         }
         String host = device.bindDomain().substring(0, separator);
         int port;
         try {
             port = Integer.parseInt(device.bindDomain().substring(separator + 1));
         } catch (NumberFormatException e) {
-            throw new DreameCloudException("Dreamehome returned an invalid MQTT port", e);
+            throw new DreameCloudException("Cloud service returned an invalid MQTT port", e);
         }
         String agent = Integer.toUnsignedString(requestId.incrementAndGet());
         String clientId = "p_" + device.masterUid() + "_" + agent + "_" + host;
@@ -366,7 +366,7 @@ public class DreameApiClient implements DreameMowerApi {
         if (object.has(name) && object.get(name) instanceof JsonObject value) {
             return value;
         }
-        throw new DreameCloudException("Dreamehome response is missing " + name);
+        throw new DreameCloudException("Cloud response is missing " + name);
     }
 
     private static String defaultIfBlank(String value, String fallback) {
