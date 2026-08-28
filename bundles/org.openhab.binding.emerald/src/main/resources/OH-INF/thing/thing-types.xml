@@ -37,6 +37,7 @@
 			<channel id="fault" typeId="fault"/>
 			<channel id="defrost" typeId="defrost"/>
 			<channel id="work-state" typeId="work-state"/>
+			<channel id="tank-capacity" typeId="tank-capacity"/>
 		</channels>
 
 		<config-description>
@@ -101,5 +102,11 @@
 		<label>Set Temperature</label>
 		<description>Set Temperature of Hot Water</description>
 		<state pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="tank-capacity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Tank Capacity</label>
+		<description>Report the current hot water capacity of the HWS</description>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

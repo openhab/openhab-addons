@@ -40,6 +40,7 @@ public class EmeraldBindingConstants {
     public static final String CHANNEL_FAULT = "fault";
     public static final String CHANNEL_DEFROST = "defrost";
     public static final String CHANNEL_WORK_STATE = "work-state";
+    public static final String CHANNEL_TANK_CAPACITY = "tank-capacity";
 
     public static final String PROPERTY_WIFI_NAME = "wifi-name";
 

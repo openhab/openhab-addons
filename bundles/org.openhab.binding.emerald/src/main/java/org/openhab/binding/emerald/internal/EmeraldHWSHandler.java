@@ -52,6 +52,8 @@ public class EmeraldHWSHandler extends BaseThingHandler {
     @Nullable
     EmeraldAccountHandler bridgeHandler;
     private @Nullable EmeraldHWSConfiguration config;
+    private int cachedCurrentTemp = -1;
+    private int cachedSetTemp = -1;
 
     public EmeraldHWSHandler(Thing thing) {
         super(thing);
@@ -156,8 +158,6 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
             if (ctx != null) {
                 EmeraldList.Heatpump hp = ctx.heatpump();
-                logger.info("Found Heat Pump id = {}", hp.id);
-
                 Map<String, String> properties = editProperties();
                 if (!hp.softVersion.isEmpty()) {
                     properties.put(Thing.PROPERTY_FIRMWARE_VERSION, hp.softVersion);
@@ -204,14 +204,30 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             if (ctx != null) {
                 EmeraldList.Heatpump hp = ctx.heatpump();
 
+                cachedCurrentTemp = hp.lastState.tempCurrent;
+                cachedSetTemp = hp.lastState.tempSet;
+
                 updateState(EmeraldBindingConstants.CHANNEL_POWER, OnOffType
                         .from("1".equals(hp.lastState.switchOn) || "on".equalsIgnoreCase(hp.lastState.switchOn)));
                 updateState(EmeraldBindingConstants.CHANNEL_MODE, new DecimalType(hp.lastState.mode));
                 updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
-                        new QuantityType<>(hp.lastState.tempCurrent, SIUnits.CELSIUS));
+                        new QuantityType<>(cachedCurrentTemp, SIUnits.CELSIUS));
                 updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE,
-                        new QuantityType<>(hp.lastState.tempSet, SIUnits.CELSIUS));
+                        new QuantityType<>(cachedSetTemp, SIUnits.CELSIUS));
+                calculateAndPublishCapacity();
             }
+        }
+    }
+
+    private void calculateAndPublishCapacity() {
+        if (cachedCurrentTemp >= 0 && cachedSetTemp >= 0) {
+            double raw = 100.0 - 2.3 * (cachedSetTemp - cachedCurrentTemp);
+            double clamped = Math.max(0.0, Math.min(100.0, raw));
+
+            // Snap to the nearest 20% step just like the Emerald app
+            int rounded = (int) (Math.round(clamped / 20.0) * 20);
+
+            updateState(EmeraldBindingConstants.CHANNEL_TANK_CAPACITY, new DecimalType(rounded));
         }
     }
 
@@ -239,16 +255,16 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
             for (JsonObject payload : objectsToProcess) {
                 if (payload.has("temp_current")) {
-                    int currentTemp = payload.get("temp_current").getAsInt();
+                    cachedCurrentTemp = payload.get("temp_current").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
-                            new QuantityType<>(currentTemp, SIUnits.CELSIUS));
+                            new QuantityType<>(cachedCurrentTemp, SIUnits.CELSIUS));
                     dataFound = true;
                 }
 
                 if (payload.has("temp_set")) {
-                    int setTemp = payload.get("temp_set").getAsInt();
+                    cachedSetTemp = payload.get("temp_set").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE,
-                            new QuantityType<>(setTemp, SIUnits.CELSIUS));
+                            new QuantityType<>(cachedSetTemp, SIUnits.CELSIUS));
                     dataFound = true;
                 }
 
@@ -300,6 +316,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             }
 
             if (dataFound) {
+                calculateAndPublishCapacity();
                 logger.debug("Successfully mapped MQTT data to openHAB channels.");
             } else {
                 logger.debug("Parsed MQTT message did not contain channel state data (Metadata only).");
