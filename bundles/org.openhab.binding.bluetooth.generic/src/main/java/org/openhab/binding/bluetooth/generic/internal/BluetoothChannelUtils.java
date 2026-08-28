@@ -158,7 +158,12 @@ public class BluetoothChannelUtils {
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }
-                request.setField(fieldName, decimalType.longValue());
+                // Use doubleValue(), not longValue(): when the integer field carries a
+                // DecimalExponent the real-world value can be fractional (e.g. 21.5 for a
+                // sint16 in 0.01 degC units). setField(Double) divides by the field multiplier
+                // (10^exponent) before encoding, yielding the correct raw integer, whereas
+                // longValue() truncates the fraction first and corrupts the written value.
+                request.setField(fieldName, decimalType.doubleValue());
                 return;
             }
             case FLOAT_IEE754:
