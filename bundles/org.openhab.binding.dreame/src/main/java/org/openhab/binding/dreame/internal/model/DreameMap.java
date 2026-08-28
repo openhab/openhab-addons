@@ -16,7 +16,11 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** A map descriptor returned by Dreamehome. */
+/**
+ * A map descriptor returned by Dreamehome.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public record DreameMap(int id, int index, String name, BigDecimal area) {
 }

@@ -4,7 +4,8 @@ This binding integrates Dreame and MOVA robotic lawn mowers with openHAB through
 It uses the selected cloud service for authentication, discovery, commands, periodic status polling and MQTT live updates.
 
 > **Development status:** The Dreame A1 Pro 2000 (`dreame.mower.g2540d`) has been tested with firmware `4.3.6_0623` in the European cloud region, including the `start`, `pause`, `stop` and `dock` commands.
-> MOVA mower support is based on public protocol references and still requires validation with physical hardware.
+> The MOVA 1000 (`mova.mower.g2405c`) has been community-tested with MOVAhome, including discovery, MQTT updates,
+> commands, zone mowing and map rendering.
 > Other mower models use the same protocol family but still require testing.
 
 ## Supported Things
@@ -17,7 +18,7 @@ It uses the selected cloud service for authentication, discovery, commands, peri
 The binding accepts devices whose model identifier starts with `dreame.mower.` or `mova.mower.`.
 Known mower identifiers include A1 (`dreame.mower.p2255`), A1 Pro (`dreame.mower.g2422` and `dreame.mower.g2540d`), A2 (`dreame.mower.g2408`), A2 1200 (`dreame.mower.g2568a`) and A3 (`dreame.mower.g3255`).
 Known MOVA identifiers include MOVA 600 (`mova.mower.g2405a`), MOVA 600 Kit (`mova.mower.g2405b`) and MOVA 1000 (`mova.mower.g2405c`).
-Only `dreame.mower.g2540d` is currently confirmed with a physical mower.
+The `dreame.mower.g2540d` and `mova.mower.g2405c` models are confirmed with physical mowers.
 
 ## Discovery
 
@@ -128,6 +129,7 @@ Number Dreame_CuttingHeight "Cutting Height [%.1f cm]" { channel="dreame:mower:h
 String Dreame_ZoneMowing "Zone Mowing" { channel="dreame:mower:home:a1pro:zone-mowing" }
 String Dreame_Zones "Zones [%s]" { channel="dreame:mower:home:a1pro:zones" }
 Image Dreame_Map "Map" { channel="dreame:mower:home:a1pro:map-svg" }
+Image Dreame_MapPng "Map (PNG)" { channel="dreame:mower:home:a1pro:map-png" }
 ```
 
 Example commands:
@@ -173,8 +175,8 @@ If a newly added channel does not appear after updating a development JAR, disab
 
 ## Known Limitations
 
-- MOVAhome login, discovery, MQTT and device operations still require testing with physical MOVA hardware.
-- Commands are not yet verified on models other than `dreame.mower.g2540d`.
+- Mower models other than `dreame.mower.g2540d` and `mova.mower.g2405c` still require physical-device testing.
+- The active map ID is read-only; selecting another stored map is not yet implemented.
 - Lifetime statistics and do not disturb are not exposed by all mower firmware versions.
 - Map details depend on the geometry and metadata supplied by the mower firmware.
 - Position values use the native Dreame map coordinate system and are not geographic coordinates.

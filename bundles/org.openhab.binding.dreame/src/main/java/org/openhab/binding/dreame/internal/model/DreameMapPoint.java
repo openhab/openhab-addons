@@ -14,7 +14,11 @@ package org.openhab.binding.dreame.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** A point in Dreame's local map coordinate system. */
+/**
+ * A point in Dreame's local map coordinate system.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public record DreameMapPoint(int x, int y) {
 }

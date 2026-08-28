@@ -16,7 +16,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** Read-only map metadata exposed by the binding. */
+/**
+ * Read-only map metadata exposed by the binding.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public record DreameMapData(int currentMapId, List<DreameMap> maps, List<DreameZone> zones,
         List<DreameMapGeometry> geometries) {

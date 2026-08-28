@@ -16,7 +16,11 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** A mowing-zone descriptor returned by Dreamehome. */
+/**
+ * A mowing-zone descriptor returned by Dreamehome.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public record DreameZone(int id, String name, BigDecimal area) {
 }

@@ -35,7 +35,11 @@ import org.openhab.binding.dreame.internal.model.DreameMapPoint;
 import org.openhab.binding.dreame.internal.model.DreameMapZoneGeometry;
 import org.openhab.binding.dreame.internal.model.DreameMowerPose;
 
-/** Renders a raster fallback of the Dreame map for clients without reliable SVG support. */
+/**
+ * Renders a raster fallback of the Dreame map for clients without reliable SVG support.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public final class DreameMapPngRenderer {
     private static final int PADDING = 300;
