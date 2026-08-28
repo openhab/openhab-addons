@@ -120,6 +120,19 @@ public abstract class BluetoothDevice {
     public abstract @Nullable Integer getTxPower();
 
     /**
+     * Indicates whether this device advertises as connectable, derived from the advertising PDU type
+     * (e.g. ADV_IND is connectable; ADV_NONCONN_IND is not). Non-connectable devices are pure beacons and
+     * must never be connect-probed during discovery.
+     *
+     * @return {@link Boolean#TRUE}/{@link Boolean#FALSE} if the advertising connectability is known, or
+     *         {@code null} if the transport does not report it (in which case connectability is unknown and
+     *         callers should fall back to their previous behavior).
+     */
+    public @Nullable Boolean getConnectable() {
+        return null;
+    }
+
+    /**
      * Returns the last Receive Signal Strength Indicator (RSSI) value or null if no RSSI has been received
      *
      * @return the last RSSI value in dBm

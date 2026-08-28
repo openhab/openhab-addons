@@ -72,6 +72,11 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      */
     protected @Nullable Integer txPower = null;
 
+    /**
+     * Advertised connectability, derived from the advertising PDU type; null until a transport reports it.
+     */
+    protected @Nullable Boolean connectable = null;
+
     protected final transient ZonedDateTime createTime = ZonedDateTime.now();
 
     /**
@@ -184,6 +189,20 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     @Override
     public @Nullable Integer getTxPower() {
         return txPower;
+    }
+
+    /**
+     * Sets the advertised connectability of the device, as derived from the advertising PDU type.
+     *
+     * @param connectable true if the device advertises as connectable, false if it is a non-connectable beacon
+     */
+    public void setConnectable(boolean connectable) {
+        this.connectable = connectable;
+    }
+
+    @Override
+    public @Nullable Boolean getConnectable() {
+        return connectable;
     }
 
     /**
