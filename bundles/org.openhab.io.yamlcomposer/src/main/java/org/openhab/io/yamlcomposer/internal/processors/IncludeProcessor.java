@@ -45,6 +45,7 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
     private final Path basePath;
     private final Set<Path> includeStack;
     private final Consumer<Path> includeCallback;
+    private final Consumer<String> envVarCallback;
     private final ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache;
 
     /**
@@ -54,15 +55,18 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
      * @param includeStack the stack of currently included files
      * @param includeCallback the callback to invoke when a file is included
      * @param includeCache the cache for storing included file contents
+     * @param envVarCallback the callback to invoke for environment variable resolution
      * @param logger the logger to use for logging messages
      */
     public IncludeProcessor(Path basePath, Set<Path> includeStack, Consumer<Path> includeCallback,
-            ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache, BufferedLogger logger) {
+            ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache, Consumer<String> envVarCallback,
+            BufferedLogger logger) {
         this.logger = logger;
         this.basePath = basePath.toAbsolutePath().normalize();
         this.includeStack = includeStack;
         this.includeCallback = includeCallback;
         this.includeCache = includeCache;
+        this.envVarCallback = envVarCallback;
     }
 
     @Override
@@ -107,7 +111,7 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
 
         try {
             YamlComposer includeComposer = new YamlComposer(includePath, includeVariables, includeStack,
-                    includeCallback, logger.getLogSession(), includeCache);
+                    includeCallback, envVarCallback, logger.getLogSession(), includeCache);
             includeCallback.accept(includePath);
             return includeComposer.load();
         } catch (YamlEngineException | IOException e) {

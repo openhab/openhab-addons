@@ -32,6 +32,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.openhab.core.OpenHAB;
 import org.openhab.io.yamlcomposer.internal.YamlComposer.CacheEntry;
 import org.openhab.io.yamlcomposer.internal.directives.Directive;
 import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
@@ -64,6 +67,13 @@ abstract class AbstractYamlComposerTest {
         logSession.close(); // This will flush logs to the console automatically
     }
 
+    protected MockedStatic<OpenHAB> mockOpenHabMetadata() {
+        MockedStatic<OpenHAB> openHABMock = Mockito.mockStatic(OpenHAB.class);
+        openHABMock.when(OpenHAB::getVersion).thenReturn("5.3.0");
+        openHABMock.when(OpenHAB::buildString).thenReturn("test-build");
+        return openHABMock;
+    }
+
     /**
      * Load a YAML fixture file from the test resources.
      * <p>
@@ -91,6 +101,7 @@ abstract class AbstractYamlComposerTest {
         try {
             ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
             Object result = YamlComposer.load(filePath, path -> {
+            }, env -> {
             }, logSession, includeCache);
 
             if (result instanceof Map<?, ?> dataMap) {
@@ -120,6 +131,7 @@ abstract class AbstractYamlComposerTest {
 
         ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
         Object result = YamlComposer.load(tempFile, path -> {
+        }, env -> {
         }, logSession, includeCache);
 
         if (result != null) {

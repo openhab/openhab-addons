@@ -511,12 +511,29 @@ foo: ${VARS['and']}
 
 ### ENV to Access Environment Variables
 
-A special variable `ENV` exposes a map of system environment variables.
-This is especially useful for configurations running within Docker containers.
+The YAML Composer provides a special variable map, **`ENV`**, which exposes system environment variables to your Composer source files.
+This is especially useful when running openHAB inside Docker, where environment variables are commonly used for deployment‑specific configuration.
 
 ```yaml
 mode: ${ENV.OPENHAB_MODE}   # Resolves to the environment value
 ```
+
+::: tip Note
+If a Composer source file references environment variables via standard lookups (e.g., `${ENV.VAR_NAME}` or `${ENV['VAR_NAME']}`), **changes to those variable values will automatically trigger regeneration** of the compiled YAML during openHAB startup.
+
+Advanced operations on `ENV`—such as checking key existence (`'VAR' in ENV` or `ENV.containsKey(...)`), iterating over the map, or querying map properties (e.g., `ENV.size()`)—are not tracked for auto-regeneration.
+:::
+
+This feature is **not the same** as [openHAB Core’s environment variable expansion](/docs/configuration/things.html#defining-things-using-files) used in `.things` files.
+
+#### Differences Between YAML Composer and Core ENV Expansion
+
+| Feature            | YAML Composer                                                                                                                                             | Core                                                                                                                                        |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| **Syntax**         | `${ENV.NAME}` or `${ENV["NAME"]}`                                                                                                                         | `${ENV:NAME}`                                                                                                                               |
+| **Where it works** | Anywhere in Composer YAML source: labels, UIDs, locations, conditions, parameters, keys, etc.                                                             | Only inside **Thing configuration values**. Can be used outside YAML Composer, directly inside `CONF/yaml/` files.                          |
+| **When applied**   | During **Composer generation**. The generated YAML contains the **resolved value**, not the `${ENV...}` expression. UI and Core see only the final value. | During **Thing initialization**. The YAML file still contains the literal `${ENV:NAME}` pattern; Core resolves it at runtime.               |
+| **How to use**     | Use Composer’s `${ENV.*}` syntax normally. It behaves like any other variable reference.                                                                  | Must wrap the literal `${ENV:NAME}` inside a [!literal](#the-literal-tag-and-sub-escape-hatch) block to prevent Composer from expanding it. |
 
 ### Calling Java Methods
 
