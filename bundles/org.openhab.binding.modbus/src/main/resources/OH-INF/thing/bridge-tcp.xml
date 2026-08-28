@@ -81,7 +81,7 @@
 			</parameter>
 			<parameter name="receiveTimeoutMillis" type="integer" min="0" unit="ms">
 				<label>Timeout for Sending and Receiving data</label>
-				<description>Maximum time to wait for data to be received, in milliseconds.</description>
+				<description>Maximum time to wait for data to be received, in milliseconds. A value of zero disables the timeout.</description>
 				<default>3000</default>
 				<advanced>true</advanced>
 			</parameter>
