@@ -69,7 +69,6 @@ public class PlivoBindingConstants {
 
     // Webhook path segments
     public static final String WEBHOOK_SMS = "sms";
-    public static final String WEBHOOK_WHATSAPP = "whatsapp";
     public static final String WEBHOOK_VOICE = "voice";
     public static final String WEBHOOK_GATHER = "gather";
     public static final String WEBHOOK_STATUS = "status";

@@ -208,8 +208,7 @@ If using a reverse proxy, you must forward this entire path prefix.
 
 | Path                                  | Method | Purpose                                                |
 | ------------------------------------- | ------ | ------------------------------------------------------ |
-| `/plivo/callback/{thingUID}/sms`      | POST   | Incoming SMS/MMS messages                              |
-| `/plivo/callback/{thingUID}/whatsapp` | POST   | Incoming WhatsApp messages                             |
+| `/plivo/callback/{thingUID}/sms`      | POST   | Incoming SMS, MMS, and WhatsApp messages               |
 | `/plivo/callback/{thingUID}/voice`    | POST   | Incoming voice calls                                   |
 | `/plivo/callback/{thingUID}/gather`   | POST   | DTMF input callbacks                                   |
 | `/plivo/callback/{thingUID}/status`   | POST   | Message/call status updates                            |

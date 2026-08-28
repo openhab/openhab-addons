@@ -295,7 +295,7 @@ public class PlivoCallbackServlet extends HttpServlet {
         // The /status endpoint is shared: message-status callbacks carry MessageUUID and use the
         // messaging signature families, while call-status callbacks carry CallUUID and require V3 like
         // the other voice callbacks.
-        boolean messaging = WEBHOOK_SMS.equals(endpoint) || WEBHOOK_WHATSAPP.equals(endpoint)
+        boolean messaging = WEBHOOK_SMS.equals(endpoint)
                 || (WEBHOOK_STATUS.equals(endpoint) && params.containsKey("MessageUUID"));
         String requestUrl = getExternalRequestUrl(req, handler, endpoint, false);
         if (!validateSignature(req, extractBodyParameters(req), requestUrl, client.getAuthToken(), messaging)) {
@@ -306,7 +306,6 @@ public class PlivoCallbackServlet extends HttpServlet {
 
         switch (endpoint) {
             case WEBHOOK_SMS:
-            case WEBHOOK_WHATSAPP:
                 handler.handleIncomingSms(params);
                 sendXmlResponse(resp, handler, EMPTY_XML_RESPONSE, endpoint);
                 break;
