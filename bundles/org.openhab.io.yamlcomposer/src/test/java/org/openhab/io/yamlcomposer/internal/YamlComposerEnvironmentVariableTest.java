@@ -69,11 +69,23 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
         }
 
         @Test
-        @DisplayName("Tracks environment variables using containsKey() method in expressions")
-        void tracksReferencedEnvironmentVariablesUsingContainsKey() throws IOException {
+        @DisplayName("Tracks only direct environment variable access, ignoring existence checks")
+        void tracksOnlyDirectEnvironmentVariableAccess() throws IOException {
             Path main = writeFixture("env_main.yaml", """
-                    setting: ${ENV.containsKey('APP_CONFIG')}
-                    in_check: ${'IN_VAR' in ENV}
+                    tracked_access:
+                      dot_syntax: ${ENV.APP_CONFIG}
+                      bracket_syntax: ${ENV['APP_NAME']}
+
+                    # Test that method calls are filtered out and not tracked
+                    untracked_access:
+                      containsKey: ${ENV.containsKey('IGNORE_KEY_1')}
+                      in_operator: ${'IGNORE_KEY_2' in ENV}
+                      containsValue: ${ENV.containsValue('ignore_value')}
+                      size: ${ENV.size}
+                      keySet: ${ENV.keySet}
+                      iteration:
+                        !for env, value in ENV:
+                          - ${env}: ${value}
                     """);
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
@@ -82,7 +94,8 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             YamlComposer.load(main, p -> {
             }, trackedEnv::add, logSession, includeCache);
 
-            assertThat(trackedEnv, containsInAnyOrder(equalTo("APP_CONFIG"), equalTo("IN_VAR")));
+            // Only direct variable evaluation should be tracked.
+            assertThat(trackedEnv, containsInAnyOrder(equalTo("APP_CONFIG"), equalTo("APP_NAME")));
         }
 
         @Test

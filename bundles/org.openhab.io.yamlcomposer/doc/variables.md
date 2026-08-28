@@ -508,7 +508,9 @@ mode: ${ENV.OPENHAB_MODE}   # Resolves to the environment value
 ```
 
 ::: tip Note
-If a Composer source file references environment variables, **changes to those variables will automatically trigger regeneration** of the composed YAML during openHAB startup.
+If a Composer source file references environment variables via standard lookups (e.g., `${ENV.VAR_NAME}` or `${ENV['VAR_NAME']}`), **changes to those variable values will automatically trigger regeneration** of the compiled YAML during openHAB startup.
+
+Advanced operations on `ENV`—such as checking key existence (`'VAR' in ENV` or `ENV.containsKey(...)`), iterating over the map, or querying map properties (e.g., `ENV.size()`)—are not tracked for auto-regeneration.
 :::
 
 This feature is **not the same** as [openHAB Core’s environment variable expansion](/docs/configuration/things.html#defining-things-using-files) used in `.things` files.

@@ -12,11 +12,16 @@
  */
 package org.openhab.io.yamlcomposer.internal.expression;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -165,22 +170,24 @@ public class ExpressionEvaluator {
      * A custom Map wrapper around System.getenv() that intercepts key lookups
      * to record which environment variables are accessed by expressions.
      */
-    private static class TrackingEnvMap extends java.util.AbstractMap<String, @Nullable String> {
+    private static class TrackingEnvMap extends AbstractMap<String, @Nullable String> {
+
         private final Consumer<String> callback;
 
-        public TrackingEnvMap(Consumer<String> callback) {
+        private static final Set<String> PUBLIC_MAP_METHODS = Arrays.stream(java.util.Map.class.getMethods())
+                .filter(method -> !Modifier.isStatic(method.getModifiers())).map(Method::getName)
+                .collect(Collectors.toUnmodifiableSet());
+
+        TrackingEnvMap(Consumer<String> callback) {
             this.callback = callback;
         }
 
         @Override
         public @Nullable String get(@Nullable Object key) {
             if (key instanceof String varName) {
-                // Special case: Ignore "containsKey" during EL property probing so EL falls back
-                // to calling TrackingEnvMap.containsKey("VAR") instead of tracking "containsKey".
-                // Caveat: Fetching the value of an actual env var named "containsKey" (${ENV.containsKey})
-                // will return the value, but it won't be tracked.
-                // (Existence checks like `'containsKey' in ENV` still work).
-                if ("containsKey".equals(varName)) {
+                // Guard against public Map method names so expression probing
+                // never tracks them as environment variables
+                if (PUBLIC_MAP_METHODS.contains(varName)) {
                     return null;
                 }
 
@@ -188,14 +195,6 @@ public class ExpressionEvaluator {
                 return System.getenv(varName);
             }
             return null;
-        }
-
-        @Override
-        public boolean containsKey(@Nullable Object key) {
-            if (key instanceof String varName) {
-                callback.accept(varName);
-            }
-            return System.getenv().containsKey(key);
         }
 
         @Override
