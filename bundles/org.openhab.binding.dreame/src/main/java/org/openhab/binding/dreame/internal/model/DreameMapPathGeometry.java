@@ -16,7 +16,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** Navigation path between the charging station and mowing areas. */
+/**
+ * Navigation path between the charging station and mowing areas.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public record DreameMapPathGeometry(int id, int type, List<DreameMapPoint> points) {
     public DreameMapPathGeometry {

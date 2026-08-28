@@ -16,7 +16,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** Boundary and mowing-zone polygons for one map. */
+/**
+ * Boundary and mowing-zone polygons for one map.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public record DreameMapGeometry(int mapId, int minX, int minY, int maxX, int maxY, List<DreameMapZoneGeometry> zones,
         List<DreameMapZoneGeometry> forbiddenAreas, List<DreameMapPathGeometry> paths) {

@@ -22,7 +22,11 @@ import org.openhab.binding.dreame.internal.model.DreameMapPoint;
 import org.openhab.binding.dreame.internal.model.DreameMapZoneGeometry;
 import org.openhab.binding.dreame.internal.model.DreameMowerPose;
 
-/** Renders Dreame vector map metadata without external graphics dependencies. */
+/**
+ * Renders Dreame vector map metadata without external graphics dependencies.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public final class DreameMapSvgRenderer {
     private static final int PADDING = 300;

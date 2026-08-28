@@ -16,7 +16,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** Polygon geometry for one mowing zone. */
+/**
+ * Polygon geometry for one mowing zone.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
 @NonNullByDefault
 public record DreameMapZoneGeometry(int id, String name, List<DreameMapPoint> points) {
     public DreameMapZoneGeometry {
