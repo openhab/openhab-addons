@@ -139,7 +139,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             "LK Dimmer", // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
             "^TRADFRI.*1055l$" // IKEA Tradfri 1055l bulb
     );
-    public static final Pattern OFF_TRANSITION_WORK_AROUND_PATTERN = Pattern.compile(
+    static final Pattern OFF_TRANSITION_WORK_AROUND_PATTERN = Pattern.compile(
             OFF_TRANSITION_WORK_AROUND_MODELS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
 
     /*
