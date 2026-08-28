@@ -76,7 +76,6 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
                       dot_syntax: ${ENV.APP_CONFIG}
                       bracket_syntax: ${ENV['APP_NAME']}
 
-                    # Test that method calls are filtered out and not tracked
                     untracked_access:
                       containsKey: ${ENV.containsKey('IGNORE_KEY_1')}
                       in_operator: ${'IGNORE_KEY_2' in ENV}
@@ -94,7 +93,6 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             YamlComposer.load(main, p -> {
             }, trackedEnv::add, logSession, includeCache);
 
-            // Only direct variable evaluation should be tracked.
             assertThat(trackedEnv, containsInAnyOrder(equalTo("APP_CONFIG"), equalTo("APP_NAME")));
         }
 
