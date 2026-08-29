@@ -17,6 +17,7 @@ import static org.openhab.core.library.unit.SIUnits.GRAM;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homeconnectdirect.internal.configuration.HomeConnectDirectConfiguration;
@@ -103,6 +104,9 @@ public class HomeConnectDirectWasherDryerHandler extends BaseHomeConnectDirectHa
     protected void onApplianceDescriptionChangeEvent(List<DeviceDescriptionChange> deviceDescriptionChanges) {
         super.onApplianceDescriptionChangeEvent(deviceDescriptionChanges);
 
+        var changedKeys = deviceDescriptionChanges.stream().map(DeviceDescriptionChange::key)
+                .collect(Collectors.toSet());
+
         deviceDescriptionChanges.forEach(deviceDescriptionChange -> {
             var key = deviceDescriptionChange.key();
             switch (key) {
@@ -116,41 +120,37 @@ public class HomeConnectDirectWasherDryerHandler extends BaseHomeConnectDirectHa
                 case DRYER_WRINKLE_GUARD_KEY -> updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_WRINKLE_GUARD, key);
                 case ROOT_OPTION_LIST_KEY, LAUNDRY_CARE_OPTION_LIST_KEY -> {
                     getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                        if (!keyFoundInList(deviceDescriptionChanges, LAUNDRY_CARE_PROCESS_PHASE_KEY)
+                        if (!changedKeys.contains(LAUNDRY_CARE_PROCESS_PHASE_KEY)
                                 && optionKeyExists(deviceDescriptionService, LAUNDRY_CARE_PROCESS_PHASE_KEY)) {
                             updateReadonlyEnumOptionDescriptionIfLinked(CHANNEL_LAUNDRY_CARE_PROCESS_PHASE,
                                     LAUNDRY_CARE_PROCESS_PHASE_KEY);
-                        } else if (!keyFoundInList(deviceDescriptionChanges, DRYER_PROCESS_PHASE_KEY)
+                        } else if (!changedKeys.contains(DRYER_PROCESS_PHASE_KEY)
                                 && optionKeyExists(deviceDescriptionService, DRYER_PROCESS_PHASE_KEY)) {
                             updateReadonlyEnumOptionDescriptionIfLinked(CHANNEL_LAUNDRY_CARE_PROCESS_PHASE,
                                     DRYER_PROCESS_PHASE_KEY);
                         }
                     });
-                    if (!keyFoundInList(deviceDescriptionChanges, WASHER_TEMPERATURE_KEY)) {
+                    if (!changedKeys.contains(WASHER_TEMPERATURE_KEY)) {
                         updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_TEMPERATURE, WASHER_TEMPERATURE_KEY);
                     }
-                    if (!keyFoundInList(deviceDescriptionChanges, WASHER_SPIN_SPEED_KEY)) {
+                    if (!changedKeys.contains(WASHER_SPIN_SPEED_KEY)) {
                         updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_SPIN_SPEED, WASHER_SPIN_SPEED_KEY);
                     }
-                    if (!keyFoundInList(deviceDescriptionChanges, WASHER_RINSE_PLUS_KEY)) {
+                    if (!changedKeys.contains(WASHER_RINSE_PLUS_KEY)) {
                         updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_RINSE_PLUS, WASHER_RINSE_PLUS_KEY);
                     }
-                    if (!keyFoundInList(deviceDescriptionChanges, WASHER_STAINS_KEY)) {
+                    if (!changedKeys.contains(WASHER_STAINS_KEY)) {
                         updateEnumOptionDescriptionIfLinked(CHANNEL_WASHER_STAINS, WASHER_STAINS_KEY);
                     }
-                    if (!keyFoundInList(deviceDescriptionChanges, DRYER_DRYING_TARGET_KEY)) {
+                    if (!changedKeys.contains(DRYER_DRYING_TARGET_KEY)) {
                         updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_DRYING_TARGET, DRYER_DRYING_TARGET_KEY);
                     }
-                    if (!keyFoundInList(deviceDescriptionChanges, DRYER_WRINKLE_GUARD_KEY)) {
+                    if (!changedKeys.contains(DRYER_WRINKLE_GUARD_KEY)) {
                         updateEnumOptionDescriptionIfLinked(CHANNEL_DRYER_WRINKLE_GUARD, DRYER_WRINKLE_GUARD_KEY);
                     }
                 }
             }
         });
-    }
-
-    private boolean keyFoundInList(List<DeviceDescriptionChange> deviceDescriptionChanges, String key) {
-        return deviceDescriptionChanges.stream().filter(c -> c.key().equals(key)).findFirst().isPresent();
     }
 
     @Override
