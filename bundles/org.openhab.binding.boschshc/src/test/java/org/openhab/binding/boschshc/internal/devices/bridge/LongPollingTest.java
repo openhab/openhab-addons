@@ -21,8 +21,6 @@ import static org.mockito.Mockito.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -33,6 +31,7 @@ import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.client.Response.CompleteListener;
 import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,6 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
-import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
 import org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils;
 import org.openhab.core.util.SameThreadExecutorService;
@@ -81,8 +79,21 @@ class LongPollingTest {
         fixture = new LongPolling(new SameThreadExecutorService(), longPollHandler, failureHandler);
     }
 
+    /**
+     * Feeds response content to the listener the way Jetty does at runtime.
+     * <p>
+     * Since Jetty 12 only the {@link Content.Chunk} overload accumulates content; the {@link ByteBuffer} overload
+     * merely records that the application wants accumulation to happen.
+     */
+    private static void sendContent(BufferingResponseListener listener, Response response, String content)
+            throws Exception {
+        listener.onContent(response,
+                Content.Chunk.from(ByteBuffer.wrap(content.getBytes(StandardCharsets.UTF_8)), true), () -> {
+                });
+    }
+
     @Test
-    void start() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void start() throws Exception {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);
@@ -104,8 +115,7 @@ class LongPollingTest {
 
         String longPollResultJSON = "{\"result\":[{\"path\":\"/devices/hdm:HomeMaticIP:3014F711A0001916D859A8A9/services/PowerSwitch\",\"@type\":\"DeviceServiceData\",\"id\":\"PowerSwitch\",\"state\":{\"@type\":\"powerSwitchState\",\"switchState\":\"ON\"},\"deviceId\":\"hdm:HomeMaticIP:3014F711A0001916D859A8A9\"}],\"jsonrpc\":\"2.0\"}\n";
         Response response = mock(Response.class);
-        bufferingResponseListener.onContent(response,
-                ByteBuffer.wrap(longPollResultJSON.getBytes(StandardCharsets.UTF_8)));
+        sendContent(bufferingResponseListener, response, longPollResultJSON);
 
         Result result = mock(Result.class);
         bufferingResponseListener.onComplete(result);
@@ -125,8 +135,7 @@ class LongPollingTest {
     }
 
     @Test
-    void startLongPollingReceiveScenario()
-            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void startLongPollingReceiveScenario() throws Exception {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);
@@ -148,8 +157,7 @@ class LongPollingTest {
 
         String longPollResultJSON = "{\"result\":[{\"@type\": \"scenarioTriggered\",\"name\": \"My scenario\",\"id\": \"509bd737-eed0-40b7-8caa-e8686a714399\",\"lastTimeTriggered\": \"1693758693032\"}],\"jsonrpc\":\"2.0\"}\n";
         Response response = mock(Response.class);
-        bufferingResponseListener.onContent(response,
-                ByteBuffer.wrap(longPollResultJSON.getBytes(StandardCharsets.UTF_8)));
+        sendContent(bufferingResponseListener, response, longPollResultJSON);
 
         Result result = mock(Result.class);
         bufferingResponseListener.onComplete(result);
@@ -166,8 +174,7 @@ class LongPollingTest {
     }
 
     @Test
-    void startLongPollingReceiveUserDefinedState()
-            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void startLongPollingReceiveUserDefinedState() throws Exception {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);
@@ -189,8 +196,7 @@ class LongPollingTest {
 
         String longPollResultJSON = "{\"result\":[{\"deleted\":false,\"@type\":\"userDefinedState\",\"name\":\"My User state\",\"id\":\"23d34fa6-382a-444d-8aae-89c706e22155\",\"state\":true}],\"jsonrpc\":\"2.0\"}\n";
         Response response = mock(Response.class);
-        bufferingResponseListener.onContent(response,
-                ByteBuffer.wrap(longPollResultJSON.getBytes(StandardCharsets.UTF_8)));
+        sendContent(bufferingResponseListener, response, longPollResultJSON);
 
         Result result = mock(Result.class);
         bufferingResponseListener.onComplete(result);
@@ -208,8 +214,7 @@ class LongPollingTest {
 
     @ParameterizedTest
     @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getBoschShcAndExecutionAndTimeoutAndInterruptedExceptionArguments()")
-    void startSubscriptionFailureHandleExceptions(Exception exception)
-            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void startSubscriptionFailureHandleExceptions(Exception exception) throws Exception {
         when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any())).thenThrow(exception);
 
         LongPollingFailedException e = assertThrows(LongPollingFailedException.class, () -> fixture.start(httpClient));
@@ -219,8 +224,7 @@ class LongPollingTest {
 
     @ParameterizedTest
     @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getExceutionExceptionAndRuntimeExceptionArguments()")
-    void startLongPollFailure(Exception exception)
-            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void startLongPollFailure(Exception exception) throws Exception {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
@@ -252,8 +256,7 @@ class LongPollingTest {
     }
 
     @Test
-    void startSubscriptionInvalid()
-            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void startSubscriptionInvalid() throws Exception {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);
@@ -275,8 +278,7 @@ class LongPollingTest {
 
         String longPollResultJSON = "{\"jsonrpc\":\"2.0\",\"error\": {\"code\":-32001,\"message\":\"No subscription with id: e8fei62b0-0\"}}\n";
         Response response = mock(Response.class);
-        bufferingResponseListener.onContent(response,
-                ByteBuffer.wrap(longPollResultJSON.getBytes(StandardCharsets.UTF_8)));
+        sendContent(bufferingResponseListener, response, longPollResultJSON);
 
         Result result = mock(Result.class);
         bufferingResponseListener.onComplete(result);
@@ -288,8 +290,7 @@ class LongPollingTest {
      * See <a href="https://github.com/openhab/openhab-addons/issues/15912">Issue 15912</a>
      */
     @Test
-    void startLongPollingInvalidLongPollResponse()
-            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void startLongPollingInvalidLongPollResponse() throws Exception {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);
@@ -311,8 +312,7 @@ class LongPollingTest {
 
         String longPollResultContent = "<HTML><HEAD><TITLE>400</TITLE></HEAD><BODY><H1>400 Unsupported HTTP Protocol Version: /remote/json-rpcHTTP/1.1</H1></BODY></HTML>";
         Response response = mock(Response.class);
-        bufferingResponseListener.onContent(response,
-                ByteBuffer.wrap(longPollResultContent.getBytes(StandardCharsets.UTF_8)));
+        sendContent(bufferingResponseListener, response, longPollResultContent);
 
         Result result = mock(Result.class);
         bufferingResponseListener.onComplete(result);
