@@ -10,32 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hue.internal.api.dto.clip2;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 
 /**
- * DTO for CLIP 2 to retrieve a list of generic resources from the bridge.
+ * Enum for '_delta' actions.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Resources {
-    private List<Error> errors = new ArrayList<>();
-    private List<Resource> data = new ArrayList<>();
+public enum ActionDeltaType {
+    UP,
+    DOWN;
 
-    public List<Error> getErrors() {
-        return errors;
-    }
-
-    public boolean hasErrors() {
-        return !errors.isEmpty();
-    }
-
-    public List<Resource> getResources() {
-        return data;
+    public static ActionDeltaType of(IncreaseDecreaseType action) {
+        return IncreaseDecreaseType.INCREASE == action ? UP : DOWN;
     }
 }
