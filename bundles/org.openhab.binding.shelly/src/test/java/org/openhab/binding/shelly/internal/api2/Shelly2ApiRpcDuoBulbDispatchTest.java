@@ -36,8 +36,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2RGBCCTStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -80,6 +81,10 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
                 if (SHELLYRPC_METHOD_RGBCCT_SET.equals(method) && requestParams.on == null
                         && requestParams.brightness == null) {
                     throw new ShellyApiException("RGBCCT.Set requires at least one of on or brightness");
+                }
+                if (SHELLYRPC_METHOD_CCT_SET.equals(method) && requestParams.on == null
+                        && requestParams.brightness == null && requestParams.ct == null) {
+                    throw new ShellyApiException("CCT.Set requires at least one of on, brightness or ct");
                 }
                 calledParams.add(requestParams);
             }
@@ -142,14 +147,11 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
     }
 
     private ShellyDeviceProfile duoBulbProfile() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
-        profile.isRGBCCT = false;
-        return profile;
+        return new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
     }
 
     private ShellyDeviceProfile multicolorBulbProfile(boolean inColor) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
-        profile.isRGBCCT = true;
         profile.inColor = inColor;
         return profile;
     }
@@ -258,6 +260,29 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         Shelly2RpcRequestParams params = rpc.lastParams();
         assertThat(params.rgb, is(new Integer[] { 10, 20, 30 }));
         assertThat(params.brightness, is(42));
+        assertThat(params.on, is(true));
+    }
+
+    @Test
+    void setLightParmsMulticolorBulbRgbOnlyRepeatsCurrentPowerState() throws ShellyApiException {
+        ShellyDeviceProfile profile = multicolorBulbProfile(true);
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.ison = false;
+        profile.status.lights = new ArrayList<>(List.of(light));
+        StubApiRpc rpc = newRpc(profile);
+        rpc.setLightParms(0, Map.of(SHELLY_COLOR_RED, "10", SHELLY_COLOR_GREEN, "20", SHELLY_COLOR_BLUE, "30"));
+
+        Shelly2RpcRequestParams params = rpc.lastParams();
+        assertThat(params.rgb, is(new Integer[] { 10, 20, 30 }));
+        assertThat(params.on, is(false));
+    }
+
+    @Test
+    void setLightParmsDuoBulbWithoutCctParametersSendsNothing() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(duoBulbProfile());
+        rpc.setLightParms(0, Map.of(SHELLY_COLOR_RED, "10"));
+
+        assertThat(rpc.calledMethods.size(), is(0));
     }
 
     @Test

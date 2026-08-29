@@ -66,6 +66,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -973,7 +974,6 @@ public class ShellyComponentsTest {
         light.red = 10;
         light.green = 20;
         light.blue = 30;
-        light.white = 0;
         status.lights = new ArrayList<>(List.of(light));
 
         boolean updated = ShellyComponents.updateRGBW(handler, status);
@@ -983,23 +983,20 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateRGBWPushesColorChannelsForMulticolorBulbInColorMode() throws Exception {
+    void updateRGBWSkipsPartialStatusWithoutRgbForMulticolorBulb() throws Exception {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
         profile.inColor = true;
         ShellyThingInterface handler = mockHandler(profile);
 
         ShellySettingsStatus status = new ShellySettingsStatus();
         ShellySettingsLight light = new ShellySettingsLight();
-        light.red = 10;
-        light.green = 20;
-        light.blue = 30;
-        light.white = 0;
+        light.brightness = 42;
         status.lights = new ArrayList<>(List.of(light));
 
         boolean updated = ShellyComponents.updateRGBW(handler, status);
 
-        assertThat(updated, is(true));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), eq(CHANNEL_COLOR_PICKER), any());
+        assertThat(updated, is(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), anyString(), any());
     }
 
     @Test
@@ -1035,17 +1032,20 @@ public class ShellyComponentsTest {
         assertThat(updated, is(true));
         verify(handler).updateChannel(eq(CHANNEL_GROUP_WHITE_CONTROL), eq(CHANNEL_BRIGHTNESS + "$Switch"),
                 eq(OnOffType.ON));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_WHITE_CONTROL), eq(CHANNEL_COLOR_TEMP), any());
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_WHITE_CONTROL), eq(CHANNEL_COLOR_TEMP),
+                eq(new QuantityType<>(3200, Units.KELVIN)));
     }
 
     @Test
-    void updateLightModeSkipsColorSlotForMulticolorBulbInColorMode() throws Exception {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
-        profile.inColor = true;
+    void updateLightModeSkipsPartialStatusForDuoBulb() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.inColor = false;
         ShellyThingInterface handler = mockHandler(profile);
 
         ShellySettingsStatus status = new ShellySettingsStatus();
-        status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.temp = 3200;
+        status.lights = new ArrayList<>(List.of(light));
 
         boolean updated = ShellyComponents.updateLightMode(handler, status);
 
@@ -1054,17 +1054,23 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateLightModeSkipsForMulticolorBulbInColorMode() throws Exception {
+    void updateLightModeResetsColorTempForMulticolorBulbInColorMode() throws Exception {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
         profile.inColor = true;
         ShellyThingInterface handler = mockHandler(profile);
 
         ShellySettingsStatus status = new ShellySettingsStatus();
-        status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.ison = true;
+        light.brightness = 55;
+        status.lights = new ArrayList<>(List.of(light));
 
-        boolean updated = ShellyComponents.updateLightMode(handler, status);
+        ShellyComponents.updateLightMode(handler, status);
 
-        assertThat(updated, is(false));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_WHITE_CONTROL), eq(CHANNEL_COLOR_TEMP), eq(UnDefType.UNDEF));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_WHITE_CONTROL), eq(CHANNEL_BRIGHTNESS), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_WHITE_CONTROL), eq(CHANNEL_BRIGHTNESS + "$Switch"),
+                any());
     }
 
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {

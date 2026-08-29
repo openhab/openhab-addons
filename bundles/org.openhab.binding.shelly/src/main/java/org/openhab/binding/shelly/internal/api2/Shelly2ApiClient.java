@@ -84,9 +84,9 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusSmoke;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTempId;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
@@ -1292,16 +1292,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
     private void applyBulbLightSettings(ShellyDeviceProfile profile, @Nullable Shelly2GetConfigLight cfg) {
         ArrayList<@Nullable ShellySettingsRgbwLight> lights = new ArrayList<>();
-        ShellySettingsRgbwLight l = new ShellySettingsRgbwLight();
-        if (cfg != null) {
-            l.autoOn = cfg.autoOnDelay;
-            l.autoOff = cfg.autoOffDelay;
-            l.name = cfg.name;
-        }
-        lights.add(l);
+        lights.add(cfg != null ? createRgbwLightSetting(cfg, ShellyLightApiComponent.NONE)
+                : new ShellySettingsRgbwLight());
         profile.settings.lights = lights;
-        profile.status.lights = new ArrayList<>();
-        profile.status.lights.add(new ShellySettingsLight());
+        // Preserve the persisted light status across profile refreshes, an unconditional reset would wipe the
+        // ison/brightness/ct just delivered by a NotifyStatus racing this refresh (same as the relay guard above)
+        if (profile.status.lights == null || profile.status.lights.size() != 1) {
+            profile.status.lights = new ArrayList<>();
+            profile.status.lights.add(new ShellySettingsLight());
+        }
     }
 
     private boolean updateDimmerStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,

@@ -69,9 +69,9 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp.Shelly2DeviceConfigApRE;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventLoraInfo;
@@ -1309,11 +1309,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         if (profile.isDuo) {
-            params.id = 0;
+            params.id = profile.getLightComponentId(lightIndex);
             if (profile.isRGBCCT) {
                 setRgbcctParms(profile, params, parameters);
             } else {
                 applyCctParam(params, parameters);
+                if (params.on == null && params.brightness == null && params.ct == null) {
+                    return; // CCT.Set requires at least one of on, brightness or ct
+                }
                 apiRequest(SHELLYRPC_METHOD_CCT_SET, params, String.class);
             }
             return;
@@ -1340,7 +1343,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     /**
      * Single RGBCCT.Set request for the Multicolor Bulb G3: an optional mode switch (SHELLY_API_MODE) is combined with
      * the rgb/ct values of the target mode. RGBCCT.Set requires on or brightness, so a request that only carries
-     * mode/rgb/ct turns the light on - showing the new color/temperature is the intent of such a command.
+     * mode/rgb/ct repeats the current power state (the handler adds turn=on itself when autoOn is enabled).
      */
     private void setRgbcctParms(ShellyDeviceProfile profile, Shelly2RpcRequestParams params,
             Map<String, String> parameters) throws ShellyApiException {
@@ -1355,7 +1358,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             applyCctParam(params, parameters);
         }
         if (params.on == null && params.brightness == null) {
-            params.on = true;
+            List<ShellySettingsLight> lights = profile.status.lights;
+            Boolean ison = lights != null && !lights.isEmpty() ? lights.get(0).ison : null;
+            params.on = ison != null ? ison : true;
         }
         apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
         if (mode != null) {
@@ -1380,7 +1385,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void setLightMode(String mode) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        if (profile.isDuo && profile.isRGBCCT) {
+        if (profile.isRGBCCT) {
             setLightParms(0, Map.of(SHELLY_API_MODE, mode));
             return;
         }
