@@ -711,8 +711,8 @@
 
 	<channel-type id="loraRxData">
 		<item-type>String</item-type>
-		<label>Data received</label>
-		<description>Received LoRa Datagram</description>
+		<label>Data Received</label>
+		<description>Received LoRa datagram decoded as UTF-8 text</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -722,8 +722,8 @@
 
 	<channel-type id="loraRxDataRaw" advanced="true">
 		<item-type>String</item-type>
-		<label>Raw Data received</label>
-		<description>Received LoRa Datagram, BASE64-encoded</description>
+		<label>Raw Data Received</label>
+		<description>Received LoRa datagram as BASE64-encoded raw payload</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -733,7 +733,7 @@
 
 	<channel-type id="loraRxBytes">
 		<item-type>Number:DataAmount</item-type>
-		<label>Bytes received</label>
+		<label>Bytes Received</label>
 		<description>Number of bytes received from the LoRa network so far</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -744,8 +744,8 @@
 
 	<channel-type id="loraTxData">
 		<item-type>String</item-type>
-		<label>Data to send</label>
-		<description>Use this channel to send a datagram to the LoRa network</description>
+		<label>Data to Send</label>
+		<description>Send a UTF-8 text datagram to the LoRa network, the binding encodes it as BASE64</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>
@@ -753,7 +753,7 @@
 
 	<channel-type id="loraTxDataRaw" advanced="true">
 		<item-type>String</item-type>
-		<label>Raw Data to send</label>
+		<label>Raw Data to Send</label>
 		<description>Use this channel to send a BASE64-encoded datagram to the LoRa network</description>
 		<tags>
 			<tag>Control</tag>
@@ -762,7 +762,7 @@
 
 	<channel-type id="loraTxBytes">
 		<item-type>Number:DataAmount</item-type>
-		<label>Bytes sent</label>
+		<label>Bytes Sent</label>
 		<description>Number of bytes sent to the LoRa network so far</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -810,7 +810,7 @@
 
 	<channel-type id="loraSNR" advanced="true">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
-		<label>SNR</label>
+		<label>LoRa SNR</label>
 		<description>LoRa Signal/Noise Ratio of the received packet</description>
 		<category>QualityOfService</category>
 		<tags>
@@ -819,6 +819,5 @@
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
-
 
 </thing:thing-descriptions>
