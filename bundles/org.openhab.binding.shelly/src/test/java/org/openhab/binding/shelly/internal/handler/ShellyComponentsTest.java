@@ -983,8 +983,8 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateRGBWPushesColorChannelsForDuoBulbInColorMode() throws Exception {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+    void updateRGBWPushesColorChannelsForMulticolorBulbInColorMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
         profile.inColor = true;
         ShellyThingInterface handler = mockHandler(profile);
 
@@ -1039,8 +1039,8 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateLightModeSkipsColorSlotForDuoBulbInColorMode() throws Exception {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+    void updateLightModeSkipsColorSlotForMulticolorBulbInColorMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
         profile.inColor = true;
         ShellyThingInterface handler = mockHandler(profile);
 

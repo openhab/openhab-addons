@@ -719,7 +719,7 @@ public class ShellyDevices {
             Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
             Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400),
 
-            // Shelly Gen3 Bulb Series — firmware mDNS name and thing-type-id alias both map to the same UID
+            // Shelly Gen3 Bulb Series - firmware mDNS name and thing-type-id alias both map to the same UID
             Map.entry("shellyduobulbg3", THING_TYPE_SHELLYPLUSDUOBULB), //
             Map.entry("shellyplusduobulb", THING_TYPE_SHELLYPLUSDUOBULB), //
             Map.entry("shellycolorblbg3", THING_TYPE_SHELLYPLUSCOLORBULB), //

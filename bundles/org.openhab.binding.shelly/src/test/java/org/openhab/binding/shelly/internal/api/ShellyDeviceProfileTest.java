@@ -166,8 +166,7 @@ public class ShellyDeviceProfileTest {
     void gen3BulbProfileFlags(ThingTypeUID thingTypeUID) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
         assertThat(profile.isDuo, is(true));
-        // isRGBCCT is always false at init-time: it requires runtime detection from Shelly.GetConfig
-        assertThat(profile.isRGBCCT, is(false));
+        assertThat(profile.isRGBCCT, is(THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID)));
         assertThat(profile.isLight, is(true));
         assertThat(profile.isGen2, is(true));
     }

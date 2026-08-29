@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_MODE_WHITE;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,7 +60,7 @@ public class Shelly2ApiClientDuoBulbStatusTest {
         profile.isRGBCCT = true;
         profile.inColor = inColor;
         profile.device.mode = inColor ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
-        profile.status.lights = new ArrayList<>(java.util.List.of(new ShellySettingsLight()));
+        profile.status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
         return profile;
     }
 
@@ -132,7 +133,6 @@ public class Shelly2ApiClientDuoBulbStatusTest {
         ShellyDeviceProfile profile = multicolorBulbProfile(true);
         Shelly2ApiClient client = newClient(profile);
 
-        // NotifyStatus payloads may omit unchanged attributes - a brightness-only update has no "mode" field
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.rgbcct0 = rgbcctStatus(null);
 

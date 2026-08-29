@@ -28,16 +28,15 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import com.google.gson.Gson;
 
 /**
- * Tests for the Shelly Duo Bulb Gen3 profile detection and RGBCCT DTO mapping.
+ * Tests the Gson mapping of the Gen3 Duo/Multicolor Bulb status and config DTOs (cct:0 / rgbcct:0 components) in
+ * {@link Shelly2ApiJsonDTO}.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class Shelly2DuoBulbProfileTest {
+public class Shelly2DuoBulbDtoTest {
 
     private final Gson gson = new Gson();
-
-    // --- Shelly.GetStatus deserialization ---
 
     @Test
     void getCCTStatusDeserializes() {
@@ -102,8 +101,6 @@ public class Shelly2DuoBulbProfileTest {
         assertThat(status.mode, is(nullValue()));
     }
 
-    // --- Shelly.GetStatus result wrapper deserialization ---
-
     @Test
     void deviceStatusResultHasCct0Field() {
         String json = """
@@ -144,8 +141,6 @@ public class Shelly2DuoBulbProfileTest {
         assertThat(result.cct0, is(nullValue()));
         assertThat(result.rgbcct0, is(notNullValue()));
     }
-
-    // --- Shelly.GetConfig deserialization ---
 
     @Test
     void getConfigResultHasCct0WhenCctOnly() {

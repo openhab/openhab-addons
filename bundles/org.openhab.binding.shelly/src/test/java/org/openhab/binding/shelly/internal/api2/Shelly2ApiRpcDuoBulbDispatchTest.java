@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
@@ -158,8 +159,6 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         return new StubApiRpc(thing, testConfig());
     }
 
-    // --- status dispatch ---
-
     @Test
     void getLightStatusDuoBulbCallsCctStatus() throws ShellyApiException {
         StubApiRpc rpc = newRpc(duoBulbProfile());
@@ -173,8 +172,6 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         rpc.getLightStatus();
         assertThat(rpc.firstMethod(), is(SHELLYRPC_METHOD_RGBCCT_STATUS));
     }
-
-    // --- turn dispatch ---
 
     @Test
     void setLightTurnDuoBulbCallsCctSet() throws ShellyApiException {
@@ -191,8 +188,6 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         assertThat(rpc.firstMethod(), is(SHELLYRPC_METHOD_RGBCCT_SET));
         assertThat(rpc.calledParams.get(0).on, is(false));
     }
-
-    // --- brightness dispatch ---
 
     @Test
     void setBrightnessDuoBulbCallsCctSet() throws ShellyApiException {
@@ -211,8 +206,6 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         assertThat(rpc.calledParams.get(0).brightness, is(42));
     }
 
-    // --- timer dispatch ---
-
     @Test
     void setAutoTimerDuoBulbCallsCctSetConfig() throws ShellyApiException {
         StubApiRpc rpc = newRpc(duoBulbProfile());
@@ -230,8 +223,6 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         assertThat(rpc.lastParams().config.autoOff, is(true));
         assertThat(rpc.lastParams().config.autoOffDelay, is(15.0));
     }
-
-    // --- parameter dispatch ---
 
     @Test
     void setLightParmsDuoBulbSendsCctSetWithColorTemp() throws ShellyApiException {
@@ -325,8 +316,6 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         assertThat(profile.inColor, is(true));
     }
 
-    // --- mode switch dispatch (Multicolor Bulb only) ---
-
     @Test
     void setLightModeMulticolorBulbSendsRgbcctSetWithMode() throws ShellyApiException {
         StubApiRpc rpc = newRpc(multicolorBulbProfile(false));
@@ -340,8 +329,7 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
     @Test
     void setLightModeDuoBulbThrowsNotImplemented() {
         StubApiRpc rpc = newRpc(duoBulbProfile());
-        org.junit.jupiter.api.Assertions.assertThrows(ShellyApiException.class,
-                () -> rpc.setLightMode(SHELLY_MODE_COLOR));
+        assertThrows(ShellyApiException.class, () -> rpc.setLightMode(SHELLY_MODE_COLOR));
     }
 
     @Test
@@ -370,11 +358,10 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         ShellyStatusLight status = rpc.getLightStatus();
 
         assertThat(status.ison, is(true));
+        assertThat(status.lights.get(0).ison, is(true));
         assertThat(status.lights.get(0).brightness, is(55));
         assertThat(status.lights.get(0).temp, is(3200));
     }
-
-    // --- timer field propagation ---
 
     @Test
     void getLightStatusDuoBulbHasNoTimerWhenTimerStartedAtAbsent() throws ShellyApiException {

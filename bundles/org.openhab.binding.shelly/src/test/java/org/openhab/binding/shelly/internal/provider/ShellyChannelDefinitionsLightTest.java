@@ -21,6 +21,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -66,7 +67,7 @@ public class ShellyChannelDefinitionsLightTest {
     void gen1Rgbw2WhiteModeRoutesBrightnessToIndexedGroup() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight(), newLight(), newLight(), newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight(), newLight(), newLight(), newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.brightness = 42;
@@ -82,7 +83,7 @@ public class ShellyChannelDefinitionsLightTest {
     void gen1Rgbw2WhiteModeWithTempCreatesColorTempChannelSharedWithProRgbwwPmCctx2Profile() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight(), newLight(), newLight(), newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight(), newLight(), newLight(), newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.temp = 4500;
@@ -97,7 +98,7 @@ public class ShellyChannelDefinitionsLightTest {
     void gen2RgbwPmWhiteModeRoutesBrightnessToIndexedGroup() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight(), newLight(), newLight(), newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight(), newLight(), newLight(), newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.brightness = 77;
@@ -113,7 +114,7 @@ public class ShellyChannelDefinitionsLightTest {
     void bulbWhiteModeRoutesBrightnessAndColorTempToSharedWhiteGroup() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBULB);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.brightness = 50;
@@ -130,7 +131,7 @@ public class ShellyChannelDefinitionsLightTest {
     void vintageWhiteModeDoesNotCreateColorTempChannel() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYVINTAGE);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.brightness = 50;

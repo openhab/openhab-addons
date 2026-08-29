@@ -133,8 +133,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 case CHANNEL_COLOR_GAIN:
                     col.setGain(setColor(lightId, SHELLY_COLOR_GAIN, command, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
                     break;
-                case CHANNEL_BRIGHTNESS: // only in white mode, except for Bulb/Duo where it's the only brightness
-                                         // channel
+                // brightness is a white-mode channel, except for Bulb/Duo where it's the only brightness channel
+                case CHANNEL_BRIGHTNESS:
                     if (profile.hasColorTag(lightId) && !profile.isBulb && !profile.isDuo) {
                         logger.debug("{}: Not in white mode, brightness not available", thingName);
                         break;
@@ -378,7 +378,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             createLightChannels(light, lightId);
             // The bulb has a combined channel set for color or white mode
             // The RGBW2 uses 2 different thing types: color=1 channel, white=4 channel
-            if (profile.isBulb || (profile.isDuo && profile.isRGBCCT)) {
+            if (profile.isBulb) {
                 updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_COLOR_MODE, getOnOff(profile.inColor));
             }
 

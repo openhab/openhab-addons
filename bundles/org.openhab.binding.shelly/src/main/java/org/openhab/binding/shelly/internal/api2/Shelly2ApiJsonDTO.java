@@ -701,7 +701,7 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Integer ct; // color temperature in Kelvin (CCT component)
         }
 
-        // Devices with combined RGB + CCT support — component "rgbcct:0"
+        // Devices with combined RGB + CCT support - component "rgbcct:0"
         // mode="cct": ct field valid; mode="rgb": rgb array valid
         public static class Shelly2RGBCCTStatus {
             public @Nullable Integer id;

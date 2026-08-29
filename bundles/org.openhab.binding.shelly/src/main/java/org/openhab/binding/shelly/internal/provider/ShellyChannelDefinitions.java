@@ -606,19 +606,16 @@ public class ShellyChannelDefinitions {
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
-            // Create power channel in color mode and brightness channel in white mode; the new Gen3 Duo/Multicolor
-            // Bulb (isDuo && isGen2) never gets a power channel, regardless of the mode it happened to be in at
-            // pairing time. The pre-existing Gen1 Duo RGBW (shellycolorbulb) keeps its documented power channel.
+            // Gen3 Duo/Multicolor Bulb (isDuo && isGen2) has no power channel (brightness 0 = off); the Gen1 Duo RGBW
+            // keeps its documented one
             addChannel(thing, add, profile.hasColorTag(idx) && !(profile.isDuo && profile.isGen2), group,
                     CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            // Always create CCT channel for Duo/Bulb: device may not report ct when off,
-            // but the channel must exist to be populated on subsequent polls when on.
-            // Duo range is 2700-6500K; Bulb/RGBW2 range is 3000-6500K — use separate channel types.
-            // Vintage shares the isDuo flag but is a fixed warm-white bulb with no CCT component at all.
+            // Duo/Bulb may omit ct while off, so the CCT channel is created unconditionally (Duo 2700-6500K vs.
+            // Bulb/RGBW2 3000-6500K need separate channel types); Vintage is a fixed warm-white bulb without CCT
             boolean isDuoCct = profile.isDuo && !profile.isVintage;
             boolean hasCCT = status.temp != null || isDuoCct || profile.isBulb;
             String tempChannelType = isDuoCct ? "whiteTempDuo" : "whiteTemp";

@@ -1281,9 +1281,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     protected void fillDuoBulbSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (!profile.isDuo) {
-            return;
-        }
         if (dc.rgbcct0 != null) {
             profile.isRGBCCT = true;
             applyBulbLightSettings(profile, dc.rgbcct0);
@@ -1401,7 +1398,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (ct != null) {
             ds.temp = ct;
         }
-        lights.set(idx, ds);
         boolean updated = triggerUpdate && channelUpdate && ShellyComponents.updateRGBW(getThing(), status);
         ShellyDeviceProfile profile = getProfile();
         if (channelUpdate && profile.isDuo) {

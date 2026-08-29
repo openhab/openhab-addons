@@ -1236,11 +1236,9 @@ There is no separate power channel: sending brightness 0 turns the bulb off, sen
 | white   | temperature | Number | r/w       | Color temperature (K): 0..100% or 2700..6500                            |
 |         | brightness  | Dimmer | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)             |
 
-The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color
-Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
-Sending `color#full` with any color other than "white" switches to color mode; sending `color#full="white"` or
-`white#temperature` switches back to white mode. `color#hsb`/`red`/`green`/`blue` only take effect while already
-in color mode.
+The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
+Sending `color#full` with any color other than "white" switches to color mode; sending `color#full="white"` or `white#temperature` switches back to white mode.
+`color#hsb`/`red`/`green`/`blue` only take effect while already in color mode.
 
 ### Shelly H&T (thing-type: shellyht)
 
