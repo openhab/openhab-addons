@@ -19,6 +19,8 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,6 +54,10 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+
 /**
  * {@link ShellyBluApi} handles the Shelly BLU Bluetooth Low Energy device protocol.
  *
@@ -80,6 +86,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private static final int PID_CYCLE_TRESHOLD = 50;
     private long lastTimeStampPacket = 0;
     private static final int PACKET_TIMESTAMP_TRESHOLD = 10;
+    private @Nullable Integer warnedDataVersion;
+    private boolean warnedDataVersionSet;
 
     /**
      * Regular constructor - called by Thing handler
@@ -200,7 +208,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             }
             for (Shelly2NotifyEvent e : events) {
                 String event = getString(e.event);
-                Shelly2NotifyBluEventData blu = e.blu;
+                Shelly2NotifyBluEventData blu = event.startsWith(SHELLY2_EVENT_BLUPREFIX) ? e.getBluData(gson) : null;
+                if (blu != null && blu.raw != null) {
+                    blu = decodeRawBTHomeData(blu);
+                    String alarmCode = blu.alarmCode;
+                    if (alarmCode != null) {
+                        t.postEvent(alarmCode, false);
+                    }
+                }
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                     if (blu != null) {
                         logger.debug("{}: BLU event {} received from address {}, pid={} (JSON={})", thingName, event,
@@ -402,6 +417,42 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to process event", thingName, e);
             t.incProtErrors();
+        }
+    }
+
+    /**
+     * Decodes the raw BTHome payload forwarded by {@code oh-blu-scanner.js} and merges the result onto
+     * {@code blu}'s own fields via Gson.
+     *
+     * @param blu event data with a non-null {@code raw} field
+     * @return {@code blu} merged with the decoded fields, or unchanged if decoding/merging failed
+     */
+    private Shelly2NotifyBluEventData decodeRawBTHomeData(Shelly2NotifyBluEventData blu) {
+        String raw = blu.raw;
+        if (raw == null) {
+            return blu;
+        }
+        Integer version = blu.dataVersion;
+        if ((version == null || version != BTHomeDecoder.SCRIPT_DATA_VERSION)
+                && (!warnedDataVersionSet || !Objects.equals(version, warnedDataVersion))) {
+            logger.warn(
+                    "{}: BLU event data version {} doesn't match the binding's expected version {}; the installed oh-blu-scanner.js might be outdated or a custom override, decoding could be incomplete",
+                    thingName, version, BTHomeDecoder.SCRIPT_DATA_VERSION);
+            warnedDataVersion = version;
+            warnedDataVersionSet = true;
+        }
+        JsonObject decoded = BTHomeDecoder.decode(raw);
+        JsonObject merged = gson.toJsonTree(blu).getAsJsonObject();
+        for (Map.Entry<String, JsonElement> entry : decoded.entrySet()) {
+            merged.add(entry.getKey(), entry.getValue());
+        }
+        try {
+            Shelly2NotifyBluEventData result = gson.fromJson(merged, Shelly2NotifyBluEventData.class);
+            return result != null ? result : blu;
+        } catch (JsonSyntaxException | NumberFormatException e) {
+            logger.warn("{}: Unable to merge decoded BTHome data {} onto event, keeping original event", thingName,
+                    decoded, e);
+            return blu;
         }
     }
 

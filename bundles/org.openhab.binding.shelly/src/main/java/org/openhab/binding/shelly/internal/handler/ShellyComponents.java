@@ -175,7 +175,12 @@ public class ShellyComponents {
             // roller has stopped. Pushing a synthetic 0/100 for the "open"/"close" (moving) states here
             // caused the position channels to flip to that endpoint and then flip again to the real
             // stopped position, even when the roller was only moving to a partial position (#14189).
-            if (SHELLY_ALWD_ROLLER_TURN_STOP.equals(state) && control.currentPos != null) {
+            // Gen1 overloads "open"/"close" for the moving direction, but Gen2+ only reports them once the
+            // roller has actually reached that end position (its own moving states are "opening"/"closing",
+            // mapped through unchanged) - so for Gen2+ currentPos is safe to trust there too (#21479).
+            boolean gen2EndPosition = profile.isGen2
+                    && (SHELLY_RSTATE_OPEN.equals(state) || SHELLY_RSTATE_CLOSE.equals(state));
+            if ((SHELLY_ALWD_ROLLER_TURN_STOP.equals(state) || gen2EndPosition) && control.currentPos != null) {
                 pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
             }
             if (pos != -1) {
@@ -881,12 +886,17 @@ public class ShellyComponents {
             throws ShellyApiException {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        if (profile.isRGBW2 && !profile.inColor) {
+        if (profile.isRGBW2) {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
             List<ShellySettingsLight> lights = orgStatus.lights;
             for (int i = 0; i < lights.size(); i++) {
+                if (profile.hasColorTag(i)) {
+                    // color component is handled by updateRGBW(); this loop only covers CCT/Light components
+                    // (a hybrid profile's secondary component(s), or all of them for a plain white-mode RGBW2)
+                    continue;
+                }
                 ShellySettingsLight light = lights.get(i);
                 String groupName = profile.getControlGroup(i);
                 OnOffType power = getOnOff(light.ison);
@@ -894,6 +904,12 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
                                 Units.PERCENT));
+                if (light.temp != null) {
+                    ShellyColorUtils col = new ShellyColorUtils();
+                    col.setMinMaxTemp(profile.getMinTemp(i), profile.getMaxTemp(i));
+                    col.setTemp(getInteger(light.temp));
+                    updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
+                }
             }
         }
         return updated;

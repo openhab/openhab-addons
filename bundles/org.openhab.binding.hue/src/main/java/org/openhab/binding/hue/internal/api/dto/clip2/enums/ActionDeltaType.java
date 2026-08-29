@@ -10,15 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.chatgpt.internal.hli;
+package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 
 /**
- * @author Artur Fedjukevits - Initial contribution
+ * Enum for '_delta' actions.
+ *
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ChatGPTHLIConstants {
+public enum ActionDeltaType {
+    UP,
+    DOWN;
 
-    public static final String SERVICE_ID = "chatgpthli";
+    public static ActionDeltaType of(IncreaseDecreaseType action) {
+        return IncreaseDecreaseType.INCREASE == action ? UP : DOWN;
+    }
 }

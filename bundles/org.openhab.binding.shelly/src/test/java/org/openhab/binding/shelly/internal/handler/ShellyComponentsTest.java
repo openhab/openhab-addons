@@ -22,7 +22,10 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_CLOSE;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_ALWD_ROLLER_TURN_OPEN;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_RSTATE_CLOSE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_RSTATE_OPEN;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,14 +37,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
@@ -56,6 +62,7 @@ import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -65,6 +72,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link ShellyComponents} — addon sensor update path and meter update path.
@@ -180,11 +188,13 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateRollerSkipsPositionWhileOpening() throws Exception {
+    void updateRollerSkipsPositionWhileOpeningOnGen1() throws Exception {
         // Regression (#14189, Copilot review on PR #21316): the shared Gen1/Gen2 poll path
         // hardcoded pos=100 for "open" regardless of the actual target, flapping the position
         // channel to 100 mid-move before the real value arrived once the roller stopped.
-        ShellyBaseHandler handler = relayUpdateHandler();
+        // On Gen1 "open"/"close" mean the roller is currently moving in that direction, so
+        // currentPos must stay untrusted until the device reports "stop" (#21479).
+        ShellyBaseHandler handler = gen1RollerUpdateHandler();
         ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_ALWD_ROLLER_TURN_OPEN, 40), 0);
 
         verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
@@ -192,9 +202,42 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateRollerSkipsPositionWhileClosing() throws Exception {
-        ShellyBaseHandler handler = relayUpdateHandler();
+    void updateRollerSkipsPositionWhileClosingOnGen1() throws Exception {
+        ShellyBaseHandler handler = gen1RollerUpdateHandler();
         ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_ALWD_ROLLER_TURN_CLOSE, 60), 0);
+
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
+    }
+
+    @Test
+    void updateRollerTrustsPositionAtOpenEndOnGen2() throws Exception {
+        // #21479: Gen2+ only reports "open"/"close" once the roller has actually reached that end
+        // position (its moving states are the distinct "opening"/"closing"), so currentPos is
+        // reliable there too - unlike Gen1, where the same strings mean "currently moving".
+        ShellyBaseHandler handler = gen2RollerUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_RSTATE_OPEN, 100), 0);
+
+        assertEquals(100.0, lastQuantity(handler, CHANNEL_GROUP_STATUS, CHANNEL_ROL_CONTROL_POS).doubleValue());
+        assertEquals(0.0, lastQuantity(handler, CHANNEL_GROUP_STATUS, CHANNEL_ROL_CONTROL_CONTROL).doubleValue());
+    }
+
+    @Test
+    void updateRollerTrustsPositionAtCloseEndOnGen2() throws Exception {
+        ShellyBaseHandler handler = gen2RollerUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus(SHELLY_RSTATE_CLOSE, 0), 0);
+
+        assertEquals(0.0, lastQuantity(handler, CHANNEL_GROUP_STATUS, CHANNEL_ROL_CONTROL_POS).doubleValue());
+        assertEquals(100.0, lastQuantity(handler, CHANNEL_GROUP_STATUS, CHANNEL_ROL_CONTROL_CONTROL).doubleValue());
+    }
+
+    @Test
+    void updateRollerSkipsPositionWhileOpeningOrClosingOnGen2() throws Exception {
+        // Gen2's genuine moving states are "opening"/"closing" - distinct from the Gen1-colliding
+        // "open"/"close" literals - and must still skip position updates like Gen1 does (#14189).
+        ShellyBaseHandler handler = gen2RollerUpdateHandler();
+        ShellyComponents.updateRoller(handler, rollerStatus("opening", 40), 0);
+        ShellyComponents.updateRoller(handler, rollerStatus("closing", 60), 0);
 
         verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_POS), any());
         verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_ROL_CONTROL_CONTROL), any());
@@ -217,6 +260,40 @@ public class ShellyComponentsTest {
         when(handler.getProfile()).thenReturn(profile);
         when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
         return handler;
+    }
+
+    private static ShellyBaseHandler gen1RollerUpdateHandler() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLY25_ROLLER);
+        profile.numRelays = 1;
+        profile.settings.relays = new ArrayList<>(List.of(new ShellySettingsRelay()));
+
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        injectLogger(handler);
+        return handler;
+    }
+
+    private static ShellyBaseHandler gen2RollerUpdateHandler() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS2PM_ROLLER);
+        profile.numRelays = 1;
+        profile.settings.relays = new ArrayList<>(List.of(new ShellySettingsRelay()));
+
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class);
+        when(handler.getProfile()).thenReturn(profile);
+        when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
+        injectLogger(handler);
+        return handler;
+    }
+
+    private static void injectLogger(ShellyBaseHandler handler) {
+        try {
+            Field field = ShellyBaseHandler.class.getDeclaredField("logger");
+            field.setAccessible(true);
+            field.set(handler, LoggerFactory.getLogger(ShellyComponentsTest.class));
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private static ShellySettingsStatus statusWithRelayIson(@Nullable Boolean ison) {
@@ -833,6 +910,49 @@ public class ShellyComponentsTest {
         verify(handler, never()).postEvent(any(), anyBoolean());
     }
 
+    @Test
+    void updateLightModeHybridProfileSkipsColorSlotAndUpdatesSecondaryComponent() throws Exception {
+        ShellyDeviceProfile profile = proRgbwwPmHybridProfile();
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight colorLight = new ShellySettingsLight(); // settings.lights[0], the "rgb" color slot
+        ShellySettingsLight cctLight = new ShellySettingsLight(); // settings.lights[1], the "cct" secondary slot
+        cctLight.ison = true;
+        cctLight.brightness = 42;
+        cctLight.temp = 4000;
+        status.lights = new ArrayList<>(List.of(colorLight, cctLight));
+
+        boolean updated = ShellyComponents.updateLightMode(handler, status);
+
+        assertThat(updated, is(true));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_LIGHT_CONTROL), anyString(), any());
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_INDEX + "1"), eq(CHANNEL_BRIGHTNESS + "$Switch"),
+                eq(OnOffType.ON));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_INDEX + "1"), eq(CHANNEL_COLOR_TEMP), any());
+    }
+
+    @Test
+    void updateLightModeUsesPerComponentCtRangeOnHybridProfile() throws Exception {
+        ShellyDeviceProfile profile = proRgbwwPmHybridProfile();
+        ShellySettingsRgbwLight cctComponent = profile.settings.lights.get(1);
+        cctComponent.minTemp = 3000;
+        cctComponent.maxTemp = 6000;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight colorLight = new ShellySettingsLight();
+        ShellySettingsLight cctLight = new ShellySettingsLight();
+        cctLight.ison = true;
+        cctLight.brightness = 42;
+        cctLight.temp = 4500;
+        status.lights = new ArrayList<>(List.of(colorLight, cctLight));
+
+        ShellyComponents.updateLightMode(handler, status);
+
+        assertEquals(new PercentType(50), lastState(handler, CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_COLOR_TEMP));
+    }
+
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.isSensor = false;
@@ -927,6 +1047,18 @@ public class ShellyComponentsTest {
         profile.isGen2 = false;
         profile.isRoller = true;
         profile.numMeters = 1;
+        return profile;
+    }
+
+    // Pro RGBWW PM "rgbcct" profile: settings.lights[0] is the color (rgb) component, [1] is the secondary cct one
+    private static ShellyDeviceProfile proRgbwwPmHybridProfile() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        profile.inColor = true;
+        ShellySettingsRgbwLight colorComponent = new ShellySettingsRgbwLight();
+        colorComponent.apiComponent = ShellyLightApiComponent.RGB;
+        ShellySettingsRgbwLight cctComponent = new ShellySettingsRgbwLight();
+        cctComponent.apiComponent = ShellyLightApiComponent.CCT;
+        profile.settings.lights = new ArrayList<>(List.of(colorComponent, cctComponent));
         return profile;
     }
 
@@ -1367,10 +1499,14 @@ public class ShellyComponentsTest {
     }
 
     private static QuantityType<?> lastQuantity(ShellyThingInterface handler, String group, String channel) {
+        return (QuantityType<?>) lastState(handler, group, channel);
+    }
+
+    private static State lastState(ShellyThingInterface handler, String group, String channel) {
         ArgumentCaptor<State> captor = ArgumentCaptor.forClass(State.class);
         verify(handler, atLeastOnce()).updateChannel(eq(group), eq(channel), captor.capture());
         List<State> vals = captor.getAllValues();
-        return (QuantityType<?>) vals.get(vals.size() - 1);
+        return vals.get(vals.size() - 1);
     }
 
     private static ShellyDeviceProfile pro3emProfile() {

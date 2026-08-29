@@ -45,6 +45,11 @@ public final class RRMapRenderer {
     private static final int MAP_INSIDE = 0xFF;
     private static final int MAP_SCAN = 0x07;
 
+    private static final int PIXEL_KIND_MASK = 0x07;
+    private static final int PIXEL_KIND_SEGMENT = 7;
+    private static final int SEGMENT_ID_SHIFT = 3;
+    private static final int NO_SEGMENT = -1;
+
     private static final Color COLOR_MAP_OUTSIDE = new Color(24, 24, 24);
     private static final Color COLOR_MAP_WALL = new Color(92, 92, 92);
     private static final Color COLOR_MAP_INSIDE = new Color(212, 221, 233);
@@ -81,7 +86,8 @@ public final class RRMapRenderer {
         int width = mapData.imageWidth();
         int height = mapData.imageHeight();
         byte[] imageData = mapData.imageData();
-        if (width <= 0 || height <= 0 || imageData.length < width * height) {
+        // The dimensions are unvalidated uint32 values whose product can wrap in int arithmetic.
+        if (width <= 0 || height <= 0 || imageData.length < (long) width * height) {
             throw new RoborockException("Cannot render map image due to invalid dimensions or data length.");
         }
 
@@ -199,18 +205,27 @@ public final class RRMapRenderer {
             case MAP_INSIDE -> COLOR_MAP_INSIDE;
             case MAP_SCAN -> COLOR_MAP_SCAN;
             default -> {
-                int obstacle = value & 0x07;
+                int obstacle = value & PIXEL_KIND_MASK;
                 if (obstacle == 0) {
                     yield COLOR_MAP_GREY_WALL;
                 } else if (obstacle == 1) {
                     yield Color.BLACK;
-                } else if (obstacle == 7) {
-                    int roomId = value >>> 3;
-                    yield roomColor(roomId);
+                }
+                int segmentId = decodeSegmentId(value);
+                if (segmentId >= 0) {
+                    yield roomColor(segmentId);
                 }
                 yield COLOR_MAP_INSIDE;
             }
         };
+    }
+
+    static int decodeSegmentId(int pixelValue) {
+        // reserved values that would pass the kind test below
+        if (pixelValue == MAP_SCAN || pixelValue == MAP_INSIDE) {
+            return NO_SEGMENT;
+        }
+        return (pixelValue & PIXEL_KIND_MASK) == PIXEL_KIND_SEGMENT ? pixelValue >>> SEGMENT_ID_SHIFT : NO_SEGMENT;
     }
 
     private Color roomColor(int roomId) {

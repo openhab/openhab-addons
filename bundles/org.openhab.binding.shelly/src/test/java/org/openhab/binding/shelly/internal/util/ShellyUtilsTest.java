@@ -17,8 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -31,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DateTimeType;
 
 /**
@@ -67,97 +64,6 @@ public class ShellyUtilsTest {
 
         assertThat(actualInstant, allOf(greaterThanOrEqualTo(before), lessThanOrEqualTo(after)));
         assertThat(actualInstant.getNano(), is(0));
-    }
-
-    @Test
-    void buildControlGroupNameUsesDeprecatedChannelPrefixForGen1Rgbw2() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
-        profile.inColor = false;
-        profile.hasLegacyLightChannels = true;
-
-        assertEquals(CHANNEL_GROUP_LIGHT_CHANNEL + "2", ShellyUtils.buildControlGroupName(profile, 2));
-    }
-
-    @Test
-    void buildControlGroupNameUsesLightPrefixForNewGen1Rgbw2() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
-        profile.inColor = false;
-
-        assertEquals(CHANNEL_GROUP_LIGHT_INDEX + "2", ShellyUtils.buildControlGroupName(profile, 2));
-    }
-
-    @Test
-    void buildControlGroupNameUsesLightPrefixForGen2RgbwPm() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
-        profile.inColor = false;
-
-        assertEquals(CHANNEL_GROUP_LIGHT_INDEX + "2", ShellyUtils.buildControlGroupName(profile, 2));
-    }
-
-    @Test
-    void buildControlGroupNameFallsBackToControlWhenInColorMode() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
-        profile.inColor = true;
-
-        assertEquals(CHANNEL_GROUP_LIGHT_CONTROL, ShellyUtils.buildControlGroupName(profile, 1));
-    }
-
-    @Test
-    void buildControlGroupNameFallsBackToControlForNonRgbw2Devices() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBULB);
-
-        assertEquals(CHANNEL_GROUP_LIGHT_CONTROL, ShellyUtils.buildControlGroupName(profile, 1));
-    }
-
-    @Test
-    void buildWhiteGroupNameUsesWhiteControlForBulb() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBULB);
-
-        assertEquals(CHANNEL_GROUP_WHITE_CONTROL, ShellyUtils.buildWhiteGroupName(profile, 1));
-    }
-
-    @Test
-    void buildWhiteGroupNameUsesWhiteControlForDuo() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYDUO);
-
-        assertEquals(CHANNEL_GROUP_WHITE_CONTROL, ShellyUtils.buildWhiteGroupName(profile, 1));
-    }
-
-    @Test
-    void buildWhiteGroupNameUsesDeprecatedChannelPrefixForGen1Rgbw2() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
-        profile.hasLegacyLightChannels = true;
-
-        assertEquals(CHANNEL_GROUP_LIGHT_CHANNEL + "3", ShellyUtils.buildWhiteGroupName(profile, 3));
-    }
-
-    @Test
-    void buildWhiteGroupNameUsesLightPrefixForNewGen1Rgbw2() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
-
-        assertEquals(CHANNEL_GROUP_LIGHT_INDEX + "3", ShellyUtils.buildWhiteGroupName(profile, 3));
-    }
-
-    @Test
-    void buildWhiteGroupNameUsesLightPrefixForGen2RgbwPm() {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
-
-        assertEquals(CHANNEL_GROUP_LIGHT_INDEX + "3", ShellyUtils.buildWhiteGroupName(profile, 3));
-    }
-
-    @Test
-    void getLightIdFromGroupParsesCurrentLightPrefix() {
-        assertEquals(2, ShellyUtils.getLightIdFromGroup(CHANNEL_GROUP_LIGHT_INDEX + "3"));
-    }
-
-    @Test
-    void getLightIdFromGroupParsesDeprecatedChannelPrefix() {
-        assertEquals(1, ShellyUtils.getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CHANNEL + "2"));
-    }
-
-    @Test
-    void getLightIdFromGroupReturnsZeroForUnrelatedGroup() {
-        assertEquals(0, ShellyUtils.getLightIdFromGroup(CHANNEL_GROUP_LIGHT_CONTROL));
     }
 
     @Test

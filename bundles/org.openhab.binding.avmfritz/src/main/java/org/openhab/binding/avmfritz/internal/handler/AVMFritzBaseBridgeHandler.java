@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
@@ -39,7 +38,6 @@ import org.openhab.binding.avmfritz.internal.dto.GroupModel;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateTemplatesCallback;
 import org.openhab.core.library.types.StringType;
@@ -148,7 +146,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     protected synchronized void manageConnections() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
         if (this.connection == null) {
-            this.connection = new FritzAhaWebInterface(config, this, httpClient);
+            FritzAhaWebInterface webInterface = new FritzAhaWebInterface(config, this, httpClient);
+            this.connection = webInterface;
+            webInterface.authenticate();
             stopPolling();
             startPolling();
         }
@@ -169,6 +169,12 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopPolling();
+        FritzAhaWebInterface webInterface = connection;
+        connection = null;
+        if (webInterface != null) {
+            webInterface.dispose();
+        }
+        super.dispose();
     }
 
     @Override
@@ -252,7 +258,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Called from {@link FritzAhaApplyTemplateCallback} to provide new templates for things.
+     * Called from {@link org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback} to
+     * provide new templates for things.
      *
      * @param templateList list of template models
      */
@@ -288,7 +295,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Builds a {@link ThingUID} from a device model. The UID is build from the
-     * {@link AVMFritzBindingConstants#BINDING_ID} and
+     * {@link org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants#BINDING_ID} and
      * value of {@link AVMFritzBaseModel#getProductName()} in which all characters NOT matching the RegEx [^a-zA-Z0-9_]
      * are replaced by "_".
      *

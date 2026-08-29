@@ -15,6 +15,7 @@ package org.openhab.binding.zwavejs.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,7 +31,9 @@ import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
+import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -194,6 +197,29 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
             verify(callback, times(1)).stateUpdated(eq(channelid), eq(new QuantityType<Power>(2.16, Units.WATT)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNode7PowerEventUpdateAppliesConfiguredFactor() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        ChannelUID channelUID = new ChannelUID("zwavejs:test-bridge:test-thing:meter-value-66049-1");
+        Channel channel = handler.getThing().getChannel(channelUID);
+        assertNotNull(channel);
+        channel.getConfiguration().put(CONFIG_CHANNEL_FACTOR, 2.0);
+        clearInvocations(callback);
+
+        EventMessage eventMessage = DataUtil.fromJson("event_node_7_power.json", EventMessage.class);
+        handler.onNodeStateChanged(eventMessage.event);
+
+        try {
+            verify(callback).stateUpdated(eq(channelUID), eq(new QuantityType<Power>(4.32, Units.WATT)));
         } finally {
             handler.dispose();
         }
@@ -548,6 +574,42 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testRollershutterCommandStopAfterPositionIncrease() {
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(39);
+        RollerShutterCapability capability = nodeHandler.getRollerShutterCapabilities().values().stream().findFirst()
+                .orElseThrow();
+        capability.setPosition(80, false);
+
+        nodeHandler.handleCommand(new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual"),
+                StopMoveType.STOP);
+
+        verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeSetValueCommand.class));
+        NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+
+        assertEquals("On", sendCommand.valueId.property);
+        assertEquals(false, sendCommand.value);
+    }
+
+    @Test
+    public void testRollershutterCommandStopAfterInvertedPositionIncrease() {
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(39);
+        RollerShutterCapability capability = nodeHandler.getRollerShutterCapabilities().values().stream().findFirst()
+                .orElseThrow();
+        nodeHandler.setRollerShutterInversion(capability, true);
+        ChannelUID channelUID = new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual");
+
+        nodeHandler.handleCommand(channelUID, UpDownType.DOWN);
+        capability.setPosition(80, true);
+        nodeHandler.handleCommand(channelUID, StopMoveType.STOP);
+
+        verify(nodeHandler.getBridgeHandler(), times(2)).sendCommand(any(NodeSetValueCommand.class));
+        NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+
+        assertEquals("On", sendCommand.valueId.property);
+        assertEquals(false, sendCommand.value);
+    }
+
+    @Test
     public void testHandleCommand_NonExistingChannel() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -605,6 +667,32 @@ public class ZwaveJSNodeHandlerTest {
             nodeHandler.handleCommand(channel.getUID(), new QuantityType<>(5.0, Units.WATT));
             // Should call sendCommand once
             verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeSetValueCommand.class));
+        } finally {
+            nodeHandler.dispose();
+        }
+    }
+
+    @Test
+    public void testHandleCommandDecimalTypeAppliesInverseFactor() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock nodeHandler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json", true);
+        ZwaveJSBridgeHandler bridgeHandler = nodeHandler.getBridgeHandler();
+        doReturn(bridgeHandler).when(nodeHandler).getBridgeHandler();
+
+        try {
+            Channel channel = nodeHandler.getThing().getChannels().stream()
+                    .filter(c -> CoreItemFactory.NUMBER.equals(c.getAcceptedItemType()))
+                    .filter(c -> c.getConfiguration().get(CONFIG_CHANNEL_WRITE_PROPERTY_INT) != null).findFirst()
+                    .orElse(null);
+            assertNotNull(channel);
+            channel.getConfiguration().put(CONFIG_CHANNEL_FACTOR, 0.1);
+
+            nodeHandler.handleCommand(channel.getUID(), new DecimalType(5.0));
+
+            NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+            assertEquals(50.0, sendCommand.value);
         } finally {
             nodeHandler.dispose();
         }

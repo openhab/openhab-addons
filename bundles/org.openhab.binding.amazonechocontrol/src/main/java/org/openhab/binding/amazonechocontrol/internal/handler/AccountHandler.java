@@ -100,10 +100,12 @@ import com.google.gson.JsonSyntaxException;
  * Handles the connection to the amazon server.
  *
  * @author Michael Geramb - Initial Contribution
+ * @author Martin Littkovsky - Backoff for failed notification polls
+ * @author Martin Littkovsky - Skip polls while no notification channel is linked
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements PushConnection.Listener {
-    private static final int CHECK_DATA_INTERVAL = 3600; // in seconds (always refresh every hour)
+    static final int CHECK_DATA_INTERVAL = 3600; // in seconds (always refresh every hour)
     private static final int CHECK_LOGIN_INTERVAL = 60; // in seconds (always check every minute)
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
@@ -131,7 +133,13 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private int lastMessageId = 1000;
     private long nextDataRefresh = 0;
     private long nextLoginCheck = 0;
-    private long nextRefreshNotifications = 0;
+    // volatile: armed from the thread that creates a link, read by the scheduler
+    private volatile long nextRefreshNotifications = 0;
+    private final NotificationPollBackoff notificationPollBackoff = new NotificationPollBackoff();
+    // Held while a poll result is accepted as one step: validate the attempt, publish it, record the
+    // next due time. Split apart, setConnection() lands in between and the replaced session wins.
+    private final Object notificationCommit = new Object();
+    private volatile boolean notificationPollSuspended = false;
 
     private final LinkedBlockingQueue<String> requestedDeviceUpdates = new LinkedBlockingQueue<>();
     private @Nullable SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator;
@@ -382,6 +390,11 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         // force data check
         nextLoginCheck = 0;
         nextDataRefresh = 0;
+        // failures of the expired session must not delay polls on the new one
+        synchronized (notificationCommit) {
+            notificationPollBackoff.reset();
+            nextRefreshNotifications = 0;
+        }
     }
 
     private void storeSession() {
@@ -402,9 +415,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         nextDataRefresh = now + CHECK_DATA_INTERVAL * 1000;
                         refreshData();
                     }
-                    if (now > nextRefreshNotifications) {
-                        refreshNotifications();
-                    }
+                    refreshNotificationsIfDue(now);
                 }
             } catch (RuntimeException e) { // this handler can be removed later, if we know that nothing else can fail.
                 logger.warn("checkData fails with unexpected error", e);
@@ -412,22 +423,132 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         }
     }
 
-    private void refreshNotifications() {
+    void refreshNotificationsIfDue(long now) {
+        // the shouldSkip check keeps a pending backoff from logging a skip on every tick
+        boolean looksDue;
+        synchronized (notificationCommit) {
+            looksDue = notificationPollBackoff.isDue(now)
+                    || (now > nextRefreshNotifications && !notificationPollBackoff.shouldSkip(now));
+        }
+        if (looksDue) {
+            refreshNotifications();
+        }
+    }
+
+    void refreshNotifications() {
         if (!connection.isLoggedIn()) {
             return;
         }
+        if (!hasLinkedNotificationTargets()) {
+            suspendNotificationPolls();
+            return;
+        }
+        if (notificationPollSuspended) {
+            notificationPollSuspended = false;
+            logger.debug("Resuming notification polls for {}: a notification channel is linked",
+                    getThing().getUID().getAsString());
+        }
+        NotificationPollBackoff.Start start = notificationPollBackoff.tryStart(System.currentTimeMillis());
+        if (start.outcome() != NotificationPollBackoff.Start.Outcome.STARTED) {
+            // push messages call in here directly, bypassing the interval check in checkLoginAndData()
+            logger.debug("notification poll for {} is {}, skipping refresh", getThing().getUID().getAsString(),
+                    start.outcome() == NotificationPollBackoff.Start.Outcome.BACKING_OFF ? "backing off"
+                            : "already running");
+            return;
+        }
         logger.debug("refresh notifications {}", getThing().getUID().getAsString());
-        ZonedDateTime requestTime = ZonedDateTime.now();
-        List<Notification> notifications = connection.getNotifications().stream()
-                .map(n -> map(n, requestTime, ZonedDateTime.now())).filter(Objects::nonNull)
-                .map(Objects::requireNonNull).toList();
-        echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(notifications));
-        ZonedDateTime first = notifications.stream().map(Notification::nextAlarmTime)
-                .min(ChronoZonedDateTime::compareTo).orElse(null);
-        if (first != null) {
-            nextRefreshNotifications = first.toEpochSecond() * 1000;
-        } else {
-            nextRefreshNotifications = Long.MAX_VALUE;
+        try {
+            ZonedDateTime requestTime = ZonedDateTime.now();
+            List<Notification> notifications;
+            try {
+                notifications = connection.getNotifications().stream()
+                        .map(n -> map(n, requestTime, ZonedDateTime.now())).filter(Objects::nonNull)
+                        .map(Objects::requireNonNull).toList();
+            } catch (ConnectionException e) {
+                synchronized (notificationCommit) {
+                    NotificationPollBackoff.Failure failure = notificationPollBackoff.onFailure(start.token(),
+                            System.currentTimeMillis());
+                    if (failure == null) {
+                        // the failure of a replaced connection must not throttle the new one
+                        logger.debug("Discarding notification poll failure of a replaced connection for {}",
+                                getThing().getUID().getAsString());
+                        return;
+                    }
+                    if (failure.firstOfStreak()) {
+                        logger.warn("Failed to get notifications for {}, next attempt in {} s: {}",
+                                getThing().getUID().getAsString(), failure.delaySeconds(), e.getMessage());
+                    } else {
+                        logger.debug("Failed to get notifications for {}, next attempt in {} s: {}",
+                                getThing().getUID().getAsString(), failure.delaySeconds(), e.getMessage());
+                    }
+                    if (failure.crossedUndefThreshold()) {
+                        logger.warn("Setting notification channels of {} to UNDEF after {} consecutive poll failures",
+                                getThing().getUID().getAsString(), NotificationPollBackoff.FAILURES_BEFORE_UNDEF);
+                    }
+                    if (failure.publishUndef()) {
+                        // repeated on every failure so that a handler registering during the outage is told as well
+                        echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(List.of()));
+                    }
+                    return;
+                }
+            }
+            synchronized (notificationCommit) {
+                NotificationPollBackoff.Success success = notificationPollBackoff.onSuccess(start.token());
+                if (success == null) {
+                    // the result of a replaced connection must neither confirm the new one nor delay its first poll
+                    logger.debug("Discarding notification poll result of a replaced connection for {}",
+                            getThing().getUID().getAsString());
+                    return;
+                }
+                if (success.endedStreak()) {
+                    logger.info("Successfully polled notifications for {} again", getThing().getUID().getAsString());
+                }
+                echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(notifications));
+                ZonedDateTime first = notifications.stream().map(Notification::nextAlarmTime)
+                        .min(ChronoZonedDateTime::compareTo).orElse(null);
+                if (first != null) {
+                    nextRefreshNotifications = first.toEpochSecond() * 1000;
+                } else {
+                    nextRefreshNotifications = Long.MAX_VALUE;
+                }
+                if (success.pollAgain()) {
+                    // a trigger refused during this poll may announce data this response predates
+                    nextRefreshNotifications = 0;
+                }
+            }
+        } finally {
+            // an attempt ending without a recorded result must neither block polling nor swallow a refused trigger
+            synchronized (notificationCommit) {
+                if (notificationPollBackoff.abort(start.token())) {
+                    nextRefreshNotifications = 0;
+                }
+            }
+        }
+    }
+
+    private boolean hasLinkedNotificationTargets() {
+        return echoHandlers.values().stream().anyMatch(EchoHandler::hasLinkedNotificationChannel);
+    }
+
+    /** Arms the next tick rather than polling: the core calls this on the linking thread, so no I/O here. */
+    void notificationChannelLinked() {
+        if (notificationPollSuspended) {
+            nextRefreshNotifications = 0;
+        }
+    }
+
+    /** The link is already gone when the core calls this, so the check sees the state that remains. */
+    void notificationChannelUnlinked() {
+        if (!hasLinkedNotificationTargets()) {
+            suspendNotificationPolls();
+        }
+    }
+
+    private void suspendNotificationPolls() {
+        if (!notificationPollSuspended) {
+            notificationPollSuspended = true;
+            logger.debug("Skipping notification polls for {}: no echo thing has a notification channel linked",
+                    getThing().getUID().getAsString());
         }
     }
 

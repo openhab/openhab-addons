@@ -264,7 +264,7 @@
 	<channel-type id="whiteTemp">
 		<item-type>Dimmer</item-type>
 		<label>Light Temperature</label>
-		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo: 2700K-6500K)</description>
+		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo/Pro RGBWW PM: 2700K-6500K)</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>

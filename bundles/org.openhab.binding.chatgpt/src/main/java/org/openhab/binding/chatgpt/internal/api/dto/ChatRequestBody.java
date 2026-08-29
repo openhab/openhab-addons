@@ -28,12 +28,14 @@ public class ChatRequestBody {
     private Double temperature;
     @JsonProperty("top_p")
     private Double topP;
-    @JsonProperty("max_tokens")
+    @JsonProperty("max_completion_tokens")
     private Integer maxTokens;
     private String user;
     private List<ChatTools> tools;
     @JsonProperty("tool_choice")
     private String toolChoice;
+    @JsonProperty("reasoning_effort")
+    private String reasoningEffort;
 
     public String getModel() {
         return model;
@@ -67,6 +69,10 @@ public class ChatRequestBody {
         return toolChoice;
     }
 
+    public String getReasoningEffort() {
+        return reasoningEffort;
+    }
+
     public void setModel(String model) {
         this.model = model;
     }
@@ -97,5 +103,9 @@ public class ChatRequestBody {
 
     public void setToolChoice(String toolChoice) {
         this.toolChoice = toolChoice;
+    }
+
+    public void setReasoningEffort(String reasoningEffort) {
+        this.reasoningEffort = reasoningEffort;
     }
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.io.yamlcomposer.internal.core;
 
+import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.BufferedLogger;
+import org.openhab.io.yamlcomposer.internal.directives.Directive;
 import org.openhab.io.yamlcomposer.internal.placeholders.IfPlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.InterpolablePlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.MergeKeyPlaceholder;
@@ -46,13 +50,34 @@ public class RecursiveTransformer {
 
     private final Map<Class<? extends Placeholder>, PlaceholderProcessor<?>> handlers = new LinkedHashMap<>();
     private final Map<String, @Nullable Object> variables;
+    private final BufferedLogger logger;
+    private final DirectiveProcessor directiveProcessor;
+    private final Path absolutePath;
+    private final Consumer<String> envVarCallback;
 
-    public RecursiveTransformer(Map<String, @Nullable Object> variables) {
+    public RecursiveTransformer(Map<String, @Nullable Object> variables, Consumer<String> envVarCallback,
+            Path absolutePath, BufferedLogger logger) {
         this.variables = variables;
+        this.logger = logger;
+        this.absolutePath = absolutePath;
+        this.envVarCallback = envVarCallback;
+        this.directiveProcessor = new DirectiveProcessor(logger, envVarCallback);
+    }
+
+    private RecursiveTransformer(RecursiveTransformer source, Map<String, @Nullable Object> variables) {
+        this.variables = variables;
+        this.envVarCallback = source.envVarCallback;
+        this.absolutePath = source.absolutePath;
+        this.logger = source.logger;
+        this.directiveProcessor = source.directiveProcessor;
     }
 
     public Map<String, @Nullable Object> getVariables() {
         return variables;
+    }
+
+    public Path getAbsolutePath() {
+        return absolutePath;
     }
 
     /**
@@ -69,7 +94,7 @@ public class RecursiveTransformer {
     public RecursiveTransformer withOverrideVariables(Map<String, @Nullable Object> overrideVariables) {
         Map<String, @Nullable Object> combinedVariables = new HashMap<>(variables);
         combinedVariables.putAll(overrideVariables);
-        RecursiveTransformer copy = new RecursiveTransformer(combinedVariables);
+        RecursiveTransformer copy = new RecursiveTransformer(this, combinedVariables);
         copy.handlers.putAll(this.handlers);
         return copy;
     }
@@ -94,7 +119,7 @@ public class RecursiveTransformer {
      * @return the transformed data tree with placeholders transformed
      */
     public @Nullable Object transform(@Nullable Object data) {
-        return transformWithVisited(data, handlers.keySet());
+        return transform(data, handlers.keySet());
     }
 
     /**
@@ -109,7 +134,16 @@ public class RecursiveTransformer {
      * @return the transformed data tree with the given placeholders transformed
      */
     public @Nullable Object transform(@Nullable Object data, Set<Class<? extends Placeholder>> allowedTypes) {
-        return transformWithVisited(data, allowedTypes);
+        return transformInternal(data, allowedTypes, new IdentityHashMap<>());
+    }
+
+    /**
+     * Overload for internal processors (like DirectiveProcessor) that need to continue
+     * traversal with specific allowed types while preserving circular reference tracking.
+     */
+    public @Nullable Object transform(@Nullable Object data, Set<Class<? extends Placeholder>> allowedTypes,
+            IdentityHashMap<Object, Object> visited) {
+        return transformInternal(data, allowedTypes, visited);
     }
 
     /**
@@ -142,7 +176,7 @@ public class RecursiveTransformer {
      */
     @SuppressWarnings("unchecked")
     public Map<Object, @Nullable Object> transform(Map<?, ?> data, Set<Class<? extends Placeholder>> allowedTypes) {
-        Object transformed = transformWithVisited(data, allowedTypes);
+        Object transformed = transform((Object) data, allowedTypes);
         if (transformed instanceof Map<?, ?> map) {
             return (Map<Object, @Nullable Object>) map;
         }
@@ -151,17 +185,10 @@ public class RecursiveTransformer {
     }
 
     /**
-     * Central helper to start transformation with a fresh visited map.
+     * The actual recursive tree traversal and directive evaluation engine.
      */
-    private @Nullable Object transformWithVisited(@Nullable Object data,
-            Set<Class<? extends Placeholder>> allowedTypes) {
-        return transformInternal(data, allowedTypes, new IdentityHashMap<>());
-    }
-
-    /**
-     * The actual tree traversal.
-     */
-    private @Nullable Object transformInternal(@Nullable Object data, Set<Class<? extends Placeholder>> allowedTypes,
+    @Nullable
+    private Object transformInternal(@Nullable Object data, Set<Class<? extends Placeholder>> allowedTypes,
             IdentityHashMap<Object, Object> visited) {
 
         if (data == null) {
@@ -224,7 +251,7 @@ public class RecursiveTransformer {
 
     /**
      * Resolves a map by transforming its keys and values, applying placeholder handlers as needed,
-     * and handling special cases like merge keys and removal signals.
+     * and handling special cases like merge keys, structural directives, and removal signals.
      *
      * @param rawMap the original map to transform
      * @param allowedTypes the set of placeholder classes to transform
@@ -232,7 +259,6 @@ public class RecursiveTransformer {
      */
     private Object resolveMap(Map<?, ?> rawMap, Set<Class<? extends Placeholder>> allowedTypes,
             IdentityHashMap<Object, Object> visited) {
-        // Always create a new map for transformed results to simplify cycle handling
         @SuppressWarnings("unchecked")
         Map<Object, @Nullable Object> map = (Map<Object, @Nullable Object>) rawMap;
 
@@ -240,21 +266,38 @@ public class RecursiveTransformer {
         // Register in visited before transforming entries to handle self-references
         visited.put(rawMap, result);
 
+        DirectiveProcessor.IfChainState ifChainState = new DirectiveProcessor.IfChainState();
+
+        // Fork variables map to ensure local !var directives inside nested blocks
+        // do not leak to parent/sibling scopes
+        RecursiveTransformer scopeTransformer = withOverrideVariables(Map.of());
+
         List<Map.Entry<Object, @Nullable Object>> mergeEntries = new ArrayList<>();
 
         for (Map.Entry<Object, @Nullable Object> entry : map.entrySet()) {
             Object oldKey = entry.getKey();
             Object oldVal = entry.getValue();
 
-            Object newKey = transformInternal(oldKey, allowedTypes, visited);
-            Object newVal = transformInternal(oldVal, allowedTypes, visited);
+            Object newKey = scopeTransformer.transformInternal(oldKey, allowedTypes, visited);
 
-            // Dropping null keys or removal signals
+            // Dispatch map-level directives via DirectiveProcessor
+            if (newKey instanceof Directive directive) {
+                Object directiveResult = directiveProcessor.processMapDirective(directive, oldVal, result, ifChainState,
+                        scopeTransformer, allowedTypes, visited);
+                mergeUnrolledMap(directiveResult, result);
+                continue;
+            }
+
+            // Regular keys are not directives and break any active conditional chain (!if / !else)
+            ifChainState.breakChain();
+
+            Object newVal = scopeTransformer.transformInternal(oldVal, allowedTypes, visited);
+
             if (shouldRemoveEntry(newKey, newVal, oldVal)) {
                 continue;
             }
 
-            newKey = Objects.requireNonNull(newKey); // null keys should have been filtered out in shouldRemoveEntry
+            newKey = Objects.requireNonNull(newKey);
 
             if (newKey instanceof MergeKeyPlaceholder mkp) {
                 mergeEntries.add(new AbstractMap.SimpleEntry<>(mkp, newVal));
@@ -343,16 +386,65 @@ public class RecursiveTransformer {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private void mergeUnrolledMap(@Nullable Object newVal, Map<Object, @Nullable Object> targetMap) {
+        if (newVal instanceof Map<?, ?> mapVal) {
+            mergeMap((Map<Object, @Nullable Object>) mapVal, targetMap);
+        } else if (newVal instanceof List<?> listVal) {
+            for (Object item : listVal) {
+                if (item instanceof Map<?, ?> mapItem) {
+                    mergeMap((Map<Object, @Nullable Object>) mapItem, targetMap);
+                }
+            }
+        }
+    }
+
     private Object resolveList(List<?> list, Set<Class<? extends Placeholder>> allowedTypes,
             IdentityHashMap<Object, Object> visited) {
-        // Always produce a new list and register it to handle cycles
         List<@Nullable Object> result = new ArrayList<>(list.size());
         visited.put(list, result);
 
+        DirectiveProcessor.IfChainState ifChainState = new DirectiveProcessor.IfChainState();
+
         for (Object oldItem : list) {
-            Object newItem = transformInternal(oldItem, allowedTypes, visited);
-            if (newItem != RemovalSignal.REMOVE && newItem != null) {
-                result.add(newItem);
+            Object processedItem = oldItem;
+            boolean isDirectiveMap = false;
+            boolean handled = false;
+
+            if (oldItem instanceof Map<?, ?> map) {
+                Object directiveResult = directiveProcessor.processListMap(map, ifChainState, this, allowedTypes,
+                        visited);
+                if (directiveResult != null) {
+                    processedItem = directiveResult;
+                    isDirectiveMap = true;
+                    handled = true;
+                }
+            }
+
+            // Standard scalars, plain maps, or maps without control directives
+            if (!handled) {
+                ifChainState.breakChain();
+                processedItem = transformInternal(oldItem, allowedTypes, visited);
+            }
+
+            if (processedItem == RemovalSignal.REMOVE || processedItem == null) {
+                continue;
+            }
+
+            if (processedItem instanceof List<?> unrolledList) {
+                // If it's a directive map (like key-level !if returning a list), flatten it inline.
+                // Otherwise, preserve it as a nested list node.
+                if (isDirectiveMap) {
+                    for (Object item : unrolledList) {
+                        if (item != null && item != RemovalSignal.REMOVE) {
+                            result.add(item);
+                        }
+                    }
+                } else {
+                    result.add(unrolledList);
+                }
+            } else {
+                result.add(processedItem);
             }
         }
 

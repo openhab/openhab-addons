@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -72,6 +74,7 @@ public class ChatGPTApiClient {
     private final String apiKey;
     private final String baseUrl;
     private final ObjectMapper objectMapper;
+    private final Set<String> modelsRequiringReasoningEffort = ConcurrentHashMap.newKeySet();
 
     public ChatGPTApiClient(HttpClient httpClient, String apiKey, String baseUrl) {
         this.httpClient = httpClient;
@@ -310,15 +313,29 @@ public class ChatGPTApiClient {
             throw new ChatGPTApiException("Failed to serialize request body: " + e.getMessage(), e);
         }
 
-        return executeCompletionRequest(queryJson, timeoutSeconds);
+        // If we know this model requires reasoning_effort for tool requests, use it preemptively
+        boolean hasTools = tools != null && !tools.isEmpty();
+        String reasoningEffort = hasTools && modelsRequiringReasoningEffort.contains(model) ? "none" : null;
+        return executeCompletionRequest(queryJson, model, hasTools, timeoutSeconds, reasoningEffort);
     }
 
-    private ChatResponse executeCompletionRequest(String queryJson, @Nullable Integer timeoutSeconds)
-            throws ChatGPTApiException {
+    private ChatResponse executeCompletionRequest(String queryJson, String model, boolean hasTools,
+            @Nullable Integer timeoutSeconds, @Nullable String reasoningEffort) throws ChatGPTApiException {
+        String finalJson = queryJson;
+        if (reasoningEffort != null) {
+            try {
+                JsonNode jsonNode = objectMapper.readTree(queryJson);
+                ((com.fasterxml.jackson.databind.node.ObjectNode) jsonNode).put("reasoning_effort", reasoningEffort);
+                finalJson = objectMapper.writeValueAsString(jsonNode);
+            } catch (IOException e) {
+                logger.debug("Failed to add reasoning_effort to request: {}", e.getMessage());
+            }
+        }
+
         Request request = httpClient.newRequest(baseUrl + PATH_CHAT_COMPLETIONS).method(HttpMethod.POST)
                 .timeout(timeoutSeconds != null ? timeoutSeconds : 10, TimeUnit.SECONDS)
                 .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
-                .content(new StringContentProvider(queryJson, StandardCharsets.UTF_8));
+                .content(new StringContentProvider(finalJson, StandardCharsets.UTF_8));
         if (!apiKey.isBlank()) {
             request.header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
         }
@@ -365,6 +382,13 @@ public class ChatGPTApiClient {
                 logger.debug("Error response from {} (POST): HTTP {} {}, payload size = {} bytes",
                         baseUrl + PATH_CHAT_COMPLETIONS, response.getStatus(), response.getReason(),
                         errorBody.getBytes(StandardCharsets.UTF_8).length);
+
+                if (reasoningEffort == null && hasTools && response.getStatus() == HttpStatus.BAD_REQUEST_400
+                        && errorBody.contains("reasoning_effort")) {
+                    logger.debug("Model {} requires reasoning_effort; caching and retrying", model);
+                    modelsRequiringReasoningEffort.add(model);
+                    return executeCompletionRequest(queryJson, model, hasTools, timeoutSeconds, "none");
+                }
                 if (logger.isTraceEnabled()) {
                     try {
                         String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
@@ -400,6 +424,7 @@ public class ChatGPTApiClient {
         if (!apiKey.isBlank()) {
             request.header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
         }
+
         logger.debug("Request to {} (GET)", baseUrl + PATH_MODELS);
         try {
             ContentResponse response = request.send();

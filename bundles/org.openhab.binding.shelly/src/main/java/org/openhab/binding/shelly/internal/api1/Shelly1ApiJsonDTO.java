@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.core.thing.CommonTriggerEvents;
@@ -136,6 +137,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_BTNT_TOGGLE = "toggle";
     public static final String SHELLY_BTNT_EDGE = "edge";
     public static final String SHELLY_BTNT_DETACHED = "detached";
+    public static final String SHELLY_BTNT_ACTIVATE = "activate"; // Gen2+ input: one-shot trigger, no local state
 
     public static final String SHELLY_STATE_LAST = "last";
     public static final String SHELLY_STATE_STOP = "stop";
@@ -521,6 +523,14 @@ public class Shelly1ApiJsonDTO {
         public String outOnUrl; // output is activated
         @SerializedName("out_off_url")
         public String outOffUrl; // output is deactivated
+
+        // Gen2 (Pro RGBWW PM) only: which RPC component this entry maps to, see ShellyApiLightUtil
+        public transient ShellyLightApiComponent apiComponent = ShellyLightApiComponent.NONE;
+
+        // Gen2 CCT component only: per-component color-temperature range from ct_range; null falls back to the
+        // profile-wide default (see ShellyDeviceProfile.getMinTemp()/getMaxTemp())
+        public transient @Nullable Integer minTemp;
+        public transient @Nullable Integer maxTemp;
     }
 
     public static class ShellyFavPos { // FW 1.9.2+ in roller mode

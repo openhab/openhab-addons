@@ -18,3 +18,18 @@ OpenTelemetry Java SDK
 * License: Apache License 2.0
 * Project: https://opentelemetry.io/
 * Source:  https://github.com/open-telemetry/opentelemetry-java
+
+Micrometer
+* License: Apache License 2.0
+* Project: https://micrometer.io/
+* Source:  https://github.com/micrometer-metrics/micrometer
+
+OpenTelemetry Proto
+* License: Apache License 2.0
+* Project: https://opentelemetry.io/
+* Source:  https://github.com/open-telemetry/opentelemetry-proto
+
+protobuf-java
+* License: BSD License
+* Project: https://developers.google.com/protocol-buffers
+* Source:  https://github.com/protocolbuffers/protobuf

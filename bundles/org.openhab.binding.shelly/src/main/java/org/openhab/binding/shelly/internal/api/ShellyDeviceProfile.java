@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -95,6 +96,8 @@ public class ShellyDeviceProfile {
     public boolean isBulb; // true only if it is a Bulb
     public boolean isDuo; // true only if it is a Duo
     public boolean isRGBW2; // true only if it a RGBW2
+    public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
+                                 // from a Plus RGBW PM running the same rgb/rgbw/light profile)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
     public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
 
@@ -214,6 +217,7 @@ public class ShellyDeviceProfile {
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
+        isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
@@ -326,10 +330,13 @@ public class ShellyDeviceProfile {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
             List<ShellySettingsRgbwLight> lights = settings.lights;
-            if (lights == null || lights.size() <= 1) {
+            int count = lights == null ? 0 : lights.size();
+            if (count <= 1 || (inColor && i == 0)) {
+                // count<=1: the single light/color component always lives in the bare "control" group.
+                // inColor && i==0: hybrid profile (color + secondary CCT/Light) - index 0 is the color slot.
                 return CHANNEL_GROUP_LIGHT_CONTROL;
             }
-            return lightChannelGroupPrefix(this) + idx;
+            return lightChannelGroupPrefix(this) + (idx - getColorComponentCount());
         } else if (isLight) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {
@@ -346,6 +353,65 @@ public class ShellyDeviceProfile {
 
     public String getMeterGroup(int idx) {
         return numMeters > 1 ? CHANNEL_GROUP_METER + (idx + 1) : CHANNEL_GROUP_METER;
+    }
+
+    /**
+     * Number of leading color-component slots in settings.lights (0 or 1 - no profile has more than one).
+     * Used to convert a device-local component id (as reported by the device, 0-based per component type,
+     * e.g. CCT:0/CCT:1 or Light:0/Light:1) into its index in the flat settings.lights list, where slot 0 is
+     * reserved for the color component (rgb0/rgbw0) whenever one is present.
+     */
+    public int getColorComponentCount() {
+        return inColor ? 1 : 0;
+    }
+
+    /**
+     * True when settings.lights[idx] is an RGB/RGBW color component, as opposed to a CCT/Light one - needed
+     * because a hybrid profile's (rgbcct, rgbx2light) secondary component(s) are not color even though the
+     * whole-profile inColor flag is true. Untagged (Gen1 RGBW2) entries fall back to that whole-profile flag.
+     */
+    public boolean hasColorTag(int idx) {
+        ShellyLightApiComponent tag = tagAt(settings.lights, idx);
+        return tag == ShellyLightApiComponent.NONE ? inColor : ShellyApiLightUtil.isColorComponent(tag);
+    }
+
+    /**
+     * True when settings.lights[idx] is a CCT (color temperature) component - Gen2 only, untagged Gen1 entries are
+     * never CCT.
+     */
+    public boolean isCctComponent(int idx) {
+        return ShellyApiLightUtil.isCctComponent(tagAt(settings.lights, idx));
+    }
+
+    /**
+     * Converts a settings.lights index into the actual Shelly RPC component id - non-color components are
+     * shifted down by the leading color slot(s) (e.g. rgbcct's CCT:0 is at settings.lights index 1).
+     */
+    public int getLightComponentId(int idx) {
+        return hasColorTag(idx) ? idx : idx - getColorComponentCount();
+    }
+
+    /**
+     * The color-temperature range to use for settings.lights[idx]: a CCT component's own ct_range when the
+     * device reported one, otherwise the profile-wide default (see initFromThingType()).
+     */
+    public int getMinTemp(int idx) {
+        Integer componentMin = componentTemp(idx, true);
+        return componentMin != null ? componentMin : minTemp;
+    }
+
+    public int getMaxTemp(int idx) {
+        Integer componentMax = componentTemp(idx, false);
+        return componentMax != null ? componentMax : maxTemp;
+    }
+
+    private @Nullable Integer componentTemp(int idx, boolean min) {
+        List<ShellySettingsRgbwLight> lights = settings.lights;
+        if (lights == null || idx < 0 || idx >= lights.size()) {
+            return null;
+        }
+        ShellySettingsRgbwLight light = lights.get(idx);
+        return min ? light.minTemp : light.maxTemp;
     }
 
     public String getInputGroup(int i) {
@@ -417,6 +483,12 @@ public class ShellyDeviceProfile {
             btnType = getString(light.btnType);
         }
 
+        if (btnType.equalsIgnoreCase(SHELLY_BTNT_ACTIVATE)) {
+            // Switch.in_mode=activate alone doesn't imply a button input (Shelly also uses it for stateful
+            // switch/PIR inputs); only the paired Input component (settings.inputs) reveals the real input type
+            return inputs != null && idx < inputs.size()
+                    && SHELLY_BTNT_MOMENTARY.equalsIgnoreCase(getString(inputs.get(idx).btnType));
+        }
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);

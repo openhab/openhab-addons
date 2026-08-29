@@ -604,7 +604,9 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
             } else if (PROGRAM_PROGRESS_KEY.equals(deviceDescriptionChange.key())) {
                 getLinkedChannel(CHANNEL_PROGRAM_PROGRESS).ifPresent(
                         channel -> getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                            if (deviceDescriptionService.isOptionAvailableAndReadable(CHANNEL_PROGRAM_PROGRESS)) {
+                            // The option is only exposed while a program is set up or running, so it becoming
+                            // readable again marks the next run and is when the previous progress goes stale.
+                            if (deviceDescriptionService.isOptionAvailableAndReadable(deviceDescriptionChange.key())) {
                                 updateState(channel.getUID(), new QuantityType<>(0, PERCENT));
                             }
                         }));

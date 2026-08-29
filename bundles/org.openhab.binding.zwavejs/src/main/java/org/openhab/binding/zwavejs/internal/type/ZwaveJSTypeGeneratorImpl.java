@@ -18,7 +18,6 @@ import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_SWITCH_COLOR;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -52,8 +51,6 @@ import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelType;
@@ -76,7 +73,6 @@ import org.slf4j.LoggerFactory;
  * @see ChannelTypeBuilder
  * @see ChannelTypeUID
  * @see StateChannelTypeBuilder
- * @see ThingRegistry
  * @see ZwaveJSChannelTypeProvider
  * @see ZwaveJSConfigDescriptionProvider
  *
@@ -105,27 +101,14 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             "awning", "venetian", "drape", "roller", "screen", "covering", "rts");
 
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSTypeGeneratorImpl.class);
-    private final ThingRegistry thingRegistry;
     private final ZwaveJSChannelTypeProvider channelTypeProvider;
     private final ZwaveJSConfigDescriptionProvider configDescriptionProvider;
 
     @Activate
     public ZwaveJSTypeGeneratorImpl(@Reference ZwaveJSChannelTypeProvider channelTypeProvider,
-            @Reference ZwaveJSConfigDescriptionProvider configDescriptionProvider,
-            @Reference ThingRegistry thingRegistry) {
+            @Reference ZwaveJSConfigDescriptionProvider configDescriptionProvider) {
         this.channelTypeProvider = channelTypeProvider;
         this.configDescriptionProvider = configDescriptionProvider;
-        this.thingRegistry = thingRegistry;
-    }
-
-    /**
-     * Retrieves a Thing by its UID.
-     *
-     * @param thingUID the UID of the Thing
-     * @return the Thing, or {@code null} if not found
-     */
-    public @Nullable Thing getThing(ThingUID thingUID) {
-        return thingRegistry.get(thingUID);
     }
 
     /**
@@ -140,7 +123,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     public ZwaveJSTypeGeneratorResult generate(ThingUID thingUID, Node node, boolean configurationAsChannels) {
         ZwaveJSTypeGeneratorResult result = new ZwaveJSTypeGeneratorResult();
         List<ConfigDescriptionParameter> configDescriptions = new ArrayList<>();
-        URI uri = Objects.requireNonNull(getConfigDescriptionURI(thingUID, node));
+        URI uri = URI.create("thing:" + thingUID);
 
         for (Value value : node.values) {
             if (!configurationAsChannels && CONFIGURATION_COMMAND_CLASSES.contains(value.commandClass)) {
@@ -254,6 +237,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .build();
 
             result.channels.put(details.id, channel);
+            result.channelMetadata.put(details.id, details);
         }
     }
 
@@ -374,6 +358,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         }
 
         result.channels.put(details.id, builder.build());
+        result.channelMetadata.put(details.id, details);
 
         // if necessary add or update the entry in our ZwaveJSTypeGeneratorResult's map of ColorCapabilities
         updateColorCapabilities(thingUID, details, result);
@@ -497,27 +482,6 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         return builder.isAdvanced(details.isAdvanced).build();
     }
 
-    private @Nullable URI getConfigDescriptionURI(ThingUID thingUID, Node node) {
-        Thing thing = getThing(thingUID);
-        if (thing == null) {
-            logger.debug("Thing '{}'' not found in registry for getConfigDescriptionURI", thingUID);
-            return null;
-        }
-        ThingUID bridgeUID = thing.getBridgeUID();
-        if (bridgeUID == null) {
-            logger.debug("No bridgeUID found for Thing '{}'' in getConfigDescriptionURI", thingUID);
-            return null;
-        }
-
-        try {
-            return new URI(String.format("thing:%s:node:%s:node%s", BindingConstants.BINDING_ID, bridgeUID.getId(),
-                    node.nodeId));
-        } catch (URISyntaxException ex) {
-            logger.warn("Can't create configDescriptionURI for node {}", node.nodeId);
-            return null;
-        }
-    }
-
     /**
      * Matches the given list of keywords against the label and description of the provided
      * {@link ChannelMetadata}. This method delegates the matching logic to the overloaded
@@ -570,6 +534,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             case CoreItemFactory.COLOR:
                 point = details.writable ? Point.CONTROL : Point.STATUS;
                 property = Property.COLOR;
+                break;
             case CoreItemFactory.DIMMER:
                 point = Point.CONTROL;
                 break;
@@ -798,6 +763,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .build();
 
             result.channels.put(details.id, channel);
+            result.channelMetadata.put(details.id, details);
             Object dimmerValue = result.values.get(rollerShutterCapability.dimmerChannel.getId());
             if (dimmerValue != null) {
                 result.values.put(details.id, dimmerValue);
@@ -851,6 +817,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                     .build();
 
             result.channels.put(details.id, channel);
+            result.channelMetadata.put(details.id, details);
             colorCapability.colorTempChannel = channel.getUID();
         });
     }
