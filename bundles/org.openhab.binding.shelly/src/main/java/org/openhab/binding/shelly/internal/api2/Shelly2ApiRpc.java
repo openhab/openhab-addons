@@ -678,9 +678,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, event);
                     break;
                 case SHELLY2_EVENT_LORADATA:
+                case SHELLY2_EVENT_LORA_USERRX:
                     Shelly2NotifyEventLoraInfo loraInfo = e.info;
                     String loraRaw = loraInfo != null ? loraInfo.data : null;
-                    logger.debug("{}: LoRa data received, payload = {}", thingName, loraRaw);
+                    logger.debug("{}: LoRa data received ({}), payload = {}, sender = {}", thingName, event, loraRaw,
+                            loraInfo != null ? loraInfo.sender : null);
                     if (loraRaw != null) {
                         updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(loraRaw));
                         try {
@@ -696,10 +698,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             logger.debug("{}: LoRa RX payload is not valid Base64: {}", thingName, ex.getMessage());
                         }
                     }
-                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI,
-                            toQuantityType(loraInfo != null ? loraInfo.rssi : null, Units.DECIBEL_MILLIWATTS));
-                    updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR,
-                            toQuantityType(loraInfo != null ? loraInfo.snr : null, Units.DECIBEL));
+                    if (loraInfo != null && loraInfo.rssi != null) {
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI,
+                                toQuantityType(loraInfo.rssi, Units.DECIBEL_MILLIWATTS));
+                    }
+                    if (loraInfo != null && loraInfo.snr != null) {
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR,
+                                toQuantityType(loraInfo.snr, Units.DECIBEL));
+                    }
                     // force the trigger: the alarm value stays LORA_RECEIVED across consecutive packets, so
                     // postEvent's de-dup would otherwise swallow all but the first of a fast burst
                     getThing().postEvent(ALARM_TYPE_LORA_RECEIVED, true);

@@ -524,7 +524,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void loraSendData(int id, String data) throws ShellyApiException {
-        throw new IllegalArgumentException("API call loraSendData not implemented");
+        throw new ShellyApiException("Request not supported");
     }
 
     /**

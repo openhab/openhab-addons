@@ -88,6 +88,7 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_TIME = "Number:Time"; // Seconds
     public static final String ITEMT_DATA = "Number:DataAmount"; // Bytes
     public static final String ITEMT_PERCENT = "Number:Dimensionless"; // 0–100% (battery, humidity)
+    public static final String ITEMT_DIMENSIONLESS = "Number:Dimensionless"; // ratios (dB)
     public static final String ITEMT_PRESSURE = "Number:Pressure";
 
     // shortcuts to avoid line breaks (make code more readable)
@@ -379,7 +380,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATARAW, "loraTxDataRaw", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXBYTES, "loraTxBytes", ITEMT_DATA))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXERRORS, "loraTxErrors", ITEMT_NUMBER))
-                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_SNR, "loraSNR", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_SNR, "loraSNR", ITEMT_DIMENSIONLESS))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_AIRTIME, "loraAirtime", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RSSI, "loraSignal", ITEMT_POWER));
     }
@@ -478,8 +479,7 @@ public class ShellyChannelDefinitions {
      *
      * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
-    public static Map<String, Channel> createLoraChannels(final Thing thing, final ShellyDeviceProfile profile,
-            final ShellySettingsStatus status) {
+    public static Map<String, Channel> createLoraChannels(final Thing thing, final ShellyDeviceProfile profile) {
         Map<String, Channel> add = new LinkedHashMap<>();
         if (!profile.settings.loraDetected) {
             return add;

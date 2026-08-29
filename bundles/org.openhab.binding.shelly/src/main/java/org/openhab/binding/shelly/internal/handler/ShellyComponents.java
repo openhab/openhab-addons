@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.measure.MetricPrefix;
@@ -90,10 +91,13 @@ public class ShellyComponents {
             thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createDeviceChannels(thingHandler.getThing(),
                     thingHandler.getProfile(), status));
         }
-        // not gated on areChannelsCreated(): reconciled every cycle so add-on/rx_enable changes apply live
-        thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createLoraChannels(thingHandler.getThing(),
-                thingHandler.getProfile(), status));
-        reconcileLoraChannels(thingHandler, profile);
+        if (profile.isGen2) {
+            // LoRa channels follow the add-on state (installed / rx_enable), so they are reconciled on every
+            // cycle and bypass the one-time channelsCreated gate of updateChannelDefinitions()
+            thingHandler.updateThingChannels(Map.of(),
+                    ShellyChannelDefinitions.createLoraChannels(thingHandler.getThing(), profile));
+            reconcileLoraChannels(thingHandler, profile);
+        }
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
         if (!profile.gateway.isEmpty()) {

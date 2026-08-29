@@ -431,10 +431,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
-        // lora100 is present only while the add-on is installed; re-evaluated on every config refresh
+        // lora100 is present only while the add-on is installed; re-evaluated on every config refresh.
+        // rx_enable is optional and defaults to enabled
         if (dc.lora100 != null) {
             profile.settings.loraDetected = true;
-            profile.settings.loraRxEnabled = Boolean.TRUE.equals(dc.lora100.rxEnabled);
+            profile.settings.loraRxEnabled = !Boolean.FALSE.equals(dc.lora100.rxEnabled);
             profile.settings.loraComponentIds = new Integer[1];
             Integer loraId = dc.lora100.id;
             profile.settings.loraComponentIds[0] = loraId != null ? loraId : 100;
@@ -628,7 +629,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateLightModeStatus(4, status, result.light4, channelUpdate);
         updated |= updateLightModeStatus(0, status, result.cct0, channelUpdate);
         updated |= updateLightModeStatus(1, status, result.cct1, channelUpdate);
-        updated |= updateLoraStatus(0, status, result.lora100, channelUpdate);
+        updated |= updateLoraStatus(result.lora100);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -1376,15 +1377,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return true;
     }
 
-    private boolean updateLoraStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLora value,
-            boolean channelUpdate) throws ShellyApiException {
-        if (value == null) {
-            return false;
-        }
-        if (value.id == null) {
-            value.id = id;
-        }
-        return getProfile().settings.loraDetected ? ShellyComponents.updateLoraStatus(getThing(), value) : false;
+    private boolean updateLoraStatus(@Nullable Shelly2DeviceStatusLora value) throws ShellyApiException {
+        return value != null && ShellyComponents.updateLoraStatus(getThing(), value);
     }
 
     protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {

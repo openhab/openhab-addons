@@ -181,6 +181,7 @@ public class Shelly2ApiJsonDTO {
 
     // LoRa
     public static final String SHELLY2_EVENT_LORADATA = "lora";
+    public static final String SHELLY2_EVENT_LORA_USERRX = "user_rx"; // SheLR datagram (LoRa.Send)
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -641,11 +642,11 @@ public class Shelly2ApiJsonDTO {
     public static class Shelly2DeviceStatus {
         public static class Shelly2DeviceStatusSysAvlUpdate {
             public static class Shelly2DeviceStatusSysUpdate {
-                public String version;
+                public @Nullable String version;
             }
 
-            public Shelly2DeviceStatusSysUpdate stable;
-            public Shelly2DeviceStatusSysUpdate beta;
+            public @Nullable Shelly2DeviceStatusSysUpdate stable;
+            public @Nullable Shelly2DeviceStatusSysUpdate beta;
         }
 
         public class Shelly2InputCounts {
@@ -1375,8 +1376,9 @@ public class Shelly2ApiJsonDTO {
 
     public static class Shelly2NotifyEventLoraInfo {
         public @Nullable String data;
-        public @Nullable Integer rssi;
-        public @Nullable Integer snr;
+        public @Nullable String sender; // user_rx only
+        public @Nullable Double rssi;
+        public @Nullable Double snr;
         public @Nullable Long tsu;
     }
 

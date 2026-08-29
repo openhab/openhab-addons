@@ -1567,21 +1567,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
         try {
-            List<Channel> existingChannels = getThing().getChannels();
+            List<Channel> obsolete = getThing().getChannels().stream()
+                    .filter(channel -> channelIds.contains(channel.getUID().getId())).toList();
+            if (obsolete.isEmpty()) {
+                return false;
+            }
             ThingBuilder thingBuilder = editThing();
-            boolean changed = false;
-            for (Channel channel : existingChannels) {
-                if (channelIds.contains(channel.getUID().getId())) {
-                    logger.debug("{}: Removing channel {}", thingName, channel.getUID().getId());
-                    thingBuilder.withoutChannel(channel.getUID());
-                    changed = true;
-                }
+            for (Channel channel : obsolete) {
+                logger.debug("{}: Removing channel {}", thingName, channel.getUID().getId());
+                thingBuilder.withoutChannel(channel.getUID());
             }
-            if (changed) {
-                updateThing(thingBuilder.build());
-                logger.debug("{}: Channel definitions updated", thingName);
-            }
-            return changed;
+            updateThing(thingBuilder.build());
+            logger.debug("{}: Channel definitions updated", thingName);
+            return true;
         } catch (IllegalArgumentException e) {
             logger.debug("{}: Unable to remove channel definitions", thingName, e);
         }
