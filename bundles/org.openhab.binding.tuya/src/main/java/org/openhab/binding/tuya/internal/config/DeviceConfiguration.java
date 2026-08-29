@@ -18,12 +18,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link DeviceConfiguration} holds the configuration of a single device
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add sub-device node id
  */
 @NonNullByDefault
 public class DeviceConfiguration {
     public String productId = "";
     public String deviceId = "";
     public String localKey = "";
+
+    /**
+     * The node id of a sub-device connected through a gateway. Empty for devices that are reached directly.
+     */
+    public String subDeviceId = "";
 
     public String ip = "";
     public int port = 6668;
