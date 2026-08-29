@@ -15,6 +15,7 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -71,7 +72,7 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
 
         if (resolvedScheduleRuleId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing Rachio scheduleRuleId. Use discovery or configure the Rachio schedule rule UUID manually.");
+                    i18nText("thing-status.rachio.schedule.missing-schedule-rule-id"));
             return;
         }
 
@@ -133,7 +134,8 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             String message = exceptionMessage(e);
             logger.debug("{}: Schedule command failed: {}", thingId, message);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nText("thing-status.rachio.schedule.command-failed", message));
         }
     }
 
@@ -210,7 +212,8 @@ public class RachioScheduleHandler extends AbstractRachioThingHandler {
             String message = exceptionMessage(e);
             logger.debug("{}: Unable to load schedule rule '{}': {}", thingId, requestedScheduleRuleId, message);
             if (isHandlerLifecycleCurrent(generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.schedule.load-failed", requestedScheduleRuleId, message));
             }
             return false;
         }

@@ -72,7 +72,7 @@ class RachioWebhookServletTest {
     }
 
     @Test
-    void failedWebhookProcessingIsAcknowledgedAndReleasesEventClaim() throws Exception {
+    void failedWebhookProcessingReturnsServerErrorAndReleasesEventClaim() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
         when(handlerFactory.webHookEvent(anyString(), any(RachioEventGsonDTO.class)))
                 .thenThrow(new RuntimeException("simulated failure")).thenReturn(true);
@@ -85,12 +85,12 @@ class RachioWebhookServletTest {
         servlet.service(request(body, VALID_SIGNATURE), redeliveryResponse);
 
         verify(handlerFactory, times(2)).webHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
-        verify(failedResponse).setStatus(HttpServletResponse.SC_OK);
+        verify(failedResponse).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         verify(redeliveryResponse).setStatus(HttpServletResponse.SC_OK);
     }
 
     @Test
-    void unroutedWebhookProcessingIsAcknowledgedAndReleasesEventClaim() throws Exception {
+    void unroutedWebhookProcessingReturnsServiceUnavailableAndReleasesEventClaim() throws Exception {
         RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
         when(handlerFactory.webHookEvent(anyString(), any(RachioEventGsonDTO.class))).thenReturn(false, true);
         RachioWebhookServlet servlet = servlet(handlerFactory);
@@ -102,7 +102,7 @@ class RachioWebhookServletTest {
         servlet.service(request(body, VALID_SIGNATURE), redeliveryResponse);
 
         verify(handlerFactory, times(2)).webHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
-        verify(failedResponse).setStatus(HttpServletResponse.SC_OK);
+        verify(failedResponse).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         verify(redeliveryResponse).setStatus(HttpServletResponse.SC_OK);
     }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -70,7 +71,7 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
 
         if (resolvedFlexScheduleRuleId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing Rachio flexScheduleRuleId. Use discovery or configure the Rachio flex schedule rule UUID manually.");
+                    i18nText("thing-status.rachio.flex-schedule.missing-flex-schedule-rule-id"));
             return;
         }
 
@@ -133,7 +134,8 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
         } catch (RachioApiException e) {
             String message = exceptionMessage(e);
             logger.debug("{}: Flex schedule command failed: {}", thingId, message);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nText("thing-status.rachio.flex-schedule.command-failed", message));
         }
     }
 
@@ -212,7 +214,8 @@ public class RachioFlexScheduleHandler extends AbstractRachioThingHandler {
             logger.debug("{}: Unable to load flex schedule rule '{}': {}", thingId, requestedFlexScheduleRuleId,
                     message);
             if (isHandlerLifecycleCurrent(generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, i18nText(
+                        "thing-status.rachio.flex-schedule.load-failed", requestedFlexScheduleRuleId, message));
             }
             return false;
         }

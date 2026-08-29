@@ -450,10 +450,10 @@ class RachioDeviceHandlerStatusTest {
 
         handler.initialize();
 
-        verify(callback).statusUpdated(eq(thing),
-                argThat(status -> status.getStatus() == ThingStatus.OFFLINE
-                        && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR
-                        && String.valueOf(status.getDescription()).contains("deviceId was not found")));
+        verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR
+                && String.valueOf(status.getDescription()).contains("@text/thing-status.rachio.device.not-found")
+                && String.valueOf(status.getDescription()).contains(DEVICE_ID)));
         verify(callback, never()).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
     }
 

@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -82,6 +83,23 @@ class RachioHandlerFactoryTest {
     }
 
     @Test
+    void removingReplacedBridgeHandlerKeepsCurrentRegistryEntry() throws Exception {
+        RachioHandlerFactory factory = createFactory();
+        ThingUID bridgeUID = new ThingUID(THING_TYPE_CLOUD, "bridge");
+        Bridge bridge = Mockito.mock(Bridge.class);
+        when(bridge.getUID()).thenReturn(bridgeUID);
+        RachioBridgeHandler replacedHandler = Mockito.mock(RachioBridgeHandler.class);
+        when(replacedHandler.getThing()).thenReturn(bridge);
+        RachioBridgeHandler currentHandler = Mockito.mock(RachioBridgeHandler.class);
+        when(currentHandler.getThing()).thenReturn(bridge);
+        bridgeList(factory).put(bridgeUID.toString(), currentHandler);
+
+        factory.removeHandler(replacedHandler);
+
+        assertThat(bridgeList(factory).get(bridgeUID.toString()), sameInstance(currentHandler));
+    }
+
+    @Test
     void legacyWebhookRoutesOnlyToBridgeWithMatchingExternalId() throws Exception {
         RachioHandlerFactory factory = createFactory();
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
@@ -100,6 +118,22 @@ class RachioHandlerFactoryTest {
         assertThat(factory.legacyWebHookEvent("127.0.0.1", event), is(false));
         verify(bridgeHandler, never()).legacyWebHookEvent(event);
         verify(bridgeHandler, never()).webHookEvent(event);
+    }
+
+    @Test
+    void webhookProcessingFailurePropagatesToServletBoundary() throws Exception {
+        RachioHandlerFactory factory = createFactory();
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        when(bridgeHandler.getExternalId()).thenReturn("expected-external-id");
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.externalId = "expected-external-id";
+        RuntimeException failure = new RuntimeException("simulated failure");
+        when(bridgeHandler.webHookEvent(event)).thenThrow(failure);
+        bridgeList(factory).put("bridge", bridgeHandler);
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> factory.webHookEvent("127.0.0.1", event));
+
+        assertThat(thrown, sameInstance(failure));
     }
 
     @Test

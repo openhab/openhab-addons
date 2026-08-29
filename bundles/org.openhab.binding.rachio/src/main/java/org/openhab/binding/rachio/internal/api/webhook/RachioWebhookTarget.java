@@ -84,7 +84,6 @@ public class RachioWebhookTarget {
     }
 
     public boolean resourceMatches(RachioApiWebHookEntry webhook) {
-        @Nullable
         RachioApiWebHookResourceId webhookResourceId = webhook.resourceId;
         return webhookResourceId != null && Objects.equals(webhookResourceId.getResourceId(resourceType), resourceId);
     }

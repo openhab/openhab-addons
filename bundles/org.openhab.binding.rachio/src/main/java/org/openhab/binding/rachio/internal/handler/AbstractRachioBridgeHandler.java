@@ -24,7 +24,6 @@ import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +120,7 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
 
     public void shutdown() {
         cancelPollingJob("bridge shutdown");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        updateStatus(ThingStatus.OFFLINE);
     }
 
     @Override

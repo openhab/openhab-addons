@@ -15,6 +15,7 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_DURATION;
@@ -1224,6 +1225,20 @@ class RachioBridgeHandlerConfigurationTest {
         InOrder order = Mockito.inOrder(handler, deviceHandler);
         order.verify(deviceHandler).webhookEvent(event);
         order.verify(handler, Mockito.timeout(1000)).refreshDeviceStatus(RefreshReason.WEBHOOK_RECONCILIATION);
+    }
+
+    @Test
+    void unexpectedWebhookProcessingFailurePropagatesToHttpBoundary() {
+        RachioBridgeHandler handler = legacyHandler();
+        RachioDeviceHandler deviceHandler = deviceHandler(deviceWithZone());
+        RachioEventGsonDTO event = legacyEvent("SCHEDULE_STATUS", "SCHEDULE_STOPPED");
+        RuntimeException failure = new RuntimeException("simulated processing failure");
+        Mockito.doThrow(failure).when(deviceHandler).webhookEvent(event);
+        handler.rachioStatusListeners.add(deviceHandler);
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> handler.webHookEvent(event));
+
+        assertThat(thrown, is(failure));
     }
 
     @Test

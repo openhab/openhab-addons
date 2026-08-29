@@ -76,7 +76,6 @@ class RachioWebhookDuplicateEventCache {
     }
 
     void release(EventClaim claim) {
-        @Nullable
         String eventId = claim.eventId();
         if (eventId != null) {
             eventIds.remove(eventId, claim);

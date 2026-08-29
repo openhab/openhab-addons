@@ -41,34 +41,29 @@ class RachioIrrigationWebhookEventHandler implements RachioWebhookEventHandler {
 
     @Override
     public boolean handle(RachioEventGsonDTO event) {
-        try {
-            RachioDevice controller = bridgeHandler.findIrrigationController(event.deviceId);
-            if (controller == null) {
-                logger.debug("RachioCloud: Event {}.{} for unknown irrigation controller {}", event.type, event.subType,
-                        event.deviceId);
-                return false;
-            }
-
-            boolean handled = false;
-            RachioDeviceHandler deviceHandler = resolveDeviceHandler(controller, event.deviceId);
-            if (deviceHandler != null) {
-                handled |= deviceHandler.webhookEvent(event);
-            }
-            for (RachioStatusListener listener : bridgeHandler.rachioStatusListeners) {
-                if (listener instanceof RachioScheduleHandler scheduleHandler) {
-                    handled |= scheduleHandler.webhookEvent(event);
-                }
-            }
-            if (handled) {
-                return true;
-            }
-            logger.debug(
-                    "RachioCloud: Event {}.{} matched irrigation controller {} but was not directly handled; reconciliation remains available",
-                    event.type, event.subType, event.deviceId);
-        } catch (RuntimeException e) {
-            logger.debug("RachioCloud: Unable to process irrigation event {}.{} for device {}", event.category,
-                    event.type, event.deviceId, e);
+        RachioDevice controller = bridgeHandler.findIrrigationController(event.deviceId);
+        if (controller == null) {
+            logger.debug("RachioCloud: Event {}.{} for unknown irrigation controller {}", event.type, event.subType,
+                    event.deviceId);
+            return false;
         }
+
+        boolean handled = false;
+        RachioDeviceHandler deviceHandler = resolveDeviceHandler(controller, event.deviceId);
+        if (deviceHandler != null) {
+            handled |= deviceHandler.webhookEvent(event);
+        }
+        for (RachioStatusListener listener : bridgeHandler.rachioStatusListeners) {
+            if (listener instanceof RachioScheduleHandler scheduleHandler) {
+                handled |= scheduleHandler.webhookEvent(event);
+            }
+        }
+        if (handled) {
+            return true;
+        }
+        logger.debug(
+                "RachioCloud: Event {}.{} matched irrigation controller {} but was not directly handled; reconciliation remains available",
+                event.type, event.subType, event.deviceId);
         return false;
     }
 

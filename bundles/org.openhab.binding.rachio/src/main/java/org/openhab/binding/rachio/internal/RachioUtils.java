@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DateTimeType;
 
+import com.google.gson.Gson;
+
 /**
  * {@link RachioUtils} provides some helper functions
  *
@@ -29,6 +31,8 @@ import org.openhab.core.library.types.DateTimeType;
  */
 @NonNullByDefault
 public class RachioUtils {
+    private static final Gson GSON = new Gson();
+
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
     }
@@ -36,6 +40,18 @@ public class RachioUtils {
     public static String exceptionMessage(Throwable e) {
         String message = e.getMessage();
         return message != null && !message.isBlank() ? message : e.toString();
+    }
+
+    public static String i18nText(String key, Object... arguments) {
+        if (arguments.length == 0) {
+            return "@text/" + key;
+        }
+
+        String[] serializedArguments = new String[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            serializedArguments[i] = String.valueOf(arguments[i]);
+        }
+        return "@text/" + key + " " + GSON.toJson(serializedArguments);
     }
 
     public static boolean isSameInstance(@Nullable Object first, @Nullable Object second) {

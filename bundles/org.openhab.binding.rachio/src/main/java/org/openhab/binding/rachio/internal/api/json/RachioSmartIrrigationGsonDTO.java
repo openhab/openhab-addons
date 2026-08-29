@@ -348,7 +348,6 @@ public class RachioSmartIrrigationGsonDTO {
 
         private boolean summaryBelongsToIgnoredDatedTopLevelEntry(@Nullable RachioForecastEntry selectedForecast,
                 LocalDate currentDate, ZoneId zoneId) {
-            @Nullable
             RachioForecastEntry topLevelEntry = today;
             if (topLevelEntry == null || Objects.equals(topLevelEntry, selectedForecast) || summary.isBlank()
                     || !summary.equals(topLevelEntry.summary)) {
@@ -360,7 +359,6 @@ public class RachioSmartIrrigationGsonDTO {
 
         private ForecastSelection selectTodayForecast(LocalDate currentDate, ZoneId zoneId) {
             List<ForecastCandidate> candidates = new ArrayList<>();
-            @Nullable
             RachioForecastEntry todayEntry = today;
             if (todayEntry != null) {
                 candidates.add(new ForecastCandidate(todayEntry, "today", true));
@@ -369,9 +367,7 @@ public class RachioSmartIrrigationGsonDTO {
             addForecastCandidates(candidates, forecasts, "forecasts");
             addForecastCandidates(candidates, dailyForecasts, "dailyForecasts");
 
-            @Nullable
             RachioForecastEntry firstUsefulFallback = null;
-            @Nullable
             RachioForecastEntry firstUndatedFallback = null;
             boolean foundParsedDate = false;
 

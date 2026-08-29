@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.math.BigDecimal;
@@ -120,7 +121,8 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             if (bridge == null || cloudHandler == null || dev == null || zone == null) {
                 String errorMessage = buildZoneResolutionError(configuredZoneId);
                 logger.debug("{}: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        buildZoneResolutionStatusDetail(configuredZoneId));
                 return;
             }
 
@@ -228,8 +230,9 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             errorMessage = message != null ? message : e.toString();
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.warn("{}: Zone command failed: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                logger.debug("{}: Zone command failed: {}", thingId, errorMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.zone.command-failed", errorMessage));
             }
         }
     }
@@ -241,6 +244,13 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         }
         return "Unable to resolve Rachio zone for Thing '" + getThing().getUID() + "' using configured zoneId '"
                 + configuredZoneId + "'.";
+    }
+
+    private String buildZoneResolutionStatusDetail(String configuredZoneId) {
+        if (configuredZoneId.isBlank()) {
+            return i18nText("thing-status.rachio.zone.missing-zone-id", getThing().getUID());
+        }
+        return i18nText("thing-status.rachio.zone.not-found", getThing().getUID(), configuredZoneId);
     }
 
     private boolean rebindToCurrentBridgeModel(String reason) {
@@ -393,7 +403,8 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                 postChannelData();
             }
         } catch (RuntimeException e) {
-            logger.debug("{}: Unable to process event", thingId, e);
+            throw new IllegalStateException(
+                    "Unable to process Rachio zone webhook event " + event.type + "." + event.subType, e);
         }
 
         return update;
@@ -519,9 +530,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     }
 
     private void downloadZoneImage(String imageUrl, String zoneName, long generation) {
-        @Nullable
         RawType image = null;
-        @Nullable
         RuntimeException failure = null;
         try {
             image = downloadZoneImage(imageUrl);

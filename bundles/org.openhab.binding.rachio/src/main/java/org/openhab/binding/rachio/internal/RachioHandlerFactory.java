@@ -112,28 +112,24 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        try {
-            ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-            logger.debug("RachioHandlerFactory: Create thing handler for type {}", thingTypeUID.toString());
-            if (SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                return createBridge((Bridge) thing);
-            } else if (SUPPORTED_ZONE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                return createZone(thing);
-            } else if (thingTypeUID.equals(THING_TYPE_SCHEDULE)) {
-                return createSchedule(thing);
-            } else if (thingTypeUID.equals(THING_TYPE_FLEX_SCHEDULE)) {
-                return createFlexSchedule(thing);
-            } else if (thingTypeUID.equals(THING_TYPE_BASE_STATION)) {
-                return createBaseStation(thing);
-            } else if (thingTypeUID.equals(THING_TYPE_VALVE)) {
-                return createValve(thing);
-            } else if (thingTypeUID.equals(THING_TYPE_VALVE_PROGRAM)) {
-                return createValveProgram(thing);
-            } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                return createDevice(thing);
-            }
-        } catch (RuntimeException e) {
-            logger.debug("RachioHandlerFactory: Exception while creating Rachio Thing handler: {}", e.toString());
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        logger.debug("RachioHandlerFactory: Create thing handler for type {}", thingTypeUID);
+        if (SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return createBridge((Bridge) thing);
+        } else if (SUPPORTED_ZONE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return createZone(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_SCHEDULE)) {
+            return createSchedule(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_FLEX_SCHEDULE)) {
+            return createFlexSchedule(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_BASE_STATION)) {
+            return createBaseStation(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_VALVE)) {
+            return createValve(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_VALVE_PROGRAM)) {
+            return createValveProgram(thing);
+        } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return createDevice(thing);
         }
 
         logger.debug("RachioHandlerFactory: Unable to create thing handler");
@@ -147,7 +143,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             bridgeHandler.shutdown();
         }
         if (thingHandler instanceof RachioBridgeHandler bridgeHandler) {
-            bridgeList.remove(bridgeHandler.getThing().getUID().toString());
+            bridgeList.remove(bridgeHandler.getThing().getUID().toString(), bridgeHandler);
         }
         if (thingHandler instanceof AbstractRachioThingHandler rachioThingHandler) {
             rachioThingHandler.shutdown();
@@ -161,23 +157,15 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
      * @param event parsed webhook event
      */
     public boolean webHookEvent(String ipAddress, RachioEventGsonDTO event) {
-        try {
-            logger.debug("RachioCloud: Event for device {} received", getEventDeviceLabel(event));
+        logger.debug("RachioCloud: Event for device {} received", getEventDeviceLabel(event));
 
-            RachioBridgeHandler cloudHandler = getBridgeHandlerForExternalId(event.externalId);
-            if (cloudHandler != null) {
-                return cloudHandler.webHookEvent(event);
-            }
-
-            // invalid externalId, could be an indicator for unauthorized access
-            logger.warn("RachioCloud: Unauthorized webhook event (externalId mismatch, source ip: {})", ipAddress);
-            return false;
-        } catch (RuntimeException e) {
-            logger.debug("RachioCloud: Unable to process event", e);
+        RachioBridgeHandler cloudHandler = getBridgeHandlerForExternalId(event.externalId);
+        if (cloudHandler != null) {
+            return cloudHandler.webHookEvent(event);
         }
 
-        logger.debug("RachioCloud: Unable to route event to bridge, externalIdPresent={}, deviceIdPresent={}",
-                !isBlank(event.externalId), !isBlank(event.deviceId));
+        // Invalid externalId could indicate unauthorized access.
+        logger.debug("RachioCloud: Unauthorized webhook event (externalId mismatch, source ip: {})", ipAddress);
         return false;
     }
 
@@ -200,26 +188,27 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
             return cloudHandler.legacyWebHookEvent(event);
         }
 
-        logger.warn("RachioCloud: Unauthorized legacy webhook event (externalId mismatch, source ip: {})", ipAddress);
+        logger.debug("RachioCloud: Unauthorized legacy webhook event (externalId mismatch, source ip: {})", ipAddress);
         return false;
     }
 
     public boolean isValidWebHookSignature(@Nullable String signature, byte[] requestBody, RachioEventGsonDTO event) {
         if (isBlank(event.externalId)) {
-            logger.warn("RachioCloud: Unable to validate webhook signature because the event externalId is missing");
+            logger.debug("RachioCloud: Unable to validate webhook signature because the event externalId is missing");
             return false;
         }
 
         RachioBridgeHandler cloudHandler = getBridgeHandlerForExternalId(event.externalId);
         if (cloudHandler == null) {
-            logger.warn(
+            logger.debug(
                     "RachioCloud: Unable to validate webhook signature because no bridge matches the event externalId");
             return false;
         }
 
         String apikey = cloudHandler.getApiKey();
         if (apikey.isEmpty()) {
-            logger.warn("RachioCloud: Unable to validate webhook signature because the matching bridge has no API key");
+            logger.debug(
+                    "RachioCloud: Unable to validate webhook signature because the matching bridge has no API key");
             return false;
         }
         return RachioApi.isValidWebHookSignature(signature, requestBody, apikey);
@@ -240,7 +229,7 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (!apiKeyAvailable) {
-            logger.warn("RachioCloud: Unable to validate webhook signature because no API key is configured");
+            logger.debug("RachioCloud: Unable to validate webhook signature because no API key is configured");
         }
         return false;
     }
@@ -268,7 +257,6 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         if (Objects.equals(webhookService, this.webhookService)) {
             return;
         }
-        @Nullable
         WebhookService previousWebhookService = this.webhookService;
         cloudWebhookRegistry.onProviderChanged(previousWebhookService, webhookService);
         this.webhookService = webhookService;
@@ -287,16 +275,11 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
         return webhookService;
     }
 
-    private @Nullable RachioBridgeHandler createBridge(Bridge bridgeThing) {
-        try {
-            ThingUID bridgeUID = bridgeThing.getUID();
-            RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing, httpClient, cloudWebhookRegistry);
-            bridgeList.put(bridgeUID.toString(), cloudHandler);
-            return cloudHandler;
-        } catch (RuntimeException e) {
-            logger.warn("RachioFactory: Unable to create bridge thing: {}: ", e.getMessage());
-        }
-        return null;
+    private RachioBridgeHandler createBridge(Bridge bridgeThing) {
+        ThingUID bridgeUID = bridgeThing.getUID();
+        RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing, httpClient, cloudWebhookRegistry);
+        bridgeList.put(bridgeUID.toString(), cloudHandler);
+        return cloudHandler;
     }
 
     private RachioDeviceHandler createDevice(Thing thing) {

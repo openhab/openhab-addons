@@ -192,7 +192,6 @@ public class RachioHttp {
             throw new RachioApiException(result.resultString, result, e);
         } catch (ExecutionException e) {
             Throwable cause = e;
-            @Nullable
             Throwable executionCause = e.getCause();
             if (executionCause != null) {
                 cause = executionCause;

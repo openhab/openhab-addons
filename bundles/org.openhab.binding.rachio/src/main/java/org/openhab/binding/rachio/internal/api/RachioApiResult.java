@@ -49,7 +49,6 @@ public class RachioApiResult {
     }
 
     public void setRateLimit(@Nullable String rateLimit, @Nullable String rateRemaining, @Nullable String rateReset) {
-        @Nullable
         Integer parsedRateLimit = parseRateLimitHeader(rateLimit, RACHIO_JSON_RATE_LIMIT);
         if (parsedRateLimit != null) {
             this.rateLimit = parsedRateLimit;
@@ -57,7 +56,6 @@ public class RachioApiResult {
             this.rateLimit = 0;
         }
 
-        @Nullable
         Integer parsedRateRemaining = parseRateLimitHeader(rateRemaining, RACHIO_JSON_RATE_REMAINING);
         if (parsedRateRemaining != null) {
             this.rateRemaining = parsedRateRemaining;

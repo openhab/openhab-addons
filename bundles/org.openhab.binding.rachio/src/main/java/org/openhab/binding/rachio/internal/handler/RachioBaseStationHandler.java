@@ -13,7 +13,9 @@
 package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,7 +63,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
 
         if (baseStationId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing Rachio baseStationId. Add the BaseStation via Inbox discovery or configure the Rachio BaseStation UUID manually.");
+                    i18nText("thing-status.rachio.base-station.missing-base-station-id"));
             return;
         }
         if (!initializeCloudHandler()) {
@@ -107,7 +109,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
             RachioBaseStation currentBaseStation = loadedBaseStation;
             if (currentBaseStation.id.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configured Rachio baseStationId was not found in the account.");
+                        i18nText("thing-status.rachio.base-station.not-found"));
                 return false;
             }
             thingId = currentBaseStation.getThingName();
@@ -144,19 +146,20 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
             }
             return false;
         } catch (RachioApiException e) {
-            String message = "Unable to load Rachio BaseStation '" + baseStationId + "': " + e.getMessage();
-            logger.debug("{}: {}", thingId, message);
+            String reason = exceptionMessage(e);
+            logger.debug("{}: Unable to load Rachio BaseStation '{}': {}", thingId, baseStationId, reason);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.base-station.load-failed", baseStationId, reason));
             }
             return false;
         } catch (RuntimeException e) {
-            String message = "Unable to initialize Rachio BaseStation '" + baseStationId + "': " + e.getMessage();
-            logger.debug("{}: {}", thingId, message, e);
+            String reason = exceptionMessage(e);
+            logger.debug("{}: Unable to initialize Rachio BaseStation '{}': {}", thingId, baseStationId, reason, e);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
                 updateStatus(ThingStatus.OFFLINE,
                         initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
-                        message);
+                        i18nText("thing-status.rachio.base-station.initialization-failed", baseStationId, reason));
             }
             return false;
         }

@@ -75,7 +75,6 @@ public final class RachioCloudWebhookRegistry {
         boolean startRequest = false;
         WebhookService webhookService;
         synchronized (this) {
-            @Nullable
             WebhookService currentProvider = currentProvider();
             if (currentProvider == null) {
                 throw new CloudWebhookException(WEBHOOK_SERVICE_UNAVAILABLE);
@@ -212,16 +211,12 @@ public final class RachioCloudWebhookRegistry {
     }
 
     public void onProviderChanged(@Nullable WebhookService previousProvider, @Nullable WebhookService newProvider) {
-        @Nullable
         RemovalOperation removal = null;
-        @Nullable
         CompletableFuture<Webhook> abandonedRequest;
-        @Nullable
         WebhookService abandonedRequestProvider;
         synchronized (this) {
             providerManaged = true;
             managedProvider = newProvider;
-            @Nullable
             WebhookService registeredProvider = cachedWebhookProvider;
             if (registeredProvider == null) {
                 registeredProvider = previousProvider;
@@ -324,7 +319,6 @@ public final class RachioCloudWebhookRegistry {
     private Throwable unwrapCompletionException(Throwable error) {
         Throwable cause = error;
         while (cause instanceof ExecutionException || cause instanceof CompletionException) {
-            @Nullable
             Throwable nestedCause = cause.getCause();
             if (nestedCause == null) {
                 break;

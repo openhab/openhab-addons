@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rachio.internal.handler;
 
+import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.util.Map;
@@ -46,7 +47,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractRachioThingHandler extends BaseThingHandler implements RachioStatusListener {
     private static final long[] LOCAL_THROTTLE_RETRY_DELAYS_SECONDS = { 15, 30, 60, 120 };
     private static final long MAX_INITIALIZATION_THROTTLE_RETRY_DELAY_SECONDS = 30;
-    private static final String INITIALIZATION_THROTTLE_STATUS_MESSAGE = "Waiting for local Rachio API bootstrap budget; initialization will retry automatically.";
+    private static final String INITIALIZATION_THROTTLE_STATUS_MESSAGE = i18nText(
+            "thing-status.rachio.thing.initialization-throttle");
     private final Logger logger = LoggerFactory.getLogger(AbstractRachioThingHandler.class);
     private final Object lifecycleLock = new Object();
 
@@ -72,9 +74,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
 
     protected long beginHandlerInitialization() {
         cancelLocalThrottleRetry();
-        @Nullable
         Future<?> previousJob;
-        @Nullable
         Thread taskThread;
         long generation;
         synchronized (lifecycleLock) {
@@ -245,8 +245,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
                 }
             }, delaySeconds, TimeUnit.SECONDS);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Local Rachio API throttle hit while " + operation + "; retry scheduled in " + delaySeconds
-                            + " seconds.");
+                    i18nText("thing-status.rachio.thing.local-throttle", operation, delaySeconds));
             return delaySeconds;
         }
     }
@@ -353,9 +352,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     }
 
     private void cancelHandlerLifecycleTasks(boolean disposed) {
-        @Nullable
         Future<?> job;
-        @Nullable
         Thread taskThread;
         synchronized (lifecycleLock) {
             lifecycleDisposed = disposed;

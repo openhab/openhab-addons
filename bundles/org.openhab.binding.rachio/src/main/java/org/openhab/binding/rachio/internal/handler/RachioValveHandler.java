@@ -15,6 +15,7 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Instant;
@@ -84,7 +85,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
 
         if (valveId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing Rachio valveId. Add the Valve via Inbox discovery or configure the Rachio Valve UUID manually.");
+                    i18nText("thing-status.rachio.valve.missing-valve-id"));
             return;
         }
         if (!initializeCloudHandler()) {
@@ -181,7 +182,8 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("{}: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.valve.command-failed", errorMessage));
             }
         }
     }
@@ -222,7 +224,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             RachioValve currentValve = loadedValve;
             if (currentValve.id.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configured Rachio valveId was not found in the account.");
+                        i18nText("thing-status.rachio.valve.not-found"));
                 return false;
             }
             thingId = currentValve.getThingName();
@@ -269,20 +271,19 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
             return false;
         } catch (RachioApiException e) {
             String reason = exceptionMessage(e);
-            String message = "Unable to load Rachio Valve '" + valveId + "': " + reason;
             logger.debug("{}: Unable to load Rachio Valve '{}': {}", thingId, valveId, reason);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.valve.load-failed", valveId, reason));
             }
             return false;
         } catch (RuntimeException e) {
             String reason = exceptionMessage(e);
-            String message = "Unable to initialize Rachio Valve '" + valveId + "': " + reason;
             logger.debug("{}: Unable to initialize Rachio Valve '{}': {}", thingId, valveId, reason, e);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
                 updateStatus(ThingStatus.OFFLINE,
                         initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
-                        message);
+                        i18nText("thing-status.rachio.valve.initialization-failed", valveId, reason));
             }
             return false;
         }

@@ -110,7 +110,7 @@ public class RachioConfiguration {
 
         effectiveConfig.updateConfig(cloudThingConfig);
         if (cloudThingConfig != null) {
-            for (Map.Entry<String, @Nullable Object> entry : cloudThingConfig.entrySet()) {
+            for (var entry : cloudThingConfig.entrySet()) {
                 if (entry.getValue() == null) {
                     continue;
                 }
@@ -128,7 +128,7 @@ public class RachioConfiguration {
         if (config == null) {
             return;
         }
-        for (Map.Entry<String, @Nullable Object> ce : config.entrySet()) {
+        for (var ce : config.entrySet()) {
             String key = ce.getKey();
             if ("component.name".equalsIgnoreCase(key) || "component.id".equalsIgnoreCase(key)) {
                 continue;

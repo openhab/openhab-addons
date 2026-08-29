@@ -182,14 +182,13 @@ public class RachioWebhookServlet extends HttpServlet {
 
         byte[] rawBody = request.getInputStream().readNBytes(MAX_WEBHOOK_PAYLOAD_BYTES + 1);
         if (rawBody.length > MAX_WEBHOOK_PAYLOAD_BYTES) {
-            logger.warn("RachioWebhook: Rejecting webhook request from {} because payload size exceeds limit {} bytes",
+            logger.debug("RachioWebhook: Rejecting webhook request from {} because payload size exceeds limit {} bytes",
                     ipAddress, MAX_WEBHOOK_PAYLOAD_BYTES);
             resp.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
             return;
         }
         String data = new String(rawBody, StandardCharsets.UTF_8);
         RachioEventGsonDTO event = null;
-        @Nullable
         EventClaim eventClaim = null;
         try {
             logger.trace("RachioWebhook: Received {} byte webhook payload", rawBody.length);
@@ -214,8 +213,8 @@ public class RachioWebhookServlet extends HttpServlet {
             }
 
             if (signature == null || signature.isBlank()) {
-                logger.warn("RachioWebhook: Payload classification summary: {}", describeLegacyClassification(event));
-                logger.warn(
+                logger.trace("RachioWebhook: Payload classification summary: {}", describeLegacyClassification(event));
+                logger.debug(
                         "RachioWebhook: Rejecting webhook request from {} because the x-signature header is missing",
                         ipAddress);
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -223,7 +222,7 @@ public class RachioWebhookServlet extends HttpServlet {
             }
 
             if (!rachioHandlerFactory.isValidWebHookSignature(signature, rawBody, event)) {
-                logger.warn("RachioWebhook: Rejecting webhook request from {} because signature validation failed",
+                logger.debug("RachioWebhook: Rejecting webhook request from {} because signature validation failed",
                         ipAddress);
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
@@ -247,14 +246,15 @@ public class RachioWebhookServlet extends HttpServlet {
             if (!rachioHandlerFactory.webHookEvent(ipAddress, event)) {
                 releaseEventClaim(eventClaim, event);
                 eventClaim = null;
-                logger.debug(
-                        "RachioWebhook: Unable to route validated webhook event; acknowledging without processing ({})",
+                logger.debug("RachioWebhook: Unable to route validated webhook event; returning 503 for retry ({})",
                         describeEvent(event));
+                resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+                return;
             }
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write("");
         } catch (JsonSyntaxException e) {
-            logger.warn("RachioWebhook: Rejecting webhook request from {} because JSON parsing failed: {}", ipAddress,
+            logger.debug("RachioWebhook: Rejecting webhook request from {} because JSON parsing failed: {}", ipAddress,
                     e.getMessage());
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
         } catch (RuntimeException e) {
@@ -264,15 +264,12 @@ public class RachioWebhookServlet extends HttpServlet {
                 if (failedClaim != null) {
                     releaseEventClaim(failedClaim, failedEvent);
                 }
-                logger.debug(
-                        "RachioWebhook: Exception processing validated webhook event; acknowledging to prevent upstream retries ({}): {}",
-                        describeEvent(failedEvent), e.getMessage(), e);
+                logger.warn("RachioWebhook: Exception processing webhook event; returning 500 for retry ({})",
+                        describeEvent(failedEvent), e);
             } else {
-                logger.debug(
-                        "RachioWebhook: Exception processing validated webhook callback; acknowledging to prevent upstream retries: {}",
-                        e.getMessage(), e);
+                logger.warn("RachioWebhook: Exception processing webhook callback; returning 500 for retry", e);
             }
-            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -384,7 +381,6 @@ public class RachioWebhookServlet extends HttpServlet {
             logger.trace("RachioWebhook: Validated webhook event has no eventId; duplicate detection skipped ({})",
                     describeEvent(event));
         }
-        @Nullable
         EventClaim claim = duplicateEventCache.claim(event.eventId);
         if (claim == null) {
             logger.debug("RachioWebhook: Skipping duplicate processed webhook event ({})", describeEvent(event));

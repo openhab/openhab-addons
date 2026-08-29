@@ -564,7 +564,6 @@ public class RachioDevice extends RachioCloudDevice {
     }
 
     private ZoneId getForecastZoneId() {
-        @Nullable
         ZoneOffset offset = getUtcOffsetZone();
         return offset != null ? offset : ZoneId.systemDefault();
     }

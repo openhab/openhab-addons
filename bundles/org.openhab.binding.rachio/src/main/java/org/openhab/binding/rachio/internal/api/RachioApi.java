@@ -49,7 +49,6 @@ import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWe
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebhookEventTypesResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioCloudPersonId;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioCloudStatus;
-import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioProperty;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioPropertyEntityLookupResponse;
@@ -539,7 +538,7 @@ public class RachioApi {
             return value;
         }
 
-        for (Map.Entry<String, @Nullable Object> entry : configuration.entrySet()) {
+        for (var entry : configuration.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(parameterName)) {
                 return entry.getValue();
             }
@@ -1562,7 +1561,7 @@ public class RachioApi {
                     + "'. Unsupported event types: " + unsupportedEventTypes);
         }
 
-        logger.warn("Ignoring unsupported webhook event types for target '{}': {}", target.describe(),
+        logger.debug("Ignoring unsupported webhook event types for target '{}': {}", target.describe(),
                 unsupportedEventTypes);
         return filteredTarget;
     }
@@ -1575,9 +1574,7 @@ public class RachioApi {
         List<RachioApiWebHookEntry> webhooks = parseWebHookList(json);
         logger.debug("Registered webhook count for target '{}': {}", target.describe(), webhooks.size());
         for (RachioApiWebHookEntry whe : webhooks) {
-            @Nullable
             RachioApiWebHookResourceId resourceId = whe.resourceId;
-            @Nullable
             String externalId = whe.externalId;
             logger.debug("WebHook: id='{}', callbackUrl={}, externalIdPresent={}, resourceId='{}'", whe.id,
                     callbackUrlLogReference(whe.url), externalId != null && !externalId.isBlank(),
@@ -1661,7 +1658,6 @@ public class RachioApi {
             eventTypes = entry.get("event_types");
         }
         if (eventTypes != null && eventTypes.isJsonArray()) {
-            @Nullable
             List<String> webhookEventTypes = webhook.eventTypes;
             for (JsonElement eventType : eventTypes.getAsJsonArray()) {
                 String normalizedEventType = parseWebHookEventType(eventType);
@@ -1735,7 +1731,6 @@ public class RachioApi {
         String json = httpGet(APIURL_BASE + APIURL_GET_PERSONID + "/" + personId, null, priority,
                 requestPurpose).resultString;
 
-        @Nullable
         RachioCloudStatus parsedCloudStatus = GSON.fromJson(json, RachioCloudStatus.class);
         if (parsedCloudStatus == null) {
             throw new RachioApiException("Rachio cloud API returned an empty account response");
@@ -1745,28 +1740,23 @@ public class RachioApi {
         fullName = getString(cloudStatus.fullName);
         email = getString(cloudStatus.email);
 
-        List<@Nullable RachioCloudDevice> cloudDevices = List.of();
-        @Nullable
-        List<@Nullable RachioCloudDevice> parsedDevices = cloudStatus.devices;
-        if (parsedDevices != null) {
-            cloudDevices = new ArrayList<>(parsedDevices);
-        }
         Map<String, RachioDevice> initializedDevices = new HashMap<>();
-        for (int i = 0; i < cloudDevices.size(); i++) {
-            @Nullable
-            RachioCloudDevice device = cloudDevices.get(i);
-            if (device == null) {
-                throw new RachioApiException("Invalid null Rachio device entry returned by the cloud API");
-            }
-            try {
-                if (!device.deleted) {
-                    RachioDevice initializedDevice = new RachioDevice(device);
-                    initializedDevices.put(initializedDevice.id, initializedDevice);
-                    logger.trace("Device '{}' initialized, {} zones.", initializedDevice.name,
-                            initializedDevice.getZones().size());
+        var cloudDevices = cloudStatus.devices;
+        if (cloudDevices != null) {
+            for (var device : new ArrayList<>(cloudDevices)) {
+                if (device == null) {
+                    throw new RachioApiException("Invalid null Rachio device entry returned by the cloud API");
                 }
-            } catch (IllegalArgumentException e) {
-                throw new RachioApiException("Invalid Rachio device data returned by the cloud API", e);
+                try {
+                    if (!device.deleted) {
+                        RachioDevice initializedDevice = new RachioDevice(device);
+                        initializedDevices.put(initializedDevice.id, initializedDevice);
+                        logger.trace("Device '{}' initialized, {} zones.", initializedDevice.name,
+                                initializedDevice.getZones().size());
+                    }
+                } catch (IllegalArgumentException e) {
+                    throw new RachioApiException("Invalid Rachio device data returned by the cloud API", e);
+                }
             }
         }
         replaceDevices(initializedDevices);

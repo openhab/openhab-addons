@@ -15,6 +15,7 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Instant;
@@ -81,7 +82,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
 
         if (programId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing Rachio programId. Add the Program via Inbox discovery or configure the Rachio Program UUID manually.");
+                    i18nText("thing-status.rachio.valve-program.missing-program-id"));
             return;
         }
         if (!initializeCloudHandler()) {
@@ -135,7 +136,8 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("{}: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.valve-program.command-failed", errorMessage));
             }
         }
     }
@@ -164,7 +166,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
             RachioValveProgram currentProgram = loadedProgram;
             if (currentProgram.id.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configured Rachio programId was not found in the account.");
+                        i18nText("thing-status.rachio.valve-program.not-found"));
                 return false;
             }
             thingId = currentProgram.getThingName();
@@ -212,20 +214,19 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
             return false;
         } catch (RachioApiException e) {
             String reason = exceptionMessage(e);
-            String message = "Unable to load Rachio Valve Program '" + programId + "': " + reason;
             logger.debug("{}: Unable to load Rachio Valve Program '{}': {}", thingId, programId, reason);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.valve-program.load-failed", programId, reason));
             }
             return false;
         } catch (RuntimeException e) {
             String reason = exceptionMessage(e);
-            String message = "Unable to initialize Rachio Valve Program '" + programId + "': " + reason;
             logger.debug("{}: Unable to initialize Rachio Valve Program '{}': {}", thingId, programId, reason, e);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
                 updateStatus(ThingStatus.OFFLINE,
                         initialLoad ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.COMMUNICATION_ERROR,
-                        message);
+                        i18nText("thing-status.rachio.valve-program.initialization-failed", programId, reason));
             }
             return false;
         }

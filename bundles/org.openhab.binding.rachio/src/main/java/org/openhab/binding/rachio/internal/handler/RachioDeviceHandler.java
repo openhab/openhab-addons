@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
+import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Duration;
@@ -106,7 +107,8 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         String configuredDeviceId = getThingConfigurationString(PROPERTY_DEV_ID);
         try {
             if (!initializeCloudHandler()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Rachio bridge is not initialized");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        i18nText("thing-status.rachio.device.bridge-not-initialized"));
                 return;
             }
 
@@ -114,8 +116,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             RachioDevice d = resolveDevice(handler, configuredDeviceId);
             if (d == null || handler == null) {
                 String errorMessage = buildDeviceResolutionError(configuredDeviceId);
-                logger.warn("{}: ERROR: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
+                logger.debug("{}: {}", thingId, errorMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        buildDeviceResolutionStatusDetail(configuredDeviceId));
                 return;
             }
 
@@ -130,9 +133,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         } catch (RuntimeException e) {
             String message = e.getMessage();
             String errorMessage = message != null ? message : e.getClass().getSimpleName();
-            logger.warn("{}: ERROR: {}", thingId, errorMessage);
+            logger.warn("{}: Unexpected error while initializing Rachio controller", thingId, e);
             if (isHandlerLifecycleCurrent(generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.device.initialization-failed", errorMessage));
             }
         }
     }
@@ -165,6 +169,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             publishInitializationError(generation, handler, d, e.toString());
         } catch (RuntimeException e) {
             String message = e.getMessage();
+            logger.warn("{}: Unexpected error while completing Rachio controller initialization", thingId, e);
             publishInitializationError(generation, handler, d,
                     message != null ? message : e.getClass().getSimpleName());
         }
@@ -172,9 +177,10 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
 
     private void publishInitializationError(long generation, RachioBridgeHandler handler, RachioDevice d,
             String errorMessage) {
-        logger.warn("{}: ERROR: {}", thingId, errorMessage);
+        logger.debug("{}: Rachio controller initialization failed: {}", thingId, errorMessage);
         if (isCurrentDeviceContext(generation, handler, d)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nText("thing-status.rachio.device.initialization-failed", errorMessage));
         }
     }
 
@@ -245,6 +251,13 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             return "Missing Rachio deviceId. Add the controller via Inbox discovery or configure the Rachio API controller UUID manually.";
         }
         return "Configured Rachio deviceId was not found in the account: '" + configuredDeviceId + "'.";
+    }
+
+    private String buildDeviceResolutionStatusDetail(String configuredDeviceId) {
+        if (configuredDeviceId.isBlank()) {
+            return i18nText("thing-status.rachio.device.missing-device-id");
+        }
+        return i18nText("thing-status.rachio.device.not-found", configuredDeviceId);
     }
 
     @Override
@@ -344,8 +357,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             errorMessage = message != null ? message : "";
         } finally {
             if (!errorMessage.isEmpty()) {
-                logger.debug("ERROR: {}", errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                logger.debug("{}: Rachio controller command failed: {}", thingId, errorMessage);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nText("thing-status.rachio.device.command-failed", errorMessage));
             }
         }
     }
@@ -596,9 +610,8 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
         if (optionalEnrichmentRetrySoon) {
             lastOptionalEnrichmentRetryMillis = now;
-            logger.debug(
-                    "{}: Optional enrichments need a short retry independently from core controller and current schedule polling; retry is allowed after {} ms",
-                    thingId, OPTIONAL_ENRICHMENT_RETRY_AFTER_THROTTLE_MS);
+            logger.debug("{}: Optional enrichments are rate limited; next refresh may retry after {} ms", thingId,
+                    OPTIONAL_ENRICHMENT_RETRY_AFTER_THROTTLE_MS);
         } else if (optionalEnrichmentLoaded) {
             lastOptionalEnrichmentRetryMillis = 0;
         }
@@ -845,9 +858,8 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                     d.id, event.summary);
             return false;
         } catch (RuntimeException e) {
-            logger.debug("{}: Unable to process event {}.{} - {}", thingId, event.type, event.subType, event.summary,
-                    e);
-            return false;
+            throw new IllegalStateException(
+                    "Unable to process Rachio controller webhook event " + event.type + "." + event.subType, e);
         }
     }
 
@@ -1149,8 +1161,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             if (requestPurpose == RequestPurpose.USER_COMMAND) {
                 throw e;
             }
-            logger.warn("Unable to register webhook for controller '{}'; polling fallback remains active, cause={}",
-                    device.id, e.getClass().getSimpleName());
+            logger.warn(
+                    "Unexpected error while registering webhook for controller '{}'; polling fallback remains active",
+                    device.id, e);
         }
     }
 
@@ -1243,9 +1256,7 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             return;
         }
 
-        @Nullable
         WebhookRegistrationRetryIntent retryIntent;
-        @Nullable
         String retryDeviceId;
         synchronized (this) {
             if (!webhookRegistrationPending || webhookRegistrationInProgress) {
@@ -1292,8 +1303,9 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                     device.id, e.getClass().getSimpleName());
         } catch (RuntimeException e) {
             clearPendingWebhookRegistration();
-            logger.warn("Unable to register webhook for controller '{}'; polling fallback remains active, cause={}",
-                    device.id, e.getClass().getSimpleName());
+            logger.warn(
+                    "Unexpected error while retrying webhook registration for controller '{}'; polling fallback remains active",
+                    device.id, e);
         }
     }
 

@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal.handler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_DEVICE_ZONE_RUN_STARTED;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_PROGRAM_RAIN_SKIP_CREATED;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_VALVE_RUN_START;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
@@ -98,6 +100,22 @@ class RachioWebhookDispatcherTest {
 
         assertThat(dispatcher.dispatch(event), is(false));
         assertThat(irrigationHandler.handled, is(false));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    void irrigationProcessingFailurePropagatesToHttpBoundary() {
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        Mockito.when(bridgeHandler.findIrrigationController("device-id"))
+                .thenThrow(new IllegalStateException("processing failed"));
+        RachioWebhookDispatcher dispatcher = new RachioWebhookDispatcher(
+                List.of(new RachioIrrigationWebhookEventHandler(bridgeHandler)));
+        RachioEventGsonDTO event = new RachioEventGsonDTO();
+        event.resourceType = "IRRIGATION_CONTROLLER";
+        event.deviceId = "device-id";
+        event.eventType = EVENT_DEVICE_ZONE_RUN_STARTED;
+
+        assertThrows(IllegalStateException.class, () -> dispatcher.dispatch(event));
     }
 
     private static class RecordingHandler implements RachioWebhookEventHandler {
