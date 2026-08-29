@@ -135,6 +135,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
+
         }
         return true;
     }

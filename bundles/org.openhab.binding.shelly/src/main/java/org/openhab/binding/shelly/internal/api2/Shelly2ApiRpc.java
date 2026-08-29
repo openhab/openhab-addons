@@ -206,11 +206,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
 
-        if (dc.led != null) {
-            profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
-            profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
-        }
-
         profile.initialized = true;
 
         try {

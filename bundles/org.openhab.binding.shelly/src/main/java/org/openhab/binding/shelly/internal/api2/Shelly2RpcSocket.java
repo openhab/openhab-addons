@@ -324,17 +324,16 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Process Inbound WebSocket message
      *
      * @param session WebSocket session
-     * @param eventMessage Textual API message
+     * @param receivedMessage Textual API message
      */
     @OnWebSocketMessage
-    public void onMessage(Session session, String eventMessage) {
+    public void onMessage(Session session, String receivedMessage) {
         Shelly2RpctInterface handler;
         synchronized (this) {
             handler = websocketHandler;
         }
         try {
-            Shelly2RpcBaseMessage message = fromJson(gson, eventMessage, Shelly2RpcBaseMessage.class);
-            String receivedMessage = eventMessage;
+            Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
             if (logger.isTraceEnabled()) {
                 logger.trace("{}: Inbound RPC message: {}", thingName, receivedMessage);
             }
@@ -392,7 +391,6 @@ public class Shelly2RpcSocket implements WriteCallback {
                                 } else if (SHELLY2_EVENT_BLE_SCAN_RESULT.equals(e.event)) {
                                     logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, e.event);
                                 } else {
-                                    // non-BLU event: always use the hub's handler, never the BLU one
                                     hasRegularEvent = true;
                                 }
                             }
@@ -411,7 +409,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                 }
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), eventMessage);
+            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
         }
     }
 
