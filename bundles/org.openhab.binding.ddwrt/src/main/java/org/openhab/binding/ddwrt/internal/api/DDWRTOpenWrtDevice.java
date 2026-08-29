@@ -70,7 +70,7 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected String getLanInterface() {
+    protected String getLanInterface(SshRunner runner) {
         return "br-lan";
     }
 
