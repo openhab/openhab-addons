@@ -54,6 +54,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * Parts of this code are inspired by the TuyAPI project (see notice file)
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Address sub-devices by node id (cid)
  */
 @NonNullByDefault
 public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
@@ -96,16 +97,23 @@ public class TuyaEncoder extends MessageToByteEncoder<MessageWrapper<?>> {
                 payload.put("protocol", 5);
                 payload.put("t", System.currentTimeMillis() / 1000);
                 Map<String, Object> data = new HashMap<>();
-                data.put("cid", deviceId);
+                data.put("cid", Objects.requireNonNullElse(msg.cid, deviceId));
                 data.put("ctype", 0);
                 if (content != null) {
                     data.putAll(content);
                 }
                 payload.put("data", data);
             } else {
-                payload.put("devId", deviceId);
-                payload.put("gwId", deviceId);
-                payload.put("uid", deviceId);
+                String cid = msg.cid;
+                if (cid != null) {
+                    // Sub-devices are addressed by their node id only. Gateways reject messages that also
+                    // carry the device identification of the gateway itself.
+                    payload.put("cid", cid);
+                } else {
+                    payload.put("devId", deviceId);
+                    payload.put("gwId", deviceId);
+                    payload.put("uid", deviceId);
+                }
                 payload.put("t", System.currentTimeMillis() / 1000);
                 if (content != null) {
                     payload.putAll(content);

@@ -58,6 +58,80 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Tuya gateway -->
+	<bridge-type id="tuyaGateway" extensible="color,switch,dimmer,number,string,ir-code">
+		<label>Tuya Gateway</label>
+		<description>A Tuya device that relays for sub-devices, e.g. a Bluetooth or ZigBee gateway.</description>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+			</parameter>
+			<parameter name="localKey" type="text" required="true">
+				<label>Device Local Key</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="productId" type="text" required="true">
+				<label>Product ID</label>
+			</parameter>
+			<parameter name="ip" type="text">
+				<label>IP Address</label>
+				<description>Auto-detected if device is on same subnet or broadcast forwarding configured.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>TCP port used by the device. Change only if the device is reachable through a NAT/port mapping.</description>
+				<default>6668</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="protocol" type="text">
+				<label>Protocol Version</label>
+				<options>
+					<option value="3.1">3.1</option>
+					<option value="3.3">3.3</option>
+					<option value="3.4">3.4</option>
+					<option value="3.5">3.5</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="0" unit="s">
+				<label>Polling Interval</label>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Tuya sub-device -->
+	<thing-type id="tuyaSubDevice" extensible="color,switch,dimmer,number,string,ir-code">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tuyaGateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Tuya Sub-Device</label>
+		<description>A Tuya device that is reached through a gateway. Can be extended with channels.</description>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+			</parameter>
+			<parameter name="productId" type="text" required="true">
+				<label>Product ID</label>
+			</parameter>
+			<parameter name="subDeviceId" type="text" required="true">
+				<label>Sub-Device ID</label>
+				<description>Node ID identifying the device towards its gateway.</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="0" unit="s">
+				<label>Polling Interval</label>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<!-- Generic Tuya device -->
 	<thing-type id="tuyaDevice" extensible="color,switch,dimmer,number,string,ir-code">
 		<label>Generic Tuya Device</label>
