@@ -161,7 +161,7 @@ public class ShellyDevices {
 
     // Shelly Gen3 Bulb Series
     public static final String SHELLYDT_DUOBULBG3 = "S3BL-D010009AEU"; // Shelly Duo Bulb E27 Gen3
-    public static final String SHELLYDT_COLORBLBG3 = "S3BL-C010007AEU"; // Shelly Multicolor Bulb E27 Gen3
+    public static final String SHELLYDT_COLORBULBG3 = "S3BL-C010007AEU"; // Shelly Multicolor Bulb E27 Gen3
 
     // Shelly BLU Series
     public static final String SHELLYDT_BLUCLASS_BUTTON = "SBBT";
@@ -526,8 +526,8 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
 
             // Gen3 Bulb Series
-            Map.entry(SHELLYDT_DUOBULBG3, THING_TYPE_SHELLYPLUSDUOBULB),
-            Map.entry(SHELLYDT_COLORBLBG3, THING_TYPE_SHELLYPLUSCOLORBULB),
+            Map.entry(SHELLYDT_DUOBULBG3, THING_TYPE_SHELLYPLUSDUOBULB), //
+            Map.entry(SHELLYDT_COLORBULBG3, THING_TYPE_SHELLYPLUSCOLORBULB), //
 
             // BLU Series
             Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON1),

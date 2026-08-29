@@ -701,25 +701,25 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Integer ct; // color temperature in Kelvin (CCT component)
         }
 
-        // Devices with combined RGB + CCT support - component "rgbcct:0"
-        // mode="cct": ct field valid; mode="rgb": rgb array valid
-        public static class Shelly2RGBCCTStatus {
-            public @Nullable Integer id;
-            public @Nullable String source;
-            public @Nullable String mode; // "cct" or "rgb"
-            public @Nullable Boolean output;
-            public @Nullable Double brightness;
-            public @Nullable Integer[] rgb; // [R, G, B] 0-255, valid when mode="rgb"
-            public @Nullable Integer ct; // color temperature K, valid when mode="cct"
-            public @Nullable Shelly2Energy aenergy;
-            public @Nullable Double apower;
-            @SerializedName("timer_started_at")
-            public @Nullable Double timerStartedAt;
-            @SerializedName("timer_duration")
-            public @Nullable Double timerDuration;
-        }
-
         public static class Shelly2DeviceStatusResult {
+            // Devices with combined RGB + CCT support - component "rgbcct:0"
+            // mode="cct": ct field valid; mode="rgb": rgb array valid
+            public static class Shelly2RGBCCTStatus {
+                public @Nullable Integer id;
+                public @Nullable String source;
+                public @Nullable String mode; // "cct" or "rgb"
+                public @Nullable Boolean output;
+                public @Nullable Double brightness;
+                public @Nullable Integer[] rgb; // [R, G, B] 0-255, valid when mode="rgb"
+                public @Nullable Integer ct; // color temperature K, valid when mode="cct"
+                public @Nullable Shelly2Energy aenergy;
+                public @Nullable Double apower;
+                @SerializedName("timer_started_at")
+                public @Nullable Double timerStartedAt;
+                @SerializedName("timer_duration")
+                public @Nullable Double timerDuration;
+            }
+
             public class Shelly2DeviceStatusBle {
 
             }
@@ -1206,7 +1206,7 @@ public class Shelly2ApiJsonDTO {
             public Integer toggleAfter;
             public Integer white;
             public Integer[] rgb;
-            public @Nullable String mode; // for RGBCCT mode switching: "rgb" or "cct"
+            public String mode; // for RGBCCT mode switching: "rgb" or "cct"
 
             // Shelly.SetAuth
             public String user;

@@ -20,10 +20,9 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2RGBCCTStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 
 import com.google.gson.Gson;
 
@@ -106,8 +105,7 @@ public class Shelly2DuoBulbDtoTest {
         String json = """
                 {"cct:0":{"id":0,"output":true,"brightness":80.0,"ct":3500}}
                 """;
-        Shelly2DeviceStatus.Shelly2DeviceStatusResult result = Objects
-                .requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
+        Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
         Shelly2DeviceStatusLight cct = result.cct0;
         assertThat(cct, is(notNullValue()));
         if (cct != null) {

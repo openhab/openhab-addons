@@ -116,6 +116,10 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shelly1lg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS1L),
                 Arguments.of("shelly2lg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS2L),
                 Arguments.of("shellyplusrgbwpm-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSRGBWPM), //
+                Arguments.of("shellyduobulbg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDUOBULB), //
+                Arguments.of("shellyplusduobulb-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDUOBULB), //
+                Arguments.of("shellycolorblbg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSCOLORBULB), //
+                Arguments.of("shellypluscolorbulb-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSCOLORBULB), //
                 Arguments.of("shellyprorgbwwpm-" + DEVICE_ID, "", THING_TYPE_SHELLYPRORGBWWPM), //
 
                 // Shelly Pro
@@ -232,6 +236,8 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSEM, "", THING_TYPE_SHELLYPLUSEM), //
                 Arguments.of(SHELLYDT_PLUS3EM63, "", THING_TYPE_SHELLYPLUS3EM63), //
                 Arguments.of(SHELLYDT_PLUSRGBWPM, "", THING_TYPE_SHELLYPLUSRGBWPM), //
+                Arguments.of(SHELLYDT_DUOBULBG3, "", THING_TYPE_SHELLYPLUSDUOBULB), //
+                Arguments.of(SHELLYDT_COLORBULBG3, "", THING_TYPE_SHELLYPLUSCOLORBULB), //
                 Arguments.of(SHELLYDT_PRORGBWWPM, "", THING_TYPE_SHELLYPRORGBWWPM), //
                 Arguments.of(SHELLYDT_PLUSBLUGW, "", THING_TYPE_SHELLYPLUSBLUGW), //
 
