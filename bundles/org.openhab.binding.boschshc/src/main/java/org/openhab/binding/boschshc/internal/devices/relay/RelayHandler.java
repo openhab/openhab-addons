@@ -23,8 +23,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import javax.inject.Provider;
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
 
@@ -105,7 +105,7 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
      * It is exchanged in unit tests in order to be able to assert that a certain
      * date is contained in the result.
      */
-    private Provider<Instant> currentDateTimeProvider = Instant::now;
+    private Supplier<Instant> currentDateTimeProvider = Instant::now;
 
     @Nullable
     private ImpulseSwitchServiceState currentImpulseSwitchServiceState;
@@ -312,7 +312,7 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
         return null;
     }
 
-    void setCurrentDateTimeProvider(Provider<Instant> currentDateTimeProvider) {
+    void setCurrentDateTimeProvider(Supplier<Instant> currentDateTimeProvider) {
         this.currentDateTimeProvider = currentDateTimeProvider;
     }
 }
