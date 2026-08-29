@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,17 +50,16 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * Tests for {@link Shelly2ApiRpc} handling of the documented "lora" notify-event (RX datagram received), whose
- * payload is nested under the "info" object rather than the generic "data" member.
+ * Tests for {@link Shelly2ApiRpc} handling of the "lora" and "user_rx" notify-events (RX datagram received),
+ * whose payload is nested under the "info" object rather than the generic "data" member.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class Shelly2LoraNotifyEventTest {
 
-    // API-docs example payload: base64("0123456789")
     private static final String API_DOCS_EVENT_JSON = """
-            {"src":"shellypro1-test","params":{"ts":1.0,"events":[{"id":0,"component":"lora:0","event":"lora",
+            {"src":"shellypro1-test","params":{"ts":1.0,"events":[{"id":100,"component":"lora:100","event":"lora",
             "info":{"data":"MDEyMzQ1Njc4OQ==","rssi":-97,"snr":8,"tsu":123456}}]}}
             """;
 
@@ -77,11 +77,41 @@ public class Shelly2LoraNotifyEventTest {
     }
 
     @Test
+    void userRxEventUpdatesRxChannelsLikeLoraEvent() throws ShellyApiException {
+        Fixture f = build();
+        f.rpc.onNotifyEvent(
+                """
+                        {"src":"shellypro1-test","params":{"ts":1.0,"events":[{"id":100,"component":"lora:100","event":"user_rx",
+                        "info":{"data":"SGVsbG8=","sender":"shellypro1-peer","rssi":-80,"snr":9.5,"tsu":123456}}]}}
+                        """);
+
+        verify(f.thing).updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, new StringType("SGVsbG8="));
+        verify(f.thing).updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, new StringType("Hello"));
+        verify(f.thing).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_RSSI),
+                eq(new QuantityType<>(-80, Units.DECIBEL_MILLIWATTS)));
+        verify(f.thing).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_SNR),
+                eq(new QuantityType<>(9.5, Units.DECIBEL)));
+        verify(f.thing).postEvent(ALARM_TYPE_LORA_RECEIVED, true);
+    }
+
+    @Test
+    void loraEventWithoutSignalInfoLeavesRssiAndSnrUntouched() throws ShellyApiException {
+        Fixture f = build();
+        f.rpc.onNotifyEvent("""
+                {"src":"shellypro1-test","params":{"ts":1.0,"events":[{"id":100,"component":"lora:100","event":"lora",
+                "info":{"data":"SGVsbG8=","tsu":123456}}]}}
+                """);
+
+        verify(f.thing).updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, new StringType("Hello"));
+        verify(f.thing, never()).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_RSSI), any());
+        verify(f.thing, never()).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_SNR), any());
+    }
+
+    @Test
     void loraEventWithNonUtf8PayloadUpdatesRawChannelOnlyNotText() throws ShellyApiException {
         Fixture f = build();
-        // base64("ÿþ") — not a valid UTF-8 sequence
         f.rpc.onNotifyEvent("""
-                {"src":"shellypro1-test","params":{"ts":1.0,"events":[{"id":0,"component":"lora:0","event":"lora",
+                {"src":"shellypro1-test","params":{"ts":1.0,"events":[{"id":100,"component":"lora:100","event":"lora",
                 "info":{"data":"//4=","rssi":-97,"snr":8,"tsu":123456}}]}}
                 """);
 
@@ -92,8 +122,6 @@ public class Shelly2LoraNotifyEventTest {
     @Test
     void loraEventPostsForcedTriggerOnEveryConsecutivePacket() throws ShellyApiException {
         Fixture f = build();
-        // the alarm value never changes across consecutive packets, so postEvent's de-dup would swallow all
-        // but the first unless the RPC layer forces it
         f.rpc.onNotifyEvent(API_DOCS_EVENT_JSON);
         f.rpc.onNotifyEvent(API_DOCS_EVENT_JSON);
 

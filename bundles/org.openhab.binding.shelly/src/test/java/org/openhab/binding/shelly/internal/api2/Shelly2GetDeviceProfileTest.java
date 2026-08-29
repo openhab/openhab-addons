@@ -652,9 +652,6 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.numInputs, is(5));
     }
 
-    // ── LoRa Add-On ─────────────────────────────────────────────────────────────
-
-    /** Config with lora:100 component; rxEnabled controls the Rx-path flag */
     private static Shelly2GetConfigResult withLora100(Gson gson, boolean rxEnabled) {
         return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
                 + "\"lora:100\":{\"id\":100,\"freq\":868000000,\"rx_enable\":" + rxEnabled + "}}");
@@ -683,6 +680,17 @@ public class Shelly2GetDeviceProfileTest {
         StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, rxEnabled));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
         assertThat(profile.settings.loraRxEnabled, is(rxEnabled));
+    }
+
+    @Test
+    void discoveryLoraRxEnableAbsentDefaultsToEnabled() throws ShellyApiException {
+        Gson gson = new Gson();
+        Shelly2GetConfigResult config = parseConfig(gson,
+                "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},\"lora:100\":{\"id\":100,\"freq\":868000000}}");
+        StubApiClient client = new StubApiClient(discoveryConfig(), config);
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraDetected, is(true));
+        assertThat(profile.settings.loraRxEnabled, is(true));
     }
 
     @Test

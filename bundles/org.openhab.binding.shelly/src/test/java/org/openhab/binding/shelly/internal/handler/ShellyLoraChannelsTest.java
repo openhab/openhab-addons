@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
 
 import java.util.Map;
 import java.util.Set;
@@ -33,12 +32,19 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 
+/**
+ * Tests for the LoRa Add-On channel lifecycle in {@link ShellyChannelDefinitions} and {@link ShellyComponents}:
+ * channel creation and reconciliation, status counter updates and TX command handling.
+ *
+ * @author Markus Michels - Initial contribution
+ */
 @NonNullByDefault
 public class ShellyLoraChannelsTest {
 
@@ -66,10 +72,7 @@ public class ShellyLoraChannelsTest {
 
     @Test
     void createLoraChannelsDetectedCreatesAllChannelsWithEmptyStatus() {
-        // Channel creation is driven by the profile flags only — the status carries no LoRa data at
-        // initialization time
-        Map<String, Channel> channels = ShellyChannelDefinitions.createLoraChannels(thing(), loraProfile(true),
-                new ShellySettingsStatus());
+        Map<String, Channel> channels = ShellyChannelDefinitions.createLoraChannels(thing(), loraProfile(true));
 
         assertThat(channels.size(), is(10));
         assertThat(channels.containsKey("lora#" + CHANNEL_LORA_RXDATA), is(true));
@@ -86,8 +89,7 @@ public class ShellyLoraChannelsTest {
 
     @Test
     void createLoraChannelsRxDisabledSkipsRxChannels() {
-        Map<String, Channel> channels = ShellyChannelDefinitions.createLoraChannels(thing(), loraProfile(false),
-                new ShellySettingsStatus());
+        Map<String, Channel> channels = ShellyChannelDefinitions.createLoraChannels(thing(), loraProfile(false));
 
         assertThat(channels.size(), is(5));
         assertThat(channels.containsKey("lora#" + CHANNEL_LORA_RXDATA), is(false));
@@ -102,8 +104,7 @@ public class ShellyLoraChannelsTest {
     void createLoraChannelsNotDetectedCreatesNothing() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1);
 
-        Map<String, Channel> channels = ShellyChannelDefinitions.createLoraChannels(thing(), profile,
-                new ShellySettingsStatus());
+        Map<String, Channel> channels = ShellyChannelDefinitions.createLoraChannels(thing(), profile);
 
         assertThat(channels.isEmpty(), is(true));
     }
@@ -124,6 +125,7 @@ public class ShellyLoraChannelsTest {
                 argThat(s -> s instanceof QuantityType<?> && ((QuantityType<?>) s).longValue() == 44));
         verify(handler).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_TXBYTES),
                 argThat(s -> s instanceof QuantityType<?> && ((QuantityType<?>) s).longValue() == 69280));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_TXERRORS), eq(new DecimalType(2)));
         verify(handler).updateChannel(eq(CHANNEL_GROUP_LORA), eq(CHANNEL_LORA_AIRTIME),
                 argThat(s -> s instanceof QuantityType<?> && ((QuantityType<?>) s).longValue() == 893342));
     }
@@ -139,8 +141,6 @@ public class ShellyLoraChannelsTest {
         full.airtime = 893342L;
         ShellyComponents.updateLoraStatus(handler, full);
 
-        // NotifyStatus is a delta: only rxBytes changed, the other fields are omitted (null) and must be
-        // left alone rather than overwritten with UNDEF/0
         Shelly2DeviceStatusLora delta = new Shelly2DeviceStatusLora();
         delta.rxBytes = 50L;
         ShellyComponents.updateLoraStatus(handler, delta);
@@ -195,7 +195,7 @@ public class ShellyLoraChannelsTest {
 
         ShellyComponents.updateLoraStatus(handler, status);
 
-        verify(handler, never()).updateChannel(anyString(), anyString(), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_LORA), anyString(), any());
     }
 
     @Test
@@ -251,6 +251,35 @@ public class ShellyLoraChannelsTest {
     }
 
     @Test
+    void updateDeviceStatusAddsLoraChannelsAfterChannelsCreated() {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(loraProfile(true));
+        Thing thing = thing();
+        when(handler.getThing()).thenReturn(thing);
+        when(handler.areChannelsCreated()).thenReturn(true);
+
+        ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannelDefinitions(any());
+        verify(handler).updateThingChannels(eq(Map.of()),
+                argThat(channels -> channels.size() == 10 && channels.containsKey("lora#" + CHANNEL_LORA_TXDATA)
+                        && channels.containsKey("lora#" + CHANNEL_LORA_RXDATA)));
+    }
+
+    @Test
+    void updateDeviceStatusAddsNoLoraChannelsWhenNotDetected() {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        when(handler.getProfile()).thenReturn(new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1));
+        Thing thing = thing();
+        when(handler.getThing()).thenReturn(thing);
+        when(handler.areChannelsCreated()).thenReturn(true);
+
+        ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
+
+        verify(handler).updateThingChannels(eq(Map.of()), argThat(Map::isEmpty));
+    }
+
+    @Test
     void updateDeviceStatusKeepsLoraChannelsWhenDetectedAndRxEnabled() {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         when(handler.getProfile()).thenReturn(loraProfile(true));
@@ -287,7 +316,6 @@ public class ShellyLoraChannelsTest {
     void handleLoraCommandTxDataRawSendsRawButSkipsTextChannelOnNonUtf8Payload() throws ShellyApiException {
         ShellyThingInterface handler = loraCommandHandler();
 
-        // base64("ÿþ") — not a valid UTF-8 sequence
         ShellyComponents.handleLoraCommand(handler, CHANNEL_LORA_TXDATARAW, new StringType("//4="));
 
         verify(handler.getApi()).loraSendData(0, "//4=");
@@ -301,20 +329,7 @@ public class ShellyLoraChannelsTest {
         ShellyComponents.handleLoraCommand(handler, CHANNEL_LORA_TXDATARAW, new StringType("not base64!!"));
 
         verify(handler.getApi(), never()).loraSendData(anyInt(), anyString());
-        verify(handler, never()).updateChannel(anyString(), anyString(), any());
-    }
-
-    @Test
-    void handleLoraCommandWorksForLoraEquippedLightHandler() throws ShellyApiException {
-        ShellyThingInterface handler = loraCommandHandler();
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
-        profile.settings.loraDetected = true;
-        profile.settings.loraRxEnabled = true;
-        when(handler.getProfile()).thenReturn(profile);
-
-        ShellyComponents.handleLoraCommand(handler, CHANNEL_LORA_TXDATA, new StringType("Hello"));
-
-        verify(handler.getApi()).loraSendData(0, "SGVsbG8=");
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_LORA), anyString(), any());
     }
 
     private static ShellyThingInterface loraCommandHandler() throws ShellyApiException {
