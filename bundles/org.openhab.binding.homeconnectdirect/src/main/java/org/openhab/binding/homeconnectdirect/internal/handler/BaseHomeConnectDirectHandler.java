@@ -1220,6 +1220,10 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                     updateOptionDescriptionToFixedValueKeyIfLinked(channelId, enumKey);
                 }
             } else {
+                // If the feature is neither writable nor readable, it is not applicable for the selected program.
+                // So we set an empty list of options and we also set the channel state to UNDEF to avoid keeping
+                // an invalid state coming from a previously selected program (no value will be sent for that
+                // feature if not applicable).
                 updateOptionDescriptionToEmptyIfLinked(channelId);
                 updateStateIfLinked(channelId, UnDefType.UNDEF);
             }
