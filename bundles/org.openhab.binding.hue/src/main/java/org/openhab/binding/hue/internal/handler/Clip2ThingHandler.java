@@ -167,7 +167,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final QuantityType<?> DEFAULT_ALARM_DURATION = QuantityType.valueOf(3, Units.SECOND);
 
     // step size for IncreaseDecreaseType commands on brightness and color temperature channels
-    private static final int INC_DEC_STEP = 10;
+    private static final int INC_DEC_PERCENT = 10;
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -449,8 +449,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-                    putResource = new Resource(lightResourceType).setMirekDelta(increaseDecreaseCommand, INC_DEC_STEP);
+                if (command instanceof IncreaseDecreaseType incDecCommand) {
+                    MirekSchema schema = cache != null ? cache.getMirekSchema() : null;
+                    schema = schema != null ? schema : MirekSchema.DEFAULT_SCHEMA;
+                    double mirekRange = schema.getMirekMaximum() - schema.getMirekMinimum();
+                    int mirekDelta = (int) Math.max(mirekRange * INC_DEC_PERCENT / 100.0, INC_DEC_PERCENT);
+                    putResource = new Resource(lightResourceType).setMirekDelta(incDecCommand, mirekDelta);
                     break;
                 }
                 if (command instanceof OnOffType) {
@@ -473,12 +477,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-                    putResource.setDimmingDelta(increaseDecreaseCommand, INC_DEC_STEP);
-                    if (IncreaseDecreaseType.INCREASE == increaseDecreaseCommand) {
+                if (command instanceof IncreaseDecreaseType incDecCommand) {
+                    putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
+                    if (IncreaseDecreaseType.INCREASE == incDecCommand) {
                         command = OnOffType.ON;
                     } else if (Objects.nonNull(cache) && cache.getDimming() instanceof Dimming dimming
-                            && dimming.getBrightness() <= INC_DEC_STEP) {
+                            && dimming.getBrightness() <= INC_DEC_PERCENT) {
                         command = OnOffType.OFF;
                     } else {
                         break; // i.e. don't append an on-off command
@@ -502,9 +506,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-                    putResource = new Resource(lightResourceType).setDimmingDelta(increaseDecreaseCommand,
-                            INC_DEC_STEP);
+                if (command instanceof IncreaseDecreaseType incDecCommand) {
+                    putResource = new Resource(lightResourceType).setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
                 } else {
                     putResource = new Resource(lightResourceType).setBrightness(command);
                 }
