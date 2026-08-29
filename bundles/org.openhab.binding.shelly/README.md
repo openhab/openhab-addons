@@ -1214,7 +1214,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 | control | autoOn      | Number | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds  |
 |         | autoOff     | Number | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds  |
 |         | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
-| white   | temperature | Number | r/w       | Color temperature (K): 0..100% or 2700..6500                            |
+| white   | temperature | Number:Temperature | r/w | Color temperature in Kelvin: 2700..6500                           |
 |         | brightness  | Dimmer | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)             |
 
 The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo - it has no RGB color output.
@@ -1233,12 +1233,12 @@ There is no separate power channel: sending brightness 0 turns the bulb off, sen
 |         | red         | Dimmer | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)        |
 |         | green       | Dimmer | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)    |
 |         | blue        | Dimmer | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
-| white   | temperature | Number | r/w       | Color temperature (K): 0..100% or 2700..6500                            |
+| white   | temperature | Number:Temperature | r/w | Color temperature in Kelvin: 2700..6500                           |
 |         | brightness  | Dimmer | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)             |
 
 The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
-Sending `color#full` with any color other than "white" switches to color mode; sending `color#full="white"` or `white#temperature` switches back to white mode.
-`color#hsb`/`red`/`green`/`blue` only take effect while already in color mode.
+Sending a color (`color#hsb`, `color#red`/`green`/`blue` or `color#full` with any color other than "white") switches to color mode; sending `color#full="white"` or `white#temperature` switches back to white mode.
+While in color mode `white#temperature` reports UNDEF, because the LEDs don't show a color temperature.
 
 ### Shelly H&T (thing-type: shellyht)
 

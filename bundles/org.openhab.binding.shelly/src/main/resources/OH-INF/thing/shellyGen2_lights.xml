@@ -6,8 +6,8 @@
 
 	<thing-type id="shellyplusduobulb">
 		<label>Shelly Duo Bulb E27</label>
-		<description>Shelly Duo Bulb E27 - Dimmable Tunable White Bulb</description>
-		<category>ColorLight</category>
+		<description>Shelly Duo Bulb E27 Gen3 (Dimmable Tunable White Bulb)</description>
+		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="duoControl"/>
@@ -21,7 +21,7 @@
 
 	<thing-type id="shellypluscolorbulb">
 		<label>Shelly Multicolor Bulb E27</label>
-		<description>Shelly Multicolor Bulb E27 - Dimmable RGB+CCT Bulb</description>
+		<description>Shelly Multicolor Bulb E27 Gen3 (Dimmable RGB+CCT Bulb)</description>
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
