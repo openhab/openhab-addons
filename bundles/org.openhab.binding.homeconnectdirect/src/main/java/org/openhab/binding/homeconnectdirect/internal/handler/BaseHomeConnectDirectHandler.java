@@ -196,8 +196,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         // check and get appliance profile
         var profile = applianceProfileService.getProfile(configuration.haId);
         if (profile == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/offline.profile-pending");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.profile-pending");
             return;
         }
 
@@ -210,8 +209,11 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         scheduler.execute(() -> {
             // initialize deviceDescription and featureMapping service
             try {
-                var featureMappingService = new FeatureMappingService(Path.of(BINDING_PROFILES_PATH, profile.featureMappingFileName()));
-                this.deviceDescriptionService = new DeviceDescriptionService(thing.getUID().getId(), Path.of(BINDING_PROFILES_PATH, profile.deviceDescriptionFileName()), featureMappingService.getFeatureMapping());
+                var featureMappingService = new FeatureMappingService(
+                        Path.of(BINDING_PROFILES_PATH, profile.featureMappingFileName()));
+                this.deviceDescriptionService = new DeviceDescriptionService(thing.getUID().getId(),
+                        Path.of(BINDING_PROFILES_PATH, profile.deviceDescriptionFileName()),
+                        featureMappingService.getFeatureMapping());
                 this.featureMappingService = featureMappingService;
             } catch (ParseException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -233,8 +235,8 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                 } else if (profile.credentials() instanceof TlsCredentials(String key)) {
                     try {
                         URI uri = URI.create(WS_TLS_URI_TEMPLATE.formatted(configuration.address));
-                        var webSocketClientService = new WebSocketTlsConscryptClientService(getThing(), uri,
-                                key, this, scheduler);
+                        var webSocketClientService = new WebSocketTlsConscryptClientService(getThing(), uri, key, this,
+                                scheduler);
                         this.webSocketClientService = webSocketClientService;
                         webSocketClientService.connect();
                     } catch (Error e) {
@@ -315,7 +317,9 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                             mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
                                     List.of(new ProgramData(programUid, null)), null, 1));
                         } else {
-                            logger.warn("The '{}' control is either unavailable or in read-only mode. Cannot start program.", ACTIVE_PROGRAM_KEY);
+                            logger.warn(
+                                    "The '{}' control is either unavailable or in read-only mode. Cannot start program.",
+                                    ACTIVE_PROGRAM_KEY);
                         }
                     });
 
@@ -331,7 +335,9 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                     mapProgramKey(command.toFullString()).ifPresent(selectedProgramUid -> send(Action.POST,
                             RO_SELECTED_PROGRAM, List.of(new ProgramData(selectedProgramUid, null)), null, 1));
                 } else {
-                    logger.warn("The '{}' control is either unavailable or in read-only mode. Cannot change selected program.", SELECTED_PROGRAM_KEY);
+                    logger.warn(
+                            "The '{}' control is either unavailable or in read-only mode. Cannot change selected program.",
+                            SELECTED_PROGRAM_KEY);
                 }
             });
         } else {
@@ -351,7 +357,8 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                                     || deviceDescriptionService.isCommandAvailableAndWritable(valueKey);
 
                             if (!isWritable) {
-                                logger.warn("The custom channel '{}' with key '{}' is either unavailable or in read-only mode. Command '{}' cannot be processed.",
+                                logger.warn(
+                                        "The custom channel '{}' with key '{}' is either unavailable or in read-only mode. Command '{}' cannot be processed.",
                                         channelUID.getId(), valueKey, command.toFullString());
                                 return;
                             }
@@ -359,16 +366,22 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
 
                         mapKey(valueKey).ifPresent(uid -> {
                             switch (command) {
-                                case OnOffType onOffTypeCommand when CHANNEL_TYPE_SWITCH_VALUE.equals(channel.getChannelTypeUID()) ->
-                                        send(Action.POST, RO_VALUES, List.of(new ValueData(uid, OnOffType.ON.equals(onOffTypeCommand))),
-                                                null, 1);
-                                case StringType stringTypeCommand when CHANNEL_TYPE_STRING_VALUE.equals(channel.getChannelTypeUID()) ->
-                                        mapEnumerationValueKeyToValue(uid, stringTypeCommand.toFullString()).ifPresentOrElse(
-                                                enumerationValue -> send(Action.POST, RO_VALUES,
-                                                        List.of(new ValueData(uid, enumerationValue)), null, 1),
-                                                () -> send(Action.POST, RO_VALUES,
-                                                        List.of(new ValueData(uid, command.toFullString())), null, 1));
-                                case Number numberCommand when CHANNEL_TYPE_NUMBER_VALUE.equals(channel.getChannelTypeUID()) -> {
+                                case OnOffType onOffTypeCommand when CHANNEL_TYPE_SWITCH_VALUE
+                                        .equals(channel.getChannelTypeUID()) ->
+                                    send(Action.POST, RO_VALUES,
+                                            List.of(new ValueData(uid, OnOffType.ON.equals(onOffTypeCommand))), null,
+                                            1);
+                                case StringType stringTypeCommand when CHANNEL_TYPE_STRING_VALUE
+                                        .equals(channel.getChannelTypeUID()) ->
+                                    mapEnumerationValueKeyToValue(uid, stringTypeCommand.toFullString())
+                                            .ifPresentOrElse(
+                                                    enumerationValue -> send(Action.POST, RO_VALUES,
+                                                            List.of(new ValueData(uid, enumerationValue)), null, 1),
+                                                    () -> send(Action.POST, RO_VALUES,
+                                                            List.of(new ValueData(uid, command.toFullString())), null,
+                                                            1));
+                                case Number numberCommand when CHANNEL_TYPE_NUMBER_VALUE
+                                        .equals(channel.getChannelTypeUID()) -> {
                                     Unit<?> unit = null;
                                     if (channel.getConfiguration()
                                             .get(CONFIGURATION_UNIT_KEY) instanceof String unitConfiguration) {
@@ -383,8 +396,8 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                                         }
                                         send(Action.POST, RO_VALUES, List.of(new ValueData(uid, (int) value)), null, 1);
                                     } else {
-                                        send(Action.POST, RO_VALUES, List.of(new ValueData(uid, numberCommand.intValue())), null,
-                                                1);
+                                        send(Action.POST, RO_VALUES,
+                                                List.of(new ValueData(uid, numberCommand.intValue())), null, 1);
                                     }
                                 }
                                 default -> {
@@ -1203,11 +1216,18 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
             if (deviceDescriptionService.isOptionAvailableAndWritable(optionKey)) {
                 updateOptionDescriptionIfLinked(channelId, optionKey);
-            } else {
+            } else if (deviceDescriptionService.isOptionAvailableAndReadable(optionKey)) {
                 var enumKey = keyValueStore.get(optionKey);
                 if (enumKey != null) {
                     updateOptionDescriptionToFixedValueKeyIfLinked(channelId, enumKey);
                 }
+            } else {
+                // If the feature is neither writable nor readable, it is not applicable for the selected program.
+                // So we set an empty list of options and we also set the channel state to UNDEF to avoid keeping
+                // an invalid state coming from a previously selected program (no value will be sent for that
+                // feature if not applicable).
+                updateOptionDescriptionToEmptyIfLinked(channelId);
+                updateStateIfLinked(channelId, UnDefType.UNDEF);
             }
         });
     }
@@ -1215,6 +1235,10 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
     protected void updateOptionDescriptionToFixedValueKeyIfLinked(String optionChannel, String fixedOptionValueKey) {
         getLinkedChannel(optionChannel).ifPresent(channel -> setStateDescriptions(channel.getUID(), List
                 .of(new StateOption(fixedOptionValueKey, mapKeyToLabel(fixedOptionValueKey, translationProvider)))));
+    }
+
+    protected void updateOptionDescriptionToEmptyIfLinked(String optionChannel) {
+        getLinkedChannel(optionChannel).ifPresent(channel -> setStateDescriptions(channel.getUID(), List.of()));
     }
 
     protected void updateOptionDescriptionIfLinked(String optionChannel, String optionKey) {
