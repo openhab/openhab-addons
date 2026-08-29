@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.handler;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -166,6 +165,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
     // smart chime devices use write-only volume and duration channels, so these are their default values
     private static final PercentType DEFAULT_SOUND_VOLUME = new PercentType(50);
     private static final QuantityType<?> DEFAULT_ALARM_DURATION = QuantityType.valueOf(3, Units.SECOND);
+
+    // step size for IncreaseDecreaseType commands on brightness and color temperature channels
+    private static final int INC_DEC_STEP = 10;
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -447,10 +449,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
-                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand,
-                            cache.getColorTemperaturePercentState());
-                } else if (command instanceof OnOffType) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    putResource = new Resource(lightResourceType).setMirekDelta(increaseDecreaseCommand, INC_DEC_STEP);
+                    break;
+                }
+                if (command instanceof OnOffType) {
                     command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
@@ -470,13 +473,20 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
-                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, cache.getBrightnessState());
-                }
-                if (command instanceof PercentType brightnessCommand) {
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    putResource.setDimmingDelta(increaseDecreaseCommand, INC_DEC_STEP);
+                    if (IncreaseDecreaseType.INCREASE == increaseDecreaseCommand) {
+                        command = OnOffType.ON;
+                    } else if (Objects.nonNull(cache) && cache.getDimming() instanceof Dimming dimming
+                            && dimming.getBrightness() <= INC_DEC_STEP) {
+                        command = OnOffType.OFF;
+                    } else {
+                        break; // i.e. don't append an on-off command
+                    }
+                    // fall through to append the on-off command
+                } else if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
-                    double brightnessAbsolute = brightnessCommand.doubleValue();
-                    command = Setters.getHardOnOff(putResource, brightnessAbsolute, true, cache); // avoid "soft off"
+                    command = OnOffType.from(brightnessCommand.doubleValue() > 0.0); // avoid "soft off"
                 }
                 // NB fall through for handling of switch related commands !!
 
@@ -492,7 +502,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
-                putResource = new Resource(lightResourceType).setBrightness(command);
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    putResource = new Resource(lightResourceType).setDimmingDelta(increaseDecreaseCommand,
+                            INC_DEC_STEP);
+                } else {
+                    putResource = new Resource(lightResourceType).setBrightness(command);
+                }
                 break;
 
             case CHANNEL_2_ON_OFF_ONLY:
@@ -719,16 +734,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private ResourceType getExtendedResourceType(ResourceType baseType) {
         return extendedResourceTypes.get(baseType) instanceof ResourceType extendedType ? extendedType : baseType;
-    }
-
-    private Command translateIncreaseDecreaseCommand(IncreaseDecreaseType command, State currentValue) {
-        if (currentValue instanceof PercentType currentPercent) {
-            int delta = command == IncreaseDecreaseType.INCREASE ? 10 : -10;
-            double newPercent = Math.min(100.0, Math.max(0.0, currentPercent.doubleValue() + delta));
-            return new PercentType(new BigDecimal(newPercent, Resource.PERCENT_MATH_CONTEXT));
-        }
-
-        return command;
     }
 
     private void refreshAllChannels() {
