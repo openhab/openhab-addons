@@ -590,9 +590,7 @@ public class ShellyChannelDefinitions {
                 addChannel(thing, add, status.gain != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN);
                 addChannel(thing, add, status.effect != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT);
             }
-
-            if (idx == 0 && (profile.hasColorTag(0) || profile.isBulb || profile.isDuo
-                    || (profile.isRGBW2 && profile.inColor))) {
+            if (idx == 0 && (profile.hasColorTag(0) || status.brightness != null || status.temp != null)) {
                 if (profile.hasColorTag(0)) {
                     addChannel(thing, add, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER);
                 } else {
