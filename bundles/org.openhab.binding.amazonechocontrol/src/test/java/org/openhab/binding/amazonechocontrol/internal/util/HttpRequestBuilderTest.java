@@ -133,6 +133,16 @@ public class HttpRequestBuilderTest {
     }
 
     @Test
+    public void testAMixedCaseUserAgentKeyStillReplacesTheClientAgent() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("user-agent", BROWSER_USER_AGENT).send();
+
+        verify(request).agent(BROWSER_USER_AGENT);
+        verify(request, never()).header(eq("user-agent"), anyString());
+    }
+
+    @Test
     public void testARequestWithoutAnOverrideKeepsTheAppUserAgent() {
         Request request = mock(Request.class, RETURNS_SELF);
 

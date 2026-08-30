@@ -129,7 +129,6 @@ import com.google.gson.JsonObject;
  *
  * @author Michael Geramb - Initial contribution
  * @author Jan N. Klug - Refactored to use jetty client, add {@link HttpRequestBuilder}
- * @author Martin Littkovsky - Browser user agent on the notification poll
  */
 @NonNullByDefault
 public class Connection {
