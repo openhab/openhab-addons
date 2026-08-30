@@ -62,6 +62,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
+            updateChannels();
             return;
         }
 
@@ -103,7 +104,14 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             }
             case EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE -> {
                 if (command instanceof QuantityType<?> qty) {
-                    payload.addProperty("temp_set", qty.intValue());
+                    @Nullable
+                    QuantityType<?> celsiusQty = qty.toUnit(SIUnits.CELSIUS);
+
+                    if (celsiusQty != null) {
+                        payload.addProperty("temp_set", celsiusQty.intValue());
+                    } else {
+                        logger.warn("Failed to convert received command to Celsius: {}", command);
+                    }
                 } else if (command instanceof DecimalType dec) {
                     payload.addProperty("temp_set", dec.intValue());
                 }

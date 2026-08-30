@@ -33,13 +33,13 @@ As a minimum, the uuid is needed:
 | channel id          | type                 | description                                          |
 |---------------------|----------------------|------------------------------------------------------|
 | power               | Switch               | Turns on/off the HWS                                 |
-| mode                | Number               | Mode the HWS is set to (Normal/Economy/Boost)        |
+| mode                | Number               | Mode the HWS is set to (Boost/Normal/Economy)        |
 | current-temperature | Number:Temperature   | Current temperature of water in the HWS              |
 | set-temperature     | Number:Temperature   | Current setpoint for water in the HWS                |
 | fault               | Number               | Current fault code (0 = No Fault)                    |
 | defrost             | Switch               | Defrost Mode On/Off                                  |
 | work-state          | Number               | Current work state of the HWS                        |
-| tank-capacity       | Number:Dimensionless | Current hot water capacicty of the HWS               |
+| tank-capacity       | Number:Dimensionless | Current hot water capacity of the HWS               |
 
 ## Full Example
 

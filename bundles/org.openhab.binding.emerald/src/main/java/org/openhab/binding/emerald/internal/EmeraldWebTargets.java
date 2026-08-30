@@ -122,10 +122,9 @@ public class EmeraldWebTargets {
 
     private String invokeAws(String uri, String amzTarget, String payload)
             throws InterruptedException, TimeoutException, ExecutionException, EmeraldCommunicationException {
-        Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
-                .header("content-type", "application/x-amz-json-1.1").header("x-amz-target", amzTarget)
+        Request request = httpClient.newRequest(uri).method(HttpMethod.POST).header("x-amz-target", amzTarget)
                 .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .content(new StringContentProvider(payload), "application/json");
+                .content(new StringContentProvider(payload), "application/x-amz-json-1.1");
 
         ContentResponse response = request.send();
         if (!HttpStatus.isSuccess(response.getStatus())) {
@@ -162,7 +161,7 @@ public class EmeraldWebTargets {
                         .header("accept-language", "en-GB;q=1.0, en-AU;q=0.9").header(headerKey, headerValue)
                         .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
                         .content(new StringContentProvider(params), "application/json");
-                if (logger.isTraceEnabled()) {
+                if (logger.isTraceEnabled() && !jsonResponse.isEmpty() && !getTokenUri.equals(uri)) {
                     logger.trace("{} request for {}", method, uri);
                 }
                 ContentResponse response = request.send();
@@ -178,7 +177,11 @@ public class EmeraldWebTargets {
                     throw new EmeraldCommunicationException(
                             String.format("Emerald Servers returned error <%d> while invoking %s", status, uri));
                 }
-            } catch (TimeoutException | ExecutionException | InterruptedException ex) {
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                String msg = ex.getMessage();
+                throw new EmeraldCommunicationException(msg != null ? msg : ex.toString(), ex);
+            } catch (TimeoutException | ExecutionException ex) {
                 String msg = ex.getMessage();
                 throw new EmeraldCommunicationException(msg != null ? msg : ex.toString(), ex);
             }

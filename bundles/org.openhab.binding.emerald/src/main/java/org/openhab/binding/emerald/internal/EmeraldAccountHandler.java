@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -70,6 +71,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) EmeraldWebTargets webTargets;
     private @Nullable EmeraldList emeraldList;
     private @Nullable Mqtt5Client mqttClient;
+    private @Nullable ScheduledFuture<?> reconnectFuture;
 
     String token = "";
 
@@ -210,7 +212,13 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             @Override
             public void onConnectionFailure(@Nullable Mqtt5Client client,
                     @Nullable OnConnectionFailureReturn onConnectionFailureReturn) {
+                String error = (onConnectionFailureReturn != null)
+                        ? String.valueOf(onConnectionFailureReturn.getErrorCode())
+                        : "Unknown";
+                logger.error("AWS CRT MQTT Connection failed. Error Code: {}", error);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Connection failed");
+
+                scheduleReconnect(); // Trigger the reconnect loop
             }
 
             @Override
@@ -220,6 +228,8 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
                         : "Unknown";
                 logger.warn("AWS CRT MQTT Disconnected. Error Code: {}", error);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Disconnected");
+
+                scheduleReconnect(); // Trigger the reconnect loop
             }
 
             @Override
@@ -231,6 +241,38 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         Mqtt5Client localClient = builder.build();
         localClient.start();
         mqttClient = localClient;
+    }
+
+    private synchronized void scheduleReconnect() {
+        @Nullable
+        ScheduledFuture<?> localFuture = reconnectFuture;
+        if (localFuture != null && !localFuture.isDone()) {
+            return; // A reconnection is already scheduled and waiting
+        }
+
+        logger.info("Scheduling MQTT reconnection in 30 seconds...");
+        reconnectFuture = scheduler.schedule(() -> {
+            try {
+                @Nullable
+                Mqtt5Client localClient = mqttClient;
+                if (localClient != null) {
+                    try {
+                        localClient.stop(null);
+                        localClient.close();
+                    } catch (Exception e) {
+                        logger.trace("Error cleaning up old MQTT client", e);
+                    }
+                    mqttClient = null;
+                }
+
+                // Fetch fresh Cognito credentials and rebuild the client
+                setupMqttConnection();
+
+            } catch (Exception e) {
+                logger.error("Failed to reconnect to MQTT, will retry in 30 seconds", e);
+                scheduleReconnect(); // If the token fetch fails, queue up another attempt
+            }
+        }, 30, TimeUnit.SECONDS);
     }
 
     private void subscribeToTopics() {
@@ -416,6 +458,13 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        @Nullable
+        ScheduledFuture<?> localFuture = reconnectFuture;
+        if (localFuture != null) {
+            localFuture.cancel(true);
+        }
+
+        @Nullable
         Mqtt5Client localMqttClient = mqttClient;
         if (localMqttClient != null) {
             localMqttClient.stop(null);

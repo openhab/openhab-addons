@@ -13,6 +13,9 @@
   <artifactId>org.openhab.binding.emerald</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Emerald Binding</name>
+  <properties>
+    <bnd.importpackage>!org.graalvm.nativeimage.hosted</bnd.importpackage>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
