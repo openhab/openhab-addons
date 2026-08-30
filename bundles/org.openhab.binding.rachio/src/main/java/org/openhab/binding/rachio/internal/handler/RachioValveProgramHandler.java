@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
+import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
-public class RachioValveProgramHandler extends AbstractRachioThingHandler {
+public class RachioValveProgramHandler extends AbstractRachioThingHandler implements RachioSmartHoseStatusListener {
     private final Logger logger = LoggerFactory.getLogger(RachioValveProgramHandler.class);
 
     private final AtomicBoolean webhookSummaryRefreshPending = new AtomicBoolean();
@@ -170,7 +171,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
                 return false;
             }
             thingId = currentProgram.getThingName();
-            registerStatusListener();
+            registerSmartHoseStatusListener(this);
             if (initialLoad || getThing().getStatus() != ThingStatus.ONLINE) {
                 // Smart Hose Timer program webhooks are optional; polling keeps schedule-like state current otherwise.
                 handler.registerValveProgramWebHook(currentProgram.id,
@@ -455,6 +456,18 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler {
     @Override
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         return false;
+    }
+
+    @Override
+    public void onSmartHoseStateChanged(RachioSmartHoseSnapshot snapshot) {
+        String programId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_PROGRAM_ID);
+        RachioValveProgram updatedProgram = snapshot.programs().get(programId);
+        if (updatedProgram == null || getHandlerLifecycleGeneration() < 0) {
+            return;
+        }
+        program = updatedProgram;
+        thingId = updatedProgram.getThingName();
+        goOnline();
     }
 
     @Override

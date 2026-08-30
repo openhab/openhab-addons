@@ -52,6 +52,7 @@ import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot;
+import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioProperty;
@@ -98,6 +99,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private static final long NO_CLOUD_WEBHOOK_GENERATION = -1;
     private static final long NO_CLOUD_WEBHOOK_CONSUMER_LEASE = -1;
     private static final Duration CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW = Duration.ofHours(1);
+    private static final Duration SMART_HOSE_REFRESH_INTERVAL = Duration.ofMinutes(15);
     private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE = RachioCloudWebhookRegistry.WEBHOOK_SERVICE_UNAVAILABLE;
     private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_STATE = "cloud WebhookService unavailable";
     private static final String CLOUD_WEBHOOK_SERVICE_UNAVAILABLE_MESSAGE = "RachioCloud: openHAB core WebhookService is not available; automatic openHAB Cloud webhook URL acquisition is disabled on this runtime";
@@ -114,6 +116,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private final AtomicReference<@Nullable Future<?>> initializationJob = new AtomicReference<>();
     private final AtomicBoolean cloudWebhookReconciliationPending = new AtomicBoolean();
     private final AtomicBoolean cloudWebhookReconciliationRequested = new AtomicBoolean();
+    private final AtomicBoolean smartHoseRefreshPending = new AtomicBoolean();
     private final AtomicReference<ResolvedWebhookState> resolvedWebhook = new AtomicReference<>(
             ResolvedWebhookState.NONE);
     private @Nullable ScheduledFuture<?> cloudWebhookRefreshJob;
@@ -123,6 +126,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private volatile String lastWebhookEventTimestamp = "";
     private volatile String lastWebhookEventType = "";
     private volatile boolean disposed;
+    private volatile RachioSmartHoseSnapshot smartHoseSnapshot = RachioSmartHoseSnapshot.EMPTY;
     private long lifecycleGeneration;
 
     public enum RefreshReason {
@@ -168,6 +172,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             disposed = false;
             generation = ++lifecycleGeneration;
             thingConfig = configuration;
+            smartHoseSnapshot = RachioSmartHoseSnapshot.EMPTY;
         }
         cancelInitializationJob();
         releaseCloudWebhookUrl("bridge reinitialization");
@@ -721,6 +726,111 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         return api.listBaseStations(api.getPersonId());
     }
 
+    public RachioSmartHoseSnapshot getSmartHoseSnapshot() throws RachioApiException {
+        try {
+            refreshSmartHoseSnapshot(false);
+        } catch (RachioApiException e) {
+            if (smartHoseSnapshot.retrievedAt().equals(Instant.EPOCH)) {
+                throw e;
+            }
+            logger.debug("RachioCloud: Reusing the last Smart Hose snapshot after refresh failure: {}", e.getMessage());
+        }
+        return smartHoseSnapshot;
+    }
+
+    void refreshSmartHoseSnapshot(boolean scheduledRefresh) throws RachioApiException {
+        Instant now = Instant.now();
+        RachioSmartHoseSnapshot currentSnapshot = smartHoseSnapshot;
+        if (!currentSnapshot.retrievedAt().plus(SMART_HOSE_REFRESH_INTERVAL).isBefore(now)) {
+            return;
+        }
+        if (!smartHoseRefreshPending.compareAndSet(false, true)) {
+            logger.trace("RachioCloud: Smart Hose snapshot refresh already in progress");
+            return;
+        }
+
+        try {
+            LifecycleSnapshot lifecycle = currentLifecycleSnapshot();
+            if (lifecycle == null) {
+                return;
+            }
+            RachioSmartHoseSnapshot updatedSnapshot = loadSmartHoseSnapshot(lifecycle.api(), now);
+            if (!isLifecycleCurrent(lifecycle.generation(), lifecycle.api())) {
+                return;
+            }
+            smartHoseSnapshot = updatedSnapshot;
+            if (!updatedSnapshot.hasSameContent(currentSnapshot)) {
+                logger.debug("RachioCloud: Smart Hose snapshot updated (baseStations={}, valves={}, programs={})",
+                        updatedSnapshot.baseStations().size(), updatedSnapshot.valves().size(),
+                        updatedSnapshot.programs().size());
+                notifySmartHoseStateChanged(updatedSnapshot);
+            } else {
+                logger.trace("RachioCloud: Smart Hose snapshot unchanged");
+            }
+        } catch (RachioApiThrottledException e) {
+            if (!scheduledRefresh) {
+                throw e;
+            }
+            logger.debug("RachioCloud: Smart Hose snapshot refresh deferred by the local API budget guard: {}",
+                    e.getMessage());
+        } finally {
+            smartHoseRefreshPending.set(false);
+        }
+    }
+
+    private RachioSmartHoseSnapshot loadSmartHoseSnapshot(RachioApi api, Instant retrievedAt)
+            throws RachioApiException {
+        Map<String, RachioBaseStation> baseStations = new HashMap<>();
+        Map<String, RachioValve> valves = new HashMap<>();
+        Map<String, RachioValveProgram> programs = new HashMap<>();
+
+        for (RachioBaseStation baseStation : api.listBaseStations(api.getPersonId())) {
+            if (baseStation.id.isBlank()) {
+                continue;
+            }
+            baseStations.put(baseStation.id, baseStation);
+            List<RachioValve> baseStationValves = api.listValves(baseStation.id);
+            for (RachioValve valve : baseStationValves) {
+                if (valve.id.isBlank()) {
+                    continue;
+                }
+                if (valve.baseStationId.isBlank()) {
+                    valve.baseStationId = baseStation.id;
+                }
+                valves.put(valve.id, valve);
+            }
+
+            try {
+                addValvePrograms(programs, api.listValveProgramsV2ByBaseStation(baseStation.id), baseStation.id);
+            } catch (RachioApiThrottledException e) {
+                throw e;
+            } catch (RachioApiException e) {
+                logger.debug(
+                        "RachioCloud: Unable to load Smart Hose programs for base station '{}'; trying valve endpoints: {}",
+                        baseStation.id, e.getMessage());
+                for (RachioValve valve : baseStationValves) {
+                    if (!valve.id.isBlank()) {
+                        addValvePrograms(programs, listValveProgramsForValve(api, valve.id), baseStation.id);
+                    }
+                }
+            }
+        }
+        return new RachioSmartHoseSnapshot(baseStations, valves, programs, retrievedAt);
+    }
+
+    private void addValvePrograms(Map<String, RachioValveProgram> programs, List<RachioValveProgram> loadedPrograms,
+            String baseStationId) {
+        for (RachioValveProgram program : loadedPrograms) {
+            if (program.id.isBlank()) {
+                continue;
+            }
+            if (program.baseStationId.isBlank()) {
+                program.baseStationId = baseStationId;
+            }
+            programs.put(program.id, program);
+        }
+    }
+
     public RachioBaseStation getBaseStation(String baseStationId) throws RachioApiException {
         return rachioApi.getBaseStation(baseStationId);
     }
@@ -758,13 +868,20 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     public List<RachioValveProgram> listValveProgramsForValve(String valveId) throws RachioApiException {
+        return listValveProgramsForValve(rachioApi, valveId);
+    }
+
+    private List<RachioValveProgram> listValveProgramsForValve(RachioApi api, String valveId)
+            throws RachioApiException {
         try {
-            return rachioApi.listValveProgramsV2ByValve(valveId);
+            return api.listValveProgramsV2ByValve(valveId);
+        } catch (RachioApiThrottledException e) {
+            throw e;
         } catch (RachioApiException e) {
             logger.debug(
                     "Unable to load Smart Hose Timer Program V2 list for valve '{}'; trying legacy program list: {}",
                     valveId, e.getMessage());
-            return rachioApi.listValvePrograms(valveId);
+            return api.listValvePrograms(valveId);
         }
     }
 
@@ -1255,7 +1372,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             return;
         }
 
-        for (RachioStatusListener listener : rachioStatusListeners) {
+        for (RachioSmartHoseStatusListener listener : smartHoseStatusListeners) {
             if (listener instanceof RachioValveHandler valveHandler) {
                 valveHandler.renewWebhookRegistration(requestPurpose);
             } else if (listener instanceof RachioValveProgramHandler programHandler) {
@@ -1798,7 +1915,16 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
     @Override
     protected void runScheduledRefresh() {
-        refreshDeviceStatus(RefreshReason.SCHEDULED_POLL);
+        if (getStatusListenerCount() > 0) {
+            refreshDeviceStatus(RefreshReason.SCHEDULED_POLL);
+        }
+        if (getSmartHoseStatusListenerCount() > 0) {
+            try {
+                refreshSmartHoseSnapshot(true);
+            } catch (RachioApiException e) {
+                logger.debug("RachioCloud: Unable to refresh Smart Hose snapshot: {}", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -1807,6 +1933,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         invalidateLifecycle();
         cancelInitializationJob();
         releaseCloudWebhookUrl("bridge disposal");
+        smartHoseSnapshot = RachioSmartHoseSnapshot.EMPTY;
         super.dispose();
     }
 }

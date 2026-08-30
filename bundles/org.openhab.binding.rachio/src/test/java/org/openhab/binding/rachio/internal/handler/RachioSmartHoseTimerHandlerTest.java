@@ -69,6 +69,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioConfiguration;
+import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStation;
@@ -182,6 +183,22 @@ class RachioSmartHoseTimerHandlerTest {
                 new StringType(PROGRAM_ID));
         verify(callback).stateUpdated(new ChannelUID(thing.getUID(), CHANNEL_VALVE_NEXT_PLANNED_RUN_SKIPPED),
                 OnOffType.OFF);
+    }
+
+    @Test
+    void valveSnapshotUpdateUsesSharedModelWithoutAnotherRestLookup() throws Exception {
+        SmartHoseValveFixture fixture = smartHoseValveFixture();
+        RachioValve updatedValve = valve(VALVE_ID, "Snapshot valve", 1200);
+        RachioSmartHoseSnapshot snapshot = new RachioSmartHoseSnapshot(Map.of(), Map.of(VALVE_ID, updatedValve),
+                Map.of(), Instant.now());
+
+        fixture.handler.onSmartHoseStateChanged(snapshot);
+
+        verify(fixture.bridgeHandler, never()).getValve(VALVE_ID);
+        verify(fixture.callback).stateUpdated(new ChannelUID(fixture.thing.getUID(), CHANNEL_VALVE_NAME),
+                new StringType("Snapshot valve"));
+        verify(fixture.callback).stateUpdated(new ChannelUID(fixture.thing.getUID(), CHANNEL_VALVE_DEFAULT_RUNTIME),
+                RachioQuantityTypes.seconds(1200));
     }
 
     @Test

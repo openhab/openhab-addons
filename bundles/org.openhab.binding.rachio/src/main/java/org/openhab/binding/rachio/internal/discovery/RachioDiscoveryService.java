@@ -15,10 +15,8 @@ package org.openhab.binding.rachio.internal.discovery;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +29,7 @@ import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot;
 import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot.DeviceSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot.ScheduleSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot.ZoneSnapshot;
+import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStation;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
@@ -328,56 +327,32 @@ public class RachioDiscoveryService extends AbstractDiscoveryService implements 
     private DiscoveryCounts discoverSmartHoseTimers(RachioBridgeHandler handler, ThingUID bridgeUID) {
         DiscoveryCounts counts = new DiscoveryCounts();
         try {
-            for (RachioBaseStation baseStation : handler.listBaseStations()) {
+            RachioSmartHoseSnapshot snapshot = handler.getSmartHoseSnapshot();
+            for (RachioBaseStation baseStation : snapshot.baseStations().values()) {
                 DiscoveryResult baseStationResult = buildBaseStationDiscoveryResult(bridgeUID, baseStation);
                 if (baseStationResult != null) {
                     thingDiscovered(baseStationResult);
                     counts.baseStations++;
                 }
 
-                if (baseStation.id.isBlank()) {
-                    continue;
-                }
-                Set<String> discoveredProgramIds = new HashSet<>();
-                try {
-                    for (RachioValveProgram program : handler.listValveProgramsForBaseStation(baseStation.id)) {
-                        DiscoveryResult programResult = buildValveProgramDiscoveryResult(bridgeUID, baseStation,
-                                program);
-                        if (programResult != null) {
-                            thingDiscovered(programResult);
-                            discoveredProgramIds.add(program.id);
-                            counts.valvePrograms++;
-                        }
+                for (RachioValve valve : snapshot.valves().values()) {
+                    if (!baseStation.id.equals(valve.baseStationId)) {
+                        continue;
                     }
-                } catch (RachioApiException e) {
-                    logger.debug("Smart Hose Timer Program discovery skipped for base station '{}': {}", baseStation.id,
-                            e.getMessage());
-                }
-                for (RachioValve valve : handler.listValves(baseStation.id)) {
                     DiscoveryResult valveResult = buildValveDiscoveryResult(bridgeUID, baseStation, valve);
                     if (valveResult != null) {
                         thingDiscovered(valveResult);
                         counts.valves++;
                     }
-                    if (valve.id.isBlank()) {
+                }
+                for (RachioValveProgram program : snapshot.programs().values()) {
+                    if (!baseStation.id.equals(program.getBaseStationId())) {
                         continue;
                     }
-                    try {
-                        for (RachioValveProgram program : handler.listValveProgramsForValve(valve.id)) {
-                            if (discoveredProgramIds.contains(program.id)) {
-                                continue;
-                            }
-                            DiscoveryResult programResult = buildValveProgramDiscoveryResult(bridgeUID, baseStation,
-                                    program);
-                            if (programResult != null) {
-                                thingDiscovered(programResult);
-                                discoveredProgramIds.add(program.id);
-                                counts.valvePrograms++;
-                            }
-                        }
-                    } catch (RachioApiException e) {
-                        logger.debug("Smart Hose Timer Program discovery skipped for valve '{}': {}", valve.id,
-                                e.getMessage());
+                    DiscoveryResult programResult = buildValveProgramDiscoveryResult(bridgeUID, baseStation, program);
+                    if (programResult != null) {
+                        thingDiscovered(programResult);
+                        counts.valvePrograms++;
                     }
                 }
             }

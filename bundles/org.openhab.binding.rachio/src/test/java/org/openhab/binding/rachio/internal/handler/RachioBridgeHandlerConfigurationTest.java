@@ -1735,7 +1735,7 @@ class RachioBridgeHandlerConfigurationTest {
         valve.name = "Valve";
         setField(valveHandler, "cloudHandler", handler);
         setField(valveHandler, "valve", valve);
-        handler.rachioStatusListeners.add(valveHandler);
+        handler.smartHoseStatusListeners.add(valveHandler);
     }
 
     private void addConfiguredValveProgramHandler(RachioBridgeHandler handler, String programId)
@@ -1747,7 +1747,7 @@ class RachioBridgeHandlerConfigurationTest {
         program.name = "Program";
         setField(programHandler, "cloudHandler", handler);
         setField(programHandler, "program", program);
-        handler.rachioStatusListeners.add(programHandler);
+        handler.smartHoseStatusListeners.add(programHandler);
     }
 
     private ModernWebhookFixture modernWebhookFixture() throws ReflectiveOperationException {

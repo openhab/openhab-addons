@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
+import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
-public class RachioValveHandler extends AbstractRachioThingHandler {
+public class RachioValveHandler extends AbstractRachioThingHandler implements RachioSmartHoseStatusListener {
     private final Logger logger = LoggerFactory.getLogger(RachioValveHandler.class);
 
     private final AtomicBoolean webhookSummaryRefreshPending = new AtomicBoolean();
@@ -228,7 +229,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
                 return false;
             }
             thingId = currentValve.getThingName();
-            registerStatusListener();
+            registerSmartHoseStatusListener(this);
             if (initialLoad || getThing().getStatus() != ThingStatus.ONLINE) {
                 // Smart Hose Timer webhooks are optional; polling keeps valve state current when they are disabled.
                 handler.registerValveWebHook(currentValve.id,
@@ -546,6 +547,18 @@ public class RachioValveHandler extends AbstractRachioThingHandler {
     @Override
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         return false;
+    }
+
+    @Override
+    public void onSmartHoseStateChanged(RachioSmartHoseSnapshot snapshot) {
+        String valveId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_ID);
+        RachioValve updatedValve = snapshot.valves().get(valveId);
+        if (updatedValve == null || getHandlerLifecycleGeneration() < 0) {
+            return;
+        }
+        valve = updatedValve;
+        thingId = updatedValve.getThingName();
+        goOnline();
     }
 
     @Override

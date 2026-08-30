@@ -84,6 +84,26 @@ class RachioPollingLifecycleTest {
         verify(replacementBridgeHandler, times(1)).registerStatusListener(childHandler);
     }
 
+    @Test
+    void smartHoseListenerOwnsPollingAndMovesToReplacementBridge() {
+        Thing thing = Mockito.mock(Thing.class);
+        Mockito.when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_DEVICE, "bridge", "hose-resource"));
+        RachioBridgeHandler oldBridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        RachioBridgeHandler replacementBridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        TestThingHandler childHandler = new TestThingHandler(thing);
+        RachioSmartHoseStatusListener listener = snapshot -> {
+        };
+
+        childHandler.useBridgeHandler(oldBridgeHandler);
+        childHandler.listenForSmartHoseStatus(listener);
+        childHandler.listenForSmartHoseStatus(listener);
+        childHandler.useBridgeHandler(replacementBridgeHandler);
+
+        verify(oldBridgeHandler, times(1)).registerSmartHoseStatusListener(listener);
+        verify(oldBridgeHandler, times(1)).unregisterSmartHoseStatusListener(listener);
+        verify(replacementBridgeHandler, times(1)).registerSmartHoseStatusListener(listener);
+    }
+
     private static class TestBridgeHandler extends AbstractRachioBridgeHandler {
         TestBridgeHandler(Bridge bridge) {
             super(bridge);
@@ -127,6 +147,10 @@ class RachioPollingLifecycleTest {
 
         void listenForStatus() {
             registerStatusListener();
+        }
+
+        void listenForSmartHoseStatus(RachioSmartHoseStatusListener listener) {
+            registerSmartHoseStatusListener(listener);
         }
 
         @Override

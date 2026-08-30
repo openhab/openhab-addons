@@ -63,6 +63,8 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
     private @Nullable Future<?> lifecycleJob;
     private @Nullable Thread lifecycleTaskThread;
     private @Nullable RachioBridgeHandler registeredStatusListenerHandler;
+    private @Nullable RachioBridgeHandler registeredSmartHoseStatusListenerHandler;
+    private @Nullable RachioSmartHoseStatusListener smartHoseStatusListener;
     private int localThrottleRetryAttempt = 0;
     private boolean localThrottleInitializationDeferred = false;
     private long lifecycleGeneration;
@@ -163,6 +165,15 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
             bridgeHandler.registerStatusListener(this);
             registeredStatusListenerHandler = bridgeHandler;
         }
+        RachioBridgeHandler registeredSmartHoseHandler = registeredSmartHoseStatusListenerHandler;
+        RachioSmartHoseStatusListener listener = smartHoseStatusListener;
+        if (!Objects.equals(previousHandler, bridgeHandler) && registeredSmartHoseHandler != null && listener != null) {
+            logger.debug("Rebinding Rachio Smart Hose status listener for Thing '{}' to replacement bridge handler",
+                    getThing().getUID());
+            registeredSmartHoseHandler.unregisterSmartHoseStatusListener(listener);
+            bridgeHandler.registerSmartHoseStatusListener(listener);
+            registeredSmartHoseStatusListenerHandler = bridgeHandler;
+        }
     }
 
     protected synchronized void registerStatusListener() {
@@ -180,6 +191,24 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
         }
         handler.registerStatusListener(this);
         registeredStatusListenerHandler = handler;
+    }
+
+    protected synchronized void registerSmartHoseStatusListener(RachioSmartHoseStatusListener listener) {
+        RachioBridgeHandler handler = cloudHandler;
+        if (handler == null) {
+            return;
+        }
+        RachioBridgeHandler registeredHandler = registeredSmartHoseStatusListenerHandler;
+        RachioSmartHoseStatusListener registeredListener = smartHoseStatusListener;
+        if (Objects.equals(registeredHandler, handler) && Objects.equals(registeredListener, listener)) {
+            return;
+        }
+        if (registeredHandler != null && registeredListener != null) {
+            registeredHandler.unregisterSmartHoseStatusListener(registeredListener);
+        }
+        handler.registerSmartHoseStatusListener(listener);
+        smartHoseStatusListener = listener;
+        registeredSmartHoseStatusListenerHandler = handler;
     }
 
     protected String getThingConfigurationString(String parameterName) {
@@ -323,6 +352,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
         cancelHandlerLifecycleTasks(true);
         cancelLocalThrottleRetry();
         unregisterStatusListener();
+        unregisterSmartHoseStatusListener();
         updateStatus(ThingStatus.OFFLINE);
     }
 
@@ -331,6 +361,7 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
         cancelHandlerLifecycleTasks(true);
         cancelLocalThrottleRetry();
         unregisterStatusListener();
+        unregisterSmartHoseStatusListener();
         super.dispose();
     }
 
@@ -349,6 +380,16 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
             handler.unregisterStatusListener(this);
         }
         registeredStatusListenerHandler = null;
+    }
+
+    private synchronized void unregisterSmartHoseStatusListener() {
+        RachioBridgeHandler handler = registeredSmartHoseStatusListenerHandler;
+        RachioSmartHoseStatusListener listener = smartHoseStatusListener;
+        if (handler != null && listener != null) {
+            handler.unregisterSmartHoseStatusListener(listener);
+        }
+        registeredSmartHoseStatusListenerHandler = null;
+        smartHoseStatusListener = null;
     }
 
     private void cancelHandlerLifecycleTasks(boolean disposed) {

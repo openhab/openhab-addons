@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
+import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStation;
 import org.openhab.core.library.types.OnOffType;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Initial contribution
  */
 @NonNullByDefault
-public class RachioBaseStationHandler extends AbstractRachioThingHandler {
+public class RachioBaseStationHandler extends AbstractRachioThingHandler implements RachioSmartHoseStatusListener {
     private final Logger logger = LoggerFactory.getLogger(RachioBaseStationHandler.class);
 
     private volatile @Nullable RachioBaseStation baseStation;
@@ -113,6 +114,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
                 return false;
             }
             thingId = currentBaseStation.getThingName();
+            registerSmartHoseStatusListener(this);
             logger.debug("{}: BaseStation model lookup succeeded: baseStationId='{}'", thingId, currentBaseStation.id);
             if (resetLocalThrottleRetry()) {
                 logger.debug(
@@ -199,6 +201,18 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler {
     @Override
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         return false;
+    }
+
+    @Override
+    public void onSmartHoseStateChanged(RachioSmartHoseSnapshot snapshot) {
+        String baseStationId = getThingConfigurationOrPropertyString(PROPERTY_BASE_STATION_ID);
+        RachioBaseStation updatedBaseStation = snapshot.baseStations().get(baseStationId);
+        if (updatedBaseStation == null || getHandlerLifecycleGeneration() < 0) {
+            return;
+        }
+        baseStation = updatedBaseStation;
+        thingId = updatedBaseStation.getThingName();
+        goOnline();
     }
 
     private State onlineState(RachioBaseStation currentBaseStation) {

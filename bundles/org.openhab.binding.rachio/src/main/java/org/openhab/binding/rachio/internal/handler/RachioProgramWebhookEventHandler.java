@@ -46,7 +46,7 @@ class RachioProgramWebhookEventHandler implements RachioWebhookEventHandler {
         if (programId.isBlank() && payload != null) {
             programId = payload.programId;
         }
-        for (RachioStatusListener listener : bridgeHandler.rachioStatusListeners) {
+        for (RachioSmartHoseStatusListener listener : bridgeHandler.smartHoseStatusListeners) {
             if (listener instanceof RachioValveProgramHandler programHandler
                     && programHandler.handlesProgramId(programId)) {
                 handled |= programHandler.webhookEvent(event);

@@ -40,7 +40,7 @@ class RachioValveWebhookEventHandler implements RachioWebhookEventHandler {
     @Override
     public boolean handle(RachioEventGsonDTO event) {
         boolean handled = false;
-        for (RachioStatusListener listener : bridgeHandler.rachioStatusListeners) {
+        for (RachioSmartHoseStatusListener listener : bridgeHandler.smartHoseStatusListeners) {
             if (listener instanceof RachioValveHandler valveHandler && valveHandler.handlesValveId(event.resourceId)) {
                 handled |= valveHandler.webhookEvent(event);
             }

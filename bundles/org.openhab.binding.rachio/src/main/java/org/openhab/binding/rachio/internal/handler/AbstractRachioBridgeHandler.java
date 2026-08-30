@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
+import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractRachioBridgeHandler.class);
     protected final Set<RachioStatusListener> rachioStatusListeners = new CopyOnWriteArraySet<>();
+    protected final Set<RachioSmartHoseStatusListener> smartHoseStatusListeners = new CopyOnWriteArraySet<>();
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private final AtomicBoolean refreshPending = new AtomicBoolean();
@@ -52,7 +54,7 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
      */
     protected synchronized void updateListenerManagement() {
         ScheduledFuture<?> job = pollingJob;
-        int listenerCount = rachioStatusListeners.size();
+        int listenerCount = rachioStatusListeners.size() + smartHoseStatusListeners.size();
         int pollingInterval = getPollingIntervalSeconds();
         if (listenerCount > 0 && (job == null || job.isDone())) {
             logger.debug("RachioCloud: {} scheduled polling (listeners={}, pollingInterval={}s)",
@@ -95,6 +97,23 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
         return result;
     }
 
+    public void registerSmartHoseStatusListener(RachioSmartHoseStatusListener listener) {
+        boolean added = smartHoseStatusListeners.add(listener);
+        logger.debug("RachioCloud: Smart Hose status listener registration {} (listeners={})",
+                added ? "added" : "already present", smartHoseStatusListeners.size());
+        updateListenerManagement();
+    }
+
+    public boolean unregisterSmartHoseStatusListener(RachioSmartHoseStatusListener listener) {
+        boolean removed = smartHoseStatusListeners.remove(listener);
+        logger.debug("RachioCloud: Smart Hose status listener unregistration {} (listeners={})",
+                removed ? "removed" : "not found", smartHoseStatusListeners.size());
+        if (removed) {
+            updateListenerManagement();
+        }
+        return removed;
+    }
+
     protected boolean beginRefresh() {
         return refreshPending.compareAndSet(false, true);
     }
@@ -109,6 +128,17 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
                 listener.onThingStateChanged(device, zone);
             } catch (RuntimeException e) {
                 logger.debug("RachioCloud: Status listener update failed (listener={})",
+                        listener.getClass().getSimpleName(), e);
+            }
+        }
+    }
+
+    protected void notifySmartHoseStateChanged(RachioSmartHoseSnapshot snapshot) {
+        for (RachioSmartHoseStatusListener listener : smartHoseStatusListeners) {
+            try {
+                listener.onSmartHoseStateChanged(snapshot);
+            } catch (RuntimeException e) {
+                logger.debug("RachioCloud: Smart Hose status listener update failed (listener={})",
                         listener.getClass().getSimpleName(), e);
             }
         }
@@ -133,6 +163,10 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
         return rachioStatusListeners.size();
     }
 
+    synchronized int getSmartHoseStatusListenerCount() {
+        return smartHoseStatusListeners.size();
+    }
+
     synchronized boolean isPollingJobActive() {
         ScheduledFuture<?> job = pollingJob;
         return job != null && !job.isDone();
@@ -142,7 +176,7 @@ public abstract class AbstractRachioBridgeHandler extends ConfigStatusBridgeHand
         ScheduledFuture<?> job = pollingJob;
         if (job != null) {
             logger.debug("RachioCloud: Cancelling scheduled polling ({}, listeners={}, pollingInterval={}s)", reason,
-                    rachioStatusListeners.size(), getPollingIntervalSeconds());
+                    rachioStatusListeners.size() + smartHoseStatusListeners.size(), getPollingIntervalSeconds());
             job.cancel(true);
             pollingJob = null;
         }
