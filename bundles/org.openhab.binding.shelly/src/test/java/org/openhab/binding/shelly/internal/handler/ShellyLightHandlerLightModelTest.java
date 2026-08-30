@@ -103,7 +103,7 @@ class ShellyLightHandlerLightModelTest {
                 PercentType.HUNDRED);
 
         Map<String, State> updates = handler.getChannelUpdates();
-        assertEquals(6, updates.size());
+        assertEquals(9, updates.size());
         assertEquals(PercentType.HUNDRED, updates.get("color#red"));
         assertEquals(PercentType.ZERO, updates.get("color#green"));
         assertEquals(PercentType.ZERO, updates.get("color#blue"));
@@ -114,6 +114,9 @@ class ShellyLightHandlerLightModelTest {
         assertEquals(0, ((HSBType) obj).getHue().intValue());
         assertEquals(100, ((HSBType) obj).getSaturation().intValue());
         assertEquals(0, ((HSBType) obj).getBrightness().intValue());
+        assertNotNull(updates.get("main#hsb"));
+        assertNotNull(updates.get("main#temperature"));
+        assertNotNull(updates.get("main#temperature-abs"));
 
         try {
             handler.acquireLock();

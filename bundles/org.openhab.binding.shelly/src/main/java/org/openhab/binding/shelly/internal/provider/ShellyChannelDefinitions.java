@@ -271,6 +271,16 @@ public class ShellyChannelDefinitions {
                         ITEMT_STRING))
                 .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, "whiteGain", ITEMT_DIMMER))
 
+                // Primary light channels
+                .add(new ShellyChannel(m, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER, "system:color",
+                        ITEMT_COLOR))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_BRIGHTNESS, "system:brightness",
+                        ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP, "system:color-temperature",
+                        ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP_ABS,
+                        "system:color-temperature-abs", ITEMT_TEMP))
+
                 // Power Meter
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTPOWER, "currentPower", ITEMT_POWER))
@@ -579,6 +589,17 @@ public class ShellyChannelDefinitions {
                 addChannel(thing, added, status.white != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE);
                 addChannel(thing, added, status.gain != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN);
                 addChannel(thing, added, status.effect != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT);
+            }
+
+            if (idx == 0 && (profile.hasColorTag(0) || profile.isBulb || profile.isDuo
+                    || (profile.isRGBW2 && profile.inColor))) {
+                if (profile.hasColorTag(0)) {
+                    addChannel(thing, added, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER);
+                } else {
+                    addChannel(thing, added, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_BRIGHTNESS);
+                }
+                addChannel(thing, added, status.temp != null, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP);
+                addChannel(thing, added, status.temp != null, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP_ABS);
             }
         }
 

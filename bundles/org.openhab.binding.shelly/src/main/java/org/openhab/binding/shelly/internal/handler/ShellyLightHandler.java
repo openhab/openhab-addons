@@ -472,6 +472,20 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
         }
 
+        // MAIN GROUP:
+        if (model.isDirty() && groupNumber == 0 && model.supportsOnOffChannel()) {
+            group = CHANNEL_GROUP_MAIN_CONTROL;
+            if (model.configGetLightCapabilities().supportsColor()) {
+                updated |= updateChannel(group, CHANNEL_COLOR_PICKER, model.getColorState());
+            } else if (model.configGetLightCapabilities().supportsBrightness()) {
+                updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
+            }
+            if (model.configGetLightCapabilities().supportsColorTemperature()) {
+                updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
+                updated |= updateChannel(group, CHANNEL_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
+            }
+        }
+
         return updated;
     }
 

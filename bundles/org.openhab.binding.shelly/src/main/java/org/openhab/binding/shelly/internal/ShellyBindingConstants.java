@@ -227,6 +227,9 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_COLOR_TEMP = "temperature";
     public static final String CHANNEL_COLOR_TEMP_ABS = "temperature-abs";
 
+    // main channel group
+    public static final String CHANNEL_GROUP_MAIN_CONTROL = "main";
+
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
     public static final String CHANNEL_DEVST_NAME = "deviceName";

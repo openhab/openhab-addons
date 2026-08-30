@@ -10,6 +10,7 @@
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
+			<channel-group id="main" typeId="main-control"/>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettings"/>
 			<channel-group id="white" typeId="whiteSettings"/>
@@ -39,6 +40,7 @@
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
+			<channel-group id="main" typeId="main-control"/>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettings"/>
 			<channel-group id="white" typeId="whiteSettings"/>
