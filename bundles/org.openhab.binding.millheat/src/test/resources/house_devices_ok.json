@@ -1,0 +1,446 @@
+[
+  {
+    "roomId": "22222222-2222-4222-8222-222222222222",
+    "roomName": "Test Room",
+    "devices": [
+      {
+        "deviceId": "33333333-3333-4333-8333-333333333333",
+        "macAddress": "AA:BB:CC:DD:EE:FF",
+        "deviceType": {
+          "childType": {
+            "id": "93e2b8fc-044c-48aa-a5f0-3f0e4a5f6514",
+            "name": "GL-Panel Heater G3"
+          },
+          "parentType": {
+            "id": "27af30e2-69df-4274-8930-93404dcddb41",
+            "name": "Heaters"
+          }
+        },
+        "isConnected": true,
+        "customName": "Test Heater",
+        "houseId": "11111111-1111-4111-8111-111111111111",
+        "roomId": "22222222-2222-4222-8222-222222222222",
+        "controlSource": "mobile_api",
+        "isArchived": false,
+        "isEnabled": true,
+        "createdAt": "2026-03-09T18:23:26.405Z",
+        "lastMetrics": {
+          "deviceId": "33333333-3333-4333-8333-333333333333",
+          "receivedAt": "2026-06-16T05:53:16.065Z",
+          "sentAt": "2026-06-16T05:53:15.000Z",
+          "temperature": 22,
+          "currentPower": 52,
+          "controlSignal": 8,
+          "currentOperationMode": 1,
+          "energyUsage": 561,
+          "timeSinceHeaterStartup": 50854,
+          "energyUsageSinceLastReport": 22,
+          "openWindowsStatus": 3,
+          "humidity": 0,
+          "currentTemperatureTypeInWeeklyProgram": 1,
+          "temperatureAmbient": 22.01,
+          "heaterFlag": 1,
+          "powerStatus": 1,
+          "remoteControlTimerMinutesLeft": 0,
+          "remoteControlEnabled": false,
+          "houseId": "11111111-1111-4111-8111-111111111111",
+          "roomId": "22222222-2222-4222-8222-222222222222",
+          "time": 1781589195
+        },
+        "deviceSettings": {
+          "reported": {
+            "operation_mode": "weekly_program",
+            "override_weekly_program": {
+              "value_type": "comfort",
+              "ends_at": -1
+            },
+            "non_repeatable_timers": {
+              "timers": []
+            },
+            "temperature_normal": 21,
+            "temperature_comfort": 22,
+            "temperature_sleep": 21.5,
+            "temperature_away": 16,
+            "temperature_vacation": 10,
+            "temperature_last_set": 22,
+            "vacation_mode": {
+              "start_timestamp": 0,
+              "end_timestamp": 0,
+              "advanced": false
+            },
+            "lock_status": "no_lock",
+            "predictive_heating_type": "off",
+            "open_window": {
+              "drop_temperature_threshold": 5,
+              "drop_time_range": 900,
+              "increase_temperature_threshold": 3,
+              "increase_time_range": 900,
+              "max_time": 3600,
+              "enabled": true,
+              "activated": false
+            },
+            "frost_protection": null,
+            "temperature_calibration_offset": -1.2,
+            "display_unit": "celsius",
+            "oil_heater_power_level": null,
+            "temperature_in_independent_mode": 21,
+            "additional_socket_mode": null,
+            "pid_parameters": {
+              "kp": 70,
+              "ki": 0,
+              "kd": 4500,
+              "kd_filter_N": 60,
+              "windup_limit": 95
+            },
+            "max_heater_power": 700,
+            "limited_heating_power": 100,
+            "hysteresis": {
+              "lower": 0.5,
+              "upper": 0.5
+            },
+            "regulator_type": "pid",
+            "timezone": "CET-1CEST,M3.5.0,M10.5.0/3",
+            "calibration_target_ambient_temperature": null,
+            "fan_state": null,
+            "enable_heater_switch_on": true,
+            "max_floor_temperature_setpoint": null,
+            "frost_protection_setpoint": null,
+            "night_saving_mode_active": null,
+            "frost_protection_active": null,
+            "floor_heating_temperature_sensor": null,
+            "night_saving_temperature_decrement": null,
+            "fh_device_name": null,
+            "remote_control_timer": null,
+            "weekly_program": {
+              "timers": [
+                {
+                  "value_type": "sleep",
+                  "timestamp": 0
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 390
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 480
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 960
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 1320
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 1440
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 1830
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 1920
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 2400
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 2760
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 2880
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 3270
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 3360
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 3840
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 4200
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 4320
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 4710
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 4800
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 5280
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 5640
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 5760
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 6150
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 6240
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 6720
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 7080
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 7200
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 7740
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 8580
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 8640
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 9180
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 10020
+                }
+              ]
+            }
+          },
+          "desired": {
+            "operation_mode": "weekly_program",
+            "override_weekly_program": {
+              "value_type": "comfort",
+              "ends_at": -1
+            },
+            "non_repeatable_timers": {
+              "timers": []
+            },
+            "temperature_normal": 21,
+            "temperature_comfort": 22,
+            "temperature_sleep": 21.5,
+            "temperature_away": 16,
+            "temperature_vacation": 10,
+            "temperature_last_set": 22,
+            "vacation_mode": {
+              "start_timestamp": 0,
+              "end_timestamp": 0,
+              "advanced": false
+            },
+            "lock_status": "no_lock",
+            "predictive_heating_type": "off",
+            "open_window": {
+              "drop_temperature_threshold": 5,
+              "drop_time_range": 900,
+              "increase_temperature_threshold": 3,
+              "increase_time_range": 900,
+              "max_time": 3600,
+              "enabled": true,
+              "activated": false
+            },
+            "frost_protection": null,
+            "temperature_calibration_offset": null,
+            "display_unit": "celsius",
+            "oil_heater_power_level": null,
+            "temperature_in_independent_mode": 21,
+            "additional_socket_mode": null,
+            "pid_parameters": {
+              "kp": 70,
+              "ki": 0,
+              "kd": 4500,
+              "kd_filter_N": 60,
+              "windup_limit": 95
+            },
+            "max_heater_power": 700,
+            "limited_heating_power": 100,
+            "hysteresis": {
+              "lower": 0.5,
+              "upper": 0.5
+            },
+            "regulator_type": "pid",
+            "timezone": "CET-1CEST,M3.5.0,M10.5.0/3",
+            "calibration_target_ambient_temperature": null,
+            "fan_state": null,
+            "enable_heater_switch_on": true,
+            "max_floor_temperature_setpoint": null,
+            "frost_protection_setpoint": null,
+            "night_saving_mode_active": null,
+            "frost_protection_active": null,
+            "floor_heating_temperature_sensor": null,
+            "night_saving_temperature_decrement": null,
+            "fh_device_name": null,
+            "remote_control_timer": null,
+            "weekly_program": {
+              "timers": [
+                {
+                  "value_type": "sleep",
+                  "timestamp": 0
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 390
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 480
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 960
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 1320
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 1440
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 1830
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 1920
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 2400
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 2760
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 2880
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 3270
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 3360
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 3840
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 4200
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 4320
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 4710
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 4800
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 5280
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 5640
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 5760
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 6150
+                },
+                {
+                  "value_type": "away",
+                  "timestamp": 6240
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 6720
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 7080
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 7200
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 7740
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 8580
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 8640
+                },
+                {
+                  "value_type": "comfort",
+                  "timestamp": 9180
+                },
+                {
+                  "value_type": "sleep",
+                  "timestamp": 10020
+                }
+              ]
+            }
+          },
+          "delta": null
+        },
+        "tags": [],
+        "energyUsageForCurrentDay": 0,
+        "electricityPriceForCurrentDay": 0,
+        "pricePerKWhForCurrentDay": 0,
+        "airSensorAdditionalItems": null,
+        "pumpAdditionalItems": null
+      }
+    ]
+  }
+]

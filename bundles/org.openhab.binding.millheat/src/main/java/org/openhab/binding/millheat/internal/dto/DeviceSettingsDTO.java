@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.millheat.internal.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * The {@link AbstractRequest} class is implemented by all service requests
- **
- * @author Arne Seime - Initial contribution
+ * An AWS IoT Thing shadow: what the device last reported, what was last requested of it, and the
+ * difference between the two. The binding reads state from {@code reported}.
+ *
+ * @author Petter L. H. Eide - Initial contribution
  */
-public interface AbstractRequest {
-    String getRequestUrl();
+public record DeviceSettingsDTO(@Nullable HeaterShadowDTO reported, @Nullable HeaterShadowDTO desired,
+        @Nullable HeaterShadowDTO delta) {
 }

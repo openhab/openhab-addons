@@ -36,6 +36,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Gili Tzabari - Initial contribution https://stackoverflow.com/users/14731/gili
  *         https://stackoverflow.com/questions/50318736/how-to-log-httpclient-requests-response-including-body
  * @author Arne Seime - adapted for Millheat binding
+ * @author Petter L. H. Eide - Reformat the body once complete rather than per chunk
  */
 @NonNullByDefault
 public final class RequestLogger {
@@ -62,12 +63,14 @@ public final class RequestLogger {
                 }
             });
             final StringBuilder contentBuffer = new StringBuilder();
+            // Content arrives in chunks, and a chunk is a fragment rather than a JSON document,
+            // so accumulate the raw bytes and reformat once the body is complete.
             request.onRequestContent((theRequest, content) -> contentBuffer
-                    .append(reformatJson(getCharset(theRequest.getHeaders()).decode(content).toString())));
+                    .append(getCharset(theRequest.getHeaders()).decode(content).toString()));
             request.onRequestSuccess(theRequest -> {
                 if (contentBuffer.length() > 0) {
                     group.append("\n");
-                    group.append(contentBuffer);
+                    group.append(reformatJson(contentBuffer.toString()));
                 }
                 String dataToLog = group.toString();
                 logger.debug(dataToLog);
@@ -77,10 +80,8 @@ public final class RequestLogger {
             request.onResponseBegin(theResponse -> {
                 group.append(String.format("Response %s\n%s < %s %s", id, id, theResponse.getVersion(),
                         theResponse.getStatus()));
-                if (theResponse.getReason() != null) {
-                    group.append(" ");
-                    group.append(theResponse.getReason());
-                }
+                group.append(" ");
+                group.append(theResponse.getReason());
                 group.append("\n");
             });
             request.onResponseHeaders(theResponse -> {
@@ -89,11 +90,11 @@ public final class RequestLogger {
                 }
             });
             request.onResponseContent((theResponse, content) -> contentBuffer
-                    .append(reformatJson(getCharset(theResponse.getHeaders()).decode(content).toString())));
+                    .append(getCharset(theResponse.getHeaders()).decode(content).toString()));
             request.onResponseSuccess(theResponse -> {
                 if (contentBuffer.length() > 0) {
                     group.append("\n");
-                    group.append(contentBuffer);
+                    group.append(reformatJson(contentBuffer.toString()));
                 }
                 String dataToLog = group.toString();
                 logger.debug(dataToLog);

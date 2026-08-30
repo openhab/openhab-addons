@@ -12,86 +12,87 @@
  */
 package org.openhab.binding.millheat.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.millheat.internal.dto.DeviceDTO;
+import org.openhab.binding.millheat.internal.dto.DeviceMetricsDTO;
+import org.openhab.binding.millheat.internal.dto.HeaterShadowDTO;
 
 /**
- * The {@link Heater} represents a heater, either connected to a room or independent
+ * A heater, either assigned to a room or controlled independently.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Rebuild on the cloud API's device model
  */
+@NonNullByDefault
 public class Heater {
-    private Room room;
-    private final Long id;
+    /** Device family name the cloud API uses for heaters. */
+    public static final String FAMILY_HEATERS = "Heaters";
+
+    private final String id;
     private final String name;
-    private final String macAddress;
+    private final @Nullable String macAddress;
+    private final String family;
+    private final boolean online;
+    private final @Nullable Room room;
+
+    private final @Nullable Double currentTemp;
+    private final @Nullable Double currentPower;
+    private final @Nullable Double energyUsage;
     private final boolean heatingActive;
-    private boolean canChangeTemp = true;
-    private final int subDomain;
-    private final int currentTemp;
-    private Integer targetTemp;
-    private boolean fanActive;
-    private boolean powerStatus;
     private final boolean windowOpen;
 
-    public Heater(final DeviceDTO dto) {
-        id = dto.deviceId;
-        name = dto.deviceName;
-        macAddress = dto.macAddress;
-        heatingActive = dto.heaterFlag;
-        canChangeTemp = dto.canChangeTemp;
-        subDomain = dto.subDomainId;
-        currentTemp = (int) dto.currentTemp;
-        setTargetTemp(dto.holidayTemp);
-        setFanActive(dto.fanStatus);
-        setPowerStatus(dto.powerStatus);
-        windowOpen = dto.openWindow;
-    }
+    private @Nullable Double targetTemp;
+    private boolean powerStatus;
+    private boolean fanActive;
+    private final boolean canChangeTemp;
 
-    public Heater(final DeviceDTO dto, final Room room) {
+    public Heater(final DeviceDTO dto, final @Nullable Room room) {
         this.room = room;
-        id = dto.deviceId;
-        name = dto.deviceName;
-        macAddress = dto.macAddress;
-        heatingActive = dto.heaterFlag;
-        canChangeTemp = dto.canChangeTemp;
-        subDomain = dto.subDomainId;
-        currentTemp = (int) dto.currentTemp;
-        if (room != null && room.getMode() != null) {
-            switch (room.getMode()) {
-                case COMFORT:
-                    setTargetTemp(room.getComfortTemp());
-                    break;
-                case SLEEP:
-                    setTargetTemp(room.getSleepTemp());
-                    break;
-                case AWAY:
-                    setTargetTemp(room.getAwayTemp());
-                    break;
-                case OFF:
-                    setTargetTemp(null);
-                    break;
-                default:
-                    // NOOP
+        id = dto.deviceId();
+        final String customName = dto.customName();
+        name = customName == null ? dto.deviceId() : customName;
+        macAddress = dto.macAddress();
+        family = dto.family();
+        online = Boolean.TRUE.equals(dto.isConnected());
+
+        final DeviceMetricsDTO metrics = dto.lastMetrics();
+        if (metrics != null) {
+            currentTemp = metrics.temperatureAmbient();
+            currentPower = metrics.currentPower();
+            energyUsage = metrics.energyUsage();
+            heatingActive = metrics.heating();
+            windowOpen = metrics.windowOpen();
+            powerStatus = metrics.powered();
+            targetTemp = metrics.temperature();
+        } else {
+            currentTemp = null;
+            currentPower = null;
+            energyUsage = null;
+            heatingActive = false;
+            windowOpen = false;
+            powerStatus = false;
+            targetTemp = null;
+        }
+
+        final HeaterShadowDTO reported = dto.reported();
+        if (reported != null) {
+            fanActive = reported.fanActive();
+            if (targetTemp == null) {
+                targetTemp = reported.temperatureNormal();
             }
         }
-        setFanActive(dto.fanStatus);
-        setPowerStatus(dto.powerStatus);
-        windowOpen = dto.openWindow;
+
+        // A heater accepts a setpoint of its own only when it is not following a room program.
+        canChangeTemp = room == null
+                || (reported != null && HeaterShadowDTO.MODE_CONTROL_INDIVIDUALLY.equals(reported.operationMode()));
+
+        if (room != null && targetTemp == null) {
+            targetTemp = room.getTargetTemperature();
+        }
     }
 
-    @Override
-    public String toString() {
-        return "Heater [room=" + room + ", id=" + id + ", name=" + name + ", macAddress=" + macAddress
-                + ", heatingActive=" + heatingActive + ", canChangeTemp=" + canChangeTemp + ", subDomain=" + subDomain
-                + ", currentTemp=" + currentTemp + ", targetTemp=" + getTargetTemp() + ", fanActive=" + fanActive()
-                + ", powerStatus=" + powerStatus() + ", windowOpen=" + windowOpen + "]";
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -99,51 +100,83 @@ public class Heater {
         return name;
     }
 
-    public String getMacAddress() {
+    public @Nullable String getMacAddress() {
         return macAddress;
+    }
+
+    /** Device family, for example {@code Heaters}. Needed when writing settings back. */
+    public String getFamily() {
+        return family.isEmpty() ? FAMILY_HEATERS : family;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public @Nullable Room getRoom() {
+        return room;
+    }
+
+    /** True when the heater belongs to no room and is therefore controlled directly. */
+    public boolean isIndependent() {
+        return room == null;
+    }
+
+    public @Nullable Double getCurrentTemp() {
+        return currentTemp;
+    }
+
+    /** Measured power draw in watts. The old service could not report this. */
+    public @Nullable Double getCurrentPower() {
+        return currentPower;
+    }
+
+    public @Nullable Double getEnergyUsage() {
+        return energyUsage;
     }
 
     public boolean isHeatingActive() {
         return heatingActive;
     }
 
+    public boolean windowOpen() {
+        return windowOpen;
+    }
+
     public boolean canChangeTemp() {
         return canChangeTemp;
     }
 
-    public int getSubDomain() {
-        return subDomain;
-    }
-
-    public int getCurrentTemp() {
-        return currentTemp;
-    }
-
-    public Integer getTargetTemp() {
+    public @Nullable Double getTargetTemp() {
         return targetTemp;
     }
 
-    public boolean fanActive() {
-        return fanActive;
+    public void setTargetTemp(final @Nullable Double targetTemp) {
+        this.targetTemp = targetTemp;
     }
 
     public boolean powerStatus() {
         return powerStatus;
     }
 
-    public boolean windowOpen() {
-        return windowOpen;
+    public void setPowerStatus(final boolean powerStatus) {
+        this.powerStatus = powerStatus;
     }
 
-    public void setTargetTemp(final Integer targetTemp) {
-        this.targetTemp = targetTemp;
+    public boolean fanActive() {
+        return fanActive;
     }
 
     public void setFanActive(final boolean fanActive) {
         this.fanActive = fanActive;
     }
 
-    public void setPowerStatus(final boolean powerStatus) {
-        this.powerStatus = powerStatus;
+    @Override
+    public String toString() {
+        final Room localRoom = room;
+        return "Heater [id=" + id + ", name=" + name + ", mac=" + macAddress + ", family=" + family + ", online="
+                + online + ", room=" + (localRoom == null ? "<independent>" : localRoom.getId()) + ", currentTemp="
+                + currentTemp + ", targetTemp=" + targetTemp + ", heating=" + heatingActive + ", power=" + powerStatus
+                + ", currentPower=" + currentPower + ", windowOpen=" + windowOpen + "]";
     }
 }

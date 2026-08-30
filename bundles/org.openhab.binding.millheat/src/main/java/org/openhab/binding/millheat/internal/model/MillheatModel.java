@@ -14,6 +14,7 @@ package org.openhab.binding.millheat.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -21,9 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link MillheatModel} represents the home structure as designed by the user in the Millheat app.
+ * The {@link MillheatModel} represents the home structure as designed by the user in the Mill app.
+ * It is an immutable snapshot rebuilt on every poll; thing handlers read from it rather than
+ * calling the API themselves.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Identifiers are cloud API UUIDs rather than numbers
  */
 @NonNullByDefault
 public class MillheatModel {
@@ -46,21 +50,30 @@ public class MillheatModel {
         return lastUpdated;
     }
 
-    public Optional<Heater> findHeaterById(final Long id) {
+    public Optional<Heater> findHeaterById(final String id) {
         return findHeaters().filter(heater -> id.equals(heater.getId())).findFirst();
     }
 
     public Optional<Heater> findHeaterByMac(final String macAddress) {
-        return findHeaters().filter(heater -> macAddress.equals(heater.getMacAddress())).findFirst();
+        final String wanted = normalizeMac(macAddress);
+        return findHeaters().filter(heater -> wanted.equals(normalizeMac(heater.getMacAddress()))).findFirst();
     }
 
-    public Optional<Heater> findHeaterByMacOrId(@Nullable final String macAddress, @Nullable final Long id) {
-        Optional<Heater> heater = Optional.empty();
+    /**
+     * The cloud API reports MAC addresses colon separated while the old service reported them bare,
+     * and users have configurations in both shapes. Comparing on the hex digits alone keeps the one
+     * identifier that survived the API change usable.
+     */
+    private static String normalizeMac(final @Nullable String macAddress) {
+        return macAddress == null ? "" : macAddress.replaceAll("[^0-9A-Fa-f]", "").toUpperCase(Locale.ROOT);
+    }
 
-        if (macAddress != null) {
+    public Optional<Heater> findHeaterByMacOrId(final @Nullable String macAddress, final @Nullable String id) {
+        Optional<Heater> heater = Optional.empty();
+        if (macAddress != null && !macAddress.isBlank()) {
             heater = findHeaterByMac(macAddress);
         }
-        if (heater.isEmpty() && id != null) {
+        if (heater.isEmpty() && id != null && !id.isBlank()) {
             heater = findHeaterById(id);
         }
         return heater;
@@ -69,26 +82,20 @@ public class MillheatModel {
     private Stream<Heater> findHeaters() {
         return Stream.concat(
                 homes.stream().flatMap(home -> home.getRooms().stream()).flatMap(room -> room.getHeaters().stream()),
-                homes.stream().flatMap(room -> room.getIndependentHeaters().stream()));
+                homes.stream().flatMap(home -> home.getIndependentHeaters().stream()));
     }
 
-    public Optional<Room> findRoomById(final Long id) {
+    public Optional<Room> findRoomById(final String id) {
         return homes.stream().flatMap(home -> home.getRooms().stream()).filter(room -> id.equals(room.getId()))
                 .findFirst();
     }
 
-    public Optional<Home> findHomeByRoomId(final Long id) {
-        for (final Home home : homes) {
-            for (final Room room : home.getRooms()) {
-                if (id.equals(room.getId())) {
-                    return Optional.of(home);
-                }
-            }
-        }
-        return Optional.empty();
+    public Optional<Home> findHomeByRoomId(final String id) {
+        return homes.stream().filter(home -> home.getRooms().stream().anyMatch(room -> id.equals(room.getId())))
+                .findFirst();
     }
 
-    public Optional<Home> findHomeById(Long homeId) {
-        return homes.stream().filter(e -> e.getId().equals(homeId)).findFirst();
+    public Optional<Home> findHomeById(final String homeId) {
+        return homes.stream().filter(home -> homeId.equals(home.getId())).findFirst();
     }
 }

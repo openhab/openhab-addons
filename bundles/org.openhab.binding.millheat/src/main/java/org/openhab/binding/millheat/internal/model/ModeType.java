@@ -12,35 +12,52 @@
  */
 package org.openhab.binding.millheat.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * The {@link ModeType} represents a type of mode the user can set in the app.
+ * A mode a room or house can be in. The cloud API reports these as lower case strings; the old
+ * service used small integers, so the numeric mapping is gone.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Map to the cloud API's string values
  */
+@NonNullByDefault
 public enum ModeType {
-    ALWAYSHOME(-1),
-    COMFORT(1),
-    SLEEP(2),
-    AWAY(3),
-    VACATION(4),
-    OFF(5);
+    WEEKLY_PROGRAM("weekly_program"),
+    COMFORT("comfort"),
+    SLEEP("sleep"),
+    AWAY("away"),
+    VACATION("vacation"),
+    NORMAL("normal"),
+    ALWAYS_HEATING("always_heating"),
+    OFF("off"),
+    /** Reported by neither the API nor the binding; used when a mode string is absent or unknown. */
+    UNKNOWN("unknown");
 
-    public static ModeType valueOf(final int modeVal) {
-        for (final ModeType mode : ModeType.values()) {
-            if (mode.value == modeVal) {
-                return mode;
+    private final String apiValue;
+
+    ModeType(final String apiValue) {
+        this.apiValue = apiValue;
+    }
+
+    /** The string this mode is called in the cloud API. */
+    public String getApiValue() {
+        return apiValue;
+    }
+
+    /**
+     * Resolves an API mode string. Unrecognised and missing values map to {@link #UNKNOWN} rather
+     * than failing, so a new mode added by Mill does not break the binding.
+     */
+    public static ModeType fromApiValue(final @Nullable String value) {
+        if (value != null) {
+            for (final ModeType mode : values()) {
+                if (mode.apiValue.equals(value)) {
+                    return mode;
+                }
             }
         }
-        return null;
-    }
-
-    private final int value;
-
-    ModeType(final int value) {
-        this.value = value;
-    }
-
-    public int getValue() {
-        return value;
+        return UNKNOWN;
     }
 }

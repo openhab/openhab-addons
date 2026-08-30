@@ -12,16 +12,22 @@
  */
 package org.openhab.binding.millheat.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link MillheatRoomConfiguration} class contains room thing configuration parameters.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Identifiers are cloud API UUIDs
  */
+@NonNullByDefault
 public class MillheatRoomConfiguration {
-    /*
-     * Room ID
+    /**
+     * Room UUID as issued by the cloud API. Numeric identifiers from the old service are not valid
+     * here; re-run discovery to obtain the new value.
      */
-    public Long roomId;
+    public @Nullable String roomId;
 
     @Override
     public String toString() {

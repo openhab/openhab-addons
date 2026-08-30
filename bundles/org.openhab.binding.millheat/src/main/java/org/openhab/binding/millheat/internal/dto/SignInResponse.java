@@ -12,20 +12,13 @@
  */
 package org.openhab.binding.millheat.internal.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * This DTO class wraps the get independent devices request
- * 
- * @author Arne Seime - Initial contribution
+ * Response of {@code POST /customer/auth/sign-in} and {@code POST /customer/auth/refresh}. The
+ * access token is short lived (10 minutes); the refresh token is valid for roughly 420 days.
+ *
+ * @author Petter L. H. Eide - Initial contribution
  */
-public class GetIndependentDevicesByHomeRequest implements AbstractRequest {
-    public final Long homeId;
-
-    public GetIndependentDevicesByHomeRequest(final Long homeId, final String timeZone) {
-        this.homeId = homeId;
-    }
-
-    @Override
-    public String getRequestUrl() {
-        return "getIndependentDevices";
-    }
+public record SignInResponse(@Nullable String idToken, @Nullable String refreshToken) {
 }
