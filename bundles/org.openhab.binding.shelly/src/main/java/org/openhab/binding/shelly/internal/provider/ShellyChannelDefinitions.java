@@ -564,7 +564,7 @@ public class ShellyChannelDefinitions {
 
     public static Map<String, Channel> createLightChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellyStatusLightChannel status, int idx) {
-        Map<String, Channel> added = new LinkedHashMap<>();
+        Map<String, Channel> add = new LinkedHashMap<>();
         String group = profile.getControlGroup(idx);
 
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
@@ -572,38 +572,38 @@ public class ShellyChannelDefinitions {
             ShellySettingsRgbwLight light = lights.get(idx);
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
 
-            addChannel(thing, added, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
-            addChannel(thing, added, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
-            addChannel(thing, added, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-            addChannel(thing, added, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
-            addChannel(thing, added, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            addChannel(thing, added, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
-            addChannel(thing, added, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
+            addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
+            addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
+            addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
+            addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
+            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
+            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
             if (profile.hasColorTag(idx)) {
-                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER);
-                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL);
-                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED);
-                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN);
-                addChannel(thing, added, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE);
-                addChannel(thing, added, status.white != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE);
-                addChannel(thing, added, status.gain != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN);
-                addChannel(thing, added, status.effect != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT);
+                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER);
+                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL);
+                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED);
+                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN);
+                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE);
+                addChannel(thing, add, status.white != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE);
+                addChannel(thing, add, status.gain != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN);
+                addChannel(thing, add, status.effect != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT);
             }
 
             if (idx == 0 && (profile.hasColorTag(0) || profile.isBulb || profile.isDuo
                     || (profile.isRGBW2 && profile.inColor))) {
                 if (profile.hasColorTag(0)) {
-                    addChannel(thing, added, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER);
+                    addChannel(thing, add, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER);
                 } else {
-                    addChannel(thing, added, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_BRIGHTNESS);
+                    addChannel(thing, add, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_BRIGHTNESS);
                 }
-                addChannel(thing, added, status.temp != null, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP);
-                addChannel(thing, added, status.temp != null, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP_ABS);
+                addChannel(thing, add, status.temp != null, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP);
+                addChannel(thing, add, status.temp != null, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP_ABS);
             }
         }
 
-        return added;
+        return add;
     }
 
     public static Map<String, Channel> createInputChannels(final Thing thing, final ShellyDeviceProfile profile,
