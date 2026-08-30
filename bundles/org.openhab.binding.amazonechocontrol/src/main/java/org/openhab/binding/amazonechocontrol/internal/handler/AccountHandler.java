@@ -102,7 +102,6 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial Contribution
  * @author Martin Littkovsky - Backoff for failed notification polls
  * @author Martin Littkovsky - Skip polls while no notification channel is linked
- * @author Martin Littkovsky - Route the do-not-disturb push to the device handler
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements PushConnection.Listener {

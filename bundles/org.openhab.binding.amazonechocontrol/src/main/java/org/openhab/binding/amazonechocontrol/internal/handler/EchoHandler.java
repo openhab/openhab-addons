@@ -100,7 +100,6 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Michael Geramb - Initial contribution
  * @author Martin Littkovsky - Report linked notification channels, so the account only polls for a consumer
- * @author Martin Littkovsky - Update the do-not-disturb channel from the push message
  */
 @NonNullByDefault
 public class EchoHandler extends BaseThingHandler {
