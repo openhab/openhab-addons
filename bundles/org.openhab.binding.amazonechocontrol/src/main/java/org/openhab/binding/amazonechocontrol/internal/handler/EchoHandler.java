@@ -99,7 +99,6 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Michael Geramb - Initial contribution
  * @author Martin Littkovsky - Report linked notification channels, so the account only polls for a consumer
- * @author Martin Littkovsky - Deliver requested activity from before the handler started
  */
 @NonNullByDefault
 public class EchoHandler extends BaseThingHandler {
@@ -118,7 +117,8 @@ public class EchoHandler extends BaseThingHandler {
     private final Object progressLock = new Object();
     private @Nullable String wakeWord;
     private @Nullable String lastKnownBluetoothMAC;
-    private long lastCustomerHistoryRecordTimestamp = System.currentTimeMillis();
+    private long handlerStartTimestamp = System.currentTimeMillis();
+    private long lastCustomerHistoryRecordTimestamp = 0;
     private String musicProviderId = "TUNEIN";
     private boolean isPlaying = false;
     private boolean isPaused = false;
@@ -156,7 +156,8 @@ public class EchoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not found.");
         }
 
-        lastCustomerHistoryRecordTimestamp = System.currentTimeMillis();
+        handlerStartTimestamp = System.currentTimeMillis();
+        lastCustomerHistoryRecordTimestamp = 0;
     }
 
     public boolean setDeviceAndUpdateThingStatus(DeviceTO device, @Nullable String wakeWord) {
@@ -967,18 +968,23 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     /**
-     * An explicit refresh also delivers records from before the handler started, which the startup guard in
-     * {@link #handlePushActivity(CustomerHistoryRecordTO)} would otherwise drop.
+     * An explicit refresh also delivers records from before the handler started; a record at or behind one
+     * already delivered is dropped on both paths, so the channel never goes backward.
      */
     public synchronized void handleRequestedActivity(CustomerHistoryRecordTO customerHistoryRecord) {
-        lastCustomerHistoryRecordTimestamp = Math.min(lastCustomerHistoryRecordTimestamp,
-                customerHistoryRecord.timestamp - 1);
-        handlePushActivity(customerHistoryRecord);
+        handleActivity(customerHistoryRecord, true);
     }
 
     public synchronized void handlePushActivity(CustomerHistoryRecordTO customerHistoryRecord) {
+        handleActivity(customerHistoryRecord, false);
+    }
+
+    private void handleActivity(CustomerHistoryRecordTO customerHistoryRecord, boolean deliverRecordsFromBeforeStart) {
         long recordTimestamp = customerHistoryRecord.timestamp;
         if (recordTimestamp <= lastCustomerHistoryRecordTimestamp) {
+            return;
+        }
+        if (!deliverRecordsFromBeforeStart && recordTimestamp <= handlerStartTimestamp) {
             return;
         }
         lastCustomerHistoryRecordTimestamp = recordTimestamp;
@@ -987,7 +993,7 @@ public class EchoHandler extends BaseThingHandler {
             String recordItemType = voiceHistoryRecordItem.recordItemType;
             if ("CUSTOMER_TRANSCRIPT".equals(recordItemType) || "ASR_REPLACEMENT_TEXT".equals(recordItemType)) {
                 String customerTranscript = voiceHistoryRecordItem.transcriptText;
-                if (!customerTranscript.isEmpty()) {
+                if (customerTranscript != null && !customerTranscript.isEmpty()) {
                     // REMOVE WAKE WORD
                     String wakeWordPrefix = this.wakeWord;
                     if (wakeWordPrefix != null

@@ -43,6 +43,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlCommandDescriptionProvider;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlStateDescriptionProvider;
+import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.connection.Connection;
 import org.openhab.binding.amazonechocontrol.internal.connection.LoginData;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHistoryRecordTO;
@@ -85,7 +86,7 @@ public class AccountHandlerActivityDispatchTest {
     private @NonNullByDefault({}) ThingHandlerCallback echoCallback;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws ConnectionException {
         bridge = mock(Bridge.class);
         when(bridge.getUID()).thenReturn(ACCOUNT_UID);
         when(bridge.getConfiguration()).thenReturn(new Configuration());
@@ -168,7 +169,7 @@ public class AccountHandlerActivityDispatchTest {
     }
 
     @Test
-    public void testRefreshSwitchDeliversStoredHistoryToTheMatchingEcho() {
+    public void testRefreshSwitchDeliversStoredHistoryToTheMatchingEcho() throws ConnectionException {
         when(connection.getActivities(anyLong(), anyLong()))
                 .thenReturn(List.of(record("SERIAL_OF_NOBODY", ONE_HOUR_BEFORE_START, "for a stranger"),
                         record(ECHO_SERIAL, ONE_HOUR_BEFORE_START + 1, "for this echo")));
@@ -180,7 +181,7 @@ public class AccountHandlerActivityDispatchTest {
     }
 
     @Test
-    public void testRefreshSwitchDeliversOnlyTheNewestRecordOfADevice() {
+    public void testRefreshSwitchDeliversOnlyTheNewestRecordOfADevice() throws ConnectionException {
         when(connection.getActivities(anyLong(), anyLong()))
                 .thenReturn(List.of(record(ECHO_SERIAL, ONE_HOUR_BEFORE_START + 1_000, "the newest command"),
                         record(ECHO_SERIAL, ONE_HOUR_BEFORE_START, "the older command")));
@@ -192,7 +193,7 @@ public class AccountHandlerActivityDispatchTest {
     }
 
     @Test
-    public void testRefreshSwitchShowsOnWhileTheRequestRunsAndOffAfterwards() {
+    public void testRefreshSwitchShowsOnWhileTheRequestRunsAndOffAfterwards() throws ConnectionException {
         accountHandler.handleCommand(REFRESH_CHANNEL, OnOffType.ON);
 
         InOrder order = inOrder(accountCallback, connection);
@@ -202,7 +203,7 @@ public class AccountHandlerActivityDispatchTest {
     }
 
     @Test
-    public void testOffCommandAnswersOffWithoutARequest() {
+    public void testOffCommandAnswersOffWithoutARequest() throws ConnectionException {
         accountHandler.handleCommand(REFRESH_CHANNEL, OnOffType.OFF);
 
         verify(accountCallback).stateUpdated(REFRESH_CHANNEL, OnOffType.OFF);
@@ -210,7 +211,7 @@ public class AccountHandlerActivityDispatchTest {
     }
 
     @Test
-    public void testActivityRequestUsesTheConfiguredWindow() {
+    public void testActivityRequestUsesTheConfiguredWindow() throws ConnectionException {
         initializeWith(Map.of("activityRequestWindow", 300));
         long windowMillis = 300_000;
         long futureCushionMillis = 30_000;
@@ -229,21 +230,21 @@ public class AccountHandlerActivityDispatchTest {
     }
 
     @Test
-    public void testAConfiguredIntervalPollsTheVoiceHistory() {
+    public void testAConfiguredIntervalPollsTheVoiceHistory() throws ConnectionException {
         initializeWith(Map.of("activityPollingInterval", 1));
 
         verify(connection, timeout(5 * ONE_POLL_MILLIS).atLeastOnce()).getActivities(anyLong(), anyLong());
     }
 
     @Test
-    public void testWithoutAnIntervalNothingIsPolled() {
+    public void testWithoutAnIntervalNothingIsPolled() throws ConnectionException {
         initializeWith(Map.of());
 
         verify(connection, after(2 * ONE_POLL_MILLIS).never()).getActivities(anyLong(), anyLong());
     }
 
     @Test
-    public void testDisposeStopsThePolling() {
+    public void testDisposeStopsThePolling() throws ConnectionException {
         initializeWith(Map.of("activityPollingInterval", 1));
         verify(connection, timeout(5 * ONE_POLL_MILLIS).atLeastOnce()).getActivities(anyLong(), anyLong());
 
@@ -251,5 +252,55 @@ public class AccountHandlerActivityDispatchTest {
         clearInvocations(connection);
 
         verify(connection, after(3 * ONE_POLL_MILLIS).never()).getActivities(anyLong(), anyLong());
+    }
+
+    @Test
+    public void testRequestedActivityNeverGoesBackBehindADeliveredPushRecord() {
+        long afterStart = System.currentTimeMillis() + 5_000;
+        echoHandler.handlePushActivity(record(ECHO_SERIAL, afterStart, "the newer command"));
+        echoHandler.handleRequestedActivity(record(ECHO_SERIAL, afterStart - 1_000, "the older command"));
+
+        verify(echoCallback, never()).stateUpdated(eq(LAST_VOICE_CHANNEL), eq(new StringType("the older command")));
+    }
+
+    @Test
+    public void testActivityRecordsFetchedAcrossAReinitializationAreDiscarded() throws ConnectionException {
+        when(connection.getActivities(anyLong(), anyLong())).thenAnswer(invocation -> {
+            accountHandler.initialize();
+            return List.of(record(ECHO_SERIAL, System.currentTimeMillis() + 5_000, "from the old lifecycle"));
+        });
+
+        accountHandler.handleCommand(REFRESH_CHANNEL, OnOffType.ON);
+
+        verify(echoCallback, never()).stateUpdated(eq(LAST_VOICE_CHANNEL), any());
+    }
+
+    @Test
+    public void testAMalformedRecordDoesNotStopTheWellFormedOnes() throws ConnectionException {
+        CustomerHistoryRecordTO malformed = record(ECHO_SERIAL, ONE_HOUR_BEFORE_START + 1, "unreachable");
+        malformed.recordKey = null;
+        when(connection.getActivities(anyLong(), anyLong()))
+                .thenReturn(List.of(malformed, record(ECHO_SERIAL, ONE_HOUR_BEFORE_START + 2, "the good one")));
+
+        accountHandler.handleCommand(REFRESH_CHANNEL, OnOffType.ON);
+
+        verify(echoCallback).stateUpdated(LAST_VOICE_CHANNEL, new StringType("the good one"));
+    }
+
+    @Test
+    public void testPollingSurvivesAFailedRequest() throws ConnectionException {
+        when(connection.getActivities(anyLong(), anyLong())).thenThrow(new ConnectionException("session expired"))
+                .thenReturn(List.of());
+        initializeWith(Map.of("activityPollingInterval", 1));
+
+        verify(connection, timeout(8 * ONE_POLL_MILLIS).atLeast(2)).getActivities(anyLong(), anyLong());
+    }
+
+    @Test
+    public void testFailedPollsDoubleTheIntervalUpToTheHourlyRefresh() {
+        assertTrue(AccountHandler.failedPollTicksToSkip(1, 60) == 1, "the first failure skips one tick");
+        assertTrue(AccountHandler.failedPollTicksToSkip(2, 60) == 3, "the second failure skips three ticks");
+        assertTrue(AccountHandler.failedPollTicksToSkip(12, 60) == 59, "the skip is capped at the hourly refresh");
+        assertTrue(AccountHandler.failedPollTicksToSkip(3, 3600) == 0, "an hourly poll never skips");
     }
 }

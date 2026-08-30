@@ -625,19 +625,14 @@ public class Connection {
         return List.of();
     }
 
-    public List<CustomerHistoryRecordTO> getActivities(long startTime, long endTime) {
-        try {
-            String url = getRetailUrl() + "/alexa-privacy/apd/rvh/customer-history-records?startTime=" + startTime
-                    + "&endTime=" + endTime;
-            CustomerHistoryRecordsTO customerHistoryRecords = requestBuilder.get(url)
-                    .syncSend(CustomerHistoryRecordsTO.class);
-            return customerHistoryRecords.customerHistoryRecords.stream()
-                    .filter(r -> !"DEVICE_ARBITRATION".equals(r.utteranceType))
-                    .sorted(Comparator.comparing(r -> r.timestamp)).toList();
-        } catch (ConnectionException e) {
-            logger.info("getting activities failed", e);
-        }
-        return List.of();
+    public List<CustomerHistoryRecordTO> getActivities(long startTime, long endTime) throws ConnectionException {
+        String url = getRetailUrl() + "/alexa-privacy/apd/rvh/customer-history-records?startTime=" + startTime
+                + "&endTime=" + endTime;
+        CustomerHistoryRecordsTO customerHistoryRecords = requestBuilder.get(url)
+                .syncSend(CustomerHistoryRecordsTO.class);
+        return customerHistoryRecords.customerHistoryRecords.stream()
+                .filter(r -> !"DEVICE_ARBITRATION".equals(r.utteranceType))
+                .sorted(Comparator.comparing(r -> r.timestamp)).toList();
     }
 
     public @Nullable NamedListsInfoTO getNamedListInfo(String listId) {
