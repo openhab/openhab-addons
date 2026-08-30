@@ -77,6 +77,15 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="dimmerSwitch">
+		<label>Dimmer Switch</label>
+		<description>Kasa Smart Wi-Fi Dimmer Switch</description>
+		<channels>
+			<channel id="output" typeId="lightOn"/>
+			<channel id="brightness" typeId="dimmerChannel"/>
+		</channels>
+	</channel-group-type>
+
 	<!-- Color Channel Type -->
 	<channel-group-type id="colorBulb">
 		<label>Color Light Bulb</label>

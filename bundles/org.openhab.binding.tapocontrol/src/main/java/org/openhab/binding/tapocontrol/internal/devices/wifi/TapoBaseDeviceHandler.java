@@ -499,6 +499,10 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, baseDeviceData.getHardwareVersion());
         properties.put(Thing.PROPERTY_MODEL_ID, baseDeviceData.getModel());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, baseDeviceData.getDeviceId());
+        String alias = baseDeviceData.getNickname();
+        if (!alias.isBlank()) {
+            properties.put(PROPERTY_ALIAS, alias);
+        }
         updateProperties(properties);
     }
 
