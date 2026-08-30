@@ -14,7 +14,6 @@ package org.openhab.binding.astro.internal.model;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.InstantSource;
 import java.time.ZoneId;
 import java.util.Map;
 import java.util.Objects;
@@ -45,26 +44,35 @@ public class MoonPhaseSet {
     public static final MoonPhaseSet NONE = new MoonPhaseSet();
 
     private final Map<MoonPhase, Instant> phases;
-    private final Instant parentNewMoon;
-    private final InstantSource instantSource;
+    private final Instant currentInstant;
+    private final Instant previousNewMoon;
+    private final Instant nextNewMoon;
 
     private double illumination;
     private @Nullable MoonPhase name;
 
-    private MoonPhaseSet(InstantSource instantSource, Instant parentNewMoon, Map<MoonPhase, Instant> phases) {
+    private MoonPhaseSet(Instant currentInstant, Instant previousNewMoon, Instant nextNewMoon,
+            Map<MoonPhase, Instant> phases) {
         this.phases = phases;
-        this.parentNewMoon = parentNewMoon;
-        this.instantSource = instantSource;
+        this.currentInstant = currentInstant;
+        this.previousNewMoon = previousNewMoon;
+        this.nextNewMoon = nextNewMoon;
     }
 
     private MoonPhaseSet() {
-        this(InstantSource.system(), Instant.MIN, Map.of());
+        this(Instant.MIN, Instant.MIN, Instant.MAX, Map.of());
     }
 
-    public MoonPhaseSet(InstantSource instantSource, double parentNewMoon, Map<MoonPhase, Double> comingPhases) {
-        this(instantSource, DateTimeUtils.jdToInstant(parentNewMoon),
+    public MoonPhaseSet(double julianDate, double previousNewMoon, double nextNewMoon,
+            Map<MoonPhase, Double> comingPhases) {
+        this(DateTimeUtils.jdToInstant(julianDate), DateTimeUtils.jdToInstant(previousNewMoon),
+                DateTimeUtils.jdToInstant(nextNewMoon),
                 comingPhases.keySet().stream().collect(Collectors.toMap(Function.identity(),
                         k -> DateTimeUtils.jdToInstant(Objects.requireNonNull(comingPhases.get(k))))));
+    }
+
+    public MoonPhaseSet withJulianDate(double julianDate) {
+        return new MoonPhaseSet(DateTimeUtils.jdToInstant(julianDate), previousNewMoon, nextNewMoon, phases);
     }
 
     public Instant getPhase(MoonPhase phase) {
@@ -86,7 +94,7 @@ public class MoonPhaseSet {
     }
 
     public double getAgePercentDouble() {
-        return ((double) Duration.between(parentNewMoon, instantSource.instant()).getSeconds()) / getMonthDuration();
+        return ((double) Duration.between(previousNewMoon, currentInstant).getSeconds()) / getMonthDuration();
     }
 
     /**
@@ -142,10 +150,10 @@ public class MoonPhaseSet {
         Instant instant = DateTimeUtils.jdToInstant(julianDate);
         Instant phaseDate = getPhase(phaseName);
         return DateTimeUtils.isSameDay(instant, phaseDate, zone)
-                || (MoonPhase.NEW.equals(phaseName) && DateTimeUtils.isSameDay(instant, parentNewMoon, zone));
+                || (MoonPhase.NEW.equals(phaseName) && DateTimeUtils.isSameDay(instant, previousNewMoon, zone));
     }
 
     private long getMonthDuration() {
-        return Duration.between(parentNewMoon, getPhase(MoonPhase.NEW)).getSeconds();
+        return Duration.between(previousNewMoon, nextNewMoon).getSeconds();
     }
 }

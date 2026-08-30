@@ -15,7 +15,6 @@ package org.openhab.binding.astro.internal.calc;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
-import java.time.InstantSource;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -59,7 +58,7 @@ public class MoonPhaseCalcTest {
 
     @BeforeEach
     public void init() {
-        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1551225600000L)));
+        moonCalc = new MoonCalc();
     }
 
     @Test
@@ -73,9 +72,8 @@ public class MoonPhaseCalcTest {
 
     @Test
     public void testGetMoonInfoForMoonPhaseAccuracy() {
-        InstantSource instantSource = InstantSource.fixed(Instant.ofEpochMilli(1551225600000L));
-        MoonPhaseSet moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.dateToJulianDate(FEB_27_2019),
-                MoonPhaseSet.NONE, ZONE);
+        MoonPhaseSet moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.dateToJulianDate(FEB_27_2019), MoonPhaseSet.NONE,
+                ZONE);
 
         // New moon 06 March 2019 17:04 - jd : 2458549.1702492456
         // First quarter 14 March 2019 11:27 - jd : 2458556.936169754
@@ -98,21 +96,34 @@ public class MoonPhaseCalcTest {
         assertEquals(newCalendar(2019, Calendar.MARCH, 28, 05, 10, TIME_ZONE).getTimeInMillis(), phaseTQ.toEpochMilli(),
                 ACCURACY_IN_MILLIS);
 
-        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseNew), DateTimeUtils.instantToJulianDay(phaseNew),
-                MoonPhaseSet.NONE, ZONE);
+        moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(phaseNew), MoonPhaseSet.NONE, ZONE);
         assertEquals(0, moonPhase.getIllumination().doubleValue(), 0.01);
 
-        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseFull), DateTimeUtils.instantToJulianDay(phaseFull),
-                MoonPhaseSet.NONE, ZONE);
+        moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(phaseFull), MoonPhaseSet.NONE, ZONE);
         assertEquals(1, moonPhase.getIllumination().doubleValue(), 0.01);
 
-        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseTQ), DateTimeUtils.instantToJulianDay(phaseTQ),
-                MoonPhaseSet.NONE, ZONE);
+        moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(phaseTQ), MoonPhaseSet.NONE, ZONE);
         assertEquals(0.5, moonPhase.getIllumination().doubleValue(), 0.01);
 
-        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseFQ), DateTimeUtils.instantToJulianDay(phaseFQ),
-                MoonPhaseSet.NONE, ZONE);
+        moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(phaseFQ), MoonPhaseSet.NONE, ZONE);
         assertEquals(0.5, moonPhase.getIllumination().doubleValue(), 0.01);
+    }
+
+    @Test
+    public void testMoonAgeAfterNewMoonAcrossUtcDateBoundary() {
+        Instant instant = newCalendar(2019, Calendar.MARCH, 7, 0, 30, TIME_ZONE).toInstant();
+
+        MoonPhaseSet moonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(instant), MoonPhaseSet.NONE,
+                ZONE);
+
+        double agePercent = moonPhase.getAgePercent().doubleValue();
+        assertTrue(agePercent >= 0 && agePercent <= 1);
+        assertEquals(MoonPhase.WAXING_CRESCENT.toString(), moonPhase.getName().toString());
+
+        Instant nextDay = newCalendar(2019, Calendar.MARCH, 8, 0, 30, TIME_ZONE).toInstant();
+        MoonPhaseSet updatedMoonPhase = MoonPhaseCalc.calculate(DateTimeUtils.instantToJulianDay(nextDay), moonPhase,
+                ZONE);
+        assertTrue(updatedMoonPhase.getAgePercent().doubleValue() > agePercent);
     }
 
     /***
