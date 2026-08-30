@@ -109,11 +109,12 @@ public class HttpRequestBuilder {
         request.header(ACCEPT_LANGUAGE, "en-US");
         request.header("DNT", "1");
         request.header("Upgrade-Insecure-Requests", "1");
-        if (!params.customHeaders().containsKey(USER_AGENT.toString())) {
-            request.agent(DEFAULT_USER_AGENT);
-        }
-        params.customHeaders().entrySet().stream().filter(h -> !h.getValue().isBlank())
-                .forEach(h -> request.header(h.getKey(), h.getValue()));
+        String customUserAgent = params.customHeaders().entrySet().stream()
+                .filter(header -> USER_AGENT.is(header.getKey())).map(Map.Entry::getValue).findFirst().orElse("");
+        request.agent(customUserAgent.isBlank() ? DEFAULT_USER_AGENT : customUserAgent);
+        params.customHeaders().entrySet().stream()
+                .filter(header -> !header.getValue().isBlank() && !USER_AGENT.is(header.getKey()))
+                .forEach(header -> request.header(header.getKey(), header.getValue()));
 
         // handle re-directs in response listener manually
         request.followRedirects(false);

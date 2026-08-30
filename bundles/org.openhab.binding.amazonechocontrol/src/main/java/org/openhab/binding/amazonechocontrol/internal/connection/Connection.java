@@ -134,6 +134,10 @@ import com.google.gson.JsonObject;
 public class Connection {
     private static final String THING_THREADPOOL_NAME = "thingHandler";
     private static final long EXPIRES_IN = 432000; // five days
+    // Amazon answers /api/notifications with 400 ThrottlingException for the app agent the binding otherwise
+    // sends, and with 200 for a browser agent; a quiet window of hours does not clear the 400.
+    private static final String NOTIFICATIONS_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
+            + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
 
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
@@ -1388,6 +1392,7 @@ public class Connection {
     public List<NotificationTO> getNotifications() throws ConnectionException {
         // propagates the exception: an empty list is indistinguishable from "no notifications set"
         return requestBuilder.get(getAlexaServer() + "/api/notifications")
+                .withHeader("User-Agent", NOTIFICATIONS_USER_AGENT)
                 .syncSend(NotificationListResponseTO.class).notifications;
     }
 

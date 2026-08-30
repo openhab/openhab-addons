@@ -18,6 +18,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Answers.RETURNS_SELF;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -56,6 +59,8 @@ public class HttpRequestBuilderTest {
     private static final String THROTTLING_ERROR_TYPE = "ThrottlingException:"
             + "http://internal.amazon.com/coral/com.amazon.alexa.exceptions/";
     private static final URI REQUEST_URI = URI.create("https://alexa.amazon.de/api/notifications");
+    private static final String BROWSER_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
+            + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
 
     @Test
     public void testMissingErrorTypeHeaderIsNotThrottled() {
@@ -115,6 +120,41 @@ public class HttpRequestBuilderTest {
         assertThat(httpResponse.isCompletedExceptionally(), is(true));
         ExecutionException failure = assertThrows(ExecutionException.class, httpResponse::get);
         assertThat(failure.getCause().getMessage(), containsString("ThrottlingException"));
+    }
+
+    @Test
+    public void testACustomUserAgentReplacesTheClientAgentInsteadOfAddingASecondOne() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("User-Agent", BROWSER_USER_AGENT).send();
+
+        verify(request).agent(BROWSER_USER_AGENT);
+        verify(request, never()).header(eq("User-Agent"), anyString());
+    }
+
+    @Test
+    public void testAMixedCaseUserAgentKeyStillReplacesTheClientAgent() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("user-agent", BROWSER_USER_AGENT).send();
+
+        verify(request).agent(BROWSER_USER_AGENT);
+        verify(request, never()).header(eq("user-agent"), anyString());
+    }
+
+    @Test
+    public void testARequestWithoutAnOverrideKeepsTheAppUserAgent() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).send();
+
+        verify(request).agent(contains("AmazonWebView"));
+    }
+
+    private HttpRequestBuilder requestBuilderFor(Request request) {
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClient.newRequest(any(URI.class))).thenReturn(request);
+        return new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
     }
 
     private Result throttledResult(HttpFields headers) {
