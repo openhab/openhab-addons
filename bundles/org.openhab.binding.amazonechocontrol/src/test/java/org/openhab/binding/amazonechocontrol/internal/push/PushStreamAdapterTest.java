@@ -297,6 +297,35 @@ public class PushStreamAdapterTest {
         assertThat(spannedFrames(true, 0), is(false));
     }
 
+    @Test
+    public void aQuotedBoundaryParameterIsAccepted() {
+        adapter.onHeaders(stream,
+                headersFrame("multipart/related; boundary=\"" + BOUNDARY + "\"; type=application/json"));
+
+        sendData(MESSAGE_PART);
+
+        assertThat(receivedUpdates, hasSize(1));
+    }
+
+    @Test
+    public void aLineWrapRightAfterTheBoundaryValueDoesNotSplitTheMessage() {
+        // the dangerous shape: a payload line ending exactly with the boundary value, newline and all
+        String json = MESSAGE_JSON.replace("resource-id", "wrap at " + BOUNDARY + "\r\n continues");
+        sendData("Content-Type: application/json\r\n\r\n" + json + "\r\n" + BOUNDARY + "\r\n");
+
+        assertThat(receivedUpdates, hasSize(1));
+        assertThat(receivedUpdates.get(0).route, is("DeeAppMessage"));
+    }
+
+    @Test
+    public void aCompleteMessageLeavesNothingInTheBuffer() {
+        sendData(MESSAGE_PART);
+        assertThat(adapter.bufferedByteCount(), is(0));
+
+        sendData(MESSAGE_PART);
+        assertThat(receivedUpdates, hasSize(2));
+    }
+
     private static byte[] slice(byte[] data, int from, int to) {
         byte[] result = new byte[to - from];
         System.arraycopy(data, from, result, 0, result.length);

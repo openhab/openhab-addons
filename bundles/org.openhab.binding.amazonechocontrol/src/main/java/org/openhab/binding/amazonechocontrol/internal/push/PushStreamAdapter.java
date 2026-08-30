@@ -18,9 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http2.api.Session;
 import org.eclipse.jetty.http2.api.Stream;
@@ -28,6 +28,7 @@ import org.eclipse.jetty.http2.frames.DataFrame;
 import org.eclipse.jetty.http2.frames.HeadersFrame;
 import org.eclipse.jetty.http2.frames.PingFrame;
 import org.eclipse.jetty.util.Callback;
+import org.eclipse.jetty.util.QuotedStringTokenizer;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushMessageTO;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpUtil;
 import org.slf4j.Logger;
@@ -45,7 +46,6 @@ import com.google.gson.Gson;
 public class PushStreamAdapter extends Stream.Listener.Adapter {
     // real messages are a few KiB, the limit is only reached if the boundary never arrives
     static final int MAX_BUFFER_SIZE = 512 * 1024;
-    private static final Pattern DASHES_ONLY = Pattern.compile("-+");
 
     private final Logger logger = LoggerFactory.getLogger(PushStreamAdapter.class);
     private final Gson gson;
@@ -75,14 +75,24 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
             logger.warn("Headers of HTTP/2 stream don't contain content-type");
             return;
         }
-        int boundaryStart = contentType.indexOf("boundary=");
-        if (boundaryStart == -1) {
+        String boundaryParameter = boundaryParameterOf(contentType);
+        if (boundaryParameter.isEmpty()) {
             logger.warn("Content-type of HTTP/2 stream doesn't contain a boundary: {}", contentType);
             return;
         }
-        int boundaryEnd = contentType.indexOf(";", boundaryStart);
-        boundary = contentType.substring(boundaryStart + 9, boundaryEnd == -1 ? contentType.length() : boundaryEnd);
+        boundary = boundaryParameter;
         boundaryBytes = boundary.getBytes(StandardCharsets.UTF_8);
+    }
+
+    /** RFC 2046 permits (and sometimes requires) a quoted boundary parameter, so the quotes are not part of it. */
+    static String boundaryParameterOf(String contentType) {
+        for (String parameter : contentType.split(";")) {
+            String trimmed = parameter.trim();
+            if (trimmed.regionMatches(true, 0, "boundary=", 0, 9)) {
+                return QuotedStringTokenizer.unquote(trimmed.substring(9).trim());
+            }
+        }
+        return "";
     }
 
     @Override
@@ -120,12 +130,12 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
     private void processBuffer(int bytesCarriedOver) {
         byte[] data = buffer.toByteArray();
         int consumed = 0;
-        int boundaryPos;
         boolean firstCompletedPart = true;
-        while ((boundaryPos = indexOf(data, boundaryBytes, consumed)) != -1) {
-            String part = new String(data, consumed, boundaryPos - consumed, StandardCharsets.UTF_8);
+        int[] delimiterLine;
+        while ((delimiterLine = nextDelimiterLine(data, consumed)) != null) {
+            String part = new String(data, consumed, delimiterLine[0] - consumed, StandardCharsets.UTF_8);
             // the part counts as consumed even if it fails, a bad message must not wedge the stream
-            consumed = boundaryPos + boundaryBytes.length;
+            consumed = delimiterLine[1];
             if (spannedFrames(firstCompletedPart, bytesCarriedOver)) {
                 logger.debug("Completed a message of {} characters that arrived split over several frames",
                         part.length());
@@ -150,10 +160,7 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
     }
 
     private void handlePart(String part) {
-        // the delimiter on the wire may be the boundary parameter itself or "--" + parameter (RFC 2046),
-        // splitting at the parameter leaves the extra dashes behind as a line of their own
-        List<String> content = part.lines()
-                .filter(line -> !line.isBlank() && !DASHES_ONLY.matcher(line.strip()).matches()).toList();
+        List<String> content = part.lines().filter(line -> !line.isBlank()).toList();
         if (content.isEmpty()) {
             // a bare boundary is a keep-alive that requires a PING response
             logger.debug("Sending ping");
@@ -179,6 +186,42 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
             logger.warn(message, arguments);
             failureLogged = true;
         }
+    }
+
+    /**
+     * Finds the next complete delimiter line (optional dashes plus the boundary, alone on a line - anywhere
+     * else the value is payload, RFC 2046) as line start and end, or null while the line is still incomplete.
+     */
+    private int @Nullable [] nextDelimiterLine(byte[] data, int fromIndex) {
+        int position = fromIndex;
+        while ((position = indexOf(data, boundaryBytes, position)) != -1) {
+            int lineStart = position;
+            while (lineStart > fromIndex && data[lineStart - 1] == '-') {
+                lineStart--;
+            }
+            boolean atLineStart = lineStart == 0 || data[lineStart - 1] == '\n';
+            int afterBoundary = position + boundaryBytes.length;
+            if (atLineStart && afterBoundary >= data.length) {
+                return null;
+            }
+            if (atLineStart && data[afterBoundary] == '\n') {
+                return new int[] { lineStart, afterBoundary + 1 };
+            }
+            if (atLineStart && data[afterBoundary] == '\r') {
+                if (afterBoundary + 1 >= data.length) {
+                    return null;
+                }
+                if (data[afterBoundary + 1] == '\n') {
+                    return new int[] { lineStart, afterBoundary + 2 };
+                }
+            }
+            position = position + 1;
+        }
+        return null;
+    }
+
+    int bufferedByteCount() {
+        return buffer.size();
     }
 
     private static int indexOf(byte[] data, byte[] pattern, int fromIndex) {
