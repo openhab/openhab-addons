@@ -19,9 +19,34 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Florian Hotze - Initial contribution
  */
-public record TirePressureWarning(@Override @SerializedName("tirePressureLampAll") int all,
-        @Override @SerializedName("tirePressureLampFL") int frontLeft,
-        @Override @SerializedName("tirePressureLampFR") int frontRight,
-        @Override @SerializedName("tirePressureLampRL") int rearLeft,
-        @Override @SerializedName("tirePressureLampRR") int rearRight) implements ITirePressureWarning {
+public record TirePressureWarning(@Override @SerializedName("tirePressureLampAll") int rawAll,
+        @Override @SerializedName("tirePressureLampFL") int rawFrontLeft,
+        @Override @SerializedName("tirePressureLampFR") int rawFrontRight,
+        @Override @SerializedName("tirePressureLampRL") int rawRearLeft,
+        @Override @SerializedName("tirePressureLampRR") int rawRearRight) implements ITirePressureWarning {
+
+    @Override
+    public boolean all() {
+        return rawAll > 0;
+    }
+
+    @Override
+    public boolean frontLeft() {
+        return rawFrontLeft > 0;
+    }
+
+    @Override
+    public boolean frontRight() {
+        return rawFrontRight > 0;
+    }
+
+    @Override
+    public boolean rearLeft() {
+        return rawRearLeft > 0;
+    }
+
+    @Override
+    public boolean rearRight() {
+        return rawRearRight > 0;
+    }
 }
