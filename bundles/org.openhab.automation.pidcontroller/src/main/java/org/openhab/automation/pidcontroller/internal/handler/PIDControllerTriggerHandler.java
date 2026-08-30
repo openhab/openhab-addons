@@ -39,6 +39,8 @@ import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.items.events.ItemStateChangedEvent;
 import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -72,6 +74,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private @Nullable String dInspector;
     private @Nullable String eInspector;
     private ItemRegistry itemRegistry;
+    private @Nullable String integralHoldItemName;
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
             BundleContext bundleContext) {
@@ -110,6 +113,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double iMinValue = getDoubleFromConfig(config, CONFIG_I_MIN);
         double iMaxValue = getDoubleFromConfig(config, CONFIG_I_MAX);
         double integralDecayTime = getDoubleFromConfig(config, CONFIG_I_DECAY_TIME);
+        integralHoldItemName = (String) config.get(CONFIG_I_HOLD_ITEM);
+        boolean directionalIntegralHold = getBooleanFromConfig(config, CONFIG_I_HOLD_DIRECTIONAL);
         pInspector = (String) config.get(P_INSPECTOR);
         iInspector = (String) config.get(I_INSPECTOR);
         dInspector = (String) config.get(D_INSPECTOR);
@@ -123,7 +128,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double previousError = getItemNameValueAsNumberOrZero(itemRegistry, eInspector);
 
         controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant, iMinValue, iMaxValue,
-                integralDecayTime, previousIntegralPart, previousDerivativePart, previousError);
+                integralDecayTime, directionalIntegralHold, previousIntegralPart, previousDerivativePart,
+                previousError);
 
         eventFilter = event -> {
             String topic = event.getTopic();
@@ -152,6 +158,31 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         return obj;
     }
 
+    /**
+     * Whether the caller is currently reporting that the actuator cannot act on the process, in which case the I-part
+     * must not keep accumulating. Anything that is not a definite "on" leaves the controller integrating, so a missing
+     * or uninitialised item cannot silently freeze the loop.
+     */
+    private boolean isIntegralHeld() {
+        String itemName = integralHoldItemName;
+        if (itemName == null || itemName.isBlank()) {
+            return false;
+        }
+        try {
+            State state = itemRegistry.getItem(itemName).getState();
+            if (state instanceof OnOffType onOff) {
+                return onOff == OnOffType.ON;
+            }
+            if (state instanceof OpenClosedType openClosed) {
+                return openClosed == OpenClosedType.CLOSED;
+            }
+            return false;
+        } catch (ItemNotFoundException e) {
+            logger.warn("Integral hold Item '{}' not found, continuing to integrate", itemName);
+            return false;
+        }
+    }
+
     private double getDoubleFromConfig(Configuration config, String key) {
         Object rawValue = config.get(key);
 
@@ -160,6 +191,19 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         }
 
         return ((BigDecimal) rawValue).doubleValue();
+    }
+
+    private boolean getBooleanFromConfig(Configuration config, String key) {
+        Object rawValue = config.get(key);
+
+        if (rawValue instanceof Boolean booleanValue) {
+            return booleanValue;
+        }
+        if (rawValue instanceof String stringValue) {
+            return Boolean.parseBoolean(stringValue);
+        }
+
+        return false;
     }
 
     private void calculate() {
@@ -182,7 +226,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
         long now = System.currentTimeMillis();
 
-        PIDOutputDTO output = controller.calculate(input, setpoint, now - previousTimeMs, loopTimeMs);
+        PIDOutputDTO output = controller.calculate(input, setpoint, now - previousTimeMs, loopTimeMs, isIntegralHeld());
         previousTimeMs = now;
 
         updateItem(pInspector, output.getProportionalPart());

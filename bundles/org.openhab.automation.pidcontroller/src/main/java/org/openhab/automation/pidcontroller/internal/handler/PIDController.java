@@ -36,15 +36,17 @@ class PIDController {
     private double iMinResult;
     private double iMaxResult;
     private double integralDecayTimeSec;
+    private boolean directionalIntegralHold;
 
     public PIDController(double kpAdjuster, double kiAdjuster, double kdAdjuster, double derivativeTimeConstantSec,
-            double iMinValue, double iMaxValue, double integralDecayTimeSec, double previousIntegralPart,
-            double previousDerivativePart, double previousError) {
+            double iMinValue, double iMaxValue, double integralDecayTimeSec, boolean directionalIntegralHold,
+            double previousIntegralPart, double previousDerivativePart, double previousError) {
         this.kp = kpAdjuster;
         this.ki = kiAdjuster;
         this.kd = kdAdjuster;
         this.derivativeTimeConstantSec = derivativeTimeConstantSec;
         this.integralDecayTimeSec = integralDecayTimeSec;
+        this.directionalIntegralHold = directionalIntegralHold;
         this.iMinResult = Double.NaN;
         this.iMaxResult = Double.NaN;
 
@@ -75,6 +77,11 @@ class PIDController {
     }
 
     public PIDOutputDTO calculate(double input, double setpoint, long lastInvocationMs, int loopTimeMs) {
+        return calculate(input, setpoint, lastInvocationMs, loopTimeMs, false);
+    }
+
+    public PIDOutputDTO calculate(double input, double setpoint, long lastInvocationMs, int loopTimeMs,
+            boolean integralHold) {
         final double lastInvocationSec = lastInvocationMs / 1000d;
         final double error = setpoint - input;
         final double errorChange = error - previousError;
@@ -87,7 +94,25 @@ class PIDController {
         previousError = error;
 
         // integral calculation
-        integralResult += error * lastInvocationMs / loopTimeMs;
+        //
+        // The hold suspends accumulation while the caller reports that the actuator cannot act on the process, for
+        // instance a mixing damper whose supply air is on the wrong side of the room temperature. The controller
+        // cannot detect that itself: the output is not saturated and the error is real, but nothing the controller
+        // does can reduce it, so integrating simply winds the I-part to its limit and mutes the loop once the plant
+        // recovers. What is already accumulated is deliberately kept, because it still describes the steady-state
+        // action the process needs; only the growth is suspended.
+        //
+        // A plain hold is symmetric: it also blocks the step that would bring the accumulator back, so a loop held
+        // through a long un-actuatable period stays stuck at whatever it had reached even after the process starts
+        // moving the right way again. Directional holding suspends only the step that pushes the accumulator further
+        // from zero and lets the opposite step through, which is the conditional-integration form of anti-windup. The
+        // caller can then report the plant condition continuously, without having to decide when to stop reporting it
+        // for the loop to be able to recover.
+        final double integralStep = error * lastInvocationMs / loopTimeMs;
+        if (!integralHold
+                || (directionalIntegralHold && Math.abs(integralResult + integralStep) < Math.abs(integralResult))) {
+            integralResult += integralStep;
+        }
 
         // Integral decay: bleed the accumulator towards zero while the error is no longer moving away from the
         // setpoint.

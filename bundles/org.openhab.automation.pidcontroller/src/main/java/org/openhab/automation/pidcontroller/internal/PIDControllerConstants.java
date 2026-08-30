@@ -35,6 +35,8 @@ public class PIDControllerConstants {
     public static final String CONFIG_I_MAX = "integralMaxValue";
     public static final String CONFIG_I_MIN = "integralMinValue";
     public static final String CONFIG_I_DECAY_TIME = "integralDecayTime";
+    public static final String CONFIG_I_HOLD_ITEM = "integralHoldItem";
+    public static final String CONFIG_I_HOLD_DIRECTIONAL = "integralHoldDirectional";
     public static final String P_INSPECTOR = "pInspector";
     public static final String I_INSPECTOR = "iInspector";
     public static final String D_INSPECTOR = "dInspector";
