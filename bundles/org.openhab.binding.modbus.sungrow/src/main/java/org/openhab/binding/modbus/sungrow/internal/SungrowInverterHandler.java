@@ -188,17 +188,26 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         this.submitOneTimePoll(getDeviceInfo, this::updateDeviceInfoProperties, this::readError);
     }
 
-    private void updateVersionProperties(AsyncModbusReadResult result) {
+    void updateVersionProperties(AsyncModbusReadResult result) {
         result.getRegisters().ifPresent(registers -> {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
 
-            long protocolNo = ModbusBitUtilities.extractUInt32(registers.getBytes(), 0);
-            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_PROTOCOL_NUMBER, String.valueOf(protocolNo));
-            long protocolVersion = ModbusBitUtilities.extractUInt32(registers.getBytes(), 4);
-            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_PROTOCOL_VERSION,
-                    String.valueOf(protocolVersion));
+            // Protocol number is stored with swapped register order: register 2 holds the first two chars,
+            // register 1 holds the last char and the NUL terminator.
+            byte[] rawBytes = registers.getBytes();
+            byte[] protocolNumberBytes = new byte[] { rawBytes[2], rawBytes[3], rawBytes[0], rawBytes[1] };
+            String protocolNumber = ModbusBitUtilities.extractStringFromBytes(protocolNumberBytes, 0, 4,
+                    StandardCharsets.UTF_8);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_PROTOCOL_NUMBER, protocolNumber);
+
+            // Protocol version is stored as 4 individual version-component bytes in swapped register order
+            // (register 2 holds major/minor, register 1 holds patch/build).
+            long rawVersion = ModbusBitUtilities.extractUInt32Swap(registers.getBytes(), 4);
+            String protocolVersion = "V" + ((rawVersion >> 24) & 0xFF) + "." + ((rawVersion >> 16) & 0xFF) + "."
+                    + ((rawVersion >> 8) & 0xFF);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_PROTOCOL_VERSION, protocolVersion);
             String certVersionArm = ModbusBitUtilities.extractStringFromRegisters(registers, 4, 28,
                     StandardCharsets.UTF_8);
             getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_ARM_CERT_VERSION_NUMBER, certVersionArm);
