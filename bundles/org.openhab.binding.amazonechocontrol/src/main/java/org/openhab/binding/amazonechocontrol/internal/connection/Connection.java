@@ -149,6 +149,7 @@ public class Connection {
     private CookieManager cookieManager = new CookieManager();
     private final HttpRequestBuilder requestBuilder;
     private @Nullable Date verifyTime;
+    private volatile boolean closed = false;
     private long connectionExpiryTime = 0;
     private long accessTokenExpiryTime = 0;
     private @Nullable String customerName;
@@ -185,8 +186,7 @@ public class Connection {
             this.loginData = new LoginData(cookieManager);
         }
 
-        replaceTimer(TimerType.DEVICES,
-                scheduler.scheduleWithFixedDelay(this::handleExecuteSequenceNode, 0, 500, TimeUnit.MILLISECONDS));
+        ensureSequenceNodeDispatcherIsRunning();
     }
 
     public HttpRequestBuilder getRequestBuilder() {
@@ -219,8 +219,10 @@ public class Connection {
     }
 
     public boolean isSequenceNodeQueueRunning() {
-        return devices.values().stream().anyMatch(
-                (queueObjects) -> (queueObjects.stream().anyMatch(queueObject -> queueObject.future != null)));
+        synchronized (devices) {
+            return devices.values().stream().anyMatch(
+                    (queueObjects) -> (queueObjects.stream().anyMatch(queueObject -> queueObject.future != null)));
+        }
     }
 
     public boolean restoreLogin(@Nullable String data, @Nullable String overloadedDomain) {
@@ -479,7 +481,7 @@ public class Connection {
     }
 
     public boolean verifyLogin() throws ConnectionException {
-        if (this.loginData.getRefreshToken() == null || !tryGetCustomerData()) {
+        if (closed || this.loginData.getRefreshToken() == null || !tryGetCustomerData()) {
             verifyTime = null;
             return false;
         }
@@ -487,7 +489,31 @@ public class Connection {
         if (loginData.getLoginTime() == null) {
             loginData.setLoginTime(verifyTime);
         }
+        ensureSequenceNodeDispatcherIsRunning();
         return true;
+    }
+
+    void ensureSequenceNodeDispatcherIsRunning() {
+        // scheduling inside compute keeps at-most-one-dispatcher atomic; the task never touches timers
+        timers.compute(TimerType.DEVICES, (type, dispatcher) -> {
+            if (closed || isLive(dispatcher)) {
+                return dispatcher;
+            }
+            return scheduler.scheduleWithFixedDelay(this::handleExecuteSequenceNode, 0, 500, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    private static boolean isLive(@Nullable ScheduledFuture<?> dispatcher) {
+        return dispatcher != null && !dispatcher.isCancelled() && !dispatcher.isDone();
+    }
+
+    boolean isSequenceNodeDispatcherRunning() {
+        return isLive(timers.get(TimerType.DEVICES));
+    }
+
+    @Nullable
+    ScheduledFuture<?> sequenceNodeDispatcher() {
+        return timers.get(TimerType.DEVICES);
     }
 
     // current value in compute can be null
@@ -498,6 +524,15 @@ public class Connection {
             }
             return newTimer;
         });
+    }
+
+    public void close() {
+        closed = true;
+        logout(false);
+    }
+
+    public boolean isClosed() {
+        return closed;
     }
 
     public void logout(boolean reset) {
@@ -524,8 +559,8 @@ public class Connection {
         replaceTimer(TimerType.VOLUME, null);
         volumes.clear();
         replaceTimer(TimerType.DEVICES, null);
+        replaceTimer(TimerType.TEXT_COMMAND, null);
         textCommands.clear();
-        replaceTimer(TimerType.TTS, null);
 
         devices.values().forEach((queueObjects) -> queueObjects.forEach((queueObject) -> {
             Future<?> future = queueObject.future;
@@ -534,6 +569,7 @@ public class Connection {
                 queueObject.future = null;
             }
         }));
+        devices.clear();
     }
 
     // commands and states
@@ -1108,7 +1144,11 @@ public class Connection {
         Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.DEVICES, k -> new ReentrantLock()));
         if (lock.tryLock()) {
             try {
-                for (String serialNumber : devices.keySet()) {
+                List<String> serialNumbers;
+                synchronized (devices) {
+                    serialNumbers = List.copyOf(devices.keySet());
+                }
+                for (String serialNumber : serialNumbers) {
                     LinkedBlockingQueue<QueueObject> queueObjects = devices.get(serialNumber);
                     if (queueObjects != null) {
                         QueueObject queueObject = queueObjects.peek();
@@ -1144,6 +1184,8 @@ public class Connection {
                         }
                     }
                 }
+            } catch (RuntimeException e) {
+                logger.warn("Dispatching sequence nodes failed, the dispatcher stays alive", e);
             } finally {
                 lock.unlock();
             }

@@ -132,6 +132,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
     private List<EnabledFeedTO> currentFlashBriefings = List.of();
     private final Gson gson;
+    private final HttpClient httpClient;
     private int lastMessageId = 1000;
     private long nextDataRefresh = 0;
     private long nextLoginCheck = 0;
@@ -152,13 +153,14 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
     private AccountHandlerConfig handlerConfig = new AccountHandlerConfig();
     private final PushConnection pushConnection;
-    private boolean disposing = false;
+    private volatile boolean disposing = false;
     private @Nullable AccountTO accountInformation;
 
     public AccountHandler(Bridge bridge, Storage<String> stateStorage, Gson gson, HttpClient httpClient,
             HTTP2Client http2Client, AmazonEchoControlCommandDescriptionProvider commandDescriptionProvider) {
         super(bridge);
         this.gson = gson;
+        this.httpClient = httpClient;
         this.sessionStorage = stateStorage;
         this.pushConnection = new PushConnection(http2Client, gson, this, scheduler);
         this.commandDescriptionProvider = commandDescriptionProvider;
@@ -168,6 +170,9 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     @Override
     public void initialize() {
         disposing = false;
+        if (connection.isClosed()) {
+            connection = new Connection(connection, gson, httpClient);
+        }
         activityLifecycle.incrementAndGet();
         handlerConfig = getConfig().as(AccountHandlerConfig.class);
 
@@ -349,8 +354,10 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             refreshSmartHomeAfterCommandJob.cancel(true);
             this.refreshSmartHomeAfterCommandJob = null;
         }
-        pushConnection.close();
-        connection.logout(false);
+        synchronized (synchronizeConnection) {
+            pushConnection.close();
+            connection.close();
+        }
     }
 
     private void checkLogin() {
@@ -359,6 +366,9 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             logger.debug("check login {}", uid.getAsString());
 
             synchronized (synchronizeConnection) {
+                if (disposing) {
+                    return;
+                }
                 try {
                     if (connection.isLoggedIn()) {
                         if (connection.renewTokens()) {
@@ -410,6 +420,10 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
     // used to set a valid connection from the web proxy login
     public void setConnection(Connection newConnection) {
+        if (disposing || newConnection.isClosed()) {
+            newConnection.close();
+            return;
+        }
         pushConnection.close();
         connection = newConnection;
         activityLifecycle.incrementAndGet();
