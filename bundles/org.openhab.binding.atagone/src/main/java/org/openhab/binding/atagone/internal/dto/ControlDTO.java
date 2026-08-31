@@ -18,7 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Gson DTO for the {@code control} block in a {@code retrieve_reply}.
  * <p>
  * CH mode values: 1=manual, 2=auto, 3=holiday/vacation, 4=extend, 5=fireplace.
- * CH control mode: 0=heat (normal for a heating-only device), 1=auto (schedule-following).
+ * CH control mode: 0=room (room-sensor setpoint control), 1=weather (weather-compensated heating
+ * curve, no room setpoint) — independent of ch_mode.
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -26,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ControlDTO {
     /** CH circuit status bitmask (firmware-internal). */
     public int ch_status;
-    /** HVAC control mode (0=heat — normal for a heating-only device, 1=auto — schedule-following). */
+    /** Room vs. weather-compensated control (0=room, 1=weather) — independent of ch_mode. */
     public int ch_control_mode;
     /** Current preset mode (1=manual, 2=auto, 3=vacation, 4=extend, 5=fireplace, 6=standby). */
     public int ch_mode;

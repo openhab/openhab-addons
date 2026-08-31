@@ -201,22 +201,26 @@ class AtagOneApiClientLiveTest {
     @Test
     @Order(3)
     void updateControlRoundTrip() throws AtagOneCommunicationException {
-        // Read current DHW setpoint, then write it back — no change to the boiler.
+        // Read the current room setpoint, then write it back — no change to the boiler. Uses
+        // ch_mode_temp (the target-temperature channel's field), confirmed live to be a genuinely
+        // writable control field. dhw_temp_setp was used here previously, but is confirmed
+        // read-only/derived — writing it is silently accepted and has no effect, which would make
+        // this test unable to distinguish a working round-trip from a no-op write.
         RetrieveReplyDTO before = apiClient.retrieve();
-        double currentDhwSetp = before.control.dhw_temp_setp;
-        LOGGER.info("updateControl round-trip: dhw_temp_setp = {}", currentDhwSetp);
+        double currentSetpoint = before.control.ch_mode_temp;
+        LOGGER.info("updateControl round-trip: ch_mode_temp = {}", currentSetpoint);
 
         ControlUpdateDTO update = new ControlUpdateDTO();
-        update.dhw_temp_setp = currentDhwSetp;
+        update.ch_mode_temp = currentSetpoint;
 
         // Should complete without throwing
         assertDoesNotThrow(() -> apiClient.updateControl(update));
 
         // Read back and verify value is unchanged
         RetrieveReplyDTO after = apiClient.retrieve();
-        assertEquals(currentDhwSetp, after.control.dhw_temp_setp, 0.5,
-                "DHW setpoint changed unexpectedly after no-op write");
+        assertEquals(currentSetpoint, after.control.ch_mode_temp, 0.5,
+                "Room setpoint changed unexpectedly after no-op write");
 
-        LOGGER.info("updateControl round-trip: OK (dhw_temp_setp still {})", after.control.dhw_temp_setp);
+        LOGGER.info("updateControl round-trip: OK (ch_mode_temp still {})", after.control.ch_mode_temp);
     }
 }

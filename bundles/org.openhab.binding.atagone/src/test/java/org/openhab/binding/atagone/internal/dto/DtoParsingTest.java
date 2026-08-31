@@ -105,8 +105,8 @@ class DtoParsingTest {
     void controlBlockParsedCorrectly() throws IOException {
         RetrieveReplyDTO reply = loadRetrieveReply();
         assertEquals(2, reply.control.ch_mode); // automatic
-        // 0=heat (normal for a heating-only device), 1=auto — see ControlDTO's javadoc; this fixture's
-        // device is in heat mode, not auto.
+        // 0=room control, 1=weather-compensated control — independent of ch_mode, see ControlDTO's
+        // javadoc. This fixture's device is on room control.
         assertEquals(0, reply.control.ch_control_mode);
         assertEquals(60.0, reply.control.dhw_temp_setp, 0.001);
         // weather fields are in control, not report

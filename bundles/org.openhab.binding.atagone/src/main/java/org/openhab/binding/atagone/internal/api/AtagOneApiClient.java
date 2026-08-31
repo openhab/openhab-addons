@@ -45,9 +45,9 @@ import com.google.gson.JsonParser;
  * HTTP client for the ATAG ONE local API (port 10000).
  * <p>
  * Three endpoints: {@code /pair}, {@code /retrieve}, {@code /update}. All use HTTP POST with JSON.
- * The device requires at least 1 second between consecutive requests; this client enforces that
- * with a synchronized rate limiter. Transient transport errors (EOF, timeout) are retried up to
- * {@value #MAX_RETRIES} times.
+ * The device requires at least {@value #MIN_INTERVAL_MS} ms between consecutive requests; this
+ * client enforces that with a synchronized rate limiter. Transient transport errors (EOF, timeout)
+ * are retried up to {@value #MAX_RETRIES} times.
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -60,9 +60,20 @@ public class AtagOneApiClient {
      * seconds. The wifi-signal channel is unaffected: rssi is reported in the report(8) section.
      */
     private static final int INFO_BITMASK = 95;
-    private static final int REQUEST_TIMEOUT_S = 5;
-    private static final long MIN_INTERVAL_MS = 2_000L;
-    private static final int MAX_RETRIES = 5;
+    /*
+     * Timeout, rate-limit gap, and retry count were originally tuned defensively without a reference
+     * point. pyatag (https://github.com/MatsNl/pyatag), the reference client this and other ATAG ONE
+     * integrations are built on, uses a 1000ms rate-limit gap and no per-attempt timeout ceiling at
+     * all (relying on aiohttp's ~300s session default) — evidence this device's brief unresponsive
+     * windows are longer than 5s, not just occasional network noise. Loosened accordingly, though not
+     * copied outright: an unbounded timeout is unsafe for a polling binding's Thing status, and
+     * MAX_RETRIES stays well short of pyatag's 10 since retries and timeout compound — 10 attempts at
+     * 15s each could block a single poll() call for 150s, longer than even this binding's own
+     * refreshInterval.
+     */
+    private static final int REQUEST_TIMEOUT_S = 15;
+    private static final long MIN_INTERVAL_MS = 1_000L;
+    private static final int MAX_RETRIES = 7;
 
     private final Logger logger = LoggerFactory.getLogger(AtagOneApiClient.class);
 
@@ -194,9 +205,8 @@ public class AtagOneApiClient {
     }
 
     /**
-     * Sends a control update. Mode and its duration parameters must be sent together so the
-     * device applies both atomically — sending {@code ch_mode} alone leaves the duration at
-     * its previous (often hardcoded) value.
+     * Sends a control update. See {@link ControlUpdateDTO} for which fields must be combined to
+     * activate or cancel each mode.
      *
      * @param controlUpdate fields to change; null fields are omitted from the JSON body
      * @throws AtagOneCommunicationException on transport or protocol failure
@@ -256,10 +266,12 @@ public class AtagOneApiClient {
             }
         }
 
-        // The device is an HTTP/1.0 server that closes every connection after responding.
-        // Jetty's pool may hand us a stale half-closed connection on the first attempt,
-        // producing an EOFException that is not a real failure. We retry that one time for
-        // free; any subsequent EOF within the same call counts toward MAX_RETRIES normally.
+        /*
+         * The device is an HTTP/1.0 server that closes every connection after responding. Jetty's
+         * pool may hand us a stale half-closed connection on the first attempt, producing an
+         * EOFException that is not a real failure. Retry that one time for free; any subsequent EOF
+         * within the same call counts toward MAX_RETRIES normally.
+         */
         boolean staleCorrectionUsed = false;
         Exception lastException = new AtagOneCommunicationException("Unreachable");
         for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {

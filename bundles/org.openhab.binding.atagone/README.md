@@ -2,6 +2,9 @@
 
 This binding integrates the [ATAG ONE](https://www.atag.nl/producten/thermostaten/atag-one) smart thermostat with openHAB via its local HTTP API, without requiring any cloud connection or MQTT broker.
 
+For the underlying local API's field reference, write semantics, and verification status of each
+protocol detail, see [DEVELOPERS.md](DEVELOPERS.md).
+
 ## Supported Things
 
 | Thing ID | Description |
@@ -48,100 +51,192 @@ Thing atagone:thermostat:boiler "ATAG ONE" [
 
 `clientId` is omitted — the binding generates one on first pairing and persists it automatically.
 
+## BREAKING CHANGE — channels are now grouped
+
+As of this release, every channel lives under a channel group, and its UID changed from `<channel-id>` to
+`<group-id>#<channel-id>` (e.g. `room-temperature` → `heating#room-temperature`). This is required to keep the
+growing channel count navigable and matches how ATAG's own app and cloud portal organize settings.
+
+**There is no automatic migration** — openHAB's thing-type update-instruction mechanism cannot convert an
+ungrouped channel into a grouped one, and existing item links do not follow automatically. After upgrading,
+every item linked to this binding must be re-linked to its new group-qualified channel. See the table below
+for the new UID of each channel.
+
+**Deploying the jar alone is not enough for an already-existing Thing** — confirmed live: an already-initialized
+Thing does not rebuild its channel list against the new thing-type just because the jar changed underneath it,
+even after disabling and re-enabling it. Channel links to any moved/renamed channel fail with "Channel not
+found" until the Thing itself is deleted and re-added with the same UID and configuration. After that, re-link
+the channels that changed group.
+
 ## Channels
 
-### Standard channels
+Channels are organized into five groups, by subsystem: **Operating Mode** (active preset and timed
+modes — the one cross-cutting exception, since a mode isn't specific to heating or hot water),
+**Central Heating** and **Hot Water** (setpoints, status, and settings per subsystem), **Device**
+(hardware diagnostics), and **Alerts**.
+
+### Operating Mode (`control#`)
 
 | Channel ID | Type | RW | Description |
 |------------|------|----|-------------|
-| `room-temperature` | `Number:Temperature` | R | Room temperature (built-in sensor) |
-| `target-temperature` | `Number:Temperature` | RW | Target (setpoint) temperature |
-| `hvac-mode` | `String` | RW | `auto` or `heat` |
-| `preset-mode` | `String` | RW | Active preset: `manual`, `auto`, `holiday`, `extend`, `fireplace` |
-| `preset-mode-duration` | `Number:Time` | R | Remaining duration of current timed preset |
-| `ch-water-temperature` | `Number:Temperature` | R | Heating Circuit Temperature |
-| `ch-return-temperature` | `Number:Temperature` | R | Heating Circuit Return Temperature (advanced) |
-| `ch-water-pressure` | `Number:Pressure` | R | CH circuit water pressure |
-| `ch-setpoint` | `Number:Temperature` | R | Boiler Target Water Temperature (advanced) |
-| `dhw-temperature` | `Number:Temperature` | R | Hot Water Temperature |
-| `dhw-target-temperature` | `Number:Temperature` | RW | Hot Water Target Temperature |
-| `dhw-mode` | `Number` | R | DHW operating mode (raw device value) |
-| `outside-temperature` | `Number:Temperature` | R | Outside Temperature (boiler estimate) |
-| `flame` | `Switch` | R | Burner flame active |
-| `modulation-level` | `Number:Dimensionless` | R | Burner modulation level (%) |
-| `burning-hours` | `Number:Time` | R | Total burner hours |
-| `burner-target` | `String` | R | `none`, `ch`, or `dhw` |
-| `vacation-start` | `DateTime` | R | Vacation period start (advanced) |
-| `vacation-end` | `DateTime` | R | Vacation period end (advanced) |
-| `vacation-temperature` | `Number:Temperature` | RW | Setpoint during vacation |
-| `vacation-duration` | `Number:Time` | RW | Vacation duration in days — writing activates holiday mode immediately |
-| `fireplace-duration` | `Number:Time` | RW | Fireplace mode duration in hours — reading shows the stored default; writing activates fireplace mode for exactly the written duration |
-| `weather-status` | `String` | R | Weather compensation status |
-| `device-errors` | `String` | R | Active device error codes |
-| `boiler-errors` | `String` | R | Active boiler error codes |
-| `time-to-target` | `Number:Time` | R | Estimated time to reach target temperature |
+| `control#preset-mode` | `String` | RW | Active preset: `manual`, `auto`, `holiday`, `extend`, `fireplace`. The **only** channel that can activate or cancel a mode — see [Preset modes](#preset-modes) |
+| `control#preset-mode-duration` | `Number:Time` | R | Remaining duration of current timed preset |
+| `control#vacation-duration` | `Number:Time` | RW | Vacation duration in days — **value-setter only**, writing it does not activate holiday mode. Resets to 0 on cancel |
+| `control#vacation-temperature` | `Number:Temperature` | RW | Setpoint during vacation |
+| `control#vacation-start` | `DateTime` | R | Vacation period start (advanced) |
+| `control#vacation-end` | `DateTime` | R | Vacation period end (advanced) |
+| `control#extend-duration` | `Number:Time` | RW | **Value-setter only** — writing it does not activate extend mode. This is **additional** time on top of whatever's left until the device's next programmed schedule change, not an absolute session length. Persists across cancel (unlike the other two duration channels). See `preset-mode-duration` for the actual remaining-time countdown |
+| `control#fireplace-duration` | `Number:Time` | RW | Fireplace mode duration in hours — **value-setter only**, writing it does not activate fireplace mode. Reverts to the factory default (1 h) on cancel |
 
-Advanced diagnostic channels are also available (visible when **Show advanced** is enabled in the UI).
+### Central Heating (`heating#`)
+
+| Channel ID | Type | RW | Description |
+|------------|------|----|-------------|
+| `heating#target-temperature` | `Number:Temperature` | RW | Target (setpoint) room temperature |
+| `heating#room-temperature` | `Number:Temperature` | R | Room temperature (built-in sensor) |
+| `heating#outside-temperature` | `Number:Temperature` | R | Outside Temperature (boiler estimate) |
+| `heating#weather-status` | `String` | R | Weather compensation status |
+| `heating#water-temperature` | `Number:Temperature` | R | Heating Circuit Temperature |
+| `heating#return-temperature` | `Number:Temperature` | R | Heating Circuit Return Temperature (advanced) |
+| `heating#water-pressure` | `Number:Pressure` | R | CH circuit water pressure |
+| `heating#water-setpoint` | `Number:Temperature` | R | Boiler Target Water Temperature (advanced) |
+| `heating#control-mode` | `String` | R | `room` (room-sensor setpoint control) or `weather` (weather-compensated heating curve) — a system-level setting, independent of `preset-mode` (advanced) |
+| `heating#flame` | `Switch` | R | Burner flame active |
+| `heating#burner-target` | `String` | R | `none`, `ch`, or `dhw` |
+| `heating#modulation-level` | `Number:Dimensionless` | R | Burner modulation level (%) |
+| `heating#burning-hours` | `Number:Time` | R | Total burner hours |
+| `heating#time-to-target` | `Number:Time` | R | Estimated time to reach target temperature |
+
+### Hot Water (`hotwater#`)
+
+| Channel ID | Type | RW | Description |
+|------------|------|----|-------------|
+| `hotwater#target-temperature` | `Number:Temperature` | R | Hot Water Target Temperature — reflects the active schedule period; not writable (the device has no direct control field for it, see DEVELOPERS.md) |
+| `hotwater#temperature` | `Number:Temperature` | R | Hot Water Temperature |
+
+### Alerts (`alerts#`)
+
+| Channel ID | Type | RW | Description |
+|------------|------|----|-------------|
+| `alerts#device-errors` | `String` | R | Active device error codes |
+| `alerts#boiler-errors` | `String` | R | Active boiler error codes |
+
+Device (`device#`) and further advanced diagnostic channels in the Operating Mode/Central Heating/Hot
+Water groups are also available (visible when **Show advanced** is enabled in the UI).
 
 ## Preset modes
+
+`preset-mode` is the **only** channel that can ever activate or cancel a mode. The duration channels
+(`vacation-duration`, `extend-duration`, `fireplace-duration`) are pure value-setters — writing one only
+updates the stored default for that mode, it never triggers activation on its own, matching how the
+device itself treats a duration field written alone.
 
 `preset-mode` accepts the following write values:
 
 | Value | Description |
 |-------|-------------|
-| `auto` | Follow the programmed schedule |
-| `holiday` | Hold a fixed low temperature for the vacation period |
-| `fireplace` | Temporarily reduce setpoint (fireplace warmth compensation) — reuses the last known `fireplace-duration`, or 1 hour if none is known yet |
+| `auto` | Follow the programmed schedule. Also cancels whichever timed preset is currently active |
+| `holiday` | Hold a fixed low temperature for the vacation period, using the currently stored `vacation-duration` (or the device's own configured default if none has been set) |
+| `fireplace` | Temporarily reduce setpoint (fireplace warmth compensation), using the currently stored `fireplace-duration` (or 1 hour if none has been set) |
+| `extend` | Temporarily extend the current schedule block, using the currently stored `extend-duration` as **additional** time on top of whatever's left until the device's next programmed schedule change — not an absolute session length |
 
-`manual` and `extend` cannot be set directly via the API.
+`manual` cannot be set directly via the API — it is set by the device when you adjust the temperature on the display.
 Writing an unknown value is rejected with a warning and the item reverts to its last known state.
 
-`extend` is activated automatically by the device when you write to `target-temperature` while the preset is `auto`.
-The `extend-duration` channel (advanced) shows the stored default extend duration and is read-only.
+To activate a mode with a **custom** duration in a single write, instead of first writing the duration
+channel and then `preset-mode`, use the [Actions](#actions) below.
+
+Use `preset-mode-duration` to see the actual remaining time in an active timed preset; the duration
+channels themselves only show the stored request value, not a countdown.
 
 ## Holiday (vacation) mode
 
-Holiday mode lets you set a fixed low temperature for a defined period.
-There is no separate "activate" step — writing a duration starts the period immediately, starting now.
+Holiday mode holds a fixed low temperature for a defined period.
 
 ```text
-Number:Time  atagone_vacation_duration  "Vacation duration"  { channel="atagone:thermostat:boiler:vacation-duration" }
-String       atagone_preset             "Preset mode"        { channel="atagone:thermostat:boiler:preset-mode" }
+Number:Time  atagone_vacation_duration  "Vacation duration"  { channel="atagone:thermostat:boiler:control#vacation-duration" }
+String       atagone_preset             "Preset mode"        { channel="atagone:thermostat:boiler:control#preset-mode" }
 ```
 
-Two equivalent ways to start it:
+To start it with a specific duration: write it to `vacation-duration` first, then write
+`preset-mode = holiday`. Writing `preset-mode = holiday` alone reuses the currently-active
+`vacation-duration` if a holiday is already running, otherwise starts one using the device's own stored
+default duration (typically 7 days, but reflects whatever was last configured on the thermostat or in
+its app). For a one-write custom-duration activation, use the `activateVacation` action instead.
 
-- Write a duration to `vacation-duration` (in days, e.g. `7 d`) — holiday mode starts immediately for that many days.
-- Write `preset-mode = holiday` — reuses the currently-active `vacation-duration` if a holiday is already running, otherwise starts one using the device's own stored default duration (typically 7 days, but reflects whatever was last configured on the thermostat or in its app).
+`vacation-duration` resets to 0 whenever a holiday period is cancelled — it does not persist across
+cancel the way `extend-duration` does.
 
-`vacation-start` and `vacation-end` are read-only status channels that report the currently running period; they cannot be written to schedule a future period.
+`vacation-start` and `vacation-end` are read-only status channels that report the currently running
+period; they cannot be written directly, but a future start can be scheduled via the `activateVacation`
+action's underlying mechanism. Rewriting a pending/future-scheduled start before it has begun is
+unsupported and can reset the device — treat a scheduled vacation as write-once until it either starts
+or is cancelled.
 
 Cancel by writing `preset-mode = auto`.
 
 ## Fireplace mode
 
-Writing a duration to `fireplace-duration` (in hours, e.g. `2 h`) activates fireplace mode immediately for exactly that duration.
-There is no separate "activate" step.
+Fireplace mode temporarily reduces the setpoint for warmth compensation while a fireplace is in use.
 
 ```text
-Number:Time  atagone_fireplace  "Fireplace duration"  { channel="atagone:thermostat:boiler:fireplace-duration" }
+Number:Time  atagone_fireplace  "Fireplace duration"  { channel="atagone:thermostat:boiler:control#fireplace-duration" }
+String       atagone_preset     "Preset mode"          { channel="atagone:thermostat:boiler:control#preset-mode" }
 ```
 
-Send `2 h` to activate for 2 hours (any time unit is accepted, e.g. `7200 s` works too).
-Reading `fireplace-duration` returns the stored default duration from the device (the value used when fireplace mode is activated from the physical thermostat).
+To start it with a specific duration: write it to `fireplace-duration` first (any time unit is accepted,
+e.g. `2 h` or `7200 s`), then write `preset-mode = fireplace`. Writing `preset-mode = fireplace` alone
+reuses the currently stored duration. For a one-write custom-duration activation, use the
+`activateFireplace` action instead.
+
+Reading `fireplace-duration` returns the stored default duration from the device (the value used when
+fireplace mode is activated from the physical thermostat). Unlike `extend-duration`, this value does
+**not** persist across cancel — it always reverts to the factory default (1 h).
+
+**Cancelling fireplace mode via the API does not take effect on its own.** Writing `preset-mode = auto`
+is accepted by the device but requires confirming on the thermostat's physical display before it actually
+takes effect — this is confirmed device behavior, not a binding limitation, and no payload avoids it. The
+binding logs a warning when this happens. The `cancelMode` action reports this explicitly via its
+`requiresPhysicalConfirmation` output.
+
+## Actions
+
+The binding registers four [Thing Actions](https://www.openhab.org/docs/configuration/rules-dsl.html#thing-actions)
+under the `atagone` scope, for rule authors who want to activate a mode with a custom duration — or cancel
+one — in a single call, instead of the two-write channel pattern described above (set the duration
+channel, then `preset-mode`):
+
+| Action | Description |
+|--------|-------------|
+| `activateVacation(long durationSeconds)` | Activates holiday mode immediately for the given duration |
+| `activateExtend(long durationSeconds)` | Activates extend mode immediately, additive to the time remaining until the next schedule boundary |
+| `activateFireplace(long durationSeconds)` | Activates fireplace mode immediately for the given duration |
+| `cancelMode()` | Cancels whichever timed preset is currently active or pending and returns to auto. Returns `true` if the mode being left is fireplace, meaning the write is accepted but requires confirming on the thermostat's physical display to actually take effect |
+
+Each action composes the same multi-field write the corresponding `preset-mode` channel value uses
+internally (e.g. `activateVacation` sets both `ch_mode` and the device's `start_vacation` field in one
+request) — vacation in particular cannot be activated with `ch_mode` alone, and `cancelMode` handles the
+active-vs-pending distinction for cancelling a vacation automatically, so a script author never needs to
+know these details.
+
+Example from a rule:
+
+```javascript
+actions.thingActions("atagone", "atagone:thermostat:boiler").activateFireplace(7200);
+```
 
 ## Full example
 
 ### `atagone.items`
 
 ```text
-Number:Temperature  CH_Room_Temp        "Room [%.1f °C]"      { channel="atagone:thermostat:boiler:room-temperature" }
-Number:Temperature  CH_Target_Temp      "Target [%.1f °C]"    { channel="atagone:thermostat:boiler:target-temperature" }
-String              CH_Preset           "Preset [%s]"         { channel="atagone:thermostat:boiler:preset-mode" }
-Number:Time         CH_Vacation_Duration "Vacation duration [%.0f %unit%]" { channel="atagone:thermostat:boiler:vacation-duration" }
-Number:Temperature  CH_Vacation_Temp    "Vacation temp [%.1f °C]" { channel="atagone:thermostat:boiler:vacation-temperature" }
-Number:Time         CH_Fireplace        "Fireplace [%.1f %unit%]" { channel="atagone:thermostat:boiler:fireplace-duration" }
-Switch              CH_Flame            "Flame"               { channel="atagone:thermostat:boiler:flame" }
-Number:Temperature  DHW_Temp            "DHW [%.1f °C]"       { channel="atagone:thermostat:boiler:dhw-temperature" }
-Number:Pressure     CH_Water_Pressure   "Pressure [%.2f bar]" { channel="atagone:thermostat:boiler:ch-water-pressure" }
+Number:Temperature  CH_Room_Temp        "Room [%.1f °C]"      { channel="atagone:thermostat:boiler:heating#room-temperature" }
+Number:Temperature  CH_Target_Temp      "Target [%.1f °C]"    { channel="atagone:thermostat:boiler:heating#target-temperature" }
+String              CH_Preset           "Preset [%s]"         { channel="atagone:thermostat:boiler:control#preset-mode" }
+Number:Time         CH_Vacation_Duration "Vacation duration [%.0f %unit%]" { channel="atagone:thermostat:boiler:control#vacation-duration" }
+Number:Temperature  CH_Vacation_Temp    "Vacation temp [%.1f °C]" { channel="atagone:thermostat:boiler:control#vacation-temperature" }
+Number:Time         CH_Fireplace        "Fireplace [%.1f %unit%]" { channel="atagone:thermostat:boiler:control#fireplace-duration" }
+Switch              CH_Flame            "Flame"               { channel="atagone:thermostat:boiler:heating#flame" }
+Number:Temperature  DHW_Temp            "DHW [%.1f °C]"       { channel="atagone:thermostat:boiler:hotwater#temperature" }
+Number:Pressure     CH_Water_Pressure   "Pressure [%.2f bar]" { channel="atagone:thermostat:boiler:heating#water-pressure" }
 ```

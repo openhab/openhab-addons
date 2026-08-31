@@ -63,7 +63,7 @@ public class ReportDTO {
     public int ch_time_to_temp;
     /** Temperature shown on the thermostat display (°C). */
     public double shown_set_temp;
-    /** Instantaneous power consumption (W). */
+    /** Power/gas consumption counter (device-internal units — meaning and scale not confirmed). */
     public int power_cons;
     /** Average outside temperature (°C). */
     public double tout_avg;

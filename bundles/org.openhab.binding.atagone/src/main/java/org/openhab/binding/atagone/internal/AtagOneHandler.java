@@ -17,8 +17,10 @@ import static org.openhab.binding.atagone.internal.AtagOneBindingConstants.*;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.atagone.internal.action.AtagOneActions;
 import org.openhab.binding.atagone.internal.api.AtagEpoch;
 import org.openhab.binding.atagone.internal.api.AtagOneApiClient;
 import org.openhab.binding.atagone.internal.api.AtagOneCommunicationException;
@@ -45,6 +48,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -64,6 +68,18 @@ public class AtagOneHandler extends BaseThingHandler {
     private static final int POST_COMMAND_DELAY_S = 2;
     private static final SecureRandom CLIENT_ID_RANDOM = new SecureRandom();
 
+    /*
+     * Timed-preset durations must be whole units. A non-conforming value (e.g. 2400 s, 40 min for
+     * fireplace) does not fail safely on the device — instead of being rejected or rounded, it
+     * triggers the same physical-confirmation/reboot pathway as a real cancel. Enforced for all three
+     * timed presets, matching their channel unit hints (hours for extend/fireplace, days for
+     * vacation), which reflect a real firmware-level granularity, not just a display convenience.
+     * Public because AtagOneActions enforces the same constraint on its activate methods — sharing
+     * these constants means the channel path and the action path can never disagree on the limit.
+     */
+    public static final long SECONDS_PER_HOUR = 3600L;
+    public static final long SECONDS_PER_DAY = 86400L;
+
     private final Logger logger = LoggerFactory.getLogger(AtagOneHandler.class);
     private final HttpClient httpClient;
 
@@ -74,32 +90,60 @@ public class AtagOneHandler extends BaseThingHandler {
     private @Nullable Future<?> connectJob;
     private volatile boolean disposing = false;
 
-    // Bumped on every initialize(). connect()/doPair() capture it at dispatch time and re-check it
-    // after any blocking call, so a task queued or in flight from a superseded generation (e.g. a
-    // rapid dispose+reinitialize while pairing) can't mutate this generation's apiClient/clientId.
+    /*
+     * Bumped on every initialize(). connect()/doPair() capture it at dispatch time and re-check it
+     * after any blocking call, so a task queued or in flight from a superseded generation (e.g. a
+     * rapid dispose+reinitialize while pairing) can't mutate this generation's apiClient/clientId.
+     */
     private volatile long generation = 0L;
 
-    // Guards only the sendControlUpdate() stop/write/start sequence. Deliberately NOT the same lock
-    // as startPollJob()/stopPollJob() (which stay synchronized on `this`) — sendControlUpdate() holds
-    // this across a blocking HTTP call, and sharing the lifecycle lock would make dispose() (which
-    // calls stopPollJob()) block for the full request/retry duration.
+    /*
+     * Guards only the sendControlUpdate() stop/write/start sequence. Deliberately NOT the same lock as
+     * startPollJob()/stopPollJob() (which stay synchronized on `this`) — sendControlUpdate() holds
+     * this across a blocking HTTP call, and sharing the lifecycle lock would make dispose() (which
+     * calls stopPollJob()) block for the full request/retry duration.
+     */
     private final Object commandLock = new Object();
 
     private final Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
 
-    // After a timed-preset write (ch_mode 3=holiday or 5=fireplace) the boiler API reinitializes for
-    // several minutes. During this window, communication errors are suppressed so the Thing stays
-    // UNKNOWN rather than OFFLINE.
+    /*
+     * After a timed-preset write (ch_mode 3=holiday or 5=fireplace) the boiler API reinitializes for
+     * several minutes. During this window, communication errors are suppressed so the Thing stays
+     * UNKNOWN rather than OFFLINE.
+     */
     private volatile long suppressCommErrorUntil = 0L;
 
-    // The device's own persisted default vacation duration (configuration.ch_mode_vacation), tracked
-    // unconditionally on every poll so "reuse the last duration" survives holiday mode ending — unlike
-    // CHANNEL_VACATION_DURATION in stateMap, which is intentionally UNDEF whenever holiday isn't active.
+    /*
+     * The device's own persisted default vacation duration (configuration.ch_mode_vacation), tracked
+     * unconditionally on every poll (see updateChannels()) so "reuse the last duration" survives
+     * holiday mode ending.
+     */
     private volatile long defaultVacationDurationSeconds = 7 * 86400L;
+
+    /*
+     * The device's own persisted default extend duration (configuration.ch_mode_extend). This is a
+     * real, controllable value, but it drives control.extend_duration, never control.ch_mode_duration
+     * — see composeExtendActivation() for how the two are related.
+     */
+    private volatile long defaultExtendDurationSeconds = 3600L;
+
+    /*
+     * A pending (future-scheduled, not-yet-active) vacation reports preset-mode=auto, not holiday, so
+     * composeCancel() cannot rely on reported preset-mode alone to detect an armed schedule — that
+     * would silently leave a pending vacation fully armed while reporting "nothing to cancel". Tracked
+     * unconditionally on every poll (including 0, so it clears when the device clears).
+     */
+    private volatile long armedStartVacation = 0L;
 
     public AtagOneHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(AtagOneActions.class);
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -177,6 +221,28 @@ public class AtagOneHandler extends BaseThingHandler {
     }
 
     /**
+     * Entry point for {@link AtagOneActions} — dispatches an already-composed control/configuration
+     * update using the same online-check, apiClient-null-check, and off-thread dispatch as a channel
+     * command, without going through {@link #handleCommand}'s {@code ChannelUID}/{@code Command}
+     * plumbing. {@code label} is used only for logging.
+     */
+    public void sendComposedUpdate(String label, ControlUpdateDTO control, DeviceConfigUpdateDTO configUpdate) {
+        if (disposing) {
+            return;
+        }
+        AtagOneApiClient client = apiClient;
+        if (client == null) {
+            logger.warn("Cannot send {} — not connected", label);
+            return;
+        }
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Ignoring {} — Thing is not ONLINE", label);
+            return;
+        }
+        scheduler.execute(() -> sendControlUpdate(client, label, control, configUpdate));
+    }
+
+    /**
      * Sends a control/configuration update and restarts polling afterwards.
      * Serialized on {@link #commandLock} (not the lifecycle lock — see its field comment) so two
      * commands handled concurrently cannot interleave the stop/write/start sequence.
@@ -193,9 +259,11 @@ public class AtagOneHandler extends BaseThingHandler {
             stopPollJob();
             try {
                 client.updateControl(control, hasConfig ? configUpdate : null);
-                // Timed-preset writes (vacation, fireplace) trigger a boiler API reinitialization
-                // lasting several minutes. Suppress COMMUNICATION_ERROR during that window so the
-                // Thing stays UNKNOWN rather than OFFLINE.
+                /*
+                 * Timed-preset writes (vacation, fireplace) trigger a boiler API reinitialization
+                 * lasting several minutes. Suppress COMMUNICATION_ERROR during that window so the
+                 * Thing stays UNKNOWN rather than OFFLINE.
+                 */
                 if (control.ch_mode != null
                         && (control.ch_mode == CH_MODE_HOLIDAY || control.ch_mode == CH_MODE_FIREPLACE)) {
                     suppressCommErrorUntil = System.currentTimeMillis() + 5 * 60 * 1000L;
@@ -242,19 +310,13 @@ public class AtagOneHandler extends BaseThingHandler {
                 }
                 return false;
 
-            case CHANNEL_HVAC_MODE:
-                if (command instanceof StringType s) {
-                    String hvacMode = s.toString();
-                    if ("auto".equalsIgnoreCase(hvacMode)) {
-                        dto.ch_control_mode = CH_CONTROL_MODE_AUTO;
-                    } else if ("heat".equalsIgnoreCase(hvacMode)) {
-                        dto.ch_control_mode = CH_CONTROL_MODE_HEAT;
-                    } else {
-                        logger.warn("Unknown hvac-mode value '{}'; valid write values: auto, heat", hvacMode);
-                        return false;
-                    }
-                    return true;
-                }
+            case CHANNEL_CH_CONTROL_MODE:
+                /*
+                 * Room-vs-weather control is a system/installer-level setting, not a routine runtime
+                 * toggle, and writing it via the local API has not been verified as safe. Kept
+                 * read-only until that changes.
+                 */
+                logger.warn("ch-control-mode is read-only; change room/weather control on the thermostat itself");
                 return false;
 
             case CHANNEL_VACATION_DURATION:
@@ -263,10 +325,18 @@ public class AtagOneHandler extends BaseThingHandler {
                     if (seconds == null || seconds.longValue() <= 0) {
                         return false;
                     }
-                    dto.ch_mode = CH_MODE_HOLIDAY;
-                    dto.ch_mode_duration = seconds.longValue();
+                    if (!isWholeUnits(seconds.longValue(), SECONDS_PER_DAY)) {
+                        logger.warn("vacation-duration must be a whole number of days, got {} s", seconds.longValue());
+                        return false;
+                    }
+                    /*
+                     * Value-setter only — does not activate holiday mode. The device treats
+                     * vacation_duration written alone as updating the stored value without changing
+                     * ch_mode. preset-mode=holiday is the sole activation trigger (see its case
+                     * below), or use the activateVacation action for a single-write custom-duration
+                     * activation.
+                     */
                     dto.vacation_duration = seconds.longValue();
-                    configDto.start_vacation = AtagEpoch.fromZonedDateTime(ZonedDateTime.now());
                     return true;
                 }
                 return false;
@@ -276,76 +346,37 @@ public class AtagOneHandler extends BaseThingHandler {
                     String modeName = s.toString().toLowerCase();
                     Integer mode = CH_MODE_BY_NAME.get(modeName);
                     if (mode == null) {
-                        logger.warn("Unknown preset-mode value '{}'; valid write values: auto, holiday, fireplace",
+                        logger.warn(
+                                "Unknown preset-mode value '{}'; valid write values: auto, holiday, extend, fireplace",
                                 modeName);
                         return false;
                     }
-                    // ch_mode=1 (manual) is not writable via the local API — the boiler rejects it
-                    // and restarts its API subsystem. Manual is a read-only state set by the device.
+                    /*
+                     * ch_mode=1 (manual) is not writable via the local API — writing it is believed to
+                     * make the boiler restart its API subsystem. Manual is treated as a read-only
+                     * state, set by the device itself when the user adjusts the temperature on the
+                     * display. This is a conservative safety choice: the risk has not been thoroughly
+                     * re-verified, so rejection stays in place unless that changes.
+                     */
                     if (mode == CH_MODE_MANUAL) {
                         logger.warn(
                                 "preset-mode=manual cannot be written via the API; send auto to cancel timed modes");
                         return false;
                     }
-                    // extend activates automatically via target-temperature write in auto mode.
                     if (mode == CH_MODE_EXTEND) {
-                        logger.warn(
-                                "preset-mode=extend cannot be set directly; write target-temperature in auto mode to activate extend");
-                        return false;
+                        composeExtendActivation(dto, null);
+                        return true;
                     }
                     if (mode == CH_MODE_HOLIDAY) {
-                        // Reuse the currently-active vacation-duration if one is running; otherwise fall
-                        // back to the device's own persisted default (configuration.ch_mode_vacation,
-                        // tracked in defaultVacationDurationSeconds since CHANNEL_VACATION_DURATION itself
-                        // is UNDEF whenever holiday isn't active, so it can't be reused directly here).
-                        long durationSeconds = defaultVacationDurationSeconds;
-                        boolean usedActiveDuration = false;
-                        State stored = stateMap.get(CHANNEL_VACATION_DURATION);
-                        if (stored instanceof QuantityType<?> sq) {
-                            QuantityType<?> inSeconds = sq.toUnit(Units.SECOND);
-                            if (inSeconds != null && inSeconds.longValue() > 0) {
-                                durationSeconds = inSeconds.longValue();
-                                usedActiveDuration = true;
-                            }
-                        }
-                        if (!usedActiveDuration) {
-                            logger.info("No vacation currently active; using stored default duration ({} s)",
-                                    durationSeconds);
-                        }
-                        dto.ch_mode = CH_MODE_HOLIDAY;
-                        dto.ch_mode_duration = durationSeconds;
-                        dto.vacation_duration = durationSeconds;
-                        configDto.start_vacation = AtagEpoch.fromZonedDateTime(ZonedDateTime.now());
+                        composeVacationActivation(dto, configDto, null);
                         return true;
                     }
                     if (mode == CH_MODE_FIREPLACE) {
-                        // Reuse the stored fireplace-duration (always populated in stateMap — unlike
-                        // vacation-duration it isn't wiped to UNDEF when fireplace isn't active).
-                        long durationSeconds = 3600L;
-                        State stored = stateMap.get(CHANNEL_FIREPLACE_DURATION);
-                        if (stored instanceof QuantityType<?> sq) {
-                            QuantityType<?> inSeconds = sq.toUnit(Units.SECOND);
-                            if (inSeconds != null && inSeconds.longValue() > 0) {
-                                durationSeconds = inSeconds.longValue();
-                            } else {
-                                logger.info("No fireplace-duration available yet; defaulting to 1 hour");
-                            }
-                        } else {
-                            logger.info("No fireplace-duration available yet; defaulting to 1 hour");
-                        }
-                        dto.ch_mode = CH_MODE_FIREPLACE;
-                        dto.ch_mode_duration = durationSeconds;
-                        dto.fireplace_duration = durationSeconds;
+                        composeFireplaceActivation(dto, null);
                         return true;
                     }
-                    dto.ch_mode = mode;
-                    dto.ch_mode_duration = 0L;
-                    // Leaving vacation mode — clear the vacation schedule on the device.
-                    State currentPreset = stateMap.get(CHANNEL_PRESET_MODE);
-                    if (currentPreset instanceof StringType st && "holiday".equals(st.toString())) {
-                        dto.vacation_duration = 0L;
-                        configDto.start_vacation = 0L;
-                    }
+                    // mode == CH_MODE_AUTO — cancel whatever timed preset (if any) is currently active.
+                    composeCancel(dto, configDto);
                     return true;
                 }
                 return false;
@@ -370,20 +401,38 @@ public class AtagOneHandler extends BaseThingHandler {
                 return false;
 
             case CHANNEL_DHW_TARGET_TEMPERATURE:
-                if (command instanceof QuantityType<?> qt) {
-                    QuantityType<?> celsius = qt.toUnit(SIUnits.CELSIUS);
-                    if (celsius == null) {
-                        return false;
-                    }
-                    dto.dhw_temp_setp = celsius.doubleValue();
-                    return true;
-                }
+                /*
+                 * control.dhw_temp_setp is read-only/derived — confirmed live: writing it is
+                 * silently accepted by the device but never changes the actual value, which instead
+                 * tracks whichever schedules.dhw_schedule entry is currently active. The real
+                 * user-settable field is schedules.dhw_schedule.base_temp, requiring the full
+                 * schedule object to be sent — not implemented yet (schedule support is a future
+                 * phase). Rejected here rather than silently accepted and ignored.
+                 */
+                logger.warn(
+                        "dhw-target-temperature is read-only; the device has no direct control field for it, see DEVELOPERS.md");
                 return false;
 
             case CHANNEL_EXTEND_DURATION:
-                // Extend mode activates automatically when target-temperature is written while
-                // the device is in auto mode. There is no API write path to activate it explicitly.
-                logger.warn("extend-duration is read-only; to activate extend, write target-temperature in auto mode");
+                if (command instanceof QuantityType<?> qt) {
+                    QuantityType<?> seconds = qt.toUnit(Units.SECOND);
+                    if (seconds == null || seconds.longValue() <= 0) {
+                        return false;
+                    }
+                    if (!isWholeUnits(seconds.longValue(), SECONDS_PER_HOUR)) {
+                        logger.warn("extend-duration must be a whole number of hours, got {} s", seconds.longValue());
+                        return false;
+                    }
+                    /*
+                     * Value-setter only — does not activate extend mode. extend_duration is additive
+                     * to the time remaining until the next schedule boundary, not an absolute session
+                     * length (see composeExtendActivation()). preset-mode=extend is the sole
+                     * activation trigger, or use the activateExtend action for a single-write custom
+                     * activation.
+                     */
+                    dto.extend_duration = seconds.longValue();
+                    return true;
+                }
                 return false;
 
             case CHANNEL_FIREPLACE_DURATION:
@@ -392,11 +441,13 @@ public class AtagOneHandler extends BaseThingHandler {
                     if (seconds == null || seconds.longValue() <= 0) {
                         return false;
                     }
-                    // Activate for the written duration and update the stored default simultaneously.
-                    // ch_mode_duration=<value> avoids the API restart that a missing field causes.
+                    if (!isWholeUnits(seconds.longValue(), SECONDS_PER_HOUR)) {
+                        logger.warn("fireplace-duration must be a whole number of hours, got {} s",
+                                seconds.longValue());
+                        return false;
+                    }
+                    // Value-setter only — does not activate fireplace mode. See CHANNEL_EXTEND_DURATION.
                     dto.fireplace_duration = seconds.longValue();
-                    dto.ch_mode = CH_MODE_FIREPLACE;
-                    dto.ch_mode_duration = seconds.longValue();
                     return true;
                 }
                 return false;
@@ -404,6 +455,151 @@ public class AtagOneHandler extends BaseThingHandler {
             default:
                 return false;
         }
+    }
+
+    // ── Mode-activation composition ─────────────────────────────────────────────
+
+    /*
+     * Shared by buildControlUpdate()'s preset-mode case (explicitDurationSeconds == null: fall back
+     * to whatever's currently stored) and AtagOneActions (explicitDurationSeconds != null: use the
+     * caller's value directly, composing the full activation in one write). Keeping this logic in one
+     * place means the channel path and the action path can never drift apart on what they send.
+     */
+
+    /**
+     * Composes an extend-mode activation.
+     * <p>
+     * {@code control.extend_duration} is additive to the time remaining until the device's next
+     * scheduled temperature change, not an absolute session length — extending by one hour shortly
+     * before a scheduled change behaves very differently than extending by one hour shortly after
+     * one. {@code control.ch_mode_duration} is deliberately not set here: for extend mode, only
+     * {@code ch_mode} and {@code extend_duration} affect the device; {@code ch_mode_duration} has no
+     * effect on it.
+     */
+    public void composeExtendActivation(ControlUpdateDTO dto, @Nullable Long explicitDurationSeconds) {
+        long durationSeconds;
+        if (explicitDurationSeconds != null) {
+            durationSeconds = explicitDurationSeconds;
+        } else {
+            durationSeconds = defaultExtendDurationSeconds;
+            State stored = stateMap.get(CHANNEL_EXTEND_DURATION);
+            if (stored instanceof QuantityType<?> sq) {
+                QuantityType<?> inSeconds = sq.toUnit(Units.SECOND);
+                if (inSeconds != null && inSeconds.longValue() > 0) {
+                    durationSeconds = inSeconds.longValue();
+                }
+            }
+        }
+        dto.ch_mode = CH_MODE_EXTEND;
+        dto.extend_duration = durationSeconds;
+    }
+
+    /**
+     * Composes a holiday/vacation activation.
+     * <p>
+     * Unlike extend and fireplace, {@code ch_mode} alone never activates holiday mode on this device
+     * — {@code ch_mode} and {@code configuration.start_vacation} must be sent together in the same
+     * write, regardless of whether {@code vacation_duration} is already stored.
+     * {@code vacation_duration} itself follows the same stored-or-explicit pattern as the other two
+     * modes: use the caller's value if given, otherwise whatever is currently stored, otherwise the
+     * device's own default.
+     */
+    public void composeVacationActivation(ControlUpdateDTO dto, DeviceConfigUpdateDTO configDto,
+            @Nullable Long explicitDurationSeconds) {
+        long durationSeconds;
+        if (explicitDurationSeconds != null) {
+            durationSeconds = explicitDurationSeconds;
+        } else {
+            durationSeconds = defaultVacationDurationSeconds;
+            State stored = stateMap.get(CHANNEL_VACATION_DURATION);
+            if (stored instanceof QuantityType<?> sq) {
+                QuantityType<?> inSeconds = sq.toUnit(Units.SECOND);
+                if (inSeconds != null && inSeconds.longValue() > 0) {
+                    durationSeconds = inSeconds.longValue();
+                } else {
+                    logger.info("No vacation-duration currently stored; using device default ({} s)", durationSeconds);
+                }
+            } else {
+                logger.info("No vacation-duration currently stored; using device default ({} s)", durationSeconds);
+            }
+        }
+        dto.ch_mode = CH_MODE_HOLIDAY;
+        dto.ch_mode_duration = durationSeconds;
+        dto.vacation_duration = durationSeconds;
+        configDto.start_vacation = AtagEpoch.fromZonedDateTime(ZonedDateTime.now());
+    }
+
+    /**
+     * Composes a fireplace activation.
+     * <p>
+     * Unlike extend, {@code ch_mode_duration} must be present in this write — omitting it causes the
+     * boiler's API subsystem to restart, making the device unreachable for several minutes.
+     */
+    public void composeFireplaceActivation(ControlUpdateDTO dto, @Nullable Long explicitDurationSeconds) {
+        long durationSeconds;
+        if (explicitDurationSeconds != null) {
+            durationSeconds = explicitDurationSeconds;
+        } else {
+            durationSeconds = 3600L;
+            State stored = stateMap.get(CHANNEL_FIREPLACE_DURATION);
+            if (stored instanceof QuantityType<?> sq) {
+                QuantityType<?> inSeconds = sq.toUnit(Units.SECOND);
+                if (inSeconds != null && inSeconds.longValue() > 0) {
+                    durationSeconds = inSeconds.longValue();
+                } else {
+                    logger.info("No fireplace-duration available yet; defaulting to 1 hour");
+                }
+            } else {
+                logger.info("No fireplace-duration available yet; defaulting to 1 hour");
+            }
+        }
+        dto.ch_mode = CH_MODE_FIREPLACE;
+        dto.ch_mode_duration = durationSeconds;
+        dto.fireplace_duration = durationSeconds;
+    }
+
+    /**
+     * Composes a cancel-to-auto write.
+     * <p>
+     * {@code ch_mode_duration} is the field that must be zeroed to cancel any timed preset — the
+     * mode-specific duration field ({@code extend_duration}, {@code fireplace_duration}, or
+     * {@code vacation_duration}) is not enough on its own and leaves the countdown stale. Leaving
+     * holiday mode additionally clears the vacation schedule ({@code vacation_duration} and
+     * {@code start_vacation}) — required to fully cancel a pending, not-yet-active scheduled
+     * vacation, and harmless-but-redundant for an active one, which self-clears both fields anyway.
+     * <p>
+     * The schedule is cleared whenever preset-mode currently reports holiday OR a vacation is armed
+     * ({@code armedStartVacation > 0}). Both checks are needed: a pending, not-yet-active vacation
+     * still reports preset-mode=auto, so relying on reported mode alone would silently leave such a
+     * schedule fully armed while this method reports there was nothing to cancel.
+     *
+     * @return {@code true} if the mode being left is fireplace, meaning this write is accepted by the
+     *         device but has no effect until a button is pressed on the thermostat display; no
+     *         payload avoids this requirement
+     */
+    public boolean composeCancel(ControlUpdateDTO dto, DeviceConfigUpdateDTO configDto) {
+        dto.ch_mode = CH_MODE_AUTO;
+        dto.ch_mode_duration = 0L;
+        State currentPreset = stateMap.get(CHANNEL_PRESET_MODE);
+        boolean reportedHoliday = currentPreset instanceof StringType st && "holiday".equals(st.toString());
+        if (reportedHoliday || armedStartVacation > 0) {
+            dto.vacation_duration = 0L;
+            configDto.start_vacation = 0L;
+        }
+        if (currentPreset instanceof StringType st && "fireplace".equals(st.toString())) {
+            logger.warn(
+                    "Cancelling fireplace mode requires a physical button press on the thermostat display; the API write alone will not take effect");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * True when durationSeconds is a positive whole multiple of unitSeconds — see the field comment
+     * on SECONDS_PER_HOUR/SECONDS_PER_DAY for why this is enforced.
+     */
+    public static boolean isWholeUnits(long durationSeconds, long unitSeconds) {
+        return durationSeconds >= unitSeconds && durationSeconds % unitSeconds == 0;
     }
 
     // ── Connection / pairing ──────────────────────────────────────────────────
@@ -530,6 +726,11 @@ public class AtagOneHandler extends BaseThingHandler {
         if (r.configuration.ch_mode_vacation > 0) {
             defaultVacationDurationSeconds = r.configuration.ch_mode_vacation;
         }
+        if (r.configuration.ch_mode_extend > 0) {
+            defaultExtendDurationSeconds = r.configuration.ch_mode_extend;
+        }
+        // Tracked unconditionally, including 0 — see armedStartVacation's field comment.
+        armedStartVacation = r.configuration.start_vacation;
 
         // Report — temperatures
         updateIfChanged(CHANNEL_ROOM_TEMPERATURE, new QuantityType<>(r.report.room_temp, SIUnits.CELSIUS));
@@ -552,9 +753,12 @@ public class AtagOneHandler extends BaseThingHandler {
         updateIfChanged(CHANNEL_MODULATION_LEVEL, new QuantityType<>(r.report.details.rel_mod_level, Units.PERCENT));
         updateIfChanged(CHANNEL_BURNING_HOURS, new QuantityType<>(r.report.burning_hours, Units.HOUR));
         updateIfChanged(CHANNEL_TIME_TO_TARGET, new QuantityType<>(r.report.ch_time_to_temp, Units.SECOND));
-        // Strip RSS:…; tokens — the device embeds RSSI as a pseudo-error entry; the dedicated
-        // wifi-signal channel already exposes the same value from the proper rssi field.
-        // Gson overwrites the "" field initializer with null when the JSON carries an explicit null.
+        /*
+         * Strip RSS:…; tokens: the device embeds RSSI as a pseudo-error entry in device_errors, but
+         * the dedicated wifi-signal channel already exposes the same value from the proper rssi
+         * field. deviceErrors can be null here even though the DTO field defaults to "" — Gson
+         * overwrites that default with null when the JSON explicitly carries a null value.
+         */
         String deviceErrors = r.report.device_errors;
         updateIfChanged(CHANNEL_DEVICE_ERRORS,
                 new StringType(deviceErrors == null ? "" : deviceErrors.replaceAll("RSS:[^;]*;", "").trim()));
@@ -566,8 +770,8 @@ public class AtagOneHandler extends BaseThingHandler {
         // voltage is reported in mV when > 1000, otherwise already in V (observed device inconsistency).
         double voltage = r.report.voltage > 1000 ? r.report.voltage / 1000.0 : r.report.voltage;
         updateIfChanged(CHANNEL_VOLTAGE, new QuantityType<>(voltage, Units.VOLT));
-        updateIfChanged(CHANNEL_CURRENT, new DecimalType(r.report.current));
-        updateIfChanged(CHANNEL_POWER_CONSUMPTION, new DecimalType(r.report.power_cons));
+        // report.current and report.power_cons are deliberately not exposed as channels — no way to
+        // verify their units or meaning against this device (see DEVELOPERS.md's field reference).
         updateIfChanged(CHANNEL_DHW_FLOW_RATE, new QuantityType<>(r.report.dhw_flow_rate, Units.LITRE_PER_MINUTE));
         updateIfChanged(CHANNEL_RESETS, new DecimalType(r.report.resets));
         updateIfChanged(CHANNEL_MEMORY_ALLOCATION, new DecimalType(r.report.memory_allocation));
@@ -581,8 +785,8 @@ public class AtagOneHandler extends BaseThingHandler {
 
         // Control — setpoints and modes
         updateIfChanged(CHANNEL_TARGET_TEMPERATURE, new QuantityType<>(r.control.ch_mode_temp, SIUnits.CELSIUS));
-        updateIfChanged(CHANNEL_HVAC_MODE,
-                new StringType(CH_CONTROL_MODE_NAMES.getOrDefault(r.control.ch_control_mode, "heat")));
+        updateIfChanged(CHANNEL_CH_CONTROL_MODE,
+                new StringType(CH_CONTROL_MODE_NAMES.getOrDefault(r.control.ch_control_mode, "room")));
         updateIfChanged(CHANNEL_PRESET_MODE, new StringType(CH_MODE_NAMES.getOrDefault(r.control.ch_mode, "manual")));
         int modeForDuration = r.control.ch_mode;
         if (modeForDuration == CH_MODE_EXTEND || modeForDuration == CH_MODE_FIREPLACE
@@ -592,9 +796,18 @@ public class AtagOneHandler extends BaseThingHandler {
             updateIfChanged(CHANNEL_PRESET_MODE_DURATION, UnDefType.UNDEF);
         }
         updateIfChanged(CHANNEL_DHW_TARGET_TEMPERATURE, new QuantityType<>(r.control.dhw_temp_setp, SIUnits.CELSIUS));
-        updateIfChanged(CHANNEL_DHW_MODE, new DecimalType(r.control.dhw_mode));
+        // control.dhw_mode is deliberately not exposed as a channel — no source documents its value
+        // meanings and neither the app nor the cloud portal expose a setting for it (see DEVELOPERS.md).
         updateIfChanged(CHANNEL_EXTEND_DURATION, new QuantityType<>(r.control.extend_duration, Units.SECOND));
         updateIfChanged(CHANNEL_FIREPLACE_DURATION, new QuantityType<>(r.control.fireplace_duration, Units.SECOND));
+        /*
+         * Read unconditionally, same as extend/fireplace above — not masked to UNDEF outside active
+         * holiday mode. composeVacationActivation()'s stored-value fallback reads this same channel,
+         * so masking it here would hide a value the user just wrote before the next holiday
+         * activation ever picks it up. control.vacation_duration resets to 0 on cancel, so reading it
+         * raw already conveys "nothing pending" without needing a separate UNDEF state.
+         */
+        updateIfChanged(CHANNEL_VACATION_DURATION, new QuantityType<>(r.control.vacation_duration, Units.SECOND));
         updateIfChanged(CHANNEL_WEATHER_STATUS,
                 new StringType(WEATHER_STATUS_NAMES.getOrDefault(r.control.weather_status, "unknown")));
 
@@ -604,7 +817,6 @@ public class AtagOneHandler extends BaseThingHandler {
             ZonedDateTime vacStart = AtagEpoch.toZonedDateTime(r.configuration.start_vacation);
             ZonedDateTime vacEnd = vacStart.plusSeconds(r.control.vacation_duration);
             long remainingSeconds = Math.max(0, Duration.between(ZonedDateTime.now(), vacEnd).getSeconds());
-            updateIfChanged(CHANNEL_VACATION_DURATION, new QuantityType<>(r.control.vacation_duration, Units.SECOND));
             updateIfChanged(CHANNEL_VACATION_START, new DateTimeType(vacStart));
             updateIfChanged(CHANNEL_VACATION_END, new DateTimeType(vacEnd));
             updateIfChanged(CHANNEL_VACATION_REMAINING, new QuantityType<>(remainingSeconds, Units.SECOND));
@@ -612,21 +824,18 @@ public class AtagOneHandler extends BaseThingHandler {
             updateIfChanged(CHANNEL_EXTEND_REMAINING, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_FIREPLACE_REMAINING, UnDefType.UNDEF);
         } else if (mode == CH_MODE_EXTEND) {
-            updateIfChanged(CHANNEL_VACATION_DURATION, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_START, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_END, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_REMAINING, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_EXTEND_REMAINING, new QuantityType<>(r.control.ch_mode_duration, Units.SECOND));
             updateIfChanged(CHANNEL_FIREPLACE_REMAINING, UnDefType.UNDEF);
         } else if (mode == CH_MODE_FIREPLACE) {
-            updateIfChanged(CHANNEL_VACATION_DURATION, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_START, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_END, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_REMAINING, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_EXTEND_REMAINING, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_FIREPLACE_REMAINING, new QuantityType<>(r.control.ch_mode_duration, Units.SECOND));
         } else {
-            updateIfChanged(CHANNEL_VACATION_DURATION, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_START, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_END, UnDefType.UNDEF);
             updateIfChanged(CHANNEL_VACATION_REMAINING, UnDefType.UNDEF);
@@ -673,10 +882,13 @@ public class AtagOneHandler extends BaseThingHandler {
     }
 
     private void persistClientId(String clientId) {
-        // Thing properties persist for both managed and textually configured Things, and
-        // resolveClientId() already checks them as a fallback. Deliberately NOT also written via
-        // updateConfiguration()/editConfiguration(): on a managed Thing that round-trips through
-        // dispose()+initialize(), tearing this handler down again right after pairing succeeds.
+        /*
+         * Thing properties persist for both managed and textually configured Things, and
+         * resolveClientId() already checks them as a fallback. Deliberately not also written via
+         * updateConfiguration()/editConfiguration(): on a managed Thing, that call round-trips
+         * through dispose()+initialize(), tearing this handler down again right after pairing just
+         * succeeded.
+         */
         updateProperty(PROPERTY_CLIENT_ID, clientId);
     }
 

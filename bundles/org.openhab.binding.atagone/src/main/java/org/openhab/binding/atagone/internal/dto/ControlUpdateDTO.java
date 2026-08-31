@@ -19,8 +19,15 @@ import org.eclipse.jdt.annotation.Nullable;
  * Gson DTO for the {@code control} block in an {@code update_message}.
  * <p>
  * Only non-null fields are serialized by Gson, so set only the fields you want to change.
- * Mode and its duration parameters must always be sent together in a single message — sending
- * {@code ch_mode} alone leaves the device at its previous (often hardcoded) duration.
+ * {@code ch_mode} alone is sufficient to activate extend or fireplace mode — the device falls back
+ * to whatever duration is already stored ({@code extend_duration}/{@code fireplace_duration}).
+ * Holiday mode is the exception: {@code ch_mode} alone never activates it, regardless of
+ * {@code vacation_duration} — {@code configuration.start_vacation} must be sent in the same
+ * request. To cancel any active timed preset, {@code ch_mode_duration} must be explicitly zeroed;
+ * the mode-specific duration fields do not need to be touched. See
+ * {@link org.openhab.binding.atagone.internal.AtagOneHandler} for how each of these writes is
+ * composed ({@code composeExtendActivation}, {@code composeFireplaceActivation},
+ * {@code composeVacationActivation}, {@code composeCancel}).
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -30,8 +37,6 @@ public class ControlUpdateDTO {
     public @Nullable Integer ch_mode;
     public @Nullable Long ch_mode_duration;
     public @Nullable Double ch_mode_temp;
-    public @Nullable Double dhw_temp_setp;
-    public @Nullable Integer dhw_mode;
     public @Nullable Long extend_duration;
     public @Nullable Long fireplace_duration;
     public @Nullable Long vacation_duration;
