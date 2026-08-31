@@ -482,27 +482,38 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType incDecCommand) {
-                    double brightnessBefore = getPredictedBrightness(cache);
-                    double brightnessAfter = switch (incDecCommand) {
-                        case INCREASE -> Math.min(100.0, brightnessBefore + INC_DEC_PERCENT);
-                        case DECREASE -> Math.max(0.0, brightnessBefore - INC_DEC_PERCENT);
-                    };
-                    predictedBrightness = brightnessAfter;
-                    command = switch (incDecCommand) {
-                        case INCREASE -> {
-                            putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
-                            yield brightnessBefore <= 0.0 ? OnOffType.ON : null;
+                    Double brightnessBeforeObj = predictedBrightness;
+                    if (brightnessBeforeObj == null && cache != null && cache.getDimming() instanceof Dimming dimming
+                            && dimming.getBrightness() instanceof Double cachedBrightness) {
+                        brightnessBeforeObj = cachedBrightness;
+                    }
+                    if (brightnessBeforeObj == null) {
+                        putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
+                        if (incDecCommand == IncreaseDecreaseType.INCREASE) {
+                            command = OnOffType.ON;
+                        } else {
+                            break;
                         }
-                        case DECREASE -> {
-                            if (brightnessAfter <= 0.0) {
-                                putResource = new Resource(lightResourceType);
-                                yield OnOffType.OFF;
-                            } else {
-                                putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
-                                yield null;
+                    } else {
+                        double brightnessBefore = brightnessBeforeObj.doubleValue();
+                        double brightnessAfter = switch (incDecCommand) {
+                            case INCREASE -> Math.min(100.0, brightnessBefore + INC_DEC_PERCENT);
+                            case DECREASE -> Math.max(0.0, brightnessBefore - INC_DEC_PERCENT);
+                        };
+                        predictedBrightness = brightnessAfter;
+                        command = switch (incDecCommand) {
+                            case INCREASE -> brightnessBefore <= 0.0 ? OnOffType.ON : null;
+                            case DECREASE -> {
+                                if (brightnessAfter <= 0.0) {
+                                    putResource = new Resource(lightResourceType);
+                                    yield OnOffType.OFF;
+                                } else {
+                                    putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
+                                    yield null;
+                                }
                             }
-                        }
-                    };
+                        };
+                    }
                     if (command == null) {
                         break; // i.e. don't append an on-off command
                     }
@@ -647,7 +658,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 return;
         }
 
-        if (putResource == null) {
+        if (putResource == null)
+
+        {
             if (logger.isDebugEnabled()) {
                 logger.debug("{} -> handleCommand() command:{} not supported on channelUID:{}", resourceId, command,
                         channelUID);
@@ -1941,19 +1954,5 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
             updateLightCacheRequiredFieldsDone = true;
         }
-    }
-
-    /**
-     * Private helper for increase/decrease commands.
-     */
-    private double getPredictedBrightness(@Nullable Resource cache) {
-        Double predicted = predictedBrightness;
-        if (predicted != null) {
-            return predicted;
-        }
-        if (cache != null && cache.getDimming() instanceof Dimming dim && dim.getBrightness() instanceof Double bri) {
-            return bri.doubleValue();
-        }
-        return 0.0;
     }
 }
