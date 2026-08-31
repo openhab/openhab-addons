@@ -71,11 +71,7 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
         }
         Connection connection = thingHandler.getConnection();
         List<DeviceTO> devices = thingHandler.updateDeviceList();
-        devices.forEach(device -> {
-            if (device.macAddress == null) {
-                device.macAddress = connection.getDeviceMacAddress(device);
-            }
-        });
+        addMacAddresses(devices, connection);
         setDevices(devices);
 
         List<EnabledFeedTO> currentFlashBriefingConfiguration = thingHandler.updateFlashBriefingHandlers();
@@ -132,23 +128,10 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
             if (serialNumber != null) {
                 String deviceFamily = device.deviceFamily;
                 if (deviceFamily != null) {
-                    ThingTypeUID thingTypeId;
-                    switch (deviceFamily) {
-                        case "ECHO":
-                            thingTypeId = THING_TYPE_ECHO;
-                            break;
-                        case "ROOK":
-                            thingTypeId = THING_TYPE_ECHO_SPOT;
-                            break;
-                        case "KNIGHT":
-                            thingTypeId = THING_TYPE_ECHO_SHOW;
-                            break;
-                        case "WHA":
-                            thingTypeId = THING_TYPE_ECHO_WHA;
-                            break;
-                        default:
-                            logger.debug("Unknown thing type '{}'", deviceFamily);
-                            continue;
+                    ThingTypeUID thingTypeId = getThingTypeId(deviceFamily);
+                    if (thingTypeId == null) {
+                        logger.debug("Unknown thing type '{}'", deviceFamily);
+                        continue;
                     }
 
                     ThingUID bridgeThingUID = thingHandler.getThing().getUID();
@@ -171,6 +154,28 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
                 }
             }
         }
+    }
+
+    static void addMacAddresses(List<DeviceTO> devices, Connection connection) {
+        devices.forEach(device -> {
+            if (device.macAddress == null && getThingTypeId(device.deviceFamily) != null) {
+                device.macAddress = connection.getDeviceMacAddress(device);
+            }
+        });
+    }
+
+    private static @Nullable ThingTypeUID getThingTypeId(@Nullable String deviceFamily) {
+        if (deviceFamily == null) {
+            return null;
+        }
+
+        return switch (deviceFamily) {
+            case "ECHO" -> THING_TYPE_ECHO;
+            case "ROOK" -> THING_TYPE_ECHO_SPOT;
+            case "KNIGHT" -> THING_TYPE_ECHO_SHOW;
+            case "WHA" -> THING_TYPE_ECHO_WHA;
+            default -> null;
+        };
     }
 
     static void addMacAddressProperty(DiscoveryResultBuilder resultBuilder, @Nullable String macAddress) {

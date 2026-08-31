@@ -14,12 +14,21 @@ package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ECHO;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openhab.binding.amazonechocontrol.internal.connection.Connection;
+import org.openhab.binding.amazonechocontrol.internal.dto.DeviceTO;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -30,6 +39,22 @@ import org.openhab.core.thing.ThingUID;
  * @author Lee Ballard - Initial contribution
  */
 class AmazonEchoDiscoveryTest {
+
+    @Test
+    void testMacAddressLookupSkipsUnsupportedDevices() {
+        DeviceTO supportedDevice = new DeviceTO();
+        supportedDevice.deviceFamily = "ECHO";
+        DeviceTO unsupportedDevice = new DeviceTO();
+        unsupportedDevice.deviceFamily = "THIRD_PARTY_AVS_MEDIA_DISPLAY";
+        Connection connection = mock(Connection.class);
+        when(connection.getDeviceMacAddress(supportedDevice)).thenReturn("40:B4:CD:10:B2:95");
+
+        AmazonEchoDiscovery.addMacAddresses(List.of(supportedDevice, unsupportedDevice), connection);
+
+        assertEquals("40:B4:CD:10:B2:95", supportedDevice.macAddress);
+        verify(connection).getDeviceMacAddress(supportedDevice);
+        verify(connection, never()).getDeviceMacAddress(unsupportedDevice);
+    }
 
     @ParameterizedTest
     @CsvSource(value = { //
