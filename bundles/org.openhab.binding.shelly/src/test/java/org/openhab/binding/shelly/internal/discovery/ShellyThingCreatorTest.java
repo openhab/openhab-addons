@@ -84,14 +84,12 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyplugus-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGUS), //
                 Arguments.of("shellyplugusg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUGUSG4), //
                 Arguments.of("shellyplusplugcpm-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGCPM), //
-                // Gen 1 relay devices — service name alone must identify type (important for auth-protected discovery)
+                // Gen 1
                 Arguments.of("shelly1-" + DEVICE_ID, "", THING_TYPE_SHELLY1), //
                 Arguments.of("shelly1pm-" + DEVICE_ID, "", THING_TYPE_SHELLY1PM), //
                 Arguments.of("shelly1l-" + DEVICE_ID, "", THING_TYPE_SHELLY1L), //
-                Arguments.of("shelly2-" + DEVICE_ID, "", THING_TYPE_SHELLY2_RELAY), // relay default; probe corrects to
-                                                                                    // roller
-                Arguments.of("shelly25-" + DEVICE_ID, "", THING_TYPE_SHELLY25_RELAY), // relay default; probe corrects
-                                                                                      // to roller
+                Arguments.of("shelly2-" + DEVICE_ID, "", THING_TYPE_SHELLY2_RELAY), //
+                Arguments.of("shelly25-" + DEVICE_ID, "", THING_TYPE_SHELLY25_RELAY), //
                 Arguments.of("shelly4pro-" + DEVICE_ID, "", THING_TYPE_SHELLY4PRO), //
                 Arguments.of("shellydimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER), //
                 Arguments.of("shellydimmer2-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER2), //
@@ -120,8 +118,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyuni-" + DEVICE_ID, "", THING_TYPE_SHELLYUNI), //
                 Arguments.of("shellybutton1-" + DEVICE_ID, "", THING_TYPE_SHELLYBUTTON1), //
                 Arguments.of("shellybutton2-" + DEVICE_ID, "", THING_TYPE_SHELLYBUTTON2), //
-                Arguments.of("shellyseye-" + DEVICE_ID, "", THING_TYPE_SHELLYEYE), // service name differs from thing
-                                                                                   // type id
+                Arguments.of("shellyseye-" + DEVICE_ID, "", THING_TYPE_SHELLYEYE), //
                 Arguments.of("shellyem-" + DEVICE_ID, "", THING_TYPE_SHELLYEM), //
                 Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM), //
 
@@ -333,20 +330,15 @@ public class ShellyThingCreatorTest {
         return Stream.of( //
                 Arguments.of("shellyplusshutter-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE), //
                 Arguments.of("notfound-" + DEVICE_ID, SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE), //
-                // Auth-protected Gen1 discovery: model from /shelly beats service name.
-                // These simulate createResult() receiving 401 from /settings after /shelly already returned devInfo.
+                // Auth-protected Gen 1 discovery
                 Arguments.of("shelly1-" + DEVICE_ID, SHELLYDT_1, THING_TYPE_SHELLY1), //
                 Arguments.of("shelly1pm-" + DEVICE_ID, SHELLYDT_1PM, THING_TYPE_SHELLY1PM), //
                 Arguments.of("shelly1l-" + DEVICE_ID, SHELLYDT_1L, THING_TYPE_SHELLY1L), //
-                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2), // custom
-                                                                                                       // hostname,
-                                                                                                       // model resolves
+                Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2), //
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_EM, THING_TYPE_SHELLYEM), //
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_FLOOD, THING_TYPE_SHELLYFLOOD), //
-                // SHSW-21 is only in relay/roller maps; with unknown mode it falls back to service name → relay default
                 Arguments.of("shelly2-" + DEVICE_ID, SHELLYDT_SHELLY2, THING_TYPE_SHELLY2_RELAY), //
                 Arguments.of("shelly25-" + DEVICE_ID, SHELLYDT_SHELLY25, THING_TYPE_SHELLY25_RELAY), //
-                // SHRGBW2 with custom hostname: device-type map resolves to white (default when mode unknown)
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_RGBW2, THING_TYPE_SHELLYRGBW2_WHITE));
     }
 
@@ -384,10 +376,6 @@ public class ShellyThingCreatorTest {
 
     private static Stream<Arguments> provideTestCasesForSingleModeDeviceFallsBackToGeneralMap() {
         return Stream.of( //
-                // SHSW-1/SHSW-PM/SHDM-2 exist only in THING_TYPE_BY_DEVICE_TYPE, not in
-                // RELAY_THING_TYPE_BY_DEVICE_TYPE. Old Gen1 firmware derives mode="relay" from num_outputs even for
-                // single-relay/dimmer devices, and a custom hostname bypasses the service-name-based resolution
-                // above, so the mode-specific lookup must fall back to the general map instead of shellyunknown.
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_1, THING_TYPE_SHELLY1), //
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_1PM, THING_TYPE_SHELLY1PM), //
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2));
