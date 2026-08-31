@@ -56,7 +56,6 @@ public class ShellyDevices {
     public static final String SHELLYDT_MOTION2 = "SHMOS-02";
     public static final String SHELLYDT_SENSE = "SHSEN-1";
     public static final String SHELLYDT_GAS = "SHGS-1";
-    public static final String SHELLYDT_EYE = "SHEYE-1";
     public static final String SHELLYDT_DIMMER = "SHDM-1";
     public static final String SHELLYDT_DIMMER2 = "SHDM-2";
     public static final String SHELLYDT_IX3 = "SHIX3-1";
@@ -230,7 +229,6 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYTRV = new ThingTypeUID(BINDING_ID, "shellytrv");
     public static final ThingTypeUID THING_TYPE_SHELLYBUTTON1 = new ThingTypeUID(BINDING_ID, "shellybutton1");
     public static final ThingTypeUID THING_TYPE_SHELLYBUTTON2 = new ThingTypeUID(BINDING_ID, "shellybutton2");
-    public static final ThingTypeUID THING_TYPE_SHELLYEYE = new ThingTypeUID(BINDING_ID, "shellyseye");
     public static final ThingTypeUID THING_TYPE_SHELLYMOTION = new ThingTypeUID(BINDING_ID, "shellymotion");
     public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_COLOR = new ThingTypeUID(BINDING_ID, "shellyrgbw2-color");
     public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_WHITE = new ThingTypeUID(BINDING_ID, "shellyrgbw2-white");
@@ -427,7 +425,6 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_FLOOD, THING_TYPE_SHELLYFLOOD), //
             Map.entry(SHELLYDT_UNI, THING_TYPE_SHELLYUNI), //
             Map.entry(SHELLYDT_GAS, THING_TYPE_SHELLYGAS), //
-            Map.entry(SHELLYDT_EYE, THING_TYPE_SHELLYEYE), //
             Map.entry(SHELLYDT_SENSE, THING_TYPE_SHELLYSENSE), //
             Map.entry(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1),
             Map.entry(SHELLYDT_BUTTON2, THING_TYPE_SHELLYBUTTON2), //
@@ -619,14 +616,12 @@ public class ShellyDevices {
             Map.entry("shellydw", THING_TYPE_SHELLYDOORWIN), //
             Map.entry("shellydw2", THING_TYPE_SHELLYDOORWIN2), //
             Map.entry("shellysense", THING_TYPE_SHELLYSENSE), //
-            Map.entry("shellyseye", THING_TYPE_SHELLYEYE), //
             Map.entry("shellybutton1", THING_TYPE_SHELLYBUTTON1), //
             Map.entry("shellybutton2", THING_TYPE_SHELLYBUTTON2), //
             Map.entry("shellyuni", THING_TYPE_SHELLYUNI), //
             Map.entry("shellymotion", THING_TYPE_SHELLYMOTION),
             Map.entry("shellymotionsensor", THING_TYPE_SHELLYMOTION),
-            Map.entry("shellymotion2", THING_TYPE_SHELLYMOTION), //
-            Map.entry("shellyeye", THING_TYPE_SHELLYEYE),
+            Map.entry("shellymotion2", THING_TYPE_SHELLYMOTION),
 
             // Shelly Plus Series
             Map.entry("shellyplus1", THING_TYPE_SHELLYPLUS1), //

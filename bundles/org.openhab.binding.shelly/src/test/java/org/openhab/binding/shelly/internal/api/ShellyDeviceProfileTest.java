@@ -100,7 +100,6 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYMOTION, false, false), //
                 Arguments.of(THING_TYPE_SHELLYTRV, false, false), //
-                Arguments.of(THING_TYPE_SHELLYEYE, false, false), //
 
                 // Shelly Plus
                 Arguments.of(THING_TYPE_SHELLYPLUS1, true, false), //

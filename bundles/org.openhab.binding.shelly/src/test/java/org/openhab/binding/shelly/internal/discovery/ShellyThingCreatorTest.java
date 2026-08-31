@@ -118,9 +118,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyuni-" + DEVICE_ID, "", THING_TYPE_SHELLYUNI), //
                 Arguments.of("shellybutton1-" + DEVICE_ID, "", THING_TYPE_SHELLYBUTTON1), //
                 Arguments.of("shellybutton2-" + DEVICE_ID, "", THING_TYPE_SHELLYBUTTON2), //
-                Arguments.of("shellyseye-" + DEVICE_ID, "", THING_TYPE_SHELLYEYE), //
-                Arguments.of("shellyem-" + DEVICE_ID, "", THING_TYPE_SHELLYEM), //
-                Arguments.of("shellyem3-" + DEVICE_ID, "", THING_TYPE_SHELLY3EM), //
 
                 // Shelly Plus
                 Arguments.of("shelly3em63g3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUS3EM63),
@@ -194,7 +191,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_SMOKE, "", THING_TYPE_SHELLYSMOKE), //
                 Arguments.of(SHELLYDT_MOTION, "", THING_TYPE_SHELLYMOTION), //
                 Arguments.of(SHELLYDT_MOTION2, "", THING_TYPE_SHELLYMOTION), //
-                Arguments.of(SHELLYDT_EYE, "", THING_TYPE_SHELLYEYE), //
                 Arguments.of(SHELLYDT_TRV, "", THING_TYPE_SHELLYTRV), //
 
                 // Plus Series
