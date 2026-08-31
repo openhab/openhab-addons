@@ -60,7 +60,6 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	com.sun.istack.commons-runtime;version='[4.1.2,4.1.3)',\
 	jakarta.activation-api;version='[2.1.4,2.1.5)',\
 	jakarta.servlet-api;version='[6.1.0,6.1.1)',\
-	org.apache.servicemix.specs.annotation-api-1.3;version='[1.3.0,1.3.1)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
 	org.glassfish.jaxb.core;version='[4.0.9,4.0.10)',\
 	org.glassfish.jaxb.runtime;version='[4.0.9,4.0.10)',\
@@ -74,7 +73,6 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	org.apache.commons.lang3;version='[3.20.0,3.20.1)',\
 	org.ops4j.pax.web.pax-web-compatibility-servlet;version='[11.1.3,11.1.4)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.22.0,2.22.1)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.22.1,2.22.2)',\
 	org.objectweb.asm;version='[9.10.1,9.10.2)',\
 	org.objectweb.asm.commons;version='[9.10.1,9.10.2)',\
 	org.objectweb.asm.tree;version='[9.10.1,9.10.2)',\
@@ -83,4 +81,5 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)',\
 	com.fasterxml.jackson.core.jackson-core;version='[2.22.2,2.22.3)',\
 	com.fasterxml.jackson.core.jackson-databind;version='[2.22.2,2.22.3)',\
-	com.fasterxml.jackson.datatype.jackson-datatype-jdk8;version='[2.22.2,2.22.3)'
+	com.fasterxml.jackson.datatype.jackson-datatype-jdk8;version='[2.22.2,2.22.3)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.22.2,2.22.3)'
