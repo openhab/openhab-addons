@@ -45,6 +45,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.Gamut2;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
+import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
 import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
@@ -253,6 +254,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
 
+    private @Nullable Double predictedBrightness; // support for increase/decrease commands
+
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
@@ -347,6 +350,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         serviceContributorsCache.clear();
         controlIds.clear();
         extendedResourceTypes.clear();
+        predictedBrightness = null;
     }
 
     /**
@@ -478,19 +482,35 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType incDecCommand) {
-                    putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
-                    if (IncreaseDecreaseType.INCREASE == incDecCommand) {
-                        command = OnOffType.ON;
-                    } else if (Objects.nonNull(cache) && cache.getDimming() instanceof Dimming dimming
-                            && dimming.getBrightness() <= INC_DEC_PERCENT) {
-                        command = OnOffType.OFF;
-                    } else {
+                    double brightnessBefore = getPredictedBrightness(cache);
+                    double brightnessAfter = switch (incDecCommand) {
+                        case INCREASE -> Math.min(100.0, brightnessBefore + INC_DEC_PERCENT);
+                        case DECREASE -> Math.max(0.0, brightnessBefore - INC_DEC_PERCENT);
+                    };
+                    predictedBrightness = brightnessAfter;
+                    command = switch (incDecCommand) {
+                        case INCREASE -> {
+                            putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
+                            yield brightnessBefore <= 0.0 ? OnOffType.ON : null;
+                        }
+                        case DECREASE -> {
+                            if (brightnessAfter <= 0.0) {
+                                putResource = new Resource(lightResourceType);
+                                yield OnOffType.OFF;
+                            } else {
+                                putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
+                                yield null;
+                            }
+                        }
+                    };
+                    if (command == null) {
                         break; // i.e. don't append an on-off command
                     }
                     // fall through to append the on-off command
                 } else if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
-                    command = OnOffType.from(brightnessCommand.doubleValue() > 0.0); // avoid "soft off"
+                    predictedBrightness = Math.max(0.0, Math.min(100.0, brightnessCommand.doubleValue()));
+                    command = OnOffType.from(predictedBrightness > 0.0); // avoid "soft off"
                 }
                 // NB fall through for handling of switch related commands !!
 
@@ -699,6 +719,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
         scheduler.submit(() -> {
             logger.debug("{} -> loopBackNotify() with resource {}", resourceId, resource);
 
+            // align dimming with the locally predicted brightness for synthetic updates
+            if (LIGHT_TYPES.contains(resource.getType()) && predictedBrightness != null) {
+                if (resource.getDimming() instanceof Dimming dimming) {
+                    dimming.setBrightness(predictedBrightness);
+                } else {
+                    resource.setDimming(new Dimming().setBrightness(predictedBrightness));
+                }
+            }
+
             // add DTO fields to synch ColorXy and ColorTemperature for commands to the counterpart channel
             if (ResourceType.LIGHT == resource.getType()) {
                 ColorXy colorXy = resource.getColorXy();
@@ -846,6 +875,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateLightCacheRequiredFieldsDone = false;
         updateSceneContributorsDone = false;
         legacyLightState = null;
+        predictedBrightness = null;
 
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
@@ -918,6 +948,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
+                if (LIGHT_TYPES.contains(resource.getType()) && predictedBrightness != null) {
+                    if (resource.getOnState() instanceof OnState onState && Boolean.FALSE.equals(onState.getOn())) {
+                        if (resource.getDimming() instanceof Dimming dimming) {
+                            dimming.setBrightness(predictedBrightness);
+                        } else {
+                            resource.setDimming(new Dimming().setBrightness(predictedBrightness));
+                        }
+                    } else if (resource.getDimming() instanceof Dimming dimming
+                            && Math.abs(dimming.getBrightness() - predictedBrightness) < 0.01) {
+                        predictedBrightness = null;
+                    }
+                }
                 resourceConsumedFlags |= FLAG_CACHE_UPDATE;
                 resourceConsumedFlags |= updateChannels && updateChannels(resource) ? FLAG_CHANNELS_UPDATE : 0;
                 putResourceToCache(resource);
@@ -1898,5 +1940,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
             updateLightCacheRequiredFieldsDone = true;
         }
+    }
+
+    /**
+     * Private helper for increase/decrease commands.
+     */
+    private double getPredictedBrightness(@Nullable Resource cache) {
+        if (predictedBrightness != null) {
+            return predictedBrightness;
+        }
+        if (cache != null && cache.getDimming() instanceof Dimming dim && dim.getBrightness() instanceof Double bri) {
+            return bri.doubleValue();
+        }
+        return 0.0;
     }
 }
