@@ -509,8 +509,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     // fall through to append the on-off command
                 } else if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
-                    predictedBrightness = Math.max(0.0, Math.min(100.0, brightnessCommand.doubleValue()));
-                    command = OnOffType.from(predictedBrightness > 0.0); // avoid "soft off"
+                    double predicted = Math.max(0.0, Math.min(100.0, brightnessCommand.doubleValue()));
+                    predictedBrightness = predicted;
+                    command = OnOffType.from(predicted > 0.0); // avoid "soft off"
                 }
                 // NB fall through for handling of switch related commands !!
 
@@ -720,11 +721,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             logger.debug("{} -> loopBackNotify() with resource {}", resourceId, resource);
 
             // align dimming with the locally predicted brightness for synthetic updates
-            if (LIGHT_TYPES.contains(resource.getType()) && predictedBrightness != null) {
+            if (LIGHT_TYPES.contains(resource.getType()) && predictedBrightness instanceof Double predicted) {
                 if (resource.getDimming() instanceof Dimming dimming) {
-                    dimming.setBrightness(predictedBrightness);
+                    dimming.setBrightness(predicted);
                 } else {
-                    resource.setDimming(new Dimming().setBrightness(predictedBrightness));
+                    resource.setDimming(new Dimming().setBrightness(predicted));
                 }
             }
 
@@ -948,15 +949,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
-                if (LIGHT_TYPES.contains(resource.getType()) && predictedBrightness != null) {
+                if (LIGHT_TYPES.contains(resource.getType()) && predictedBrightness instanceof Double predicted) {
                     if (resource.getOnState() instanceof OnState onState && Boolean.FALSE.equals(onState.getOn())) {
                         if (resource.getDimming() instanceof Dimming dimming) {
-                            dimming.setBrightness(predictedBrightness);
+                            dimming.setBrightness(predicted);
                         } else {
-                            resource.setDimming(new Dimming().setBrightness(predictedBrightness));
+                            resource.setDimming(new Dimming().setBrightness(predicted));
                         }
-                    } else if (resource.getDimming() instanceof Dimming dimming
-                            && Math.abs(dimming.getBrightness() - predictedBrightness) < 0.01) {
+                    } else if (resource.getDimming() instanceof Dimming dim && dim.getBrightness() instanceof Double bri
+                            && Math.abs(bri - predicted) < 0.01) {
                         predictedBrightness = null;
                     }
                 }
@@ -1946,8 +1947,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Private helper for increase/decrease commands.
      */
     private double getPredictedBrightness(@Nullable Resource cache) {
-        if (predictedBrightness != null) {
-            return predictedBrightness;
+        Double predicted = predictedBrightness;
+        if (predicted != null) {
+            return predicted;
         }
         if (cache != null && cache.getDimming() instanceof Dimming dim && dim.getBrightness() instanceof Double bri) {
             return bri.doubleValue();
