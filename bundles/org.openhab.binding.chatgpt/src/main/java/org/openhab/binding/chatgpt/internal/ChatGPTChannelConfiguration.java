@@ -27,5 +27,6 @@ public class ChatGPTChannelConfiguration {
     public @Nullable Double topP;
     public @Nullable Integer maxTokens;
     public @Nullable String systemMessage;
+    public @Nullable String reasoningEffort;
     public @Nullable Integer requestTimeout;
 }
