@@ -508,4 +508,37 @@ class ShellyLightModelTest {
         // @formatter:on
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("pastelColorProvider")
+    void testPastelColorsChangeHsbSaturation(int red, int expectedSaturation) {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYRGBW2_COLOR);
+
+        ShellyLightModel model = ShellyLightModel.create(handler, 0, handler.profile, STEP);
+        handler.lightModels.put(0, model);
+
+        model.acquire();
+        try {
+            model.setColor(R, red);
+            model.setColor(G, 0);
+            model.setColor(B, 0);
+            model.setColor(CW, 255 - red);
+            model.setGain(50);
+            model.setOnOff(true);
+        } finally {
+            model.release();
+        }
+
+        HSBType color = (HSBType) handler.getChannelUpdates().get("color#hsb");
+
+        assertEquals(0, color.getHue().intValue());
+        assertEquals(expectedSaturation, color.getSaturation().intValue(), 1.0);
+        assertEquals(50, color.getBrightness().intValue());
+    }
+
+    static Stream<Arguments> pastelColorProvider() {
+        return Stream.of(Arguments.of(255, 100), Arguments.of(224, 88), Arguments.of(192, 75), Arguments.of(160, 63),
+                Arguments.of(128, 50), Arguments.of(96, 38), Arguments.of(64, 25), Arguments.of(32, 13),
+                Arguments.of(0, 0));
+    }
 }

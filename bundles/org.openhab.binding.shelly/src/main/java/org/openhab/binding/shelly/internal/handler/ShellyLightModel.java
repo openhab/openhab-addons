@@ -387,11 +387,9 @@ public class ShellyLightModel extends LightModel {
     public void setColor(RGBX index, int value) {
         logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setColor({},{})", handler.thingName,
                 apiLightIndex, channelGroupNumber, index, value);
-        cacheRGBX[index.ordinal()] = value;
-        double[] rgbx = getRGBx();
+        int[] rgbx = getRGBX();
         rgbx[index.ordinal()] = value;
-        super.setRGBx(rgbx);
-        setMode(Mode.COLOR);
+        setRGBX(rgbx);
     }
 
     /**
@@ -610,8 +608,8 @@ public class ShellyLightModel extends LightModel {
     public void setRGBX(int[] rgbx) {
         logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setRGBX({})", handler.thingName, apiLightIndex,
                 channelGroupNumber, rgbx);
-        super.setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
         refreshCache(rgbx);
+        super.setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
         setMode(Mode.COLOR);
     }
 

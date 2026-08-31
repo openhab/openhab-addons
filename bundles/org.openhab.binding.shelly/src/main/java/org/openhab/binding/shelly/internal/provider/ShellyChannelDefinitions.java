@@ -570,8 +570,9 @@ public class ShellyChannelDefinitions {
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
-            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
 
+            // dynamically add white-group or per-light channels
+            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
             addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
@@ -580,6 +581,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
             addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
+            // dynamically add color channels (in case any were missing in thing-type xml)
             if (profile.hasColorTag(idx)) {
                 addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER);
                 addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL);
@@ -590,6 +592,8 @@ public class ShellyChannelDefinitions {
                 addChannel(thing, add, status.gain != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN);
                 addChannel(thing, add, status.effect != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT);
             }
+
+            // dynamically add main control channels
             if (idx == 0 && (profile.hasColorTag(0) || status.brightness != null || status.temp != null)) {
                 if (profile.hasColorTag(0)) {
                     addChannel(thing, add, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER);
