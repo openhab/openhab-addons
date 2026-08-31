@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 
@@ -50,7 +50,8 @@ public class IpObserverDiscoveryJob implements Runnable {
 
     private boolean isIpObserverDevice(String ip) {
         Request request = discoveryClass.getHttpClient().newRequest("http://" + ip + LIVE_DATA_URL);
-        request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
+        request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS);
+        request.headers(headers -> headers.put(HttpHeader.ACCEPT_ENCODING, "gzip"));
         ContentResponse contentResponse;
         try {
             contentResponse = request.send();

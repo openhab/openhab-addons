@@ -23,12 +23,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tapocontrol.internal.api.TapoConnectorInterface;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface;
@@ -119,7 +119,7 @@ public class SecurePassthrough implements TapoProtocolInterface {
         httpRequest.timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         /* add request body */
-        httpRequest.content(new StringContentProvider(tapoRequest.toString(), CONTENT_CHARSET), CONTENT_TYPE_JSON);
+        httpRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, tapoRequest.toString()));
 
         try {
             responseReceived(httpRequest.send(), command);
@@ -147,13 +147,13 @@ public class SecurePassthrough implements TapoProtocolInterface {
         httpRequest = setHeaders(httpRequest);
 
         /* add request body */
-        httpRequest.content(new StringContentProvider(encryptedRequest.toString(), CONTENT_CHARSET), CONTENT_TYPE_JSON);
+        httpRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, encryptedRequest.toString()));
 
         httpRequest.timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
             @Override
             public void onComplete(Result result) {
-                final HttpResponse response = (HttpResponse) result.getResponse();
+                final Response response = result.getResponse();
                 if (result.getFailure() != null) {
                     /* handle result errors */
                     Throwable e = result.getFailure();
@@ -266,9 +266,9 @@ public class SecurePassthrough implements TapoProtocolInterface {
      * Set HTTP-Headers
      */
     protected Request setHeaders(Request httpRequest) {
-        httpRequest.header("Accept", CONTENT_TYPE_JSON);
+        httpRequest.headers(h -> h.add("Accept", CONTENT_TYPE_JSON));
         if (session.isHandshakeComplete()) {
-            httpRequest.header(HTTP_AUTH_TYPE_COOKIE, session.getCookie());
+            httpRequest.headers(h -> h.add(HTTP_AUTH_TYPE_COOKIE, session.getCookie()));
         }
         return httpRequest;
     }

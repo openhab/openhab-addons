@@ -14,8 +14,6 @@ package org.openhab.binding.homeconnect.internal.factory;
 
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -45,7 +43,9 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jaxrs.client.SseEventSourceFactory;
+import org.osgi.service.jakartars.client.SseEventSourceFactory;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * The {@link HomeConnectHandlerFactory} is responsible for creating things and thing

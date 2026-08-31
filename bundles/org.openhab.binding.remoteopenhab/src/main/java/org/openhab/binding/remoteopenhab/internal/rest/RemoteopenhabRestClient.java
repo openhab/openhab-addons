@@ -30,20 +30,15 @@ import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.sse.InboundSseEvent;
-import javax.ws.rs.sse.SseEventSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabChannelDescriptionChangedEvent;
@@ -66,12 +61,18 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.types.Command;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.jaxrs.client.SseEventSourceFactory;
+import org.osgi.service.jakartars.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.sse.InboundSseEvent;
+import jakarta.ws.rs.sse.SseEventSource;
 
 /**
  * A client to use the openHAB REST API and to receive/parse events received from the openHAB REST API Server-Sent
@@ -562,28 +563,29 @@ public class RemoteopenhabRestClient {
     public String executeUrl(HttpMethod httpMethod, String url, String acceptHeader, @Nullable String content,
             @Nullable String contentType, boolean provideAccessToken, boolean asyncReading, boolean retryIfEOF)
             throws RemoteopenhabException {
+        final String acceptHdr = acceptHeader;
         final Request request = httpClient.newRequest(url).method(httpMethod)
                 .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).followRedirects(false)
-                .header(HttpHeaders.ACCEPT, acceptHeader);
+                .headers(h -> h.add(HttpHeaders.ACCEPT, acceptHdr));
 
         if (url.startsWith("https:") || authenticateAnyway) {
             boolean useAlternativeHeader = false;
             if (!credentialToken.isEmpty()) {
-                request.header(HttpHeaders.AUTHORIZATION, "Basic " + credentialToken);
+                request.headers(h -> h.add(HttpHeaders.AUTHORIZATION, "Basic " + credentialToken));
                 useAlternativeHeader = true;
             }
             if (provideAccessToken && !accessToken.isEmpty()) {
                 if (useAlternativeHeader) {
-                    request.header("X-OPENHAB-TOKEN", accessToken);
+                    request.headers(h -> h.add("X-OPENHAB-TOKEN", accessToken));
                 } else {
-                    request.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+                    request.headers(h -> h.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken));
                 }
             }
         }
 
         if (content != null && (HttpMethod.POST.equals(httpMethod) || HttpMethod.PUT.equals(httpMethod))
                 && contentType != null) {
-            request.content(new StringContentProvider(content), contentType);
+            request.body(new StringRequestContent(contentType, content));
         }
 
         logger.debug("Request {} {}", request.getMethod(), request.getURI());

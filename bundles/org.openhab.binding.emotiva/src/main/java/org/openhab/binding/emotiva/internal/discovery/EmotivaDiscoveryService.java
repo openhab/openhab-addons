@@ -16,8 +16,6 @@ import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 
 import java.util.Objects;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.emotiva.internal.EmotivaUdpBroadcastService;
@@ -26,6 +24,8 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Discovery service for Emotiva devices.

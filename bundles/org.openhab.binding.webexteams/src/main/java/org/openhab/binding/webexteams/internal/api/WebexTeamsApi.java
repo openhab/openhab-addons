@@ -28,10 +28,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.webexteams.internal.WebexAuthenticationException;
@@ -113,13 +113,13 @@ public class WebexTeamsApi {
         Gson gson = new Gson();
         try {
             Request req = httpClient.newRequest(url).method(method);
-            req.header("Authorization", "Bearer " + authToken);
+            req.headers(h -> h.add("Authorization", "Bearer " + authToken));
             logger.debug("Requesting {} with ({}, {})", url, clazz, body);
 
             if (body != null) {
                 String bodyString = gson.toJson(body, body.getClass());
-                req.content(new StringContentProvider(bodyString));
-                req.header("Content-type", "application/json");
+                req.body(new StringRequestContent(bodyString));
+                req.headers(h -> h.add("Content-type", "application/json"));
             }
 
             ContentResponse response = req.send();

@@ -13,8 +13,6 @@
 package org.openhab.binding.miio.internal.cloud;
 
 import java.io.IOException;
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -38,11 +36,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
@@ -157,7 +157,7 @@ public class MiCloudConnector {
                 // setFollowRedirects must be configured before the client is started
                 httpClient.setFollowRedirects(true);
                 httpClient.start();
-                CookieStore cookieStore = httpClient.getCookieStore();
+                HttpCookieStore cookieStore = httpClient.getHttpCookieStore();
                 // set default cookies
                 addCookie(cookieStore, "sdkVersion", "accountsdk-18.8.15", "mi.com");
                 addCookie(cookieStore, "sdkVersion", "accountsdk-18.8.15", "xiaomi.com");
@@ -340,16 +340,18 @@ public class MiCloudConnector {
         logger.debug("Send request to {} with data '{}'", url, params.get("data"));
         Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
-        request.header("x-xiaomi-protocal-flag-cli", "PROTOCAL-HTTP2");
-        request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-        request.cookie(new HttpCookie("userId", this.userId));
-        request.cookie(new HttpCookie("yetAnotherServiceToken", this.serviceToken));
-        request.cookie(new HttpCookie("serviceToken", this.serviceToken));
-        request.cookie(new HttpCookie("locale", locale.toString()));
-        request.cookie(new HttpCookie("timezone", ZonedDateTime.now().format(FORMATTER)));
-        request.cookie(new HttpCookie("is_daylight", TZ.inDaylightTime(new Date()) ? "1" : "0"));
-        request.cookie(new HttpCookie("dst_offset", Integer.toString(TZ.getDSTSavings())));
-        request.cookie(new HttpCookie("channel", "MI_APP_STORE"));
+        request.headers(h -> {
+            h.add("x-xiaomi-protocal-flag-cli", "PROTOCAL-HTTP2");
+            h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        });
+        request.cookie(HttpCookie.build("userId", this.userId).build());
+        request.cookie(HttpCookie.build("yetAnotherServiceToken", this.serviceToken).build());
+        request.cookie(HttpCookie.build("serviceToken", this.serviceToken).build());
+        request.cookie(HttpCookie.build("locale", locale.toString()).build());
+        request.cookie(HttpCookie.build("timezone", ZonedDateTime.now().format(FORMATTER)).build());
+        request.cookie(HttpCookie.build("is_daylight", TZ.inDaylightTime(new Date()) ? "1" : "0").build());
+        request.cookie(HttpCookie.build("dst_offset", Integer.toString(TZ.getDSTSavings())).build());
+        request.cookie(HttpCookie.build("channel", "MI_APP_STORE").build());
 
         if (logger.isTraceEnabled()) {
             for (HttpCookie cookie : request.getCookies()) {
@@ -370,7 +372,7 @@ public class MiCloudConnector {
             fields.put("signature", signature);
             fields.put("_nonce", nonce);
             fields.put("data", params.get("data"));
-            request.content(new FormContentProvider(fields));
+            request.body(new FormRequestContent(fields));
 
             logger.trace("fieldcontent: {}", fields.toString());
             final ContentResponse response = request.send();
@@ -404,10 +406,8 @@ public class MiCloudConnector {
         }
     }
 
-    private void addCookie(CookieStore cookieStore, String name, String value, String domain) {
-        HttpCookie cookie = new HttpCookie(name, value);
-        cookie.setDomain("." + domain);
-        cookie.setPath("/");
+    private void addCookie(HttpCookieStore cookieStore, String name, String value, String domain) {
+        HttpCookie cookie = HttpCookie.build(name, value).domain("." + domain).path("/").build();
         cookieStore.add(URI.create("https://" + domain), cookie);
     }
 
@@ -509,8 +509,6 @@ public class MiCloudConnector {
             return;
         }
         logger.trace("Xiaomi cloud request  URL= {} {} {}", request.getMethod(), request.getHost(), request.getPath());
-        logger.trace("Xiaomi cloud request content req= {}",
-                request.getContent() == null ? "" : request.getContent().toString());
         logger.trace("Xiaomi cloud request headers= {}", request.getHeaders().toString());
         logger.trace("Xiaomi cloud request param= {}", request.getParams());
         logger.trace("Xiaomi cloud request cookie= {}", request.getCookies().toString());
@@ -545,7 +543,7 @@ public class MiCloudConnector {
         logger.trace("Xiaomi Login step 3 @ {}", (URI.create(location).toURL()).getHost());
         request = httpClient.newRequest(location).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
-        request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
         responseStep3 = request.send();
         logger.trace("Xiaomi login step 3 content = {}", responseStep3.getContentAsString());
         logger.trace("Xiaomi login step 3 response = {}", responseStep3);
@@ -566,18 +564,14 @@ public class MiCloudConnector {
             try {
                 URI uri = URI.create(url);
                 logger.trace("Cookie dump for {}", uri);
-                CookieStore cs = httpClient.getCookieStore();
-                if (cs != null) {
-                    List<HttpCookie> cookies = cs.get(uri);
-                    for (HttpCookie cookie : cookies) {
-                        logger.trace("Cookie ({}) : {} --> {}     (path: {}. Removed: {})", cookie.getDomain(),
-                                cookie.getName(), cookie.getValue(), cookie.getPath(), delete);
-                        if (delete) {
-                            cs.remove(uri, cookie);
-                        }
+                HttpCookieStore cs = httpClient.getHttpCookieStore();
+                List<HttpCookie> cookies = cs.match(uri);
+                for (HttpCookie cookie : cookies) {
+                    logger.trace("Cookie ({}) : {} --> {}     (path: {}. Removed: {})", cookie.getDomain(),
+                            cookie.getName(), cookie.getValue(), cookie.getPath(), delete);
+                    if (delete) {
+                        cs.remove(uri, cookie);
                     }
-                } else {
-                    logger.trace("Could not create cookiestore from {}", url);
                 }
             } catch (IllegalArgumentException e) {
                 logger.trace("Error dumping cookies from {}: {}", url, e.getMessage(), e);
@@ -587,7 +581,7 @@ public class MiCloudConnector {
 
     protected String extractServiceToken(URI uri) {
         String serviceToken = "";
-        List<HttpCookie> cookies = httpClient.getCookieStore().get(uri);
+        List<HttpCookie> cookies = httpClient.getHttpCookieStore().match(uri);
         for (HttpCookie cookie : cookies) {
             logger.trace("Cookie :{} --> {}", cookie.getName(), cookie.getValue());
             if (cookie.getName().contentEquals("serviceToken")) {

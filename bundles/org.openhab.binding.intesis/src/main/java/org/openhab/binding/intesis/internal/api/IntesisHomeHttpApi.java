@@ -18,10 +18,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.intesis.internal.config.IntesisHomeConfiguration;
 import org.slf4j.Logger;
@@ -56,8 +56,8 @@ public class IntesisHomeHttpApi {
         String url = "http://" + ipAddress + "/api.cgi";
         try {
             Request request = httpClient.POST(url);
-            request.header(HttpHeader.CONTENT_TYPE, "application/json");
-            request.content(new StringContentProvider(contentString), "application/json");
+            request.headers(headers -> headers.put(HttpHeader.CONTENT_TYPE, "application/json"));
+            request.body(new StringRequestContent("application/json", contentString));
 
             ContentResponse contentResponse = request.timeout(5, TimeUnit.SECONDS).send();
 

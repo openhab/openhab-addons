@@ -14,8 +14,8 @@ package org.openhab.binding.emotiva.internal.dto;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Emotiva Notify message type. 2.x version of protocol uses command type as prefix in each line in the body, while 3.x
