@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -32,6 +33,7 @@ import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -67,7 +69,14 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
         if (activateTimeStamp != null) {
             removeOlderResults(activateTimeStamp);
         }
-        setDevices(thingHandler.updateDeviceList());
+        Connection connection = thingHandler.getConnection();
+        List<DeviceTO> devices = thingHandler.updateDeviceList();
+        devices.forEach(device -> {
+            if (device.macAddress == null) {
+                device.macAddress = connection.getDeviceMacAddress(device);
+            }
+        });
+        setDevices(devices);
 
         List<EnabledFeedTO> currentFlashBriefingConfiguration = thingHandler.updateFlashBriefingHandlers();
         discoverFlashBriefingProfiles(currentFlashBriefingConfiguration);
@@ -145,13 +154,15 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
                     ThingUID bridgeThingUID = thingHandler.getThing().getUID();
                     ThingUID thingUID = new ThingUID(thingTypeId, bridgeThingUID, serialNumber);
 
-                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.accountName)
-                            .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
+                    DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(thingUID)
+                            .withLabel(device.accountName).withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
                             .withProperty(DEVICE_PROPERTY_FAMILY, deviceFamily)
                             .withProperty(DEVICE_PROPERTY_DEVICE_TYPE_ID,
                                     Objects.requireNonNullElse(device.deviceType, "<unknown>"))
-                            .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(bridgeThingUID)
-                            .build();
+                            .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(bridgeThingUID);
+
+                    addMacAddressProperty(resultBuilder, device.macAddress);
+                    DiscoveryResult result = resultBuilder.build();
 
                     logger.debug("Device [{}: {}] found. Mapped to thing type {}", device.deviceFamily, serialNumber,
                             thingTypeId.getAsString());
@@ -160,6 +171,28 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
                 }
             }
         }
+    }
+
+    static void addMacAddressProperty(DiscoveryResultBuilder resultBuilder, @Nullable String macAddress) {
+        String normalizedMacAddress = normalizeMacAddress(macAddress);
+        if (!normalizedMacAddress.isEmpty()) {
+            resultBuilder.withProperty(Thing.PROPERTY_MAC_ADDRESS, normalizedMacAddress);
+        }
+    }
+
+    private static String normalizeMacAddress(@Nullable String macAddress) {
+        if (macAddress == null) {
+            return "";
+        }
+
+        String hex = macAddress.replace(":", "").replace("-", "").trim();
+        if (!hex.matches("(?i)[0-9a-f]{12}") || "000000000000".equals(hex)) {
+            return "";
+        }
+
+        String normalized = hex.toLowerCase(Locale.ROOT);
+        return String.join(":", normalized.substring(0, 2), normalized.substring(2, 4), normalized.substring(4, 6),
+                normalized.substring(6, 8), normalized.substring(8, 10), normalized.substring(10, 12));
     }
 
     private synchronized void discoverFlashBriefingProfiles(List<EnabledFeedTO> enabledFeeds) {
