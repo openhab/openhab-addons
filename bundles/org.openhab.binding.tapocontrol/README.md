@@ -85,7 +85,7 @@ The Things have the following configuration parameters:
 | ipAddress          | IP address of the device.                                             | Any Wi-Fi device            |
 | pollingInterval    | [optional] Refresh interval in seconds. The default is 30 seconds     | Any Wi-Fi device            |
 | httpPort           | [optional] HTTP communication port. Default is 80                     | Any Wi-Fi device            |
-| protocol           | [optional] Used communication protocol (AES/KLAP/'') Default 'AES'    | Any Wi-Fi device            |
+| protocol           | [optional] Used communication protocol (AES/KLAP/KASA/'') Default 'AES' | Any Wi-Fi device          |
 | backgroundDiscovery| [optional] RF devices will be discovered after every polling request  | SmartHub                    |
 
 ## Channels

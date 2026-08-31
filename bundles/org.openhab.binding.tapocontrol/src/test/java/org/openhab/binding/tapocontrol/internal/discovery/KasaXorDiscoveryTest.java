@@ -53,6 +53,8 @@ class KasaXorDiscoveryTest {
         assertThat(result.deviceMac(), is("14EBB66445AD"));
         assertThat(result.alias(), is("living room chandelier"));
         assertThat(result.ip(), is("192.168.0.61"));
+        assertThat(result.encryptionSchema().encryptType(), is("KASA"));
+        assertThat(result.encryptionSchema().httpPort(), is(9999));
     }
 
     @Test

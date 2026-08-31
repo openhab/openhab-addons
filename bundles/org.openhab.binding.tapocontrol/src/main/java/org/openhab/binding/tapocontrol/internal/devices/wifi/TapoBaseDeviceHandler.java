@@ -309,6 +309,17 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
         return deviceConfig.ipAddress;
     }
 
+    public boolean isDimmerSwitch() {
+        return SUPPORTED_DIMMER_SWITCH_UIDS.contains(getThing().getThingTypeUID());
+    }
+
+    /**
+     * Runs device communication without blocking framework callback threads.
+     */
+    public void executeAsync(Runnable task) {
+        scheduler.execute(task);
+    }
+
     /*
      * return device configuration
      */

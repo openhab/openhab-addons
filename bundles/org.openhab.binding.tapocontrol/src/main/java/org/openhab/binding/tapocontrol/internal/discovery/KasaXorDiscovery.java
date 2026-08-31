@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.discovery;
 
-import static org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum.SECUREPASSTROUGH;
+import static org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum.KASA;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -74,7 +74,7 @@ final class KasaXorDiscovery {
                 return Optional.empty();
             }
 
-            var encryption = new TapoDiscoveryResult.EncryptionSchema(false, SECUREPASSTROUGH.toString(), 80, 0);
+            var encryption = new TapoDiscoveryResult.EncryptionSchema(false, KASA.toString(), 9999, 0);
             return Optional.of(new TapoDiscoveryResult(false, true, false, encryption, 0, 0,
                     stringValue(sysinfo, "alias"), "", stringValue(sysinfo, "hw_ver"),
                     stringValue(sysinfo, "deviceId", "device_id"), mac, model, stringValue(sysinfo, "dev_name"), "",
