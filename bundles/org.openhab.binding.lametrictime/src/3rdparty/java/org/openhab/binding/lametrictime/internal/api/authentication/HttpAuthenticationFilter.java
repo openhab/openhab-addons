@@ -46,7 +46,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
