@@ -254,7 +254,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
 
-    private @Nullable Double predictedBrightness; // support for increase/decrease commands
+    private volatile @Nullable Double predictedBrightness; // support for increase/decrease commands
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
