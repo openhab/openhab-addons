@@ -502,7 +502,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         };
                         predictedBrightness = brightnessAfter;
                         command = switch (incDecCommand) {
-                            case INCREASE -> brightnessBefore <= 0.0 ? OnOffType.ON : null;
+                            case INCREASE -> {
+                                putResource.setDimmingDelta(incDecCommand, INC_DEC_PERCENT);
+                                yield brightnessBefore <= 0.0 ? OnOffType.ON : null;
+                            }
                             case DECREASE -> {
                                 if (brightnessAfter <= 0.0) {
                                     putResource = new Resource(lightResourceType);
