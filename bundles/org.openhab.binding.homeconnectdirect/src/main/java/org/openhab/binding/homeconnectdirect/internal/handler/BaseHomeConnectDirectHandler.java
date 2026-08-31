@@ -317,7 +317,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                             mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
                                     List.of(new ProgramData(programUid, null)), null, 1));
                         } else {
-                            logger.warn(
+                            logger.info(
                                     "The '{}' control is either unavailable or in read-only mode. Cannot start program.",
                                     ACTIVE_PROGRAM_KEY);
                         }
@@ -328,6 +328,9 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                 sendBooleanCommandIfAllowed(PAUSE_PROGRAM_KEY);
             } else if (COMMAND_RESUME.equalsIgnoreCase(command.toFullString())) {
                 sendBooleanCommandIfAllowed(RESUME_PROGRAM_KEY);
+            } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())
+                    && isStopProgramCommandSupported()) {
+                sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
             }
         } else if (CHANNEL_SELECTED_PROGRAM.equals(channelUID.getId()) && command instanceof StringType) {
             getDeviceDescriptionServiceOptional().ifPresent(deviceDescription -> {
@@ -1161,7 +1164,11 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
     }
 
     private void updateCommandDescriptions() {
-        // command channel
+        updateCommandDescription();
+        updateProgramCommandDescription();
+    }
+
+    private void updateCommandDescription() {
         getLinkedChannel(CHANNEL_COMMAND)
                 .ifPresent(channel -> getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
                     var commands = deviceDescriptionService.getCommands(true, true);
@@ -1175,14 +1182,31 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
 
                     setCommandOptions(channel.getUID(), commandOptions);
                 }));
+    }
 
-        // program command
+    /**
+     * Whether the appliance supports aborting a running program. Aborting is only supported for appliances where it is
+     * a sensible operation. Washers for example report the abort command as available at any time, but aborting leaves
+     * the drum filled with water.
+     * <p>
+     * Handlers that override {@link #updateProgramCommandDescription()} entirely determine the offered command options
+     * on their own and use this method only to gate the command execution.
+     */
+    protected boolean isStopProgramCommandSupported() {
+        return false;
+    }
+
+    /**
+     * Updates the command options of the program command channel. Appliance handlers with a different set of supported
+     * program commands override this method.
+     */
+    protected void updateProgramCommandDescription() {
         getLinkedChannel(CHANNEL_PROGRAM_COMMAND)
                 .ifPresent(channel -> getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
                     var commands = deviceDescriptionService.getCommands(true, true);
 
                     // collect all commands of type boolean
-                    var commandOptions = commands.stream()
+                    var commandOptions = new ArrayList<>(commands.stream()
                             .filter(command -> ContentType.BOOLEAN.equals(command.contentType()))
                             .filter(command -> Set.of(RESUME_PROGRAM_KEY, PAUSE_PROGRAM_KEY).contains(command.key()))
                             .map(command -> {
@@ -1197,11 +1221,16 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                                     default -> throw new IllegalStateException("Unexpected value: " + command.key());
                                 };
                                 return new CommandOption(commandOptionCommand, commandOptionLabel);
-                            }).toList();
+                            }).toList());
                     if (commandOptions.isEmpty() && deviceDescriptionService.getActiveProgram(true) != null
                             && deviceDescriptionService.getSelectedProgram(true) != null) {
-                        commandOptions = List
-                                .of(new CommandOption(COMMAND_START, translationProvider.getText(I18N_START_PROGRAM)));
+                        commandOptions
+                                .add(new CommandOption(COMMAND_START, translationProvider.getText(I18N_START_PROGRAM)));
+                    }
+                    if (isStopProgramCommandSupported()
+                            && deviceDescriptionService.isCommandAvailableAndWritable(ABORT_PROGRAM_KEY)) {
+                        commandOptions
+                                .add(new CommandOption(COMMAND_STOP, translationProvider.getText(I18N_STOP_PROGRAM)));
                     }
 
                     setCommandOptions(channel.getUID(), commandOptions);
