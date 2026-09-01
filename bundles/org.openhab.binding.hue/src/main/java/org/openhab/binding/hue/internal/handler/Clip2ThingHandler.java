@@ -501,9 +501,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
-                if (command instanceof PercentType brightnessCommand) {
-                    putResource = new Resource(lightResourceType).setBrightness(brightnessCommand);
-                }
+                putResource = new Resource(lightResourceType).setBrightness(brightnessCommand);
                 break;
 
             case CHANNEL_2_ON_OFF_ONLY:
