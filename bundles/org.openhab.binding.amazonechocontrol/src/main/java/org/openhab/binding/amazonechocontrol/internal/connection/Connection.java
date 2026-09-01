@@ -89,6 +89,7 @@ import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHisto
 import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHistoryRecordsTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceListTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceNotificationStatesTO;
+import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceWifiDetailsTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DoNotDisturbDeviceStatusesTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.EndpointTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.ListItemTO;
@@ -554,6 +555,22 @@ public class Connection {
         Set<@Nullable String> serialNumbers = ConcurrentHashMap.newKeySet();
         return devices.devices.stream().filter(d -> d.serialNumber != null && serialNumbers.add(d.serialNumber))
                 .toList();
+    }
+
+    public @Nullable String getDeviceMacAddress(DeviceTO device) {
+        String serialNumber = device.serialNumber;
+        String deviceType = device.deviceType;
+        if (serialNumber == null || deviceType == null) {
+            return null;
+        }
+
+        try {
+            return requestBuilder.get(getAlexaServer() + "/api/device-wifi-details?deviceSerialNumber=" + serialNumber
+                    + "&deviceType=" + deviceType).syncSend(DeviceWifiDetailsTO.class).macAddress;
+        } catch (ConnectionException e) {
+            logger.debug("Getting Wi-Fi details failed for device {}", serialNumber, e);
+            return null;
+        }
     }
 
     public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<SmartHomeBaseDevice> devices)
