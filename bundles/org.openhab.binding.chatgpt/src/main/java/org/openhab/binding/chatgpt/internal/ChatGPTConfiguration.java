@@ -37,4 +37,5 @@ public class ChatGPTConfiguration {
     public Double topP = DEFAULT_TOP_P;
     public Integer maxTokens = DEFAULT_MAX_TOKENS;
     public Integer maxModelTurns = DEFAULT_MAX_MODEL_TURNS;
+    public String reasoningEffort = DEFAULT_REASONING_EFFORT;
 }
