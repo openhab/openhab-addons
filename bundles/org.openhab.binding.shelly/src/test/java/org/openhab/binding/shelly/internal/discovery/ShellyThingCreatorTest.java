@@ -88,8 +88,8 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shelly1-" + DEVICE_ID, "", THING_TYPE_SHELLY1), //
                 Arguments.of("shelly1pm-" + DEVICE_ID, "", THING_TYPE_SHELLY1PM), //
                 Arguments.of("shelly1l-" + DEVICE_ID, "", THING_TYPE_SHELLY1L), //
-                Arguments.of("shelly2-" + DEVICE_ID, "", THING_TYPE_SHELLY2_RELAY), //
-                Arguments.of("shelly25-" + DEVICE_ID, "", THING_TYPE_SHELLY25_RELAY), //
+                Arguments.of("shellyswitch-" + DEVICE_ID, "", THING_TYPE_SHELLYUNKNOWN), //
+                Arguments.of("shellyswitch25-" + DEVICE_ID, "", THING_TYPE_SHELLYUNKNOWN), //
                 Arguments.of("shelly4pro-" + DEVICE_ID, "", THING_TYPE_SHELLY4PRO), //
                 Arguments.of("shellydimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER), //
                 Arguments.of("shellydimmer2-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER2), //
@@ -333,8 +333,6 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2), //
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_EM, THING_TYPE_SHELLYEM), //
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_FLOOD, THING_TYPE_SHELLYFLOOD), //
-                Arguments.of("shelly2-" + DEVICE_ID, SHELLYDT_SHELLY2, THING_TYPE_SHELLY2_RELAY), //
-                Arguments.of("shelly25-" + DEVICE_ID, SHELLYDT_SHELLY25, THING_TYPE_SHELLY25_RELAY), //
                 Arguments.of("shellydevice-" + DEVICE_ID, SHELLYDT_RGBW2, THING_TYPE_SHELLYRGBW2_WHITE));
     }
 
@@ -351,10 +349,10 @@ public class ShellyThingCreatorTest {
 
     private static Stream<Arguments> provideTestCasesForMultiModeGen1Devices() {
         return Stream.of( //
-                Arguments.of("shelly2-" + DEVICE_ID, SHELLYDT_SHELLY2, "relay", THING_TYPE_SHELLY2_RELAY), //
-                Arguments.of("shelly2-" + DEVICE_ID, SHELLYDT_SHELLY2, "roller", THING_TYPE_SHELLY2_ROLLER), //
-                Arguments.of("shelly25-" + DEVICE_ID, SHELLYDT_SHELLY25, "relay", THING_TYPE_SHELLY25_RELAY), //
-                Arguments.of("shelly25-" + DEVICE_ID, SHELLYDT_SHELLY25, "roller", THING_TYPE_SHELLY25_ROLLER), //
+                Arguments.of("shellyswitch-" + DEVICE_ID, SHELLYDT_SHELLY2, "relay", THING_TYPE_SHELLY2_RELAY), //
+                Arguments.of("shellyswitch-" + DEVICE_ID, SHELLYDT_SHELLY2, "roller", THING_TYPE_SHELLY2_ROLLER), //
+                Arguments.of("shellyswitch25-" + DEVICE_ID, SHELLYDT_SHELLY25, "relay", THING_TYPE_SHELLY25_RELAY), //
+                Arguments.of("shellyswitch25-" + DEVICE_ID, SHELLYDT_SHELLY25, "roller", THING_TYPE_SHELLY25_ROLLER), //
                 Arguments.of("shellybulb-" + DEVICE_ID, SHELLYDT_BULB, "color", THING_TYPE_SHELLYBULB), //
                 Arguments.of("shellybulb-" + DEVICE_ID, SHELLYDT_BULB, "white", THING_TYPE_SHELLYBULB), //
                 Arguments.of("shellyrgbw2-" + DEVICE_ID, SHELLYDT_RGBW2, "color", THING_TYPE_SHELLYRGBW2_COLOR), //
