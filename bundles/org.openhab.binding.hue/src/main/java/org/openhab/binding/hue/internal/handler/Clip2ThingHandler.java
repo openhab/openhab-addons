@@ -1895,7 +1895,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * Helper for {@link IncreaseDecreaseType} command processing.
      * Adjusts brightness based on the given Increase/Decrease command and returns an adjunct {@link OnOffType}
      * to be appended to the payload. It converts the relative command into an absolute brightness value since
-     * live testing has shown that it leads to a more predictable / reliable outcomes.
+     * live testing has shown that it leads to more predictable / reliable outcomes.
      *
      * @param command the {@link IncreaseDecreaseType} command.
      * @param putResource the resource to be sent to the bridge.
@@ -1940,7 +1940,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            logger.debug("Failed to fetch light resource type:{}, id:{} {}", type, id, e.getMessage(), e);
+            logger.debug("Failed to fetch light resource type:{}, id:{}", type, id, e);
         }
         return null;
     }
