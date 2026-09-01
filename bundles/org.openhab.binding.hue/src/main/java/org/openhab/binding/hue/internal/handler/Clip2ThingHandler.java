@@ -1894,9 +1894,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     /**
      * Helper for {@link IncreaseDecreaseType} command processing.
-     * Handles the logic for adjusting the brightness based on the given Increase/Decrease command, and returns
-     * an adjunct {@link OnOffType.ON} to be appended to the pay-load. It translates the +/- relative command
-     * to absolute brightness commands (since these are more reliable).
+     * Adjusts brightness based on the given Increase/Decrease command and returns an adjunct {@link OnOffType}
+     * (ON or OFF) to be appended to the payload. It converts the relative command into an absolute brightness value
+     * when possible (using the bridge’s current state) to avoid relying on potentially stale cached values.
      *
      * @param command the {@link IncreaseDecreaseType} command.
      * @param putResource the resource to be sent to the bridge.
