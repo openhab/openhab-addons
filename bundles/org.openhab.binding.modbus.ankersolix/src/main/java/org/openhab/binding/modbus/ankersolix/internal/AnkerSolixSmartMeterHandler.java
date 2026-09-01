@@ -57,9 +57,9 @@ public class AnkerSolixSmartMeterHandler extends AbstractAnkerSolixHandler {
     protected void applyStateFromCache() {
         String serialNumber = readString(10702, 10);
         String rawModel = readString(10620, 10);
-        updateStringChannel(CHANNEL_DEVICE_MODEL, resolveModelName(rawModel, serialNumber));
-        updateStringChannel(CHANNEL_DEVICE_SERIAL_NUMBER, serialNumber);
-        updateStringChannel(CHANNEL_DEVICE_SW_VERSION, readVersion(10696));
+        updateThingProperty(DISCOVERY_PROPERTY_MODEL, resolveModelName(rawModel, serialNumber));
+        updateThingProperty(DISCOVERY_PROPERTY_SERIAL_NUMBER, serialNumber);
+        updateThingProperty(DISCOVERY_PROPERTY_SOFTWARE_VERSION, readVersion(10696));
 
         Integer meterTypeRaw = readUInt16(10630);
         if (meterTypeRaw != null) {

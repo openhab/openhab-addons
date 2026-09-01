@@ -48,6 +48,9 @@ public class AnkerSolixBindingConstants {
     public static final String DISCOVERY_PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String DISCOVERY_PROPERTY_MODEL = "model";
     public static final String DISCOVERY_PROPERTY_DEVICE_FAMILY = "deviceFamily";
+    public static final String DISCOVERY_PROPERTY_SOFTWARE_VERSION = "softwareVersion";
+    public static final String DISCOVERY_PROPERTY_HARDWARE_VERSION = "hardwareVersion";
+    public static final String DISCOVERY_PROPERTY_PRODUCT_NUMBER = "productNumber";
 
     public static final String DEVICE_FAMILY_SOLARBANK = "solarbank";
     public static final String DEVICE_FAMILY_SMART_METER_GEN2 = "smartmeter-gen2";
@@ -66,9 +69,6 @@ public class AnkerSolixBindingConstants {
             Map.entry("DNSL", "Anker SOLIX Smart Meter Gen 2"), Map.entry("DNSM", "Anker SOLIX Smart Meter Gen 2"),
             Map.entry("A519", "Anker SOLIX V1 Smart EV Charger"));
 
-    public static final String CHANNEL_DEVICE_MODEL = "device-model";
-    public static final String CHANNEL_DEVICE_SERIAL_NUMBER = "device-serial-number";
-    public static final String CHANNEL_DEVICE_SW_VERSION = "device-sw-version";
     public static final String CHANNEL_BATTERY_SOC = "battery-soc";
     public static final String CHANNEL_PV_POWER = "pv-power";
     public static final String CHANNEL_BATTERY_CHARGING_POWER = "battery-charging-power";
@@ -114,11 +114,8 @@ public class AnkerSolixBindingConstants {
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_CURRENT = "current";
     public static final String CHANNEL_TEMPERATURE = "temperature";
-    public static final String CHANNEL_SWITCH_STATUS = "switch-status";
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
 
-    public static final String CHANNEL_PRODUCT_NUMBER = "product-number";
-    public static final String CHANNEL_DEVICE_HW_VERSION = "device-hw-version";
     public static final String CHANNEL_RATED_POWER = "rated-power";
     public static final String CHANNEL_MINIMUM_OUTPUT_CURRENT = "minimum-output-current";
     public static final String CHANNEL_MAXIMUM_OUTPUT_CURRENT = "maximum-output-current";
