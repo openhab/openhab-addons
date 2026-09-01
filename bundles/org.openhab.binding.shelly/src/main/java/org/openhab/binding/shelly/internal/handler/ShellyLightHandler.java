@@ -567,7 +567,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 parms.put(SHELLY_COLOR_WHITE, String.valueOf(newCol.white));
             }
         }
-        if (!inColor && (oldCol.temp != newCol.temp)) {
+        // on a switch back to CCT mode the color temp must be repeated, the LEDs were driven by the RGB values
+        if (!inColor && (switchRgbcctMode || oldCol.temp != newCol.temp)) {
             logger.debug("{}: Setting color temp to {}", thingName, newCol.temp);
             parms.put(SHELLY_COLOR_TEMP, String.valueOf(newCol.temp));
         }

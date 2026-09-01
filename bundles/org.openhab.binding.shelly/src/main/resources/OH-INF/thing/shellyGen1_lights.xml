@@ -275,14 +275,14 @@
 	</channel-type>
 
 	<channel-type id="whiteTempDuo">
-		<item-type>Number:Temperature</item-type>
+		<item-type unitHint="K">Number:Temperature</item-type>
 		<label>Color Temperature</label>
 		<description>Color Temperature in Kelvin (2700K-6500K)</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
-		<state min="2700" max="6500" step="10" pattern="%.0f %unit%" readOnly="false"/>
+		<state min="2700" max="6500" step="10" pattern="%.0f K" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="whiteBrightness">
