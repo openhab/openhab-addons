@@ -123,6 +123,24 @@ public class HttpRequestBuilderTest {
     }
 
     @Test
+    public void testARedirectIsHandedToTheCallerAndNotFollowedWhenAutoRedirectIsOff() throws Exception {
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
+
+        HttpFields headers = new HttpFields();
+        headers.add("Location", "https://www.amazon.com/ap/cvf/request?arb=1");
+
+        CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
+        RequestParams params = new RequestParams(HttpMethod.POST, "email=x&password=y", false, Map.of());
+        requestBuilder.new HttpResponseListener(httpResponse, params, false, FailMode.RETRY)
+                .onComplete(resultWithStatus(302, headers));
+
+        verify(httpClient, never()).newRequest(any(URI.class));
+        assertThat(httpResponse.get().statusCode(), is(302));
+    }
+
+    @Test
     public void testACustomUserAgentReplacesTheClientAgentInsteadOfAddingASecondOne() {
         Request request = mock(Request.class, RETURNS_SELF);
 
@@ -158,11 +176,15 @@ public class HttpRequestBuilderTest {
     }
 
     private Result throttledResult(HttpFields headers) {
+        return resultWithStatus(400, headers);
+    }
+
+    private Result resultWithStatus(int status, HttpFields headers) {
         Request request = mock(Request.class);
         when(request.getURI()).thenReturn(REQUEST_URI);
         Response response = mock(Response.class);
         when(response.getRequest()).thenReturn(request);
-        when(response.getStatus()).thenReturn(400);
+        when(response.getStatus()).thenReturn(status);
         when(response.getHeaders()).thenReturn(headers);
         when(response.getReason()).thenReturn("Bad Request");
         Result result = mock(Result.class);

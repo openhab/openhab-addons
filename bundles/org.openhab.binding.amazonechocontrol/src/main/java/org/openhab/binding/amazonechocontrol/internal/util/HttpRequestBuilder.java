@@ -383,9 +383,11 @@ public class HttpRequestBuilder {
                 logger.debug("Redirected to {}", location);
                 if (!autoRedirect) {
                     httpResponse.complete(new HttpResponse(responseStatus, headers, content));
+                    return;
                 }
                 if (redirectCounter == 0) {
                     httpResponse.completeExceptionally(new ConnectionException("Too many redirects"));
+                    return;
                 }
                 createRequest(URI.create(location), params,
                         new HttpResponseListener(this, retryCounter, redirectCounter - 1));
