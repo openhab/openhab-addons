@@ -766,6 +766,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             case "PUSH_VOLUME_CHANGE":
             case "PUSH_CONTENT_FOCUS_CHANGE":
             case "PUSH_EQUALIZER_STATE_CHANGE":
+            case "PUSH_DND_STATE_CHANGE":
                 if (payload.startsWith("{") && payload.endsWith("}")) {
                     PushDeviceTO devicePayload = Objects.requireNonNull(gson.fromJson(payload, PushDeviceTO.class));
                     PushDopplerIdTO dopplerId = devicePayload.dopplerId;
