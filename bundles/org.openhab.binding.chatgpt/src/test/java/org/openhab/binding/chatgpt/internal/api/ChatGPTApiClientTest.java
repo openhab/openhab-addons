@@ -122,7 +122,8 @@ public class ChatGPTApiClientTest {
 
         assertNotNull(response);
         assertEquals(1, response.getChoices().size());
-        assertEquals("Hello! How can I help you today?", response.getChoices().getFirst().getChatMessage().getContent());
+        assertEquals("Hello! How can I help you today?",
+                response.getChoices().getFirst().getChatMessage().getContent());
 
         ArgumentCaptor<ContentProvider> contentCaptor = ArgumentCaptor.forClass(ContentProvider.class);
         verify(request, times(2)).content(contentCaptor.capture());
