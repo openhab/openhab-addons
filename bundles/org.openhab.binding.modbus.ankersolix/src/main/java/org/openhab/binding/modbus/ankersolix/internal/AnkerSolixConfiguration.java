@@ -24,6 +24,6 @@ public class AnkerSolixConfiguration {
 
     public int pollInterval = 5000;
     public int maxTries = 3;
-    public int writeProtectionDurationSeconds = 15;
+    public int writeProtectionDurationSeconds = 5;
     public boolean autoThirdPartyControl = true;
 }

@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -71,8 +70,8 @@ public class AnkerSolixSmartPlugHandler extends AbstractAnkerSolixHandler {
     protected void applyStateFromCache() {
         String serialNumber = readString(30005, 12);
         String rawModel = readString(32768, 5);
-        updateStringChannel(CHANNEL_DEVICE_MODEL, resolveModelName(rawModel, serialNumber));
-        updateStringChannel(CHANNEL_DEVICE_SERIAL_NUMBER, serialNumber);
+        updateThingProperty(DISCOVERY_PROPERTY_MODEL, resolveModelName(rawModel, serialNumber));
+        updateThingProperty(DISCOVERY_PROPERTY_SERIAL_NUMBER, serialNumber);
 
         updateScaledPowerChannel(CHANNEL_REAL_TIME_POWER, readScaledUInt16(30030, 10));
         updateVoltageChannel(CHANNEL_VOLTAGE, readScaledUInt16(30031, 10));
@@ -85,8 +84,6 @@ public class AnkerSolixSmartPlugHandler extends AbstractAnkerSolixHandler {
         State switchShadow = getShadowState(CHANNEL_POWER_SWITCH);
         if (switchShadow instanceof OnOffType shadowSwitch) {
             updateChannelState(CHANNEL_POWER_SWITCH, shadowSwitch);
-            updateChannelState(CHANNEL_SWITCH_STATUS,
-                    shadowSwitch == OnOffType.ON ? new StringType("connected") : new StringType("disconnected"));
             return;
         }
 
@@ -94,8 +91,6 @@ public class AnkerSolixSmartPlugHandler extends AbstractAnkerSolixHandler {
         if (statusRaw != null) {
             boolean connected = statusRaw == 1;
             updateChannelState(CHANNEL_POWER_SWITCH, connected ? OnOffType.ON : OnOffType.OFF);
-            updateChannelState(CHANNEL_SWITCH_STATUS, new StringType(
-                    connected ? "connected" : statusRaw == 0 ? "disconnected" : String.valueOf(statusRaw)));
         }
     }
 }
