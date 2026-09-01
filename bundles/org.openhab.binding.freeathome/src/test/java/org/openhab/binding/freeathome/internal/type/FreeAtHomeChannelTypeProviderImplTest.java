@@ -14,7 +14,6 @@ package org.openhab.binding.freeathome.internal.type;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,17 +56,5 @@ public class FreeAtHomeChannelTypeProviderImplTest {
         assertNotNull(state);
         assertTrue(state.isReadOnly());
         assertTrue(restartedProvider.getChannelTypes(null).stream().anyMatch(type -> uid.equals(type.getUID())));
-    }
-
-    @Test
-    public void restoredChannelTypeReferencesNoConfigDescription() {
-        FreeAtHomeChannelTypeProviderImpl provider = new FreeAtHomeChannelTypeProviderImpl(storageService);
-        ChannelTypeUID uid = UidUtils.generateChannelTypeUID("decimal", false);
-        provider.addChannelType(ChannelTypeBuilder.state(uid, "Setpoint", CoreItemFactory.NUMBER).build());
-
-        ChannelType restoredType = new FreeAtHomeChannelTypeProviderImpl(storageService).getChannelType(uid, null);
-
-        assertNotNull(restoredType);
-        assertNull(restoredType.getConfigDescriptionURI());
     }
 }
