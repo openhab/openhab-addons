@@ -71,8 +71,6 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
         super(SUPPORTED_THING_TYPES, MANUAL_DISCOVERY_TIME_S, true);
     }
 
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
-
     @Override
     protected void startScan() {
         scheduler.execute(() -> listenUntilDeadline(System.currentTimeMillis() + MANUAL_DISCOVERY_TIME_S * 1000L));
@@ -98,8 +96,6 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
         scanJob = null;
     }
 
-    // ── Discovery ─────────────────────────────────────────────────────────────
-
     private void listenOnce() {
         byte[] buf = new byte[64];
         // DatagramSocket(null) + explicit bind so setReuseAddress takes effect before binding.
@@ -122,13 +118,8 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Manual-scan variant of {@link #listenOnce()}: keeps receiving on a single bound socket until
-     * {@code deadlineMs}, announcing every valid datagram, instead of returning after the first one.
-     * The framework advertises a {@value #MANUAL_DISCOVERY_TIME_S}s manual scan window to the user —
-     * without this loop, a scan would silently end after the first datagram (or after one
-     * {@value #SOCKET_TIMEOUT_MS}ms timeout with none), missing any second device on the LAN or
-     * recovering from a first packet that turned out to be noise. Background discovery doesn't need
-     * this: it already gets repeated coverage over time via its own recurring schedule.
+     * Manual-scan variant of {@link #listenOnce()}: keeps receiving until {@code deadlineMs} instead of
+     * returning after the first datagram, so a second device or a noisy first packet isn't missed.
      */
     private void listenUntilDeadline(long deadlineMs) {
         byte[] buf = new byte[64];

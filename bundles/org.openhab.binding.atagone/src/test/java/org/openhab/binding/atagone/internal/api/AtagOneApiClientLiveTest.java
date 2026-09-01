@@ -69,8 +69,6 @@ class AtagOneApiClientLiveTest {
         }
     }
 
-    // ── Test 1: pairing ───────────────────────────────────────────────────────
-
     /**
      * pair() returns 1 (pending) if the user must press Accept, 2 (granted) if the device
      * auto-accepts. Some firmware versions return 0 for an open-LAN client — the raw JSON is
@@ -89,8 +87,6 @@ class AtagOneApiClientLiveTest {
         }
         assertTrue(accStatus >= 0, "acc_status must be non-negative, got: " + accStatus);
     }
-
-    // ── Test 2: retrieve ──────────────────────────────────────────────────────
 
     @Test
     @Order(2)
@@ -166,8 +162,6 @@ class AtagOneApiClientLiveTest {
         LOGGER.info("  ch_mode_vacation : {} s", r.configuration.ch_mode_vacation);
         LOGGER.info("  boiler_id        : {}", r.configuration.boiler_id);
 
-        // ── Structural assertions ──────────────────────────────────────────────
-
         assertFalse(r.status.device_id.isEmpty(), "device_id must not be empty");
 
         assertTrue(r.report.room_temp >= 5 && r.report.room_temp <= 35,
@@ -196,16 +190,11 @@ class AtagOneApiClientLiveTest {
                         + r.configuration.dhw_max_set);
     }
 
-    // ── Test 3: safe write ────────────────────────────────────────────────────
-
     @Test
     @Order(3)
     void updateControlRoundTrip() throws AtagOneCommunicationException {
         // Read the current room setpoint, then write it back — no change to the boiler. Uses
-        // ch_mode_temp (the target-temperature channel's field), confirmed live to be a genuinely
-        // writable control field. dhw_temp_setp was used here previously, but is confirmed
-        // read-only/derived — writing it is silently accepted and has no effect, which would make
-        // this test unable to distinguish a working round-trip from a no-op write.
+        // ch_mode_temp: dhw_temp_setp is read-only/derived, so writing it wouldn't prove a round-trip.
         RetrieveReplyDTO before = apiClient.retrieve();
         double currentSetpoint = before.control.ch_mode_temp;
         LOGGER.info("updateControl round-trip: ch_mode_temp = {}", currentSetpoint);

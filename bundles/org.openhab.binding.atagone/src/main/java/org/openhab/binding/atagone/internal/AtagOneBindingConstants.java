@@ -88,23 +88,8 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_RESETS = "device#resets";
     public static final String CHANNEL_MEMORY_ALLOCATION = "device#memory-allocation";
 
-    /*
-     * Advanced writable device-configuration channels — declared but not yet wired to any
-     * channel-type in thing-types.xml or any read/write logic in the handler (planned for a later
-     * phase). Grouped by subsystem, not under a dedicated settings group — see the channel-group
-     * placement rule in thing-types.xml's channel-groups comment, and DEVELOPERS.md's gap analysis
-     * for the full list of planned fields per group.
-     */
-    public static final String CHANNEL_FROST_PROTECTION = "heating#frost-protection";
-    public static final String CHANNEL_FROST_PROTECTION_TEMPERATURE = "heating#frost-protection-temperature";
-    public static final String CHANNEL_LEGIONELLA_PROTECTION = "hotwater#legionella-protection";
-    public static final String CHANNEL_SUMMER_ECO_MODE = "heating#summer-eco-mode";
-    public static final String CHANNEL_SUMMER_ECO_TEMPERATURE = "heating#summer-eco-temperature";
-
     // Thing property key for the persisted client identifier
     public static final String PROPERTY_CLIENT_ID = "clientId";
-
-    // ── Protocol enum constants ───────────────────────────────────────────────
 
     public static final int CH_MODE_MANUAL = 1;
     public static final int CH_MODE_AUTO = 2;

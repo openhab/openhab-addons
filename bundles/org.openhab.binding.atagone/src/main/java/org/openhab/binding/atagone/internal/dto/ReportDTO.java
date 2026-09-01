@@ -36,8 +36,6 @@ public class ReportDTO {
     public double room_temp;
     /** Outside temperature sensor (°C) — may be negative; signed arithmetic required. */
     public double outside_temp;
-    /** Debug outside temperature reading (°C). */
-    public double dbg_outside_temp;
     /** PCB (circuit board) temperature (°C). */
     public double pcb_temp;
     /** Active CH setpoint sent to boiler (°C). */
@@ -46,8 +44,6 @@ public class ReportDTO {
     public double dhw_water_temp;
     /** CH circuit water temperature (°C). */
     public double ch_water_temp;
-    /** DHW circuit water pressure (bar). */
-    public double dhw_water_pres;
     /** CH circuit water pressure (bar). */
     public double ch_water_pres;
     /** CH circuit return temperature (°C). */
@@ -57,8 +53,6 @@ public class ReportDTO {
      * 0x004=CH active, 0x008=burner commanded on, 0x010=DHW active, 0x100=flame sensor.
      */
     public int boiler_status;
-    /** Boiler configuration bitmask (firmware-internal). */
-    public int boiler_config;
     /** Estimated seconds until room reaches target temperature. */
     public int ch_time_to_temp;
     /** Temperature shown on the thermostat display (°C). */
@@ -73,10 +67,6 @@ public class ReportDTO {
     public int current;
     /** Supply voltage (device-internal units, likely mV). */
     public int voltage;
-    /** Charge status (firmware-internal). */
-    public int charge_status;
-    /** Burner start count since last reset. */
-    public int lmuc_burner_starts;
     /** DHW flow rate (L/min). */
     public double dhw_flow_rate;
     /** Controller reset count. */

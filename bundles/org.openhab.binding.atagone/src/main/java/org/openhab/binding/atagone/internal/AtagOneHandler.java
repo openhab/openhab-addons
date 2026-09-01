@@ -68,15 +68,8 @@ public class AtagOneHandler extends BaseThingHandler {
     private static final int POST_COMMAND_DELAY_S = 2;
     private static final SecureRandom CLIENT_ID_RANDOM = new SecureRandom();
 
-    /*
-     * Timed-preset durations must be whole units. A non-conforming value (e.g. 2400 s, 40 min for
-     * fireplace) does not fail safely on the device — instead of being rejected or rounded, it
-     * triggers the same physical-confirmation/reboot pathway as a real cancel. Enforced for all three
-     * timed presets, matching their channel unit hints (hours for extend/fireplace, days for
-     * vacation), which reflect a real firmware-level granularity, not just a display convenience.
-     * Public because AtagOneActions enforces the same constraint on its activate methods — sharing
-     * these constants means the channel path and the action path can never disagree on the limit.
-     */
+    // A non-whole-unit duration doesn't fail safely on the device — it triggers the same
+    // physical-confirmation/reboot pathway as a real cancel. Public so AtagOneActions can share the limit.
     public static final long SECONDS_PER_HOUR = 3600L;
     public static final long SECONDS_PER_DAY = 86400L;
 
@@ -90,50 +83,28 @@ public class AtagOneHandler extends BaseThingHandler {
     private @Nullable Future<?> connectJob;
     private volatile boolean disposing = false;
 
-    /*
-     * Bumped on every initialize(). connect()/doPair() capture it at dispatch time and re-check it
-     * after any blocking call, so a task queued or in flight from a superseded generation (e.g. a
-     * rapid dispose+reinitialize while pairing) can't mutate this generation's apiClient/clientId.
-     */
+    // Bumped on every initialize(); connect()/doPair() re-check it after each blocking call so a task
+    // from a superseded generation (e.g. a rapid dispose+reinitialize) can't mutate stale state.
     private volatile long generation = 0L;
 
-    /*
-     * Guards only the sendControlUpdate() stop/write/start sequence. Deliberately NOT the same lock as
-     * startPollJob()/stopPollJob() (which stay synchronized on `this`) — sendControlUpdate() holds
-     * this across a blocking HTTP call, and sharing the lifecycle lock would make dispose() (which
-     * calls stopPollJob()) block for the full request/retry duration.
-     */
+    // Guards only sendControlUpdate()'s stop/write/start sequence — deliberately not the lifecycle lock
+    // (startPollJob/stopPollJob stay synchronized on `this`), since sendControlUpdate() holds this
+    // across a blocking HTTP call and sharing the lifecycle lock would make dispose() block on it.
     private final Object commandLock = new Object();
 
     private final Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
 
-    /*
-     * After a timed-preset write (ch_mode 3=holiday or 5=fireplace) the boiler API reinitializes for
-     * several minutes. During this window, communication errors are suppressed so the Thing stays
-     * UNKNOWN rather than OFFLINE.
-     */
+    // A timed-preset write reinitializes the boiler's API for several minutes; communication errors are
+    // suppressed until this deadline so the Thing stays UNKNOWN rather than OFFLINE.
     private volatile long suppressCommErrorUntil = 0L;
 
-    /*
-     * The device's own persisted default vacation duration (configuration.ch_mode_vacation), tracked
-     * unconditionally on every poll (see updateChannels()) so "reuse the last duration" survives
-     * holiday mode ending.
-     */
+    // Device's persisted default vacation/extend durations, tracked unconditionally on every poll (see
+    // updateChannels()) so "reuse the last duration" survives the mode ending.
     private volatile long defaultVacationDurationSeconds = 7 * 86400L;
-
-    /*
-     * The device's own persisted default extend duration (configuration.ch_mode_extend). This is a
-     * real, controllable value, but it drives control.extend_duration, never control.ch_mode_duration
-     * — see composeExtendActivation() for how the two are related.
-     */
     private volatile long defaultExtendDurationSeconds = 3600L;
 
-    /*
-     * A pending (future-scheduled, not-yet-active) vacation reports preset-mode=auto, not holiday, so
-     * composeCancel() cannot rely on reported preset-mode alone to detect an armed schedule — that
-     * would silently leave a pending vacation fully armed while reporting "nothing to cancel". Tracked
-     * unconditionally on every poll (including 0, so it clears when the device clears).
-     */
+    // A pending (future-scheduled) vacation reports preset-mode=auto, not holiday, so composeCancel()
+    // can't rely on reported mode alone to detect an armed schedule — tracked separately, every poll.
     private volatile long armedStartVacation = 0L;
 
     public AtagOneHandler(Thing thing, HttpClient httpClient) {
@@ -145,8 +116,6 @@ public class AtagOneHandler extends BaseThingHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(AtagOneActions.class);
     }
-
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     @Override
     public void initialize() {
@@ -178,8 +147,6 @@ public class AtagOneHandler extends BaseThingHandler {
             pairingJob = null;
         }
     }
-
-    // ── Command handling ──────────────────────────────────────────────────────
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -215,16 +182,14 @@ public class AtagOneHandler extends BaseThingHandler {
             return;
         }
 
-        // The actual write is a blocking HTTP call (rate-limited + retried, up to ~12 s) — never run
-        // it on the calling thread, which may be a shared openHAB event-bus thread.
+        // The write is a blocking HTTP call (rate-limited + retried, up to ~12 s) — never on the caller's thread.
         scheduler.execute(() -> sendControlUpdate(client, channelId, control, configUpdate));
     }
 
     /**
-     * Entry point for {@link AtagOneActions} — dispatches an already-composed control/configuration
-     * update using the same online-check, apiClient-null-check, and off-thread dispatch as a channel
-     * command, without going through {@link #handleCommand}'s {@code ChannelUID}/{@code Command}
-     * plumbing. {@code label} is used only for logging.
+     * Entry point for {@link AtagOneActions}: dispatches an already-composed update with the same
+     * checks as {@link #handleCommand}, without its {@code ChannelUID}/{@code Command} plumbing.
+     * {@code label} is used only for logging.
      */
     public void sendComposedUpdate(String label, ControlUpdateDTO control, DeviceConfigUpdateDTO configUpdate) {
         if (disposing) {
@@ -243,11 +208,9 @@ public class AtagOneHandler extends BaseThingHandler {
     }
 
     /**
-     * Sends a control/configuration update and restarts polling afterwards.
-     * Serialized on {@link #commandLock} (not the lifecycle lock — see its field comment) so two
-     * commands handled concurrently cannot interleave the stop/write/start sequence.
-     * {@code startPollJob} runs in a {@code finally} block so that no exception from the write —
-     * checked or unchecked — can ever leave polling permanently disabled.
+     * Sends a control/configuration update and restarts polling afterwards. Serialized on
+     * {@link #commandLock} so concurrent commands can't interleave the stop/write/start sequence;
+     * {@code startPollJob} runs in a {@code finally} so no write exception leaves polling disabled.
      */
     private void sendControlUpdate(AtagOneApiClient client, String channelId, ControlUpdateDTO control,
             DeviceConfigUpdateDTO configUpdate) {
@@ -401,16 +364,9 @@ public class AtagOneHandler extends BaseThingHandler {
                 return false;
 
             case CHANNEL_DHW_TARGET_TEMPERATURE:
-                /*
-                 * control.dhw_temp_setp is read-only/derived — confirmed live: writing it is
-                 * silently accepted by the device but never changes the actual value, which instead
-                 * tracks whichever schedules.dhw_schedule entry is currently active. The real
-                 * user-settable field is schedules.dhw_schedule.base_temp, requiring the full
-                 * schedule object to be sent — not implemented yet (schedule support is a future
-                 * phase). Rejected here rather than silently accepted and ignored.
-                 */
-                logger.warn(
-                        "dhw-target-temperature is read-only; the device has no direct control field for it, see DEVELOPERS.md");
+                // control.dhw_temp_setp is read-only/derived — confirmed live: writing it is silently
+                // accepted but never changes the value, which tracks the active schedule instead.
+                logger.warn("dhw-target-temperature is read-only; the device has no direct control field for it");
                 return false;
 
             case CHANNEL_EXTEND_DURATION:
@@ -457,17 +413,11 @@ public class AtagOneHandler extends BaseThingHandler {
         }
     }
 
-    // ── Mode-activation composition ─────────────────────────────────────────────
-
-    /*
-     * Shared by buildControlUpdate()'s preset-mode case (explicitDurationSeconds == null: fall back
-     * to whatever's currently stored) and AtagOneActions (explicitDurationSeconds != null: use the
-     * caller's value directly, composing the full activation in one write). Keeping this logic in one
-     * place means the channel path and the action path can never drift apart on what they send.
-     */
-
     /**
-     * Composes an extend-mode activation.
+     * Composes an extend-mode activation. Shared by {@link #buildControlUpdate}'s preset-mode case
+     * ({@code explicitDurationSeconds == null}: fall back to whatever's currently stored) and
+     * {@link AtagOneActions} ({@code explicitDurationSeconds != null}: use the caller's value
+     * directly), so the channel path and the action path can never drift apart on what they send.
      * <p>
      * {@code control.extend_duration} is additive to the time remaining until the device's next
      * scheduled temperature change, not an absolute session length — extending by one hour shortly
@@ -602,8 +552,6 @@ public class AtagOneHandler extends BaseThingHandler {
         return durationSeconds >= unitSeconds && durationSeconds % unitSeconds == 0;
     }
 
-    // ── Connection / pairing ──────────────────────────────────────────────────
-
     private void connect(long myGeneration) {
         if (disposing || generation != myGeneration) {
             return;
@@ -676,8 +624,6 @@ public class AtagOneHandler extends BaseThingHandler {
         }
     }
 
-    // ── Polling ───────────────────────────────────────────────────────────────
-
     private void poll() {
         if (disposing) {
             return;
@@ -717,8 +663,6 @@ public class AtagOneHandler extends BaseThingHandler {
             pollJob = null;
         }
     }
-
-    // ── Channel updates ───────────────────────────────────────────────────────
 
     private void updateChannels(RetrieveReplyDTO r) {
         // Tracked unconditionally (not mode-gated) so it survives holiday mode ending — see the
@@ -770,8 +714,8 @@ public class AtagOneHandler extends BaseThingHandler {
         // voltage is reported in mV when > 1000, otherwise already in V (observed device inconsistency).
         double voltage = r.report.voltage > 1000 ? r.report.voltage / 1000.0 : r.report.voltage;
         updateIfChanged(CHANNEL_VOLTAGE, new QuantityType<>(voltage, Units.VOLT));
-        // report.current and report.power_cons are deliberately not exposed as channels — no way to
-        // verify their units or meaning against this device (see DEVELOPERS.md's field reference).
+        // report.current and report.power_cons are deliberately not exposed as channels — their units
+        // and meaning are not confirmed against this device.
         updateIfChanged(CHANNEL_DHW_FLOW_RATE, new QuantityType<>(r.report.dhw_flow_rate, Units.LITRE_PER_MINUTE));
         updateIfChanged(CHANNEL_RESETS, new DecimalType(r.report.resets));
         updateIfChanged(CHANNEL_MEMORY_ALLOCATION, new DecimalType(r.report.memory_allocation));
@@ -797,7 +741,7 @@ public class AtagOneHandler extends BaseThingHandler {
         }
         updateIfChanged(CHANNEL_DHW_TARGET_TEMPERATURE, new QuantityType<>(r.control.dhw_temp_setp, SIUnits.CELSIUS));
         // control.dhw_mode is deliberately not exposed as a channel — no source documents its value
-        // meanings and neither the app nor the cloud portal expose a setting for it (see DEVELOPERS.md).
+        // meanings, and neither the app nor the cloud portal expose a setting for it.
         updateIfChanged(CHANNEL_EXTEND_DURATION, new QuantityType<>(r.control.extend_duration, Units.SECOND));
         updateIfChanged(CHANNEL_FIREPLACE_DURATION, new QuantityType<>(r.control.fireplace_duration, Units.SECOND));
         /*
@@ -853,8 +797,6 @@ public class AtagOneHandler extends BaseThingHandler {
         }
     }
 
-    // ── Status helpers ────────────────────────────────────────────────────────
-
     private void goOnline() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
@@ -870,8 +812,6 @@ public class AtagOneHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.OFFLINE, detail, reason);
     }
-
-    // ── Client ID lifecycle ───────────────────────────────────────────────────
 
     private String resolveClientId() {
         if (!config.clientId.isBlank()) {

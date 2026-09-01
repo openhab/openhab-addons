@@ -26,6 +26,4 @@ public class StatusDTO {
     public String device_id = "";
     /** Device status bitmask (firmware-internal). */
     public int device_status;
-    /** Connection status bitmask. */
-    public int connection_status;
 }

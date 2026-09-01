@@ -95,16 +95,6 @@ class AtagOneBindingConstantsTest {
                 continue;
             }
             String value = (String) field.get(null);
-            // The five "advanced writable device-configuration channels" constants are declared for a
-            // later phase and deliberately have no <channel-type> in thing-types.xml yet — everything
-            // else is a real, currently-shipped channel and must match exactly.
-            if (field.getName().equals("CHANNEL_FROST_PROTECTION")
-                    || field.getName().equals("CHANNEL_FROST_PROTECTION_TEMPERATURE")
-                    || field.getName().equals("CHANNEL_LEGIONELLA_PROTECTION")
-                    || field.getName().equals("CHANNEL_SUMMER_ECO_MODE")
-                    || field.getName().equals("CHANNEL_SUMMER_ECO_TEMPERATURE")) {
-                continue;
-            }
             assertTrue(declaredInXml.contains(value), field.getName() + " = \"" + value
                     + "\" does not match any <channel> in a " + "<channel-group-type> in thing-types.xml");
         }

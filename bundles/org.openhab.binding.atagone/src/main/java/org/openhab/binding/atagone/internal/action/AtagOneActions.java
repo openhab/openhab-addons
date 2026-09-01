@@ -30,15 +30,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Single-write mode activation for the ATAG ONE binding, complementing the channel-based interface.
- * <p>
- * {@code preset-mode} is the only channel that can ever trigger a mode change — writing a duration
- * channel (vacation/extend/fireplace-duration) only updates the stored value, matching the device's
- * own behavior. That means activating with a <em>custom</em> duration normally takes two writes: set
- * the duration, then set preset-mode. These actions compose the full multi-field write in one call
- * instead, for rule authors who want precise, immediate control without that two-step sequence —
- * each action reuses the same {@code composeXxxActivation}/{@code composeCancel} methods on
- * {@link AtagOneHandler} that the {@code preset-mode} channel path uses, so the two can never drift
- * apart on what they actually send.
+ * Activating with a custom duration via channels normally takes two writes (set the duration, then
+ * {@code preset-mode}); these actions compose the full write in one call, reusing the same
+ * {@code composeXxxActivation}/{@code composeCancel} methods on {@link AtagOneHandler} as the channel
+ * path so the two can never drift apart.
  *
  * @author Florian Lettner - Initial contribution
  */
