@@ -64,7 +64,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
 
     void play() throws InterruptedException, SqueezeBoxTimeoutException {
         setupPlayerForNotification();
-        addNotificationMessageToPlaylist();
+        notificationMessagePlaylistsIndex = addNotificationMessageToPlaylist();
         playNotification();
     }
 
@@ -123,9 +123,10 @@ class SqueezeBoxNotificationPlayer implements Closeable {
         }
     }
 
-    private void addNotificationMessageToPlaylist() throws InterruptedException, SqueezeBoxTimeoutException {
+    private int addNotificationMessageToPlaylist() throws InterruptedException, SqueezeBoxTimeoutException {
         logger.debug("Adding notification message to playlist");
-        SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
+        int currentCount = squeezeBoxPlayerHandler.currentNumberPlaylistTracks();
+        SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac, currentCount);
         listener.resetPlaylistUpdated();
 
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
@@ -134,6 +135,7 @@ class SqueezeBoxNotificationPlayer implements Closeable {
         try {
             updatePlaylist(listener);
             this.playlistModified = true;
+            return listener.getNewTrackCount() - 1;
         } finally {
             squeezeBoxServerHandler.unregisterSqueezeBoxPlayerListener(listener);
         }
@@ -155,9 +157,8 @@ class SqueezeBoxNotificationPlayer implements Closeable {
     }
 
     /**
-     * Monitor the number of playlist entries. When it changes, then we know the playlist
-     * has been updated with the notification URL. There's probably an edge case here where
-     * someone is updating the playlist at the same time, but that should be rare.
+     * Wait for the playlist to be updated. The listener verifies the track count
+     * actually changed from the expected previous count before acknowledging.
      *
      * @param listener
      * @throws InterruptedException
@@ -180,9 +181,8 @@ class SqueezeBoxNotificationPlayer implements Closeable {
     }
 
     private void playNotification() throws InterruptedException, SqueezeBoxTimeoutException {
-        logger.debug("Playing notification");
+        logger.debug("Playing notification at playlist index {}", notificationMessagePlaylistsIndex);
 
-        notificationMessagePlaylistsIndex = squeezeBoxPlayerHandler.currentNumberPlaylistTracks() - 1;
         SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac);
         listener.resetStopped();
 

@@ -44,12 +44,19 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
 
     // Used to monitor for updates to the playlist
     private final AtomicBoolean playlistUpdated = new AtomicBoolean(false);
+    private final int previousTrackCount;
+    private volatile int newTrackCount;
 
     // Used to monitor when the player volume changes to a specific target value
     private final AtomicInteger volume = new AtomicInteger(-1);
 
     SqueezeBoxNotificationListener(String playerMAC) {
+        this(playerMAC, -1);
+    }
+
+    SqueezeBoxNotificationListener(String playerMAC, int previousTrackCount) {
         this.playerMAC = playerMAC;
+        this.previousTrackCount = previousTrackCount;
     }
 
     // Stopped
@@ -78,6 +85,10 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
 
     public boolean isPlaylistUpdated() {
         return this.playlistUpdated.get();
+    }
+
+    public int getNewTrackCount() {
+        return this.newTrackCount;
     }
 
     // Volume updated
@@ -161,7 +172,10 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     }
 
     /*
-     * Monitor for when the playlist is updated
+     * Monitor for when the playlist is updated.
+     * Only acknowledge the update when the track count actually changed
+     * from the expected previous count, to avoid stale events satisfying
+     * the wait prematurely.
      */
     @Override
     public void numberPlaylistTracksEvent(String mac, int track) {
@@ -169,7 +183,10 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
             return;
         }
         logger.trace("Number of playlist tracks is {} for player {}", track, mac);
-        playlistUpdated.set(true);
+        if (previousTrackCount == -1 || track != previousTrackCount) {
+            newTrackCount = track;
+            playlistUpdated.set(true);
+        }
     }
 
     @Override
