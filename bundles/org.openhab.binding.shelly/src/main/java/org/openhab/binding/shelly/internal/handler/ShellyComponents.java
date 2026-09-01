@@ -548,13 +548,9 @@ public class ShellyComponents {
     }
 
     /**
-     * Derives the WS90 rain switch state. The holdoff keeps the switch ON for the configured number of minutes after
-     * the last packet reporting rain. It is evaluated against the wall clock on every status update, not only when a
-     * packet arrives, so the switch also expires on its own once the station goes quiet.
-     *
-     * @param sdata accumulated sensor data
-     * @param holdoffMin holdoff in minutes; 0 follows the sensor's own rain reading with no delay
-     * @return true while rain is reported or the holdoff has not expired yet
+     * The holdoff keeps the switch ON for the configured minutes after the last packet reporting rain, evaluated
+     * against the wall clock on every status update so it also expires once the station goes quiet. A holdoff of 0
+     * follows the sensor's own rain reading with no delay.
      */
     private static boolean isRaining(ShellyStatusSensor sdata, int holdoffMin) {
         if (holdoffMin == 0) {
@@ -562,6 +558,19 @@ public class ShellyComponents {
         }
         Instant lastRain = sdata.lastRain;
         return lastRain != null && Instant.now().isBefore(lastRain.plusSeconds(holdoffMin * 60L));
+    }
+
+    /**
+     * Derives and publishes the rain switch atomically on the sensor data, the monitor the BLU event thread writes
+     * rain/lastRain under, so a poll can't publish a state it derived before an event that already published a
+     * newer one.
+     */
+    private static boolean updateRainSwitch(ShellyThingInterface thingHandler, ShellyStatusSensor sdata) {
+        int holdoffMin = thingHandler.getThingConfig().getRainSwitchHoldoff();
+        synchronized (sdata) {
+            return thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH,
+                    OnOffType.from(isRaining(sdata, holdoffMin)));
+        }
     }
 
     /**
@@ -792,8 +801,7 @@ public class ShellyComponents {
                         toQuantityType(getDouble(sdata.seaLevelPressure), DIGITS_PRESSURE, hpa));
             }
             if (profile.isWS90) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH,
-                        OnOffType.from(isRaining(sdata, thingHandler.getThingConfig().getRainSwitchHoldoff())));
+                updated |= updateRainSwitch(thingHandler, sdata);
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);

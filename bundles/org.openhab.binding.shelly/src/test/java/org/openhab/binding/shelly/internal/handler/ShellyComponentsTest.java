@@ -13,6 +13,8 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -30,6 +32,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -757,6 +761,63 @@ public class ShellyComponentsTest {
 
         assertThat(sdata.lastRain, is(lastRain));
         assertThat(sdata.rain, is(false));
+    }
+
+    @Test
+    void updateSensorsWs90RainEventCannotInterleaveBetweenDeriveAndPublishOfRainSwitch() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.rain = false;
+        ShellyThingInterface handler = ws90HandlerWith(sdata, holdoffConfig(10));
+
+        AtomicBoolean writerStillBlocked = new AtomicBoolean();
+        AtomicReference<@Nullable Instant> seenWhilePublishing = new AtomicReference<>();
+        AtomicReference<@Nullable Thread> writer = new AtomicReference<>();
+        when(handler.updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_RAIN_SWITCH), any()))
+                .thenAnswer(invocation -> {
+                    Thread rainEvent = new Thread(() -> {
+                        synchronized (sdata) {
+                            sdata.rain = true;
+                            sdata.lastRain = Instant.now();
+                        }
+                    });
+                    writer.set(rainEvent);
+                    rainEvent.start();
+                    rainEvent.join(500);
+                    writerStillBlocked.set(rainEvent.isAlive());
+                    seenWhilePublishing.set(sdata.lastRain);
+                    return true;
+                });
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        Thread rainEvent = writer.get();
+        assertNotNull(rainEvent);
+        rainEvent.join(5000);
+        assertThat(writerStillBlocked.get(), is(true));
+        assertThat(seenWhilePublishing.get(), is(nullValue()));
+        assertThat(sdata.lastRain, is(notNullValue()));
+    }
+
+    @Test
+    void updateSensorsWs90PollAfterRainEventPublishesOn() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.rain = false;
+        ShellyThingInterface handler = ws90HandlerWith(sdata, holdoffConfig(10));
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.OFF);
+
+        Thread rainEvent = new Thread(() -> {
+            synchronized (sdata) {
+                sdata.rain = true;
+                sdata.lastRain = Instant.now();
+            }
+        });
+        rainEvent.start();
+        rainEvent.join(5000);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.ON);
     }
 
     @Test

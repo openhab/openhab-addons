@@ -343,7 +343,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.distance = blu.distance;
                         }
                         if (blu.rain != null) {
-                            sensorData.rain = getDouble(blu.rain) > 0;
+                            // sensorData is the monitor the polling thread derives the rain switch under
+                            synchronized (sensorData) {
+                                sensorData.rain = getDouble(blu.rain) > 0;
+                            }
                         }
                         // BTHome sends the WS90's Speed object twice per packet: average speed, then gust speed
                         Double[] speeds = blu.speeds;
@@ -390,11 +393,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                 sensorData.seaLevelPressure = seaLevelPressure(pressure, tC,
                                         resolveAltitude(t.getThingConfig().getAltitude()));
                             }
-                            // sensorData is accumulated across packets, so the rain state has to be read from
-                            // there; blu.rain only tells whether this particular packet carried the field and
-                            // therefore whether it may refresh the timestamp
-                            if (blu.rain != null && Boolean.TRUE.equals(sensorData.rain)) {
-                                sensorData.lastRain = Instant.now();
+                            // blu.rain only tells whether this packet carried the field, the state itself is
+                            // accumulated in sensorData
+                            synchronized (sensorData) {
+                                if (blu.rain != null && Boolean.TRUE.equals(sensorData.rain)) {
+                                    sensorData.lastRain = Instant.now();
+                                }
                             }
                         }
                         Long firmware32 = blu.firmware32;
@@ -527,26 +531,15 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         return strFirmware;
     }
 
-    /**
-     * Maps a wind direction in degrees to a 16-point compass rose label.
-     *
-     * @param degrees direction in degrees (0-360)
-     * @return compass label, e.g. "NNE"
-     */
+    /** Maps a wind direction in degrees to a 16-point compass rose label, e.g. "NNE". */
     static String windDirectionLabel(double degrees) {
         int idx = (int) Math.floor((((degrees % 360) + 360) % 360 + 11.25) / 22.5) % 16;
         return COMPASS_POINTS[idx];
     }
 
     /**
-     * Computes the "feels like" temperature using the Australian Bureau of Meteorology's Steadman
-     * Apparent Temperature formula, applied continuously across the full range so the result never
-     * jumps at a threshold (unlike switching between Wind Chill/Heat Index/Steadman by condition).
-     *
-     * @param tC air temperature in °C
-     * @param rH relative humidity in %
-     * @param windMs wind speed in m/s
-     * @return apparent ("feels like") temperature in °C
+     * Steadman Apparent Temperature (Australian Bureau of Meteorology), applied continuously so the result never
+     * jumps at a threshold. Takes °C, % and m/s, returns °C.
      */
     static double apparentTemperature(double tC, double rH, double windMs) {
         double e = (rH / 100.0) * 6.105 * Math.exp(17.27 * tC / (237.7 + tC));
@@ -554,14 +547,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     /**
-     * Reduces a station-level barometric pressure reading to sea-level pressure (QNH) using the
-     * international barometric formula, so readings from stations at different altitudes become
-     * comparable.
-     *
-     * @param stationHpa measured pressure at the station, in hPa
-     * @param tC station temperature in °C, or {@code null} if unavailable (defaults to 15°C/288.15K)
-     * @param altitudeM station altitude above sea level, in meters
-     * @return sea-level pressure in hPa; unchanged from {@code stationHpa} when {@code altitudeM} is 0
+     * Reduces station pressure (hPa) to sea level (QNH) via the international barometric formula, so readings from
+     * stations at different altitudes are comparable. Temperature defaults to 15°C when unavailable.
      */
     static double seaLevelPressure(double stationHpa, @Nullable Double tC, int altitudeM) {
         if (altitudeM == 0) {
@@ -572,24 +559,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         return stationHpa * Math.pow(1 - (lapseRate * altitudeM) / (t0K + lapseRate * altitudeM / 2.0), -5.255);
     }
 
-    /**
-     * Falls back to openHAB's system location (if configured) when the thing's {@code altitude} is not
-     * manually set, so {@link #seaLevelPressure} can still apply an altitude correction without requiring
-     * the user to look up and enter the station altitude themselves.
-     *
-     * @param configuredAltitudeM the thing's {@code altitude} configuration value, in meters
-     * @return {@code configuredAltitudeM} if non-zero; otherwise the altitude from openHAB's system
-     *         location if available, or 0 if neither is set
-     */
+    /** Falls back to openHAB's system location when the thing's altitude is not configured. */
     private int resolveAltitude(int configuredAltitudeM) {
         if (configuredAltitudeM != 0) {
             return configuredAltitudeM;
         }
-        LocationProvider provider = locationProvider;
-        if (provider == null) {
-            return 0;
-        }
-        PointType location = provider.getLocation();
+        PointType location = locationProvider.getLocation();
         return location != null ? location.getAltitude().intValue() : 0;
     }
 }
