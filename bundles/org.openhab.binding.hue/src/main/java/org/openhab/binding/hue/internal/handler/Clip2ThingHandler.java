@@ -46,6 +46,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.Gamut2;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
+import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
 import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
@@ -1908,14 +1909,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (cache != null) {
             Resource actual = getResource(cache.getType(), cache.getId());
             if (actual != null) {
-                double brightnessActual = actual.getDimming() instanceof Dimming dim
-                        && dim.getBrightness() instanceof Double bri ? bri : -1;
-                if (brightnessActual >= 0) {
-                    double brightnessTarget = inc //
-                            ? Math.min(100.0, brightnessActual + INCREASE_DECREASE_PERCENT)
-                            : Math.max(0.0, brightnessActual - INCREASE_DECREASE_PERCENT);
-                    putResource.setBrightness(new PercentType(BigDecimal.valueOf(brightnessTarget)));
-                    return OnOffType.from(brightnessTarget > 0.0);
+                double brightnessActual = (actual.getDimming() instanceof Dimming dim
+                        && dim.getBrightness() instanceof Double bri) ? bri : -1;
+                if (brightnessActual >= 0.0) {
+                    if (inc || (actual.getOnState() instanceof OnState on && Boolean.TRUE.equals(on.getOn()))) {
+                        double brightnessTarget = inc //
+                                ? Math.min(100.0, brightnessActual + INCREASE_DECREASE_PERCENT)
+                                : Math.max(0.0, brightnessActual - INCREASE_DECREASE_PERCENT);
+                        putResource.setBrightness(new PercentType(BigDecimal.valueOf(brightnessTarget)));
+                        return OnOffType.from(brightnessTarget > 0.0);
+                    }
                 }
             }
         }
