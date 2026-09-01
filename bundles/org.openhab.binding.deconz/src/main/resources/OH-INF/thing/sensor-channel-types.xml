@@ -313,7 +313,7 @@
 	</channel-type>
 
 	<channel-type id="pm25">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Particulate Matter (PM2.5)</label>
 		<description>Current particulate matter (PM2.5) concentration</description>
 		<tags>
