@@ -112,7 +112,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final Storage<String> sessionStorage;
     private final AmazonEchoControlCommandDescriptionProvider commandDescriptionProvider;
-    private Connection connection;
+    private volatile Connection connection;
 
     private final Map<String, EchoHandler> echoHandlers = new ConcurrentHashMap<>();
     private final Set<SmartHomeDeviceHandler> smartHomeDeviceHandlers = new CopyOnWriteArraySet<>();
@@ -169,9 +169,11 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
     @Override
     public void initialize() {
-        disposing = false;
-        if (connection.isClosed()) {
-            connection = new Connection(connection, gson, httpClient);
+        synchronized (synchronizeConnection) {
+            disposing = false;
+            if (connection.isClosed()) {
+                connection = new Connection(connection, gson, httpClient);
+            }
         }
         activityLifecycle.incrementAndGet();
         handlerConfig = getConfig().as(AccountHandlerConfig.class);
@@ -420,22 +422,26 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
     // used to set a valid connection from the web proxy login
     public void setConnection(Connection newConnection) {
-        if (disposing || newConnection.isClosed()) {
-            newConnection.close();
-            return;
-        }
-        pushConnection.close();
-        connection = newConnection;
-        activityLifecycle.incrementAndGet();
-        storeSession();
+        synchronized (synchronizeConnection) {
+            if (disposing || newConnection.isClosed()) {
+                newConnection.close();
+                return;
+            }
+            pushConnection.close();
+            Connection replacedConnection = connection;
+            connection = newConnection;
+            replacedConnection.close();
+            activityLifecycle.incrementAndGet();
+            storeSession();
 
-        // force data check
-        nextLoginCheck = 0;
-        nextDataRefresh = 0;
-        // failures of the expired session must not delay polls on the new one
-        synchronized (notificationCommit) {
-            notificationPollBackoff.reset();
-            nextRefreshNotifications = 0;
+            // force data check
+            nextLoginCheck = 0;
+            nextDataRefresh = 0;
+            // failures of the expired session must not delay polls on the new one
+            synchronized (notificationCommit) {
+                notificationPollBackoff.reset();
+                nextRefreshNotifications = 0;
+            }
         }
     }
 

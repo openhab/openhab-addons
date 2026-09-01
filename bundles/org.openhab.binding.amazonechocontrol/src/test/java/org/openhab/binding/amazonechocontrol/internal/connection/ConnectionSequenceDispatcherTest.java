@@ -12,10 +12,19 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.connection;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -23,6 +32,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * Tests the sequence node dispatcher lifecycle around logout, re-login and terminal close. Without a running
@@ -33,7 +43,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ConnectionSequenceDispatcherTest {
 
-    private final Connection connection = new Connection(null, new Gson(), mock(HttpClient.class));
+    private final HttpClient httpClient = mock(HttpClient.class);
+    private final Connection connection = new Connection(null, new Gson(), httpClient);
 
     @AfterEach
     public void stopDispatcher() {
@@ -79,5 +90,49 @@ public class ConnectionSequenceDispatcherTest {
 
         assertSame(dispatcher, connection.sequenceNodeDispatcher());
         assertTrue(connection.isSequenceNodeDispatcherRunning());
+    }
+
+    @Test
+    public void logoutDropsQueuedNodesAndBumpsTheLoginGeneration() {
+        long generation = connection.currentLoginGeneration();
+        connection.executeSequenceNode(List.of("SERIAL"), new JsonObject(), generation);
+
+        connection.logout(false);
+
+        assertEquals(0, connection.queuedSequenceNodeCount());
+        assertNotEquals(generation, connection.currentLoginGeneration());
+    }
+
+    @Test
+    public void dispatcherDropsANodeQueuedBeforeTheLastLogoutUnexecuted() {
+        connection.executeSequenceNode(List.of("SERIAL"), new JsonObject(), connection.currentLoginGeneration() - 1);
+
+        connection.handleExecuteSequenceNode();
+
+        assertEquals(0, connection.queuedSequenceNodeCount());
+        assertFalse(connection.isSequenceNodeQueueRunning());
+    }
+
+    @Test
+    public void dispatcherPicksUpANodeFromTheCurrentLogin() throws InterruptedException {
+        CountDownLatch executionStarted = new CountDownLatch(1);
+        CountDownLatch releaseExecution = new CountDownLatch(1);
+        when(httpClient.newRequest(any(URI.class))).thenAnswer(invocation -> {
+            executionStarted.countDown();
+            try {
+                releaseExecution.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            throw new IllegalStateException("request released");
+        });
+        connection.executeSequenceNode(List.of("SERIAL"), new JsonObject(), connection.currentLoginGeneration());
+
+        connection.handleExecuteSequenceNode();
+
+        assertTrue(executionStarted.await(5, TimeUnit.SECONDS));
+        assertEquals(1, connection.queuedSequenceNodeCount());
+        assertTrue(connection.isSequenceNodeQueueRunning());
+        releaseExecution.countDown();
     }
 }
