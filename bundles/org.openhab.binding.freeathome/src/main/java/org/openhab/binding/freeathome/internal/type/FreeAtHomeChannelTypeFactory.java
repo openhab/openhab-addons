@@ -23,8 +23,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 
 /**
- * Builds the channel type a datapoint group is represented by, without a configuration description URI so that the type
- * stays resolvable after a restore from storage.
+ * Builds the channel type a datapoint group is represented by. The type references no configuration description: the
+ * binding registers none, and a dangling reference makes the framework warn on every boot.
  *
  * @author Martin Littkovsky - Initial contribution
  */

@@ -32,8 +32,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescription;
 
 /**
- * Tests that the channel type the binding generates for a datapoint group carries no configuration description, so that
- * it still resolves after the provider restored it from storage.
+ * Tests that the channel type the binding generates for a datapoint group references no configuration description -
+ * neither when built nor after the provider restored it from storage - because the binding registers none.
  *
  * @author Martin Littkovsky - Initial contribution
  */
