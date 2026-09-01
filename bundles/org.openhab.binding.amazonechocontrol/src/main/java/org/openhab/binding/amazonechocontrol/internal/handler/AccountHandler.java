@@ -430,7 +430,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             pushConnection.close();
             Connection replacedConnection = connection;
             connection = newConnection;
-            if (replacedConnection != newConnection) {
+            if (!replacedConnection.equals(newConnection)) {
                 replacedConnection.close();
             }
             activityLifecycle.incrementAndGet();
