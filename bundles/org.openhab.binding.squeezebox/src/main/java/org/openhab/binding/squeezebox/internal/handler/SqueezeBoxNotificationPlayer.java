@@ -125,14 +125,15 @@ class SqueezeBoxNotificationPlayer implements Closeable {
 
     private int addNotificationMessageToPlaylist() throws InterruptedException, SqueezeBoxTimeoutException {
         logger.debug("Adding notification message to playlist");
-        int currentCount = squeezeBoxPlayerHandler.currentNumberPlaylistTracks();
-        SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac, currentCount);
-        listener.resetPlaylistUpdated();
-
+        SqueezeBoxNotificationListener listener = new SqueezeBoxNotificationListener(mac, true);
         squeezeBoxServerHandler.registerSqueezeBoxPlayerListener(listener);
-        squeezeBoxServerHandler.addPlaylistItem(mac, uri.toString(), "Notification");
 
+        // Establish a fresh baseline track count from the live status stream so
+        // that a stale or absent cached count cannot be mistaken for the change.
         try {
+            squeezeBoxServerHandler.requestStatus(mac);
+            waitForBaseline(listener);
+            squeezeBoxServerHandler.addPlaylistItem(mac, uri.toString(), "Notification");
             updatePlaylist(listener);
             this.playlistModified = true;
             return listener.getNewTrackCount() - 1;
@@ -157,8 +158,32 @@ class SqueezeBoxNotificationPlayer implements Closeable {
     }
 
     /**
+     * Wait for the listener to observe the current playlist track count from
+     * the live status stream, establishing a baseline to compare against.
+     *
+     * @param listener
+     * @throws InterruptedException
+     * @throws SqueezeBoxTimeoutException
+     */
+    private void waitForBaseline(SqueezeBoxNotificationListener listener)
+            throws InterruptedException, SqueezeBoxTimeoutException {
+        logger.trace("Waiting up to {} s for playlist baseline...", PLAYLIST_COMMAND_TIMEOUT);
+
+        int timeoutCount = 0;
+
+        while (!listener.isBaselineEstablished()) {
+            Thread.sleep(100);
+            if (timeoutCount++ > PLAYLIST_COMMAND_TIMEOUT * 10) {
+                logger.debug("Playlist baseline timed out after {} seconds", PLAYLIST_COMMAND_TIMEOUT);
+                throw new SqueezeBoxTimeoutException("Unable to establish playlist baseline.");
+            }
+        }
+        logger.debug("Playlist baseline established");
+    }
+
+    /**
      * Wait for the playlist to be updated. The listener verifies the track count
-     * actually changed from the expected previous count before acknowledging.
+     * actually changed from the established baseline before acknowledging.
      *
      * @param listener
      * @throws InterruptedException
