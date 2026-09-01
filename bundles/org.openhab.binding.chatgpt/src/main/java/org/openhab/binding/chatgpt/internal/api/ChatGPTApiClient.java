@@ -389,6 +389,7 @@ public class ChatGPTApiClient {
                 }
 
                 if (reasoningEffort != null && response.getStatus() == HttpStatus.BAD_REQUEST_400
+                        && errorBody.toLowerCase().contains("unrecognized request argument")
                         && errorBody.contains("reasoning_effort")) {
                     logger.debug("Model {} doesn't support reasoning_effort; caching and retrying without it", model);
                     modelsNotSupportingReasoningEffort.add(model);
