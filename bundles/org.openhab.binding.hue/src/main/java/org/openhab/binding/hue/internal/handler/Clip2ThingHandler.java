@@ -14,6 +14,7 @@ package org.openhab.binding.hue.internal.handler;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -45,7 +46,6 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.Gamut2;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
-import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
 import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
@@ -130,7 +130,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Archetype.HUE_LIGHTSTRIP_TV, Archetype.HUE_TUBE, Archetype.STRING_LIGHT, Archetype.CHRISTMAS_TREE);
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
-    private static final Duration PREDICTED_BRIGHTNESS_RESET_DELAY = Duration.ofSeconds(2);
 
     /*
      * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having
@@ -168,8 +167,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final PercentType DEFAULT_SOUND_VOLUME = new PercentType(50);
     private static final QuantityType<?> DEFAULT_ALARM_DURATION = QuantityType.valueOf(3, Units.SECOND);
 
-    // step size for IncreaseDecreaseType commands on brightness and color temperature channels
-    private static final int INC_DEC_PERCENT = 10;
+    // step size for IncreaseDecreaseType commands
+    private static final int INCREASE_DECREASE_PERCENT = 10;
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -254,10 +253,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> dynamicsResetTask;
     private @Nullable Future<?> updateDependenciesTask;
     private @Nullable Future<?> updateServiceContributorsTask;
-    private @Nullable Future<?> predictedBrightnessResetTask;
-
-    // support for IncreaseDecreaseType commands on brightness channels where bridge feedback may lag
-    private volatile @Nullable Double predictedBrightness;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
             ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -341,12 +336,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
         cancelTask(dynamicsResetTask, true);
         cancelTask(updateDependenciesTask, true);
         cancelTask(updateServiceContributorsTask, true);
-        cancelTask(predictedBrightnessResetTask, true);
         alertResetTask = null;
         dynamicsResetTask = null;
         updateDependenciesTask = null;
         updateServiceContributorsTask = null;
-        predictedBrightnessResetTask = null;
         legacyLinkedChannelUIDs.clear();
         sceneContributorsCache.clear();
         sceneResourceEntries.clear();
@@ -355,7 +348,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         serviceContributorsCache.clear();
         controlIds.clear();
         extendedResourceTypes.clear();
-        clearPredictedBrightness();
     }
 
     /**
@@ -462,7 +454,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     MirekSchema schema = cache != null ? cache.getMirekSchema() : null;
                     schema = schema != null ? schema : MirekSchema.DEFAULT_SCHEMA;
                     double mirekRange = schema.getMirekMaximum() - schema.getMirekMinimum();
-                    int mirekDelta = (int) Math.max(mirekRange * INC_DEC_PERCENT / 100.0, INC_DEC_PERCENT);
+                    int mirekDelta = (int) Math.max(mirekRange * INCREASE_DECREASE_PERCENT / 100.0,
+                            INCREASE_DECREASE_PERCENT);
                     putResource = new Resource(lightResourceType).setMirekDelta(incDecCommand, mirekDelta);
                     break;
                 }
@@ -488,14 +481,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType incDecCommand) {
                     command = handleIncreaseDecreaseBrightnessCommand(incDecCommand, putResource, cache);
-                    if (command == null) {
-                        break; // i.e. no on-off command to append
-                    }
-                    // fall through to append any on-off command
+                    // fall through
                 } else if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
                     double brightness = Math.max(0.0, Math.min(100.0, brightnessCommand.doubleValue()));
-                    clearPredictedBrightness();
                     command = OnOffType.from(brightness > 0.0); // avoid "soft off"
                 }
                 // NB fall through for handling of switch related commands !!
@@ -503,9 +492,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 putResource.setOnOff(command);
-                if (OnOffType.OFF == command) {
-                    clearPredictedBrightness();
-                }
                 applyOffTransitionWorkAround(command, putResource);
                 applyColorTemperatureWorkAround(command, putResource);
                 break;
@@ -517,15 +503,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case CHANNEL_2_DIMMING_ONLY:
                 if (command instanceof PercentType brightnessCommand) {
                     putResource = new Resource(lightResourceType).setBrightness(brightnessCommand);
-                    clearPredictedBrightness();
                 }
                 break;
 
             case CHANNEL_2_ON_OFF_ONLY:
                 putResource = new Resource(lightResourceType).setOnOff(command);
-                if (OnOffType.OFF == command) {
-                    clearPredictedBrightness();
-                }
                 applyOffTransitionWorkAround(command, putResource);
                 break;
 
@@ -710,11 +692,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         scheduler.submit(() -> {
             logger.debug("{} -> loopBackNotify() with resource {}", resourceId, resource);
 
-            // align dimming with the locally predicted brightness for synthetic updates
-            if (LIGHT_TYPES.contains(resource.getType())) {
-                updateDimmingFromPredictedBrightness(resource);
-            }
-
             // add DTO fields to synch ColorXy and ColorTemperature for commands to the counterpart channel
             if (ResourceType.LIGHT == resource.getType()) {
                 ColorXy colorXy = resource.getColorXy();
@@ -863,8 +840,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updateSceneContributorsDone = false;
         legacyLightState = null;
 
-        clearPredictedBrightness();
-
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
             BridgeHandler bridgeHandler = bridge.getHandler();
@@ -936,9 +911,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
-                if (LIGHT_TYPES.contains(resource.getType())) {
-                    updatePredictedBrightness(resource);
-                }
                 resourceConsumedFlags |= FLAG_CACHE_UPDATE;
                 resourceConsumedFlags |= updateChannels && updateChannels(resource) ? FLAG_CHANNELS_UPDATE : 0;
                 putResourceToCache(resource);
@@ -1922,143 +1894,54 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Helper for increase/decrease command processing. Get the predicted brightness value, if it is set,
-     * otherwise get the cached brightness value from the given resource.
+     * Helper for {@link IncreaseDecreaseType} command processing.
+     * Handles the logic for adjusting the brightness based on the given Increase/Decrease command, and returns
+     * an adjunct {@link OnOffType.ON} to be appended to the pay-load. It translates the +/- relative command
+     * to absolute brightness commands (since these are more reliable).
      *
-     * @param cachedResource the cached resource with the current state, may be null.
-     * @return the predicted brightness value, or null if not set and not available in the cache.
+     * @param command the {@link IncreaseDecreaseType} command.
+     * @param putResource the resource to be sent to the bridge.
+     * @param cache the cached resource with the current state, may be null.
+     * @return an adjunct {@link OnOffType.ON} .
      */
-    private @Nullable Double getPredictedBrightness(@Nullable Resource cachedResource) {
-        Double predicted = predictedBrightness;
-        if (predicted != null) {
-            return predicted;
+    private OnOffType handleIncreaseDecreaseBrightnessCommand(IncreaseDecreaseType command, Resource putResource,
+            @Nullable Resource cache) {
+        boolean inc = IncreaseDecreaseType.INCREASE == command;
+        if (cache != null) {
+            Resource actual = getResource(cache.getType(), cache.getId());
+            if (actual != null) {
+                double brightnessActual = actual.getDimming() instanceof Dimming dim
+                        && dim.getBrightness() instanceof Double bri ? bri : -1;
+                if (brightnessActual >= 0) {
+                    double brightnessTarget = inc //
+                            ? Math.min(100.0, brightnessActual + INCREASE_DECREASE_PERCENT)
+                            : Math.max(0.0, brightnessActual - INCREASE_DECREASE_PERCENT);
+                    putResource.setBrightness(new PercentType(BigDecimal.valueOf(brightnessTarget)));
+                    return OnOffType.from(brightnessTarget > 0.0);
+                }
+            }
         }
-        if (cachedResource != null && cachedResource.getDimming() instanceof Dimming dimming
-                && dimming.getBrightness() instanceof Double brightness) {
-            return brightness;
+        putResource.setBrightness(inc ? PercentType.HUNDRED : PercentType.ZERO);
+        return OnOffType.from(inc);
+    }
+
+    /**
+     * Fetch the current resource from the bridge for the given type and id. Returns null if the resource
+     * cannot be fetched.
+     *
+     * @param type the resource type.
+     * @param id the resource id.
+     * @return the current resource, or null if it cannot be fetched.
+     */
+    private @Nullable Resource getResource(ResourceType type, String id) {
+        try {
+            Resources resources = getBridgeHandler().getResources(new ResourceReference().setType(type).setId(id));
+            return resources.getResources().get(0);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            logger.debug("Failed to fetch current light resource: {}", e.getMessage());
         }
         return null;
-    }
-
-    /**
-     * Helper for increase/decrease command processing. Set the predicted brightness value, ensuring it is
-     * clamped between 0.0 and 100.0.
-     *
-     * @param brightness the predicted brightness value to set.
-     */
-    private void setPredictedBrightness(double brightness) {
-        predictedBrightness = Math.max(0.0, Math.min(100.0, brightness));
-        restartPredictedBrightnessResetTask();
-    }
-
-    /**
-     * Helper for {@link IncreaseDecreaseType} command processing. Handles the logic for adjusting the brightness of
-     * a light resource based on the given INCREASE or DECREASE command. It compares the intent of the command against
-     * the current predicted brightness, and handles the following edge cases:
-     * <ul>
-     * <li>If increasing and old brightness is null, sets putResource to an ABSOLUTE amount and returns adjunct ON
-     * command.</li>
-     * <li>If increasing and old brightness is zero, sets putResource to an ABSOLUTE amount and returns adjunct ON
-     * command.</li>
-     * <li>If increasing and old brightness is above zero, sets putResource to increase by a RELATIVE amount.</li>
-     * <li>If decreasing and old brightness is null, sets putResource to decrease by a RELATIVE amount.</li>
-     * <li>If decreasing and new brightness is above zero, sets putResource to decrease by a RELATIVE amount.</li>
-     * <li>If decreasing and new brightness is zero or below, returns adjunct OFF command.</li>
-     * </ul>
-     *
-     * @param command the INCREASE or DECREASE command.
-     * @param putResource the resource to be sent to the bridge.
-     * @param cacheResource the cached resource with the current state, may be null.
-     * @return an adjunct ON or OFF command, or null.
-     */
-    private @Nullable OnOffType handleIncreaseDecreaseBrightnessCommand(IncreaseDecreaseType command,
-            Resource putResource, @Nullable Resource cacheResource) {
-        Double brightnessBeforeObj = getPredictedBrightness(cacheResource);
-
-        if (brightnessBeforeObj == null) {
-            if (IncreaseDecreaseType.INCREASE == command) {
-                putResource.setBrightness(new PercentType(INC_DEC_PERCENT));
-                setPredictedBrightness(INC_DEC_PERCENT);
-                return OnOffType.ON;
-            } else {
-                putResource.setDimmingDelta(command, INC_DEC_PERCENT);
-                return null;
-            }
-        } else {
-            double brightnessBefore = brightnessBeforeObj.doubleValue();
-            double brightnessAfter = switch (command) {
-                case INCREASE -> Math.min(100.0, brightnessBefore + INC_DEC_PERCENT);
-                case DECREASE -> Math.max(0.0, brightnessBefore - INC_DEC_PERCENT);
-            };
-            boolean lightIsOff = cacheResource != null && cacheResource.getOnState() instanceof OnState onState
-                    && Boolean.FALSE.equals(onState.getOn());
-
-            if (IncreaseDecreaseType.INCREASE == command && (lightIsOff || brightnessBefore <= 0.0)) {
-                putResource.setBrightness(new PercentType(INC_DEC_PERCENT));
-                setPredictedBrightness(INC_DEC_PERCENT);
-                return OnOffType.ON;
-            } else if (IncreaseDecreaseType.DECREASE == command && brightnessAfter <= 0.0) {
-                return OnOffType.OFF;
-            } else {
-                putResource.setDimmingDelta(command, INC_DEC_PERCENT);
-                setPredictedBrightness(brightnessAfter);
-                return null;
-            }
-        }
-    }
-
-    /**
-     * Helper for Increase/Decrease command processing. Update the predicted brightness value based on the
-     * given resource.
-     *
-     * @param resource the resource to check for brightness updates.
-     */
-    private void updatePredictedBrightness(Resource resource) {
-        if (resource.getOnState() instanceof OnState onState && Boolean.FALSE.equals(onState.getOn())) {
-            clearPredictedBrightness();
-        } else if (resource.getDimming() instanceof Dimming dimming
-                && dimming.getBrightness() instanceof Double brightness) {
-            Double predicted = predictedBrightness;
-            if (predicted != null && Math.abs(brightness - predicted) < 0.01) {
-                clearPredictedBrightness();
-            }
-        }
-    }
-
-    /**
-     * Helper for Increase/Decrease command processing. Update the dimming brightness value of the given
-     * resource to the predicted brightness.
-     *
-     * @param resource the resource to update.
-     */
-    private void updateDimmingFromPredictedBrightness(Resource resource) {
-        Double predicted = predictedBrightness;
-        if (predicted != null) {
-            if (resource.getOnState() instanceof OnState onState && Boolean.FALSE.equals(onState.getOn())) {
-                if (resource.getDimming() instanceof Dimming dimming) {
-                    dimming.setBrightness(predicted);
-                } else {
-                    resource.setDimming(new Dimming().setBrightness(predicted));
-                }
-            } else if (resource.getDimming() instanceof Dimming dimming) {
-                dimming.setBrightness(predicted);
-            } else {
-                resource.setDimming(new Dimming().setBrightness(predicted));
-            }
-        }
-    }
-
-    private void clearPredictedBrightness() {
-        predictedBrightness = null;
-        cancelTask(predictedBrightnessResetTask, false);
-        predictedBrightnessResetTask = null;
-    }
-
-    private void restartPredictedBrightnessResetTask() {
-        cancelTask(predictedBrightnessResetTask, false);
-        predictedBrightnessResetTask = scheduler.schedule(() -> {
-            predictedBrightness = null;
-            predictedBrightnessResetTask = null;
-        }, PREDICTED_BRIGHTNESS_RESET_DELAY.toMillis(), TimeUnit.MILLISECONDS);
     }
 }
