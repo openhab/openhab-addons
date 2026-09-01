@@ -1033,8 +1033,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             hdmiModeOptions.add(new StateOption("1080I60", "1080I60"));
             hdmiModeOptions.add(new StateOption("720P50", "720P50"));
             hdmiModeOptions.add(new StateOption("720P60", "720P60"));
-            hdmiModeOptions.add(new StateOption("576P", "567P"));
-            hdmiModeOptions.add(new StateOption("576I", "567I"));
+            hdmiModeOptions.add(new StateOption("576P", "576P"));
+            hdmiModeOptions.add(new StateOption("576I", "576I"));
             hdmiModeOptions.add(new StateOption("480P", "480P"));
             hdmiModeOptions.add(new StateOption("480I", "480I"));
         } else {
