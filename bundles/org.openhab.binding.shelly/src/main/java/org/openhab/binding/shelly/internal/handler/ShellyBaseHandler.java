@@ -1278,7 +1278,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @param mode Device mode (e.g. relay, roller)
      */
     protected void changeThingType(String thingType, String mode) {
-        String servicePrefix = substringBefore(thingType, "-");
+        String servicePrefix = substringBeforeLast(thingType, "-");
         // Prefer the real hardware model over the service-name prefix so relay/roller maps resolve correctly
         String deviceType = getString(profile.device.type);
         if (deviceType.isEmpty()) {
