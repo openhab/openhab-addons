@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
@@ -45,6 +46,7 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
@@ -104,16 +106,20 @@ public class HttpRequestBuilder {
         return new Builder(httpMethod, uriString);
     }
 
+    private static Optional<String> customHeader(RequestParams params, HttpHeader header) {
+        return params.customHeaders().entrySet().stream().filter(entry -> header.is(entry.getKey()))
+                .map(Map.Entry::getValue).filter(value -> !value.isBlank()).findFirst();
+    }
+
     private void createRequest(URI uri, RequestParams params, HttpResponseListener responseListener) {
         Request request = httpClient.newRequest(uri).method(params.method());
-        request.header(ACCEPT_LANGUAGE, "en-US");
+        request.header(ACCEPT_LANGUAGE, customHeader(params, ACCEPT_LANGUAGE).orElse("en-US"));
         request.header("DNT", "1");
         request.header("Upgrade-Insecure-Requests", "1");
-        String customUserAgent = params.customHeaders().entrySet().stream()
-                .filter(header -> USER_AGENT.is(header.getKey())).map(Map.Entry::getValue).findFirst().orElse("");
-        request.agent(customUserAgent.isBlank() ? DEFAULT_USER_AGENT : customUserAgent);
+        request.agent(customHeader(params, USER_AGENT).orElse(DEFAULT_USER_AGENT));
         params.customHeaders().entrySet().stream()
-                .filter(header -> !header.getValue().isBlank() && !USER_AGENT.is(header.getKey()))
+                .filter(header -> !header.getValue().isBlank() && !USER_AGENT.is(header.getKey())
+                        && !ACCEPT_LANGUAGE.is(header.getKey()))
                 .forEach(header -> request.header(header.getKey(), header.getValue()));
 
         // handle re-directs in response listener manually

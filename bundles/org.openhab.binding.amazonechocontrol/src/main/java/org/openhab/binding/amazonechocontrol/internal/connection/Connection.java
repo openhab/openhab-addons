@@ -135,6 +135,7 @@ import com.google.gson.JsonObject;
 public class Connection {
     private static final String THING_THREADPOOL_NAME = "thingHandler";
     private static final long EXPIRES_IN = 432000; // five days
+    private static final String SIGN_IN_URL = "https://" + AmazonEchoControlBindingConstants.SIGN_IN_HOST;
     // Amazon answers /api/notifications with 400 ThrottlingException for the app agent the binding otherwise
     // sends, and with 200 for a browser agent; a quiet window of hours does not clear the 400.
     private static final String NOTIFICATIONS_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
@@ -299,8 +300,8 @@ public class Connection {
 
     public boolean registerConnectionAsApp(String accessToken) {
         try {
-            List<CookieTO> webSiteCookies = cookieManager.getCookieStore().get(URI.create("https://www.amazon.com"))
-                    .stream().map(TOMapper::mapCookie).toList();
+            List<CookieTO> webSiteCookies = cookieManager.getCookieStore().get(URI.create(SIGN_IN_URL)).stream()
+                    .map(TOMapper::mapCookie).toList();
 
             AuthRegisterTO registerAppRequest = new AuthRegisterTO();
             registerAppRequest.registrationData.deviceSerial = loginData.getSerial();
@@ -448,7 +449,7 @@ public class Connection {
         return loginData.getLoginTime() != null;
     }
 
-    public String getLoginPage() throws ConnectionException {
+    public String getLoginPage(Map<String, String> browserHeaders) throws ConnectionException {
         // clear session data
         logout(false);
 
@@ -457,12 +458,11 @@ public class Connection {
         String mapMdJson = "{\"device_user_dictionary\":[],\"device_registration_data\":{\"software_version\":\"1\"},\"app_identifier\":{\"app_version\":\"2.2.443692\",\"bundle_id\":\"com.amazon.echo\"}}";
         String mapMdCookie = Base64.getEncoder().encodeToString(mapMdJson.getBytes());
 
-        cookieManager.getCookieStore().add(URI.create("https://www.amazon.com"), new HttpCookie("map-md", mapMdCookie));
-        cookieManager.getCookieStore().add(URI.create("https://www.amazon.com"),
-                new HttpCookie("frc", loginData.getFrc()));
+        cookieManager.getCookieStore().add(URI.create(SIGN_IN_URL), new HttpCookie("map-md", mapMdCookie));
+        cookieManager.getCookieStore().add(URI.create(SIGN_IN_URL), new HttpCookie("frc", loginData.getFrc()));
 
-        String url = "https://www.amazon.com/ap/signin" //
-                + "?openid.return_to=https://www.amazon.com/ap/maplanding" //
+        String url = SIGN_IN_URL + "/ap/signin" //
+                + "?openid.return_to=" + SIGN_IN_URL + "/ap/maplanding" //
                 + "&openid.assoc_handle=amzn_dp_project_dee_ios" //
                 + "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" //
                 + "&pageId=amzn_dp_project_dee_ios" //
@@ -476,7 +476,8 @@ public class Connection {
                 + "&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0" //
                 + "&openid.oa2.scope=device_auth_access";
 
-        return requestBuilder.get(url).withHeader("authority", "www.amazon.com").syncSend(String.class);
+        return requestBuilder.get(url).withHeaders(browserHeaders)
+                .withHeader("authority", AmazonEchoControlBindingConstants.SIGN_IN_HOST).syncSend(String.class);
     }
 
     public boolean verifyLogin() throws ConnectionException {

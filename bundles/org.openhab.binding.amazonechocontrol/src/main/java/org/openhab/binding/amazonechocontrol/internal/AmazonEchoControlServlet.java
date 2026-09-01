@@ -32,8 +32,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.Servlet;
@@ -82,8 +85,10 @@ import org.slf4j.LoggerFactory;
 public class AmazonEchoControlServlet extends HttpServlet {
     public static final String SERVLET_PATH = "/" + BINDING_ID;
     private static final long serialVersionUID = -9158865063627039237L;
-    private static final String FORWARD_URI_PART = "/FORWARD/";
     private static final String PROXY_URI_PART = "/PROXY/";
+    private static final String MAP_LANDING_PATH = "/ap/maplanding";
+    private static final Pattern LINK_TARGET = Pattern.compile("(?<=\\s)(href|action|formaction)=\"([^\"]*)\"",
+            Pattern.CASE_INSENSITIVE);
 
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoControlServlet.class);
     private final VelocityEngine velocityEngine = new VelocityEngine();
@@ -187,8 +192,8 @@ public class AmazonEchoControlServlet extends HttpServlet {
                 postData = req.getReader().lines().collect(Collectors.joining());
             }
 
-            this.handleProxyRequest(accountHandler, connection, resp, uriParts, method, proxyUrl, null, postData,
-                    postData != null, connection.getRetailDomain());
+            this.handleProxyRequest(accountHandler, connection, resp, uriParts, method, proxyUrl, Map.of(), postData,
+                    postData != null, null);
             return;
         }
 
@@ -215,24 +220,42 @@ public class AmazonEchoControlServlet extends HttpServlet {
             } else {
                 String[] strings = map.get(name);
                 if (strings != null && strings.length > 0) {
-                    value = strings[0];
+                    value = LoginDialogPage.unrewrite(strings[0], uriParts);
                 }
             }
             postDataBuilder.append(URLEncoder.encode(value, StandardCharsets.UTF_8));
         }
 
-        String relativeUrl = uriParts.request().replace(FORWARD_URI_PART, "/");
-
-        String retailDomain = relativeUrl.startsWith("/ap/signin") ? "amazon.com" : connection.getRetailDomain();
-        String postUrl = "https://www." + retailDomain + relativeUrl;
-        queryString = req.getQueryString();
-        if (isNotBlank(queryString)) {
-            postUrl += "?" + queryString;
+        LoginDialogPage page = LoginDialogPage.fromRequest(LoginDialogPage.unrewrite(uri, uriParts),
+                dialogHosts(connection.getRetailUrl()));
+        if (page == null) {
+            returnError(resp, uriParts, "Refusing to post to '" + uri + "'");
+            return;
         }
-        String referer = "https://www." + retailDomain;
         String postData = postDataBuilder.toString();
-        handleProxyRequest(accountHandler, connection, resp, uriParts, method, postUrl, referer, postData, false,
-                retailDomain);
+        handleProxyRequest(accountHandler, connection, resp, uriParts, method, page.url(),
+                browserHeaders(req, page, method), postData, false, page);
+    }
+
+    /** Amazon rejects the sign-in post unless it carries the identity of the browser the page was served to */
+    static Map<String, String> browserHeaders(HttpServletRequest req) {
+        Map<String, String> headers = new HashMap<>();
+        for (HttpHeader header : List.of(HttpHeader.USER_AGENT, HttpHeader.ACCEPT_LANGUAGE)) {
+            String value = req.getHeader(header.asString());
+            if (value != null && !value.isBlank()) {
+                headers.put(header.asString(), value);
+            }
+        }
+        return headers;
+    }
+
+    static Map<String, String> browserHeaders(HttpServletRequest req, LoginDialogPage page, HttpMethod method) {
+        Map<String, String> headers = browserHeaders(req);
+        headers.put(HttpHeader.REFERER.asString(), page.origin());
+        if (!HttpMethod.GET.equals(method)) {
+            headers.put(HttpHeader.ORIGIN.asString(), page.origin());
+        }
+        return headers;
     }
 
     private void doAccountGet(ServletUri uriParts, HttpServletRequest req, HttpServletResponse resp)
@@ -250,11 +273,19 @@ public class AmazonEchoControlServlet extends HttpServlet {
             }
 
             Connection connection = accountHandler.getConnection();
-            if (uri.startsWith(FORWARD_URI_PART)) {
-                String getUrl = connection.getRetailUrl() + "/" + uri.substring(FORWARD_URI_PART.length());
-
-                this.handleProxyRequest(accountHandler, connection, resp, uriParts, HttpMethod.GET, getUrl, null, null,
-                        false, connection.getRetailDomain());
+            if (uri.startsWith(LoginDialogPage.FORWARD_URI_PART)) {
+                if (connection.isLoggedIn()) {
+                    returnError(resp, uriParts, "Connection not in initialize mode.");
+                    return;
+                }
+                LoginDialogPage page = LoginDialogPage.fromRequest(LoginDialogPage.unrewrite(uri, uriParts),
+                        dialogHosts(connection.getRetailUrl()));
+                if (page == null) {
+                    returnError(resp, uriParts, "Refusing to forward to '" + uri + "'");
+                    return;
+                }
+                this.handleProxyRequest(accountHandler, connection, resp, uriParts, HttpMethod.GET, page.url(),
+                        browserHeaders(req, page, HttpMethod.GET), null, false, page);
                 return;
             }
 
@@ -262,8 +293,8 @@ public class AmazonEchoControlServlet extends HttpServlet {
                 // handle proxy request
                 String proxyUrl = connection.getAlexaServer() + "/" + uri.substring(PROXY_URI_PART.length());
 
-                this.handleProxyRequest(accountHandler, connection, resp, uriParts, HttpMethod.GET, proxyUrl, null,
-                        null, false, connection.getRetailDomain());
+                this.handleProxyRequest(accountHandler, connection, resp, uriParts, HttpMethod.GET, proxyUrl, Map.of(),
+                        null, false, null);
                 return;
             }
 
@@ -303,8 +334,9 @@ public class AmazonEchoControlServlet extends HttpServlet {
                 return;
             }
 
-            String html = connection.getLoginPage();
-            returnHtml(resp, uriParts, html, "amazon.com");
+            String html = connection.getLoginPage(browserHeaders(req));
+            LoginDialogPage signInPage = LoginDialogPage.signIn();
+            returnHtml(resp, uriParts, html, signInPage.host(), signInPage.linkBase(uriParts));
         } catch (ConnectionException e) {
             logger.warn("get failed with uri syntax error", e);
         }
@@ -368,55 +400,44 @@ public class AmazonEchoControlServlet extends HttpServlet {
     }
 
     private void handleProxyRequest(AccountHandler accountHandler, Connection connection, HttpServletResponse resp,
-            ServletUri uriParts, HttpMethod method, String url, @Nullable String referer, @Nullable Object postData,
-            boolean isJson, String retailDomain) throws IOException {
+            ServletUri uriParts, HttpMethod method, String url, Map<String, String> headers, @Nullable Object postData,
+            boolean isJson, @Nullable LoginDialogPage page) throws IOException {
+        String retailUrl = connection.getRetailUrl();
+        List<String> dialogHosts = dialogHosts(retailUrl);
+        String host = page == null ? dialogHosts.get(dialogHosts.size() - 1) : page.host();
         try {
-            Map<String, String> headers = new HashMap<>();
-            if (referer != null) {
-                headers.put(HttpHeader.REFERER.asString(), referer);
-            }
-
             HttpRequestBuilder.HttpResponse response = connection.getRequestBuilder().builder(method, url)
                     .withContent(postData).withJson(isJson).withHeaders(headers).retry(false).redirect(false)
                     .syncSend();
-            if (response.statusCode() == HttpStatus.FOUND_302) {
-                String location = response.headers().get("location");
-                if (location.contains("/ap/maplanding")) {
+            if (HttpStatus.isRedirection(response.statusCode())) {
+                String location = LoginDialogPage.unrewrite(response.headers().get("location"), uriParts);
+                LoginDialogPage target = page == null ? null
+                        : LoginDialogPage.fromLocation(location, page, dialogHosts);
+                if (target != null && target.pathAndQuery().startsWith(MAP_LANDING_PATH)) {
                     try {
                         URI oAuthRedirectUri = new URI(location);
                         String accessToken = getQueryMap(oAuthRedirectUri.getQuery()).get("openid.oa2.access_token");
                         if (accessToken == null) {
                             returnError(resp, uriParts,
-                                    "Login to '" + retailDomain + "' failed: Could not extract accessToken.");
+                                    "Login to '" + host + "' failed: Could not extract accessToken.");
                         } else if (connection.registerConnectionAsApp(accessToken)) {
                             accountHandler.setConnection(connection);
                             resp.sendRedirect(SERVLET_PATH + "/" + uriParts.account());
                             // createAccountPage(resp, uriParts, accountHandler, connection);
                         } else {
-                            returnError(resp, uriParts,
-                                    "Login to '" + retailDomain + "' failed: Could not register as app.");
+                            returnError(resp, uriParts, "Login to '" + host + "' failed: Could not register as app.");
                         }
                         return;
                     } catch (URISyntaxException e) {
-                        returnError(resp, uriParts,
-                                "Login to '" + retailDomain + "' failed: " + e.getLocalizedMessage());
+                        returnError(resp, uriParts, "Login to '" + host + "' failed: " + e.getLocalizedMessage());
                         accountHandler.resetConnection(false);
                         return;
                     }
                 }
 
-                String startString = connection.getRetailUrl() + "/";
-                String newLocation = null;
-                if (location.startsWith(startString) && connection.isLoggedIn()) {
-                    newLocation = uriParts.buildFor(PROXY_URI_PART + location.substring(startString.length()));
-                } else if (location.startsWith(startString)) {
-                    newLocation = uriParts.buildFor(FORWARD_URI_PART + location.substring(startString.length()));
-                } else {
-                    startString = "/";
-                    if (location.startsWith(startString)) {
-                        newLocation = uriParts.buildFor(FORWARD_URI_PART + location.substring(startString.length()));
-                    }
-                }
+                String newLocation = page == null
+                        ? proxyRedirectTarget(location, retailUrl, connection.isLoggedIn(), uriParts)
+                        : target == null ? null : target.servletPath(uriParts);
                 if (newLocation != null) {
                     logger.debug("Redirect mapped from {} to {}", location, newLocation);
                     resp.sendRedirect(newLocation);
@@ -425,25 +446,68 @@ public class AmazonEchoControlServlet extends HttpServlet {
                 returnError(resp, uriParts, "Invalid redirect to '" + location + "'");
                 return;
             }
-            returnHtml(resp, uriParts, response.content(), retailDomain);
+            String linkBase = page == null ? uriParts.buildFor("/") : page.linkBase(uriParts);
+            returnHtml(resp, uriParts, response.content(), host, linkBase);
         } catch (ConnectionException e) {
             returnError(resp, uriParts, e.getLocalizedMessage());
         }
     }
 
-    private void returnHtml(HttpServletResponse resp, ServletUri uriParts, String html, String retailDomain)
+    /** the sign-in host first, the account's retail host last */
+    static List<String> dialogHosts(String retailUrl) {
+        String retailHost;
+        try {
+            retailHost = URI.create(retailUrl).getHost();
+        } catch (IllegalArgumentException e) {
+            retailHost = null;
+        }
+        if (retailHost == null || SIGN_IN_HOST.equalsIgnoreCase(retailHost)) {
+            return List.of(SIGN_IN_HOST);
+        }
+        return List.of(SIGN_IN_HOST, retailHost.toLowerCase(Locale.ROOT));
+    }
+
+    static @Nullable String proxyRedirectTarget(String location, String retailUrl, boolean loggedIn,
+            ServletUri uriParts) {
+        String retailUrlWithSlash = retailUrl + "/";
+        if (loggedIn && location.startsWith(retailUrlWithSlash)) {
+            return uriParts.buildFor(PROXY_URI_PART + location.substring(retailUrlWithSlash.length()));
+        }
+        return null;
+    }
+
+    private void returnHtml(HttpServletResponse resp, ServletUri uriParts, String html, String host, String linkBase)
             throws IOException {
-        String servletUrl = uriParts.buildFor("/");
-        String resultHtml = html.replace("action=\"/", "action=\"" + servletUrl)
-                .replace("action=\"&#x2F;", "action=\"" + servletUrl)
-                .replace("https://www." + retailDomain + "/", servletUrl)
-                .replace("https://www." + retailDomain + ":443" + "/", servletUrl)
-                .replace("https:&#x2F;&#x2F;www." + retailDomain + "&#x2F;", servletUrl)
-                .replace("https:&#x2F;&#x2F;www." + retailDomain + ":443" + "&#x2F;", servletUrl)
-                .replace("http://www." + retailDomain + "/", servletUrl)
-                .replace("http:&#x2F;&#x2F;www." + retailDomain + "&#x2F;", servletUrl);
         resp.addHeader(HttpHeader.CONTENT_TYPE.asString(), MimeTypes.Type.TEXT_HTML_UTF_8.asString());
-        resp.getWriter().write(resultHtml);
+        resp.getWriter().write(rewriteLinks(html, host, linkBase));
+    }
+
+    static String rewriteLinks(String html, String host, String linkBase) {
+        Matcher matcher = LINK_TARGET.matcher(html);
+        StringBuilder rewritten = new StringBuilder();
+        while (matcher.find()) {
+            matcher.appendReplacement(rewritten, Matcher.quoteReplacement(
+                    matcher.group(1) + "=\"" + rewriteLinkTarget(matcher.group(2), host, linkBase) + "\""));
+        }
+        matcher.appendTail(rewritten);
+        return rewritten.toString();
+    }
+
+    private static String rewriteLinkTarget(String target, String host, String linkBase) {
+        for (String prefix : List.of("https://" + host + "/", "https://" + host + ":443/", "http://" + host + "/",
+                "https:&#x2F;&#x2F;" + host + "&#x2F;", "https:&#x2F;&#x2F;" + host + ":443&#x2F;",
+                "http:&#x2F;&#x2F;" + host + "&#x2F;")) {
+            if (target.startsWith(prefix)) {
+                return linkBase + target.substring(prefix.length());
+            }
+        }
+        if (target.startsWith("/") && !target.startsWith("//")) {
+            return linkBase + target.substring(1);
+        }
+        if (target.startsWith("&#x2F;") && !target.startsWith("&#x2F;&#x2F;")) {
+            return linkBase + target.substring("&#x2F;".length());
+        }
+        return target;
     }
 
     void returnError(HttpServletResponse resp, @Nullable ServletUri uriParts, @Nullable String errorMessage)

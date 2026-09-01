@@ -40,6 +40,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.FailMode;
@@ -161,12 +162,24 @@ public class HttpRequestBuilderTest {
     }
 
     @Test
+    public void testACustomAcceptLanguageReplacesTheDefaultInsteadOfAddingASecondOne() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("Accept-Language", "de-DE,de;q=0.9").send();
+
+        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "de-DE,de;q=0.9");
+        verify(request, never()).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
+        verify(request, never()).header(eq("Accept-Language"), anyString());
+    }
+
+    @Test
     public void testARequestWithoutAnOverrideKeepsTheAppUserAgent() {
         Request request = mock(Request.class, RETURNS_SELF);
 
         requestBuilderFor(request).get(REQUEST_URI.toString()).send();
 
         verify(request).agent(contains("AmazonWebView"));
+        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
     }
 
     private HttpRequestBuilder requestBuilderFor(Request request) {
