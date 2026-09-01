@@ -42,7 +42,6 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.net.NetworkAddressChangeListener;
@@ -165,7 +164,22 @@ public class ShellyBluApiTest {
     }
 
     @Test
-    void onNotifyEventComputesRainSwitchWithHoldoff() throws Exception {
+    void onNotifyEventRecordsLastRainWhenRainIsDetected() throws Exception {
+        ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
+
+        String rainPacket = """
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Moisture": 1.0}}]}}
+                """;
+
+        api.onNotifyEvent(rainPacket);
+
+        assertThat("rain flag decoded from the packet", api.getSensorStatus().rain, is(equalTo(true)));
+        assertThat("lastRain recorded when rain is detected", api.getSensorStatus().lastRain, is(notNullValue()));
+    }
+
+    @Test
+    void onNotifyEventKeepsLastRainWhenRainStops() throws Exception {
         ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
 
         String rainPacket = """
@@ -178,40 +192,17 @@ public class ShellyBluApiTest {
                 """;
 
         api.onNotifyEvent(rainPacket);
-        assertThat("rainSwitch turns ON once rain is detected", api.getSensorStatus().rainSwitch, is(equalTo(true)));
+        Instant lastRain = api.getSensorStatus().lastRain;
 
         api.onNotifyEvent(dryPacket);
-        assertThat("rainSwitch stays ON within the holdoff window after rain stops", api.getSensorStatus().rainSwitch,
-                is(equalTo(true)));
+
+        assertThat("rain flag follows the packet", api.getSensorStatus().rain, is(equalTo(false)));
+        assertThat("lastRain is not refreshed by a dry packet", api.getSensorStatus().lastRain, is(equalTo(lastRain)));
     }
 
     @Test
-    void onNotifyEventRainSwitchFollowsRainStatusWithZeroHoldoff() throws Exception {
+    void onNotifyEventKeepsRainStateWhenPacketOmitsMoisture() throws Exception {
         ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
-        when(thingMock.getThingConfig())
-                .thenReturn(new Configuration(Map.of("rainSwitchHoldoff", 0)).as(ShellyThingConfiguration.class));
-
-        String rainPacket = """
-                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
-                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Moisture": 1.0}}]}}
-                """;
-        String dryPacket = """
-                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
-                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 2, "Moisture": 0.0}}]}}
-                """;
-
-        api.onNotifyEvent(rainPacket);
-        assertThat(api.getSensorStatus().rainSwitch, is(equalTo(true)));
-
-        api.onNotifyEvent(dryPacket);
-        assertThat(api.getSensorStatus().rainSwitch, is(equalTo(false)));
-    }
-
-    @Test
-    void onNotifyEventRainSwitchSurvivesPacketWithoutMoistureWithZeroHoldoff() throws Exception {
-        ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
-        when(thingMock.getThingConfig())
-                .thenReturn(new Configuration(Map.of("rainSwitchHoldoff", 0)).as(ShellyThingConfiguration.class));
 
         String rainPacket = """
                 {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
@@ -224,28 +215,34 @@ public class ShellyBluApiTest {
                 """;
 
         api.onNotifyEvent(rainPacket);
-        assertThat("rainSwitch turns ON once rain is detected", api.getSensorStatus().rainSwitch, is(equalTo(true)));
-
         api.onNotifyEvent(atmosphericPacket);
-        assertThat("rainSwitch stays ON when a follow-up packet simply omits the moisture field",
-                api.getSensorStatus().rainSwitch, is(equalTo(true)));
+
+        assertThat("rain stays reported when a follow-up packet omits the moisture field", api.getSensorStatus().rain,
+                is(equalTo(true)));
+        assertThat("lastRain stays set when a follow-up packet omits the moisture field",
+                api.getSensorStatus().lastRain, is(notNullValue()));
     }
 
     @Test
-    void rainSwitchExpiresOnNextStatusPollEvenWithoutANewPacket() throws Exception {
+    void getSensorStatusDoesNotMutateAccumulatedSensorData() throws Exception {
         ShellyBluApi api = buildBluApi(THING_TYPE_SHELLYBLUWS90);
 
         String rainPacket = """
                 {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
-                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Moisture": 1.0}}]}}
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Moisture": 1.0, "Temperature": [18.0],
+                 "Humidity": 72.0, "Pressure": 1008.5}}]}}
                 """;
         api.onNotifyEvent(rainPacket);
-        assertThat("rainSwitch turns ON once rain is detected", api.getSensorStatus().rainSwitch, is(equalTo(true)));
 
-        setField(api, "lastRainTimestamp", Instant.now().minusSeconds(11 * 60L));
+        ShellyStatusSensor first = api.getSensorStatus();
+        Instant lastRain = first.lastRain;
+        Double apparentTemp = first.apparentTemp;
 
-        assertThat("rainSwitch times out on the next status read alone", api.getSensorStatus().rainSwitch,
-                is(equalTo(false)));
+        ShellyStatusSensor second = api.getSensorStatus();
+
+        assertThat("a status read must not touch the accumulated rain state", second.lastRain, is(equalTo(lastRain)));
+        assertThat("a status read must not recompute derived values", second.apparentTemp, is(equalTo(apparentTemp)));
+        assertThat("a status read must not clear the rain flag", second.rain, is(equalTo(true)));
     }
 
     @Test
@@ -338,10 +335,12 @@ public class ShellyBluApiTest {
     }
 
     private ShellyBluApi buildBluApi(ThingTypeUID thingTypeUID) {
-        return buildBluApi(thingTypeUID, null);
+        LocationProvider locationProvider = mock(LocationProvider.class);
+        when(locationProvider.getLocation()).thenReturn(null);
+        return buildBluApi(thingTypeUID, locationProvider);
     }
 
-    private ShellyBluApi buildBluApi(ThingTypeUID thingTypeUID, @Nullable LocationProvider locationProvider) {
+    private ShellyBluApi buildBluApi(ThingTypeUID thingTypeUID, LocationProvider locationProvider) {
         Thing ohThing = mock(Thing.class);
         when(ohThing.getThingTypeUID()).thenReturn(thingTypeUID);
 

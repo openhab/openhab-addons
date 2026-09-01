@@ -13,7 +13,6 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
@@ -36,7 +35,7 @@ public class ShellyBluHandler extends ShellyBaseHandler {
     public ShellyBluHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, final ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
-            final @Nullable LocationProvider locationProvider) {
+            final LocationProvider locationProvider) {
         super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
                 locationProvider);
     }

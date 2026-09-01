@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.api1;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1242,7 +1243,7 @@ public class Shelly1ApiJsonDTO {
         public @Nullable String windDirectionStr;
         public @Nullable Double apparentTemp;
         public @Nullable Double seaLevelPressure;
-        public @Nullable Boolean rainSwitch;
+        public @Nullable Instant lastRain; // time of the last packet reporting rain, not part of the device API
     }
 
     public static class ShellySettingsSmoke {

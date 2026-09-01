@@ -800,8 +800,7 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_APPARENT_TEMP);
         addChannel(thing, newChannels, ws90 || sdata.seaLevelPressure != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_SEALEVEL_PRESSURE);
-        addChannel(thing, newChannels, ws90 || sdata.rainSwitch != null, CHANNEL_GROUP_SENSOR,
-                CHANNEL_SENSOR_RAIN_SWITCH);
+        addChannel(thing, newChannels, ws90, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH);
 
         // Flood Gen4
         if (profile.isFlood && profile.isGen2) {

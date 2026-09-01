@@ -92,10 +92,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             "WSW", "W", "WNW", "NW", "NNW" };
     private @Nullable Integer warnedDataVersion;
     private boolean warnedDataVersionSet;
-    // written on the BLU event thread, read on the polling thread
-    private volatile @Nullable Instant lastRainTimestamp; // WS90: timestamp of the last "rain detected" report
-    private volatile boolean lastKnownRaining; // WS90: accumulated rain flag as of the last processed packet
-    private final @Nullable LocationProvider locationProvider;
+    private final LocationProvider locationProvider;
 
     /**
      * Regular constructor - called by Thing handler
@@ -105,11 +102,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @param thing Thing Handler (ThingHandlerInterface)
      * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      * @param locationProvider openHAB's system location service, used as a fallback to derive the WS90
-     *            station altitude when {@code altitude} is not manually configured; may be {@code null}
+     *            station altitude when {@code altitude} is not manually configured
      */
     public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
             ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler,
-            @Nullable LocationProvider locationProvider) {
+            LocationProvider locationProvider) {
         super(thingName, thingTable, thing, config, webSocketClient, scheduler);
         this.locationProvider = locationProvider;
 
@@ -186,20 +183,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
         if (!connected) {
             throw new ShellyApiException("offline.status-error-blu-sensor-unavailable");
-        }
-        if (getProfile().isWS90) {
-            int holdoffMin = getThing().getThingConfig().getRainSwitchHoldoff();
-            if (holdoffMin == 0) {
-                // no holdoff configured: mirror the sensor's own latest reading with no time-based decay
-                sensorData.rainSwitch = lastKnownRaining;
-            } else {
-                // ON for holdoffMin after the last confirmed rain report; re-evaluated against the wall clock
-                // on every read (not just when a new packet arrives), so it also expires on its own once the
-                // device goes quiet instead of only reacting to the next packet
-                Instant lastRain = lastRainTimestamp;
-                sensorData.rainSwitch = lastRain != null
-                        && Instant.now().isBefore(lastRain.plusSeconds(holdoffMin * 60L));
-            }
         }
         return sensorData;
     }
@@ -374,8 +357,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         // direction
                         Double[] directions = blu.directions;
                         if (directions != null && directions.length >= 1) {
-                            sensorData.windDirection = directions[0];
-                            sensorData.windDirectionStr = windDirectionLabel(directions[0]);
+                            Double direction = directions[0];
+                            sensorData.windDirection = direction;
+                            sensorData.windDirectionStr = direction != null ? windDirectionLabel(direction) : null;
                             if (directions.length >= 2) {
                                 sensorData.gustDirection = directions[1];
                             }
@@ -409,11 +393,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             // sensorData is accumulated across packets, so the rain state has to be read from
                             // there; blu.rain only tells whether this particular packet carried the field and
                             // therefore whether it may refresh the timestamp
-                            boolean raining = Boolean.TRUE.equals(sensorData.rain);
-                            if (raining && blu.rain != null) {
-                                lastRainTimestamp = Instant.now();
+                            if (blu.rain != null && Boolean.TRUE.equals(sensorData.rain)) {
+                                sensorData.lastRain = Instant.now();
                             }
-                            lastKnownRaining = raining;
                         }
                         Long firmware32 = blu.firmware32;
                         if (firmware32 != null) {

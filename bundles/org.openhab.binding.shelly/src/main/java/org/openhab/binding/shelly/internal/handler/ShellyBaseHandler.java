@@ -150,12 +150,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @param coapServer coap server instance
      * @param httpClient from httpService
      * @param locationProvider openHAB's system location service, used by BLU weather stations to derive
-     *            the station altitude when not manually configured; {@code null} for non-BLU handlers
+     *            the station altitude when not manually configured
      */
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
-            final @Nullable LocationProvider locationProvider) {
+            final LocationProvider locationProvider) {
         super(thing);
 
         this.thingTable = thingTable;

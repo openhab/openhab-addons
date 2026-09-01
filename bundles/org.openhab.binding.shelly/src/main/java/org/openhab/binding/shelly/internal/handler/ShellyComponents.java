@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 
@@ -547,6 +548,23 @@ public class ShellyComponents {
     }
 
     /**
+     * Derives the WS90 rain switch state. The holdoff keeps the switch ON for the configured number of minutes after
+     * the last packet reporting rain. It is evaluated against the wall clock on every status update, not only when a
+     * packet arrives, so the switch also expires on its own once the station goes quiet.
+     *
+     * @param sdata accumulated sensor data
+     * @param holdoffMin holdoff in minutes; 0 follows the sensor's own rain reading with no delay
+     * @return true while rain is reported or the holdoff has not expired yet
+     */
+    private static boolean isRaining(ShellyStatusSensor sdata, int holdoffMin) {
+        if (holdoffMin == 0) {
+            return getBool(sdata.rain);
+        }
+        Instant lastRain = sdata.lastRain;
+        return lastRain != null && Instant.now().isBefore(lastRain.plusSeconds(holdoffMin * 60L));
+    }
+
+    /**
      * Update Sensor channel
      *
      * @param thingHandler Thing Handler instance
@@ -773,9 +791,9 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SEALEVEL_PRESSURE,
                         toQuantityType(getDouble(sdata.seaLevelPressure), DIGITS_PRESSURE, hpa));
             }
-            if (sdata.rainSwitch != null) {
+            if (profile.isWS90) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH,
-                        OnOffType.from(getBool(sdata.rainSwitch)));
+                        OnOffType.from(isRaining(sdata, thingHandler.getThingConfig().getRainSwitchHoldoff())));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
