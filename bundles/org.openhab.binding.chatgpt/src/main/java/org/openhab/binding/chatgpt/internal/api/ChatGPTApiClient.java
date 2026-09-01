@@ -376,6 +376,17 @@ public class ChatGPTApiClient {
                 logger.debug("Error response from {} (POST): HTTP {} {}, payload size = {} bytes",
                         baseUrl + PATH_CHAT_COMPLETIONS, response.getStatus(), response.getReason(),
                         errorBody.getBytes(StandardCharsets.UTF_8).length);
+                if (logger.isTraceEnabled()) {
+                    try {
+                        String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
+                                .writeValueAsString(objectMapper.readTree(errorBody));
+                        logger.trace("Error response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
+                                prettyError);
+                    } catch (IOException e) {
+                        logger.trace("Error response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
+                                errorBody);
+                    }
+                }
 
                 if (reasoningEffort != null && response.getStatus() == HttpStatus.BAD_REQUEST_400
                         && errorBody.contains("reasoning_effort")) {
@@ -390,17 +401,7 @@ public class ChatGPTApiClient {
                         logger.debug("Failed to remove reasoning_effort from payload for retry: {}", e.getMessage());
                     }
                 }
-                if (logger.isTraceEnabled()) {
-                    try {
-                        String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
-                                .writeValueAsString(objectMapper.readTree(errorBody));
-                        logger.trace("Error response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
-                                prettyError);
-                    } catch (IOException e) {
-                        logger.trace("Error response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
-                                errorBody);
-                    }
-                }
+
                 throw new ChatGPTApiException(
                         "ChatGPT API request failed with HTTP " + response.getStatus() + " " + response.getReason());
             }
