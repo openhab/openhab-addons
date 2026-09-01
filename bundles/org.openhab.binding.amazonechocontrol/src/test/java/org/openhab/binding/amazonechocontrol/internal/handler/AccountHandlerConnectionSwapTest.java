@@ -71,6 +71,16 @@ public class AccountHandlerConnectionSwapTest {
     }
 
     @Test
+    public void setConnectionWithTheCurrentConnectionKeepsItOpen() {
+        Connection current = handler.getConnection();
+
+        handler.setConnection(current);
+
+        assertSame(current, handler.getConnection());
+        assertFalse(current.isClosed());
+    }
+
+    @Test
     public void setConnectionRefusesAClosedCandidate() {
         Connection current = handler.getConnection();
         Connection closedCandidate = new Connection(null, gson, httpClient);

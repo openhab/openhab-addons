@@ -105,6 +105,7 @@ public class ConnectionSequenceDispatcherTest {
 
     @Test
     public void dispatcherDropsANodeQueuedBeforeTheLastLogoutUnexecuted() {
+        connection.logout(false);
         connection.executeSequenceNode(List.of("SERIAL"), new JsonObject(), connection.currentLoginGeneration() - 1);
 
         connection.handleExecuteSequenceNode();
