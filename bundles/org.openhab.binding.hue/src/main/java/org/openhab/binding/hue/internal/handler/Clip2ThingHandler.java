@@ -168,8 +168,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final PercentType DEFAULT_SOUND_VOLUME = new PercentType(50);
     private static final QuantityType<?> DEFAULT_ALARM_DURATION = QuantityType.valueOf(3, Units.SECOND);
 
-    // step size for IncreaseDecreaseType commands
     private static final int INCREASE_DECREASE_PERCENT = 10;
+    private static final int MIN_MIREK_DELTA = 10;
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -455,8 +455,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     MirekSchema schema = cache != null ? cache.getMirekSchema() : null;
                     schema = schema != null ? schema : MirekSchema.DEFAULT_SCHEMA;
                     double mirekRange = schema.getMirekMaximum() - schema.getMirekMinimum();
-                    int mirekDelta = (int) Math.max(mirekRange * INCREASE_DECREASE_PERCENT / 100.0,
-                            INCREASE_DECREASE_PERCENT);
+                    int mirekDelta = (int) Math.max(mirekRange * INCREASE_DECREASE_PERCENT / 100.0, MIN_MIREK_DELTA);
                     putResource = new Resource(lightResourceType).setMirekDelta(incDecCommand, mirekDelta);
                     break;
                 }
