@@ -63,8 +63,6 @@ public class AnkerSolixWallboxHandler extends AbstractAnkerSolixHandler {
             2, "connected");
     private static final Map<Integer, String> MQTT_CONNECTION_STATUS_MAP = Map.of(0, "not_connected", 1, "connected");
     private static final Map<Integer, String> CHARGING_COMMAND_MAP = Map.of(1, "start_charging", 2, "stop_charging");
-    private static final Map<Integer, String> PHASE_SETTING_MAP = Map.of(0, "default", 1, "fixed_single_phase", 2,
-            "fixed_three_phase");
 
     private final Logger logger = LoggerFactory.getLogger(AnkerSolixWallboxHandler.class);
 
@@ -130,8 +128,7 @@ public class AnkerSolixWallboxHandler extends AbstractAnkerSolixHandler {
             Integer value = parsePhaseSetting(command);
             if (value != null) {
                 writeInt16Holding(21005, value);
-                setShadowState(CHANNEL_SET_NUMBER_OF_CHARGING_PHASES,
-                        new StringType(PHASE_SETTING_MAP.getOrDefault(value, String.valueOf(value))));
+                setShadowState(CHANNEL_SET_NUMBER_OF_CHARGING_PHASES, new DecimalType(value));
             } else {
                 logger.warn("Unsupported charging phase command: {}", command);
             }
@@ -142,14 +139,14 @@ public class AnkerSolixWallboxHandler extends AbstractAnkerSolixHandler {
     protected void applyStateFromCache() {
         String modelName = readString(20001, 10);
         String serialNumber = readString(20011, 12);
-        updateStringChannel(CHANNEL_DEVICE_MODEL, resolveModelName(modelName, serialNumber));
-        updateStringChannel(CHANNEL_DEVICE_SERIAL_NUMBER, serialNumber);
-        updateStringChannel(CHANNEL_DEVICE_SW_VERSION, readString(20023, 6));
-        updateStringChannel(CHANNEL_DEVICE_HW_VERSION, readString(20029, 6));
+        updateThingProperty(DISCOVERY_PROPERTY_MODEL, resolveModelName(modelName, serialNumber));
+        updateThingProperty(DISCOVERY_PROPERTY_SERIAL_NUMBER, serialNumber);
+        updateThingProperty(DISCOVERY_PROPERTY_SOFTWARE_VERSION, readString(20023, 6));
+        updateThingProperty(DISCOVERY_PROPERTY_HARDWARE_VERSION, readString(20029, 6));
 
         Integer productNumber = readUInt16(20000);
         if (productNumber != null) {
-            updateChannelState(CHANNEL_PRODUCT_NUMBER, new DecimalType(productNumber));
+            updateThingProperty(DISCOVERY_PROPERTY_PRODUCT_NUMBER, productNumber);
         }
 
         updatePowerChannel(CHANNEL_RATED_POWER, readInt32(20035));
@@ -270,7 +267,10 @@ public class AnkerSolixWallboxHandler extends AbstractAnkerSolixHandler {
         if (phaseShadow != null) {
             updateChannelState(CHANNEL_SET_NUMBER_OF_CHARGING_PHASES, phaseShadow);
         } else {
-            updateEnumChannel(CHANNEL_SET_NUMBER_OF_CHARGING_PHASES, PHASE_SETTING_MAP, readUInt16(21005));
+            Integer phaseValue = readUInt16(21005);
+            if (phaseValue != null) {
+                updateChannelState(CHANNEL_SET_NUMBER_OF_CHARGING_PHASES, new DecimalType(phaseValue));
+            }
         }
     }
 

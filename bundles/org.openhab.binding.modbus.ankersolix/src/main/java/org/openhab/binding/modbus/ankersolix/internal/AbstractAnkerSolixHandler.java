@@ -56,6 +56,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
 
+    private static final String STATUS_INVALID_POLL_INTERVAL = "@text/status.configuration-error.invalid-poll-interval";
+    private static final String STATUS_INVALID_MAX_TRIES = "@text/status.configuration-error.invalid-max-tries";
+    private static final String STATUS_READ_FAILED = "@text/status.communication-error.read-failed";
+    private static final String STATUS_WRITE_FAILED = "@text/status.communication-error.write-failed";
+
     protected record PollRange(ModbusReadFunctionCode functionCode, int startAddress, int length, boolean optional) {
         protected PollRange(ModbusReadFunctionCode functionCode, int startAddress, int length) {
             this(functionCode, startAddress, length, false);
@@ -114,12 +119,11 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     public void modbusInitialize() {
         AnkerSolixConfiguration localConfig = getConfigAs(AnkerSolixConfiguration.class);
         if (localConfig.pollInterval < 500) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid poll interval (must be >= 500 ms)");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_INVALID_POLL_INTERVAL);
             return;
         }
         if (localConfig.maxTries < 1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid maxTries (must be >= 1)");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_INVALID_MAX_TRIES);
             return;
         }
 
@@ -211,7 +215,7 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
         Exception cause = failure.getCause();
         logger.debug("Failed to read Anker SOLIX registers: {}", cause.getMessage());
         if (!range.optional()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_READ_FAILED);
             return;
         }
         // only back off on an explicit "illegal data address" protocol response: the device answered and rejected
@@ -225,9 +229,7 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
             if (task != null) {
                 unregisterRegularPoll(task);
             }
-            logger.info(
-                    "Register {} is not supported by this device (or firmware) - this is not an error, all channels keep working normally; regular polling of this register is now paused and resumes automatically if the device firmware version changes",
-                    range.startAddress());
+            logger.debug("Register {} not supported by device/firmware, pausing regular polling", range.startAddress());
         }
     }
 
@@ -265,12 +267,28 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     private void handleWriteFailure(AsyncModbusFailure<?> failure, String operation) {
         String message = String.valueOf(failure.getCause().getMessage());
         logger.warn("{} failed: {}", operation, message);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_WRITE_FAILED);
+    }
+
+    protected void updateThingProperty(String propertyName, @Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+        String currentValue = getThing().getProperties().get(propertyName);
+        if (!value.equals(currentValue)) {
+            updateProperty(propertyName, value);
+        }
+    }
+
+    protected void updateThingProperty(String propertyName, @Nullable Number value) {
+        if (value != null) {
+            updateThingProperty(propertyName, String.valueOf(value));
+        }
     }
 
     protected void setShadowState(String channelId, State state) {
         AnkerSolixConfiguration localConfig = config;
-        int durationSeconds = localConfig != null ? Math.max(1, localConfig.writeProtectionDurationSeconds) : 15;
+        int durationSeconds = localConfig != null ? Math.max(1, localConfig.writeProtectionDurationSeconds) : 5;
         shadowStates.put(channelId, state);
         shadowStateExpiry.put(channelId, Instant.now().plusSeconds(durationSeconds));
     }

@@ -217,10 +217,10 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
     protected void applyStateFromCache() {
         String serialNumber = readString(10100, 12);
         String rawModel = readString(32768, 5);
-        updateStringChannel(CHANNEL_DEVICE_MODEL, resolveModelName(rawModel, serialNumber));
-        updateStringChannel(CHANNEL_DEVICE_SERIAL_NUMBER, serialNumber);
+        updateThingProperty(DISCOVERY_PROPERTY_MODEL, resolveModelName(rawModel, serialNumber));
+        updateThingProperty(DISCOVERY_PROPERTY_SERIAL_NUMBER, serialNumber);
         String firmwareVersion = readString(10112, 6);
-        updateStringChannel(CHANNEL_DEVICE_SW_VERSION, firmwareVersion);
+        updateThingProperty(DISCOVERY_PROPERTY_SOFTWARE_VERSION, firmwareVersion);
         checkFirmwareVersionChange(firmwareVersion);
 
         Integer batterySoc = readUInt16(10014);
