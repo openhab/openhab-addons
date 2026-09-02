@@ -47,7 +47,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
-        if (config.tripSearchKey == null || config.tripSearchKey.isBlank()) {
+        // Redundanten Null-Check für tripSearchKey entfernt
+        if (config.tripSearchKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip Search Key is missing");
             return;
         }
@@ -76,7 +77,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     }
 
     private void startPolling() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> job = refreshJob;
+        if (job == null || job.isCancelled()) {
             TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
             long refreshInterval = Math.max(30L, config.refreshInterval);
             refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
@@ -198,6 +200,8 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         return null;
     }
 
+    // @Override Annotation hinzugefügt
+    @Override
     public void dispose() {
         stopPolling();
         super.dispose();

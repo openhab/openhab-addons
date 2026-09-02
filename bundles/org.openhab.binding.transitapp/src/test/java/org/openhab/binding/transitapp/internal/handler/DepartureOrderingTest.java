@@ -38,7 +38,7 @@ public class DepartureOrderingTest {
     public void testDepartureOrdering() {
         Gson gson = new Gson();
 
-        // Simuliere API-Antworten über Gson, um die fehlenden Setter zu umgehen
+        // Simulate API responses via Gson to avoid needing setters
         ScheduleItem item1 = gson.fromJson("{ \"departure_time\": 1700000000 }", ScheduleItem.class);
         assertNotNull(item1, "Parsed ScheduleItem 1 should not be null");
 
@@ -49,7 +49,7 @@ public class DepartureOrderingTest {
         departures.add(item1);
         departures.add(item2);
 
-        // Sortier-Logik über die neuen Getter testen
+        // Test sorting logic via the new getters
         departures.sort(Comparator.comparing(a -> {
             Instant t = a.getDepartureTime();
             return t != null ? t.getEpochSecond() : 0L;
@@ -58,7 +58,7 @@ public class DepartureOrderingTest {
         assertNotNull(departures);
         assertEquals(2, departures.size());
 
-        // Erwartung: item2 (früher) steht jetzt an erster Stelle
+        // Expectation: item2 (earlier) is now at the first position
         Instant firstDeparture = departures.get(0).getDepartureTime();
         Instant secondDeparture = departures.get(1).getDepartureTime();
 

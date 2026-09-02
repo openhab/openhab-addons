@@ -48,7 +48,8 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
-        if (config.routeId == null || config.routeId.isBlank()) {
+        // Redundanten Null-Check entfernt
+        if (config.routeId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Route ID is missing");
             return;
         }
@@ -77,7 +78,8 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
     }
 
     private void startPolling() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> job = refreshJob;
+        if (job == null || job.isCancelled()) {
             TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
             long refreshInterval = Math.max(30L, config.refreshInterval);
             refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
@@ -147,10 +149,11 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
                     updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
                 }
 
-                // Update alerts count when route is known
+                // Update alerts count when route is known (Null-Check für lokales Feld)
                 int alertsCount = 0;
-                if (route.alerts != null) {
-                    alertsCount = route.alerts.size();
+                var localAlerts = route.alerts;
+                if (localAlerts != null) {
+                    alertsCount = localAlerts.size();
                 }
                 updateState("route#active-alerts-count", new DecimalType(alertsCount));
             } else {

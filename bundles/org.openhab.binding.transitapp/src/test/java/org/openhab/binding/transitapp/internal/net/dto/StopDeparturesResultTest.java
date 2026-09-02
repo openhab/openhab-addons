@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
@@ -78,7 +79,8 @@ public class StopDeparturesResultTest {
         assertNotNull(scheduledDepTime);
         assertEquals(1700000000L, scheduledDepTime.getEpochSecond());
 
-        Boolean isRealTime = item.isRealTime();
+        @Nullable
+        Boolean isRealTime = item.getIsRealTime();
         assertNotNull(isRealTime);
         assertTrue(isRealTime);
 

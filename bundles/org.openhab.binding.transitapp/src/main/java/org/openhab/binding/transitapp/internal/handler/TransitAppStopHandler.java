@@ -96,7 +96,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
     }
 
     private void startPolling() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> job = refreshJob;
+        if (job == null || job.isCancelled()) {
             TransitAppStopConfiguration config = getConfigAs(TransitAppStopConfiguration.class);
             long refreshInterval = Math.max(30L, config.refreshInterval);
             refreshJob = scheduler.scheduleWithFixedDelay(this::pollTransitApi, 1, refreshInterval, TimeUnit.SECONDS);
@@ -119,8 +120,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
     }
 
     private synchronized void pollTransitApi() {
-        Bridge bridge = getBridge();
-        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
+        Bridge localBridge = getBridge();
+        if (localBridge == null || localBridge.getStatus() != ThingStatus.ONLINE) {
             return;
         }
 
@@ -146,7 +147,8 @@ public class TransitAppStopHandler extends BaseThingHandler {
         } catch (Exception e) {
             latestLineDepartures.clear();
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
-            logger.error("Communication issue: {}", errorMessage);
+            // Downgraded to WARN per code review
+            logger.warn("Communication issue: {}", errorMessage);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             clearRemainingDepartures(1);
         }
@@ -168,7 +170,6 @@ public class TransitAppStopHandler extends BaseThingHandler {
         List<FlattenedDeparture> allDepartures = new ArrayList<>();
 
         for (RouteDeparture routeDep : routeDepartures) {
-            // Extract to explicit variables to satisfy the Eclipse JDT @NonNull compiler
             @Nullable
             String sName = routeDep.getRouteShortName();
             final String shortName = sName != null ? sName : "";
@@ -259,7 +260,14 @@ public class TransitAppStopHandler extends BaseThingHandler {
             updateState(prefix + "wheelchair-accessible", UnDefType.UNDEF);
         }
 
-        updateState(prefix + "is-cancelled", schedule.isCancelled() ? OnOffType.ON : OnOffType.OFF);
+        // Tri-state fix for isCancelled
+        @Nullable
+        Boolean cancelled = schedule.getIsCancelled();
+        if (cancelled == null) {
+            updateState(prefix + "is-cancelled", UnDefType.UNDEF);
+        } else {
+            updateState(prefix + "is-cancelled", cancelled ? OnOffType.ON : OnOffType.OFF);
+        }
 
         @Nullable
         String platform = schedule.getTrack();

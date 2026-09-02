@@ -99,7 +99,7 @@ public class StopDeparturesResult {
         private @Nullable String tripSearchKey;
 
         @SerializedName("wheelchair_accessible")
-        private @Nullable Integer wheelchairAccessible; // Integer, not Boolean!
+        private @Nullable Integer wheelchairAccessible;
 
         @SerializedName("track")
         private @Nullable String track;
@@ -108,27 +108,33 @@ public class StopDeparturesResult {
         private @Nullable String occupancyStatus;
 
         public @Nullable Instant getScheduledDepartureTime() {
-            return scheduledDepartureTime != null ? Instant.ofEpochSecond(scheduledDepartureTime) : null;
+            Long time = this.scheduledDepartureTime;
+            return time != null ? Instant.ofEpochSecond(time) : null;
         }
 
         public @Nullable Instant getDepartureTime() {
-            return departureTime != null ? Instant.ofEpochSecond(departureTime) : null;
+            Long time = this.departureTime;
+            return time != null ? Instant.ofEpochSecond(time) : null;
         }
 
         public @Nullable Instant getScheduledArrivalTime() {
-            return scheduledArrivalTime != null ? Instant.ofEpochSecond(scheduledArrivalTime) : null;
+            Long time = this.scheduledArrivalTime;
+            return time != null ? Instant.ofEpochSecond(time) : null;
         }
 
         public @Nullable Instant getArrivalTime() {
-            return arrivalTime != null ? Instant.ofEpochSecond(arrivalTime) : null;
+            Long time = this.arrivalTime;
+            return time != null ? Instant.ofEpochSecond(time) : null;
         }
 
-        public boolean isCancelled() {
-            return Boolean.TRUE.equals(isCancelled);
+        // Rückgabetyp @Nullable Boolean, um den Null-Zustand an den Handler durchzureichen
+        public @Nullable Boolean getIsCancelled() {
+            return isCancelled;
         }
 
-        public boolean isRealTime() {
-            return Boolean.TRUE.equals(isRealTime);
+        // Rückgabetyp @Nullable Boolean
+        public @Nullable Boolean getIsRealTime() {
+            return isRealTime;
         }
 
         public @Nullable String getRtTripId() {
