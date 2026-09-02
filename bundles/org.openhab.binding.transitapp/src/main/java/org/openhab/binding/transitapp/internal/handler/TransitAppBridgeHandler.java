@@ -77,7 +77,7 @@ public class TransitAppBridgeHandler extends BaseBridgeHandler {
 
                 int statusCode = response.getStatus();
                 if (statusCode >= 200 && statusCode < 300) {
-                    logger.info("Transit API connection verified successfully!");
+                    logger.debug("API key verified successfully");
                     updateStatus(ThingStatus.ONLINE);
                 } else if (statusCode == 401 || statusCode == 403) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

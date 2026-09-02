@@ -29,6 +29,11 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+/**
+ * The {@link TransitAppHandlerFactory} is responsible for creating things and thing handlers.
+ *
+ * @author Michael - Initial contribution
+ */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.transitapp")
 public class TransitAppHandlerFactory extends BaseThingHandlerFactory {
