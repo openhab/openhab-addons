@@ -128,3 +128,4 @@ Bridge transitapp:bridge:mybridge [ apiKey="YOUR_API_KEY_HERE" ] {
     Thing routedetails myroute [ routeId="VVSDE:247174", refreshInterval=300 ]
     Thing tripdetails mytrip [ tripSearchKey="VVSDE:52245421:47:2:22", targetStopId="VVSDE:1234", refreshInterval=60 ]
 }
+```

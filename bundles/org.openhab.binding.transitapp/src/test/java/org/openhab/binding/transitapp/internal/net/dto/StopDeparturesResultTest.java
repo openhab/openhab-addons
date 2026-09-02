@@ -16,10 +16,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
+@NonNullByDefault
 public class StopDeparturesResultTest {
 
     private final Gson gson = new Gson();
@@ -39,29 +44,46 @@ public class StopDeparturesResultTest {
 
         // Assert root object
         assertNotNull(result);
-        assertEquals(1, result.getRouteDepartures().size());
+
+        List<StopDeparturesResult.RouteDeparture> routeDepartures = result.getRouteDepartures();
+        assertNotNull(routeDepartures);
+        assertEquals(1, routeDepartures.size());
 
         // Assert route details
-        StopDeparturesResult.RouteDeparture route = result.getRouteDepartures().get(0);
+        StopDeparturesResult.RouteDeparture route = routeDepartures.get(0);
         assertEquals("105", route.getRouteShortName());
         assertEquals("Local Route", route.getRouteLongName());
 
         // Assert itinerary
-        assertEquals(1, route.getItineraries().size());
-        StopDeparturesResult.Itinerary itinerary = route.getItineraries().get(0);
+        List<StopDeparturesResult.Itinerary> itineraries = route.getItineraries();
+        assertNotNull(itineraries);
+        assertEquals(1, itineraries.size());
+
+        StopDeparturesResult.Itinerary itinerary = itineraries.get(0);
         assertEquals("Vendome", itinerary.getHeadsign());
 
-        // Assert schedule item and Instant conversion
-        assertEquals(1, itinerary.getScheduleItems().size());
-        StopDeparturesResult.ScheduleItem item = itinerary.getScheduleItems().get(0);
+        // Assert schedule item
+        List<StopDeparturesResult.ScheduleItem> scheduleItems = itinerary.getScheduleItems();
+        assertNotNull(scheduleItems);
+        assertEquals(1, scheduleItems.size());
 
-        assertNotNull(item.getDepartureTime());
-        assertEquals(1700000100L, item.getDepartureTime().getEpochSecond());
+        StopDeparturesResult.ScheduleItem item = scheduleItems.get(0);
 
-        assertNotNull(item.getScheduledDepartureTime());
-        assertEquals(1700000000L, item.getScheduledDepartureTime().getEpochSecond());
+        // Assert Instant conversion using local variables to satisfy null analysis
+        Instant depTime = item.getDepartureTime();
+        assertNotNull(depTime);
+        assertEquals(1700000100L, depTime.getEpochSecond());
 
-        assertTrue(item.isRealTime());
-        assertEquals(1, item.getWheelchairAccessible());
+        Instant scheduledDepTime = item.getScheduledDepartureTime();
+        assertNotNull(scheduledDepTime);
+        assertEquals(1700000000L, scheduledDepTime.getEpochSecond());
+
+        Boolean isRealTime = item.isRealTime();
+        assertNotNull(isRealTime);
+        assertTrue(isRealTime);
+
+        Integer wheelchair = item.getWheelchairAccessible();
+        assertNotNull(wheelchair);
+        assertEquals(1, wheelchair.intValue());
     }
 }

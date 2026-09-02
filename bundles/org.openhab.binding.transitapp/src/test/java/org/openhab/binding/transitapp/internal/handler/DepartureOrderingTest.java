@@ -12,11 +12,19 @@
  */
 package org.openhab.binding.transitapp.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
+import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.ScheduleItem;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link DepartureOrderingTest} is responsible for testing departure sorting.
@@ -27,8 +35,36 @@ import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult;
 public class DepartureOrderingTest {
 
     @Test
-    public void testDepartureResultInitialization() {
-        StopDeparturesResult result = new StopDeparturesResult();
-        assertNotNull(result);
+    public void testDepartureOrdering() {
+        Gson gson = new Gson();
+
+        // Simuliere API-Antworten über Gson, um die fehlenden Setter zu umgehen
+        ScheduleItem item1 = gson.fromJson("{ \"departure_time\": 1700000000 }", ScheduleItem.class);
+        assertNotNull(item1, "Parsed ScheduleItem 1 should not be null");
+
+        ScheduleItem item2 = gson.fromJson("{ \"departure_time\": 1600000000 }", ScheduleItem.class);
+        assertNotNull(item2, "Parsed ScheduleItem 2 should not be null");
+
+        List<ScheduleItem> departures = new ArrayList<>();
+        departures.add(item1);
+        departures.add(item2);
+
+        // Sortier-Logik über die neuen Getter testen
+        departures.sort(Comparator.comparing(a -> {
+            Instant t = a.getDepartureTime();
+            return t != null ? t.getEpochSecond() : 0L;
+        }));
+
+        assertNotNull(departures);
+        assertEquals(2, departures.size());
+
+        // Erwartung: item2 (früher) steht jetzt an erster Stelle
+        Instant firstDeparture = departures.get(0).getDepartureTime();
+        Instant secondDeparture = departures.get(1).getDepartureTime();
+
+        assertNotNull(firstDeparture);
+        assertNotNull(secondDeparture);
+        assertEquals(1600000000L, firstDeparture.getEpochSecond());
+        assertEquals(1700000000L, secondDeparture.getEpochSecond());
     }
 }

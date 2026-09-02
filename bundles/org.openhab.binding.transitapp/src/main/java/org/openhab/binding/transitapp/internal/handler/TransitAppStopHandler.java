@@ -169,14 +169,17 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
         for (RouteDeparture routeDep : routeDepartures) {
             // Extract to explicit variables to satisfy the Eclipse JDT @NonNull compiler
+            @Nullable
             String sName = routeDep.getRouteShortName();
             final String shortName = sName != null ? sName : "";
 
+            @Nullable
             String lName = routeDep.getRouteLongName();
             final String longName = lName != null ? lName : "";
 
             for (Itinerary itinerary : routeDep.getItineraries()) {
                 for (ScheduleItem schedule : itinerary.getScheduleItems()) {
+                    @Nullable
                     Instant depTime = schedule.getDepartureTime();
                     if (depTime == null || depTime.getEpochSecond() <= currentTimeSeconds) {
                         continue;
@@ -232,6 +235,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
             latestLineDepartures.put(shortName, LocalTime.ofInstant(depTime, ZoneId.systemDefault()).toString());
         }
 
+        @Nullable
         Instant scheduledDepTime = schedule.getScheduledDepartureTime();
         long delayMinutes = 0;
         if (scheduledDepTime != null) {
@@ -245,6 +249,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
             updateState(prefix + "delay-minutes", UnDefType.UNDEF);
         }
 
+        @Nullable
         Integer wheelchair = schedule.getWheelchairAccessible();
         if (wheelchair != null && wheelchair == 1) {
             updateState(prefix + "wheelchair-accessible", OnOffType.ON);
@@ -256,6 +261,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
 
         updateState(prefix + "is-cancelled", schedule.isCancelled() ? OnOffType.ON : OnOffType.OFF);
 
+        @Nullable
         String platform = schedule.getTrack();
         if (platform != null && !platform.isBlank()) {
             updateState(prefix + "platform", new StringType(platform));
@@ -263,6 +269,7 @@ public class TransitAppStopHandler extends BaseThingHandler {
             updateState(prefix + "platform", UnDefType.UNDEF);
         }
 
+        @Nullable
         String occupancy = schedule.getOccupancyStatus();
         if (occupancy != null && !occupancy.isBlank()) {
             updateState(prefix + "occupancy", new StringType(occupancy));
