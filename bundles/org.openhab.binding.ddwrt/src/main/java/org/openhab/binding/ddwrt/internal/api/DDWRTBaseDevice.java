@@ -279,9 +279,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 // Update config if credentials changed
                 if (!Objects.equals(existing.config.password, cfg.password)
                         || !Objects.equals(existing.config.user, cfg.user) || existing.config.port != cfg.port) {
-                    existing.config = cfg;
-                    existing.closeSessionQuietly();
-                    existing.authSession = ssh;
+                    existing.replaceSession(cfg, ssh);
                     ssh = null; // prevent finally from closing session handed to device
                     log.info("Updated credentials for device: {} (MAC: {})", cfg.hostname, mac);
                 } else {
@@ -1076,6 +1074,15 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      * Full refresh cycle. Recovers session if needed, then calls template methods.
      */
     public void refresh() {
+        refreshLock.lock();
+        try {
+            refreshLocked();
+        } finally {
+            refreshLock.unlock();
+        }
+    }
+
+    private void refreshLocked() {
         SshAuthSession s = ensureSession();
         if (s == null) {
             online = false;
@@ -1270,10 +1277,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Get the LAN bridge interface name for /proc/net/dev traffic parsing.
-     * Default is "br0" (DD-WRT/Tomato). OpenWrt overrides to "br-lan".
+     * Get the LAN or primary interface name for /proc/net/dev traffic parsing. Default is "br0" (DD-WRT/Tomato).
+     * OpenWrt overrides to "br-lan", while generic Linux determines the interface through the supplied runner.
      */
-    protected String getLanInterface() {
+    protected String getLanInterface(SshRunner runner) {
         return "br0";
     }
 
@@ -1287,9 +1294,15 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         }
 
         // LAN interface (overridable: br0 for DD-WRT/Tomato, br-lan for OpenWrt)
-        long[] lan = parseIfaceCounters(runner, getLanInterface());
-        ifIn = lan[0];
-        ifOut = lan[1];
+        String lanInterface = getLanInterface(runner);
+        if (lanInterface.isEmpty()) {
+            ifIn = 0;
+            ifOut = 0;
+        } else {
+            long[] lan = parseIfaceCounters(runner, lanInterface);
+            ifIn = lan[0];
+            ifOut = lan[1];
+        }
     }
 
     /**
@@ -1298,7 +1311,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      * @return two-element array: [rxBytes, txBytes], both 0 on parse failure
      */
     private long[] parseIfaceCounters(SshRunner runner, String iface) {
-        String line = safeTrim(runner.execStdout("cat /proc/net/dev | grep '" + iface + "' | awk '{print $2, $10}'"));
+        String line = safeTrim(runner
+                .execStdout("awk -v iface='" + iface + "' '$1 == iface \":\" {print $2, $10; exit}' /proc/net/dev"));
         if (!line.isEmpty()) {
             String[] parts = line.split("\\s+");
             if (parts.length >= 2) {
@@ -2306,12 +2320,31 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         }
     }
 
+    void replaceSession(DDWRTDeviceConfiguration newConfig, SshAuthSession newSession) {
+        refreshLock.lock();
+        try {
+            config = newConfig;
+            closeSessionQuietly();
+            authSession = newSession;
+        } finally {
+            refreshLock.unlock();
+        }
+    }
+
     public void closeSessionQuietly() {
         SshAuthSession s = authSession;
         authSession = null;
+        onSessionClosed();
         if (s != null) {
             s.close();
         }
+    }
+
+    /**
+     * Clear session-specific state when the SSH connection closes. Subclasses may override when cached data must be
+     * rediscovered after reconnection.
+     */
+    protected void onSessionClosed() {
     }
 
     // ---- Getters / Setters ----

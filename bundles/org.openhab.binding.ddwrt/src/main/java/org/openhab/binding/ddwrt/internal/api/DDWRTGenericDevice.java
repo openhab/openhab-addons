@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class DDWRTGenericDevice extends DDWRTBaseDevice {
 
+    private static final Pattern INTERFACE_NAME_PATTERN = Objects
+            .requireNonNull(Pattern.compile("^[a-zA-Z0-9_.:-]{1,15}$"));
     private static final Pattern STATION_MAC_PATTERN = Objects
             .requireNonNull(Pattern.compile("^Station\\s+([0-9a-fA-F:]{17})"));
     private static final Pattern SIGNAL_PATTERN = Objects.requireNonNull(Pattern.compile("signal:\\s*(-?\\d+)"));
@@ -40,8 +42,52 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
     private static final Pattern TX_BITRATE_PATTERN = Objects
             .requireNonNull(Pattern.compile("tx bitrate:\\s*([\\d.]+\\s*\\S+)"));
 
+    private volatile String lanInterface = "";
+    private volatile boolean lanInterfaceResolutionFailed;
+
     public DDWRTGenericDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         super(cfg, logger);
+    }
+
+    @Override
+    protected String getLanInterface(SshRunner runner) {
+        String cachedInterface = lanInterface;
+        if (!cachedInterface.isEmpty()) {
+            return cachedInterface;
+        }
+
+        String defaultRouteInterface = safeTrim(runner.execStdout(
+                "ip -o route show default 2>/dev/null | awk '{for (i=1;i<=NF;i++) if ($i == \"dev\") {print $(i+1); exit}}'"));
+        String selectedInterface = validInterfaceName(defaultRouteInterface);
+        if (selectedInterface.isEmpty()) {
+            selectedInterface = validInterfaceName(safeTrim(runner.execStdout(
+                    "for path in /sys/class/net/*; do iface=${path##*/}; [ \"$iface\" = lo ] && continue; [ -e \"$path/device\" ] || continue; [ \"$(cat \"$path/operstate\" 2>/dev/null)\" = up ] || continue; echo \"$iface\"; break; done")));
+        }
+
+        if (selectedInterface.isEmpty()) {
+            if (!lanInterfaceResolutionFailed) {
+                logger.warn("Could not determine a LAN traffic interface for {}; counters will remain zero",
+                        config.hostname);
+                lanInterfaceResolutionFailed = true;
+            }
+            return "";
+        }
+
+        lanInterface = selectedInterface;
+        lanInterfaceResolutionFailed = false;
+        logger.debug("Using {} for LAN traffic counters on {}", selectedInterface, config.hostname);
+        return selectedInterface;
+    }
+
+    private static String validInterfaceName(String interfaceName) {
+        return !"lo".equals(interfaceName) && INTERFACE_NAME_PATTERN.matcher(interfaceName).matches() ? interfaceName
+                : "";
+    }
+
+    @Override
+    protected void onSessionClosed() {
+        lanInterface = "";
+        lanInterfaceResolutionFailed = false;
     }
 
     @Override
