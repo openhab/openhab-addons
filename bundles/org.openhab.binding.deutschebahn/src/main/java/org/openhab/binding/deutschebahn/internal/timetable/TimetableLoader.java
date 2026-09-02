@@ -13,12 +13,11 @@
 package org.openhab.binding.deutschebahn.internal.timetable;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +41,7 @@ import org.openhab.core.library.types.DateTimeType;
  * This consists of a series of calls.
  *
  * @author Sönke Küper - initial contribution
+ * @author Leo Siepel - Add explicit time-zone handling
  */
 @NonNullByDefault
 public final class TimetableLoader {
@@ -63,12 +63,13 @@ public final class TimetableLoader {
     private final TimetableStopPredicate stopPredicate;
     private final TimetableStopComparator comparator;
     private final Supplier<Date> currentTimeProvider;
+    private final TimetableTimeConverter timeConverter;
     private int stopCount;
 
     private final String evaNo;
 
     @Nullable
-    private Date lastRequestedPlan;
+    private LocalDateTime lastRequestedPlan;
     @Nullable
     private Date lastRequestedChanges;
 
@@ -79,16 +80,18 @@ public final class TimetableLoader {
      * @param stopPredicate Filter for selection of loaded {@link TimetableStop}.
      * @param requestedStopCount Count of stops to be loaded on each call.
      * @param currentTimeProvider {@link Supplier} for the current time.
+     * @param timeConverter converter for the local timetable time zone.
      */
     public TimetableLoader(final TimetablesV1Api api, final TimetableStopPredicate stopPredicate,
-            final EventType eventToSort, final Supplier<Date> currentTimeProvider, final String evaNo,
-            final int requestedStopCount) {
+            final EventType eventToSort, final Supplier<Date> currentTimeProvider,
+            final TimetableTimeConverter timeConverter, final String evaNo, final int requestedStopCount) {
         this.api = api;
         this.stopPredicate = stopPredicate;
         this.currentTimeProvider = currentTimeProvider;
+        this.timeConverter = timeConverter;
         this.evaNo = evaNo;
         this.stopCount = requestedStopCount;
-        this.comparator = new TimetableStopComparator(eventToSort);
+        this.comparator = new TimetableStopComparator(eventToSort, timeConverter);
         this.cachedStopsPerId = new HashMap<>();
         this.cachedChanges = new HashMap<>();
         this.lastRequestedChanges = null;
@@ -148,11 +151,11 @@ public final class TimetableLoader {
     /**
      * Returns <code>true</code> if the planned and changed time from arrival and departure are in the past.
      */
-    private static boolean isInPast(TimetableStop stop, Date currentTime) {
+    private boolean isInPast(TimetableStop stop, Date currentTime) {
         return isBefore(EventAttribute.PT, stop.getAr(), currentTime) //
                 && isBefore(EventAttribute.CT, stop.getAr(), currentTime) //
                 && isBefore(EventAttribute.PT, stop.getDp(), currentTime) //
-                && isBefore(EventAttribute.PT, stop.getDp(), currentTime);
+                && isBefore(EventAttribute.CT, stop.getDp(), currentTime);
     }
 
     /**
@@ -160,14 +163,14 @@ public final class TimetableLoader {
      * the given compareTime.
      * If the {@link Event} is <code>null</code> it will return <code>true</code>.
      */
-    private static boolean isBefore( //
+    private boolean isBefore( //
             final EventAttribute<Date, DateTimeType> attribute, //
             final @Nullable Event event, //
             final Date toCompare) {
         if (event == null) {
             return true;
         }
-        final Date value = attribute.getValue(event);
+        final Date value = attribute.getValue(event, timeConverter);
         if (value == null) {
             return true;
         } else {
@@ -185,23 +188,21 @@ public final class TimetableLoader {
         }
 
         // start requesting at last request time.
-        final GregorianCalendar requestTime = new GregorianCalendar();
-        if (this.lastRequestedPlan != null) {
-            requestTime.setTime(this.lastRequestedPlan);
-            requestTime.set(Calendar.HOUR_OF_DAY, requestTime.get(Calendar.HOUR_OF_DAY) + 1);
-        } else {
-            requestTime.setTime(currentTime);
-        }
+        final LocalDateTime localCurrentTime = LocalDateTime.ofInstant(currentTime.toInstant(),
+                timeConverter.getTimeZone());
+        final LocalDateTime lastRequestedPlan = this.lastRequestedPlan;
+        LocalDateTime requestTime = lastRequestedPlan == null ? localCurrentTime : lastRequestedPlan.plusHours(1);
 
         // Determine the max. time for which a plan is available
-        final GregorianCalendar maxRequestTime = new GregorianCalendar();
-        maxRequestTime.setTime(currentTime);
-        maxRequestTime.set(Calendar.HOUR_OF_DAY, maxRequestTime.get(Calendar.HOUR_OF_DAY) + MAX_ADVANCE_HOUR);
+        final LocalDateTime maxRequestTime = localCurrentTime.plusHours(MAX_ADVANCE_HOUR);
 
         // load until required amount of stops is present or no more data is available.
-        while ((this.cachedStopsPerId.size() < this.stopCount) && requestTime.before(maxRequestTime)) {
-            final Timetable timetable = this.api.getPlan(this.evaNo, requestTime.getTime());
-            this.lastRequestedPlan = requestTime.getTime();
+        while ((this.cachedStopsPerId.size() < this.stopCount) && requestTime.isBefore(maxRequestTime)) {
+            // Resolve daylight-saving gaps before retaining and advancing the local plan hour.
+            requestTime = requestTime.atZone(timeConverter.getTimeZone()).toLocalDateTime();
+            final Date apiRequestTime = Date.from(requestTime.atZone(timeConverter.getTimeZone()).toInstant());
+            final Timetable timetable = this.api.getPlan(this.evaNo, apiRequestTime);
+            this.lastRequestedPlan = requestTime;
 
             // Filter only stops that are selected by given filter
             final List<TimetableStop> stops = timetable //
@@ -214,7 +215,7 @@ public final class TimetableLoader {
             this.processLoadedPlan(stops, currentTime);
 
             // Move request time one hour ahead.
-            requestTime.set(Calendar.HOUR_OF_DAY, requestTime.get(Calendar.HOUR_OF_DAY) + 1);
+            requestTime = requestTime.plusHours(1);
         }
     }
 
@@ -228,7 +229,7 @@ public final class TimetableLoader {
             // Check if a change for the stop was cached and apply it
             final TimetableStop change = this.cachedChanges.remove(stop.getId());
             if (change != null) {
-                TimetableStopMerger.merge(stop, change);
+                TimetableStopMerger.merge(stop, change, timeConverter);
             }
 
             // Check if stop is in past after applying changes and put
@@ -256,7 +257,7 @@ public final class TimetableLoader {
 
             final TimetableStop existingEntry = this.cachedStopsPerId.get(change.getId());
             if (existingEntry != null) {
-                TimetableStopMerger.merge(existingEntry, change);
+                TimetableStopMerger.merge(existingEntry, change, timeConverter);
             } else {
                 this.cachedChanges.put(change.getId(), change);
             }
