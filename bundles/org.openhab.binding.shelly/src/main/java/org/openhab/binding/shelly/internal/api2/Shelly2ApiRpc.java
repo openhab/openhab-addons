@@ -710,10 +710,27 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     // postEvent's de-dup would otherwise swallow all but the first of a fast burst
                     getThing().postEvent(ALARM_TYPE_LORA_RECEIVED, true);
                     break;
+                case SHELLY2_EVENT_PRESENCE:
+                    if (profile.isPresence && isMainZoneEvent(profile, e) && e.value != null) {
+                        sensorData.presence = e.value;
+                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE, getOnOff(e.value));
+                    }
+                    break;
+                case SHELLY2_EVENT_COUNTER:
+                    if (profile.isPresence && isMainZoneEvent(profile, e) && e.numObjects != null) {
+                        sensorData.objectCount = e.numObjects;
+                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT, getDecimal(e.numObjects));
+                    }
+                    break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }
         }
+    }
+
+    /** Zones other than the configured main zone must not overwrite the channels of the main zone. */
+    private static boolean isMainZoneEvent(ShellyDeviceProfile profile, Shelly2NotifyEvent e) {
+        return profile.presenceMainZoneKey.equals(e.component);
     }
 
     @Override
@@ -1072,6 +1089,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void muteSmokeAlarm(int index) throws ShellyApiException {
         apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SMOKE_MUTE).withId(index));
+    }
+
+    @Override
+    public void setPresenceSensor(boolean enable) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.enable = enable;
+        apiRequest(SHELLYRPC_METHOD_PRESENCE_SETSENSOR, params, String.class);
+        sensorData.sensorEnable = enable; // status has no such field, keep the cached config in sync
     }
 
     @Override

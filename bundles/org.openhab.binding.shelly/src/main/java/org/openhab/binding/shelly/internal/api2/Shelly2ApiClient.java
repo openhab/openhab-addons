@@ -87,6 +87,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
@@ -445,6 +446,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.loraComponentIds = null;
         }
 
+        Shelly2DeviceConfig.Shelly2DevConfigPresence presence = dc.presence0;
+        if (profile.isPresence && presence != null) {
+            String mainZone = presence.mainZone;
+            if (mainZone != null) {
+                profile.presenceMainZoneKey = mainZone;
+            }
+            sensorData.sensorEnable = getBool(presence.enable);
+        }
+
         return dc;
     }
 
@@ -637,6 +647,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateHumidityStatus(sensorData, result.humidity0);
         updateTemperatureStatus(sensorData, result.temperature0);
         updateIlluminanceStatus(sensorData, result.illuminance0);
+        updatePresenceStatus(sensorData, result.presence);
         updateSmokeStatus(sensorData, result.smoke0);
         Shelly2DeviceStatusFlood flood0 = result.flood0;
         if (flood0 != null) {
@@ -1511,6 +1522,31 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         sdata.lux.isValid = value.lux != null;
         sdata.lux.value = getDouble(value.lux);
         sdata.lux.illumination = getString(value.illumination);
+    }
+
+    protected void updatePresenceStatus(ShellyStatusSensor sdata, @Nullable ArrayList<Shelly2StatusPresence> zones)
+            throws ShellyApiException {
+        if (zones == null || zones.isEmpty()) {
+            return;
+        }
+        int mainZoneId = getPresenceMainZoneId(getProfile().presenceMainZoneKey);
+        for (Shelly2StatusPresence zone : zones) {
+            Integer zoneId = zone.id;
+            if (zoneId != null && zoneId.intValue() == mainZoneId) {
+                if (zone.value != null) {
+                    sdata.presence = zone.value;
+                }
+                if (zone.numObjects != null) {
+                    sdata.objectCount = zone.numObjects;
+                }
+                break;
+            }
+        }
+    }
+
+    private static int getPresenceMainZoneId(String mainZoneKey) {
+        Integer zoneId = Shelly2PresenceZoneAdapters.zoneIdFromKey(mainZoneKey);
+        return zoneId != null ? zoneId : SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
     }
 
     protected void updateSmokeStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusSmoke value) {
