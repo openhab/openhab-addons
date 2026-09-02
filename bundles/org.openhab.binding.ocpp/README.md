@@ -118,7 +118,7 @@ To add a card without knowing its id, use `learn-card`: switch it ON and present
 | session-energy          | Number:Energy            | R          | Energy of the last session (meter-stop − meter-start), published once at session end            |
 | charging                | Switch                   | RW         | ON while a transaction runs; command to remote start/stop                                       |
 | charge-limit            | Number:ElectricCurrent   | RW         | Charge current cap via SetChargingProfile                                                       |
-| power-limit             | Number:Power             | RW         | Charge power cap (watts); overrides charge-limit, for power-only chargers                       |
+| power-limit             | Number:Power             | RW         | Charge power cap (watts) for power-only chargers; takes over from charge-limit until a later charge-limit clears it |
 | number-phases           | Number                   | RW         | Phases to charge on (1/2/3); 0 = charger default. Needs a charger that supports phase switching |
 | pause                   | Switch                   | RW         | Pause charging (profile limit 0) without ending the transaction                                 |
 | availability            | Switch                   | RW         | OCPP availability (Operative/Inoperative)                                                       |
@@ -145,7 +145,7 @@ To keep stop working, start the charge from openHAB (`charging` `ON`), which mak
 
 `charge-limit` caps the charging current: the value is sent as a `SetChargingProfile` and the channel reflects the applied limit once accepted.
 Some chargers only accept a charge limit expressed in watts (their OCPP `ChargingScheduleAllowedChargingRateUnit` is `Power`, not `Current`); the binding learns this from the charger and converts `charge-limit` amps to watts with `nominalVoltage` and `phases`, so the same amps channel still works.
-Alternatively set `power-limit` (watts) directly — when set it overrides `charge-limit` and is sent as-is, with no conversion, on any charger that accepts a power limit.
+Alternatively set `power-limit` (watts) directly — it is sent as-is, with no conversion, on any charger that accepts a power limit, and takes over from `charge-limit` while it is set. Commanding `charge-limit` again clears the power-limit and returns to amps, so the most recent command always wins.
 `number-phases` requests charging on a given number of phases (1, 2 or 3) by setting `numberPhases` in the charging profile — for switching a car to single-phase when solar surplus is low, for instance; 0 clears the request so the charger keeps its own default (OCPP assumes 3). It only takes effect on a charger that supports phase switching (its `ConnectorSwitch3to1PhaseSupported` is true), and when set it also drives the amps→watts conversion above.
 `pause` suspends charging with a 0 A profile without ending the transaction; switching it off resumes — at your `charge-limit` if one is set, otherwise by removing the cap so the charger returns to its own maximum — distinct from `charging`, which ends the session.
 A pause is a 0 A limit, so a resume must lift the cap rather than send another 0 A, which a charger reads as "stay suspended".

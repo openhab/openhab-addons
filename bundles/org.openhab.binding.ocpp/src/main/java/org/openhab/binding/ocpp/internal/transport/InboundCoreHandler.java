@@ -74,9 +74,18 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
             BootNotificationRequest request) {
         logger.debug("BootNotification from session {}: vendor={} model={} fw={}", sessionIndex,
                 request.getChargePointVendor(), request.getChargePointModel(), request.getFirmwareVersion());
-        listener.onBootNotification(sessionIndex, request);
+        deliver("BootNotification", sessionIndex, () -> listener.onBootNotification(sessionIndex, request));
         return new BootNotificationConfirmation(ZonedDateTime.now(ZoneOffset.UTC), listener.heartbeatFor(sessionIndex),
                 RegistrationStatus.Accepted);
+    }
+
+    /** Deliver an inbound message to the listener without letting a throw there starve the OCPP confirmation. */
+    private void deliver(String what, UUID session, Runnable delivery) {
+        try {
+            delivery.run();
+        } catch (RuntimeException e) {
+            logger.warn("Failed to process {} from session {}: {}", what, session, e.getMessage());
+        }
     }
 
     @Override
@@ -90,7 +99,7 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
     @NonNullByDefault({})
     public HeartbeatConfirmation handleHeartbeatRequest(UUID sessionIndex, HeartbeatRequest request) {
         logger.trace("Heartbeat from session {}", sessionIndex);
-        listener.onHeartbeat(sessionIndex);
+        deliver("Heartbeat", sessionIndex, () -> listener.onHeartbeat(sessionIndex));
         return new HeartbeatConfirmation(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
@@ -98,11 +107,7 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
     @NonNullByDefault({})
     public MeterValuesConfirmation handleMeterValuesRequest(UUID sessionIndex, MeterValuesRequest request) {
         logger.debug("MeterValues from session {} connector {}", sessionIndex, request.getConnectorId());
-        try {
-            listener.onMeterValues(sessionIndex, request);
-        } catch (RuntimeException e) {
-            logger.warn("Failed to process MeterValues from session {}: {}", sessionIndex, e.getMessage());
-        }
+        deliver("MeterValues", sessionIndex, () -> listener.onMeterValues(sessionIndex, request));
         return new MeterValuesConfirmation();
     }
 
@@ -115,7 +120,8 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
         logger.debug("StartTransaction from session {} connector {} idTag {} -> txId {} ({})", sessionIndex,
                 request.getConnectorId(), request.getIdTag(), transactionId, authorized ? "accepted" : "invalid");
         if (authorized) {
-            listener.onStartTransaction(sessionIndex, request, transactionId);
+            deliver("StartTransaction", sessionIndex,
+                    () -> listener.onStartTransaction(sessionIndex, request, transactionId));
         }
         AuthorizationStatus status = authorized ? AuthorizationStatus.Accepted : AuthorizationStatus.Invalid;
         return new StartTransactionConfirmation(new IdTagInfo(status), transactionId);
@@ -127,7 +133,7 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
             StatusNotificationRequest request) {
         logger.debug("StatusNotification from session {} connector {}: {} ({})", sessionIndex, request.getConnectorId(),
                 request.getStatus(), request.getErrorCode());
-        listener.onStatusNotification(sessionIndex, request);
+        deliver("StatusNotification", sessionIndex, () -> listener.onStatusNotification(sessionIndex, request));
         return new StatusNotificationConfirmation();
     }
 
@@ -135,7 +141,7 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
     @NonNullByDefault({})
     public StopTransactionConfirmation handleStopTransactionRequest(UUID sessionIndex, StopTransactionRequest request) {
         logger.debug("StopTransaction from session {} txId {}", sessionIndex, request.getTransactionId());
-        listener.onStopTransaction(sessionIndex, request);
+        deliver("StopTransaction", sessionIndex, () -> listener.onStopTransaction(sessionIndex, request));
         return new StopTransactionConfirmation();
     }
 }
