@@ -301,7 +301,7 @@ items_mapped:
   !for "index, item in enumerate(items)":
     "item_${index}": "${item}"
 
-# Enumerating maps yields index and Map.Entry pairs (.key and .value)
+# Enumerating maps yields index and map entry pairs (.key and .value)
 map_results:
   !for "idx, entry in enumerate(mapping)":
     "item_${idx}_${entry.key}": "${entry.value}"
@@ -375,11 +375,9 @@ enumerated_list: ${items | enumerate}
 enumerated_list_func: ${enumerate(items)}
 # Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
 
-# Enumerating maps yields indexed Map.Entry objects.
-# Each entry wraps the original key-value pair and provides explicit
-# property accessors: .key (for the map key) and .value (for the map value).
+# Enumerating maps yields indexed map entry objects (default starting index 0)
 enumerated_map: ${enumerate(mapping)}
-# Result Structure: [[0, alpha=one], [1, beta=two]]
+# Result Structure: [[0, {key=alpha, value=one}], [1, {key=beta, value=two}]]
 #
 # Accessing properties from a specific index (e.g., the first item):
 #   - Key access:   ${enumerated_map[0][1].key}   -> "alpha"
