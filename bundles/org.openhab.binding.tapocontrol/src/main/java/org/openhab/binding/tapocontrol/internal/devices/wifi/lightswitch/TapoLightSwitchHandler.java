@@ -119,7 +119,7 @@ public class TapoLightSwitchHandler extends TapoBaseDeviceHandler {
         updateState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT), getOnOffType(deviceData.isOverheated()));
         if (deviceData instanceof TapoDimmerSwitchData dimmerData) {
             updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_BRIGHTNESS),
-                    getPercentType(dimmerData.getBrightness()));
+                    getPercentType(dimmerData.isOn() ? dimmerData.getBrightness() : 0));
         }
     }
 }
