@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.ScheduleItem;
 
@@ -51,6 +52,7 @@ public class DepartureOrderingTest {
 
         // Test sorting logic via the new getters
         departures.sort(Comparator.comparing(a -> {
+            @Nullable
             Instant t = a.getDepartureTime();
             return t != null ? t.getEpochSecond() : 0L;
         }));
@@ -59,7 +61,9 @@ public class DepartureOrderingTest {
         assertEquals(2, departures.size());
 
         // Expectation: item2 (earlier) is now at the first position
+        @Nullable
         Instant firstDeparture = departures.get(0).getDepartureTime();
+        @Nullable
         Instant secondDeparture = departures.get(1).getDepartureTime();
 
         assertNotNull(firstDeparture);

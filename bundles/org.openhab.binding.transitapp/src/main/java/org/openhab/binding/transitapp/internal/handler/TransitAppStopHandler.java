@@ -147,7 +147,6 @@ public class TransitAppStopHandler extends BaseThingHandler {
         } catch (Exception e) {
             latestLineDepartures.clear();
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.toString();
-            // Downgraded to WARN per code review
             logger.warn("Communication issue: {}", errorMessage);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             clearRemainingDepartures(1);

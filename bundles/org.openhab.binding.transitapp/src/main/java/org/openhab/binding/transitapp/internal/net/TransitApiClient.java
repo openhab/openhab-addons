@@ -34,6 +34,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * The {@link TransitApiClient} is responsible for handling HTTP communication with the Transit API.
+ *
+ * @author Michael - Initial contribution
+ */
 @NonNullByDefault
 public class TransitApiClient {
     private final Logger logger = LoggerFactory.getLogger(TransitApiClient.class);

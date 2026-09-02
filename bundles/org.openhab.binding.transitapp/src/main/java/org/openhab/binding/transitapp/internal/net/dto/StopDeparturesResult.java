@@ -127,7 +127,7 @@ public class StopDeparturesResult {
             return time != null ? Instant.ofEpochSecond(time) : null;
         }
 
-        // Rückgabetyp @Nullable Boolean, um den Null-Zustand an den Handler durchzureichen
+        // Return the real-time status or null if unknown
         public @Nullable Boolean getIsCancelled() {
             return isCancelled;
         }

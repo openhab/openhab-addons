@@ -71,10 +71,12 @@ public class StopDeparturesResultTest {
         StopDeparturesResult.ScheduleItem item = scheduleItems.get(0);
 
         // Assert Instant conversion using local variables to satisfy null analysis
+        @Nullable
         Instant depTime = item.getDepartureTime();
         assertNotNull(depTime);
         assertEquals(1700000100L, depTime.getEpochSecond());
 
+        @Nullable
         Instant scheduledDepTime = item.getScheduledDepartureTime();
         assertNotNull(scheduledDepTime);
         assertEquals(1700000000L, scheduledDepTime.getEpochSecond());
@@ -84,6 +86,7 @@ public class StopDeparturesResultTest {
         assertNotNull(isRealTime);
         assertTrue(isRealTime);
 
+        @Nullable
         Integer wheelchair = item.getWheelchairAccessible();
         assertNotNull(wheelchair);
         assertEquals(1, wheelchair.intValue());

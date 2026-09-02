@@ -47,7 +47,6 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         TransitAppTripConfiguration config = getConfigAs(TransitAppTripConfiguration.class);
-        // Redundanten Null-Check für tripSearchKey entfernt
         if (config.tripSearchKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Trip Search Key is missing");
             return;
@@ -200,7 +199,6 @@ public class TransitAppTripDetailsHandler extends BaseThingHandler {
         return null;
     }
 
-    // @Override Annotation hinzugefügt
     @Override
     public void dispose() {
         stopPolling();

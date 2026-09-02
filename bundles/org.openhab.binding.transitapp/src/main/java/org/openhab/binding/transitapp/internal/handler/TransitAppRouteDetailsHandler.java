@@ -48,7 +48,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         TransitAppRouteConfiguration config = getConfigAs(TransitAppRouteConfiguration.class);
-        // Redundanten Null-Check entfernt
+
         if (config.routeId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Route ID is missing");
             return;
@@ -149,7 +149,7 @@ public class TransitAppRouteDetailsHandler extends BaseThingHandler {
                     updateState("route#route-color", org.openhab.core.types.UnDefType.UNDEF);
                 }
 
-                // Update alerts count when route is known (Null-Check für lokales Feld)
+                // Update alerts count when route is known
                 int alertsCount = 0;
                 var localAlerts = route.alerts;
                 if (localAlerts != null) {
