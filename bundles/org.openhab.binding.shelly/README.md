@@ -119,6 +119,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
 | shellyplusflood      | Shelly Flood Gen4 water leak sensor                      | S4SN-0071A                                                                |
+| shellypluspresence   | Shelly Presence Gen4 mmWave radar sensor                 | S4SN-0U61X                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US, S4DM-0A102US                                                 |
 | shellyplusdimmer     | Shelly Plus Wall Dimmer EU / Dimmer Gen 3                | SNDM-0011EU, S3DM-0A101WWL                                                |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
@@ -1728,6 +1729,21 @@ The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
 | battery | batteryLevel  | Number          | yes       | Battery level in %                                                        |
 |         | lowBattery    | Switch          | yes       | ON: Low battery alert (< 20%)                                             |
 | device  | alarm         | Trigger         | yes       | Trigger: `FLOOD` on flood alarm, `SENSOR_ERROR` on cable fault, `ALARM_MUTED` when muted via the physical button |
+
+### Shelly Presence Gen4 (thing-type: shellypluspresence)
+
+Mains-powered (USB-C) mmWave radar occupancy sensor.
+`presence` and `objectCount` are pushed in real time when the device reports a change and are also refreshed on every poll cycle, the remaining channels are updated on the poll cycle.
+The device supports up to 10 detection zones; the binding reports the default zone, which is the one the device also uses for its own presence indication.
+
+| Group   | Channel      | Type              | read-only | Description                                              |
+| ------- | ------------ | ----------------- | --------- | -------------------------------------------------------- |
+| sensors | presence     | Switch            | yes       | ON: Occupancy detected in the default detection zone     |
+|         | objectCount  | Number            | yes       | Number of persons/objects currently detected in the zone |
+|         | lux          | Number:Illuminance | yes      | Brightness in Lux                                        |
+|         | illumination | String            | yes       | Ambient light class (dark / twilight / bright)           |
+|         | lastUpdate   | DateTime          | yes       | Timestamp of the last update                             |
+| control | sensorEnable | Switch            | r/w       | Enable or disable the mmWave radar sensor                |
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
