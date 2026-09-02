@@ -44,6 +44,13 @@ public class OppoBindingConstants {
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
     public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
 
+    public static final Set<String> BDPXX_HDMI_MODES = Set.of("AUTO", "SRC", "1080P", "1080I", "720P", "SDP", "SDI");
+    public static final Set<String> BDP10X_HDMI_MODES = Set.of("AUTO", "SRC", "4K2K", "1080P", "1080I", "720P", "SDP",
+            "SDI");
+    public static final Set<String> UDP20X_HDMI_MODES = Set.of("AUTO", "SRC", "UHD_AUTO", "UHD24", "UHD50", "UHD60",
+            "1080P_AUTO", "1080P24", "1080P50", "1080P60", "1080I50", "1080I60", "720P50", "720P60", "576P", "576I",
+            "480P", "480I");
+
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
     public static final Integer UDP20X_PORT = 23;

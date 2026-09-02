@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -85,6 +86,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
     private final Logger logger = LoggerFactory.getLogger(OppoHandler.class);
 
+    private final List<StateOption> allHdmiModeStateOptions;
+
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
 
@@ -95,9 +98,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final @Nullable Bundle bundle;
-
-    private List<StateOption> inputSourceOptions = new ArrayList<>();
-    private List<StateOption> hdmiModeOptions = new ArrayList<>();
 
     private long lastEventReceived = System.currentTimeMillis();
     private String verboseMode = VERBOSE_2;
@@ -130,7 +130,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         this.serialPortManager = serialPortManager;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
-        this.bundle = FrameworkUtil.getBundle(OppoHandler.class);
+        bundle = FrameworkUtil.getBundle(OppoHandler.class);
+        allHdmiModeStateOptions = createAllHdmiModeStateOptions();
     }
 
     @Override
@@ -178,13 +179,13 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             return;
         }
 
-        buildStateOptionLists(model);
-        if (!inputSourceOptions.isEmpty()) {
+        List<StateOption> inputSourceStateOptions = buildInputSourceStateOptions(model);
+        if (!inputSourceStateOptions.isEmpty()) {
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SOURCE),
-                    inputSourceOptions);
+                    inputSourceStateOptions);
         }
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_HDMI_MODE),
-                hdmiModeOptions);
+                buildHdmiModeStateOptions(model));
 
         scheduleReconnectJob();
         schedulePollingJob();
@@ -1014,63 +1015,82 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         }
     }
 
-    private void buildStateOptionLists(OppoPlayerModel model) {
-        hdmiModeOptions.clear();
-        inputSourceOptions.clear();
+    private List<StateOption> buildInputSourceStateOptions(OppoPlayerModel model) {
+        return switch (model) {
+            case BDP103 -> buildBdpInputSourceStateOptions(false);
+            case BDP105 -> buildBdpInputSourceStateOptions(true);
+            case UDP203 -> buildUdpInputSourceStateOptions(false);
+            case UDP205 -> buildUdpInputSourceStateOptions(true);
+            default -> List.of();
+        };
+    }
 
-        hdmiModeOptions.add(new StateOption("AUTO", getString("auto", "Auto")));
-        hdmiModeOptions.add(new StateOption("SRC", getString("direct", "Source Direct")));
-        if (model == OppoPlayerModel.UDP203 || model == OppoPlayerModel.UDP205) {
-            hdmiModeOptions.add(new StateOption("UHD_AUTO", getString("auto_uhd", "UHD Auto")));
-            hdmiModeOptions.add(new StateOption("UHD24", "UHD24"));
-            hdmiModeOptions.add(new StateOption("UHD50", "UHD50"));
-            hdmiModeOptions.add(new StateOption("UHD60", "UHD60"));
-            hdmiModeOptions.add(new StateOption("1080P_AUTO", getString("auto_1080p", "1080P Auto")));
-            hdmiModeOptions.add(new StateOption("1080P24", "1080P24"));
-            hdmiModeOptions.add(new StateOption("1080P50", "1080P50"));
-            hdmiModeOptions.add(new StateOption("1080P60", "1080P60"));
-            hdmiModeOptions.add(new StateOption("1080I50", "1080I50"));
-            hdmiModeOptions.add(new StateOption("1080I60", "1080I60"));
-            hdmiModeOptions.add(new StateOption("720P50", "720P50"));
-            hdmiModeOptions.add(new StateOption("720P60", "720P60"));
-            hdmiModeOptions.add(new StateOption("576P", "576P"));
-            hdmiModeOptions.add(new StateOption("576I", "576I"));
-            hdmiModeOptions.add(new StateOption("480P", "480P"));
-            hdmiModeOptions.add(new StateOption("480I", "480I"));
-        } else {
-            if (model == OppoPlayerModel.BDP103 || model == OppoPlayerModel.BDP105) {
-                hdmiModeOptions.add(new StateOption("4K2K", "4K*2K"));
-            }
-            hdmiModeOptions.add(new StateOption("1080P", "1080P"));
-            hdmiModeOptions.add(new StateOption("1080I", "1080I"));
-            hdmiModeOptions.add(new StateOption("720P", "720P"));
-            hdmiModeOptions.add(new StateOption("SDP", "480P"));
-            hdmiModeOptions.add(new StateOption("SDI", "480I"));
+    private List<StateOption> buildBdpInputSourceStateOptions(boolean includeAudioInputs) {
+        List<StateOption> options = new ArrayList<>(8);
+
+        options.add(new StateOption("0", getString("blu_ray", "Blu-ray Player")));
+        options.add(new StateOption("1", getString("hdmi_in_front", "HDMI In-Front")));
+        options.add(new StateOption("2", getString("hdmi_in_back", "HDMI In-Back")));
+        options.add(new StateOption("3", getString("arc1", "ARC HDMI Out 1")));
+        options.add(new StateOption("4", getString("arc2", "ARC HDMI Out 2")));
+
+        if (includeAudioInputs) {
+            options.add(new StateOption("5", getString("optical", "Optical In")));
+            options.add(new StateOption("6", getString("coaxial", "Coaxial In")));
+            options.add(new StateOption("7", getString("usb", "USB Audio In")));
         }
 
-        if (model == OppoPlayerModel.BDP103 || model == OppoPlayerModel.BDP105) {
-            inputSourceOptions.add(new StateOption("0", getString("blu_ray", "Blu-ray Player")));
-            inputSourceOptions.add(new StateOption("1", getString("hdmi_in_front", "HDMI In-Front")));
-            inputSourceOptions.add(new StateOption("2", getString("hdmi_in_back", "HDMI In-Back")));
-            inputSourceOptions.add(new StateOption("3", getString("arc1", "ARC HDMI Out 1")));
-            inputSourceOptions.add(new StateOption("4", getString("arc2", "ARC HDMI Out 2")));
+        return options;
+    }
 
-            if (model == OppoPlayerModel.BDP105) {
-                inputSourceOptions.add(new StateOption("5", getString("optical", "Optical In")));
-                inputSourceOptions.add(new StateOption("6", getString("coaxial", "Coaxial In")));
-                inputSourceOptions.add(new StateOption("7", getString("usb", "USB Audio In")));
-            }
-        } else if (model == OppoPlayerModel.UDP203 || model == OppoPlayerModel.UDP205) {
-            inputSourceOptions.add(new StateOption("0", getString("blu_ray", "Blu-ray Player")));
-            inputSourceOptions.add(new StateOption("1", getString("hdmi_in", "HDMI In")));
-            inputSourceOptions.add(new StateOption("2", getString("arc", "ARC HDMI Out")));
+    private List<StateOption> buildUdpInputSourceStateOptions(boolean includeAudioInputs) {
+        List<StateOption> options = new ArrayList<>(6);
 
-            if (model == OppoPlayerModel.UDP205) {
-                inputSourceOptions.add(new StateOption("3", getString("optical", "Optical In")));
-                inputSourceOptions.add(new StateOption("4", getString("coaxial", "Coaxial In")));
-                inputSourceOptions.add(new StateOption("5", getString("usb", "USB Audio In")));
-            }
+        options.add(new StateOption("0", getString("blu_ray", "Blu-ray Player")));
+        options.add(new StateOption("1", getString("hdmi_in", "HDMI In")));
+        options.add(new StateOption("2", getString("arc", "ARC HDMI Out")));
+
+        if (includeAudioInputs) {
+            options.add(new StateOption("3", getString("optical", "Optical In")));
+            options.add(new StateOption("4", getString("coaxial", "Coaxial In")));
+            options.add(new StateOption("5", getString("usb", "USB Audio In")));
         }
+
+        return options;
+    }
+
+    private List<StateOption> buildHdmiModeStateOptions(OppoPlayerModel model) {
+        Set<String> supportedModes = model.getHdmiModes();
+
+        return allHdmiModeStateOptions.stream().filter(option -> supportedModes.contains(option.getValue())).toList();
+    }
+
+    private List<StateOption> createAllHdmiModeStateOptions() {
+        return List.of( //
+                new StateOption("AUTO", getString("auto", "Auto")), //
+                new StateOption("SRC", getString("direct", "Source Direct")), //
+                new StateOption("UHD_AUTO", getString("auto_uhd", "UHD Auto")), //
+                new StateOption("4K2K", "4K*2K"), //
+                new StateOption("UHD24", "UHD24"), //
+                new StateOption("UHD50", "UHD50"), //
+                new StateOption("UHD60", "UHD60"), //
+                new StateOption("1080P_AUTO", getString("auto_1080p", "1080P Auto")), //
+                new StateOption("1080P24", "1080P24"), //
+                new StateOption("1080P50", "1080P50"), //
+                new StateOption("1080P60", "1080P60"), //
+                new StateOption("1080P", "1080P"), //
+                new StateOption("1080I50", "1080I50"), //
+                new StateOption("1080I60", "1080I60"), //
+                new StateOption("1080I", "1080I"), //
+                new StateOption("720P50", "720P50"), //
+                new StateOption("720P60", "720P60"), //
+                new StateOption("720P", "720P"), //
+                new StateOption("576P", "576P"), //
+                new StateOption("576I", "576I"), //
+                new StateOption("480P", "480P"), //
+                new StateOption("SDP", "480P"), //
+                new StateOption("480I", "480I"), //
+                new StateOption("SDI", "480I"));
     }
 
     private @Nullable String getString(String i18nKey, String defaultStr) {
