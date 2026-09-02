@@ -256,7 +256,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             // ignore hostname exception here. It's already handled by others.
         } catch (final EnvoyConnectionException e) {
             if (deviceDataSupported == FeatureStatus.UNKNOWN) {
-                logger.info(
+                logger.debug(
                         "This Enphase Envoy device ({}) doesn't seem to support per-device energy data. So no inverter energy channels are set.",
                         getThing().getUID());
                 deviceDataSupported = FeatureStatus.UNSUPPORTED;
