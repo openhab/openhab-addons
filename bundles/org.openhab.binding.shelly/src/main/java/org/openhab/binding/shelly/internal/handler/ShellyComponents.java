@@ -687,6 +687,18 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF,
                         toQuantityType((double) profile.reportHoldoff, DIGITS_NONE, Units.SECOND));
             }
+            if (sdata.presence != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE,
+                        getOnOff(sdata.presence));
+            }
+            if (sdata.objectCount != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT,
+                        getDecimal(sdata.objectCount));
+            }
+            if (sdata.sensorEnable != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE,
+                        getOnOff(sdata.sensorEnable));
+            }
 
             if (sdata.gasSensor != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SELFTTEST,
