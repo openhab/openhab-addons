@@ -87,7 +87,9 @@ public class TapoLightSwitchHandler extends TapoBaseDeviceHandler {
     }
 
     private void handleBrightnessCommand(Command command) {
-        if (command instanceof PercentType percentCommand) {
+        if (command instanceof OnOffType onOffCommand) {
+            switchOnOff(onOffCommand == OnOffType.ON);
+        } else if (command instanceof PercentType percentCommand) {
             setBrightness(percentCommand.intValue());
         } else if (command instanceof DecimalType decimalCommand) {
             setBrightness(decimalCommand.intValue());
