@@ -65,6 +65,13 @@
 				<default>2048</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="maxModelTurns" type="integer" groupName="hli" min="1">
+				<label>Maximum Model Turns</label>
+				<description>The maximum number of interaction turns with the model allowed in a single request to prevent infinite
+					loops and excess resource usage.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
 			<!-- Connection Settings -->
 			<parameter name="requestTimeout" type="integer" min="1" unit="s" groupName="connection">
 				<label>Request Timeout</label>
