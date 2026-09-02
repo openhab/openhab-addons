@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal.expression.filters;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +60,10 @@ public class EnumerateFilter implements Filter {
             }
         } else if (var instanceof Map) {
             for (Map.Entry<?, ?> entry : ((Map<?, ?>) var).entrySet()) {
-                addPair(enumeratedList, index++, entry);
+                Map<String, Object> mapEntry = new LinkedHashMap<>();
+                mapEntry.put("key", entry.getKey());
+                mapEntry.put("value", entry.getValue());
+                addPair(enumeratedList, index++, mapEntry);
             }
         } else if (var.getClass().isArray()) {
             Object[] array = (Object[]) var;
