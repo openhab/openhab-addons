@@ -47,7 +47,7 @@ Discovery results appear in the openHAB inbox after each device refresh cycle.
 Bridge ddwrt:network:home "Home Network" [ hostnames="router,office-ap,garage-ap" ]
 ```
 
-1. **Wait for discovery** — devices, radios, clients, and firewall rules appear in the inbox
+1. **Wait for discovery** — devices, radios, clients, and DD-WRT firewall rules appear in the inbox
 
 The `hostnames` parameter is a comma-separated list of hostnames or IP addresses.
 Each hostname is connected via SSH and auto-detected during the first refresh cycle.

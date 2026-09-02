@@ -1956,10 +1956,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Enumerate firewall rules. Default implementation parses DD-WRT nvram filter rules
-     * using a single {@code nvram show | grep filter} command.
-     * Only runs on firmware types that support nvram (DD-WRT, Tomato).
-     * OpenWrt subclasses should override to use iptables/nftables commands.
+     * Enumerate DD-WRT nvram filter rules using a single {@code nvram show | grep filter} command.
+     * Returns no rules for firmware types that do not support nvram.
      */
     protected List<DDWRTFirewallRule> enumerateFirewallRules(SshRunner runner) {
         List<DDWRTFirewallRule> rules = new ArrayList<>();
@@ -2102,7 +2100,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Refresh firewall rules from nvram and update cache.
+     * Refresh supported firewall rules and update the cache.
      */
     protected void refreshFirewallRules(SshRunner runner) {
         firewallRules.clear();
