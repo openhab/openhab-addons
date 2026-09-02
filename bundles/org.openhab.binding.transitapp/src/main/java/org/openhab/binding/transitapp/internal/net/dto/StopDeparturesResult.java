@@ -127,12 +127,12 @@ public class StopDeparturesResult {
             return time != null ? Instant.ofEpochSecond(time) : null;
         }
 
-        // Return the real-time status or null if unknown
+        // Return the cancellation status or null if unknown
         public @Nullable Boolean getIsCancelled() {
             return isCancelled;
         }
 
-        // Rückgabetyp @Nullable Boolean
+        // Return the real-time status or null if unknown
         public @Nullable Boolean getIsRealTime() {
             return isRealTime;
         }
