@@ -2086,7 +2086,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Refresh firewall rules from nvram and update cache.
+     * Refresh supported firewall rules and update the cache.
      */
     protected void refreshFirewallRules(SshRunner runner) {
         firewallRules.clear();
