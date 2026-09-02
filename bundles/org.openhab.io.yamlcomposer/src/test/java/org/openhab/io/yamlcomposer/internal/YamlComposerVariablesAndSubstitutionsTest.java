@@ -668,6 +668,20 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
             }
 
             @Test
+            @DisplayName("Enumerates list elements using the enumerate filter with a custom start index")
+            void enumeratesListWithFilterAndStartIndex() throws IOException {
+                String yaml = """
+                        variables:
+                          items: ["apple", "banana", "cherry"]
+                        result: ${items | enumerate(1)}
+                        """;
+
+                Map<Object, Object> data = loadYaml(yaml);
+                assertThat(data.get("result"),
+                        equalTo(List.of(List.of(1, "apple"), List.of(2, "banana"), List.of(3, "cherry"))));
+            }
+
+            @Test
             @DisplayName("Enumerates list elements using the enumerate function")
             void enumeratesListWithFunction() throws IOException {
                 String yaml = """
@@ -679,6 +693,20 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
                 Map<Object, Object> data = loadYaml(yaml);
                 assertThat(data.get("result"),
                         equalTo(List.of(List.of(0, "apple"), List.of(1, "banana"), List.of(2, "cherry"))));
+            }
+
+            @Test
+            @DisplayName("Enumerates list elements using the enumerate function with a custom start index")
+            void enumeratesListWithFunctionAndStartIndex() throws IOException {
+                String yaml = """
+                        variables:
+                          items: ["apple", "banana", "cherry"]
+                        result: ${enumerate(items, 10)}
+                        """;
+
+                Map<Object, Object> data = loadYaml(yaml);
+                assertThat(data.get("result"),
+                        equalTo(List.of(List.of(10, "apple"), List.of(11, "banana"), List.of(12, "cherry"))));
             }
 
             @Test
