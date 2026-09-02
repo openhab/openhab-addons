@@ -57,25 +57,43 @@ public class KasaXorProtocol implements TapoProtocolInterface {
     private final TapoDeviceConnector connector;
     private final String ipAddress;
     private final boolean dimmer;
-    private volatile boolean loggedIn;
-    private volatile @Nullable Socket activeSocket;
+    private final int port;
+    private final Object requestLock = new Object();
+    private final Object sessionLock = new Object();
+    private boolean loggedIn;
+    private long sessionGeneration;
+    private @Nullable Socket activeSocket;
 
     public KasaXorProtocol(TapoDeviceConnector connector, String ipAddress, boolean dimmer) {
+        this(connector, ipAddress, dimmer, PORT);
+    }
+
+    KasaXorProtocol(TapoDeviceConnector connector, String ipAddress, boolean dimmer, int port) {
         this.connector = connector;
         this.ipAddress = ipAddress;
         this.dimmer = dimmer;
+        this.port = port;
     }
 
     @Override
     public boolean login(TapoCredentials credentials) {
-        loggedIn = true;
+        synchronized (sessionLock) {
+            if (!loggedIn) {
+                sessionGeneration++;
+                loggedIn = true;
+            }
+        }
         return true;
     }
 
     @Override
     public void logout() {
-        loggedIn = false;
-        Socket socket = activeSocket;
+        Socket socket;
+        synchronized (sessionLock) {
+            loggedIn = false;
+            sessionGeneration++;
+            socket = activeSocket;
+        }
         if (socket != null) {
             try {
                 socket.close();
@@ -87,12 +105,18 @@ public class KasaXorProtocol implements TapoProtocolInterface {
 
     @Override
     public boolean isLoggedIn() {
-        return loggedIn;
+        synchronized (sessionLock) {
+            return loggedIn;
+        }
     }
 
     @Override
     public void sendRequest(TapoRequest request) throws TapoErrorHandler {
-        connector.handleResponse(execute(request), request.method());
+        long requestSession = requireActiveSession();
+        TapoResponse response = execute(request, requestSession);
+        if (isSessionActive(requestSession)) {
+            connector.handleResponse(response, request.method());
+        }
     }
 
     @Override
@@ -100,44 +124,54 @@ public class KasaXorProtocol implements TapoProtocolInterface {
         if (!(request instanceof TapoRequest) && !(request instanceof TapoMultipleRequest)) {
             throw new TapoErrorHandler(ERR_API_PARAMS, request.method());
         }
+        long requestSession = requireActiveSession();
         connector.executeAsync(() -> {
             try {
-                connector.handleResponse(execute(request), request.method());
+                TapoResponse response = execute(request, requestSession);
+                if (isSessionActive(requestSession)) {
+                    connector.handleResponse(response, request.method());
+                }
             } catch (TapoErrorHandler e) {
-                connector.handleError(e);
+                if (isSessionActive(requestSession)) {
+                    connector.handleError(e);
+                }
             }
         });
     }
 
-    private TapoResponse execute(TapoBaseRequestInterface request) throws TapoErrorHandler {
-        if (!loggedIn) {
-            throw new TapoErrorHandler(ERR_BINDING_DEVICE_OFFLINE);
-        }
-        if (request instanceof TapoRequest singleRequest) {
-            return executeSingle(singleRequest);
-        }
-        if (request instanceof TapoMultipleRequest multipleRequest
-                && multipleRequest.params() instanceof TapoMultipleRequest.SubRequest subRequest) {
-            List<TapoResponse> responses = new ArrayList<>();
-            for (TapoRequest singleRequest : subRequest.requests()) {
-                TapoResponse response = executeSingle(singleRequest);
-                if (response.hasError()) {
-                    return new TapoResponse(response.errorCode(), new JsonObject(), DEVICE_CMD_MULTIPLE_REQ, "");
+    private TapoResponse execute(TapoBaseRequestInterface request, long requestSession) throws TapoErrorHandler {
+        synchronized (requestLock) {
+            requireActiveSession(requestSession);
+            TapoResponse response;
+            if (request instanceof TapoRequest singleRequest) {
+                response = executeSingle(singleRequest, requestSession);
+            } else if (request instanceof TapoMultipleRequest multipleRequest
+                    && multipleRequest.params() instanceof TapoMultipleRequest.SubRequest subRequest) {
+                List<TapoResponse> responses = new ArrayList<>();
+                for (TapoRequest singleRequest : subRequest.requests()) {
+                    TapoResponse singleResponse = executeSingle(singleRequest, requestSession);
+                    if (singleResponse.hasError()) {
+                        return new TapoResponse(singleResponse.errorCode(), new JsonObject(), DEVICE_CMD_MULTIPLE_REQ,
+                                "");
+                    }
+                    responses.add(singleResponse);
                 }
-                responses.add(response);
+                JsonObject result = new JsonObject();
+                result.add("responses", GSON.toJsonTree(responses));
+                response = new TapoResponse(0, result, DEVICE_CMD_MULTIPLE_REQ, "");
+            } else {
+                throw new TapoErrorHandler(ERR_API_PARAMS, request.method());
             }
-            JsonObject result = new JsonObject();
-            result.add("responses", GSON.toJsonTree(responses));
-            return new TapoResponse(0, result, DEVICE_CMD_MULTIPLE_REQ, "");
+            requireActiveSession(requestSession);
+            return response;
         }
-        throw new TapoErrorHandler(ERR_API_PARAMS, request.method());
     }
 
-    private TapoResponse executeSingle(TapoRequest request) throws TapoErrorHandler {
+    private TapoResponse executeSingle(TapoRequest request, long requestSession) throws TapoErrorHandler {
         try {
             return switch (request.method()) {
-                case DEVICE_CMD_GETINFO -> mapSysinfo(sendCommand(GET_SYSINFO));
-                case DEVICE_CMD_SETINFO -> executeSetDeviceInfo(request.params());
+                case DEVICE_CMD_GETINFO -> mapSysinfo(sendCommand(GET_SYSINFO, requestSession));
+                case DEVICE_CMD_SETINFO -> executeSetDeviceInfo(request.params(), requestSession);
                 default -> throw new TapoErrorHandler(ERR_BINDING_NOT_IMPLEMENTED, request.method());
             };
         } catch (TapoErrorHandler e) {
@@ -149,14 +183,15 @@ public class KasaXorProtocol implements TapoProtocolInterface {
         }
     }
 
-    private TapoResponse executeSetDeviceInfo(@Nullable Object params) throws IOException, TapoErrorHandler {
+    private TapoResponse executeSetDeviceInfo(@Nullable Object params, long requestSession)
+            throws IOException, TapoErrorHandler {
         JsonObject values = params == null ? new JsonObject() : GSON.toJsonTree(params).getAsJsonObject();
         List<String> commands = buildSetCommands(values, dimmer);
         if (commands.isEmpty()) {
             throw new TapoErrorHandler(ERR_API_PARAMS, DEVICE_CMD_SETINFO);
         }
         for (String command : commands) {
-            JsonObject response = JsonParser.parseString(sendCommand(command)).getAsJsonObject();
+            JsonObject response = JsonParser.parseString(sendCommand(command, requestSession)).getAsJsonObject();
             int errorCode = findErrorCode(response);
             if (errorCode != 0) {
                 return new TapoResponse(errorCode, new JsonObject(), DEVICE_CMD_SETINFO, "");
@@ -206,10 +241,14 @@ public class KasaXorProtocol implements TapoProtocolInterface {
         return commands;
     }
 
-    private synchronized String sendCommand(String command) throws IOException {
-        try (Socket socket = new Socket()) {
+    private String sendCommand(String command, long requestSession) throws IOException, TapoErrorHandler {
+        Socket socket = new Socket();
+        synchronized (sessionLock) {
+            requireActiveSessionLocked(requestSession);
             activeSocket = socket;
-            socket.connect(new InetSocketAddress(ipAddress, PORT), SOCKET_TIMEOUT_MILLIS);
+        }
+        try (socket) {
+            socket.connect(new InetSocketAddress(ipAddress, port), SOCKET_TIMEOUT_MILLIS);
             socket.setSoTimeout(SOCKET_TIMEOUT_MILLIS);
             try (DataOutputStream output = new DataOutputStream(socket.getOutputStream());
                     DataInputStream input = new DataInputStream(socket.getInputStream())) {
@@ -227,7 +266,34 @@ public class KasaXorProtocol implements TapoProtocolInterface {
                 return decrypt(response);
             }
         } finally {
-            activeSocket = null;
+            synchronized (sessionLock) {
+                activeSocket = null;
+            }
+        }
+    }
+
+    private long requireActiveSession() throws TapoErrorHandler {
+        synchronized (sessionLock) {
+            requireActiveSessionLocked(sessionGeneration);
+            return sessionGeneration;
+        }
+    }
+
+    private void requireActiveSession(long requestSession) throws TapoErrorHandler {
+        synchronized (sessionLock) {
+            requireActiveSessionLocked(requestSession);
+        }
+    }
+
+    private void requireActiveSessionLocked(long requestSession) throws TapoErrorHandler {
+        if (!loggedIn || requestSession != sessionGeneration) {
+            throw new TapoErrorHandler(ERR_BINDING_DEVICE_OFFLINE);
+        }
+    }
+
+    private boolean isSessionActive(long requestSession) {
+        synchronized (sessionLock) {
+            return loggedIn && requestSession == sessionGeneration;
         }
     }
 
