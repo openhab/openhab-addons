@@ -1940,7 +1940,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            logger.debug("Failed to fetch light resource type:{}, id:{}", type, id, e);
+            logger.debug("Failed to fetch resource type:{}, id:{}", type, id, e);
         }
         return null;
     }
