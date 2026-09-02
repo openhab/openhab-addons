@@ -104,6 +104,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSHTG3 = "S3SN-0U12A";
     public static final String SHELLYDT_PLUSSMOKE = "SNSN-0031Z";
     public static final String SHELLYDT_PLUSFLOODG4 = "S4SN-0071A"; // Shelly Flood Gen4
+    public static final String SHELLYDT_PLUSPRESENCE = "S4SN-0U61X"; // Shelly Presence Gen4
     public static final String SHELLYDT_PLUSUNI = "SNSN-0043X";
     public static final String SHELLYDT_PLUSDIMMEREU = "SNDM-0011EU";
     public static final String SHELLYDT_PLUSDIMMERUS = "SNDM-0013US";
@@ -256,6 +257,7 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSUNI = new ThingTypeUID(BINDING_ID, "shellyplusuni");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSSMOKE = new ThingTypeUID(BINDING_ID, "shellyplussmoke");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSFLOOD = new ThingTypeUID(BINDING_ID, "shellyplusflood");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSPRESENCE = new ThingTypeUID(BINDING_ID, "shellypluspresence");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGS = new ThingTypeUID(BINDING_ID, "shellyplusplug");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGUS = new ThingTypeUID(BINDING_ID, "shellyplusplugus");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGCPM = new ThingTypeUID(BINDING_ID, "shellyplusplugcpm");
@@ -361,6 +363,9 @@ public class ShellyDevices {
     // Smoke Sensors
     public static final Set<ThingTypeUID> GROUP_SMOKE_THING_TYPES = Set.of(THING_TYPE_SHELLYSMOKE,
             THING_TYPE_SHELLYPLUSSMOKE);
+
+    // Presence Sensors (mmWave radar)
+    public static final Set<ThingTypeUID> GROUP_PRESENCE_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSPRESENCE);
 
     // Flood Sensors
     public static final Set<ThingTypeUID> GROUP_FLOOD_THING_TYPES = Set.of(THING_TYPE_SHELLYFLOOD,
@@ -540,7 +545,10 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUCLASS_WS, THING_TYPE_SHELLYBLUWS90),
 
             // Wall displays
-            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
+            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY),
+
+            // Presence sensor
+            Map.entry(SHELLYDT_PLUSPRESENCE, THING_TYPE_SHELLYPLUSPRESENCE));
 
     // Relay devices (mode="relay")
     public static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
@@ -714,6 +722,11 @@ public class ShellyDevices {
             Map.entry("shellybludistance", THING_TYPE_SHELLYBLUDISTANCE), //
             Map.entry("shellybluremote", THING_TYPE_SHELLYBLUREMOTE), //
             Map.entry("shellybluws90", THING_TYPE_SHELLYBLUWS90), //
+
+            // Presence sensor
+            Map.entry("shellypluspresence", THING_TYPE_SHELLYPLUSPRESENCE), //
+            Map.entry("shellypresenceg4", THING_TYPE_SHELLYPLUSPRESENCE), //
+            Map.entry("shellypresence", THING_TYPE_SHELLYPLUSPRESENCE), // older firmware
 
             // Password protected device
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
