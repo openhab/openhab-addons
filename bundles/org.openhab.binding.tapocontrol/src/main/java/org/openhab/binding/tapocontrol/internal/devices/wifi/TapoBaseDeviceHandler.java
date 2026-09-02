@@ -309,6 +309,17 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
         return deviceConfig.ipAddress;
     }
 
+    public boolean isDimmerSwitch() {
+        return SUPPORTED_DIMMER_SWITCH_UIDS.contains(getThing().getThingTypeUID());
+    }
+
+    /**
+     * Runs device communication without blocking framework callback threads.
+     */
+    public void executeAsync(Runnable task) {
+        scheduler.execute(task);
+    }
+
     /*
      * return device configuration
      */
@@ -499,6 +510,10 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, baseDeviceData.getHardwareVersion());
         properties.put(Thing.PROPERTY_MODEL_ID, baseDeviceData.getModel());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, baseDeviceData.getDeviceId());
+        String alias = baseDeviceData.getNickname();
+        if (!alias.isBlank()) {
+            properties.put(PROPERTY_ALIAS, alias);
+        }
         updateProperties(properties);
     }
 

@@ -36,6 +36,7 @@ public class TapoThingConstants {
     public static final String DEVICE_BRIDGE = "bridge";
     public static final String DEVICE_H100 = "H100";
     public static final String DEVICE_HS200 = "HS200";
+    public static final String DEVICE_HS220 = "HS220";
     public static final String DEVICE_P100 = "P100";
     public static final String DEVICE_P105 = "P105";
     public static final String DEVICE_P110 = "P110";
@@ -73,6 +74,7 @@ public class TapoThingConstants {
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_BRIDGE);
     public static final ThingTypeUID H100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_H100);
     public static final ThingTypeUID HS200_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HS200);
+    public static final ThingTypeUID HS220_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HS220);
     public static final ThingTypeUID P100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P100);
     public static final ThingTypeUID P105_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P105);
     public static final ThingTypeUID P110_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P110);
@@ -110,7 +112,8 @@ public class TapoThingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_MOTION_SENSORS = Set.of();
     public static final Set<ThingTypeUID> SUPPORTED_WEATHER_SENSORS = Set.of(T310_THING_TYPE, T315_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_SMART_SWITCHES = Set.of(S210_THING_TYPE, S220_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_SWITCH_UIDS = Set.of(HS200_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_SWITCH_UIDS = Set.of(HS200_THING_TYPE, HS220_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_DIMMER_SWITCH_UIDS = Set.of(HS220_THING_TYPE);
 
     /*** SET OF ALL SUPPORTED THINGS ***/
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
@@ -178,6 +181,7 @@ public class TapoThingConstants {
 
     /*** LIST OF PROPERTY NAMES ***/
     public static final String PROPERTY_FAMILY = "deviceFamily";
+    public static final String PROPERTY_ALIAS = "alias";
     public static final String PROPERTY_LOCATION = "location";
     public static final String PROPERTY_WIFI_LEVEL = "signal-strength";
 

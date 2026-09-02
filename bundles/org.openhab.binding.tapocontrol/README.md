@@ -27,6 +27,7 @@ The following Tapo-Devices are supported. For precise channel-description look a
 | Smart Switch (RF)                  | S210      | Wall switch with 1 contact                    |
 | Smart Switch (RF)                  | S220      | Wall switch with 2 contacts                   |
 | Smart Light Switch (Wi-Fi)         | HS200     | Wall switch with 1 contact                    |
+| Smart Dimmer Switch (Wi-Fi)        | HS220     | Dimmable wall switch                          |
 
 ## Prerequisites
 
@@ -84,7 +85,7 @@ The Things have the following configuration parameters:
 | ipAddress          | IP address of the device.                                             | Any Wi-Fi device            |
 | pollingInterval    | [optional] Refresh interval in seconds. The default is 30 seconds     | Any Wi-Fi device            |
 | httpPort           | [optional] HTTP communication port. Default is 80                     | Any Wi-Fi device            |
-| protocol           | [optional] Used communication protocol (AES/KLAP/'') Default 'AES'    | Any Wi-Fi device            |
+| protocol           | [optional] Used communication protocol (AES/KLAP/KASA/'') Default 'AES' | Any Wi-Fi device          |
 | backgroundDiscovery| [optional] RF devices will be discovered after every polling request  | SmartHub                    |
 
 ## Channels
@@ -93,19 +94,19 @@ All devices support some of the following channels:
 
 | group     | channel          | type                   | description                         | things supporting this channel                                          |
 |-----------|----------------- |------------------------|-------------------------------------|-------------------------------------------------------------------------|
-| actuator  | output           | Switch                 | Power device on or off              | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930, HS200 |
+| actuator  | output           | Switch                 | Power device on or off              | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930, HS200, HS220 |
 |           | output1          | Switch                 | Power socket 1 on or off            | P300                                                                    |
 |           | output2          | Switch                 | Power socket 2 on or off            | P300                                                                    |
 |           | output3          | Switch                 | Power socket 3 on or off            | P300                                                                    |
-|           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920                                      |
+|           | brightness       | Dimmer                 | Brightness 0-100%                   | L510, L530, L610, L630, L900, L920, HS220                               |
 |           | colorTemperature | Number:Temperature     | Color Temperature in Kelvin         | L530 (2500 K .. 6500 K), L630 (2200 K .. 6500 K)                        |
 |           | color            | Color                  | Color                               | L530, L630, L900, L920                                                  |
 | sensor    | isOpen           | Switch                 | Contact (Door/Window) is Open       | T110                                                                    |
 |           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                              |
 |           | currentHumidity  | Number:Dimensionless   | Current relative humidity in %      | T310, T315                                                              |
 | effects   | fxName           | String                 | Active lightning effect             | L530, L900, L920, L930                                                  |
-| device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930, HS200 |
-|           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930, HS200             |
+| device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930, HS200, HS220 |
+|           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930, HS200, HS220      |
 |           | signalStrength   | Number                 | RF-quality-level                    | T110                                                                    |
 |           | isOnline         | Switch                 | Device is Online                    | T110                                                                    |
 |           | batteryLow       | Switch                 | Battery of device is low            | T110                                                                    |

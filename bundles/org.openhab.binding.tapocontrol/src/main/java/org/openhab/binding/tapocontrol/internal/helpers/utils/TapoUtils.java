@@ -139,6 +139,8 @@ public class TapoUtils {
             deviceModel = deviceModel.replace(" ", "_");
             if (deviceModel.startsWith(DEVICE_HS200)) {
                 deviceModel = DEVICE_HS200;
+            } else if (deviceModel.startsWith(DEVICE_HS220)) {
+                deviceModel = DEVICE_HS220;
             } else {
                 // Keep legacy behavior of only first 4 characters
                 deviceModel = deviceModel.substring(0, 4);

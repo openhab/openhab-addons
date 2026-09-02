@@ -263,6 +263,9 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.deviceHwVer());
         properties.put(Thing.PROPERTY_MODEL_ID, deviceModel);
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.deviceId());
+        if (!device.alias().isBlank()) {
+            properties.put(PROPERTY_ALIAS, device.alias());
+        }
         if (device.ip().length() >= 7) {
             properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, device.ip());
             properties.put(TapoDeviceConfiguration.CONFIG_HTTP_PORT, device.encryptionSchema().httpPort());
