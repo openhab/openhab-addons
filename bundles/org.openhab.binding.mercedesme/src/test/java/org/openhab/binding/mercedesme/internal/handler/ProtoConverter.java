@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -191,6 +191,14 @@ public class ProtoConverter {
             Int32Value soc = (Int32Value) cpv.get("max_soc");
             cpv.put("max_soc", soc.getValue());
             return cpv;
+        }
+        // ChargingConfigure carries max_soc as an Int32Value wrapper, same as
+        // ChargeProgramConfigure - unwrap it before returning.
+        if (cr.hasChargingConfigure()) {
+            JSONObject cc = Utils.getJsonObject(cr.getChargingConfigure().getAllFields());
+            Int32Value soc = (Int32Value) cc.get("max_soc");
+            cc.put("max_soc", soc.getValue());
+            return cc;
         }
         return cmJson;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,8 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        mockCluster.featureMap = new ElectricalEnergyMeasurementCluster.FeatureMap(true, true, true, true);
+        mockCluster.featureMap = new ElectricalEnergyMeasurementCluster.FeatureMap(true, true, true, true, false,
+                false);
         converter = new ElectricalEnergyMeasurementConverter(mockCluster, mockHandler, 1, "TestLabel");
     }
 
@@ -75,7 +76,7 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
         message.path.attributeName = "cumulativeEnergyImported";
 
         ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct energyMeasurement = new EnergyMeasurementStruct(
-                BigInteger.valueOf(1000), null, null, null, null);
+                BigInteger.valueOf(1000), null, null, null, null, null, null);
         message.value = energyMeasurement;
 
         converter.onEvent(message);
@@ -87,7 +88,7 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
     @Test
     void testInitState() {
         ElectricalEnergyMeasurementCluster.EnergyMeasurementStruct measurement = new EnergyMeasurementStruct(
-                BigInteger.valueOf(1000), null, null, null, null);
+                BigInteger.valueOf(1000), null, null, null, null, null, null);
 
         mockCluster.cumulativeEnergyImported = measurement;
         mockCluster.periodicEnergyImported = measurement;

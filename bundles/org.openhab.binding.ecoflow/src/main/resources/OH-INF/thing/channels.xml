@@ -99,7 +99,7 @@
 			<channel id="current" typeId="solar-current">
 				<label>PV Current</label>
 			</channel>
-			<channel id="power" typeId="solar1power">
+			<channel id="power" typeId="solar-power">
 				<label>PV Power</label>
 			</channel>
 			<channel id="charge-state" typeId="solar-charge-state">

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -253,7 +253,8 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void thingUpdated(Thing thing) {
-        LuxomBridgeConfig newConfig = thing.getConfiguration().as(LuxomBridgeConfig.class);
+        setThing(thing);
+        LuxomBridgeConfig newConfig = getConfigAs(LuxomBridgeConfig.class);
         boolean validConfig = validConfiguration(newConfig);
         boolean needsReconnect = validConfig && config != null && !config.sameConnectionParameters(newConfig);
 
@@ -261,7 +262,6 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             dispose();
         }
 
-        this.thing = thing;
         this.config = newConfig;
 
         if (needsReconnect) {

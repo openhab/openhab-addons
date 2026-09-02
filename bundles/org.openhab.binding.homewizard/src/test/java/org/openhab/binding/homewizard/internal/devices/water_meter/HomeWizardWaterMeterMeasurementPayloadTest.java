@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,9 @@ public class HomeWizardWaterMeterMeasurementPayloadTest {
                 HomeWizardWaterMeterMeasurementPayload.class);
         assertThat(key, is(notNullValue()));
 
+        assertThat(key.getWifiSsid(), is("My Wi-Fi"));
+        assertThat(key.getWifiRssi(), is(-58));
+
         assertThat(key.getActiveLiter(), is(7.2));
         assertThat(key.getTotalLiter(), is(123.456));
     }
@@ -47,6 +50,9 @@ public class HomeWizardWaterMeterMeasurementPayloadTest {
         HomeWizardWaterMeterMeasurementPayload key = DATA_UTIL.fromJson("response-empty.json",
                 HomeWizardWaterMeterMeasurementPayload.class);
         assertThat(key, is(notNullValue()));
+
+        assertThat(key.getWifiSsid(), is(""));
+        assertThat(key.getWifiRssi(), is(-100));
 
         assertThat(key.getActiveLiter(), is(0.0));
         assertThat(key.getTotalLiter(), is(0.0));

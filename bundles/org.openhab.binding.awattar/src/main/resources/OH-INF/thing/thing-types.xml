@@ -278,6 +278,11 @@
 	<channel-type id="uom-price">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Price</label>
+		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -285,6 +290,11 @@
 		<item-type>Number</item-type>
 		<label>Price</label>
 		<description>Price in ct/kWh</description>
+		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f ct"/>
 	</channel-type>
 

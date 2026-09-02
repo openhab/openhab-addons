@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PiHoleConfiguration {
+    public static final String API_V6 = "v6";
+    public static final String API_V5 = "v5";
+
     public String hostname = "";
     public String token = "";
     public int refreshIntervalSeconds = 600;
+    public String serverVersion = API_V5;
 }

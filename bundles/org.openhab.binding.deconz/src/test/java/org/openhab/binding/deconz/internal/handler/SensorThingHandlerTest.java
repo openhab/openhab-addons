@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,6 +58,21 @@ public class SensorThingHandlerTest extends BaseDeconzThingHandlerTest {
                 new TestParam(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime("2021-12-29T01:18Z")));
 
         assertThing("json/sensors/airquality.json", expected);
+    }
+
+    @Test
+    public void testParticulateMatter() throws IOException {
+        createThing(THING_TYPE_PARTICULATEMATTER_SENSOR, List.of(CHANNEL_PARTICULATEMATTER_PM25, CHANNEL_LAST_UPDATED),
+                SensorThingHandler::new);
+
+        Set<TestParam> expected = Set.of(
+                // standard channels
+                new TestParam(CHANNEL_PARTICULATEMATTER_PM25, new QuantityType<>("5 µg/m³")),
+                new TestParam(CHANNEL_LAST_UPDATED, Util.convertTimestampToDateTime("2023-12-29T01:18:41.184")),
+                // last seen
+                new TestParam(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime("2023-12-29T01:18Z")));
+
+        assertThing("json/sensors/particulatematter.json", expected);
     }
 
     @Test

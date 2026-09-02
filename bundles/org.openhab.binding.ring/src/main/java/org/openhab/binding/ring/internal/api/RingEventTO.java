@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,8 +31,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class RingEventTO {
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
     public long id = 0;
     @SerializedName("created_at")
     public String createdAt = "";
@@ -41,6 +40,8 @@ public class RingEventTO {
     public boolean favorite;
     @SerializedName("snapshot_url")
     public @Nullable String snapshotUrl;
+    @SerializedName("cv_properties")
+    public CVPropertiesTO cvProperties = new CVPropertiesTO();
     public Map<String, String> recording = Map.of();
     public List<Object> events = List.of();
     public DoorbotTO doorbot = new DoorbotTO();

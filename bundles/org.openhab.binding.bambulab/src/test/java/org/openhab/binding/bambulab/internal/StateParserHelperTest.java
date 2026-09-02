@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,6 +99,32 @@ class StateParserHelperTest {
         assertThat(result).isPresent();
         assertThat(result.get()).isInstanceOf(StringType.class);
         assertThat(result.get().toString()).isEqualTo("test string");
+    }
+
+    @Test
+    @DisplayName("Given a hyphenated tray type, when parseTrayType is called, then it preserves the hyphenated state value")
+    void testParseTrayTypePreservesCanonicalStateValue() {
+        // Given
+        var trayType = "ASA-CF";
+
+        // When
+        var result = StateParserHelper.parseTrayType(trayType);
+
+        // Then
+        assertThat(result).contains(StringType.valueOf("ASA-CF"));
+    }
+
+    @Test
+    @DisplayName("Given PLA-S, when parseTrayType is called, then it returns PLA-S")
+    void testParseTrayTypeSupportsPlaS() {
+        // Given
+        var trayType = "PLA-S";
+
+        // When
+        var result = StateParserHelper.parseTrayType(trayType);
+
+        // Then
+        assertThat(result).contains(StringType.valueOf("PLA-S"));
     }
 
     @Test

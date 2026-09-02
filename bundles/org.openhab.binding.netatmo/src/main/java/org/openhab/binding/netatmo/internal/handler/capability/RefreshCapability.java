@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,13 +15,13 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -36,14 +36,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RefreshCapability extends Capability {
-    protected static final Duration ASAP = Duration.ofSeconds(2);
+    public static final Duration ASAP = Duration.ofSeconds(2);
     protected static final Duration OFFLINE_DELAY = Duration.ofMinutes(15);
     protected static final Duration PROBING_INTERVAL = Duration.ofMinutes(2);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
 
     protected Duration dataValidity = PROBING_INTERVAL;
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshJob;
     private boolean expiring = false;
 
     public RefreshCapability(CommonInterface handler) {
@@ -51,7 +51,7 @@ public class RefreshCapability extends Capability {
     }
 
     public void setInterval(Duration dataValidity) {
-        if (dataValidity.isNegative() || dataValidity.isZero()) {
+        if (!dataValidity.isPositive()) {
             throw new IllegalArgumentException("refreshInterval must be positive");
         }
         this.dataValidity = dataValidity;
@@ -85,9 +85,14 @@ public class RefreshCapability extends Capability {
     private void proceedWithUpdate() {
         Duration delay;
         handler.proceedWithUpdate();
-        if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
+        if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler
+                && !ThingStatus.ONLINE.equals(accountHandler.getThing().getStatus())) {
+            delay = accountHandler.getIdleTime();
+            delay = delay != null ? delay.plus(ASAP) : OFFLINE_DELAY;
+            logger.debug("Bridge is not ONLINE, will wait for him to come-back in {}", delay);
+        } else if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
             delay = OFFLINE_DELAY;
-            logger.debug("Thing '{}' is not ONLINE, using special refresh interval", thingUID);
+            logger.debug("Thing '{}' is not ONLINE, special refresh interval {} used", thingUID, delay);
         } else {
             delay = calcDelay();
         }
@@ -95,24 +100,25 @@ public class RefreshCapability extends Capability {
     }
 
     private void rescheduleJob(Duration delay) {
-        if (refreshJob.isPresent()) {
-            ScheduledFuture<?> job = refreshJob.get();
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
             Instant now = Instant.now();
             Instant expectedExecution = now.plus(delay);
-            Instant scheduledExecution = now.plusMillis(job.getDelay(TimeUnit.MILLISECONDS));
+            Instant scheduledExecution = now.plusMillis(refreshJob.getDelay(TimeUnit.MILLISECONDS));
             if (Math.abs(ChronoUnit.SECONDS.between(expectedExecution, scheduledExecution)) <= 3) {
                 logger.debug("'{}' refresh as already pending roughly as the same time, will not reschedule", thingUID);
                 return;
-            } else {
-                stopJob();
             }
+            stopJob();
         }
         logger.debug("'{}' next refresh in {}", thingUID, delay);
-        refreshJob = handler.schedule(this::proceedWithUpdate, delay);
+        this.refreshJob = handler.schedule(this::proceedWithUpdate, delay);
     }
 
     private void stopJob() {
-        refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.empty();
+        if (refreshJob instanceof ScheduledFuture job) {
+            job.cancel(true);
+        }
+        refreshJob = null;
     }
 }

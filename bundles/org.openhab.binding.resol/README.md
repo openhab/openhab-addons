@@ -18,7 +18,7 @@ In the binding might support USB-type bridges in future.
 
 ### Device
 
-On top of the bridge things, which enable access to the VBUS, many - if not all - Resol Controllers and Modules like WMZ heat meters, HKM Heating circuit extensions etc. are supported including branded versions from different suppliers as thing type _device_.
+On top of the bridge Things, which enable access to the VBUS, many - if not all - Resol Controllers and Modules like WMZ heat meters, HKM Heating circuit extensions etc. are supported including branded versions from different suppliers as Thing type _device_.
 The supported devices include
 
 - Solar controller DeltaSol® A/AX/AX HE
@@ -55,7 +55,7 @@ A more complete list can be found in the doc of the [resol-vbus-java library](ht
 
 ### Emulated Extension Module EM
 
-Some controllers like the Deltasol MX can be connected to an extension module, which can be emulated by the thing type _emulatedEM_.
+Some controllers like the Deltasol MX can be connected to an extension module, which can be emulated by the Thing type _emulatedEM_.
 The emulated EM is a virtual device, visible on the VBUS to a Resol controller and provides an interface between openHAB and the controller.
 Relay channels are outputs from the controller point of view and therefore read-only in OH.
 The sensor channels as inputs for the solar or system controller and intended to be written by OH.
@@ -88,41 +88,41 @@ For configuration in files you can enable the logging with at least DEBUG level 
 
 _emulatedEM_ devices cannot be auto-discovered and require beside the bridge the following configuration:
 
-| Parameter | Type | Required | Description                                                |
-|-----------|------|----------|-----------------------------------------------------------------------------------------------------------------|
+| Parameter | Type | Required | Description                                                                                                      |
+|-----------|------|----------|------------------------------------------------------------------------------------------------------------------|
 | moduleID  | int  | yes      | The module ID on the VBUS in range 0-15, but further restrictions might apply depending on the resol controller. |
 
 ## Device Channels
 
-The channels of a thing are determined automatically based on the received VBUS data and are highly dependent on the used device.
+The channels of a Thing are determined automatically based on the received VBUS data and are highly dependent on the used device.
 Here is a list of the channels of a DeltaSol MX with a heat quantity meter (HQM) and an extension module EM.
 The channels supported for your device can be seen in the UI or in the logs if DEBUG logging is enabled for this binding after data is received from the physical device.
 
-| Channel                           | Type                     | Description                                        |
-|-----------------------------------|--------------------------|----------------------------------------------------|
-| pump_speed_relay_x                | Number:Dimensionless     | Percentage of the output state of relay 'x'        |
-| temperature_sensor_x              | Number:Temperature       | Temperature sensor 'x' of the controller           |
-| temperature_module_y_sensor_x     | Number:Temperature       | Temperature sensor 'x' of the extension module 'y' |
-| pressure_sensor_x                 | Number:Pressure          | Pressure sensor 'x'                                |
-| humidity_sensor_x                 | Number:Dimensionless     | Humidity sensor 'x'                                |
-| irradiation_sensor_x              | Number:Intensity         | Sunlight intensity sensor                          |
-| output_m                          | Number:Dimensionless     | PWM/0-10V level value of the output 'm'            |
-| system_date                       | DateTime                 | Date and time of the controller clock              |
-| error_mask                        | Number                   | Bitmask for the different errors                   |
-| error_sensor_line_broken          | Number                   | Sensor line broken status (details for error_mask) |
-| error_sensor_line_short-circuited | Number                   | Sensor short circuit status (details for error_mask) |
-| flow_rate_sensor_x                | Number:VolumetricFlowRate| Flow rate of sensor 'x'                            |
-| flow_set_temperature              | Number:Temperature       | Heating circuit set temperature                    |
-| operating_state                   | Number                   | Heating circuit operating state                    |
-| heat_quantity                     | Number:Energy            | Total heat quantity (of a HQM)                     |
-| heat_quantity_today               | Number:Energy            | Todays heat quantity (of a HQM)                    |
-| heat_quantity_week                | Number:Energy            | This weeks heat quantity (of a HQM)                |
-| heat_quantity_month               | Number:Energy            | This months heat quantity (of a HQM)               |
-| volume_in_total                   | Number:Volume            | Total volume (of a HQM)                            |
-| volume_today                      | Number:Volume            | Todays volume (of a HQM)                           |
-| volume_week                       | Number:Volume            | This weeks volume (of a HQM)                       |
-| volume_month                      | Number:Volume            | This months volume (of a HQM)                      |
-| power                             | Number:Power             | Current power (of a HQM)                           |
+| Channel                           | Type                      | Description                                          |
+|-----------------------------------|---------------------------|------------------------------------------------------|
+| pump_speed_relay_x                | Number:Dimensionless      | Percentage of the output state of relay 'x'          |
+| temperature_sensor_x              | Number:Temperature        | Temperature sensor 'x' of the controller             |
+| temperature_module_y_sensor_x     | Number:Temperature        | Temperature sensor 'x' of the extension module 'y'   |
+| pressure_sensor_x                 | Number:Pressure           | Pressure sensor 'x'                                  |
+| humidity_sensor_x                 | Number:Dimensionless      | Humidity sensor 'x'                                  |
+| irradiation_sensor_x              | Number:Intensity          | Sunlight intensity sensor                            |
+| output_m                          | Number:Dimensionless      | PWM/0-10V level value of the output 'm'              |
+| system_date                       | DateTime                  | Date and time of the controller clock                |
+| error_mask                        | Number                    | Bitmask for the different errors                     |
+| error_sensor_line_broken          | Number                    | Sensor line broken status (details for error_mask)   |
+| error_sensor_line_short-circuited | Number                    | Sensor short circuit status (details for error_mask) |
+| flow_rate_sensor_x                | Number:VolumetricFlowRate | Flow rate of sensor 'x'                              |
+| flow_set_temperature              | Number:Temperature        | Heating circuit set temperature                      |
+| operating_state                   | Number                    | Heating circuit operating state                      |
+| heat_quantity                     | Number:Energy             | Total heat quantity (of a HQM)                       |
+| heat_quantity_today               | Number:Energy             | Todays heat quantity (of a HQM)                      |
+| heat_quantity_week                | Number:Energy             | This weeks heat quantity (of a HQM)                  |
+| heat_quantity_month               | Number:Energy             | This months heat quantity (of a HQM)                 |
+| volume_in_total                   | Number:Volume             | Total volume (of a HQM)                              |
+| volume_today                      | Number:Volume             | Todays volume (of a HQM)                             |
+| volume_week                       | Number:Volume             | This weeks volume (of a HQM)                         |
+| volume_month                      | Number:Volume             | This months volume (of a HQM)                        |
+| power                             | Number:Power              | Current power (of a HQM)                             |
 
 Channels are dynamically created dependent on the devices connected to the VBus.
 So far only reading is supported.
@@ -139,14 +139,14 @@ Additionally the virtual input device for adjusting the heating circuits as a _B
 The type of the sensor inputs must be configured in the Resol Controller accordingly.
 From all possible sensor channels (temperatureX, switchX, etc.) only one shall be linked to an item at a time, except for BAS which emulates a RCP12 room control unit where both, BasTempAdjustmentX and BasModeX shall be written from OH.
 
-| Channel              | Type                      | Description                                        |
-|----------------------|---------------------------|----------------------------------------------------|
-| relayX               | Number:Dimensionless      | Read-only percentage of the virtual output state of relay 'x' as set by the Resol Controller.        |
-| temperatureX         | Number:Temperature        | Writable temperature value for the virtual input for sensor 'x'. |
-| resistorX            | Number:ElectricResistance | Writable resistance value for the virtual input for sensor 'x'.  |
-| switchX              | Switch                    | Writable switch state for the virtual input for sensor 'x'.      |
-| BasTempAdjustmentX   | Number:Temperature        | Writable temperature adjustment for the virtual room control module BAS on the for the virtual input for sensor 'x'. Use together with BasModeX, not effective if BasModeX is OFF or Party.           |
-| BasModeX             | Number                    | Writable heating circuit mode for the virtual room control module BAS on the for the virtual input for sensor 'x'. Use together with BasTempAdjustmentX.|
+| Channel            | Type                      | Description                                                                                                                                                                                 |
+|--------------------|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| relayX             | Number:Dimensionless      | Read-only percentage of the virtual output state of relay 'x' as set by the Resol Controller.                                                                                               |
+| temperatureX       | Number:Temperature        | Writable temperature value for the virtual input for sensor 'x'.                                                                                                                            |
+| resistorX          | Number:ElectricResistance | Writable resistance value for the virtual input for sensor 'x'.                                                                                                                             |
+| switchX            | Switch                    | Writable switch state for the virtual input for sensor 'x'.                                                                                                                                 |
+| BasTempAdjustmentX | Number:Temperature        | Writable temperature adjustment for the virtual room control module BAS on the for the virtual input for sensor 'x'. Use together with BasModeX, not effective if BasModeX is OFF or Party. |
+| BasModeX           | Number                    | Writable heating circuit mode for the virtual room control module BAS on the for the virtual input for sensor 'x'. Use together with BasTempAdjustmentX.                                    |
 
 ## Full Example
 

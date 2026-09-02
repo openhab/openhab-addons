@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,6 @@ public class HeosChannelHandlerNowPlaying extends BaseHeosChannelHandler {
     private void handleCommand(Command command, String id) throws IOException, ReadException {
         if (command instanceof RefreshType) {
             // TODO consider caching this somehow, this method is triggered from a lot of channels for the same player
-            @Nullable
             Media payload = getApi().getNowPlayingMedia(id).payload;
             if (payload != null) {
                 eventListener.playerMediaChangeEvent(id, payload);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -100,16 +101,18 @@ import com.google.gson.JsonSyntaxException;
  * Handles the connection to the amazon server.
  *
  * @author Michael Geramb - Initial Contribution
+ * @author Martin Littkovsky - Backoff for failed notification polls
+ * @author Martin Littkovsky - Skip polls while no notification channel is linked
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements PushConnection.Listener {
-    private static final int CHECK_DATA_INTERVAL = 3600; // in seconds (always refresh every hour)
+    static final int CHECK_DATA_INTERVAL = 3600; // in seconds (always refresh every hour)
     private static final int CHECK_LOGIN_INTERVAL = 60; // in seconds (always check every minute)
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final Storage<String> sessionStorage;
     private final AmazonEchoControlCommandDescriptionProvider commandDescriptionProvider;
-    private Connection connection;
+    private volatile Connection connection;
 
     private final Map<String, EchoHandler> echoHandlers = new ConcurrentHashMap<>();
     private final Set<SmartHomeDeviceHandler> smartHomeDeviceHandlers = new CopyOnWriteArraySet<>();
@@ -123,28 +126,41 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     private @Nullable ScheduledFuture<?> checkDataJob;
     private @Nullable ScheduledFuture<?> updateSmartHomeStateJob;
     private @Nullable ScheduledFuture<?> refreshActivityJob;
+    private @Nullable ScheduledFuture<?> activityPollingJob;
     private @Nullable ScheduledFuture<?> refreshSmartHomeAfterCommandJob;
     private final Object synchronizeSmartHomeJobScheduler = new Object();
 
     private List<EnabledFeedTO> currentFlashBriefings = List.of();
     private final Gson gson;
+    private final HttpClient httpClient;
     private int lastMessageId = 1000;
     private long nextDataRefresh = 0;
     private long nextLoginCheck = 0;
-    private long nextRefreshNotifications = 0;
+    // volatile: armed from the thread that creates a link, read by the scheduler
+    private volatile long nextRefreshNotifications = 0;
+    private final NotificationPollBackoff notificationPollBackoff = new NotificationPollBackoff();
+    // counts lifecycle edges (initialize, dispose, relogin), so a request that straddles one is discarded
+    private final AtomicInteger activityLifecycle = new AtomicInteger();
+    private int activityPollTicksToSkip = 0;
+    private int activityPollFailureStreak = 0;
+    // Held while a poll result is accepted as one step: validate the attempt, publish it, record the
+    // next due time. Split apart, setConnection() lands in between and the replaced session wins.
+    private final Object notificationCommit = new Object();
+    private volatile boolean notificationPollSuspended = false;
 
     private final LinkedBlockingQueue<String> requestedDeviceUpdates = new LinkedBlockingQueue<>();
     private @Nullable SmartHomeDeviceStateGroupUpdateCalculator smartHomeDeviceStateGroupUpdateCalculator;
 
     private AccountHandlerConfig handlerConfig = new AccountHandlerConfig();
     private final PushConnection pushConnection;
-    private boolean disposing = false;
+    private volatile boolean disposing = false;
     private @Nullable AccountTO accountInformation;
 
     public AccountHandler(Bridge bridge, Storage<String> stateStorage, Gson gson, HttpClient httpClient,
             HTTP2Client http2Client, AmazonEchoControlCommandDescriptionProvider commandDescriptionProvider) {
         super(bridge);
         this.gson = gson;
+        this.httpClient = httpClient;
         this.sessionStorage = stateStorage;
         this.pushConnection = new PushConnection(http2Client, gson, this, scheduler);
         this.commandDescriptionProvider = commandDescriptionProvider;
@@ -153,10 +169,17 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
     @Override
     public void initialize() {
-        disposing = false;
+        synchronized (synchronizeConnection) {
+            disposing = false;
+            if (connection.isClosed()) {
+                connection = new Connection(connection, gson, httpClient);
+            }
+        }
+        activityLifecycle.incrementAndGet();
         handlerConfig = getConfig().as(AccountHandlerConfig.class);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
+        updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.OFF);
 
         nextDataRefresh = 0;
         nextLoginCheck = 0;
@@ -170,6 +193,17 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 pollingIntervalSkills);
         updateSmartHomeStateJob = scheduler.scheduleWithFixedDelay(() -> updateSmartHomeState(null), 20, 10,
                 TimeUnit.SECONDS);
+
+        int pollingInterval = handlerConfig.activityPollingInterval;
+        if (pollingInterval > 0) {
+            if (handlerConfig.activityRequestWindow < pollingInterval) {
+                logger.warn(
+                        "activityRequestWindow ({}s) is smaller than activityPollingInterval ({}s) - commands between two polls will be missed",
+                        handlerConfig.activityRequestWindow, pollingInterval);
+            }
+            activityPollingJob = scheduler.scheduleWithFixedDelay(this::pollActivity, pollingInterval, pollingInterval,
+                    TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -182,13 +216,15 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             }
             String channelId = channelUID.getId();
             if (channelId.equals(CHANNEL_REFRESH_ACTIVITY) && command instanceof OnOffType) {
-                for (CustomerHistoryRecordTO record : getCustomerActivity(null)) {
-                    String[] keyParts = record.recordKey.split("#");
-                    String serialNumber = keyParts[keyParts.length - 1];
-                    EchoHandler echoHandler = echoHandlers.get(serialNumber);
-                    if (echoHandler != null) {
-                        echoHandler.handlePushActivity(record);
-                    }
+                if (command != OnOffType.ON) {
+                    updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.OFF);
+                    return;
+                }
+                updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.ON);
+                try {
+                    dispatchActivityRecords(true);
+                } finally {
+                    updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.OFF);
                 }
             } else if (channelId.equals(CHANNEL_SEND_MESSAGE) && command instanceof StringType) {
                 String commandValue = command.toFullString();
@@ -298,7 +334,13 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     }
 
     private void cleanup() {
+        activityLifecycle.incrementAndGet();
         logger.debug("cleanup {}", getThing().getUID().getAsString());
+        ScheduledFuture<?> activityPollingJob = this.activityPollingJob;
+        if (activityPollingJob != null) {
+            activityPollingJob.cancel(true);
+            this.activityPollingJob = null;
+        }
         ScheduledFuture<?> updateSmartHomeStateJob = this.updateSmartHomeStateJob;
         if (updateSmartHomeStateJob != null) {
             updateSmartHomeStateJob.cancel(true);
@@ -314,8 +356,10 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             refreshSmartHomeAfterCommandJob.cancel(true);
             this.refreshSmartHomeAfterCommandJob = null;
         }
-        pushConnection.close();
-        connection.logout(false);
+        synchronized (synchronizeConnection) {
+            pushConnection.close();
+            connection.close();
+        }
     }
 
     private void checkLogin() {
@@ -324,6 +368,9 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             logger.debug("check login {}", uid.getAsString());
 
             synchronized (synchronizeConnection) {
+                if (disposing) {
+                    return;
+                }
                 try {
                     if (connection.isLoggedIn()) {
                         if (connection.renewTokens()) {
@@ -375,13 +422,29 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
     // used to set a valid connection from the web proxy login
     public void setConnection(Connection newConnection) {
-        pushConnection.close();
-        connection = newConnection;
-        storeSession();
+        synchronized (synchronizeConnection) {
+            if (disposing || newConnection.isClosed()) {
+                newConnection.close();
+                return;
+            }
+            pushConnection.close();
+            Connection replacedConnection = connection;
+            connection = newConnection;
+            if (!replacedConnection.equals(newConnection)) {
+                replacedConnection.close();
+            }
+            activityLifecycle.incrementAndGet();
+            storeSession();
 
-        // force data check
-        nextLoginCheck = 0;
-        nextDataRefresh = 0;
+            // force data check
+            nextLoginCheck = 0;
+            nextDataRefresh = 0;
+            // failures of the expired session must not delay polls on the new one
+            synchronized (notificationCommit) {
+                notificationPollBackoff.reset();
+                nextRefreshNotifications = 0;
+            }
+        }
     }
 
     private void storeSession() {
@@ -402,9 +465,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                         nextDataRefresh = now + CHECK_DATA_INTERVAL * 1000;
                         refreshData();
                     }
-                    if (now > nextRefreshNotifications) {
-                        refreshNotifications();
-                    }
+                    refreshNotificationsIfDue(now);
                 }
             } catch (RuntimeException e) { // this handler can be removed later, if we know that nothing else can fail.
                 logger.warn("checkData fails with unexpected error", e);
@@ -412,22 +473,132 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         }
     }
 
-    private void refreshNotifications() {
+    void refreshNotificationsIfDue(long now) {
+        // the shouldSkip check keeps a pending backoff from logging a skip on every tick
+        boolean looksDue;
+        synchronized (notificationCommit) {
+            looksDue = notificationPollBackoff.isDue(now)
+                    || (now > nextRefreshNotifications && !notificationPollBackoff.shouldSkip(now));
+        }
+        if (looksDue) {
+            refreshNotifications();
+        }
+    }
+
+    void refreshNotifications() {
         if (!connection.isLoggedIn()) {
             return;
         }
+        if (!hasLinkedNotificationTargets()) {
+            suspendNotificationPolls();
+            return;
+        }
+        if (notificationPollSuspended) {
+            notificationPollSuspended = false;
+            logger.debug("Resuming notification polls for {}: a notification channel is linked",
+                    getThing().getUID().getAsString());
+        }
+        NotificationPollBackoff.Start start = notificationPollBackoff.tryStart(System.currentTimeMillis());
+        if (start.outcome() != NotificationPollBackoff.Start.Outcome.STARTED) {
+            // push messages call in here directly, bypassing the interval check in checkLoginAndData()
+            logger.debug("notification poll for {} is {}, skipping refresh", getThing().getUID().getAsString(),
+                    start.outcome() == NotificationPollBackoff.Start.Outcome.BACKING_OFF ? "backing off"
+                            : "already running");
+            return;
+        }
         logger.debug("refresh notifications {}", getThing().getUID().getAsString());
-        ZonedDateTime requestTime = ZonedDateTime.now();
-        List<Notification> notifications = connection.getNotifications().stream()
-                .map(n -> map(n, requestTime, ZonedDateTime.now())).filter(Objects::nonNull)
-                .map(Objects::requireNonNull).toList();
-        echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(notifications));
-        ZonedDateTime first = notifications.stream().map(Notification::nextAlarmTime)
-                .min(ChronoZonedDateTime::compareTo).orElse(null);
-        if (first != null) {
-            nextRefreshNotifications = first.toEpochSecond() * 1000;
-        } else {
-            nextRefreshNotifications = Long.MAX_VALUE;
+        try {
+            ZonedDateTime requestTime = ZonedDateTime.now();
+            List<Notification> notifications;
+            try {
+                notifications = connection.getNotifications().stream()
+                        .map(n -> map(n, requestTime, ZonedDateTime.now())).filter(Objects::nonNull)
+                        .map(Objects::requireNonNull).toList();
+            } catch (ConnectionException e) {
+                synchronized (notificationCommit) {
+                    NotificationPollBackoff.Failure failure = notificationPollBackoff.onFailure(start.token(),
+                            System.currentTimeMillis());
+                    if (failure == null) {
+                        // the failure of a replaced connection must not throttle the new one
+                        logger.debug("Discarding notification poll failure of a replaced connection for {}",
+                                getThing().getUID().getAsString());
+                        return;
+                    }
+                    if (failure.firstOfStreak()) {
+                        logger.warn("Failed to get notifications for {}, next attempt in {} s: {}",
+                                getThing().getUID().getAsString(), failure.delaySeconds(), e.getMessage());
+                    } else {
+                        logger.debug("Failed to get notifications for {}, next attempt in {} s: {}",
+                                getThing().getUID().getAsString(), failure.delaySeconds(), e.getMessage());
+                    }
+                    if (failure.crossedUndefThreshold()) {
+                        logger.warn("Setting notification channels of {} to UNDEF after {} consecutive poll failures",
+                                getThing().getUID().getAsString(), NotificationPollBackoff.FAILURES_BEFORE_UNDEF);
+                    }
+                    if (failure.publishUndef()) {
+                        // repeated on every failure so that a handler registering during the outage is told as well
+                        echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(List.of()));
+                    }
+                    return;
+                }
+            }
+            synchronized (notificationCommit) {
+                NotificationPollBackoff.Success success = notificationPollBackoff.onSuccess(start.token());
+                if (success == null) {
+                    // the result of a replaced connection must neither confirm the new one nor delay its first poll
+                    logger.debug("Discarding notification poll result of a replaced connection for {}",
+                            getThing().getUID().getAsString());
+                    return;
+                }
+                if (success.endedStreak()) {
+                    logger.info("Successfully polled notifications for {} again", getThing().getUID().getAsString());
+                }
+                echoHandlers.values().forEach(echoHandler -> echoHandler.updateNotifications(notifications));
+                ZonedDateTime first = notifications.stream().map(Notification::nextAlarmTime)
+                        .min(ChronoZonedDateTime::compareTo).orElse(null);
+                if (first != null) {
+                    nextRefreshNotifications = first.toEpochSecond() * 1000;
+                } else {
+                    nextRefreshNotifications = Long.MAX_VALUE;
+                }
+                if (success.pollAgain()) {
+                    // a trigger refused during this poll may announce data this response predates
+                    nextRefreshNotifications = 0;
+                }
+            }
+        } finally {
+            // an attempt ending without a recorded result must neither block polling nor swallow a refused trigger
+            synchronized (notificationCommit) {
+                if (notificationPollBackoff.abort(start.token())) {
+                    nextRefreshNotifications = 0;
+                }
+            }
+        }
+    }
+
+    private boolean hasLinkedNotificationTargets() {
+        return echoHandlers.values().stream().anyMatch(EchoHandler::hasLinkedNotificationChannel);
+    }
+
+    /** Arms the next tick rather than polling: the core calls this on the linking thread, so no I/O here. */
+    void notificationChannelLinked() {
+        if (notificationPollSuspended) {
+            nextRefreshNotifications = 0;
+        }
+    }
+
+    /** The link is already gone when the core calls this, so the check sees the state that remains. */
+    void notificationChannelUnlinked() {
+        if (!hasLinkedNotificationTargets()) {
+            suspendNotificationPolls();
+        }
+    }
+
+    private void suspendNotificationPolls() {
+        if (!notificationPollSuspended) {
+            notificationPollSuspended = true;
+            logger.debug("Skipping notification polls for {}: no echo thing has a notification channel linked",
+                    getThing().getUID().getAsString());
         }
     }
 
@@ -617,6 +788,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             case "PUSH_VOLUME_CHANGE":
             case "PUSH_CONTENT_FOCUS_CHANGE":
             case "PUSH_EQUALIZER_STATE_CHANGE":
+            case "PUSH_DND_STATE_CHANGE":
                 if (payload.startsWith("{") && payload.endsWith("}")) {
                     PushDeviceTO devicePayload = Objects.requireNonNull(gson.fromJson(payload, PushDeviceTO.class));
                     PushDopplerIdTO dopplerId = devicePayload.dopplerId;
@@ -661,19 +833,102 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         }
     }
 
-    private List<CustomerHistoryRecordTO> getCustomerActivity(@Nullable Long timestamp) {
+    private void pollActivity() {
+        if (activityPollTicksToSkip > 0) {
+            activityPollTicksToSkip--;
+            return;
+        }
+        try {
+            dispatchActivityRecords(false);
+            if (activityPollFailureStreak > 0) {
+                activityPollFailureStreak = 0;
+                logger.info("Successfully polled the voice history again");
+            }
+        } catch (ConnectionException e) {
+            activityPollFailureStreak++;
+            activityPollTicksToSkip = failedPollTicksToSkip(activityPollFailureStreak,
+                    handlerConfig.activityPollingInterval);
+            long nextAttemptSeconds = (activityPollTicksToSkip + 1L) * handlerConfig.activityPollingInterval;
+            if (activityPollFailureStreak == 1) {
+                logger.warn("Voice history poll failed, next attempt in {} s: {}", nextAttemptSeconds, e.getMessage());
+            } else {
+                logger.debug("Voice history poll failed, next attempt in {} s: {}", nextAttemptSeconds, e.getMessage());
+            }
+        } catch (RuntimeException e) {
+            // an exception escaping a fixed-delay task silently ends all further polls
+            logger.warn("Voice history poll failed: {}", e.toString());
+            logger.debug("Voice history poll failure", e);
+        }
+    }
+
+    /** Doubles the effective poll interval per consecutive failure, capped at the hourly data refresh. */
+    static int failedPollTicksToSkip(int failureStreak, int pollingIntervalSeconds) {
+        long doublingTicks = (1L << Math.min(failureStreak, 30)) - 1;
+        long hourlyCapTicks = Math.max(0, CHECK_DATA_INTERVAL / Math.max(1, pollingIntervalSeconds) - 1);
+        return (int) Math.min(doublingTicks, hourlyCapTicks);
+    }
+
+    private void dispatchActivityRecords(boolean replayHistory) throws ConnectionException {
+        int lifecycle = activityLifecycle.get();
+        List<CustomerHistoryRecordTO> records = getCustomerActivity(null);
+        if (lifecycle != activityLifecycle.get()) {
+            logger.debug("Discarding {} activity record(s) fetched across a lifecycle change", records.size());
+            return;
+        }
+        logger.debug("Activity request returned {} record(s), {} echo handler(s) registered", records.size(),
+                echoHandlers.size());
+        for (CustomerHistoryRecordTO record : replayHistory ? newestRecordPerDevice(records) : records) {
+            String serialNumber = deviceSerialOf(record);
+            EchoHandler echoHandler = serialNumber.isEmpty() ? null : echoHandlers.get(serialNumber);
+            if (echoHandler == null) {
+                logger.debug("No echo handler for activity record of device ...{}",
+                        serialNumber.substring(Math.max(0, serialNumber.length() - 6)));
+                continue;
+            }
+            try {
+                if (replayHistory) {
+                    echoHandler.handleRequestedActivity(record);
+                } else {
+                    echoHandler.handlePushActivity(record);
+                }
+            } catch (RuntimeException e) {
+                // one malformed record must not cost the well-formed ones their delivery
+                logger.debug("Skipping an unreadable activity record: {}", e.toString());
+            }
+        }
+    }
+
+    private static Collection<CustomerHistoryRecordTO> newestRecordPerDevice(List<CustomerHistoryRecordTO> records) {
+        Map<String, CustomerHistoryRecordTO> newest = new HashMap<>();
+        records.forEach(record -> newest.merge(deviceSerialOf(record), record,
+                (known, candidate) -> known.timestamp >= candidate.timestamp ? known : candidate));
+        return newest.values();
+    }
+
+    private static String deviceSerialOf(CustomerHistoryRecordTO record) {
+        String[] keyParts = Objects.requireNonNullElse(record.recordKey, "").split("#");
+        return keyParts[keyParts.length - 1];
+    }
+
+    private List<CustomerHistoryRecordTO> getCustomerActivity(@Nullable Long timestamp) throws ConnectionException {
         if (!connection.isLoggedIn()) {
             return List.of();
         }
         long realTimestamp = Objects.requireNonNullElse(timestamp, System.currentTimeMillis());
-        long startTimestamp = realTimestamp - 120000;
+        long startTimestamp = realTimestamp - handlerConfig.activityRequestWindow * 1000L;
         long endTimestamp = realTimestamp + 30000;
 
         return connection.getActivities(startTimestamp, endTimestamp);
     }
 
     private void handlePushActivity(@Nullable Long timestamp) {
-        List<CustomerHistoryRecordTO> activityRecords = getCustomerActivity(timestamp);
+        List<CustomerHistoryRecordTO> activityRecords;
+        try {
+            activityRecords = getCustomerActivity(timestamp);
+        } catch (ConnectionException e) {
+            logger.debug("Failed to get the voice history for a push activity: {}", e.getMessage());
+            activityRecords = List.of();
+        }
 
         while (!pushActivityProcessingQueue.isEmpty()) {
             String deviceSerialNumber = pushActivityProcessingQueue.poll();

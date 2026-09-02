@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public class NhcThermostat1 extends NhcThermostat {
      * @param overruletime time duration in min for overrule
      */
     @Override
-    public void executeOverrule(int overrule, int overruletime) {
+    public void executeOverrule(long overrule, long overruletime) {
         logger.debug("execute thermostat overrule {} during {} min for {}", overrule, overruletime, id);
 
         nhcComm.executeThermostat(id, overrule, overruletime);

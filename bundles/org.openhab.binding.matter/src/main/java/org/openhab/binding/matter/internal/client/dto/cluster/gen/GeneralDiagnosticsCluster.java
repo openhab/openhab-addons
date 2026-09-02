@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,7 +32,6 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0033;
     public static final String CLUSTER_NAME = "GeneralDiagnostics";
     public static final String CLUSTER_PREFIX = "generalDiagnostics";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_NETWORK_INTERFACES = "networkInterfaces";
     public static final String ATTRIBUTE_REBOOT_COUNT = "rebootCount";
@@ -45,7 +43,6 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     public static final String ATTRIBUTE_ACTIVE_NETWORK_FAULTS = "activeNetworkFaults";
     public static final String ATTRIBUTE_TEST_EVENT_TRIGGERS_ENABLED = "testEventTriggersEnabled";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * The NetworkInterfaces attribute shall be a list of NetworkInterface structs. Each logical network interface on
@@ -60,10 +57,10 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      */
     public Integer rebootCount; // 1 uint16 R V
     /**
-     * The UpTime attribute shall indicate a best-effort assessment of the length of time, in seconds, since the Node’s
+     * The UpTime attribute shall indicate a best-effort assessment of the length of time, in seconds, since the Node's
      * last reboot. This attribute SHOULD be incremented to account for the periods of time that a Node is in a
      * low-power or sleep state. This attribute shall only be reset upon a device reboot. This attribute shall be based
-     * on the same System Time source as those used to fulfill any usage of the system-us and system-ms data types
+     * on the same System Time source as those used to fulfill any usage of the systime-us and systime-ms data types
      * within the server.
      */
     public BigInteger upTime; // 2 uint64 R V
@@ -75,7 +72,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      */
     public Integer totalOperationalHours; // 3 uint32 R V
     /**
-     * The BootReason attribute shall indicate the reason for the Node’s most recent boot.
+     * The BootReason attribute shall indicate the reason for the Node's most recent boot.
      */
     public BootReasonEnum bootReason; // 4 BootReasonEnum R V
     /**
@@ -111,9 +108,10 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     /**
      * The TestEventTriggersEnabled attribute shall indicate whether the Node has any TestEventTrigger configured. When
      * this attribute is true, the Node has been configured with one or more test event triggers by virtue of the
-     * internally programmed EnableKey value (see TestEventTrigger) being set to a non-zero value. This attribute can be
-     * used by Administrators to detect if a device was inadvertently commissioned with test event trigger mode enabled,
-     * and take appropriate action (e.g. warn the user and/or offer to remove all fabrics on the Node).
+     * internally programmed EnableKey value (see Section 11.12.7.1, "TestEventTrigger Command") being set to a non-zero
+     * value. This attribute can be used by Administrators to detect if a device was inadvertently commissioned with
+     * test event trigger mode enabled, and take appropriate action (e.g. warn the user and/or offer to remove all
+     * fabrics on the Node).
      */
     public Boolean testEventTriggersEnabled; // 8 bool R V
 
@@ -229,7 +227,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         public List<OctetString> iPv4Addresses; // list
         /**
          * This field shall provide a list of the unicast IPv6 addresses that are currently assigned to the network
-         * interface. This list shall include the Node’s link-local address and SHOULD include any assigned GUA and ULA
+         * interface. This list shall include the Node's link-local address and SHOULD include any assigned GUA and ULA
          * addresses. This list shall NOT include any multicast group addresses to which the Node is subscribed.
          */
         public List<OctetString> iPv6Addresses; // list
@@ -266,8 +264,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         NON_VOLATILE_MEMORY_ERROR(9, "Non Volatile Memory Error"),
         TAMPER_DETECTED(10, "Tamper Detected");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private HardwareFaultEnum(Integer value, String label) {
             this.value = value;
@@ -294,8 +292,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         BLE_FAULT(5, "Ble Fault"),
         ETHERNET_FAULT(6, "Ethernet Fault");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private RadioFaultEnum(Integer value, String label) {
             this.value = value;
@@ -319,8 +317,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         NETWORK_JAMMED(2, "Network Jammed"),
         CONNECTION_FAILED(3, "Connection Failed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NetworkFaultEnum(Integer value, String label) {
             this.value = value;
@@ -345,8 +343,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         CELLULAR(3, "Cellular"),
         THREAD(4, "Thread");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private InterfaceTypeEnum(Integer value, String label) {
             this.value = value;
@@ -373,8 +371,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         SOFTWARE_UPDATE_COMPLETED(5, "Software Update Completed"),
         SOFTWARE_RESET(6, "Software Reset");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BootReasonEnum(Integer value, String label) {
             this.value = value;
@@ -399,7 +397,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
          * This feature indicates support for extended Data Model testing commands, which are required in some
          * situations.
          * This feature shall be supported if the MaxPathsPerInvoke attribute of the Basic Information Cluster has a
-         * value &gt; 1.
+         * value > 1.
          */
         public boolean dataModelTest;
 
@@ -436,9 +434,9 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
 
     /**
      * This command may be used by a client to obtain a correlated view of both System Time, and, if currently
-     * synchronized and supported, &quot;wall clock time&quot; of the server. This can help clients establish time
-     * correlation between their concept of time and the server’s concept of time. This is especially useful when
-     * processing event histories where some events only contain System Time.
+     * synchronized and supported, "wall clock time" of the server. This can help clients establish time correlation
+     * between their concept of time and the server's concept of time. This is especially useful when processing event
+     * histories where some events only contain System Time.
      * Upon command invocation, the server shall respond with a TimeSnapshotResponse.
      */
     public static ClusterCommand timeSnapshot() {
@@ -446,11 +444,11 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     }
 
     /**
-     * This command provides a means for certification tests or manufacturer’s internal tests to validate particular
+     * This command provides a means for certification tests or manufacturer's internal tests to validate particular
      * command handling and encoding constraints by generating a response of a given size.
      * This command shall use the same EnableKey behavior as the TestEventTrigger command, whereby processing of the
      * command is only enabled when the TestEventTriggersEnabled field is true, which shall NOT be true outside of
-     * certification testing or manufacturer’s internal tests.
+     * certification testing or manufacturer's internal tests.
      * The fields for the PayloadTestRequest command are as follows:
      */
     public static ClusterCommand payloadTestRequest(OctetString enableKey, Integer value, Integer count) {
@@ -470,7 +468,6 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "networkInterfaces : " + networkInterfaces + "\n";
         str += "rebootCount : " + rebootCount + "\n";

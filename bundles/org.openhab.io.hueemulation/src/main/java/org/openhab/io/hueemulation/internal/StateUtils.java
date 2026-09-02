@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.io.hueemulation.internal;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,9 @@ import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseState
 @NonNullByDefault
 public class StateUtils {
 
+    private static final BigDecimal BIG_DECIMAL_HUNDRED = BigDecimal.valueOf(100);
+    private static final BigDecimal BIG_DECIMAL_HUE_BRI_MAX = BigDecimal.valueOf(HueStateBulb.MAX_BRI);
+
     /**
      * Compute the hue state from a given item state and a device type.
      *
@@ -62,37 +67,34 @@ public class StateUtils {
         AbstractHueState state;
         switch (deviceType) {
             case ColorType:
-                if (itemState instanceof HSBType) {
-                    state = new HueStateColorBulb((HSBType) itemState);
-                } else if (itemState instanceof PercentType) {
-                    state = new HueStateColorBulb((PercentType) itemState, ((PercentType) itemState).intValue() > 0);
-                } else if (itemState instanceof OnOffType) {
-                    OnOffType t = (OnOffType) itemState;
-                    state = new HueStateColorBulb(t == OnOffType.ON);
+                if (itemState instanceof HSBType hsbState) {
+                    state = new HueStateColorBulb(hsbState);
+                } else if (itemState instanceof PercentType percentState) {
+                    state = new HueStateColorBulb(percentState,
+                            percentState.toBigDecimal().compareTo(BigDecimal.ZERO) > 0);
+                } else if (itemState instanceof OnOffType onOffState) {
+                    state = new HueStateColorBulb(onOffState == OnOffType.ON);
                 } else {
                     state = new HueStateColorBulb(new HSBType());
                 }
                 break;
             case WhiteType:
             case WhiteTemperatureType:
-                if (itemState instanceof HSBType) {
-                    PercentType brightness = ((HSBType) itemState).getBrightness();
-                    state = new HueStateBulb(brightness, brightness.intValue() > 0);
-                } else if (itemState instanceof PercentType) {
-                    PercentType brightness = (PercentType) itemState;
-                    state = new HueStateBulb(brightness, brightness.intValue() > 0);
-                } else if (itemState instanceof OnOffType) {
-                    OnOffType t = (OnOffType) itemState;
-                    state = new HueStateBulb(t == OnOffType.ON);
+                if (itemState instanceof HSBType hsbState) {
+                    PercentType brightness = hsbState.getBrightness();
+                    state = new HueStateBulb(brightness, brightness.toBigDecimal().compareTo(BigDecimal.ZERO) > 0);
+                } else if (itemState instanceof PercentType percentState) {
+                    state = new HueStateBulb(percentState, percentState.toBigDecimal().compareTo(BigDecimal.ZERO) > 0);
+                } else if (itemState instanceof OnOffType onOffState) {
+                    state = new HueStateBulb(onOffState == OnOffType.ON);
                 } else {
                     state = new HueStateBulb(new PercentType(0), false);
                 }
                 break;
             case SwitchType:
             default:
-                if (itemState instanceof OnOffType) {
-                    OnOffType t = (OnOffType) itemState;
-                    state = new HueStatePlug(t == OnOffType.ON);
+                if (itemState instanceof OnOffType onOffState) {
+                    state = new HueStatePlug(onOffState == OnOffType.ON);
                 } else {
                     state = new HueStatePlug(false);
                 }
@@ -174,7 +176,7 @@ public class StateUtils {
         if (newState.bri != null) {
             try {
                 state.as(HueStateBulb.class).bri = newState.bri;
-                command = new PercentType((int) (newState.bri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
+                command = percentTypeFromHueBrightness(newState.bri);
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
                 errorApplied.add("bri");
@@ -187,7 +189,7 @@ public class StateUtils {
                 if (newBri < 0 || newBri > HueStateBulb.MAX_BRI) {
                     throw new IllegalArgumentException();
                 }
-                command = new PercentType((int) (newBri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
+                command = percentTypeFromHueBrightness(newBri);
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
                 errorApplied.add("bri_inc");
@@ -353,6 +355,28 @@ public class StateUtils {
         return command;
     }
 
+    /**
+     * Converts a Hue brightness value (0-254) to a {@link PercentType} with two decimal places.
+     *
+     * @param brightness the Hue brightness value
+     * @return the corresponding PercentType
+     */
+    public static PercentType percentTypeFromHueBrightness(int brightness) {
+        return new PercentType(BigDecimal.valueOf(brightness).multiply(BIG_DECIMAL_HUNDRED)
+                .divide(BIG_DECIMAL_HUE_BRI_MAX, 2, RoundingMode.HALF_UP));
+    }
+
+    /**
+     * Converts a {@link PercentType} to a Hue brightness value (1-254).
+     *
+     * @param percentValue the PercentType value
+     * @return the corresponding Hue brightness value
+     */
+    public static int hueBrightnessFromPercentType(PercentType percentValue) {
+        return Math.max(1, percentValue.toBigDecimal().multiply(BIG_DECIMAL_HUE_BRI_MAX)
+                .divide(BIG_DECIMAL_HUNDRED, 0, RoundingMode.HALF_UP).intValue());
+    }
+
     public static @Nullable DeviceType determineTargetType(ConfigStore cs, Item element) {
         String category = element.getCategory();
         String type = element.getType();
@@ -430,30 +454,29 @@ public class StateUtils {
 
         if (lastCommand != null && lastHueChange != null) {
             if (lastCommand instanceof HSBType) {
-                if (hueState instanceof HueStateColorBulb && itemState.as(HSBType.class).equals(lastCommand)) {
-                    HueStateColorBulb c = (HueStateColorBulb) hueState;
-
+                if (hueState instanceof HueStateColorBulb hueStateColorBulb
+                        && lastCommand.equals(itemState.as(HSBType.class))) {
                     if (lastHueChange.bri != null) {
-                        c.bri = lastHueChange.bri;
+                        hueStateColorBulb.bri = lastHueChange.bri;
                     }
                     if (lastHueChange.hue != null) {
-                        c.hue = lastHueChange.hue;
+                        hueStateColorBulb.hue = lastHueChange.hue;
                     }
                     if (lastHueChange.sat != null) {
-                        c.sat = lastHueChange.sat;
+                        hueStateColorBulb.sat = lastHueChange.sat;
                     }
                     // Although we can't set a colour temperature in OH
                     // this keeps Alexa happy when asking to turn a light
                     // to white.
                     if (lastHueChange.ct != null) {
-                        c.ct = lastHueChange.ct;
+                        hueStateColorBulb.ct = lastHueChange.ct;
                     }
                 }
             } else if (lastCommand instanceof PercentType) {
-                if (hueState instanceof HueStateBulb && itemState != null
+                if (hueState instanceof HueStateBulb hueStateBulb
                         && lastCommand.equals(itemState.as(PercentType.class))) {
                     if (lastHueChange.bri != null) {
-                        ((HueStateBulb) hueState).bri = lastHueChange.bri;
+                        hueStateBulb.bri = lastHueChange.bri;
                     }
                 }
             }

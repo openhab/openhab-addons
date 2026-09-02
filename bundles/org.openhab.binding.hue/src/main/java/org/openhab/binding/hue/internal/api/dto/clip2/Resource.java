@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,19 +26,24 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ButtonEventType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ChimeType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContactStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneState;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.TamperStateType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
-import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
@@ -52,9 +57,11 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 import org.openhab.core.util.ColorUtil.Gamut;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -68,6 +75,7 @@ import com.google.gson.annotations.SerializedName;
 public class Resource {
 
     public static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
+    private static final Gson GSON = new Gson();
 
     /**
      * The SSE event mechanism sends resources in a sparse (skeleton) format that only includes state fields whose
@@ -97,7 +105,7 @@ public class Resource {
     private @Nullable Dimming dimming;
     private @Nullable @SerializedName("color_temperature") ColorTemperature colorTemperature;
     private @Nullable ColorXy color;
-    private @Nullable Alerts alert;
+    private @Nullable JsonElement alert;
     private @Nullable Effects effects;
     private @Nullable @SerializedName("timed_effects") TimedEffects timedEffects;
     private @Nullable ResourceReference group;
@@ -117,6 +125,11 @@ public class Resource {
     private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
     private @Nullable JsonElement state;
     private @Nullable @SerializedName("script_id") String scriptId;
+    private @Nullable Sound alarm;
+    private @Nullable Sound chime;
+    private @Nullable Mute mute;
+    private @Nullable @SerializedName("dimming_delta") DimmingDelta dimmingDelta;
+    private @Nullable @SerializedName("color_temperature_delta") ColorTemperatureDelta colorTemperatureDelta;
 
     /**
      * Constructor
@@ -171,12 +184,22 @@ public class Resource {
         return actions;
     }
 
+    /**
+     * Get the alerts setting. We need to disambiguate between an alert setting and an alerts setting, because
+     * both are represented by the same 'alert' JSON element. If the JSON element contains a 'status' field it is
+     * an alert setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
+     */
     public @Nullable Alerts getAlerts() {
-        return alert;
+        JsonElement alert = this.alert;
+        if (Objects.nonNull(alert) && alert.isJsonObject() && (alert.getAsJsonObject().get("action") != null
+                || alert.getAsJsonObject().get("action_values") != null)) {
+            return GSON.fromJson(alert, Alerts.class);
+        }
+        return null;
     }
 
     public State getAlertState() {
-        Alerts alerts = this.alert;
+        Alerts alerts = getAlerts();
         if (Objects.nonNull(alerts)) {
             if (!alerts.getActionValues().isEmpty()) {
                 ActionType alertType = alerts.getAction();
@@ -215,26 +238,22 @@ public class Resource {
     /**
      * Get the brightness as a PercentType. If off the brightness is 0, otherwise use dimming value.
      *
-     * @return a PercentType with the dimming state, or UNDEF, or NULL
+     * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getBrightnessState() {
+    public State getBrightnessState() throws CriticalFieldMissingException {
         Dimming dimming = this.dimming;
         if (Objects.nonNull(dimming)) {
-            try {
-                // if off the brightness is 0, otherwise it is the larger of dimming value or minimum dimming level
-                OnState on = this.on;
-                double brightness;
-                if (Objects.nonNull(on) && !on.isOn()) {
-                    brightness = 0f;
-                } else {
-                    Double minimumDimmingLevel = dimming.getMinimumDimmingLevel();
-                    brightness = Math.max(Objects.nonNull(minimumDimmingLevel) ? minimumDimmingLevel
-                            : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL, Math.min(100f, dimming.getBrightness()));
-                }
-                return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            Double brightness = dimming.getBrightness();
+            if (brightness == null) {
+                throw new CriticalFieldMissingException("'brightness' is missing");
             }
+            OnState on = this.on;
+            if (on != null && on.getOn() instanceof Boolean on2 && !on2) {
+                return PercentType.ZERO;
+            }
+            brightness = Math.max(0.0, Math.min(100.0, brightness));
+            return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
     }
@@ -296,22 +315,28 @@ public class Resource {
      * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value. Note: this
      * method is only to be used on cached state DTOs which already have a defined color gamut.
      *
-     * @return an HSBType containing the current color and brightness level, or UNDEF or NULL.
+     * @return UnDefType.NULL if the channel is not supported, or an HSBType if the value is good
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getColorState() {
+    public State getColorState() throws CriticalFieldMissingException {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
-            try {
-                HSBType hsb = ColorUtil.xyToHsb(color.getXY());
-                OnState on = this.on;
-                Dimming dimming = this.dimming;
-                double brightness = Objects.nonNull(on) && !on.isOn() ? 0
-                        : Objects.nonNull(dimming) ? Math.max(0, Math.min(100, dimming.getBrightness())) : 50;
-                return new HSBType(hsb.getHue(), hsb.getSaturation(),
-                        new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT)));
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            Dimming dimming = this.dimming;
+            if (dimming == null) {
+                throw new CriticalFieldMissingException("'dimming' is missing");
             }
+            PairXy xy = color.getXY();
+            Gamut gamut = (ResourceType.LIGHT == getType()) ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
+            Double brightness = dimming.getBrightness();
+            if (xy == null || gamut == null || brightness == null) {
+                throw new CriticalFieldMissingException("'xy', 'gamut', or 'brightness' missing");
+            }
+            brightness = Math.max(0.0, Math.min(100.0, brightness));
+            HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
+            PercentType percent = (on instanceof OnState on && on.getOn() instanceof Boolean on2 && !on2) //
+                    ? PercentType.ZERO
+                    : new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
+            return new HSBType(hsb.getHue(), hsb.getSaturation(), percent);
         }
         return UnDefType.NULL;
     }
@@ -320,17 +345,20 @@ public class Resource {
         return colorTemperature;
     }
 
+    /**
+     * Gets the absolute color temperature as a QuantityType in Kelvin.
+     * 
+     * @return UnDefType.NULL if the channel is not supported, or a QuantityType if the value is good, or
+     *         UnDefType.UNDEF if the value is bad
+     */
     public State getColorTemperatureAbsoluteState() {
         ColorTemperature colorTemp = colorTemperature;
         if (Objects.nonNull(colorTemp)) {
-            try {
-                QuantityType<?> colorTemperature = colorTemp.getAbsolute();
-                if (Objects.nonNull(colorTemperature)) {
-                    return colorTemperature;
-                }
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            QuantityType<?> colorTemperature = colorTemp.getAbsolute();
+            if (Objects.nonNull(colorTemperature)) {
+                return colorTemperature;
             }
+            return UnDefType.UNDEF;
         }
         return UnDefType.NULL;
     }
@@ -339,19 +367,25 @@ public class Resource {
      * Get the colour temperature in percent. Note: this method is only to be used on cached state DTOs which already
      * have a defined mirek schema.
      *
-     * @return a PercentType with the colour temperature percentage.
+     * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getColorTemperaturePercentState() {
+    public State getColorTemperaturePercentState() throws CriticalFieldMissingException {
         ColorTemperature colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
-            try {
-                Double percent = colorTemperature.getPercent();
-                if (Objects.nonNull(percent)) {
-                    return new PercentType(new BigDecimal(percent, PERCENT_MATH_CONTEXT));
-                }
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            Long mirek = colorTemperature.getMirek();
+            if (mirek == null) {
+                return UnDefType.UNDEF;
             }
+            MirekSchema mirekSchema = colorTemperature.getMirekSchema();
+            if (mirekSchema == null || mirekSchema.invalid()) {
+                throw new CriticalFieldMissingException("'mirek_schema' is missing or invalid");
+            }
+            double min = mirekSchema.getMirekMinimum();
+            double max = mirekSchema.getMirekMaximum();
+            double percent = 100.0 * (mirek.doubleValue() - min) / (max - min);
+            percent = Math.max(0.0, Math.min(100.0, percent));
+            return new PercentType(new BigDecimal(percent, PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
     }
@@ -370,18 +404,20 @@ public class Resource {
 
     /**
      * Return an HSB where the HS part is derived from the color xy JSON element (only), so the B part is 100%
-     *
-     * @return an HSBType.
+     * 
+     * @return UnDefType.NULL if the channel is not supported, or an HSBType if the value is good
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getColorXyState() {
+    public State getColorXyState() throws CriticalFieldMissingException {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
-            try {
-                HSBType hsb = ColorUtil.xyToHsb(color.getXY());
-                return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            PairXy xy = color.getXY();
+            Gamut gamut = (ResourceType.LIGHT == getType()) ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
+            if (xy == null || gamut == null) {
+                throw new CriticalFieldMissingException("'xy' or 'gamut' is missing");
             }
+            HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
+            return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
         }
         return UnDefType.NULL;
     }
@@ -414,19 +450,32 @@ public class Resource {
     /**
      * Return a PercentType which is derived from the dimming JSON element (only).
      *
-     * @return a PercentType.
+     * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getDimmingState() {
+    public State getDimmingState() throws CriticalFieldMissingException {
         Dimming dimming = this.dimming;
         if (Objects.nonNull(dimming)) {
-            try {
-                double dimmingValue = Math.max(0f, Math.min(100f, dimming.getBrightness()));
-                return new PercentType(new BigDecimal(dimmingValue, PERCENT_MATH_CONTEXT));
-            } catch (DTOPresentButEmptyException e) {
-                return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+            Double brightness = dimming.getBrightness();
+            if (brightness == null) {
+                throw new CriticalFieldMissingException("'brightness' is missing");
             }
+            brightness = Math.max(0.0, Math.min(100.0, brightness));
+            return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
+    }
+
+    public @Nullable Double getDimmingValue() {
+        Dimming dimming = this.dimming;
+        if (Objects.nonNull(dimming)) {
+            return dimming.getBrightness();
+        }
+        return null;
+    }
+
+    public @Nullable Dynamics getDynamics() {
+        return dynamics;
     }
 
     public @Nullable Effects getFixedEffects() {
@@ -522,11 +571,6 @@ public class Resource {
         return metadata;
     }
 
-    public @Nullable Double getMinimumDimmingLevel() {
-        Dimming dimming = this.dimming;
-        return Objects.nonNull(dimming) ? dimming.getMinimumDimmingLevel() : null;
-    }
-
     public @Nullable MirekSchema getMirekSchema() {
         ColorTemperature colorTemp = this.colorTemperature;
         return Objects.nonNull(colorTemp) ? colorTemp.getMirekSchema() : null;
@@ -581,15 +625,52 @@ public class Resource {
     }
 
     /**
-     * Return the state of the On/Off element (only).
+     * Return the state of the On/Off element treating "soft off" as off.
+     * 
+     * @return UnDefType.NULL if the channel is not supported, or an OnOffType if the value is good
+     * @throws CriticalFieldMissingException if a critical element is missing
      */
-    public State getOnOffState() {
-        try {
-            OnState on = this.on;
-            return Objects.nonNull(on) ? OnOffType.from(on.isOn()) : UnDefType.NULL;
-        } catch (DTOPresentButEmptyException e) {
-            return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
+    public State getSwitchState() throws CriticalFieldMissingException {
+        OnState on = this.on;
+        if (on == null) {
+            return UnDefType.NULL;
         }
+        Boolean onValue = on.getOn();
+        if (onValue == null) {
+            throw new CriticalFieldMissingException("'on' is missing");
+        }
+        if (onValue == Boolean.FALSE) {
+            return OnOffType.OFF;
+        }
+        Dimming dimming = getDimming();
+        if (dimming == null) {
+            // simple on/off device so if not off it is on
+            return OnOffType.ON;
+        }
+        // we have dimming so handle "soft off" by treating brightness > 0.0 as ON
+        Double brightness = dimming.getBrightness();
+        if (brightness == null) {
+            throw new CriticalFieldMissingException("'brightness' missing");
+        }
+        return OnOffType.from(brightness > 0.0);
+    }
+
+    /**
+     * Return the state of the On/Off element (only).
+     * 
+     * @return UnDefType.NULL if the channel is not supported, or an OnOffType if the value is good
+     * @throws CriticalFieldMissingException if a critical element is missing
+     */
+    public State getOnOffState() throws CriticalFieldMissingException {
+        OnState onState = this.on;
+        if (onState == null) {
+            return UnDefType.NULL;
+        }
+        Boolean on = onState.getOn();
+        if (on == null) {
+            throw new CriticalFieldMissingException("'on' is missing");
+        }
+        return OnOffType.from(on);
     }
 
     public @Nullable OnState getOnState() {
@@ -610,10 +691,10 @@ public class Resource {
 
     public String getProductName() {
         ProductData productData = getProductData();
-        if (Objects.nonNull(productData)) {
-            return productData.getProductName();
+        if (Objects.nonNull(productData) && productData.getProductName() instanceof String productName) {
+            return productName;
         }
-        return getType().toString();
+        return getTypeAsString();
     }
 
     public @Nullable Recall getRecall() {
@@ -695,7 +776,9 @@ public class Resource {
 
     /**
      * Check if the smart scene resource contains a 'state' element. If such an element is present, returns a Boolean
-     * whose value depends on the value of that element, or null if it is not.
+     * whose value depends on the value of that element, or null if it is not. Disambiguate between a software update
+     * status and a smart scene state, because both are represented by the 'state' JSON element. If the resource type
+     * is 'device_software_update' it is a software update status, if it is 'smart_scene' it is a smart scene state.
      *
      * @return true, false, or null.
      */
@@ -740,7 +823,7 @@ public class Resource {
     }
 
     /**
-     * The the Hue bridge could return its raw list of tamper reports in any order, so sort the list (latest entry
+     * The Hue bridge could return its raw list of tamper reports in any order, so sort the list (latest entry
      * first) according to the respective 'changed' instant and return the first entry i.e. the latest changed entry.
      *
      * @return the latest changed tamper report
@@ -805,17 +888,28 @@ public class Resource {
         return ResourceType.of(type);
     }
 
+    public String getTypeAsString() {
+        return getType().toString();
+    }
+
     public State getZigbeeState() {
         ZigbeeStatus zigbeeStatus = getZigbeeStatus();
         return Objects.nonNull(zigbeeStatus) ? new StringType(zigbeeStatus.toString()) : UnDefType.NULL;
     }
 
     public @Nullable ZigbeeStatus getZigbeeStatus() {
+        String value = getZigbeeStatusValue();
+        return Objects.nonNull(value) ? ZigbeeStatus.of(value) : null;
+    }
+
+    /**
+     * Get the Zigbee status value exactly as the bridge reported it, or null if the resource does not contain one.
+     * Note that {@link ZigbeeStatus#of(String)} maps any unrecognised value to {@link ZigbeeStatus#DISCONNECTED}, so
+     * a caller that must not confuse an unrecognised value with a genuine disconnect has to consult this method.
+     */
+    public @Nullable String getZigbeeStatusValue() {
         JsonElement status = this.status;
-        if (Objects.nonNull(status) && status.isJsonPrimitive()) {
-            return ZigbeeStatus.of(status.getAsString());
-        }
-        return null;
+        return Objects.nonNull(status) && status.isJsonPrimitive() ? status.getAsString() : null;
     }
 
     public boolean hasFullState() {
@@ -827,12 +921,26 @@ public class Resource {
         return Objects.nonNull(metaData) && Objects.nonNull(metaData.getName());
     }
 
+    /**
+     * Set the alerts parameter. Note: this method sets the 'alert' JSON element. The 'alert' JSON element is used for
+     * both alert and alerts settings, so this method should only be used when setting an alerts element.
+     */
     public Resource setAlerts(Alerts alert) {
-        this.alert = alert;
+        this.alert = GSON.toJsonTree(alert);
         return this;
     }
 
-    public Resource setColorTemperature(ColorTemperature colorTemperature) {
+    public Resource setBrightness(Command command) {
+        if (command instanceof PercentType brightness) {
+            Dimming dimming = this.dimming;
+            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
+            dimming.setBrightness(brightness.doubleValue());
+            setDimming(dimming);
+        }
+        return this;
+    }
+
+    public Resource setColorTemperature(@Nullable ColorTemperature colorTemperature) {
         this.colorTemperature = colorTemperature;
         return this;
     }
@@ -857,6 +965,11 @@ public class Resource {
         return this;
     }
 
+    public Resource setDimmingDelta(IncreaseDecreaseType action, double delta) {
+        dimmingDelta = new DimmingDelta().setAction(action).setDelta(delta);
+        return this;
+    }
+
     public Resource setDynamicsDuration(Duration duration) {
         dynamics = new Dynamics().setDuration(duration);
         return this;
@@ -868,8 +981,8 @@ public class Resource {
     }
 
     public Resource setEnabled(Command command) {
-        if (command instanceof OnOffType) {
-            this.enabled = ((OnOffType) command) == OnOffType.ON;
+        if (command instanceof OnOffType onOffCommand) {
+            this.enabled = onOffCommand == OnOffType.ON;
         }
         return this;
     }
@@ -884,6 +997,11 @@ public class Resource {
         return this;
     }
 
+    public Resource setMirekDelta(IncreaseDecreaseType action, int delta) {
+        colorTemperatureDelta = new ColorTemperatureDelta().setAction(action).setDelta(delta);
+        return this;
+    }
+
     public Resource setMirekSchema(@Nullable MirekSchema schema) {
         ColorTemperature colorTemperature = this.colorTemperature;
         if (Objects.nonNull(colorTemperature)) {
@@ -895,15 +1013,13 @@ public class Resource {
     /**
      * Set the on/off JSON element (only).
      *
-     * @param command an OnOffTypee command value.
+     * @param command an OnOffType command value.
      * @return this resource instance.
      */
     public Resource setOnOff(Command command) {
-        if (command instanceof OnOffType) {
-            OnOffType onOff = (OnOffType) command;
-            OnState on = this.on;
-            on = Objects.nonNull(on) ? on : new OnState();
-            on.setOn(OnOffType.ON.equals(onOff));
+        if (command instanceof OnOffType onOffCommand) {
+            OnState on = Objects.requireNonNullElse(this.on, new OnState());
+            on.setOn(OnOffType.ON.equals(onOffCommand));
             this.on = on;
         }
         return this;
@@ -915,20 +1031,23 @@ public class Resource {
     }
 
     public Resource setRecallAction(SceneRecallAction recallAction) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setAction(recallAction);
+        this.recall = recall;
         return this;
     }
 
     public Resource setRecallAction(SmartSceneRecallAction recallAction) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setAction(recallAction);
+        this.recall = recall;
         return this;
     }
 
     public Resource setRecallDuration(Duration recallDuration) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setDuration(recallDuration);
+        this.recall = recall;
         return this;
     }
 
@@ -960,5 +1079,102 @@ public class Resource {
         String id = this.id;
         return String.format("id:%s, type:%s", Objects.nonNull(id) ? id : "?" + " ".repeat(35),
                 getType().name().toLowerCase());
+    }
+
+    /**
+     * Get the speaker sound field for the given chime type.
+     */
+    public @Nullable Sound getSound(ChimeType chimeType) {
+        switch (chimeType) {
+            case ALARM:
+                return alarm;
+            case CHIME:
+                return chime;
+            case ALERT:
+                /*
+                 * We need to disambiguate between an alert setting and an alerts setting, because both are represented
+                 * by the same 'alert' JSON element. If the JSON element contains a 'status' field it is an alert
+                 * setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
+                 */
+                if (alert instanceof JsonElement alert && alert.isJsonObject()
+                        && alert.getAsJsonObject().get("status") != null) {
+                    try {
+                        return GSON.fromJson(alert, Sound.class);
+                    } catch (JsonSyntaxException e) {
+                        // fall through
+                    }
+                }
+        }
+        return null;
+    }
+
+    /**
+     * Get the speaker sound state for the given chime type.
+     */
+    public State getSoundState(ChimeType chimeType) {
+        return getSound(chimeType) instanceof Sound sound && sound.getSoundValue() instanceof SoundValue soundValue
+                ? StringType.valueOf(soundValue.name())
+                : UnDefType.NULL;
+    }
+
+    /**
+     * Get the speaker mute state.
+     */
+    public State getSoundMuteState() {
+        return mute instanceof Mute m && m.getMuteType() instanceof MuteType mt ? OnOffType.from(mt == MuteType.MUTE)
+                : UnDefType.NULL;
+    }
+
+    /**
+     * Get the software update status if any. Disambiguate between a software update status and a smart scene state,
+     * because both are represented by the 'state' JSON element. If the resource type is 'device_software_update' it
+     * is a software update status, if it is 'smart_scene' it is a smart scene state.
+     */
+    public @Nullable UpdateStatusV2 getUpdateStatus() {
+        if (ResourceType.DEVICE_SOFTWARE_UPDATE == getType() && state instanceof JsonPrimitive statePrimitive) {
+            try {
+                return GSON.fromJson(statePrimitive, UpdateStatusV2.class);
+            } catch (JsonSyntaxException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Depending on the returned value from getUpdateStatus() this method returns a StringType of the status
+     * name, or 'UnDefType.NULL' if there is no such status.
+     */
+    public State getUpdateState() {
+        UpdateStatusV2 updateStatus = getUpdateStatus();
+        return updateStatus != null ? new StringType(updateStatus.toString()) : UnDefType.NULL;
+    }
+
+    /**
+     * Set the speaker sound type, volume and duration for the given chime type.
+     */
+    public Resource setSound(ChimeType chimeType, @Nullable SoundValue soundValue, @Nullable PercentType volume,
+            @Nullable QuantityType<?> duration) {
+        Sound sound = soundValue != null ? new Sound().setSoundValue(soundValue).setVolume(volume) : null;
+        switch (chimeType) {
+            case ALARM:
+                alarm = sound == null ? null : sound.setDuration(duration); // only alarm may set a duration
+                break;
+            case ALERT:
+                alert = GSON.toJsonTree(sound);
+                break;
+            case CHIME:
+                chime = sound;
+                break;
+        }
+        return this;
+    }
+
+    /**
+     * Set the speaker mute state.
+     */
+    public Resource setMuteType(@Nullable MuteType muteType) {
+        mute = muteType == null ? null : new Mute().setMuteType(muteType);
+        return this;
     }
 }

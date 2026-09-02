@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -310,6 +310,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         ItemChannelLinkRegistry itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class,
                 ItemChannelLinkRegistry.class);
         assertNotNull(itemChannelLinkRegistry);
+        itemChannelLinkRegistry.waitForCompletedAsyncActivationTasks();
 
         for (Channel channel : thing.getChannels()) {
             String itemName = channel.getUID().getId();

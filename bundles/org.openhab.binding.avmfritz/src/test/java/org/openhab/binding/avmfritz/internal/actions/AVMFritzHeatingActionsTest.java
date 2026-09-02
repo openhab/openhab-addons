@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,6 +79,20 @@ public class AVMFritzHeatingActionsTest {
     }
 
     @Test
+    public void testSetBoostModeThrowsIllegalArgumentExceptionIfDurationIsLessThanZero() {
+        heatingActions.setThingHandler(heatingActionsHandlerMock);
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setBoostMode(heatingActions, Long.valueOf(-5L)));
+    }
+
+    @Test
+    public void testSetBoostModeThrowsIllegalArgumentExceptionIfDurationIsTooBig() {
+        heatingActions.setThingHandler(heatingActionsHandlerMock);
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setBoostMode(heatingActions, Long.valueOf(86500L)));
+    }
+
+    @Test
     public void testSetWindowOpenModeThingActionsIsNotAVMFritzHeatingActions() {
         assertThrows(ClassCastException.class,
                 () -> AVMFritzHeatingActions.setWindowOpenMode(thingActionsStub, Long.valueOf(5L)));
@@ -101,5 +115,19 @@ public class AVMFritzHeatingActionsTest {
     public void testSetWindowOpenMode() {
         heatingActions.setThingHandler(heatingActionsHandlerMock);
         AVMFritzHeatingActions.setWindowOpenMode(heatingActions, Long.valueOf(5L));
+    }
+
+    @Test
+    public void testSetWindowOpenModeThrowsIllegalArgumentExceptionIfDurationIsLessThanZero() {
+        heatingActions.setThingHandler(heatingActionsHandlerMock);
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setWindowOpenMode(heatingActions, Long.valueOf(-5L)));
+    }
+
+    @Test
+    public void testSetWindowOpenModeThrowsIllegalArgumentExceptionIfDurationIsTooBig() {
+        heatingActions.setThingHandler(heatingActionsHandlerMock);
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setWindowOpenMode(heatingActions, Long.valueOf(86500L)));
     }
 }

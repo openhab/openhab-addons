@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,7 +32,6 @@ public class IcdManagementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0046;
     public static final String CLUSTER_NAME = "IcdManagement";
     public static final String CLUSTER_PREFIX = "icdManagement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_IDLE_MODE_DURATION = "idleModeDuration";
     public static final String ATTRIBUTE_ACTIVE_MODE_DURATION = "activeModeDuration";
@@ -46,7 +44,6 @@ public class IcdManagementCluster extends BaseCluster {
     public static final String ATTRIBUTE_OPERATING_MODE = "operatingMode";
     public static final String ATTRIBUTE_MAXIMUM_CHECK_IN_BACKOFF = "maximumCheckInBackoff";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the maximum interval in seconds the server can stay in idle mode. The IdleModeDuration shall NOT be
@@ -85,26 +82,26 @@ public class IcdManagementCluster extends BaseCluster {
      * unless specified otherwise in the requirement column of the UserActiveModeTriggerHint table.
      * ActuateSensorLightsBlink, ResetButtonLightsBlink and SetupButtonLightsBlink (i.e. bits 7, 9 and 14) have a
      * dependency on the UserActiveModeTriggerInstruction attribute but do not require the attribute to be present.
-     * ### An ICD can indicate multiple ways of being put into Active Mode by setting multiple bits in the bitmap at the
+     * An ICD can indicate multiple ways of being put into Active Mode by setting multiple bits in the bitmap at the
      * same time. However, a device shall NOT set more than one bit which has a dependency on the
      * UserActiveModeTriggerInstruction attribute.
      */
     public UserActiveModeTriggerBitmap userActiveModeTriggerHint; // 6 UserActiveModeTriggerBitmap R V
     /**
      * The meaning of the attribute is dependent upon the UserActiveModeTriggerHint attribute value, and the conformance
-     * is in indicated in the &quot;dependency&quot; column in UserActiveModeTriggerHint table. The
+     * is in indicated in the "dependency" column in UserActiveModeTriggerHint table. The
      * UserActiveModeTriggerInstruction attribute may give additional information on how to transition the device to
      * Active Mode. If the attribute is present, the value shall be encoded as a valid UTF-8 string with a maximum
      * length of 128 bytes. If the UserActiveModeTriggerHint has the ActuateSensorSeconds, ActuateSensorTimes,
      * ResetButtonSeconds, ResetButtonTimes, SetupButtonSeconds or SetupButtonTimes set, the string shall consist solely
      * of an encoding of N as a decimal unsigned integer using the ASCII digits 0-9, and without leading zeros.
-     * For example, given UserActiveModeTriggerHint&#x3D;&quot;2048&quot;, ResetButtonTimes is set which indicates
-     * &quot;Press Reset Button for N seconds&quot;. Therefore, a value of
-     * UserActiveModeTriggerInstruction&#x3D;&quot;10&quot; would indicate that N is 10 in that context.
+     * For example, given UserActiveModeTriggerHint="1024", ResetButtonSeconds is set which indicates "Press Reset
+     * Button for N seconds". Therefore, a value of UserActiveModeTriggerInstruction="6" would indicate that N is 6 in
+     * that context.
      * When CustomInstruction is set by the UserActiveModeTriggerHint attribute, indicating presence of a custom string,
-     * the ICD SHOULD perform localization (translation to user’s preferred language, as indicated in the Device’s
+     * the ICD SHOULD perform localization (translation to user's preferred language, as indicated in the Device's
      * currently configured locale). The Custom Instruction option SHOULD NOT be used by an ICD that does not have
-     * knowledge of the user’s language preference.
+     * knowledge of the user's language preference.
      * When the UserActiveModeTriggerHint key indicates a light to blink (ActuateSensorLightsBlink,
      * ResetButtonLightsBlink or SetupButtonLightsBlink), information on color of light may be made available via the
      * UserActiveModeTriggerInstruction attribute. When using such color indication in the
@@ -113,9 +110,9 @@ public class IcdManagementCluster extends BaseCluster {
      */
     public String userActiveModeTriggerInstruction; // 7 string R V
     /**
-     * This attribute shall indicate the operating mode of the ICD as specified in the OperatingModeEnum.
-     * • If the ICD is operating as a LIT ICD, OperatingMode shall be LIT.
-     * • If the ICD is operating as a SIT ICD, OperatingMode shall be SIT.
+     * Indicates the operating mode of the ICD as specified in the OperatingModeEnum.
+     * - If the ICD is operating as a LIT ICD, OperatingMode shall be LIT.
+     * - If the ICD is operating as a SIT ICD, OperatingMode shall be SIT.
      */
     public OperatingModeEnum operatingMode; // 8 OperatingModeEnum R V
     /**
@@ -138,20 +135,23 @@ public class IcdManagementCluster extends BaseCluster {
          * same as the CheckInNodeID. The MonitoredSubject gives the registering client the flexibility of having a
          * different CheckInNodeID from the MonitoredSubject. A subscription shall count as an active subscription for
          * this entry if:
-         * • It is on the associated fabric of this entry, and
-         * • The subject of this entry matches the ISD of the SubscriptionRequest message that created the subscription.
+         * - It is on the associated fabric of this entry, and
+         * - The subject of this entry matches the ISD of the SubscriptionRequest message that created the subscription.
          * Matching shall be determined using the subject_matches function defined in the Access Control Privilege
          * Granting Algorithm.
          * For example, if the MonitoredSubject is Node ID 0x1111_2222_3333_AAAA, and one of the subscribers to the
-         * server on the entry’s associated fabric bears that Node ID, then the entry matches.
+         * server on the entry's associated fabric bears that Node ID, then the entry matches.
          * Another example is if the MonitoredSubject has the value 0xFFFF_FFFD_AA12_0002, and one of the subscribers to
-         * the server on the entry’s associated fabric bears the CASE Authenticated TAG value 0xAA12 and the version
+         * the server on the entry's associated fabric bears the CASE Authenticated TAG value 0xAA12 and the version
          * 0x0002 or higher within its NOC, then the entry matches.
          */
         public BigInteger monitoredSubject; // subject-id
+        /**
+         * This field is deprecated. Use the RegisterClient command to set the ICDToken.
+         */
         public String key;
         /**
-         * This field shall indicate the client’s type to inform the ICD of the availability for communication of the
+         * This field shall indicate the client's type to inform the ICD of the availability for communication of the
          * client.
          */
         public ClientTypeEnum clientType; // ClientTypeEnum
@@ -172,8 +172,8 @@ public class IcdManagementCluster extends BaseCluster {
         PERMANENT(0, "Permanent"),
         EPHEMERAL(1, "Ephemeral");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ClientTypeEnum(Integer value, String label) {
             this.value = value;
@@ -195,8 +195,8 @@ public class IcdManagementCluster extends BaseCluster {
         SIT(0, "Sit"),
         LIT(1, "Lit");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperatingModeEnum(Integer value, String label) {
             this.value = value;
@@ -364,7 +364,6 @@ public class IcdManagementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "idleModeDuration : " + idleModeDuration + "\n";
         str += "activeModeDuration : " + activeModeDuration + "\n";

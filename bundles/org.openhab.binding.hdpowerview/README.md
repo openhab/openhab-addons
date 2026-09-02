@@ -32,17 +32,17 @@ Make sure your shades are visible in the PowerView app before attempting discove
 
 The binding can automatically discover PowerView hubs and gateways.
 The discovery process can be started by pressing the refresh button in the Main Configuration UI Inbox.
-However you can also manually create a (bridge) thing for the hub, and enter the required configuration parameters (see Thing Configuration below).
+However you can also manually create a (bridge) Thing for the hub, and enter the required configuration parameters (see Thing Configuration below).
 If the configuration parameters are all valid, the binding will then automatically attempt to connect to the hub/gateway.
 If the connection succeeds, the hub will indicate its status as Online, otherwise it will show an error status.
 
-Once the hub thing has been created and successfully connected, the binding will automatically discover all shades and scenes that are in it.
+Once the hub Thing has been created and successfully connected, the binding will automatically discover all shades and scenes that are in it.
 
-- For each shade discovered: the binding will create a new dedicated thing with its own channels.
-- For each scene discovered: the binding will create a new channel dynamically within the hub/gateway thing.
-- <sup>[1/2]</sup> For each repeater discovered: the binding will create a new dedicated thing with its own channels.
-- <sup>[1/2]</sup> For each scene group discovered: the binding will create a new channel dynamically within the hub thing.
-- <sup>[1/2]</sup> For each automation discovered: the binding will create a new channel dynamically within the hub thing.
+- For each shade discovered: the binding will create a new dedicated Thing with its own channels.
+- For each scene discovered: the binding will create a new channel dynamically within the hub/gateway Thing.
+- <sup>[1/2]</sup> For each repeater discovered: the binding will create a new dedicated Thing with its own channels.
+- <sup>[1/2]</sup> For each scene group discovered: the binding will create a new channel dynamically within the hub Thing.
+- <sup>[1/2]</sup> For each automation discovered: the binding will create a new channel dynamically within the hub Thing.
 
 <sup>[1/2]</sup> Generation 1/2 hubs only.
 

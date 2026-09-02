@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,19 @@ public interface EcovacsApi {
         return new EcovacsApiImpl(httpClient, configuration);
     }
 
-    void loginAndGetAccessToken() throws EcovacsApiException, InterruptedException;
+    public record Credentials(String userId, String resource, String token, long expiryTimestampMs) {
+        public boolean isExpired() {
+            return System.currentTimeMillis() > expiryTimestampMs;
+        }
+    }
+
+    void testAndSetCredentials(Credentials creds) throws EcovacsApiException, InterruptedException;
+
+    Credentials refreshCredentials() throws EcovacsApiException, InterruptedException;
+
+    void startLoginAndRequestVerificationCode() throws EcovacsApiException, InterruptedException;
+
+    Credentials finishLogin(String verificationCode) throws EcovacsApiException, InterruptedException;
 
     List<EcovacsDevice> getDevices() throws EcovacsApiException, InterruptedException;
 }

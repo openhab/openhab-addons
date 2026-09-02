@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -145,7 +145,8 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 }
             } catch (OAuthException | IOException | OAuthResponseException | CommunicationException
                     | AuthorizationException e) {
-                ZonedDateTime nextReinitializeDateTime = ZonedDateTime.now().plusSeconds(REINITIALIZATION_DELAY_SEC);
+                ZonedDateTime nextReinitializeDateTime = ZonedDateTime.now(ZONE_ID)
+                        .plusSeconds(REINITIALIZATION_DELAY_SEC);
 
                 String offlineMessage = String.format(
                         "Home Connect service is not reachable or a problem occurred! Retrying at %s (%s). bridge=%s",

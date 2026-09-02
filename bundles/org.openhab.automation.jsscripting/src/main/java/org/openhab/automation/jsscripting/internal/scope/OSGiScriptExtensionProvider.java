@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-@Component(immediate = true, service = ScriptExtensionProvider.class)
+@Component(immediate = true, service = { ScriptExtensionProvider.class, OSGiScriptExtensionProvider.class })
 public class OSGiScriptExtensionProvider extends ScriptDisposalAwareScriptExtensionProvider {
 
     @Override

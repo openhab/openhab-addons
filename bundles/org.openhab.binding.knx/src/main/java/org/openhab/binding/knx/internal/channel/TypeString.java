@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 
-import tuwien.auto.calimero.dptxlator.DPTXlatorString;
+import io.calimero.dptxlator.DPTXlatorString;
 
 /**
  * string channel type description

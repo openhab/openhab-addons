@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,21 +25,21 @@ import org.openhab.binding.sunsynk.internal.api.exception.SunSynkAuthenticateExc
 
 @NonNullByDefault
 public class Client {
-    private int code; // 102 username or password probloem
+    private int code; // 102 username or password problem
     private String msg = "";
     private boolean success;
     @Nullable
     private APIdata data = new APIdata();
     private int status;
     private String error = ""; // "{"timestamp":"2024-06-16T11:21:17.690+00:00","status":404,"error":"Not
-                               // Found","path":"/oauth/toke"}"
+                               // Found","path":"/oauth/token"}"
     private String path = "";
     private String timestamp = "";
 
     public Client() {
     }
 
-    public static String getAccessTokenString() {
+    public String getAccessTokenString() {
         return APIdata.staticAccessToken;
     }
 
@@ -92,12 +92,12 @@ public class Client {
         if (data != null) {
             return data;
         } else {
-            throw new SunSynkAuthenticateException("Empty client data.");
+            throw new SunSynkAuthenticateException("Empty client data - account re-authentication required");
         }
     }
 
     @Override
     public String toString() {
-        return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data + "]";
+        return "Content [code=" + code + ", msg=" + msg + "success=" + success + ", data=" + data + "]";
     }
 }

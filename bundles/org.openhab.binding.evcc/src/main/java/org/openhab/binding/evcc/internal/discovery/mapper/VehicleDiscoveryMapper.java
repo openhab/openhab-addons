@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.discovery.mapper;
 
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_MEMBER_VEHICLES;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_ID;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_TYPE;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_TYPE_VEHICLE;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +26,7 @@ import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -38,30 +36,29 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Goerentz - Initial contribution
  */
+@Component(service = EvccDiscoveryMapper.class)
 @NonNullByDefault
 public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonObject vehicles = state.getAsJsonObject(JSON_MEMBER_VEHICLES);
+        JsonObject vehicles = state.getAsJsonObject(JSON_KEY_VEHICLES);
         if (vehicles == null) {
             return results;
         }
         for (Map.Entry<String, JsonElement> entry : vehicles.entrySet()) {
             JsonObject v = entry.getValue().getAsJsonObject();
             String id = entry.getKey();
-            String title = v.has("title") ? v.get("title").getAsString() : id;
+            String title = v.has(JSON_KEY_TITLE) ? v.get(JSON_KEY_TITLE).getAsString() : id;
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_VEHICLE, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_TYPE_VEHICLE)
-                    .withProperty(PROPERTY_ID, id).withRepresentationProperty(PROPERTY_ID).build();
-
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_VEHICLE_ID, id)
+                    .withRepresentationProperty(PROPERTY_VEHICLE_ID).build();
             results.add(result);
         }
-
         return results;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,14 +17,16 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginMode;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -66,17 +68,25 @@ public class CloudConnector {
     private String username = "";
     private String password = "";
     private String country = "ru,us,tw,sg,cn,de,i2";
+    private @Nullable String userId;
+    private @Nullable String clientId;
+    private @Nullable String ssecurity;
+    private @Nullable String serviceToken;
+    private CloudLoginMode loginMode = CloudLoginMode.QRCODE;
+    private String cloudDiscoveryMode = "disabled";
+
     private List<CloudDeviceDTO> deviceList = new ArrayList<>();
     private boolean connected;
     private final HttpClient httpClient;
     private @Nullable MiCloudConnector cloudConnector;
     private final Logger logger = LoggerFactory.getLogger(CloudConnector.class);
+    private final List<CloudLoginListener> pendingListeners = new CopyOnWriteArrayList<>();
 
-    private ConcurrentHashMap<@NonNull String, @NonNull HomeListDTO> homeLists = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, HomeListDTO> homeLists = new ConcurrentHashMap<>();
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
-    private ExpiringCache<Boolean> logonCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-        return logon();
+    private ExpiringCache<Boolean> loginCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+        return login();
     });
 
     private ExpiringCache<String> refreshDeviceList = new ExpiringCache<>(CACHE_EXPIRY, () -> {
@@ -156,15 +166,34 @@ public class CloudConnector {
         return isConnected(false);
     }
 
+    public void registerListener(CloudLoginListener cloudLoginListener) {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            cl.registerListener(cloudLoginListener);
+        } else {
+            if (!pendingListeners.contains(cloudLoginListener)) {
+                pendingListeners.add(cloudLoginListener);
+            }
+        }
+    }
+
+    public void unregisterListener(CloudLoginListener cloudLoginListener) {
+        pendingListeners.remove(cloudLoginListener);
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            cl.unregisterListener(cloudLoginListener);
+        }
+    }
+
     public boolean isConnected(boolean force) {
         final MiCloudConnector cl = cloudConnector;
         if (cl != null && cl.hasLoginToken()) {
             return true;
         }
         if (force) {
-            logonCache.invalidateValue();
+            loginCache.invalidateValue();
         }
-        final @Nullable Boolean c = logonCache.getValue();
+        final @Nullable Boolean c = loginCache.getValue();
         if (c != null && c.booleanValue()) {
             return true;
         }
@@ -205,8 +234,8 @@ public class CloudConnector {
 
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
         logger.debug("Getting vacuum map {} from Xiaomi cloud server: '{}'", mapId, country);
-        String mapCountry;
-        String mapUrl = "";
+        String mapCountry = "";
+        Optional<String> mapUrl = Optional.empty();
         final @Nullable MiCloudConnector cl = this.cloudConnector;
         if (cl == null || !isConnected()) {
             throw new MiCloudException("Cannot execute request. Cloud service not available");
@@ -214,9 +243,14 @@ public class CloudConnector {
         if (country.isEmpty()) {
             logger.debug("Server not defined in thing. Trying servers: {}", this.country);
             for (String mapCountryServer : this.country.split(",")) {
-                mapCountry = mapCountryServer.trim().toLowerCase();
-                mapUrl = cl.getMapUrl(mapId, mapCountry);
-                logger.debug("Map download from server {} returned {}", mapCountry, mapUrl);
+                try {
+                    mapCountry = mapCountryServer.trim().toLowerCase();
+                    mapUrl = cl.getMapUrl(mapId, mapCountry);
+                    logger.debug("Map download from server {} returned {}", mapCountry, mapUrl);
+                } catch (MiCloudException e) {
+                    logger.debug("Failed to get map from server '{}': {}", mapCountry, e.getMessage());
+                    continue;
+                }
                 if (!mapUrl.isEmpty()) {
                     break;
                 }
@@ -225,12 +259,12 @@ public class CloudConnector {
             mapCountry = country.trim().toLowerCase();
             mapUrl = cl.getMapUrl(mapId, mapCountry);
         }
-        if (mapUrl.isBlank()) {
+        if (!mapUrl.isPresent() || mapUrl.get().isEmpty()) {
             logger.debug("Cannot download map data: Returned map URL is empty");
             return null;
         }
         try {
-            RawType mapData = HttpUtil.downloadData(mapUrl, null, false, -1);
+            RawType mapData = HttpUtil.downloadData(mapUrl.get(), null, false, -1);
             if (mapData != null) {
                 return mapData;
             } else {
@@ -253,21 +287,74 @@ public class CloudConnector {
         }
     }
 
-    private boolean logon() {
-        if (username.isEmpty() || password.isEmpty()) {
-            logger.debug("No Xiaomi cloud credentials. Cloud connectivity disabled");
-            logger.debug("Logon details: username: '{}', pass: '{}', country: '{}'", username,
+    public void setCredentials(@Nullable String username, @Nullable String password, @Nullable String country,
+            @Nullable String clientId, @Nullable String userId, @Nullable String serviceToken,
+            @Nullable String ssecurity) {
+        setCredentials(username, password, country);
+        this.clientId = clientId;
+        this.userId = userId;
+        this.serviceToken = serviceToken;
+        this.ssecurity = ssecurity;
+    }
+
+    private boolean login() {
+        if (loginMode == CloudLoginMode.PASSWORD && (username.isEmpty() || password.isEmpty())) {
+            logger.debug("No Xiaomi cloud credentials. Cloud connectivity disabled for PASSWORD mode");
+            logger.debug("Login details: username: '{}', pass: '{}', country: '{}'", username,
                     password.replaceAll(".", "*"), country);
             return connected;
         }
         try {
-            final MiCloudConnector cl = new MiCloudConnector(username, password, httpClient);
+            logger.debug("Xiaomi cloud login mode is {}", this.loginMode);
+
+            final MiCloudConnector cl;
+            switch (this.loginMode) {
+                case TOKEN:
+                    cl = new MiCloudConnector(username, password, httpClient, this.clientId, this.userId,
+                            this.serviceToken, this.ssecurity);
+                    break;
+                case PASSWORD:
+                    cl = new MiCloudUserIdLoginConnector(username, password, httpClient, this.clientId, this.userId,
+                            this.serviceToken, this.ssecurity);
+                    break;
+                case QRCODE:
+                default:
+                    cl = new MiCloudQRConnector(username, password, httpClient, this.clientId, this.userId,
+                            this.serviceToken, this.ssecurity);
+                    break;
+            }
+
+            // Transfer any listeners registered before the connector was created
+            for (CloudLoginListener listener : pendingListeners) {
+                cl.registerListener(listener);
+            }
+            pendingListeners.clear();
+
+            // Also re-register listeners from any previous connector instance
+            final MiCloudConnector prev = this.cloudConnector;
+            if (prev != null) {
+                for (CloudLoginListener listener : prev.getListeners()) {
+                    cl.registerListener(listener);
+                }
+            }
+
             this.cloudConnector = cl;
-            connected = cl.login();
+            if (loginMode != CloudLoginMode.TOKEN && cl.getListeners().isEmpty()) {
+                logger.debug("No listeners registered. Skipping {} login flow.", loginMode);
+                connected = false;
+            } else {
+                connected = cl.login();
+            }
             if (connected) {
+                // Sync back the potentially refreshed token fields
+                this.serviceToken = cl.getServiceToken();
+                this.userId = cl.getUserId();
+                this.ssecurity = cl.getSsecurity();
                 getDevicesList();
             } else {
                 deviceListState = CloudListState.FAILED;
+                // Clear stale token so next login() attempt doesn't reuse it
+                this.serviceToken = "";
             }
         } catch (MiCloudException e) {
             connected = false;
@@ -363,5 +450,106 @@ public class CloudConnector {
             return getRoom(id, false);
         }
         return null;
+    }
+
+    public boolean hasLoginToken() {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        return cl == null ? false : cl.hasLoginToken();
+    }
+
+    public String getUserId() {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        return cl == null ? "" : cl.getUserId();
+    }
+
+    public void setUserId(String userId) {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl != null) {
+            cl.setUserId(userId);
+        }
+    }
+
+    public String getServiceToken() {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        return cl == null ? "" : cl.getServiceToken();
+    }
+
+    public void setServiceToken(String serviceToken) {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl != null) {
+            cl.setServiceToken(serviceToken);
+        }
+    }
+
+    public String getSsecurity() {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        return cl == null ? "" : cl.getSsecurity();
+    }
+
+    public void setSsecurity(String ssecurity) {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl != null) {
+            cl.setSsecurity(ssecurity);
+        }
+    }
+
+    public void setLoginMode(CloudLoginMode loginMode) {
+        this.loginMode = loginMode;
+    }
+
+    public void setCloudDiscoveryMode(String cloudDiscoveryMode) {
+        this.cloudDiscoveryMode = cloudDiscoveryMode;
+    }
+
+    public String getCloudDiscoveryMode() {
+        return cloudDiscoveryMode;
+    }
+
+    /**
+     * Stops the active cloud connector and invalidates the login cache, allowing a fresh
+     * login sequence to be initiated on the next {@link #isConnected(boolean)} call.
+     */
+    public void resetLogin() {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            // Preserve listeners so they are re-registered when the new connector is created in login()
+            for (CloudLoginListener listener : cl.getListeners()) {
+                if (!pendingListeners.contains(listener)) {
+                    pendingListeners.add(listener);
+                }
+            }
+            cl.stopClient();
+        }
+        cloudConnector = null;
+        connected = false;
+        loginCache.invalidateValue();
+    }
+
+    /**
+     * Submits a captcha response to the active cloud connector's login flow.
+     *
+     * @param captchaResponse the captcha text entered by the user
+     */
+    public void submitCaptcha(String captchaResponse) {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            cl.login(captchaResponse);
+        } else {
+            logger.debug("submitCaptcha: no active cloud connector");
+        }
+    }
+
+    /**
+     * Submits a 2FA response code to the active cloud connector's login flow.
+     *
+     * @param faCode the 2FA code entered by the user
+     */
+    public void submit2FA(String faCode) {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            cl.faResponse(faCode);
+        } else {
+            logger.debug("submit2FA: no active cloud connector");
+        }
     }
 }

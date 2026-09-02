@@ -13,7 +13,7 @@
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>
-				<description>Network address of the ethernet transceiver</description>
+				<description>Network address of the Ethernet transceiver</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="portNumber" type="integer" required="true">
@@ -46,21 +46,22 @@
 	<channel-type id="blaster">
 		<item-type>String</item-type>
 		<label>Blaster Channel</label>
-		<description>The Blaster Channel allows to send (filtered) infrared commands over the specified blaster led of the
+		<description>The Blaster channel allows sending (filtered) infrared commands over the specified blaster LED of the
 			transceiver</description>
 		<config-description>
 			<parameter name="led" type="text" required="true">
-				<label>Led</label>
-				<description>The Led on which infrared commands will be emitted</description>
+				<label>LED</label>
+				<description>The LED on which infrared commands will be emitted</description>
 			</parameter>
 			<parameter name="remote" type="text" required="true">
 				<label>Remote</label>
-				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server
+				<description>The remote or manufacturer name whose commands will be allowed, as defined in the IRtrans server
 					database and flashed into the transceiver. Can be '*' for any remote</description>
 			</parameter>
 			<parameter name="command" type="text" required="true">
 				<label>Command</label>
-				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the
+				<description>The name of the command that will be allowed, as defined in the IRtrans server database and flashed
+					into the
 					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>
@@ -69,17 +70,18 @@
 	<channel-type id="receiver">
 		<item-type>String</item-type>
 		<label>Receiver Channel</label>
-		<description>The Receiver Channel allows to receive (filtered) infrared commands on the receiver led of the
+		<description>The Receiver channel allows receiving (filtered) infrared commands on the receiver LED of the
 			transceiver</description>
 		<config-description>
 			<parameter name="remote" type="text" required="true">
 				<label>Remote</label>
-				<description>The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server
+				<description>The remote or manufacturer name whose commands will be allowed, as defined in the IRtrans server
 					database and flashed into the transceiver. Can be '*' for any remote</description>
 			</parameter>
 			<parameter name="command" type="text" required="true">
 				<label>Command</label>
-				<description>The name of the command will be allowed, as defined in the IRtrans server database and flashed into the
+				<description>The name of the command that will be allowed, as defined in the IRtrans server database and flashed
+					into the
 					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>

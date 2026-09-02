@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,6 +101,7 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
         super(thing);
         // Mark all channels "Advanced" since most are unlikely to be used in any particular config
         advancedChannels = true;
+        useTriggerChannels = false; // Virtual buttons are bidirectional: openHAB sends ON to trigger Lutron scenes
         commandTargetType = TargetType.VIRTUALKEYPAD; // For the LEAP bridge
     }
 }

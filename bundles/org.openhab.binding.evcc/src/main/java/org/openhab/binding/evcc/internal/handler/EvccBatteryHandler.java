@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +22,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -37,35 +38,42 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
 
     public EvccBatteryHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        Map<String, String> props = thing.getProperties();
-        String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
-        index = Integer.parseInt(indexString);
+        this.index = Integer.parseInt(getPropertyOrConfigValue(PROPERTY_INDEX));
+        type = PROPERTY_TYPE_BATTERY;
     }
 
     @Override
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject();
+            JsonObject state = getStateFromCachedState(stateOpt);
             commonInitialize(state);
         });
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
-        state = state.has(JSON_MEMBER_BATTERY) ? state.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject()
-                : new JsonObject();
-        super.updateFromEvccState(state);
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+        state = state.has(JSON_KEY_BATTERY) ? getStateFromCachedState(state) : new JsonObject();
+        updateStatesFromApiResponse(state);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.getAsJsonArray(JSON_MEMBER_BATTERY).get(index).getAsJsonObject();
+        JsonElement battElement = state.get(JSON_KEY_BATTERY);
+        if (battElement.isJsonNull()) {
+            return new JsonObject();
+        }
+        JsonArray battArray = battElement.isJsonArray()
+                // for up to version 0.300.0
+                ? (JsonArray) battElement
+                // for version 0.300.0+
+                : ((JsonObject) battElement).getAsJsonArray(JSON_KEY_DEVICES);
+        return battArray.get(index).getAsJsonObject();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,14 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for all message parsers.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcParser<M, R> {
 
     /**

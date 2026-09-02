@@ -67,7 +67,7 @@ The following configurations occur for each of the bridges/things:
 
 ## Channels
 
-The following channels are supported for each bridge/thing
+The following channels are supported for each bridge/Thing
 
 ### Russound System
 
@@ -188,7 +188,7 @@ The following channels are supported for each bridge/thing
 1. If you send an OnOffType to the volume will have the same affect as turning the zone on/off (ie sending OnOffType to "status")
 1. The volume PercentType will be scaled to Russound's volume of 0-50 (ie 50% = volume of 25, 100% = volume of 50)
 1. Initialize a media management session by sending ON to the channel.
-    The related source thing will then start sending out media management information in the MM channels.
+    The related source Thing will then start sending out media management information in the MM channels.
     To close the session - simply send OFF to the channel.
     Sending OFF to the channel when a session has not been initialized does nothing.
     Likewise if the related source is a tuner, this command does nothing.

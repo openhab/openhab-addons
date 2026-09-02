@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,10 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class VigiCruesBindingConstants {
+    public static final String BINDING_ID = "vigicrues";
 
     // List of Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID("vigicrues", "station");
+    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "station");
 
     // List of all Channel id's
     public static final String OBSERVATION_TIME = "observation-time";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class InfoParser {
-    private static final Logger LOGGER = LoggerFactory.getLogger(InfoParser.class);
-
     private InfoParser() {
     }
 
@@ -89,10 +87,11 @@ public class InfoParser {
     }
 
     public static String urldecode(String value) {
+        Logger logger = LoggerFactory.getLogger(InfoParser.class);
         try {
             return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            LOGGER.warn("Unsupported encoding error in '{}'", value, e);
+            logger.warn("Unsupported encoding error in '{}'", value, e);
             return value;
         }
     }

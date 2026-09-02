@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,15 +13,15 @@
 package org.openhab.binding.zwavejs.internal.type;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.BINDING_ID;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,13 +29,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.DataUtil;
+import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
+import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSChannelTypeInMemmoryProvider;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.StateDescription;
@@ -53,12 +56,7 @@ public class ZwaveJSTypeGeneratorTest {
 
     @BeforeEach
     public void setup() {
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
-        Thing thing = mock(Thing.class);
-        when(thing.getUID()).thenReturn(new ThingUID(BindingConstants.BINDING_ID, "test-thing"));
-        when(thing.getBridgeUID()).thenReturn(new ThingUID(BindingConstants.BINDING_ID, "test-bridge"));
-        when(thingRegistry.get(any())).thenReturn(thing);
-        provider = new ZwaveJSTypeGeneratorImpl(channelTypeProvider, configDescriptionProvider, thingRegistry);
+        provider = new ZwaveJSTypeGeneratorImpl(channelTypeProvider, configDescriptionProvider);
     }
 
     private Channel getChannel(String store, int nodeId, String channelId) throws IOException {
@@ -72,6 +70,26 @@ public class ZwaveJSTypeGeneratorTest {
                 new ThingUID(BINDING_ID, "test-bridge", "test-thing"), Objects.requireNonNull(node),
                 configurationAsChannels);
         return Objects.requireNonNull(results.channels.get(channelId));
+    }
+
+    @Test
+    public void testConfigDescriptionUsesThingUID() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+        ThingUID thingUID = new ThingUID(BINDING_ID, "node", "test-bridge", "kitchen");
+
+        Objects.requireNonNull(provider).generate(thingUID, Objects.requireNonNull(node), false);
+
+        assertNotNull(configDescriptionProvider.getConfigDescription(URI.create("thing:" + thingUID), null));
+    }
+
+    @Test
+    public void testConfigDescriptionUsesDefaultNodeThingUID() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+        ThingUID thingUID = new ThingUID(BINDING_ID, "node", "test-bridge", "node7");
+
+        Objects.requireNonNull(provider).generate(thingUID, Objects.requireNonNull(node), false);
+
+        assertNotNull(configDescriptionProvider.getConfigDescription(URI.create("thing:" + thingUID), null));
     }
 
     @Test
@@ -194,6 +212,25 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode12TimeOutType() throws IOException {
+        Channel channel = getChannel("store_4.json", 12, "protection-timeout");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:protection-timeout", channel.getUID().getAsString());
+        assertEquals("Number:Time", Objects.requireNonNull(type).getItemType());
+        assertEquals("RF Protection Timeout", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+        assertNull(statePattern.getStep());
+        assertEquals("%d %unit%", statePattern.getPattern());
+    }
+
+    @Test
     public void testGenCTNode13MultilevelSwitchType() throws IOException {
         Channel channel = getChannel("store_4.json", 13, "multilevel-switch-value");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
@@ -236,10 +273,52 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode21RollerShutterTypeForOpenClose() throws IOException {
+        // Test detection of Roller Shutter type based on Open/Close Switch channels.
+        // Channel identifiers may vary depending on device configuration.
+        Channel channel = getChannel("store_4.json", 21, "rollershutter-virtual");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:rollershutter-virtual", channel.getUID().getAsString());
+        assertEquals("Roller Shutter", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+
+        assertNotNull(type);
+        assertEquals(CoreItemFactory.ROLLERSHUTTER, type.getItemType());
+    }
+
+    @Test
     public void testGenCTNode25WriteProperty() throws IOException {
         Channel channel = getChannel("store_4.json", 25, "binary-switch-value-1");
 
         assertEquals("targetValue", channel.getConfiguration().get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+    }
+
+    @Test
+    public void testGenCTNode39RollerShutterTypeForOnOff() throws IOException {
+        // Test detection of Roller Shutter type based on On/Off Switch channels.
+        // Channel identifiers may vary depending on device configuration.
+        Channel channel = getChannel("store_4.json", 39, "rollershutter-virtual");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:rollershutter-virtual", channel.getUID().getAsString());
+        assertEquals("Roller Shutter", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+
+        assertNotNull(type);
+        assertEquals(CoreItemFactory.ROLLERSHUTTER, type.getItemType());
     }
 
     @Test
@@ -263,6 +342,58 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testReadOnlyColorSemanticTags() throws IOException {
+        Node node = Objects.requireNonNull(DataUtil.getNodeFromStore("store_4.json", 44));
+        Value colorValue = node.values.stream().filter(value -> value.metadata.type == MetadataType.COLOR).findFirst()
+                .orElseThrow();
+        colorValue.metadata.writeable = false;
+
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-bridge", "test-thing"), node, false);
+        Channel channel = Objects.requireNonNull(results.channels.get("color-switch-hex-color"));
+        ChannelType type = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+
+        assertEquals(Set.of(Point.STATUS.getName(), Property.COLOR.getName()), type.getTags());
+    }
+
+    @Test
+    public void testGenCTNode60RollerShutterTypeForUpDown() throws IOException {
+        // Test detection of Roller Shutter type based on Up/Down Switch channels.
+        // Channel identifiers may vary depending on device configuration.
+        Channel channel = getChannel("store_4.json", 60, "rollershutter-virtual-1");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:rollershutter-virtual-1", channel.getUID().getAsString());
+        assertEquals("EP1 Roller Shutter", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+
+        assertNotNull(type);
+        assertEquals(CoreItemFactory.ROLLERSHUTTER, type.getItemType());
+    }
+
+    @Test
+    public void testNode60RollerShutterChannelDetection() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 60);
+
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-thing"), Objects.requireNonNull(node), true);
+
+        assertEquals("multilevel-switch-value-1",
+                Objects.requireNonNull(results.rollerShutterCapabilities.get(1)).dimmerChannel.getId());
+        assertEquals("multilevel-switch-up-1",
+                Objects.requireNonNull(results.rollerShutterCapabilities.get(1)).upChannel.getId());
+        assertEquals("multilevel-switch-down-1",
+                Objects.requireNonNull(results.rollerShutterCapabilities.get(1)).downChannel.getId());
+    }
+
+    @Test
     public void testGenCTNode74HumidityInvalidUnit() throws IOException {
         Channel channel = getChannel("store_4.json", 74, "multilevel-sensor-humidity");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
@@ -275,6 +406,23 @@ public class ZwaveJSTypeGeneratorTest {
         StateDescription statePattern = type.getState();
         assertNotNull(statePattern);
         assertNotNull(type);
+    }
+
+    @Test
+    public void testNode186NotificationChannelDetection() throws IOException {
+        Channel channel = getChannel("store_4.json", 186, "notification-virtual");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:notification-virtual", channel.getUID().getAsString());
+        assertEquals("String", type.getItemType());
+        assertEquals("Raw Notification", channel.getLabel());
+        assertNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNull(statePattern);
     }
 
     @Test
@@ -306,7 +454,7 @@ public class ZwaveJSTypeGeneratorTest {
             channels.putAll(results.channels);
         }
 
-        assertEquals(43, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(47, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
         assertTrue(channels.containsKey("color-switch-color-temperature"));
     }
 }

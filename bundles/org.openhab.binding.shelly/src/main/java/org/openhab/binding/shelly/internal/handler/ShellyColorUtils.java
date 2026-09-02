@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -135,6 +135,22 @@ public class ShellyColorUtils {
         boolean changed = effect != value;
         effect = value;
         return changed;
+    }
+
+    public PercentType getPercentRed() {
+        return percentRed;
+    }
+
+    public PercentType getPercentGreen() {
+        return percentGreen;
+    }
+
+    public PercentType getPercentBlue() {
+        return percentBlue;
+    }
+
+    public PercentType getPercentWhite() {
+        return percentWhite;
     }
 
     public HSBType toHSB() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,6 +106,10 @@ public class GardenaSmartWebSocket {
 
     public String getLocationID() {
         return this.locationID;
+    }
+
+    public synchronized void updateToken(@Nullable PostOAuth2Response token) {
+        this.token = token;
     }
 
     public void restart(String newUrl) throws Exception {

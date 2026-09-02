@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,7 +100,7 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
         if (status != 200 || "".equals(response) || ".".equals(response)) {
             validRequest = false;
             if (retries >= 1) {
-                webIface.authenticate();
+                webIface.invalidateAuthentication();
                 retries--;
                 switch (httpMethod) {
                     case GET:

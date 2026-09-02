@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,9 +50,9 @@ public class DoorLockDevice extends BaseDevice {
                 int lockInt = ((Double) data).intValue();
                 boolean locked = DoorLockCluster.LockStateEnum.LOCKED.getValue() == lockInt;
                 if (primaryItem instanceof GroupItem groupItem) {
-                    groupItem.send(OnOffType.from(locked));
+                    groupItem.send(OnOffType.from(locked), MATTER_SOURCE);
                 } else {
-                    ((SwitchItem) primaryItem).send(OnOffType.from(locked));
+                    ((SwitchItem) primaryItem).send(OnOffType.from(locked), MATTER_SOURCE);
                 }
             }
             default:
@@ -67,8 +67,9 @@ public class DoorLockDevice extends BaseDevice {
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
         attributeMap.put(DoorLockCluster.CLUSTER_PREFIX + "." + DoorLockCluster.ATTRIBUTE_LOCK_STATE,
                 Optional.ofNullable(primaryItem.getStateAs(OnOffType.class))
-                        .orElseGet(() -> OnOffType.OFF) == OnOffType.ON ? DoorLockCluster.LockStateEnum.LOCKED.value
-                                : DoorLockCluster.LockStateEnum.UNLOCKED.value);
+                        .orElseGet(() -> OnOffType.OFF) == OnOffType.ON
+                                ? DoorLockCluster.LockStateEnum.LOCKED.getValue()
+                                : DoorLockCluster.LockStateEnum.UNLOCKED.getValue());
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
     }
 
@@ -81,8 +82,8 @@ public class DoorLockDevice extends BaseDevice {
     public void updateState(Item item, State state) {
         if (state instanceof OnOffType onOffType) {
             setEndpointState(DoorLockCluster.CLUSTER_PREFIX, DoorLockCluster.ATTRIBUTE_LOCK_STATE,
-                    onOffType == OnOffType.ON ? DoorLockCluster.LockStateEnum.LOCKED.value
-                            : DoorLockCluster.LockStateEnum.UNLOCKED.value);
+                    onOffType == OnOffType.ON ? DoorLockCluster.LockStateEnum.LOCKED.getValue()
+                            : DoorLockCluster.LockStateEnum.UNLOCKED.getValue());
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,4 +32,10 @@ public class MetOfficeDataHubBridgeConfiguration {
      * reboots)
      */
     public int siteRateDailyLimit = 250;
+
+    /**
+     * If enabled then API key validation is disabled, and API communication will be attempted without first validating
+     * the key.
+     */
+    public boolean disableKeyValidation = false;
 }

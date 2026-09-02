@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -37,17 +36,24 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(1293, ApplicationBasicCluster.class);
         CLUSTER_IDS.put(1292, ApplicationLauncherCluster.class);
         CLUSTER_IDS.put(1291, AudioOutputCluster.class);
-        CLUSTER_IDS.put(769, BallastConfigurationCluster.class);
         CLUSTER_IDS.put(40, BasicInformationCluster.class);
         CLUSTER_IDS.put(30, BindingCluster.class);
         CLUSTER_IDS.put(69, BooleanStateCluster.class);
         CLUSTER_IDS.put(128, BooleanStateConfigurationCluster.class);
         CLUSTER_IDS.put(57, BridgedDeviceBasicInformationCluster.class);
+        CLUSTER_IDS.put(1362, CameraAvSettingsUserLevelManagementCluster.class);
+        CLUSTER_IDS.put(1361, CameraAvStreamManagementCluster.class);
         CLUSTER_IDS.put(1037, CarbonDioxideConcentrationMeasurementCluster.class);
         CLUSTER_IDS.put(1036, CarbonMonoxideConcentrationMeasurementCluster.class);
         CLUSTER_IDS.put(1284, ChannelCluster.class);
+        CLUSTER_IDS.put(1366, ChimeCluster.class);
+        CLUSTER_IDS.put(260, ClosureControlCluster.class);
+        CLUSTER_IDS.put(261, ClosureDimensionCluster.class);
         CLUSTER_IDS.put(768, ColorControlCluster.class);
         CLUSTER_IDS.put(1873, CommissionerControlCluster.class);
+        CLUSTER_IDS.put(2823, CommodityMeteringCluster.class);
+        CLUSTER_IDS.put(149, CommodityPriceCluster.class);
+        CLUSTER_IDS.put(1792, CommodityTariffCluster.class);
         CLUSTER_IDS.put(1296, ContentAppObserverCluster.class);
         CLUSTER_IDS.put(1295, ContentControlCluster.class);
         CLUSTER_IDS.put(1290, ContentLauncherCluster.class);
@@ -60,6 +66,7 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(257, DoorLockCluster.class);
         CLUSTER_IDS.put(1872, EcosystemInformationCluster.class);
         CLUSTER_IDS.put(145, ElectricalEnergyMeasurementCluster.class);
+        CLUSTER_IDS.put(160, ElectricalGridConditionsCluster.class);
         CLUSTER_IDS.put(144, ElectricalPowerMeasurementCluster.class);
         CLUSTER_IDS.put(153, EnergyEvseCluster.class);
         CLUSTER_IDS.put(157, EnergyEvseModeCluster.class);
@@ -77,8 +84,8 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(70, IcdManagementCluster.class);
         CLUSTER_IDS.put(3, IdentifyCluster.class);
         CLUSTER_IDS.put(1024, IlluminanceMeasurementCluster.class);
+        CLUSTER_IDS.put(1875, JointFabricAdministratorCluster.class);
         CLUSTER_IDS.put(1874, JointFabricDatastoreCluster.class);
-        CLUSTER_IDS.put(1875, JointFabricPkiCluster.class);
         CLUSTER_IDS.put(1289, KeypadInputCluster.class);
         CLUSTER_IDS.put(74, LaundryDryerControlsCluster.class);
         CLUSTER_IDS.put(83, LaundryWasherControlsCluster.class);
@@ -88,6 +95,7 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(1288, LowPowerCluster.class);
         CLUSTER_IDS.put(1287, MediaInputCluster.class);
         CLUSTER_IDS.put(1286, MediaPlaybackCluster.class);
+        CLUSTER_IDS.put(2822, MeterIdentificationCluster.class);
         CLUSTER_IDS.put(95, MicrowaveOvenControlCluster.class);
         CLUSTER_IDS.put(94, MicrowaveOvenModeCluster.class);
         CLUSTER_IDS.put(80, ModeSelectCluster.class);
@@ -109,9 +117,8 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(46, PowerSourceConfigurationCluster.class);
         CLUSTER_IDS.put(156, PowerTopologyCluster.class);
         CLUSTER_IDS.put(1027, PressureMeasurementCluster.class);
-        CLUSTER_IDS.put(66, ProxyConfigurationCluster.class);
-        CLUSTER_IDS.put(67, ProxyDiscoveryCluster.class);
         CLUSTER_IDS.put(512, PumpConfigurationAndControlCluster.class);
+        CLUSTER_IDS.put(1365, PushAvStreamTransportCluster.class);
         CLUSTER_IDS.put(1071, RadonConcentrationMeasurementCluster.class);
         CLUSTER_IDS.put(87, RefrigeratorAlarmCluster.class);
         CLUSTER_IDS.put(82, RefrigeratorAndTemperatureControlledCabinetModeCluster.class);
@@ -123,6 +130,7 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(336, ServiceAreaCluster.class);
         CLUSTER_IDS.put(92, SmokeCoAlarmCluster.class);
         CLUSTER_IDS.put(52, SoftwareDiagnosticsCluster.class);
+        CLUSTER_IDS.put(1072, SoilMeasurementCluster.class);
         CLUSTER_IDS.put(59, SwitchCluster.class);
         CLUSTER_IDS.put(1285, TargetNavigatorCluster.class);
         CLUSTER_IDS.put(86, TemperatureControlCluster.class);
@@ -134,17 +142,21 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(1107, ThreadNetworkDirectoryCluster.class);
         CLUSTER_IDS.put(44, TimeFormatLocalizationCluster.class);
         CLUSTER_IDS.put(56, TimeSynchronizationCluster.class);
+        CLUSTER_IDS.put(2049, TlsCertificateManagementCluster.class);
+        CLUSTER_IDS.put(2050, TlsClientManagementCluster.class);
         CLUSTER_IDS.put(1070, TotalVolatileOrganicCompoundsConcentrationMeasurementCluster.class);
         CLUSTER_IDS.put(45, UnitLocalizationCluster.class);
         CLUSTER_IDS.put(65, UserLabelCluster.class);
-        CLUSTER_IDS.put(68, ValidProxiesCluster.class);
         CLUSTER_IDS.put(129, ValveConfigurationAndControlCluster.class);
         CLUSTER_IDS.put(1283, WakeOnLanCluster.class);
         CLUSTER_IDS.put(148, WaterHeaterManagementCluster.class);
         CLUSTER_IDS.put(158, WaterHeaterModeCluster.class);
         CLUSTER_IDS.put(121, WaterTankLevelMonitoringCluster.class);
+        CLUSTER_IDS.put(1363, WebRtcTransportProviderCluster.class);
+        CLUSTER_IDS.put(1364, WebRtcTransportRequestorCluster.class);
         CLUSTER_IDS.put(54, WiFiNetworkDiagnosticsCluster.class);
         CLUSTER_IDS.put(1105, WiFiNetworkManagementCluster.class);
         CLUSTER_IDS.put(258, WindowCoveringCluster.class);
+        CLUSTER_IDS.put(1360, ZoneManagementCluster.class);
     }
 }

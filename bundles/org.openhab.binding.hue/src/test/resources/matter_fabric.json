@@ -1,0 +1,15 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"creation_time": "2025-12-14T14:06:09Z",
+			"fabric_data": {
+				"label": "",
+				"vendor_id": 4996
+			},
+			"id": "d5439fd6-53bf-4677-a5e1-2ab78fa47ce9",
+			"status": "paired",
+			"type": "matter_fabric"
+		}
+	]
+}

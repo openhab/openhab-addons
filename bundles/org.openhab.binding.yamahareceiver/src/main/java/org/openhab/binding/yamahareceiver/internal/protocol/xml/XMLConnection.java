@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
@@ -212,6 +213,6 @@ public class XMLConnection extends AbstractConnection {
      * @throws MalformedURLException
      */
     private URL createBaseUrl(String path) throws MalformedURLException {
-        return new URL("http://" + host + path);
+        return URI.create("http://" + host + path).toURL();
     }
 }

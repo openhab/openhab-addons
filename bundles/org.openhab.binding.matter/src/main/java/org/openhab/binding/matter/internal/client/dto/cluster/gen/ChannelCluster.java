@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,13 +32,11 @@ public class ChannelCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0504;
     public static final String CLUSTER_NAME = "Channel";
     public static final String CLUSTER_PREFIX = "channel";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CHANNEL_LIST = "channelList";
     public static final String ATTRIBUTE_LINEUP = "lineup";
     public static final String ATTRIBUTE_CURRENT_CHANNEL = "currentChannel";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute shall provide the list of supported channels.
@@ -64,31 +61,31 @@ public class ChannelCluster extends BaseCluster {
     public static class ChannelInfoStruct {
         /**
          * This field shall indicate the channel major number value (for example, using ATSC format). When the channel
-         * number is expressed as a string, such as &quot;13.1&quot; or &quot;256&quot;, the major number would be 13 or
-         * 256, respectively. This field is required but shall be set to 0 for channels such as over-the-top channels
-         * that are not represented by a major or minor number.
+         * number is expressed as a string, such as "13.1" or "256", the major number would be 13 or 256, respectively.
+         * This field is required but shall be set to 0 for channels such as over-the-top channels that are not
+         * represented by a major or minor number.
          */
         public Integer majorNumber; // uint16
         /**
          * This field shall indicate the channel minor number value (for example, using ATSC format). When the channel
-         * number is expressed as a string, such as &quot;13.1&quot; or &quot;256&quot;, the minor number would be 1 or
-         * 0, respectively. This field is required but shall be set to 0 for channels such as over-the-top channels that
-         * are not represented by a major or minor number.
+         * number is expressed as a string, such as "13.1" or "256", the minor number would be 1 or 0, respectively.
+         * This field is required but shall be set to 0 for channels such as over-the-top channels that are not
+         * represented by a major or minor number.
          */
         public Integer minorNumber; // uint16
         /**
-         * This field shall indicate the marketing name for the channel, such as “The CW&quot; or &quot;Comedy
-         * Central&quot;. This field is optional, but SHOULD be provided when known.
+         * This field shall indicate the marketing name for the channel, such as “The CW" or "Comedy Central". This
+         * field is optional, but SHOULD be provided when known.
          */
         public String name; // string
         /**
-         * This field shall indicate the call sign of the channel, such as &quot;PBS&quot;. This field is optional, but
-         * SHOULD be provided when known.
+         * This field shall indicate the call sign of the channel, such as "PBS". This field is optional, but SHOULD be
+         * provided when known.
          */
         public String callSign; // string
         /**
-         * This field shall indicate the local affiliate call sign, such as &quot;KCTS&quot;. This field is optional,
-         * but SHOULD be provided when known.
+         * This field shall indicate the local affiliate call sign, such as "KCTS". This field is optional, but SHOULD
+         * be provided when known.
          */
         public String affiliateCallSign; // string
         /**
@@ -116,7 +113,7 @@ public class ChannelCluster extends BaseCluster {
 
     /**
      * The Lineup Info allows references to external lineup sources like Gracenote. The combination of OperatorName,
-     * LineupName, and PostalCode MUST uniquely identify a lineup.
+     * LineupName, and PostalCode shall uniquely identify a lineup.
      */
     public static class LineupInfoStruct {
         /**
@@ -124,13 +121,13 @@ public class ChannelCluster extends BaseCluster {
          */
         public String operatorName; // string
         /**
-         * This field shall indicate the name of the provider lineup, for example &quot;Comcast King County&quot;. This
-         * field is optional, but SHOULD be provided when known.
+         * This field shall indicate the name of the provider lineup, for example "Comcast King County". This field is
+         * optional, but SHOULD be provided when known.
          */
         public String lineupName; // string
         /**
-         * This field shall indicate the postal code (zip code) for the location of the device, such as
-         * &quot;98052&quot;. This field is optional, but SHOULD be provided when known.
+         * This field shall indicate the postal code (zip code) for the location of the device, such as "98052". This
+         * field is optional, but SHOULD be provided when known.
          */
         public String postalCode; // string
         /**
@@ -175,7 +172,7 @@ public class ChannelCluster extends BaseCluster {
          */
         public String title; // string
         /**
-         * This field shall indicate the subtitle for the specific program. For example, “Maybe Today&quot; which is an
+         * This field shall indicate the subtitle for the specific program. For example, “Maybe Today" which is an
          * episode name for “MCIS: Los Angeles”. This field is optional but shall be provided if applicable and known.
          */
         public String subtitle; // string
@@ -390,8 +387,8 @@ public class ChannelCluster extends BaseCluster {
     public enum LineupInfoTypeEnum implements MatterEnum {
         MSO(0, "Mso");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LineupInfoTypeEnum(Integer value, String label) {
             this.value = value;
@@ -414,8 +411,8 @@ public class ChannelCluster extends BaseCluster {
         MULTIPLE_MATCHES(1, "Multiple Matches"),
         NO_MATCHES(2, "No Matches");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -439,8 +436,8 @@ public class ChannelCluster extends BaseCluster {
         TERRESTRIAL(2, "Terrestrial"),
         OTT(3, "Ott");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChannelTypeEnum(Integer value, String label) {
             this.value = value;
@@ -513,7 +510,7 @@ public class ChannelCluster extends BaseCluster {
     /**
      * Change the channel to the channel case-insensitive exact matching the value passed as an argument.
      * The match priority order shall be: Identifier, AffiliateCallSign, CallSign, Name, Number. In the match string,
-     * the Channel number should be presented in the &quot;Major.Minor&quot; format, such as &quot;13.1&quot;.
+     * the Channel number should be presented in the Major.Minor format, such as 13.1.
      * Upon receipt, this shall generate a ChangeChannelResponse command.
      * Upon success, the CurrentChannel attribute, if supported, shall be updated to reflect the change.
      */
@@ -541,6 +538,9 @@ public class ChannelCluster extends BaseCluster {
 
     /**
      * This command provides channel up and channel down functionality, but allows channel index jumps of size Count.
+     * Jumps are relative to the available list of channels. For example, when the current channel is 100.0 and the list
+     * of available channels is [100.0, 200.0, 201.0, 305.1], a SkipChannel command with jump value of 2 shall change
+     * the channel to 201.0.
      * When the value of the increase or decrease is larger than the number of channels remaining in the given
      * direction, then the behavior shall be to return to the beginning (or end) of the channel list and continue. For
      * example, if the current channel is at index 0 and count value of -1 is given, then the current channel should
@@ -633,7 +633,6 @@ public class ChannelCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "channelList : " + channelList + "\n";
         str += "lineup : " + lineup + "\n";

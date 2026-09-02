@@ -70,46 +70,46 @@
 		-->
 
 		<parameter name="region" type="text" required="true">
-			<label>AWS region ID</label>
-			<description><![CDATA[AWS region ID<br />
+			<label>AWS Region ID</label>
+			<description><![CDATA[AWS region ID.<br />
 			The region needs to match the region of the AWS user that will access Amazon DynamoDB.<br />
 			For example, eu-west-1.]]></description>
 		</parameter>
 
 		<parameter name="accessKey" type="text" required="false">
-			<label>AWS access key</label>
-			<description><![CDATA[AWS access key<br />
-			Give either 1) access key and secret key, or 2) credentials file and profile name.
+			<label>AWS Access Key</label>
+			<description><![CDATA[AWS access key.<br />
+			Provide either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
 
 		<parameter name="secretKey" type="text" required="false">
-			<label>AWS secret key</label>
-			<description><![CDATA[AWS secret key<br />
-			Give either 1) access key and secret key, or 2) credentials file and profile name.
+			<label>AWS Secret Key</label>
+			<description><![CDATA[AWS secret key.<br />
+			Provide either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
 
 
 		<parameter name="profilesConfigFile" type="text" required="false">
-			<label>AWS credentials file</label>
-			<description><![CDATA[Path to the AWS credentials file. <br />
-			For example, /etc/openhab/aws_creds. Please note that the user that runs openHAB must have approriate read rights to the credential file. <br />
-			Give either 1) access key and secret key, or 2) credentials file and profile name.
+			<label>AWS Credentials File</label>
+			<description><![CDATA[Path to the AWS credentials file.<br />
+			For example, /etc/openhab/aws_creds. Please note that the user that runs openHAB must have appropriate read rights to the credential file.<br />
+			Provide either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
 
 		<parameter name="profile" type="text" required="false">
-			<label>Profile name</label>
-			<description><![CDATA[Profile name in AWS credentials file. <br />
-			Give either 1) access key and secret key, or 2) credentials file and profile name.
+			<label>Profile Name</label>
+			<description><![CDATA[Profile name in AWS credentials file.<br />
+			Provide either 1) access key and secret key, or 2) credentials file and profile name.
 			]]></description>
 		</parameter>
 
 		<parameter name="table" type="text" required="false">
 			<label>Table</label>
-			<description><![CDATA[Table name. <br />
-			Specify this parameter over Table Prefix to use the new optimized table format.]]></description>
+			<description><![CDATA[Table name.<br />
+			Specify this parameter instead of Table Prefix to use the new optimized table format.]]></description>
 			<default>openhab</default> <!-- set by default, preferring new schema format -->
 		</parameter>
 
@@ -130,7 +130,7 @@
 		<parameter name="expireDays" type="integer" required="false" min="1">
 			<label>Data Expiry, in Days</label>
 			<description><![CDATA[Expire time for data.<br />
-			Data older than this is automatically removed by DynamoDB Time to Live (TTL) feature. Use empty value to disable data expiration.
+			Data older than this is automatically removed by the DynamoDB Time to Live (TTL) feature. Use an empty value to disable data expiration.
 			]]></description>
 			<advanced>true</advanced>
 			<default></default> <!-- empty by default, giving preference to new table schema -->
@@ -138,8 +138,8 @@
 
 		<parameter name="tablePrefix" type="text" required="false">
 			<label>Table Prefix</label>
-			<description><![CDATA[Legacy: Table prefix used in the name of created tables. <br />
-			Default is "openhab-"]]></description>
+			<description><![CDATA[Legacy: Table prefix used in the name of created tables.<br />
+			Default is "openhab-".]]></description>
 			<advanced>true</advanced>
 			<default></default> <!-- empty by default, giving preference to new table schema -->
 		</parameter>

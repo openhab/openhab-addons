@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,7 @@ public class SiteState extends AbstractCommand {
      */
     @Override
     protected void onCompleteCodeOk(@Nullable String json) {
-        JsonObject jsonObject = transform(json);
+        JsonObject jsonObject = transform(json, JsonObject.class);
 
         if (jsonObject != null) {
             logger.debug("success");
@@ -89,6 +89,10 @@ public class SiteState extends AbstractCommand {
                     processChargerStateData(chargerData.getAsJsonObject());
                 }
             }
+            // a successful site poll is the health signal of the bridge, so update the bridge status as well.
+            // Otherwise the bridge would only recover on the next token refresh/login (which can be up to an hour
+            // later) while the chargers already went back online via setOnline().
+            processResult(jsonObject);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeathome.internal.configuration.FreeAtHomeDeviceHandlerConfiguration;
@@ -56,6 +57,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.util.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -491,7 +493,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
                     Channel thingChannel = ChannelBuilder.create(channelUID)
                             .withAcceptedItemType(dpg.getOpenHabItemType()).withKind(ChannelKind.STATE)
-                            .withProperties(channelProps).withLabel(capitalizeWordsInLabel(channelLabel))
+                            .withProperties(channelProps)
+                            .withLabel(Objects.requireNonNull(StringUtils.capitalizeByWhitespace(channelLabel)))
                             .withDescription(channelDescription).withType(channelTypeUID).withAutoUpdatePolicy(policy)
                             .build();
                     thingChannels.add(thingChannel);
@@ -613,25 +616,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         mapChannelUID.clear();
 
         mapEventToChannelUID.clear();
-    }
-
-    private String capitalizeWordsInLabel(String label) {
-        // splliting up words using split function
-        String[] words = label.split(" ");
-
-        for (int i = 0; i < words.length; i++) {
-
-            // taking letter individually from sentences
-            String firstLetter = words[i].substring(0, 1);
-            String restOfWord = words[i].substring(1);
-
-            // making first letter uppercase using toUpperCase function
-            firstLetter = firstLetter.toUpperCase();
-            words[i] = firstLetter + restOfWord;
-        }
-
-        // joining the words together to make a sentence
-        return String.join(" ", words);
     }
 
     private boolean isThingHandlesVirtualDevice() {

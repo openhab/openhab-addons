@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,11 +60,15 @@ import com.google.gson.reflect.TypeToken;
  * The {@link HttpRequestBuilder} creates customized requests for Alexa API requests
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Martin Littkovsky - Fail fast on throttled requests
  */
 @NonNullByDefault
 public class HttpRequestBuilder {
     private static final String DEFAULT_USER_AGENT = "AmazonWebView/Amazon Alexa/" + API_VERSION + "/iOS/"
             + DI_OS_VERSION + "/iPhone";
+    private static final String AMZN_ERROR_TYPE_HEADER = "x-amzn-ErrorType";
+    private static final String THROTTLING_EXCEPTION = "ThrottlingException";
+    private static final String NO_REASON_GIVEN = "no reason given";
 
     private final Logger logger = LoggerFactory.getLogger(HttpRequestBuilder.class);
 
@@ -105,11 +109,12 @@ public class HttpRequestBuilder {
         request.header(ACCEPT_LANGUAGE, "en-US");
         request.header("DNT", "1");
         request.header("Upgrade-Insecure-Requests", "1");
-        if (!params.customHeaders().containsKey(USER_AGENT.toString())) {
-            request.agent(DEFAULT_USER_AGENT);
-        }
-        params.customHeaders().entrySet().stream().filter(h -> !h.getValue().isBlank())
-                .forEach(h -> request.header(h.getKey(), h.getValue()));
+        String customUserAgent = params.customHeaders().entrySet().stream()
+                .filter(header -> USER_AGENT.is(header.getKey())).map(Map.Entry::getValue).findFirst().orElse("");
+        request.agent(customUserAgent.isBlank() ? DEFAULT_USER_AGENT : customUserAgent);
+        params.customHeaders().entrySet().stream()
+                .filter(header -> !header.getValue().isBlank() && !USER_AGENT.is(header.getKey()))
+                .forEach(header -> request.header(header.getKey(), header.getValue()));
 
         // handle re-directs in response listener manually
         request.followRedirects(false);
@@ -304,11 +309,22 @@ public class HttpRequestBuilder {
         }
     }
 
-    private class HttpResponseListener extends BufferingResponseListener {
+    static boolean isThrottled(int responseStatus, @Nullable String amznErrorType) {
+        return responseStatus == TOO_MANY_REQUESTS_429
+                || (amznErrorType != null && amznErrorType.startsWith(THROTTLING_EXCEPTION));
+    }
+
+    static String buildFailureReason(@Nullable String reason, @Nullable String amznErrorType) {
+        String statusReason = reason == null || reason.isBlank() ? NO_REASON_GIVEN : reason;
+        return amznErrorType == null || amznErrorType.isBlank() ? statusReason
+                : statusReason + " (" + AMZN_ERROR_TYPE_HEADER + ": " + amznErrorType + ")";
+    }
+
+    /** Package-private so that HttpRequestBuilderTest can drive onComplete() directly. */
+    class HttpResponseListener extends BufferingResponseListener {
         private static final int MAX_REDIRECTS = 30;
         private static final int MAX_RETRIES = 3;
 
-        private final Logger logger = LoggerFactory.getLogger(HttpResponseListener.class);
         private final CompletableFuture<HttpResponse> httpResponse;
         private final RequestParams params;
         private final boolean autoRedirect;
@@ -378,12 +394,22 @@ public class HttpRequestBuilder {
                 // handle queue expired
                 httpResponse.completeExceptionally(new ConnectionException("Queue expired"));
             } else {
-                if (failMode == EXCEPTION || retryCounter == 0) {
+                // Amazon reports the real failure cause in the x-amzn-ErrorType header, the status
+                // line only carries a generic reason like "Bad Request"
+                String amznErrorType = headers.get(AMZN_ERROR_TYPE_HEADER);
+                if (amznErrorType != null && !amznErrorType.isBlank() && !logger.isTraceEnabled()) {
+                    logger.debug("< {} to {} failed: {}, x-amzn-ErrorType = {}", params.method(), requestUri,
+                            responseStatus, amznErrorType);
+                }
+                boolean throttled = isThrottled(responseStatus, amznErrorType);
+                // a throttled request is not retried: every retry is itself a counted request
+                if (failMode == EXCEPTION || retryCounter == 0 || (throttled && failMode != NORMAL)) {
                     if (responseStatus == 0) {
                         httpResponse.completeExceptionally(new ConnectionException("Request aborted."));
+                        return;
                     }
-                    httpResponse.completeExceptionally(new ConnectionException(
-                            requestUri + " failed with code " + responseStatus + ": " + response.getReason()));
+                    httpResponse.completeExceptionally(new ConnectionException(requestUri + " failed with code "
+                            + responseStatus + ": " + buildFailureReason(response.getReason(), amznErrorType)));
                 } else if (failMode == NORMAL) {
                     httpResponse.complete(new HttpResponse(responseStatus, headers, content));
                 } else {
@@ -400,7 +426,7 @@ public class HttpRequestBuilder {
         }
     }
 
-    private record RequestParams(HttpMethod method, @Nullable String requestContent, boolean json,
+    record RequestParams(HttpMethod method, @Nullable String requestContent, boolean json,
             Map<String, String> customHeaders) {
         public boolean equals(@Nullable Object o) {
             if (this == o) {

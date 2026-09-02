@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.hue.internal.api.dto.clip2;
+
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,23 +27,23 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ProductData {
-    private @NonNullByDefault({}) @SerializedName("model_id") String modelId;
-    private @NonNullByDefault({}) @SerializedName("manufacturer_name") String manufacturerName;
-    private @NonNullByDefault({}) @SerializedName("product_name") String productName;
-    private @NonNullByDefault({}) @SerializedName("product_archetype") String productArchetype;
-    private @NonNullByDefault({}) Boolean certified;
-    private @NonNullByDefault({}) @SerializedName("software_version") String softwareVersion;
-    private @Nullable @SerializedName("hardware_platform_type") String hardwarePlatformType;
+    private @SerializedName("model_id") @NonNullByDefault({}) String modelId;
+    private @SerializedName("product_archetype") @Nullable String productArchetype;
+    private @SerializedName("manufacturer_name") @Nullable String manufacturerName;
+    private @SerializedName("product_name") @Nullable String productName;
+    private @Nullable Boolean certified;
+    private @SerializedName("software_version") @Nullable String softwareVersion;
+    private @SerializedName("hardware_platform_type") @Nullable String hardwarePlatformType;
 
     public String getModelId() {
-        return modelId;
+        return Objects.requireNonNull(modelId);
     }
 
-    public String getManufacturerName() {
+    public @Nullable String getManufacturerName() {
         return manufacturerName;
     }
 
-    public String getProductName() {
+    public @Nullable String getProductName() {
         return productName;
     }
 
@@ -49,12 +51,21 @@ public class ProductData {
         return Archetype.of(productArchetype);
     }
 
+    public String getProductArchetypeAsString() {
+        return getProductArchetype().toString();
+    }
+
     public Boolean getCertified() {
+        Boolean certified = this.certified;
         return certified != null ? certified : false;
     }
 
-    public String getSoftwareVersion() {
-        return softwareVersion != null ? softwareVersion : "";
+    public String getCertifiedAsString() {
+        return getCertified().toString();
+    }
+
+    public @Nullable String getSoftwareVersion() {
+        return softwareVersion;
     }
 
     public @Nullable String getHardwarePlatformType() {

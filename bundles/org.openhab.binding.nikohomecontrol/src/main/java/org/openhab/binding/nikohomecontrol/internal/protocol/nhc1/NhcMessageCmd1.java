@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ class NhcMessageCmd1 extends NhcMessageBase1 {
 
     // thermostat
     private @Nullable Integer mode;
-    private @Nullable Integer overrule;
+    private @Nullable Long overrule;
     private @Nullable String overruletime;
 
     // energy
@@ -67,7 +67,7 @@ class NhcMessageCmd1 extends NhcMessageBase1 {
         return this;
     }
 
-    NhcMessageCmd1 withOverrule(int overrule) {
+    NhcMessageCmd1 withOverrule(long overrule) {
         this.overrule = overrule;
         return this;
     }

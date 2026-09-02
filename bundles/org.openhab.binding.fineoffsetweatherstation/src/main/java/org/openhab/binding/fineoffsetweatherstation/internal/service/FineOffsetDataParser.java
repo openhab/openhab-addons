@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,10 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.CodeBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
-import org.openhab.binding.fineoffsetweatherstation.internal.domain.Measurand;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasurandRegistry;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.ParserCustomizationType;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
@@ -46,6 +48,7 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetDataParser {
     private final Logger logger = LoggerFactory.getLogger(FineOffsetDataParser.class);
     private final Protocol protocol;
+    private final MeasurandRegistry registry = MeasurandRegistry.standard();
 
     public FineOffsetDataParser(Protocol protocol) {
         this.protocol = protocol;
@@ -89,7 +92,7 @@ public class FineOffsetDataParser {
             }
             SensorGatewayBinding sensorGatewayBinding = null;
             if (sensorCandidates.size() == 1) {
-                sensorGatewayBinding = sensorCandidates.get(0);
+                sensorGatewayBinding = sensorCandidates.getFirst();
             } else if (sensorCandidates.size() == 2 && data[idx] == 0) {
                 sensorGatewayBinding = Boolean.TRUE.equals(isUseWh24.get()) ? SensorGatewayBinding.WH24
                         : SensorGatewayBinding.WH65;
@@ -128,22 +131,13 @@ public class FineOffsetDataParser {
         // 10 - time zone index (?)
         // 11 - DST 0-1 - false/true
         // 12 - 0x?? - checksum
-        Integer frequency = null;
-        switch (data[4]) {
-            case 0:
-                frequency = 433;
-                break;
-            case 1:
-                frequency = 868;
-                break;
-            case 2:
-                frequency = 915;
-                break;
-            case 3:
-                frequency = 920;
-                break;
-
-        }
+        Integer frequency = switch (data[4]) {
+            case 0 -> 433;
+            case 1 -> 868;
+            case 2 -> 915;
+            case 3 -> 920;
+            default -> null;
+        };
         boolean useWh24 = data[5] == 0;
         var unix = toUInt32(data, 6);
         var date = LocalDateTime.ofEpochSecond(unix, 0, ZoneOffset.UTC);
@@ -179,17 +173,17 @@ public class FineOffsetDataParser {
     }
 
     List<MeasuredValue> getRainData(byte[] data, DebugDetails debugDetails) {
-        return readMeasuredValues(data, 5, Measurand.ParserCustomizationType.RAIN_READING, debugDetails);
+        return readMeasuredValues(data, 5, ParserCustomizationType.RAIN_READING, debugDetails);
     }
 
-    private List<MeasuredValue> readMeasuredValues(byte[] data, int idx,
-            Measurand.@Nullable ParserCustomizationType protocol, DebugDetails debugDetails) {
+    private List<MeasuredValue> readMeasuredValues(byte[] data, int idx, @Nullable ParserCustomizationType protocol,
+            DebugDetails debugDetails) {
         var size = toUInt16(data, 3);
 
         List<MeasuredValue> result = new ArrayList<>();
         while (idx < size) {
             byte code = data[idx++];
-            Measurand.SingleChannelMeasurand measurand = Measurand.getByCode(code);
+            CodeBinding measurand = registry.tcpByCode(code);
             if (measurand == null) {
                 logger.warn("failed to get measurand 0x{}", Integer.toHexString(code));
                 debugDetails.addDebugDetails(idx - 1, 1, "unknown measurand");

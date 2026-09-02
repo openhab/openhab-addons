@@ -8,7 +8,7 @@ For a list of certified products see this page: <https://www.studer-innotec.com/
 
 ## Supported Things
 
-This bundle adds the following thing type to the Modbus binding.
+This bundle adds the following Thing type to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
 | Thing Type IDs | Description                                                                                                          | Picture                             |
@@ -23,7 +23,7 @@ Note, that the things will show up under the Modbus binding.
 You need first to set up a Serial Modbus bridge according to the Modbus documentation.
 Things in this extension will use the selected bridge to connect to the device.
 
-For defining a thing textually, you have to find out the start address of the model block and the length of it.
+For defining a Thing textually, you have to find out the start address of the model block and the length of it.
 While the length is usually fixed, the address is not.
 Please refer to your device's vendor documentation how model blocks are laid for your equipment.
 
@@ -43,7 +43,7 @@ More Details about that can be found in the technical specification and appendix
 
 Multicast writes on any devices of given class, but reads only on the first available device (Not Summary!). Currently, there are no writes available, 10/20/40 is useless for now.
 
-The following parameters are valid for all thing types:
+The following parameters are valid for all Thing types:
 
 | Parameter | Type    | Required | Default if omitted      | Description                                                                |
 |-----------|---------|----------|-------------------------|----------------------------------------------------------------------------|

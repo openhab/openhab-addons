@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,14 +17,17 @@ import static org.mockito.Mockito.mock;
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
@@ -39,6 +42,7 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
@@ -47,6 +51,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.internal.BridgeImpl;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.State;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * {@link TestMessages} tests some generic use cases
@@ -61,7 +66,7 @@ class TestMessages {
     void testSignature() {
         String fileName = "src/test/resources/Signature.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             JSONObject json = new JSONObject(content);
             String calculatedSignature = MSpaUtils.getSignature(json.getString("nonce"), json.getLong("ts"),
                     ServiceRegion.ROW);
@@ -76,7 +81,7 @@ class TestMessages {
     void testToken() {
         String fileName = "src/test/resources/TokenResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             AccessTokenResponse token = MSpaUtils.decodeNewToken(content);
             assertEquals("test_token", token.getAccessToken(), "Token check");
             assertEquals(86400, token.getExpiresIn(), "Expiration check");
@@ -90,7 +95,7 @@ class TestMessages {
     void testDiscovery() {
         Bridge thing = new BridgeImpl(THING_TYPE_OWNER_ACCOUNT, new ThingUID("mspa", "account"));
         Map<String, Object> configMap = new HashMap<>();
-        MSpaDiscoveryService discovery = new MSpaDiscoveryService();
+        MSpaDiscoveryService discovery = new MSpaDiscoveryService(new SameThreadExecutorService());
         DiscoveryListenerMock discoveryListener = new DiscoveryListenerMock();
         discovery.addDiscoveryListener(discoveryListener);
         configMap.put("email", "a@b.c");
@@ -100,8 +105,10 @@ class TestMessages {
                 storageService.getStorage(BINDING_ID));
         String fileName = "src/test/resources/DevicelistResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
-            account.decodeDevices(content);
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+            Optional<JSONArray> deviceList = account.extractList(new JSONObject(content));
+            assertTrue(deviceList.isPresent(), "Device list present");
+            account.discovery(deviceList.get());
             List<DiscoveryResult> results = discoveryListener.getResults();
             assertEquals(1, results.size(), "Number of discovery results");
             DiscoveryResult result = results.get(0);
@@ -120,9 +127,9 @@ class TestMessages {
         pool.setCallback(callback);
         String fileName = "src/test/resources/DataResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             pool.distributeData(content);
-            assertEquals(10, callback.numberOfUpdates(), "Number of state updates");
+            assertEquals(11, callback.numberOfUpdates(), "Number of state updates");
 
             State heater = callback.getState(CHANNEL_HEATER);
             assertNotNull(heater, "Heater available");
@@ -178,6 +185,57 @@ class TestMessages {
             QuantityType<?> targetTempQuantity = (QuantityType<?>) targetTemp;
             assertEquals(SIUnits.CELSIUS, targetTempQuantity.getUnit(), "Target water temperature unit");
             assertEquals(40, targetTempQuantity.doubleValue(), 0.1, "Target water temperature unit");
+        } catch (IOException e) {
+            fail("Error reading file " + fileName);
+        }
+    }
+
+    @Test
+    void whenFaultReportedThenFaultChannelContainsCode() {
+        // Arrange
+        Thing thing = new ThingImpl(THING_TYPE_POOL, new ThingUID("mspa", "pool"));
+        MSpaPool pool = new MSpaPool(thing, mock(UnitProvider.class), mock(MSpaCommandOptionProvider.class));
+        CallbackMock callback = new CallbackMock();
+        pool.setCallback(callback);
+        String fileName = "src/test/resources/F1-FaultResponse.json";
+
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+
+            // Act
+            pool.distributeData(content);
+
+            // Assert
+            State faultState = callback.getState(CHANNEL_FAULT);
+            assertNotNull(faultState, "Fault channel updated");
+            assertTrue(faultState instanceof StringType, "Fault channel StringType");
+            assertEquals("F1", faultState.toString(), "Fault channel contains fault code only, warning is ignored");
+            assertNull(callback.getThingStatus(), "Thing status is not touched by fault reporting");
+        } catch (IOException e) {
+            fail("Error reading file " + fileName);
+        }
+    }
+
+    @Test
+    void whenNoFaultReportedThenFaultChannelShowsNone() {
+        // Arrange
+        Thing thing = new ThingImpl(THING_TYPE_POOL, new ThingUID("mspa", "pool"));
+        MSpaPool pool = new MSpaPool(thing, mock(UnitProvider.class), mock(MSpaCommandOptionProvider.class));
+        CallbackMock callback = new CallbackMock();
+        pool.setCallback(callback);
+        String fileName = "src/test/resources/DataResponse.json";
+
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+
+            // Act
+            pool.distributeData(content);
+
+            // Assert
+            State faultState = callback.getState(CHANNEL_FAULT);
+            assertNotNull(faultState, "Fault channel updated");
+            assertEquals(FAULT_STATE_NONE, faultState.toString(), "Fault channel reports NONE when fault is blank");
+            assertNull(callback.getThingStatus(), "Thing status is not touched when fault is blank");
         } catch (IOException e) {
             fail("Error reading file " + fileName);
         }

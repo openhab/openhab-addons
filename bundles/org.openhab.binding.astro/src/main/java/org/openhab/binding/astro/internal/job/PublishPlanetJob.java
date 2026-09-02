@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.astro.internal.job;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.astro.internal.AstroHandlerFactory;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 
 /**
@@ -28,26 +27,27 @@ public final class PublishPlanetJob extends AbstractJob {
     /**
      * Constructor
      *
-     * @param thingUID thing UID
+     * @param handler the thing handler
      * @throws IllegalArgumentException
      *             if the provided argument is {@code null}
      */
-    public PublishPlanetJob(String thingUID) {
-        super(thingUID);
+    public PublishPlanetJob(AstroThingHandler handler) {
+        super(handler);
     }
 
     @Override
     public void run() {
-        AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(getThingUID());
-        if (astroHandler != null) {
-            astroHandler.publishDailyInfo();
-        } else {
-            LOGGER.trace("AstroThingHandler is null");
+        try {
+            handler.publishDailyInfo();
+        } catch (Exception e) {
+            LOGGER.warn("The publishing of daily info for \"{}\" failed: {}", handler.getThing().getUID(),
+                    e.getMessage());
+            LOGGER.trace("", e);
         }
     }
 
     @Override
     public String toString() {
-        return "Publish planet job " + getThingUID();
+        return "Publish planet job " + handler.getThing().getUID();
     }
 }

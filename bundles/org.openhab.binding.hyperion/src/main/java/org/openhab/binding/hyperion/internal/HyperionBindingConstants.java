@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,6 +60,7 @@ public class HyperionBindingConstants {
     // List of all properties
     public static final String PROP_HOST = "host";
     public static final String PROP_PORT = "port";
+    public static final String PROP_INSTANCES = "instances";
     public static final String PROP_PRIORITY = "priority";
     public static final String PROP_POLL_FREQUENCY = "poll_frequency";
     public static final String PROP_ORIGIN = "origin";

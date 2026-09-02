@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.automation.pwm.internal.template;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,8 +51,7 @@ public class PWMRuleTemplate extends RuleTemplate {
         Set<String> tags = new HashSet<>();
         tags.add("PWM");
 
-        return new PWMRuleTemplate(tags, triggers, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList());
+        return new PWMRuleTemplate(tags, triggers, List.of(), List.of(), List.of());
     }
 
     public PWMRuleTemplate(Set<String> tags, List<Trigger> triggers, List<Condition> conditions, List<Action> actions,

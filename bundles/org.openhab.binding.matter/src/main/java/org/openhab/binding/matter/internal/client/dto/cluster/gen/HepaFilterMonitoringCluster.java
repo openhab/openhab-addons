@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -31,7 +30,6 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0071;
     public static final String CLUSTER_NAME = "HepaFilterMonitoring";
     public static final String CLUSTER_PREFIX = "hepaFilterMonitoring";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CONDITION = "condition";
     public static final String ATTRIBUTE_DEGRADATION_DIRECTION = "degradationDirection";
@@ -40,7 +38,6 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
     public static final String ATTRIBUTE_LAST_CHANGED_TIME = "lastChangedTime";
     public static final String ATTRIBUTE_REPLACEMENT_PRODUCT_LIST = "replacementProductList";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the current condition of the resource in percent.
@@ -95,8 +92,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         UP(0, "Up"),
         DOWN(1, "Down");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DegradationDirectionEnum(Integer value, String label) {
             this.value = value;
@@ -119,8 +116,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChangeIndicationEnum(Integer value, String label) {
             this.value = value;
@@ -149,8 +146,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         GTIN14(3, "Gtin 14"),
         OEM(4, "Oem");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ProductIdentifierTypeEnum(Integer value, String label) {
             this.value = value;
@@ -215,7 +212,6 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "condition : " + condition + "\n";
         str += "degradationDirection : " + degradationDirection + "\n";

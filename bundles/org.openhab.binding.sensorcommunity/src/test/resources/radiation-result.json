@@ -1,0 +1,92 @@
+[
+	{
+		"sampling_rate": null,
+		"sensordatavalues": [
+			{
+				"value": "72",
+				"id": 66244464531,
+				"value_type": "counts_per_minute"
+			},
+			{
+				"value": "30024",
+				"id": 66244464534,
+				"value_type": "hv_pulses"
+			},
+			{
+				"value": "181",
+				"id": 66244464537,
+				"value_type": "counts"
+			},
+			{
+				"value": "149985",
+				"id": 66244464539,
+				"value_type": "sample_time_ms"
+			}
+		],
+		"location": {
+			"country": "AT",
+			"longitude": "14.17789856482",
+			"indoor": 0,
+			"latitude": "48.18064425000",
+			"exact_location": 1,
+			"id": 66616,
+			"altitude": "294.8"
+		},
+		"timestamp": "2026-03-09 16:05:25",
+		"sensor": {
+			"pin": "19",
+			"id": 77506,
+			"sensor_type": {
+				"name": "Radiation Si22G",
+				"manufacturer": "EcoCurious",
+				"id": 36
+			}
+		},
+		"id": 28514541414
+	},
+	{
+		"sampling_rate": null,
+		"sensordatavalues": [
+			{
+				"value": "66",
+				"id": 66244412637,
+				"value_type": "counts_per_minute"
+			},
+			{
+				"value": "29403",
+				"id": 66244412638,
+				"value_type": "hv_pulses"
+			},
+			{
+				"value": "168",
+				"id": 66244412639,
+				"value_type": "counts"
+			},
+			{
+				"value": "152284",
+				"id": 66244412640,
+				"value_type": "sample_time_ms"
+			}
+		],
+		"location": {
+			"country": "AT",
+			"longitude": "14.17789856482",
+			"indoor": 0,
+			"latitude": "48.18064425000",
+			"exact_location": 1,
+			"id": 66616,
+			"altitude": "294.8"
+		},
+		"timestamp": "2026-03-09 16:02:55",
+		"sensor": {
+			"pin": "19",
+			"id": 77506,
+			"sensor_type": {
+				"name": "Radiation Si22G",
+				"manufacturer": "EcoCurious",
+				"id": 36
+			}
+		},
+		"id": 28514520654
+	}
+]

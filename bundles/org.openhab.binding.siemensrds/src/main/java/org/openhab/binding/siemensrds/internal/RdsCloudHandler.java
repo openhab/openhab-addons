@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -142,7 +142,7 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
         if (accessToken != null) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "cloud server responded");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
         } else {
             if (getThing().getStatus() == ThingStatus.ONLINE) {

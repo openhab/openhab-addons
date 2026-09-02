@@ -42,6 +42,8 @@
 
 		<properties>
 			<property name="thingTypeVersion">1</property>
+			<property name="modelId">Unknown</property>
+			<property name="serialNumber">Unknown</property>
 		</properties>
 
 		<config-description>
@@ -114,6 +116,8 @@
 
 		<properties>
 			<property name="thingTypeVersion">1</property>
+			<property name="modelId">Unknown</property>
+			<property name="serialNumber">Unknown</property>
 		</properties>
 
 		<representation-property>macAddress</representation-property>
@@ -148,6 +152,11 @@
 					<option value="40">Volume range is 0-40</option>
 				</options>
 				<default>20</default>
+			</parameter>
+			<parameter name="password" type="text" required="false" pattern="[A-Za-z0-9@]{0,16}">
+				<context>password</context>
+				<label>Password</label>
+				<description>Projector 'Monitor' password - must be &lt;= 16 alpha numeric or @ characters (optional)</description>
 			</parameter>
 		</config-description>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class BaseDevice implements StateChangeListener {
+    // The "source" sent with command events so rules can identify them as coming from Matter
+    public static final String MATTER_SOURCE = "org.openhab.binding.matter";
+
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected final GenericItem primaryItem;
@@ -88,12 +91,12 @@ public abstract class BaseDevice implements StateChangeListener {
 
     @Override
     public void stateChanged(Item item, State oldState, State newState) {
-        logger.debug("{} state changed from {} to {}", item.getName(), oldState, newState);
-        updateState(item, newState);
     }
 
     @Override
     public void stateUpdated(Item item, State state) {
+        logger.debug("{} state updated to {}", item.getName(), state);
+        updateState(item, state);
     }
 
     public BridgedEndpoint activateBridgedEndpoint() {

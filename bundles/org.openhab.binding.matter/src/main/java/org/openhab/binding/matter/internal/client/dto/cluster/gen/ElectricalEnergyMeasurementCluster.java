@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -29,7 +28,6 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0091;
     public static final String CLUSTER_NAME = "ElectricalEnergyMeasurement";
     public static final String CLUSTER_PREFIX = "electricalEnergyMeasurement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_ACCURACY = "accuracy";
     public static final String ATTRIBUTE_CUMULATIVE_ENERGY_IMPORTED = "cumulativeEnergyImported";
@@ -38,7 +36,6 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
     public static final String ATTRIBUTE_PERIODIC_ENERGY_EXPORTED = "periodicEnergyExported";
     public static final String ATTRIBUTE_CUMULATIVE_ENERGY_RESET = "cumulativeEnergyReset";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the accuracy of energy measurement by this server. The value of the MeasurementType field on this
@@ -152,6 +149,8 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
      * A server which has determined the time in UTC shall use the timestamp fields to specify the measurement period.
      * Such a server may also include the systime fields to indicate how many seconds had passed since boot for a given
      * timestamp; this allows for client-side resolution of UTC time for previous reports that only included systime.
+     * Elements using this data type shall indicate whether it represents cumulative or periodic energy, e.g. in the
+     * name or in the element description.
      */
     public static class EnergyMeasurementStruct {
         /**
@@ -203,14 +202,36 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          * EndTimestamp.
          */
         public BigInteger endSystime; // systime-ms
+        /**
+         * This field shall indicate the reported apparent energy.
+         * If the EnergyMeasurementStruct represents cumulative energy, then this shall represent the cumulative
+         * apparent energy recorded at either the value of the EndTimestamp field or the value of the EndSystime field,
+         * or both.
+         * If the EnergyMeasurementStruct represents periodic energy, then this shall represent the apparent energy
+         * recorded during the period specified by either the StartTimestamp and EndTimestamp fields, the period
+         * specified by the StartSystime and EndSystime fields, or both.
+         */
+        public BigInteger apparentEnergy; // energy-mVAh
+        /**
+         * This field shall be the reported reactive energy.
+         * If the EnergyMeasurementStruct represents cumulative energy, then this shall represent the cumulative
+         * reactive energy recorded at either the value of the EndTimestamp field or the value of the EndSystime field,
+         * or both.
+         * If the EnergyMeasurementStruct represents periodic energy, then this shall represent the reactive energy
+         * recorded during the period specified by either the StartTimestamp and EndTimestamp fields, the period
+         * specified by the StartSystime and EndSystime fields, or both.
+         */
+        public BigInteger reactiveEnergy; // energy-mVARh
 
         public EnergyMeasurementStruct(BigInteger energy, Integer startTimestamp, Integer endTimestamp,
-                BigInteger startSystime, BigInteger endSystime) {
+                BigInteger startSystime, BigInteger endSystime, BigInteger apparentEnergy, BigInteger reactiveEnergy) {
             this.energy = energy;
             this.startTimestamp = startTimestamp;
             this.endTimestamp = endTimestamp;
             this.startSystime = startSystime;
             this.endSystime = endSystime;
+            this.apparentEnergy = apparentEnergy;
+            this.reactiveEnergy = reactiveEnergy;
         }
     }
 
@@ -275,6 +296,45 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
         }
     }
 
+    // Enums
+    public enum MeasurementTypeEnum implements MatterEnum {
+        UNSPECIFIED(0, "Unspecified"),
+        VOLTAGE(1, "Voltage"),
+        ACTIVE_CURRENT(2, "Active Current"),
+        REACTIVE_CURRENT(3, "Reactive Current"),
+        APPARENT_CURRENT(4, "Apparent Current"),
+        ACTIVE_POWER(5, "Active Power"),
+        REACTIVE_POWER(6, "Reactive Power"),
+        APPARENT_POWER(7, "Apparent Power"),
+        RMS_VOLTAGE(8, "Rms Voltage"),
+        RMS_CURRENT(9, "Rms Current"),
+        RMS_POWER(10, "Rms Power"),
+        FREQUENCY(11, "Frequency"),
+        POWER_FACTOR(12, "Power Factor"),
+        NEUTRAL_CURRENT(13, "Neutral Current"),
+        ELECTRICAL_ENERGY(14, "Electrical Energy"),
+        REACTIVE_ENERGY(15, "Reactive Energy"),
+        APPARENT_ENERGY(16, "Apparent Energy");
+
+        private final Integer value;
+        private final String label;
+
+        private MeasurementTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
     // Bitmaps
     public static class FeatureMap {
         /**
@@ -290,8 +350,8 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
         /**
          * 
          * The feature indicates the server is capable of measuring how much energy has been imported or exported by the
-         * server over the device’s lifetime. This measurement may start from when a device’s firmware is updated to
-         * include this feature, when a device’s firmware is updated to correct measurement errors, or when a device is
+         * server over the device's lifetime. This measurement may start from when a device's firmware is updated to
+         * include this feature, when a device's firmware is updated to correct measurement errors, or when a device is
          * factory reset.
          */
         public boolean cumulativeEnergy;
@@ -302,13 +362,25 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          * by the server, and may represent overlapping periods.
          */
         public boolean periodicEnergy;
+        /**
+         * 
+         * Measurements report apparent energy
+         */
+        public boolean apparentEnergy;
+        /**
+         * 
+         * Measurements report reactive energy
+         */
+        public boolean reactiveEnergy;
 
         public FeatureMap(boolean importedEnergy, boolean exportedEnergy, boolean cumulativeEnergy,
-                boolean periodicEnergy) {
+                boolean periodicEnergy, boolean apparentEnergy, boolean reactiveEnergy) {
             this.importedEnergy = importedEnergy;
             this.exportedEnergy = exportedEnergy;
             this.cumulativeEnergy = cumulativeEnergy;
             this.periodicEnergy = periodicEnergy;
+            this.apparentEnergy = apparentEnergy;
+            this.reactiveEnergy = reactiveEnergy;
         }
     }
 
@@ -323,7 +395,6 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "accuracy : " + accuracy + "\n";
         str += "cumulativeEnergyImported : " + cumulativeEnergyImported + "\n";

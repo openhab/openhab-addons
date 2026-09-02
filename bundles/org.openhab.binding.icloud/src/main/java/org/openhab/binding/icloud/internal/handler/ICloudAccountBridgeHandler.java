@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,8 +44,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Retrieves the data for a given account from iCloud and passes the information to
@@ -186,7 +184,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 } catch (ICloudApiResponseException e) {
                     logger.debug("ICloudApiResponseException with status code {}", e.getStatusCode());
                     lastException = e;
-                    if (e.getStatusCode() == 450) {
+                    if (e.getStatusCode() == 421 || e.getStatusCode() == 450 || e.getStatusCode() == 500) {
+                        logger.debug("Authentication error detected (code {}), triggering re-authentication",
+                                e.getStatusCode());
                         checkLogin();
                     }
                 } catch (IllegalStateException e) {
@@ -209,7 +209,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 } catch (InterruptedException e) {
                     Thread.interrupted();
                 }
-            } while (!success && retryCount < 3);
+            } while (retryCount < 3);
             throw new RetryException(lastException);
         }
     }
@@ -404,7 +404,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                             "Status = " + statusCode + ", Response = " + json);
                 }
                 logger.debug("iCloud bridge data refresh complete.");
-            } catch (NumberFormatException | JsonSyntaxException e) {
+            } catch (RuntimeException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "iCloud response invalid: " + e.getMessage());
             }

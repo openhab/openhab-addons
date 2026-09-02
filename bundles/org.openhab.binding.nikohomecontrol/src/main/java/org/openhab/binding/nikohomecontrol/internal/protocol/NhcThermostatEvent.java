@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,5 +35,5 @@ public interface NhcThermostatEvent extends NhcBaseEvent {
      * @param overrule the overrule temperature in 0.1°C multiples
      * @param demand 0 if no demand, > 0 if heating, &lt; 0 if cooling
      */
-    void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand);
+    void thermostatEvent(long measured, long setpoint, int mode, long overrule, int demand);
 }

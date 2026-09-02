@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.tapocontrol.internal.api;
 
-import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.TAPO_CLOUD_URL;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.getObjectFromJson;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -167,6 +167,11 @@ public class TapoCloudConnector implements TapoConnectorInterface {
     @Override
     public String getThingUID() {
         return bridge.getUID().toString();
+    }
+
+    @Override
+    public TapoBridgeHandler getBridge() {
+        return bridge;
     }
 
     /************************

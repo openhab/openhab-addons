@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.voice.googlestt.internal;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public class GoogleSTTLocale {
         }
         logger.debug("Loading languages from doc");
         try {
-            URL url = new URL(GC_STT_DOC_LANGUAGES);
+            URL url = URI.create(GC_STT_DOC_LANGUAGES).toURL();
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("Content-Type", "text/html");
@@ -70,7 +71,7 @@ public class GoogleSTTLocale {
             Matcher matcher = pattern.matcher(html);
             Locale lastLocale = null;
             while (matcher.find()) {
-                Locale locale = new Locale(matcher.group("lang"), matcher.group("country"));
+                Locale locale = Locale.of(matcher.group("lang"), matcher.group("country"));
                 if (lastLocale == null || !lastLocale.equals(locale)) {
                     lastLocale = locale;
                     SUPPORTED_LOCALES.add(locale);
@@ -86,7 +87,7 @@ public class GoogleSTTLocale {
     private static void loadLocalesFromLocal() {
         Arrays.stream(LOCAL_COPY.split(",")).map((localeTag) -> {
             String[] localeTagParts = localeTag.split("-");
-            return new Locale(localeTagParts[0], localeTagParts[1]);
+            return Locale.of(localeTagParts[0], localeTagParts[1]);
         }).forEach(SUPPORTED_LOCALES::add);
     }
 }

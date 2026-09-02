@@ -1,0 +1,1013 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.roborock.internal;
+
+import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.CRC32;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.openhab.binding.roborock.internal.api.GetUrlByEmail;
+import org.openhab.binding.roborock.internal.api.Home;
+import org.openhab.binding.roborock.internal.api.HomeData;
+import org.openhab.binding.roborock.internal.api.Login;
+import org.openhab.binding.roborock.internal.api.Login.Rriot;
+import org.openhab.binding.roborock.internal.discovery.RoborockVacuumDiscoveryService;
+import org.openhab.binding.roborock.internal.util.ProtocolUtils;
+import org.openhab.binding.roborock.internal.util.SchedulerTask;
+import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+/**
+ * The {@link RoborockAccountHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Paul Smedley - Initial contribution
+ */
+@NonNullByDefault
+public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCallbackExtended {
+
+    static final Duration MQTT_INBOUND_SILENCE_THRESHOLD = Duration.ofMinutes(3);
+    static final Duration MQTT_ACTIVITY_USAGE_WINDOW = Duration.ofMinutes(2);
+    static final Duration MQTT_WATCHDOG_RECYCLE_COOLDOWN = Duration.ofMinutes(1);
+    static final long MQTT_WATCHDOG_INTERVAL_SECONDS = 30;
+
+    private final Logger logger = LoggerFactory.getLogger(RoborockAccountHandler.class);
+
+    private final Storage<String> sessionStorage;
+    private @Nullable RoborockAccountConfiguration config;
+    private final SchedulerTask initTask;
+    private final SchedulerTask mqttConnectTask;
+    private final SchedulerTask mqttWatchdogTask;
+    private final RoborockWebTargets webTargets;
+    private final MqttInboundLivenessWatchdog mqttWatchdog;
+    private @Nullable MqttClient mqttClient;
+    private volatile boolean disposed = false;
+    private String country = "";
+    private String countryCode = "";
+    private String token = "";
+    private String baseUri = "";
+    private Rriot rriot = new Rriot();
+    private final SecureRandom secureRandom = new SecureRandom();
+    private String mqttUser = "";
+    protected final Map<String, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
+    private final ExpiringCache<Home> homeCache = new ExpiringCache<>(Duration.ofMinutes(10), this::refreshHome);
+    private final ExpiringCache<HomeData> homeDataCache = new ExpiringCache<>(Duration.ofMinutes(10),
+            this::refreshHomeData);
+    private final AtomicInteger cloudSequenceCounter = new AtomicInteger(1);
+
+    private int nextCloudSequence() {
+        return cloudSequenceCounter.updateAndGet(current -> current >= Integer.MAX_VALUE ? 2 : current + 1);
+    }
+
+    private final Gson gson = new Gson();
+
+    public RoborockAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient) {
+        this(bridge, stateStorage, httpClient, new MqttInboundLivenessWatchdog(MQTT_ACTIVITY_USAGE_WINDOW,
+                MQTT_INBOUND_SILENCE_THRESHOLD, MQTT_WATCHDOG_RECYCLE_COOLDOWN));
+    }
+
+    RoborockAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient,
+            MqttInboundLivenessWatchdog mqttWatchdog) {
+        super(bridge);
+        webTargets = new RoborockWebTargets(httpClient);
+        sessionStorage = stateStorage;
+        this.mqttWatchdog = mqttWatchdog;
+        initTask = new SchedulerTask(scheduler, logger, "API Init", this::initAPI);
+        mqttConnectTask = new SchedulerTask(scheduler, logger, "MQTT Connection", this::establishMQTTConnection);
+        mqttWatchdogTask = new SchedulerTask(scheduler, logger, "MQTT Watchdog", this::checkMqttInboundLiveness);
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getEndpointPrefix() {
+        return ProtocolUtils.getEndpoint(rriot);
+    }
+
+    public ThingUID getUID() {
+        return thing.getUID();
+    }
+
+    @Nullable
+    public Home getHomeDetail() {
+        return homeCache.getValue();
+    }
+
+    /**
+     * Validates a captured snapshot of credentials.
+     * Decoupled from ThingStatus to allow recovery from transient connection drops.
+     */
+    private boolean hasValidCredentials(String localToken, Rriot localRriot) {
+        return !localToken.isBlank() && localRriot.r != null && localRriot.r.m != null && !localRriot.r.m.isBlank()
+                && localRriot.r.a != null && !localRriot.r.a.isBlank() && localRriot.u != null
+                && !localRriot.u.isBlank() && localRriot.s != null && !localRriot.s.isBlank() && localRriot.k != null
+                && !localRriot.k.isBlank();
+    }
+
+    @Nullable
+    public Home refreshHome() {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            return null;
+        }
+        try {
+            return webTargets.getHomeDetail(baseUri, localToken);
+        } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return null;
+            }
+            logger.warn("Transient API error while refreshing home: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Nullable
+    public HomeData getHomeData() {
+        return homeDataCache.getValue();
+    }
+
+    @Nullable
+    public HomeData refreshHomeData() {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            return null;
+        }
+        try {
+            Home home = homeCache.getValue();
+            if (home == null || home.data == null) {
+                return null;
+            }
+            return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), localRriot);
+        } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return null;
+            }
+            logger.warn("Transient API error while refreshing home data: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Nullable
+    public String getRoutines(String deviceId) {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            return "";
+        }
+        try {
+            return webTargets.getRoutines(deviceId, localRriot);
+        } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return "";
+            }
+            logger.warn("Transient API error while fetching routines: {}", e.getMessage());
+            return "";
+        }
+    }
+
+    @Nullable
+    public String setRoutine(String sceneID) {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            return "";
+        }
+        try {
+            return webTargets.setRoutine(sceneID, localRriot);
+        } catch (RoborockException e) {
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return "";
+            }
+            logger.warn("Transient API error while executing routine: {}", e.getMessage());
+            return "";
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // we do not have any channels -> nothing to do here
+    }
+
+    @Override
+    public void initialize() {
+        disposed = false;
+        RoborockAccountConfiguration localConfig = config = getConfigAs(RoborockAccountConfiguration.class);
+        if (localConfig.email.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-email");
+            return;
+        }
+        updateStatus(ThingStatus.UNKNOWN);
+        initTask.setNamePrefix(getThing().getUID().getId());
+        mqttConnectTask.setNamePrefix(getThing().getUID().getId());
+        mqttWatchdogTask.setNamePrefix(getThing().getUID().getId());
+        initTask.submit();
+        mqttWatchdogTask.scheduleRecurring(MQTT_WATCHDOG_INTERVAL_SECONDS);
+    }
+
+    @Override
+    public void handleRemoval() {
+        teardown();
+        super.handleRemoval();
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        logger.debug("Child registered with gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
+                getThing().getUID(), getThing().getLabel());
+        if (childHandler instanceof RoborockVacuumHandler vacuumHandler) {
+            String routingKey = buildRoutingKey(childThing.getConfiguration().get(THING_CONFIG_DUID),
+                    childThing.getUID().getId());
+            childDevices.put(routingKey, vacuumHandler);
+            if (!routingKey.equals(childThing.getUID().getId())) {
+                childDevices.put(childThing.getUID().getId(), vacuumHandler);
+            }
+            logger.debug("Registered child routing key '{}' for thing {}", routingKey, childThing.getUID());
+        } else {
+            logger.debug("Initialized child handler is not a RoborockVacuumHandler: {}",
+                    childHandler.getClass().getName());
+        }
+    }
+
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        logger.debug("Child released from gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
+                getThing().getUID(), getThing().getLabel());
+        String routingKey = buildRoutingKey(childThing.getConfiguration().get(THING_CONFIG_DUID),
+                childThing.getUID().getId());
+        childDevices.remove(routingKey);
+        childDevices.remove(childThing.getUID().getId());
+    }
+
+    static String buildRoutingKey(@Nullable Object configuredDuid, String fallbackThingId) {
+        if (configuredDuid != null) {
+            String value = configuredDuid.toString();
+            if (!value.isBlank()) {
+                return value;
+            }
+        }
+        return fallbackThingId;
+    }
+
+    /**
+     * Atomically invalidates an expired cloud session (code 2010), stops background MQTT tasks,
+     * purges persistent storage, clears stale 2fa config, and schedules 2FA re-authentication.
+     */
+
+    public synchronized void handleSessionExpired() {
+        if (token.isEmpty() && rriot.r == null) {
+            return;
+        }
+
+        logger.warn("Roborock session expired (code 2010). Invalidating credentials and requesting new 2FA code.");
+
+        mqttConnectTask.cancel();
+        mqttWatchdogTask.cancel();
+        disconnectMqttClient();
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "Session expired. Requesting new 2FA code...");
+
+        sessionStorage.remove("token");
+        sessionStorage.remove("rriot");
+        token = "";
+        rriot = new Rriot();
+
+        Configuration configuration = editConfiguration();
+        if (configuration.get("twofa") != null && !configuration.get("twofa").toString().isBlank()) {
+            configuration.put("twofa", "");
+            updateConfiguration(configuration);
+        }
+
+        if (config != null) {
+            config.twofa = "";
+        }
+
+        initTask.submit();
+    }
+
+    private void initAPI() {
+        if (disposed) {
+            logger.debug("Handler disposed, aborting API init");
+            return;
+        }
+        RoborockAccountConfiguration localConfig = config;
+        if (localConfig == null) {
+            return;
+        }
+        if (baseUri.isEmpty()) {
+            try {
+                GetUrlByEmail getUrlByEmail = webTargets.getUrlByEmail(localConfig.email);
+                if (getUrlByEmail != null && getUrlByEmail.data != null) {
+                    baseUri = getUrlByEmail.data.url;
+                    country = getUrlByEmail.data.country;
+                    countryCode = getUrlByEmail.data.countrycode;
+                    logger.trace("Country determined to be {} and code {}", country, countryCode);
+                } else {
+                    baseUri = EU_IOT_BASE_URL;
+                }
+            } catch (RoborockException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+                return;
+            }
+        }
+        String sessionStoreToken = sessionStorage.get("token");
+        String sessionStoreRriot = sessionStorage.get("rriot");
+        if (sessionStoreToken != null && sessionStoreRriot != null) {
+            logger.debug("Retrieved token and rriot values from sessionStorage");
+            token = sessionStoreToken;
+            @Nullable
+            Rriot rriotTemp = gson.fromJson(sessionStoreRriot, Rriot.class);
+            if (rriotTemp != null) {
+                rriot = rriotTemp;
+            }
+        } else {
+            logger.debug("No available token or rriot values from sessionStorage, logging in");
+            try {
+                if (localConfig.twofa.isBlank()) {
+                    if (!country.isBlank()) {
+                        webTargets.requestCodeV4(baseUri, localConfig.email);
+                    } else {
+                        webTargets.requestCode(baseUri, localConfig.email);
+                    }
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "A new 2FA verification code has been sent to your email. Please enter it in the 'twofa' configuration setting.");
+                    return;
+                } else {
+                    String response = "";
+                    if (!country.isBlank()) {
+                        response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
+                                localConfig.twofa);
+                    } else {
+                        response = webTargets.doLogin(baseUri, localConfig.email, localConfig.twofa);
+                    }
+                    Configuration configuration = editConfiguration();
+                    configuration.put("twofa", "");
+                    updateConfiguration(configuration);
+                    int code = 0;
+                    String message = "";
+                    if (response != null && !response.isEmpty()) {
+                        try {
+                            JsonObject responseObj = JsonParser.parseString(response).getAsJsonObject();
+                            if (responseObj.has("code")) {
+                                code = responseObj.get("code").getAsInt();
+                                message = responseObj.get("msg").getAsString();
+                            }
+                        } catch (RuntimeException e) {
+                            logger.debug("Failed to parse login response JSON: {}", e.getMessage());
+                        }
+                    }
+                    if (code == 200) {
+                        Login loginResponse = gson.fromJson(response, Login.class);
+                        if (loginResponse == null) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "@text/offline.comm-error.login-failed " + message);
+                            return;
+                        }
+                        sessionStorage.put("token", loginResponse.data.token);
+                        sessionStorage.put("rriot", gson.toJson(loginResponse.data.rriot));
+                        token = loginResponse.data.token;
+                        rriot = loginResponse.data.rriot;
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/offline.comm-error.login-failed " + message);
+                        return;
+                    }
+                }
+            } catch (RoborockException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+                return;
+            }
+        }
+        updateStatus(ThingStatus.ONLINE);
+        mqttConnectTask.submit();
+    }
+
+    private synchronized void teardown() {
+        disposed = true;
+        initTask.cancel();
+        mqttConnectTask.cancel();
+        mqttWatchdogTask.cancel();
+        disconnectMqttClient();
+    }
+
+    private void establishMQTTConnection() {
+        if (disposed) {
+            logger.debug("Handler disposed, aborting MQTT connection");
+            return;
+        }
+
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            logger.debug("Credentials incomplete; delaying MQTT connection.");
+            return;
+        }
+        try {
+            connectMqttClient(localRriot);
+            logger.debug("Bridge connected to MQTT");
+            updateStatus(ThingStatus.ONLINE);
+        } catch (MqttException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.no-mqtt");
+        }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        teardown();
+    }
+
+    public void connectMqttClient(Rriot localRriot) throws MqttException {
+        try {
+            URI mqttURL = new URI(localRriot.r.m);
+            mqttUser = ProtocolUtils.md5Hex(localRriot.u + ':' + localRriot.k).substring(2, 10);
+            String mqttPassword = ProtocolUtils.md5Hex(localRriot.s + ':' + localRriot.k).substring(16);
+            String serverURI = "ssl://" + mqttURL.getHost() + ":" + mqttURL.getPort();
+            String clientId = mqttUser;
+            MqttClient localMqttClient = mqttClient = new MqttClient(serverURI, clientId, new MemoryPersistence());
+            localMqttClient.setCallback(this);
+            MqttConnectOptions connOpts = new MqttConnectOptions();
+            connOpts.setCleanSession(true);
+            connOpts.setUserName(mqttUser);
+            connOpts.setPassword(mqttPassword.toCharArray());
+            connOpts.setAutomaticReconnect(true);
+            connOpts.setConnectionTimeout(60);
+            connOpts.setKeepAliveInterval(30);
+            localMqttClient.connect(connOpts);
+            mqttWatchdog.reset(Instant.now());
+        } catch (URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.comm-error.mqtt-url-bad");
+            throw new MqttException(e);
+        } catch (MqttException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.mqtt-login-fail");
+            throw e;
+        }
+    }
+
+    @Override
+    public void connectComplete(boolean reconnect, @Nullable String serverURI) {
+        if (disposed) {
+            return;
+        }
+        Rriot localRriot = this.rriot;
+        if (!hasValidCredentials(this.token, localRriot)) {
+            return;
+        }
+
+        if (reconnect) {
+            logger.info("MQTT reconnection completed for server URI: {}", serverURI);
+        } else {
+            logger.debug("MQTT connection established. Server URI: {}", serverURI);
+        }
+        try {
+            String mqttUser = ProtocolUtils.md5Hex(localRriot.u + ':' + localRriot.k).substring(2, 10);
+            String topic = "rr/m/o/" + localRriot.u + "/" + mqttUser + "/#";
+            MqttClient localMqttClient = mqttClient;
+            if (localMqttClient != null) {
+                localMqttClient.subscribe(topic, 0);
+            }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (MqttException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.mqtt-subscribe-fail");
+        }
+    }
+
+    @Override
+    public void connectionLost(@Nullable Throwable cause) {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT connectionLost");
+            return;
+        }
+        String causeMessage = cause != null ? cause.getMessage() : "unknown";
+        logger.warn("MQTT connection lost: {}. Attempting automatic reconnection...", causeMessage);
+    }
+
+    @Override
+    public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) throws Exception {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT messageArrived");
+            return;
+        }
+        String localTopic = topic;
+        MqttMessage localMessage = message;
+        if (localTopic == null || localMessage == null) {
+            return;
+        }
+        byte[] payload = localMessage.getPayload();
+        if (payload == null || payload.length == 0) {
+            return;
+        }
+
+        String destination = localTopic.substring(localTopic.lastIndexOf('/') + 1);
+        mqttWatchdog.noteInboundMessage(Instant.now());
+        logger.debug("Received MQTT message for device {}", destination);
+
+        RoborockVacuumHandler handler = childDevices.get(destination);
+        if (handler != null) {
+            handler.handleMessage(payload);
+        } else {
+            logger.warn("Received MQTT message for unknown device destination: {}", destination);
+        }
+    }
+
+    @Override
+    public void deliveryComplete(@Nullable IMqttDeliveryToken token) {
+    }
+
+    public void disconnectMqttClient() {
+        MqttClient localMqttClient = mqttClient;
+        if (localMqttClient != null) {
+            try {
+                if (localMqttClient.isConnected()) {
+                    localMqttClient.disconnect();
+                }
+                localMqttClient.close();
+            } catch (MqttException e) {
+                logger.error("Error while disconnecting MQTT client.", e);
+            }
+        }
+        this.mqttClient = null;
+    }
+
+    public int sendRPCCommand(String method, String params, String thingID, String localKey, byte[] nonce, int id)
+            throws UnsupportedEncodingException {
+
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            logger.debug("Cannot send RPC command {} as session credentials are invalid.", method);
+            return -1;
+        }
+
+        int timestamp = (int) Instant.now().getEpochSecond();
+        int protocol = 101;
+        MqttClient localMqttClient = mqttClient;
+        String nonceHex = java.util.HexFormat.of().formatHex(nonce);
+
+        Map<String, Object> security = new HashMap<>();
+        security.put("endpoint", ProtocolUtils.getEndpoint(localRriot));
+        security.put("nonce", nonceHex.toLowerCase());
+
+        JsonElement paramsElement = JsonParser.parseString(params);
+        Map<String, Object> inner = new HashMap<>();
+        inner.put("id", id);
+        inner.put("method", method);
+        inner.put("params", paramsElement);
+        inner.put("security", security);
+
+        Map<String, Object> dps = new HashMap<>();
+        dps.put(Integer.toString(protocol), gson.toJson(inner));
+
+        Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put("t", timestamp);
+        payloadMap.put("dps", dps);
+        String payload = gson.toJson(payloadMap);
+
+        logger.trace("MQTT payload = {}", payload);
+        byte[] messageBytes = build(localKey, protocol, timestamp, payload.getBytes(StandardCharsets.UTF_8));
+
+        String topic = "rr/m/i/" + localRriot.u + "/" + mqttUser + "/" + thingID;
+        if (localMqttClient != null && localMqttClient.isConnected()) {
+            logger.debug("Publishing {} message to {}", method, topic);
+            try {
+                MqttMessage message = new MqttMessage(messageBytes);
+                message.setQos(1);
+                message.setRetained(false);
+                localMqttClient.publish(topic, message);
+                mqttWatchdog.noteOutboundPublish(Instant.now());
+                return id;
+            } catch (MqttException e) {
+                logger.debug("MQTT publish failed (transient): {}", e.getMessage(), e);
+                return -1;
+            }
+        } else {
+            logger.debug("Failed to publish {} message to {}, mqttClient not connected", method, topic);
+            return -1;
+        }
+    }
+
+    byte[] build(String localKey, int protocol, int timestamp, byte[] payload) {
+        try {
+            String key = ProtocolUtils.encodeTimestamp(timestamp) + localKey + SALT;
+            byte[] encryptedPayload = ProtocolUtils.encrypt(payload, key);
+
+            int randomInt = secureRandom.nextInt(90000) + 10000;
+            int seq = nextCloudSequence();
+
+            int totalLength = HEADER_LENGTH_WITHOUT_CRC + encryptedPayload.length + CRC_LENGTH;
+            byte[] message = new byte[totalLength];
+
+            message[0] = '1';
+            message[1] = '.';
+            message[2] = '0';
+
+            ProtocolUtils.writeInt32BE(message, seq, SEQ_OFFSET);
+            ProtocolUtils.writeInt32BE(message, randomInt, RANDOM_OFFSET);
+            ProtocolUtils.writeInt32BE(message, timestamp, TIMESTAMP_OFFSET);
+            ProtocolUtils.writeInt16BE(message, protocol, PROTOCOL_OFFSET);
+            ProtocolUtils.writeInt16BE(message, encryptedPayload.length, PAYLOAD_OFFSET);
+
+            System.arraycopy(encryptedPayload, 0, message, HEADER_LENGTH_WITHOUT_CRC, encryptedPayload.length);
+
+            CRC32 crc32 = new CRC32();
+            crc32.update(message, 0, message.length - CRC_LENGTH);
+            ProtocolUtils.writeInt32BE(message, (int) crc32.getValue(), message.length - CRC_LENGTH);
+            return message;
+        } catch (Exception e) {
+            logger.debug("Exception encrypting payload, {}", e.getMessage());
+            return new byte[0];
+        }
+    }
+
+    public void onEventStreamFailure(Throwable error) {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring event stream failure");
+            return;
+        }
+        logger.debug("Device connection failed, reconnecting", error);
+        mqttConnectTask.schedule(60);
+    }
+
+    void checkMqttInboundLiveness() {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (disposed || !hasValidCredentials(localToken, localRriot)) {
+            return;
+        }
+        MqttClient localMqttClient = mqttClient;
+        boolean connected = localMqttClient != null && localMqttClient.isConnected();
+        Instant now = Instant.now();
+        MqttInboundLivenessWatchdog.Decision decision = mqttWatchdog.evaluate(now, connected);
+        if (decision == MqttInboundLivenessWatchdog.Decision.STALE) {
+            @Nullable
+            Instant lastInbound = mqttWatchdog.getLastInboundMessageAt();
+            String lastInboundAge = lastInbound == null ? "never"
+                    : Duration.between(lastInbound, now).toSeconds() + "s";
+            logger.debug(
+                    "MQTT inbound watchdog detected possible silent cloud downlink stall (last inbound: {}). Recycling MQTT client.",
+                    lastInboundAge);
+            mqttWatchdog.noteRecycleAttempt(now);
+            recycleMqttClient(localRriot);
+        } else if (decision != MqttInboundLivenessWatchdog.Decision.HEALTHY) {
+            logger.debug("MQTT inbound watchdog check skipped: {}", decision);
+        }
+    }
+
+    void recycleMqttClient(Rriot localRriot) {
+        disconnectMqttClient();
+        try {
+            connectMqttClient(localRriot);
+            logger.debug("MQTT client recycled after inbound liveness watchdog trigger");
+            updateStatus(ThingStatus.ONLINE);
+        } catch (MqttException e) {
+            logger.warn("MQTT recycle attempt failed", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.no-mqtt");
+        }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(RoborockVacuumDiscoveryService.class);
+    }
+    // -------------------------------------------------------------------------
+    // B01 command support (Q7 and similar models)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Translates a V1-style method name and params into the B01 equivalent,
+     * then builds and publishes the MQTT frame.
+     *
+     * <p>
+     * B01 uses a different payload envelope ({@code dps.10000}) and different
+     * method names ({@code prop.set}, {@code prop.get}, {@code service.*}) compared
+     * to V1 ({@code dps.101} with raw RPC method names).
+     *
+     * @param method V1-style method name, e.g. {@code "app_start"}, {@code "get_prop"}
+     * @param params JSON-encoded params, e.g. {@code "[]"} or {@code "["status"]"}
+     * @param thingID device DUID
+     * @param localKey device local key (16 UTF-8 bytes)
+     * @param id message sequence ID
+     * @return the message ID on success, -1 on failure
+     */
+    public int sendB01RPCCommand(String method, String params, String thingID, String localKey, int id) {
+        int timestamp = (int) Instant.now().getEpochSecond();
+        MqttClient localMqttClient = mqttClient;
+
+        String b01Method;
+        Object b01Params;
+
+        // Translate V1 method names → B01 equivalents.
+        switch (method) {
+            case COMMAND_APP_START -> {
+                b01Method = "service.set_room_clean";
+                b01Params = Map.of("clean_type", 0, "ctrl_value", 1, "room_ids", new JsonArray());
+            }
+            case COMMAND_APP_SPOT -> {
+                b01Method = "service.set_room_clean";
+                b01Params = Map.of("clean_type", 0, "ctrl_value", 0, "room_ids", new JsonArray());
+            }
+            case COMMAND_APP_PAUSE -> {
+                b01Method = "service.set_room_clean";
+                b01Params = Map.of("clean_type", 0, "ctrl_value", 2, "room_ids", new JsonArray());
+            }
+            case COMMAND_APP_CHARGE -> {
+                b01Method = "service.start_recharge";
+                b01Params = Map.of();
+            }
+            case COMMAND_GET_STATUS -> {
+                b01Method = "prop.get";
+                JsonArray statusProps = new JsonArray();
+                for (String p : new String[] { "status", "fault", "wind", "water", "mode", "quantity", "tank_state",
+                        "sweep_type", "clean_path_preference", "cloth_state", "time_zone", "language", "cleaning_time",
+                        "cleaning_area", "custom_type", "work_mode", "charge_state", "current_map_id", "map_num",
+                        "dust_action", "quiet_is_open", "clean_finish", "build_map", "dust_frequency", "multi_floor",
+                        "map_save", "green_laser", "dust_bag_used", "back_to_wash", "repeat_state" }) {
+                    statusProps.add(p);
+                }
+                b01Params = Map.of("property", statusProps);
+            }
+            case "get_prop" -> {
+                b01Method = "prop.get";
+                try {
+                    JsonElement properties = JsonParser.parseString(params);
+                    if (!properties.isJsonArray()) {
+                        logger.debug("B01 get_prop expects JSON array params but got: {}", params);
+                        return -1;
+                    }
+                    b01Params = Map.of("property", properties.getAsJsonArray());
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for get_prop: {}", e.getMessage());
+                    return -1;
+                }
+            }
+            case "set_custom_mode" -> {
+                try {
+                    int wind = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                    b01Method = "prop.set";
+                    b01Params = Map.of("wind", wind);
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for set_custom_mode: {}", e.getMessage());
+                    return -1;
+                }
+            }
+            case "set_water_box_custom_mode" -> {
+                try {
+                    int water = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                    b01Method = "prop.set";
+                    b01Params = Map.of("water", water);
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for set_water_box_custom_mode: {}", e.getMessage());
+                    return -1;
+                }
+            }
+            case "get_map_v1" -> {
+                b01Method = "service.upload_by_maptype";
+                b01Params = Map.of("force", 1, "map_type", 0);
+            }
+            case "get_room_mapping" -> {
+                b01Method = "service.get_map_list";
+                b01Params = Map.of();
+            }
+            case COMMAND_GET_NETWORK_INFO -> {
+                b01Method = "service.get_net_info";
+                b01Params = Map.of();
+            }
+            case COMMAND_GET_CONSUMABLE -> {
+                b01Method = "prop.get";
+                JsonArray consumableProps = new JsonArray();
+                for (String p : new String[] { "main_brush", "side_brush", "hypa", "main_sensor" }) {
+                    consumableProps.add(p);
+                }
+                b01Params = Map.of("property", consumableProps);
+            }
+            case COMMAND_GET_DND_TIMER -> {
+                b01Method = "prop.get";
+                JsonArray quietTimeProps = new JsonArray();
+                for (String p : new String[] { "quiet_begin_time", "quiet_end_time" }) {
+                    quietTimeProps.add(p);
+                }
+                b01Params = Map.of("property", quietTimeProps);
+            }
+            case COMMAND_GET_CLEAN_SUMMARY -> {
+                b01Method = "service.get_record_list";
+                b01Params = Map.of();
+            }
+            default -> {
+                logger.debug("B01 sendB01RPCCommand: unhandled method '{}', ignoring", method);
+                return -1;
+            }
+        }
+
+        // Build the inner payload: { method, msgId, params }
+        // Note: key ordering matches the cloud expectation (method first, then msgId, then params)
+        Map<String, Object> b01Inner = new java.util.LinkedHashMap<>();
+        b01Inner.put("method", b01Method);
+        b01Inner.put("msgId", String.valueOf(id));
+        b01Inner.put("params", b01Params);
+
+        Map<String, Object> dps = new HashMap<>();
+        dps.put("10000", b01Inner);
+
+        Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put("t", timestamp);
+        payloadMap.put("dps", dps);
+
+        String payload = gson.toJson(payloadMap);
+        logger.trace("B01 MQTT payload = {}", payload);
+
+        byte[] messageBytes = buildB01(localKey, payload.getBytes(StandardCharsets.UTF_8));
+        if (messageBytes.length == 0) {
+            logger.debug("Failed to build B01 {} message (empty frame), not publishing", method);
+            return -1;
+        }
+        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
+        if (localMqttClient != null && localMqttClient.isConnected()) {
+            logger.debug("Publishing B01 {} ({}) message to {}", method, b01Method, topic);
+            try {
+                MqttMessage message = new MqttMessage(messageBytes);
+                message.setQos(1);
+                message.setRetained(false);
+                localMqttClient.publish(topic, message);
+                mqttWatchdog.noteOutboundPublish(Instant.now());
+                return id;
+            } catch (MqttException e) {
+                logger.debug("B01 MQTT publish failed (transient): {}", e.getMessage(), e);
+                return -1;
+            }
+        } else {
+            logger.debug("Failed to publish B01 {} message to {}, mqttClient not connected", method, topic);
+            return -1;
+        }
+    }
+
+    /**
+     * Sends a Q10 native DP write by publishing a raw data-point map directly to the device,
+     * bypassing the RPC method/msgId envelope used by V1 and Q7.
+     *
+     * <p>
+     * Unlike {@link #sendB01RPCCommand}, no RPC envelope is added and the DP map is
+     * placed directly at the top level of {@code dps} — NOT nested under
+     * {@code 10000} as with RPC commands. The correct wire format is:
+     * {@code {"t":N,"dps":{"201":{"cmd":1}}}}
+     *
+     * @param thingID device DUID
+     * @param localKey device local key (16 UTF-8 bytes)
+     * @param dps the data-point map to publish, e.g. {@code {"201": {"cmd":1}}}
+     */
+    public void sendB01DpCommand(String thingID, String localKey, Map<String, Object> dps) {
+        int timestamp = (int) Instant.now().getEpochSecond();
+        MqttClient localMqttClient = mqttClient;
+
+        Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put("t", timestamp);
+        payloadMap.put("dps", dps);
+
+        String payload = gson.toJson(payloadMap);
+        logger.trace("B01 DP payload = {}", payload);
+
+        byte[] messageBytes = buildB01(localKey, payload.getBytes(StandardCharsets.UTF_8));
+        if (messageBytes.length == 0) {
+            logger.debug("Failed to build B01 DP message (empty frame), not publishing");
+            return;
+        }
+
+        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
+        if (localMqttClient != null && localMqttClient.isConnected()) {
+            logger.debug("Publishing B01 DP command to {}: {}", topic, dps);
+            try {
+                MqttMessage message = new MqttMessage(messageBytes);
+                message.setQos(1);
+                message.setRetained(false);
+                localMqttClient.publish(topic, message);
+                mqttWatchdog.noteOutboundPublish(Instant.now());
+            } catch (MqttException e) {
+                logger.debug("B01 DP publish failed (transient): {}", e.getMessage(), e);
+            }
+        } else {
+            logger.debug("Failed to publish B01 DP message to {}, mqttClient not connected", topic);
+        }
+    }
+
+    /**
+     * Builds a complete B01 binary frame: assembles the header, encrypts the payload
+     * with AES-128-CBC using a random IV derived from the frame's random field,
+     * and appends a CRC32 checksum.
+     *
+     * <p>
+     * The frame wire format is identical to V1 (version(3) + seq(4) + random(4) +
+     * timestamp(4) + protocol(2) + payloadLen(2) + payload(N) + crc32(4)) but the
+     * version bytes are {@code "B01"} and the crypto uses {@link ProtocolUtils#encryptB01}.
+     *
+     * @param localKey device local key
+     * @param payload plaintext payload bytes
+     * @return the complete binary frame ready to publish via MQTT
+     */
+    byte[] buildB01(String localKey, byte[] payload) {
+        try {
+            int timestamp = JsonParser.parseString(new String(payload, StandardCharsets.UTF_8)).getAsJsonObject()
+                    .get("t").getAsInt();
+            int randomInt = secureRandom.nextInt(90000) + 10000;
+            int seq = nextCloudSequence();
+            int protocol = 101;
+
+            byte[] encryptedPayload = ProtocolUtils.encryptB01(payload, localKey, randomInt);
+
+            int totalLength = HEADER_LENGTH_WITHOUT_CRC + encryptedPayload.length + CRC_LENGTH;
+            byte[] message = new byte[totalLength];
+
+            // Version string "B01"
+            message[0] = 'B';
+            message[1] = '0';
+            message[2] = '1';
+
+            ProtocolUtils.writeInt32BE(message, seq, SEQ_OFFSET);
+            ProtocolUtils.writeInt32BE(message, randomInt, RANDOM_OFFSET);
+            ProtocolUtils.writeInt32BE(message, timestamp, TIMESTAMP_OFFSET);
+            ProtocolUtils.writeInt16BE(message, protocol, PROTOCOL_OFFSET);
+            ProtocolUtils.writeInt16BE(message, encryptedPayload.length, PAYLOAD_OFFSET);
+
+            System.arraycopy(encryptedPayload, 0, message, HEADER_LENGTH_WITHOUT_CRC, encryptedPayload.length);
+
+            CRC32 crc32 = new CRC32();
+            crc32.update(message, 0, message.length - CRC_LENGTH);
+            ProtocolUtils.writeInt32BE(message, (int) crc32.getValue(), message.length - CRC_LENGTH);
+
+            return message;
+        } catch (Exception e) {
+            logger.debug("Exception building B01 frame: {}", e.getMessage());
+            return new byte[0];
+        }
+    }
+}

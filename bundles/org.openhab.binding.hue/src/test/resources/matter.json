@@ -1,0 +1,12 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"has_qr_code": false,
+			"id": "191870cd-a998-46b1-8776-db2c5f20e5cb",
+			"max_fabrics": 16,
+			"software_version_string": "1.3.0",
+			"type": "matter"
+		}
+	]
+}

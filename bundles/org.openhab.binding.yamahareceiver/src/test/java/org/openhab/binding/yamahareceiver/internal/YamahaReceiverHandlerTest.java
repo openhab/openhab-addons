@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,14 +17,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.BINDING_ID;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
 import org.openhab.binding.yamahareceiver.internal.discovery.ZoneDiscoveryService;
 import org.openhab.binding.yamahareceiver.internal.handler.YamahaBridgeHandler;
 import org.openhab.binding.yamahareceiver.internal.protocol.ConnectionStateListener;
@@ -36,6 +36,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
@@ -47,8 +48,6 @@ public class YamahaReceiverHandlerTest extends AbstractXMLProtocolTest {
 
     private YamahaBridgeHandler subject;
 
-    private @Mock YamahaBridgeConfig bridgeConfig;
-    private @Mock Configuration configuration;
     private @Mock ProtocolFactory protocolFactory;
     private @Mock DeviceInformation deviceInformation;
     private @Mock SystemControl systemControl;
@@ -63,11 +62,13 @@ public class YamahaReceiverHandlerTest extends AbstractXMLProtocolTest {
         ctx.respondWith("<Main_Zone><Input><Input_Sel_Item>GetParam</Input_Sel_Item></Input></Main_Zone>",
                 "Main_Zone_Input_Input_Sel.xml");
 
-        when(bridgeConfig.getHostWithPort()).thenReturn(Optional.of("localhost:80"));
-        when(bridgeConfig.getInputMapping()).thenReturn("");
-        when(bridgeConfig.getRefreshInterval()).thenReturn(10);
+        when(bridge.getUID()).thenReturn(new ThingUID(BINDING_ID, "yamahaAV", "bridge"));
 
-        when(configuration.as(YamahaBridgeConfig.class)).thenReturn(bridgeConfig);
+        Configuration configuration = new Configuration(new HashMap<>());
+        configuration.put("host", "localhost");
+        configuration.put("port", 80);
+        configuration.put("inputMapping", "");
+        configuration.put("refreshInterval", 10);
         when(bridge.getConfiguration()).thenReturn(configuration);
 
         when(protocolFactory.DeviceInformation(any(), any())).thenReturn(deviceInformation);

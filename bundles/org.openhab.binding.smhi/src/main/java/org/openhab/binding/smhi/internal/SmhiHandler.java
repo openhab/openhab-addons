@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,14 @@ package org.openhab.binding.smhi.internal;
 
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -27,11 +29,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
+import org.openhab.binding.smhi.provider.SmhiChannelTypeProvider;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -40,11 +40,12 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,16 +63,22 @@ public class SmhiHandler extends BaseThingHandler {
     private SmhiConfiguration config = new SmhiConfiguration();
 
     private final HttpClient httpClient;
+    private final SmhiChannelTypeProvider channelTypeProvider;
+    private final ChannelTypeRegistry channelTypeRegistry;
     private @Nullable SmhiConnector connection;
     private ZonedDateTime currentHour;
-    private @Nullable TimeSeries cachedTimeSeries;
-    private boolean hasLatestForecast = false;
+    private @Nullable SmhiTimeSeries cachedTimeSeries;
+    private @Nullable Future<?> parameterUpdater;
     private @Nullable Future<?> forecastUpdater;
     private @Nullable Future<?> instantUpdate;
+    private volatile boolean parametersInitialized = false;
 
-    public SmhiHandler(Thing thing, HttpClient httpClient) {
+    public SmhiHandler(Thing thing, HttpClient httpClient, SmhiChannelTypeProvider channelTypeProvider,
+            ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
         this.httpClient = httpClient;
+        this.channelTypeProvider = channelTypeProvider;
+        this.channelTypeRegistry = channelTypeRegistry;
         this.currentHour = calculateCurrentHour();
     }
 
@@ -96,14 +103,15 @@ public class SmhiHandler extends BaseThingHandler {
         config = getConfigAs(SmhiConfiguration.class);
 
         connection = new SmhiConnector(httpClient);
-
-        // Check which channel groups are selected in the config.
-        List<Channel> channels = new ArrayList<>();
-        channels.addAll(createChannels());
-        updateThing(editThing().withChannels(channels).build());
+        scheduler.execute(() -> {
+            updateParameters();
+            if (parametersInitialized) {
+                recreateChannels();
+                updateNow();
+            }
+        });
 
         startPolling();
-        updateNow();
     }
 
     /**
@@ -111,6 +119,7 @@ public class SmhiHandler extends BaseThingHandler {
      */
     private synchronized void startPolling() {
         logger.debug("Start polling");
+        parameterUpdater = scheduler.scheduleWithFixedDelay(this::updateParameters, 1, 1, TimeUnit.HOURS);
         forecastUpdater = scheduler.scheduleWithFixedDelay(this::waitForForecast, 1, 1, TimeUnit.MINUTES);
     }
 
@@ -119,7 +128,11 @@ public class SmhiHandler extends BaseThingHandler {
      */
     private synchronized void cancelPolling() {
         logger.debug("Cancelling polling");
-        Future<?> localRef = forecastUpdater;
+        Future<?> localRef = parameterUpdater;
+        if (localRef != null) {
+            localRef.cancel(false);
+        }
+        localRef = forecastUpdater;
         if (localRef != null) {
             localRef.cancel(false);
         }
@@ -130,11 +143,76 @@ public class SmhiHandler extends BaseThingHandler {
     }
 
     /**
+     * Downloads the parameter description and updates channel types.
+     * If any parameter has been updated, recreate the channels
+     */
+    private void updateParameters() {
+        SmhiConnector apiConnection = connection;
+        if (apiConnection != null) {
+            try {
+                List<ParameterMetadata> metadata = apiConnection.getParameterMetadata();
+                metadata.forEach(channelTypeProvider::putParameterMetadata);
+                AGGREGATE_CHANNELS_METADATA.forEach(channelTypeProvider::putParameterMetadata);
+                parametersInitialized = true;
+            } catch (SmhiException e) {
+                logger.warn("Unable to get parameters from API");
+                logger.debug("Reason", e);
+                return;
+            }
+        }
+        if (channelTypeProvider.channelsUpdatedSince(Duration.ofHours(1))) {
+            logger.debug("New channel type(s) created from SMHI parameters, recreating channels");
+            recreateChannels();
+        }
+    }
+
+    /**
+     * Recreate channels
+     */
+    private void recreateChannels() {
+        Map<ChannelUID, Channel> channels = new LinkedHashMap<>();
+        // Check which channel groups are selected in the config.
+        createChannels().forEach(c -> {
+            channels.put(c.getUID(), c);
+        });
+
+        // Keep connected channels
+        getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).forEach(c -> {
+            channels.putIfAbsent(c.getUID(), c);
+        });
+
+        // TODO: Remove after last 2026 release
+        List<String> deprecatedChannels = channels.values().stream().map(Channel::getUID)
+                .filter(channelId -> PMP3G_BACKWARD_COMP.containsKey(channelId.getIdWithoutGroup()))
+                .map(ChannelUID::getId).toList();
+        if (!deprecatedChannels.isEmpty()) {
+            logger.warn(
+                    "{}: The following deprecated channels have linked Items. Please relink them to the new channels: {}",
+                    thing.getUID(), deprecatedChannels);
+        }
+        // TODO: end
+
+        updateThing(editThing().withChannels(new ArrayList<>(channels.values())).build());
+    }
+
+    /**
      * Update channels with new forecast data.
      *
-     * @param timeSeries A {@link TimeSeries} object containing forecasts.
+     * @param timeSeries A {@link SmhiTimeSeries} object containing forecasts.
      */
-    private void updateChannels(TimeSeries timeSeries) {
+    private void updateChannels(SmhiTimeSeries timeSeries) {
+        // Update timeSeries channels
+        List<Channel> tsChannels = thing.getChannelsOfGroup("timeseries");
+        tsChannels.forEach(c -> {
+            String id = c.getUID().getIdWithoutGroup();
+            ParameterMetadata metadata = channelTypeProvider.getParameterMetadata(id);
+            if (metadata == null) {
+                return;
+            }
+
+            sendTimeSeries(c.getUID(), timeSeries.getTimeSeries(metadata));
+        });
+
         // Loop through hourly forecasts and update those available
         for (int i = 0; i < 25; i++) {
             List<Channel> channels = thing.getChannelsOfGroup("hour_" + i);
@@ -142,13 +220,23 @@ public class SmhiHandler extends BaseThingHandler {
                 continue;
             }
             Optional<Forecast> forecast = timeSeries.getForecast(currentHour, i);
-            if (forecast.isPresent()) {
-                channels.forEach(c -> {
-                    String id = c.getUID().getIdWithoutGroup();
-                    Optional<BigDecimal> value = forecast.get().getParameter(id);
-                    updateChannel(c, value);
-                });
-            }
+            forecast.ifPresent(f -> channels.forEach(c -> {
+                String id = c.getUID().getIdWithoutGroup();
+                // TODO: Remove after last 2026 release
+                if (id.equals(PMP3G_PRECIPITATION_CATEGORY)) {
+                    updateState(c.getUID(), new DecimalType(PMP3G_PCAT_BACKWARD_COMP
+                            .getOrDefault(f.getParameter(id).intValue(), f.getParameter(id).intValue())));
+                    return;
+                }
+                id = PMP3G_BACKWARD_COMP.getOrDefault(id, id);
+                // TODO: end
+                ParameterMetadata metadata = channelTypeProvider.getParameterMetadata(id);
+                if (metadata == null) {
+                    return;
+                }
+
+                updateState(c.getUID(), f.getParameterAsState(metadata));
+            }));
         }
         // Loop through daily forecasts and updates those available
         for (int i = 0; i < 10; i++) {
@@ -160,70 +248,18 @@ public class SmhiHandler extends BaseThingHandler {
             int dayOffset = i;
             channels.forEach(c -> {
                 String id = c.getUID().getIdWithoutGroup();
-                updateChannel(c, getDayValue(id, timeSeries, dayOffset));
+                // TODO: Remove after last 2026 release
+                if (id.equals(PMP3G_PRECIPITATION_CATEGORY)) {
+                    State value = getDayValue(id, timeSeries, dayOffset);
+                    updateState(c.getUID(), new DecimalType(PMP3G_PCAT_BACKWARD_COMP
+                            .getOrDefault(((DecimalType) value).intValue(), ((DecimalType) value).intValue())));
+                    return;
+                }
+                id = PMP3G_BACKWARD_COMP.getOrDefault(id, id);
+                // TODO: end
+                updateState(c.getUID(), getDayValue(id, timeSeries, dayOffset));
             });
         }
-    }
-
-    private void updateChannel(Channel channel, Optional<BigDecimal> value) {
-        String id = channel.getUID().getIdWithoutGroup();
-        State newState = UnDefType.UNDEF;
-
-        if (value.isPresent()) {
-            switch (id) {
-                case PRESSURE:
-                    newState = new QuantityType<>(value.get(), MetricPrefix.HECTO(SIUnits.PASCAL));
-                    break;
-                case TEMPERATURE:
-                case TEMPERATURE_MAX:
-                case TEMPERATURE_MIN:
-                    newState = new QuantityType<>(value.get(), SIUnits.CELSIUS);
-                    break;
-                case VISIBILITY:
-                    newState = new QuantityType<>(value.get(), MetricPrefix.KILO(SIUnits.METRE));
-                    break;
-                case WIND_DIRECTION:
-                    newState = new QuantityType<>(value.get(), Units.DEGREE_ANGLE);
-                    break;
-                case WIND_SPEED:
-                case WIND_MAX:
-                case WIND_MIN:
-                case GUST:
-                    newState = new QuantityType<>(value.get(), Units.METRE_PER_SECOND);
-                    break;
-                case RELATIVE_HUMIDITY:
-                case THUNDER_PROBABILITY:
-                    newState = new QuantityType<>(value.get(), Units.PERCENT);
-                    break;
-                case PERCENT_FROZEN:
-                    // Smhi returns -9 for spp if there's no precipitation, convert to UNDEF
-                    if (value.get().intValue() == -9) {
-                        newState = UnDefType.UNDEF;
-                    } else {
-                        newState = new QuantityType<>(value.get(), Units.PERCENT);
-                    }
-                    break;
-                case HIGH_CLOUD_COVER:
-                case MEDIUM_CLOUD_COVER:
-                case LOW_CLOUD_COVER:
-                case TOTAL_CLOUD_COVER:
-                    newState = new QuantityType<>(value.get().multiply(OCTAS_TO_PERCENT), Units.PERCENT);
-                    break;
-                case PRECIPITATION_MAX:
-                case PRECIPITATION_MEAN:
-                case PRECIPITATION_MEDIAN:
-                case PRECIPITATION_MIN:
-                    newState = new QuantityType<>(value.get(), Units.MILLIMETRE_PER_HOUR);
-                    break;
-                case PRECIPITATION_TOTAL:
-                    newState = new QuantityType<>(value.get(), MetricPrefix.MILLI(SIUnits.METRE));
-                    break;
-                default:
-                    newState = new DecimalType(value.get().setScale(0, RoundingMode.DOWN));
-            }
-        }
-
-        updateState(channel.getUID(), newState);
     }
 
     /**
@@ -239,17 +275,20 @@ public class SmhiHandler extends BaseThingHandler {
      * published, in that case, fetch it and update channels.
      */
     private void waitForForecast() {
+        if (!parametersInitialized) {
+            logger.debug("Parameters not yet initialized, deferring update");
+            return;
+        }
         try {
             if (isItNewHour()) {
                 currentHour = calculateCurrentHour();
                 // Update channels with cached forecasts - just shift an hour forward
-                TimeSeries forecast = cachedTimeSeries;
+                SmhiTimeSeries forecast = cachedTimeSeries;
                 if (forecast != null) {
                     updateChannels(forecast);
                 }
-                hasLatestForecast = false;
             }
-            if (!hasLatestForecast && isForecastUpdated()) {
+            if (isForecastUpdated()) {
                 getUpdatedForecast();
             }
         } catch (RuntimeException e) {
@@ -263,6 +302,10 @@ public class SmhiHandler extends BaseThingHandler {
      * Schedules an imminent update, making it wait 5 seconds to catch any bursts of calls before executing.
      */
     private synchronized void updateNow() {
+        if (!parametersInitialized) {
+            logger.debug("Parameters not yet initialized, deferring update");
+            return;
+        }
         Future<?> localRef = instantUpdate;
         if (localRef == null || localRef.isDone()) {
             instantUpdate = scheduler.schedule(this::getUpdatedForecast, 5, TimeUnit.SECONDS);
@@ -286,15 +329,20 @@ public class SmhiHandler extends BaseThingHandler {
      * @return true if the time of the latest forecast is equal to or after currentHour, otherwise false
      */
     private boolean isForecastUpdated() {
-        ZonedDateTime referenceTime;
+        ZonedDateTime createdTime;
         SmhiConnector apiConnection = connection;
         if (apiConnection != null) {
             try {
-                referenceTime = apiConnection.getReferenceTime();
+                createdTime = apiConnection.getCreatedTime();
             } catch (SmhiException e) {
                 return false;
             }
-            return referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour);
+            SmhiTimeSeries localRef = cachedTimeSeries;
+            if (localRef != null) {
+                return createdTime.isAfter(localRef.getCreatedTime());
+            } else {
+                return true;
+            }
         }
         return false;
     }
@@ -304,13 +352,15 @@ public class SmhiHandler extends BaseThingHandler {
      * If it is, set flag to indicate we have the latest forecast.
      */
     private void getUpdatedForecast() {
-        TimeSeries forecast;
-        ZonedDateTime referenceTime;
+        SmhiTimeSeries forecast;
         SmhiConnector apiConnection = connection;
         if (apiConnection != null) {
             try {
-                forecast = apiConnection.getForecast(config.latitude, config.longitude);
+                forecast = apiConnection.getForecast(config.getLatitude(), config.getLongitude());
             } catch (SmhiException e) {
+                // False positive null warning, e cannot be null here and Optional.orElse()
+                // has @Contract(value = "!null -> !null", pure = true)
+                @SuppressWarnings("null")
                 String message = Optional.ofNullable(e.getCause()).orElse(e).getMessage();
                 logger.debug("Failed to get new forecast: {}", message);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
@@ -322,11 +372,7 @@ public class SmhiHandler extends BaseThingHandler {
                 return;
             }
             updateStatus(ThingStatus.ONLINE);
-            referenceTime = forecast.getReferenceTime();
             updateChannels(forecast);
-            if (referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour)) {
-                hasLatestForecast = true;
-            }
             cachedTimeSeries = forecast;
         }
     }
@@ -337,44 +383,40 @@ public class SmhiHandler extends BaseThingHandler {
      * @return A {@link ZonedDateTime} corresponding to the last even hour
      */
     private ZonedDateTime calculateCurrentHour() {
-        ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        int y = now.getYear();
-        int m = now.getMonth().getValue();
-        int d = now.getDayOfMonth();
-        int h = now.getHour();
-        return ZonedDateTime.of(y, m, d, h, 0, 0, 0, ZoneOffset.UTC);
+        return ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).truncatedTo(ChronoUnit.HOURS);
     }
 
     /**
      * Creates channels based on selections in thing configuration
      *
-     * @return A List of Channels to add to the Thing
+     * @return A {@link java.util.List} of Channels to add to the Thing
      */
     private List<Channel> createChannels() {
         List<Channel> channels = new ArrayList<>();
 
-        @Nullable
-        List<Integer> hourlyForecasts = config.hourlyForecasts;
-        @Nullable
-        List<Integer> dailyForecasts = config.dailyForecasts;
+        List<Integer> hourlyForecasts = config.getHourlyForecasts();
+        List<Integer> dailyForecasts = config.getDailyForecasts();
 
-        if (hourlyForecasts != null) {
-            for (int i : hourlyForecasts) {
-                ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), "hour_" + i);
-                HOURLY_CHANNELS.forEach(id -> {
-                    channels.add(createChannel(groupUID, id));
-                });
+        ChannelGroupUID tsGroup = new ChannelGroupUID(thing.getUID(), TIMESERIES_GROUP_ID);
+        channelTypeProvider.getAllParameterMetadata().forEach(metadata -> {
+            ChannelType channelType = channelTypeRegistry
+                    .getChannelType(new ChannelTypeUID(BINDING_ID, metadata.name()));
+            if (channelType == null) {
+                return;
             }
-        }
 
-        if (dailyForecasts != null) {
+            if (!AGGREGATE_CHANNELS.contains(metadata.name())) {
+                channels.add(createChannel(tsGroup, channelType));
+                for (int i : hourlyForecasts) {
+                    ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), "hour_" + i);
+                    channels.add(createChannel(groupUID, channelType));
+                }
+            }
             for (int i : dailyForecasts) {
                 ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), "day_" + i);
-                DAILY_CHANNELS.forEach(id -> {
-                    channels.add(createChannel(groupUID, id));
-                });
+                channels.add(createChannel(groupUID, channelType));
             }
-        }
+        });
         return channels;
     }
 
@@ -382,74 +424,42 @@ public class SmhiHandler extends BaseThingHandler {
      * Create a channel with the correct item type based on the channel ID
      *
      * @param channelGroupUID Channel group the channel belongs to
-     * @param channelID ID of the channel (without group ID)
+     * @param channelType {@link ChannelType} the channel type
      * @return The created channel
      */
-    private Channel createChannel(ChannelGroupUID channelGroupUID, String channelID) {
-        ChannelUID channelUID = new ChannelUID(channelGroupUID, channelID);
-        String itemType = "Number";
-        switch (channelID) {
-            case TEMPERATURE:
-            case TEMPERATURE_MAX:
-            case TEMPERATURE_MIN:
-                itemType += ":Temperature";
-                break;
-            case PRESSURE:
-                itemType += ":Pressure";
-                break;
-            case VISIBILITY:
-            case PRECIPITATION_TOTAL:
-                itemType += ":Length";
-                break;
-            case WIND_DIRECTION:
-                itemType += ":Angle";
-                break;
-            case WIND_SPEED:
-            case WIND_MAX:
-            case WIND_MIN:
-            case GUST:
-            case PRECIPITATION_MAX:
-            case PRECIPITATION_MEAN:
-            case PRECIPITATION_MEDIAN:
-            case PRECIPITATION_MIN:
-                itemType += ":Speed";
-                break;
-            case RELATIVE_HUMIDITY:
-            case PERCENT_FROZEN:
-            case TOTAL_CLOUD_COVER:
-            case HIGH_CLOUD_COVER:
-            case MEDIUM_CLOUD_COVER:
-            case LOW_CLOUD_COVER:
-            case THUNDER_PROBABILITY:
-                itemType += ":Dimensionless";
-                break;
-
-        }
-        return ChannelBuilder.create(channelUID, itemType).withType(new ChannelTypeUID(BINDING_ID, channelID)).build();
+    private Channel createChannel(ChannelGroupUID channelGroupUID, ChannelType channelType) {
+        String channelId = channelType.getUID().getId();
+        ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
+        return ChannelBuilder.create(channelUID, channelType.getItemType()).withType(channelType.getUID()).build();
     }
 
     /**
      * Gets the value that represents the day forecast for a specified day and channel
      *
      * @param parameter The parameter to retrieve or calculate
-     * @param timeSeries A TimeSeries object containing forecasts
+     * @param timeSeries A {@link SmhiTimeSeries} object containing forecasts
      * @param dayOffset The number of days from the start of the TimeSeries
-     * @return An Optional containing the retrieved or calculated value
+     * @return A {@link State} representing the retrieved or calculated value
      */
-    private Optional<BigDecimal> getDayValue(String parameter, TimeSeries timeSeries, int dayOffset) {
-        switch (parameter) {
-            case TEMPERATURE_MAX:
-                return ForecastAggregator.max(timeSeries, dayOffset, TEMPERATURE);
-            case TEMPERATURE_MIN:
-                return ForecastAggregator.min(timeSeries, dayOffset, TEMPERATURE);
-            case WIND_MAX:
-                return ForecastAggregator.max(timeSeries, dayOffset, WIND_SPEED);
-            case WIND_MIN:
-                return ForecastAggregator.min(timeSeries, dayOffset, WIND_SPEED);
-            case PRECIPITATION_TOTAL:
-                return ForecastAggregator.total(timeSeries, dayOffset, PRECIPITATION_MEAN);
-            default:
-                return ForecastAggregator.noonOrFirst(timeSeries, dayOffset, parameter);
-        }
+    private State getDayValue(String parameter, SmhiTimeSeries timeSeries, int dayOffset) {
+        // TODO: Remove after last 2026 release
+        parameter = PMP3G_BACKWARD_COMP.getOrDefault(parameter, parameter);
+        // TODO: end
+
+        return switch (parameter) {
+            case TEMPERATURE_MAX ->
+                ForecastAggregator.max(timeSeries, dayOffset, channelTypeProvider.getParameterMetadata(TEMPERATURE));
+            case TEMPERATURE_MIN ->
+                ForecastAggregator.min(timeSeries, dayOffset, channelTypeProvider.getParameterMetadata(TEMPERATURE));
+            case WIND_MAX ->
+                ForecastAggregator.max(timeSeries, dayOffset, channelTypeProvider.getParameterMetadata(WIND_SPEED));
+            case WIND_MIN ->
+                ForecastAggregator.min(timeSeries, dayOffset, channelTypeProvider.getParameterMetadata(WIND_SPEED));
+            case PRECIPITATION_TOTAL -> ForecastAggregator.total(timeSeries, dayOffset,
+                    channelTypeProvider.getParameterMetadata(PRECIPITATION_MEAN),
+                    channelTypeProvider.getParameterMetadata(PRECIPITATION_TOTAL));
+            default -> ForecastAggregator.noonOrFirst(timeSeries, dayOffset,
+                    channelTypeProvider.getParameterMetadata(parameter));
+        };
     }
 }

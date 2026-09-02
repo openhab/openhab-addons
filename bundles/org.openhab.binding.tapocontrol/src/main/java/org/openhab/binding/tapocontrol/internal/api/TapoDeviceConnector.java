@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface;
 import org.openhab.binding.tapocontrol.internal.api.protocol.aes.SecurePassthrough;
+import org.openhab.binding.tapocontrol.internal.api.protocol.kasa.KasaXorProtocol;
 import org.openhab.binding.tapocontrol.internal.api.protocol.klap.KlapProtocol;
 import org.openhab.binding.tapocontrol.internal.api.protocol.passthrough.PassthroughProtocol;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
@@ -89,6 +90,9 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
             case KLAP:
                 logger.trace("({}) selected klap-protocol '{}'", uid, protocol);
                 return new KlapProtocol(this);
+            case KASA:
+                logger.trace("({}) selected kasa xor-protocol '{}'", uid, protocol);
+                return new KasaXorProtocol(this, device.getIpAddress(), device.isDimmerSwitch());
             default:
                 logger.debug("({}) unknown protocol '{}'", uid, protocol);
                 handleError(new TapoErrorHandler(NO_ERROR, protocol));
@@ -172,7 +176,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Send "set_device_info" command to device and query info immediately
-     * 
+     *
      * @param deviceDataClass clazz contains devicedata which should be sent
      */
     public void sendDeviceCommand(Object deviceDataClass) {
@@ -181,7 +185,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Send command to device with params and query info immediately
-     * 
+     *
      * @param command command
      * @param deviceDataClass clazz contains devicedata which should be sent
      */
@@ -191,7 +195,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Send command to device with params
-     * 
+     *
      * @param command command
      * @param deviceDataClass clazz contains devicedata which should be sent
      * @param ignoreGap ignore gap to last query. query anyway
@@ -208,7 +212,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Send command to device with params and query info immediately
-     * 
+     *
      * @param deviceDataClass clazz contains devicedata which should be sent
      * @param multipleRequestSupported set to true if device supports multipleRequests
      */
@@ -218,7 +222,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Send command to device with params and query info immediately
-     * 
+     *
      * @param command command
      * @param deviceDataClass clazz contains devicedata which should be sent
      * @param multipleRequestSupported set to true if device supports multipleRequests
@@ -237,7 +241,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Send command to child device
-     * 
+     *
      * @param childData ChildDeviceData-Class
      */
     public void sendChildCommand(TapoChildDeviceData childData) {
@@ -246,7 +250,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Send command to child device
-     * 
+     *
      * @param childData ChildDeviceData-Class
      * @param ignoreGap ignore gap to last query. query anyway
      */
@@ -271,7 +275,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * send asynchronous multi-request igrnoring min-gap
-     * 
+     *
      * @param requests list of TapoRequests should be sent to device
      * @param ignoreGap ignoreGap ignore gap to last query. query anyway
      */
@@ -288,7 +292,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * send asynchron multi-request
-     * 
+     *
      * @param requests array of TapoRequest
      */
     public void sendMultipleRequest(TapoRequest... requests) {
@@ -297,7 +301,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * send asynchron request to protocol handler
-     * 
+     *
      * @param tapoRequest Request inherits TapoBaseRequestInterface
      */
     public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) {
@@ -308,13 +312,20 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         }
     }
 
+    /**
+     * Runs blocking legacy protocol I/O on the handler scheduler.
+     */
+    public void executeAsync(Runnable task) {
+        device.executeAsync(task);
+    }
+
     /***********************
      * Response-Handling
      **********************/
 
     /**
      * Return class object from json formated string
-     * 
+     *
      * @param json json formatted string
      * @param clazz class string should parsed to
      */
@@ -335,7 +346,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Return class object from JsonObject
-     * 
+     *
      * @param jso JsonOject
      * @param clazz class string should parsed to
      */
@@ -345,7 +356,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * handle and decrypt response from device
-     * 
+     *
      * @param response TapoResponse was received
      * @param command was sent to device belonging to response
      */
@@ -364,7 +375,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Handle response got from single-request
-     * 
+     *
      * @param response response from request
      * @param command command was sent
      */
@@ -381,7 +392,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Handle response got from multiple-request
-     * 
+     *
      * @param response response from request
      */
     private void handleMultipleRespone(TapoResponse response) {
@@ -393,13 +404,13 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Parse responsedata from result to object and inform device about new data
-     * 
+     *
      * @param response response from request
      * @param command command was sent
      */
     private void handleQueryResult(TapoResponse response, String command) {
         if (!response.hasError()) {
-            logger.trace("({}) queryResponse successfull '{}'", uid, response);
+            logger.trace("({}) queryResponse successful '{}'", uid, response);
             queryResponse = response;
             device.newDataResult(command);
         } else {
@@ -410,7 +421,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Handle SuccessResponse (setDeviceInfo)
-     * 
+     *
      * @param response response from request
      */
     private void handleSuccessResponse(TapoResponse response) {
@@ -418,7 +429,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
             logger.debug("({}) set deviceInfo not successful: {}", uid, response);
             device.setError(new TapoErrorHandler(response.errorCode()));
         } else {
-            logger.trace("({}) setcommand successfull '{}'", uid, response);
+            logger.trace("({}) setcommand successful '{}'", uid, response);
             if (queryAfterCommand) {
                 sendQueryCommand(DEVICE_CMD_GETINFO, true);
             }
@@ -479,7 +490,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
 
     /**
      * Get Dataobject from response
-     * 
+     *
      * @param clazz object class response should be transformed
      */
     public <T> T getResponseData(Class<T> clazz) {
@@ -487,7 +498,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     /**
-     * Ping to IP of device - return true if successfull
+     * Ping to IP of device - return true if successful
      */
     public boolean pingDevice() {
         try {
@@ -517,5 +528,10 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     @Override
     public String getThingUID() {
         return device.getThingUID().toString();
+    }
+
+    @Override
+    public TapoBridgeHandler getBridge() {
+        return bridge;
     }
 }

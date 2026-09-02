@@ -20,7 +20,7 @@ You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](ht
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the amplifier controller.
+There is exactly one supported Thing type, which represents the amplifier controller.
 It has the `amplifier` id.
 
 ## Discovery
@@ -39,7 +39,7 @@ The binding has the following configuration parameters:
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter Label          | Parameter ID   | Description                                                                                                                                     | Accepted values                                                                    |
 |--------------------------|--------------- |-------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
@@ -56,7 +56,7 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-- If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier thing via an MPS4 IP connection.
+- If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier Thing via an MPS4 IP connection.
 - MPS4 connections do not support commands using `SxDISPINFO`& `SxDISPLINE` (display_lineN channels) including those outlined in the advanced rules section below. In this case,`SxDISPINFOTWO` and `SxDISPLINES` must be used instead. See the _very advanced_ rule examples below.
 - As of OH 3.4.0, the binding supports NuvoNet source communication for any/all of the amplifier's 6 inputs but only when using an MPS4 connection.
 - By implementing NuvoNet communication, the binding can now support sending custom menus, custom favorite lists, album art, etc. to the Nuvo keypads for each source configured as an openHAB NuvoNet source.
@@ -160,7 +160,7 @@ Number nuvo_z1_bass "Bass Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1
 Number nuvo_z1_balance "Balance Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#balance" }
 Switch nuvo_z1_loudness "Loudness" { channel="nuvo:amplifier:myamp:zone1#loudness" }
 Switch nuvo_z1_dnd "Do Not Disturb" { channel="nuvo:amplifier:myamp:zone1#dnd" }
-Switch nuvo_z1_lock "Zone Locked [%s]" { channel="nuvo:amplifier:myamp:zone1#lock" }
+Contact nuvo_z1_lock "Zone Locked [%s]" { channel="nuvo:amplifier:myamp:zone1#lock" }
 Switch nuvo_z1_party "Party Mode" { channel="nuvo:amplifier:myamp:zone1#party" }
 
 // > repeat for zones 2-20 (substitute z1 and zone1) < //
@@ -348,8 +348,6 @@ sitemap nuvo label="Audio Control" {
 ### `nuvo.rules` Example
 
 ```java
-import java.text.Normalizer
-
 // To be used with a direct serial port or serial over IP connection
 
 val actions = getActions("nuvo","nuvo:amplifier:myamp")
@@ -399,34 +397,22 @@ rule "Load track name for Source 3"
 when
     Item Item_Containing_TrackName changed
 then
-    // The Nuvo keypad cannot display extended ASCII characters (accent, umlaut, etc.)
-    // Below we transform extended ASCII chars into their basic counterparts
-    // example: 'La Touché' becomes 'La Touche' and 'Nöel' becomes 'Noel'
-    var trackName = Normalizer::normalize(Item_Containing_TrackName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-
-    sendCommand(nuvo_s3_display_line4, trackName)
+    sendCommand(nuvo_s3_display_line4, Item_Containing_TrackName.state.toString)
     sendCommand(nuvo_s3_display_line1, "")
-
 end
 
 rule "Load album name for Source 3"
 when
     Item Item_Containing_AlbumName changed
 then
-    // fix extended ASCII chars
-    var albumName = Normalizer::normalize(Item_Containing_AlbumName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-
-    sendCommand(nuvo_s3_display_line2, albumName)
+    sendCommand(nuvo_s3_display_line2, Item_Containing_AlbumName.state.toString)
 end
 
 rule "Load artist name for Source 3"
 when
     Item Item_Containing_ArtistName changed
 then
-    // fix extended ASCII chars
-    var artistName = Normalizer::normalize(Item_Containing_ArtistName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
-
-    sendCommand(nuvo_s3_display_line3, artistName)
+    sendCommand(nuvo_s3_display_line3, Item_Containing_ArtistName.state.toString)
 end
 
 // In this rule we have three items: Item_Containing_PlayMode, Item_Containing_TrackLength & Item_Containing_TrackPosition
@@ -543,13 +529,11 @@ end
 The following are a set of example rules necessary to integrate metadata and control of another openHAB connected source (ie: Chromecast) into an openHAB NuvoNet source.
 By using these rules, it is possible to have artist, album and track names displayed on the keypad, transport button presses from the keypad relayed to the source, and album art displayed if using a Nuvo CTP-36 keypad.
 Global Favorites selection and Menu selections from the custom menus described above are also processed by these rules.
-The list of favorite names should be playable via another thing connected to openHAB and this thing should have a means to accept a text string that tells it to play a particular favorite/playlist.
+The list of favorite names should be playable via another Thing connected to openHAB and this Thing should have a means to accept a text string that tells it to play a particular favorite/playlist.
 
 #### `nuvo-advanced.rules.rules` Example
 
 ```java
-import java.text.Normalizer
-
 // all examples using Source 6
 var source = "S6"
 
@@ -648,7 +632,7 @@ when
     Item music_Music_Album received update
 then
     if (music_Music_Album.state.toString() != "") {
-        albumName = Normalizer::normalize(music_Music_Album.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+        albumName = music_Music_Album.state.toString
         sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + albumName + "\",\"" + artistName + "\",\"" + trackName + "\"")
     }
 end
@@ -658,7 +642,7 @@ when
     Item music_Music_Artist received update
 then
     if (music_Music_Artist.state.toString() != "") {
-        artistName = Normalizer::normalize(music_Music_Artist.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+        artistName = music_Music_Artist.state.toString
         sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + albumName + "\",\"" + artistName + "\",\"" + trackName + "\"")
     }
 end
@@ -668,7 +652,7 @@ when
     Item music_Music_Track received update
 then
     if (music_Music_Track.state.toString() != "") {
-        trackName = Normalizer::normalize(music_Music_Track.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
+        trackName = music_Music_Track.state.toString
         sendCommand(nuvo_system_sendcmd, source + "DISPLINES0,0,0,\"\",\"" + albumName + "\",\"" + artistName + "\",\"" + trackName + "\"")
     }
 end

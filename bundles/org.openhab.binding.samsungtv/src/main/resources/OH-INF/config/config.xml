@@ -24,6 +24,7 @@
 			<default>55000</default>
 		</parameter>
 		<parameter name="macAddress" type="text">
+			<context>mac-address</context>
 			<label>MAC Address</label>
 			<description>MAC Address of the Samsung TV.</description>
 		</parameter>

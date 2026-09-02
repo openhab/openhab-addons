@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,6 +115,23 @@ public class ICloudSession {
         return request("GET", url, null, overrideHeaders);
     }
 
+    /**
+     * Invoke an HTTP PUT request to the given url and body.
+     *
+     * @param url URL to call.
+     * @param body Body for the request
+     * @param overrideHeaders If not null the given headers are used instead of the standard headers set via
+     *            {@link #setDefaultHeaders(Pair...)} (optional)
+     * @return Result body as {@link String}.
+     * @throws IOException if I/O error occurred
+     * @throws InterruptedException if this blocking request was interrupted
+     * @throws ICloudApiResponseException if the request failed (e.g. not OK HTTP return code)
+     */
+    public String put(String url, @Nullable String body, @Nullable List<Pair<String, String>> overrideHeaders)
+            throws IOException, InterruptedException, ICloudApiResponseException {
+        return request("PUT", url, body, overrideHeaders);
+    }
+
     private String request(String method, String url, @Nullable String body,
             @Nullable List<Pair<String, String>> overrideHeaders)
             throws IOException, InterruptedException, ICloudApiResponseException {
@@ -130,6 +147,8 @@ public class ICloudSession {
 
         if (body != null) {
             builder.method(method, BodyPublishers.ofString(body));
+        } else {
+            builder.method(method, BodyPublishers.noBody());
         }
 
         HttpRequest request = builder.build();
@@ -144,10 +163,6 @@ public class ICloudSession {
         logger.trace("Result {} {}\nHeaders -----\n{}\nBody -----\n{}\n------\n", url, response.statusCode(),
                 response.headers(), responseBodyAsString);
 
-        if (response.statusCode() >= 300) {
-            throw new ICloudApiResponseException(url, response.statusCode());
-        }
-
         // Store headers to reuse authentication
         this.data.accountCountry = response.headers().firstValue("X-Apple-ID-Account-Country")
                 .orElse(getAccountCountry());
@@ -157,6 +172,12 @@ public class ICloudSession {
         this.data.scnt = response.headers().firstValue("scnt").orElse(getScnt());
 
         this.stateStorage.put(SESSION_DATA_KEY, JsonUtils.toJson(this.data));
+
+        if (ICloudApiAuthenticationException.isAuthError(response.statusCode())) {
+            throw new ICloudApiAuthenticationException(url, response.statusCode(), responseBodyAsString);
+        } else if (response.statusCode() >= 300) {
+            throw new ICloudApiResponseException(url, response.statusCode(), responseBodyAsString);
+        }
 
         return responseBodyAsString;
     }

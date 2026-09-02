@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -71,9 +72,28 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(VerisureHandlerFactory.class);
     private final HttpClient httpClient;
 
+    // Verisure's WAF and JWT session cookies exceed Jetty's default 4 kB request buffer
+    private static final int REQUEST_BUFFER_SIZE = 16 * 1024;
+
     @Activate
     public VerisureHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClient = httpClientFactory.createHttpClient(VerisureBindingConstants.BINDING_ID);
+        this.httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+        try {
+            this.httpClient.start();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to start HTTP client", e);
+        }
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Failed to stop Verisure HTTP client: {}", e.getMessage());
+        }
+        super.deactivate(componentContext);
     }
 
     @Override

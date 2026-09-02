@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,4 +26,12 @@ public interface RingDevice {
     void setDeviceStatus(RingDeviceTO ringDeviceTO);
 
     RingDeviceTO getDeviceStatus();
+
+    default String getId() {
+        return getDeviceStatus().id;
+    }
+
+    default String getKind() {
+        return getDeviceStatus().kind;
+    }
 }

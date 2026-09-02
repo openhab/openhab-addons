@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,23 +14,29 @@ package org.openhab.binding.homematic.internal.communicator.message;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Helper class with common RPC funtions.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class RpcUtils {
 
     /**
      * Dumps decoded RPC data.
      */
-    public static String dumpRpcMessage(String methodName, Object[] responseData) {
+    public static String dumpRpcMessage(@Nullable String methodName, Object @Nullable [] responseData) {
         StringBuilder sb = new StringBuilder();
         if (methodName != null) {
             sb.append(methodName);
             sb.append("()\n");
         }
-        dumpCollection(responseData, sb, 0);
+        if (responseData != null) {
+            dumpCollection(responseData, sb, 0);
+        }
         return sb.toString();
     }
 

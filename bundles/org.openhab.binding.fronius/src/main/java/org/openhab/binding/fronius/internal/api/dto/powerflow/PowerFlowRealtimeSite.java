@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,6 +43,10 @@ public class PowerFlowRealtimeSite {
     private double eTotal;
     @SerializedName("Meter_Location")
     private String meterLocation;
+    @SerializedName("BackupMode")
+    private Boolean backupMode;
+    @SerializedName("BatteryStandby")
+    private Boolean batteryStandby;
 
     public String getMode() {
         if (mode == null) {
@@ -89,5 +93,13 @@ public class PowerFlowRealtimeSite {
 
     public String getMeterLocation() {
         return meterLocation;
+    }
+
+    public Boolean getBackupMode() {
+        return backupMode;
+    }
+
+    public Boolean getBatteryStandby() {
+        return batteryStandby;
     }
 }

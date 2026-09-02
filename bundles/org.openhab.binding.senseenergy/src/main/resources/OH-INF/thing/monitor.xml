@@ -32,10 +32,9 @@
 		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="id" type="integer">
+			<parameter name="id" type="integer" required="true">
 				<label>ID</label>
 				<description>Device ID (only known from the openHAB log or when devices is discovered).</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

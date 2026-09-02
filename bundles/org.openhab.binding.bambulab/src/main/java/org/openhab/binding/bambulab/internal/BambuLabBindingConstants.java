@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,6 +61,7 @@ public class BambuLabBindingConstants {
         CHANNEL_BIG_FAN_2_SPEED("big-fan2-speed"),
         CHANNEL_HEAT_BREAK_FAN_SPEED("heat-break-fan-speed"),
         CHANNEL_LAYER_NUM("layer-num"),
+        CHANNEL_LAYER_TOTAL("layer-total"),
         CHANNEL_SPEED_LEVEL("speed-level", true),
         CHANNEL_TIME_LAPS("time-laps"),
         CHANNEL_USE_AMS("use-ams"),
@@ -209,20 +210,32 @@ public class BambuLabBindingConstants {
         }
 
         public static enum TrayType {
-            PLA,
-            PETG,
-            ABS,
-            TPU,
-            ASA,
-            PA,
-            PC,
-            PVA,
-            HIPS;
+            PLA("PLA"),
+            PLA_S("PLA-S"),
+            PETG("PETG"),
+            ABS("ABS"),
+            TPU("TPU"),
+            ASA("ASA"),
+            PA("PA"),
+            PC("PC"),
+            PVA("PVA"),
+            HIPS("HIPS"),
+            ASA_CF("ASA-CF");
+
+            private final String typeName;
+
+            TrayType(String typeName) {
+                this.typeName = typeName;
+            }
 
             public static Optional<TrayType> findTrayType(String name) {
                 return stream(values())//
-                        .filter(t -> t.name().equalsIgnoreCase(name))//
+                        .filter(t -> t.typeName.equalsIgnoreCase(name))//
                         .findAny();
+            }
+
+            public String getTypeName() {
+                return typeName;
             }
         }
     }

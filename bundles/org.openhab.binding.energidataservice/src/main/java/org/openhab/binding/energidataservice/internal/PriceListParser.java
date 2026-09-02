@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,9 @@
 package org.openhab.binding.energidataservice.internal;
 
 import java.math.BigDecimal;
-import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -31,62 +32,66 @@ import org.openhab.binding.energidataservice.internal.provider.cache.Electricity
 
 /**
  * Parses results from {@link org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords}
- * into map of hourly tariffs.
+ * into a map of tariffs with configurable time resolution (e.g. hourly or quarter-hourly).
  * 
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
 public class PriceListParser {
 
-    private final Clock clock;
+    private final InstantSource instantSource;
 
     public PriceListParser() {
-        this(Clock.system(EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+        this(InstantSource.system());
     }
 
-    public PriceListParser(Clock clock) {
-        this.clock = clock;
+    public PriceListParser(InstantSource instantSource) {
+        this.instantSource = instantSource;
     }
 
     public Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records) {
-        Instant firstHourStart = Instant.now(clock)
-                .minus(ElectricityPriceSubscriptionCache.NUMBER_OF_HISTORIC_HOURS, ChronoUnit.HOURS)
-                .truncatedTo(ChronoUnit.HOURS);
-        Instant lastHourStart = Instant.now(clock).truncatedTo(ChronoUnit.HOURS).plus(2, ChronoUnit.DAYS)
-                .truncatedTo(ChronoUnit.DAYS);
-
-        return toHourly(records, firstHourStart, lastHourStart);
+        return toResolution(records, Duration.ofHours(1));
     }
 
-    public Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records, Instant firstHourStart,
-            Instant lastHourStart) {
+    public Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records, Instant firstStart,
+            Instant lastStart) {
+        return toResolution(records, firstStart, lastStart, Duration.ofHours(1));
+    }
+
+    private Map<Instant, BigDecimal> toResolution(Collection<DatahubPricelistRecord> records, Duration resolution) {
+        Instant now = instantSource.instant();
+        Instant firstStart = truncateToResolution(
+                now.minus(ElectricityPriceSubscriptionCache.NUMBER_OF_HISTORIC_HOURS, ChronoUnit.HOURS), resolution);
+        Instant lastStart = now.truncatedTo(ChronoUnit.HOURS).plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
+
+        return toResolution(records, firstStart, lastStart, resolution);
+    }
+
+    private Map<Instant, BigDecimal> toResolution(Collection<DatahubPricelistRecord> records, Instant firstStart,
+            Instant lastStart, Duration resolution) {
         Map<Instant, BigDecimal> totalMap = new ConcurrentHashMap<>(DatahubPriceSubscriptionCache.MAX_CACHE_SIZE);
         records.stream().map(record -> record.chargeTypeCode()).distinct().forEach(chargeTypeCode -> {
-            Map<Instant, BigDecimal> currentMap = toHourly(records, chargeTypeCode, firstHourStart, lastHourStart);
+            Map<Instant, BigDecimal> currentMap = toResolution(records, chargeTypeCode, firstStart, lastStart,
+                    resolution);
             for (Entry<Instant, BigDecimal> current : currentMap.entrySet()) {
-                BigDecimal total = totalMap.get(current.getKey());
-                if (total == null) {
-                    total = BigDecimal.ZERO;
-                }
-                totalMap.put(current.getKey(), total.add(current.getValue()));
+                totalMap.merge(current.getKey(), current.getValue(), BigDecimal::add);
             }
         });
 
         return totalMap;
     }
 
-    private Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records, String chargeTypeCode,
-            Instant firstHourStart, Instant lastHourStart) {
+    private Map<Instant, BigDecimal> toResolution(Collection<DatahubPricelistRecord> records, String chargeTypeCode,
+            Instant firstStart, Instant lastStart, Duration resolution) {
         Map<Instant, BigDecimal> tariffMap = new ConcurrentHashMap<>(DatahubPriceSubscriptionCache.MAX_CACHE_SIZE);
 
         LocalDateTime previousValidFrom = LocalDateTime.MAX;
         LocalDateTime previousValidTo = LocalDateTime.MIN;
         Map<LocalTime, BigDecimal> tariffs = Map.of();
-        for (Instant hourStart = firstHourStart; hourStart
-                .isBefore(lastHourStart); hourStart = hourStart.plus(1, ChronoUnit.HOURS)) {
-            LocalDateTime localDateTime = hourStart.atZone(EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE)
+        for (Instant start = firstStart; start.isBefore(lastStart); start = start.plus(resolution)) {
+            LocalDateTime localDateTime = start.atZone(EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE)
                     .toLocalDateTime();
-            if (localDateTime.compareTo(previousValidFrom) < 0 || localDateTime.compareTo(previousValidTo) >= 0) {
+            if (localDateTime.isBefore(previousValidFrom) || !localDateTime.isBefore(previousValidTo)) {
                 DatahubPricelistRecord priceList = getTariffs(records, localDateTime, chargeTypeCode);
                 if (priceList != null) {
                     tariffs = priceList.getTariffMap();
@@ -97,23 +102,34 @@ public class PriceListParser {
                 }
             }
 
-            LocalTime localTime = LocalTime
-                    .of(hourStart.atZone(EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE).getHour(), 0);
+            LocalTime localTime = truncateToResolution(
+                    start.atZone(EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE).toLocalTime(), resolution);
             BigDecimal tariff = tariffs.get(localTime);
             if (tariff != null) {
-                tariffMap.put(hourStart, tariff);
+                tariffMap.put(start, tariff);
             }
         }
 
         return tariffMap;
     }
 
+    private Instant truncateToResolution(Instant instant, Duration resolution) {
+        long seconds = resolution.getSeconds();
+        long truncated = (instant.getEpochSecond() / seconds) * seconds;
+        return Instant.ofEpochSecond(truncated);
+    }
+
+    private LocalTime truncateToResolution(LocalTime time, Duration resolution) {
+        long seconds = resolution.getSeconds();
+        long truncated = (time.toSecondOfDay() / seconds) * seconds;
+        return LocalTime.ofSecondOfDay(truncated);
+    }
+
     private @Nullable DatahubPricelistRecord getTariffs(Collection<DatahubPricelistRecord> records,
             LocalDateTime localDateTime, String chargeTypeCode) {
         return records.stream()
-                .filter(record -> localDateTime.compareTo(record.validFrom()) >= 0
-                        && localDateTime.compareTo(record.validTo()) < 0
-                        && record.chargeTypeCode().equals(chargeTypeCode))
+                .filter(record -> !localDateTime.isBefore(record.validFrom())
+                        && localDateTime.isBefore(record.validTo()) && record.chargeTypeCode().equals(chargeTypeCode))
                 .findFirst().orElse(null);
     }
 }

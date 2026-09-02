@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,4 +24,6 @@ public class ColorLightConfiguration extends BaseDeviceConfiguration {
 
     public int fadeTime = 750;
     public int fadeSequence = 0;
+    public int colorTemperatureMin = -1;
+    public int colorTemperatureMax = -1;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,9 @@ public enum ZigbeeStatus {
     CONNECTED,
     DISCONNECTED,
     CONNECTIVITY_ISSUE,
-    UNIDIRECTIONAL_INCOMING;
+    UNIDIRECTIONAL_INCOMING,
+    // documented for 'zgp_connectivity' resources, a pending pairing rather than a connectivity issue
+    PENDING_DISCOVERY;
 
     private static final Set<ZigbeeStatus> CONNECTIVITY_ISSUES = Set.of(DISCONNECTED, CONNECTIVITY_ISSUE);
 

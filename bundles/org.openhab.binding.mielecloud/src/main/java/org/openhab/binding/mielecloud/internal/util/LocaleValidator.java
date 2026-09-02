@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public final class LocaleValidator {
      */
     public static boolean isValidLanguage(String language) {
         try {
-            String iso3Language = new Locale(language).getISO3Language();
+            String iso3Language = Locale.of(language).getISO3Language();
             return iso3Language != null && !iso3Language.isEmpty();
         } catch (MissingResourceException e) {
             return false;

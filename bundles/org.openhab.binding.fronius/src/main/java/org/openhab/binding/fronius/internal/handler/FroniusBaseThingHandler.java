@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
+import org.openhab.binding.fronius.internal.api.FroniusPollingSkipException;
 import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 import org.openhab.binding.fronius.internal.api.dto.Head;
 import org.openhab.binding.fronius.internal.api.dto.HeadStatus;
@@ -32,6 +33,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -40,6 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -151,6 +155,9 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
+        } catch (FroniusPollingSkipException e) {
+            logger.debug("Skipping refresh for {} because another request is already in progress.",
+                    getThing().getUID().getId());
         } catch (FroniusCommunicationException | RuntimeException e) {
             logger.debug("Exception caught in refresh() for {}", getThing().getUID().getId(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -166,7 +173,79 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
     protected abstract void handleRefresh(FroniusBridgeConfiguration bridgeConfiguration)
             throws FroniusCommunicationException;
 
+    protected @Nullable FroniusBridgeHandler getFroniusBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return null;
+        }
+        ThingHandler bridgeHandler = bridge.getHandler();
+        return bridgeHandler instanceof FroniusBridgeHandler froniusBridgeHandler ? froniusBridgeHandler : null;
+    }
+
+    protected FroniusHttpUtil getHttpUtil() throws FroniusCommunicationException {
+        FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
+        if (bridgeHandler == null) {
+            throw new FroniusCommunicationException("Bridge handler is not available");
+        }
+        return bridgeHandler.getHttpUtil();
+    }
+
     /**
+     * Get the firmware version of the inverter from its <code>/api/status/version</code> or
+     * <code>/status/version</code>
+     * endpoint.
+     *
+     * @param scheme http or https
+     * @param hostname the hostname or IP address of the inverter
+     * @return the firmware version, or null if it could not be determined
+     */
+    protected @Nullable String getFirmwareVersion(String scheme, String hostname) {
+        final String host = scheme + "://" + hostname;
+        final String versionPath = "/status/version";
+        FroniusHttpUtil httpUtil;
+        try {
+            httpUtil = getHttpUtil();
+        } catch (FroniusCommunicationException e) {
+            logger.warn("Failed to get bridge HTTP utility for Fronius inverter at {}: {}", hostname, e.getMessage());
+            return null;
+        }
+
+        String url = host + "/api" + versionPath; // try the new API path first
+        String response;
+        try {
+            response = httpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
+        } catch (FroniusCommunicationException e) {
+            url = host + versionPath; // fallback to the old API path
+            try {
+                response = httpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
+            } catch (FroniusCommunicationException ex) {
+                logger.debug("Failed to get version info from Fronius inverter at {}: {}", hostname, ex.getMessage());
+                return null;
+            }
+        }
+        try {
+            JsonElement jsonElement = JsonParser.parseString(response);
+            if (!jsonElement.isJsonObject()) {
+                logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname,
+                        response);
+                return null;
+            }
+            try {
+                return jsonElement.getAsJsonObject().get("swrevisions").getAsJsonObject().get("GEN24").getAsString();
+            } catch (IllegalStateException | UnsupportedOperationException e) {
+                logger.debug("Failed to parse version info from Fronius inverter at {}: {}", hostname, e.getMessage());
+                return null;
+            }
+        } catch (JsonSyntaxException e) {
+            // 404 errors go here, as the response is not valid JSON
+            logger.debug("Invalid JSON response for version info from Fronius inverter at {}: {}", hostname, response,
+                    e);
+        }
+        return null;
+    }
+
+    /**
+     * Collect data for periodic polling. Requests are skipped when another request for the same bridge is in progress.
      *
      * @param type response class type
      * @param url to request
@@ -174,11 +253,26 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
      */
     protected <T extends BaseFroniusResponse> T collectDataFromUrl(Class<T> type, String url)
             throws FroniusCommunicationException {
+        return collectDataFromUrl(type, url, true);
+    }
+
+    /**
+     * Collect data and choose whether the request may be skipped while another request for the same bridge is active.
+     *
+     * @param type response class type
+     * @param url to request
+     * @param usePollingRequest true when the request may be skipped, false when it must wait for the active request
+     * @return the object representation of the json response
+     */
+    protected <T extends BaseFroniusResponse> T collectDataFromUrl(Class<T> type, String url, boolean usePollingRequest)
+            throws FroniusCommunicationException {
         try {
+            FroniusHttpUtil httpUtil = getHttpUtil();
             int attempts = 1;
             while (true) {
                 logger.trace("Fetching URL = {}", url);
-                String response = FroniusHttpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
+                String response = usePollingRequest ? httpUtil.executePollingUrl(HttpMethod.GET, url, API_TIMEOUT)
+                        : httpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
                 logger.trace("aqiResponse = {}", response);
 
                 @Nullable

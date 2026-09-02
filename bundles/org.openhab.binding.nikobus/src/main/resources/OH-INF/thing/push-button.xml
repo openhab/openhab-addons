@@ -24,7 +24,7 @@
 			</parameter>
 			<parameter name="impactedModules" type="text">
 				<label>Impacted Modules</label>
-				<description>Comma separated list of impacted modules, i.e. switch-module:s1:1</description>
+				<description>Comma-separated list of impacted modules, e.g., switch-module:s1:1</description>
 			</parameter>
 		</config-description>
 	</thing-type>

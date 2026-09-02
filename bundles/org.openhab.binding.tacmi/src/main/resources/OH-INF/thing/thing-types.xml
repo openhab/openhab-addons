@@ -16,7 +16,7 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>C.M.I. IP Address</label>
-				<description>Host name of IP address of the CMI</description>
+				<description>Host name or IP address of the C.M.I.</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="node" type="integer" min="1" max="62" required="true">
@@ -46,7 +46,7 @@
 	<channel-type id="coe-digital-out">
 		<item-type>Switch</item-type>
 		<label>Digital Output (OH -> C.M.I.)</label>
-		<description>A digital channel sent from OpenHAB to C.M.I.</description>
+		<description>A digital channel sent from openHAB to C.M.I.</description>
 		<tags>
 			<tag>Switch</tag>
 		</tags>
@@ -80,7 +80,7 @@
 	<channel-type id="coe-analog-out">
 		<item-type>Number</item-type>
 		<label>Analog Output Channel (OH -> C.M.I.)</label>
-		<description>A Analog Channel sent to the C.M.I.</description>
+		<description>An Analog Channel sent to the C.M.I.</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>
@@ -227,9 +227,9 @@
 				<description>Password for authentication on the C.M.I.</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="nodeId" type="integer" required="true" min="0">
+			<parameter name="nodeId" type="integer" required="true" min="1">
 				<label>Node Id</label>
-				<description>The node ID of the device you want to monitor (CMI → CAN-Bus)</description>
+				<description>The node ID of the device you want to monitor (C.M.I. → CAN-Bus)</description>
 			</parameter>
 			<parameter name="params" type="text">
 				<label>API-Parameters</label>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,6 +65,14 @@ public class WLedHelper {
             if (endIndex != -1) {
                 return message.substring(startIndex + element.length(), endIndex);
             }
+        }
+        return "";
+    }
+
+    public static String getMacAddress(String message) {
+        String macAddress = getValue(message, "\"mac\":\"", "\"");
+        if (!macAddress.isBlank()) {
+            return macAddress.replaceAll("[^A-Fa-f0-9]", "").toUpperCase().replaceAll("(.{2})(?!$)", "$1:");
         }
         return "";
     }

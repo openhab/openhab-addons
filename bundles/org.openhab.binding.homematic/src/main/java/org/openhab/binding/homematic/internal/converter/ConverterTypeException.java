@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if converting between two types is not possible due wrong item type or command.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class ConverterTypeException extends ConverterException {
     private static final long serialVersionUID = 7114173349077221055L;
 

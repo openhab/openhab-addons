@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,7 +132,7 @@ public class GenericCommunicator extends AbstractCommunicator implements IRespon
         } else if (type == RequestType.EPROM) {
             receiveEpromResponse(response);
         } else {
-            logger.debug("Probably wrong sender in the request. Request type is not one of the supported methods.");
+            logger.debug("Received response for unhandled request type: {}", type);
         }
     }
 }

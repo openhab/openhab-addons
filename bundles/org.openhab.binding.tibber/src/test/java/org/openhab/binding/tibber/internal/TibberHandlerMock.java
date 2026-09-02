@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.osgi.framework.BundleContext;
 
@@ -27,16 +28,27 @@ import org.osgi.framework.BundleContext;
  * The {@link TibberHandlerMock} sets the PriceCalculator for unit testing.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Add history channel group
  */
 @NonNullByDefault
 public class TibberHandlerMock extends TibberHandler {
 
+    public TibberHandlerMock(Thing thing, HttpClient httpClient, CronScheduler cron, BundleContext bundleContext,
+            TimeZoneProvider timeZoneProvider, StorageService storageService) {
+        super(thing, httpClient, cron, bundleContext, timeZoneProvider, storageService);
+    }
+
     public TibberHandlerMock() {
         super(mock(Thing.class), mock(HttpClient.class), mock(CronScheduler.class), mock(BundleContext.class),
-                mock(TimeZoneProvider.class));
+                mock(TimeZoneProvider.class), mock(StorageService.class));
     }
 
     public void setPriceCalculator(PriceCalculator calc) {
         super.calculator = calc;
+    }
+
+    @Override
+    public void managePriceChannels(boolean add) {
+        super.managePriceChannels(add);
     }
 }

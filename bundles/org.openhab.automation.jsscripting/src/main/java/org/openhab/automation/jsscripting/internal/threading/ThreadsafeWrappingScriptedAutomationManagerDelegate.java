@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,10 +40,13 @@ public class ThreadsafeWrappingScriptedAutomationManagerDelegate {
 
     private ScriptedAutomationManager delegate;
     private final Lock lock;
+    private final long lockAcquisitionTimeoutMS;
 
-    public ThreadsafeWrappingScriptedAutomationManagerDelegate(ScriptedAutomationManager delegate, Lock lock) {
+    public ThreadsafeWrappingScriptedAutomationManagerDelegate(ScriptedAutomationManager delegate, Lock lock,
+            long lockAcquisitionTimeoutMS) {
         this.delegate = delegate;
         this.lock = lock;
+        this.lockAcquisitionTimeoutMS = lockAcquisitionTimeoutMS;
     }
 
     public void removeModuleType(String UID) {
@@ -65,7 +68,7 @@ public class ThreadsafeWrappingScriptedAutomationManagerDelegate {
     public Rule addRule(Rule element) {
         // wrap in a threadsafe version, safe per context
         if (element instanceof SimpleRule rule) {
-            element = new ThreadsafeSimpleRuleDelegate(lock, rule);
+            element = new ThreadsafeSimpleRuleDelegate(lock, lockAcquisitionTimeoutMS, rule);
         }
 
         return delegate.addRule(element);

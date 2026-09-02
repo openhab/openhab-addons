@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,13 @@ package org.openhab.binding.amazonechocontrol.internal.push;
 
 import static org.eclipse.jetty.http.HttpHeader.CONTENT_TYPE;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http2.api.Session;
 import org.eclipse.jetty.http2.api.Stream;
@@ -27,6 +28,7 @@ import org.eclipse.jetty.http2.frames.DataFrame;
 import org.eclipse.jetty.http2.frames.HeadersFrame;
 import org.eclipse.jetty.http2.frames.PingFrame;
 import org.eclipse.jetty.util.Callback;
+import org.eclipse.jetty.util.QuotedStringTokenizer;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushMessageTO;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpUtil;
 import org.slf4j.Logger;
@@ -38,14 +40,23 @@ import com.google.gson.Gson;
  * The {@link PushStreamAdapter} handles the HTTP/2 push stream
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Martin Littkovsky - Buffer stream data until a message is complete
  */
 @NonNullByDefault
 public class PushStreamAdapter extends Stream.Listener.Adapter {
+    // real messages are a few KiB, the limit is only reached if the boundary never arrives
+    static final int MAX_BUFFER_SIZE = 512 * 1024;
+
     private final Logger logger = LoggerFactory.getLogger(PushStreamAdapter.class);
     private final Gson gson;
     private final Session session;
     private final Listener listener;
+    // all mutable state is confined to the stream's serialized listener invocations
+    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
     private String boundary = "";
+    private byte[] boundaryBytes = new byte[0];
+    private boolean failureLogged = false;
 
     public PushStreamAdapter(Gson gson, Session session, Listener listener) {
         this.gson = gson;
@@ -64,51 +75,166 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
             logger.warn("Headers of HTTP/2 stream don't contain content-type");
             return;
         }
-        int boundaryStart = contentType.indexOf("boundary=");
-        int boundaryEnd = contentType.indexOf(";", boundaryStart);
-        boundary = contentType.substring(boundaryStart + 9, boundaryEnd);
+        String boundaryParameter = boundaryParameterOf(contentType);
+        if (boundaryParameter.isEmpty()) {
+            logger.warn("Content-type of HTTP/2 stream doesn't contain a boundary: {}", contentType);
+            return;
+        }
+        boundary = boundaryParameter;
+        boundaryBytes = boundary.getBytes(StandardCharsets.UTF_8);
+    }
+
+    /** RFC 2046 permits (and sometimes requires) a quoted boundary parameter, so the quotes are not part of it. */
+    static String boundaryParameterOf(String contentType) {
+        for (String parameter : contentType.split(";")) {
+            String trimmed = parameter.trim();
+            if (trimmed.regionMatches(true, 0, "boundary=", 0, 9)) {
+                return QuotedStringTokenizer.unquote(trimmed.substring(9).trim());
+            }
+        }
+        return "";
     }
 
     @Override
     public void onData(@NonNullByDefault({}) Stream stream, @NonNullByDefault({}) DataFrame frame,
             @NonNullByDefault({}) Callback callback) {
-        byte[] contentBuffer = new byte[frame.remaining()];
-        frame.getData().get(contentBuffer);
-        String contentString = new String(contentBuffer);
-        logger.trace("Received raw data {}", contentString);
-
-        // process
         try {
+            byte[] contentBuffer = new byte[frame.remaining()];
+            frame.getData().get(contentBuffer);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Received raw data {}", new String(contentBuffer, StandardCharsets.UTF_8));
+            }
             if (boundary.isBlank()) {
-                logger.debug("Discarding message because boundary is not set");
+                logger.debug("Discarding data because boundary is not set");
                 return;
             }
-            BufferedReader contentReader = new BufferedReader(new StringReader(contentString));
-            List<String> content = contentReader.lines().filter(line -> !line.isBlank()).toList();
-
-            if (content.isEmpty()) {
-                return;
-            }
-
-            if (!content.get(content.size() - 1).endsWith(boundary)) {
-                logger.debug("Discarding incomplete message, boundary not found");
-            }
-
-            if (content.size() == 1) {
-                // only boundary requires a PING response
-                logger.debug("Sending ping");
-                session.ping(new PingFrame(false), Callback.NOOP);
-            } else if (content.get(0).equals("Content-Type: application/json")) {
-                // parse the message
-                PushMessageTO parsedMessage = Objects
-                        .requireNonNullElse(gson.fromJson(content.get(1), PushMessageTO.class), new PushMessageTO());
-                parsedMessage.directive.payload.renderingUpdates.forEach(listener::onPushMessageReceived);
-            } else {
-                logger.warn("Don't know how to handle frame starting with {}", content.get(0));
-            }
+            // a message can be split over several DATA frames and a frame can contain several messages,
+            // so bytes are collected until the trailing boundary marker completes a part
+            int bytesCarriedOver = buffer.size();
+            buffer.write(contentBuffer, 0, contentBuffer.length);
+            processBuffer(bytesCarriedOver);
         } catch (RuntimeException e) {
             logger.warn("Exception while processing message", e);
+        } finally {
+            // completing the callback replenishes the HTTP/2 flow control window,
+            // without that the server can't send further data on this long-lived stream
+            callback.succeeded();
         }
+    }
+
+    /** A completed part spanned frames when it used bytes an earlier frame had left in the buffer. */
+    static boolean spannedFrames(boolean firstCompletedPart, int bytesCarriedOver) {
+        return firstCompletedPart && bytesCarriedOver > 0;
+    }
+
+    private void processBuffer(int bytesCarriedOver) {
+        byte[] data = buffer.toByteArray();
+        int consumed = 0;
+        boolean firstCompletedPart = true;
+        int[] delimiterLine;
+        while ((delimiterLine = nextDelimiterLine(data, consumed)) != null) {
+            String part = new String(data, consumed, delimiterLine[0] - consumed, StandardCharsets.UTF_8);
+            // the part counts as consumed even if it fails, a bad message must not wedge the stream
+            consumed = delimiterLine[1];
+            if (spannedFrames(firstCompletedPart, bytesCarriedOver)) {
+                logger.debug("Completed a message of {} characters that arrived split over several frames",
+                        part.length());
+            }
+            firstCompletedPart = false;
+            try {
+                handlePart(part);
+            } catch (RuntimeException e) {
+                // the content was already logged at TRACE when the frame arrived
+                logFailure("Failed to process a message part of {} characters: {}", part.length(), e.toString());
+                logger.debug("Processing failure", e);
+            }
+        }
+        if (consumed > 0) {
+            buffer.reset();
+            buffer.write(data, consumed, data.length - consumed);
+        }
+        if (buffer.size() > MAX_BUFFER_SIZE) {
+            logger.warn("Discarding {} bytes of buffered data that don't contain a message boundary", buffer.size());
+            buffer.reset();
+        }
+    }
+
+    private void handlePart(String part) {
+        List<String> content = part.lines().filter(line -> !line.isBlank()).toList();
+        if (content.isEmpty()) {
+            // a bare boundary is a keep-alive that requires a PING response
+            logger.debug("Sending ping");
+            session.ping(new PingFrame(false), Callback.NOOP);
+            return;
+        }
+        if (content.get(0).equals("Content-Type: application/json")) {
+            String json = String.join("", content.subList(1, content.size()));
+            PushMessageTO parsedMessage = Objects.requireNonNullElse(gson.fromJson(json, PushMessageTO.class),
+                    new PushMessageTO());
+            parsedMessage.directive.payload.renderingUpdates.forEach(listener::onPushMessageReceived);
+            failureLogged = false;
+        } else {
+            logFailure("Don't know how to handle a message part of {} characters", part.length());
+        }
+    }
+
+    /** The first failure of a streak is a WARN, repetitions only DEBUG: a format change must not flood the log. */
+    private void logFailure(String message, Object... arguments) {
+        if (failureLogged) {
+            logger.debug(message, arguments);
+        } else {
+            logger.warn(message, arguments);
+            failureLogged = true;
+        }
+    }
+
+    /**
+     * Finds the next complete delimiter line (optional dashes plus the boundary, alone on a line - anywhere
+     * else the value is payload, RFC 2046) as line start and end, or null while the line is still incomplete.
+     */
+    private int @Nullable [] nextDelimiterLine(byte[] data, int fromIndex) {
+        int position = fromIndex;
+        while ((position = indexOf(data, boundaryBytes, position)) != -1) {
+            int lineStart = position;
+            while (lineStart > fromIndex && data[lineStart - 1] == '-') {
+                lineStart--;
+            }
+            boolean atLineStart = lineStart == 0 || data[lineStart - 1] == '\n';
+            int afterBoundary = position + boundaryBytes.length;
+            if (atLineStart && afterBoundary >= data.length) {
+                return null;
+            }
+            if (atLineStart && data[afterBoundary] == '\n') {
+                return new int[] { lineStart, afterBoundary + 1 };
+            }
+            if (atLineStart && data[afterBoundary] == '\r') {
+                if (afterBoundary + 1 >= data.length) {
+                    return null;
+                }
+                if (data[afterBoundary + 1] == '\n') {
+                    return new int[] { lineStart, afterBoundary + 2 };
+                }
+            }
+            position = position + 1;
+        }
+        return null;
+    }
+
+    int bufferedByteCount() {
+        return buffer.size();
+    }
+
+    private static int indexOf(byte[] data, byte[] pattern, int fromIndex) {
+        for (int i = fromIndex; i <= data.length - pattern.length; i++) {
+            int j = 0;
+            while (j < pattern.length && data[i + j] == pattern[j]) {
+                j++;
+            }
+            if (j == pattern.length) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public interface Listener {

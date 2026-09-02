@@ -30,7 +30,7 @@ Go to Preferences/Connection and set:
   - `https://home.myopenhab.org/gpstracker/owntracks`
 - **Identification**
   - Turn Authentication ON
-  - Set username and password to be able to reach your openHAB server (myopenhab.org credential, if choosen as host)
+  - Set username and password to be able to reach your openHAB server (myopenhab.org credential, if chosen as host)
   - Device ID is not important. Set it to e.g. phone
   - Tracker ID - This id identifies the tracker as a thing. This must be unique for each tracker connected to the same openHAB instance (e.g. family members).
 
@@ -51,7 +51,7 @@ Right after enabling, the app takes you to the _Log to custom URL_ settings:
   - Note: "_tid_" is the tracker id that identifies the tracker as a thing. This must be unique for each tracker connected to the same openHAB instance (e.g. family members).
 - **HTTP Headers** - type in: _Content-Type: application/json_
 - **HTTP Method** - type in: _POST_
-- **Basic Authentication** - Set username and password to be able to reach your openHAB server (myopenhab.org credential, if choosen as URL)
+- **Basic Authentication** - Set username and password to be able to reach your openHAB server (myopenhab.org credential, if chosen as URL)
 - Check if everything is ok by clicking on **Validate SSL Certificate**.
 
 ### Things
@@ -253,7 +253,7 @@ After a location message received from the tracker the log should contain these 
 
 Assumptions:
 
-- A **shared** region is defined in OwnTracks application. Lets call it Work.
+- A **shared** region is defined in OwnTracks application. Let's call it Work.
 - Presence switch is linked to the regionTrigger channel with parameters:
   - Profile: Geofence(gpstracker:trigger-geofence)
   - Region Name: Work

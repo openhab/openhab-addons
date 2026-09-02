@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.doorbird.internal.handler.ControllerHandler;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
+import org.openhab.binding.doorbird.internal.servlet.DoorbirdHTTPServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,10 +40,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.doorbird", service = ThingHandlerFactory.class)
 public class DoorbirdHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
+    private final DoorbirdHTTPServlet callbackServlet;
 
     @Activate
-    public DoorbirdHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public DoorbirdHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference DoorbirdHTTPServlet callbackServlet) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.callbackServlet = callbackServlet;
     }
 
     @Override
@@ -54,7 +58,7 @@ public class DoorbirdHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_D101.equals(thingTypeUID) || THING_TYPE_D210X.equals(thingTypeUID)) {
-            return new DoorbellHandler(thing, httpClient, bundleContext);
+            return new DoorbellHandler(thing, httpClient, bundleContext, callbackServlet);
         } else if (THING_TYPE_A1081.equals(thingTypeUID)) {
             return new ControllerHandler(thing);
         }

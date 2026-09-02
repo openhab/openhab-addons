@@ -5,7 +5,7 @@ These data are made public through OpenDataSoft website.
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents a river level measurement station.
+There is exactly one supported Thing type, which represents a river level measurement station.
 It is identified by the `id`.
 
 To get your station id:
@@ -33,7 +33,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 | Parameter | Description                                                             |
 |-----------|-------------------------------------------------------------------------|
@@ -42,7 +42,7 @@ The thing has a few configuration parameters:
 
 ## Channels
 
-Once created, at first initialization, the thing will discover its capabilities (available data) using the webservices apis.
+Once created, at first initialization, the Thing will discover its capabilities (available data) using the webservices apis.
 Channels will be presented depending upon actual available data.
 
 The VigiCrues information that retrieved are made available with these channels:
@@ -53,7 +53,7 @@ The VigiCrues information that retrieved are made available with these channels:
 | flow             | Number:VolumetricFlowRate | Volume of water per time unit                              |
 | height           | Number:Length             | Water height of the river                                  |
 | relative-height  | Number:Dimensionless      | Current water level toward lowest historical flood         |
-| relative-flow    | Number:Dimensionless      | Current water flow tower lowest historical flood           |
+| relative-flow    | Number:Dimensionless      | Current water flow toward lowest historical flood          |
 | alert (*)        | Number                    | Flooding alert level of the portion related to the station |
 | alert-icon       | Image                     | Pictogram associated to the alert level                    |
 | short-comment    | String                    | Description of the alert level                             |
@@ -67,6 +67,64 @@ The VigiCrues information that retrieved are made available with these channels:
 | 1    | Yellow | Be attentive to the flooding situation    |
 | 2    | Orange | Be "very vigilant" in the concerned areas |
 | 3    | Red    | Absolute vigilance required               |
+
+## Timeseries
+
+Height and flow channel are exposed as timeseries channel.
+So you can graph historical value using a chart like this one:
+
+![doc/graphe.png](doc/graphe.png)
+
+```yaml
+config:
+  label: Vigicrues Graphes
+  sidebar: true
+slots:
+  grid:
+    - component: oh-chart-grid
+      config: {}
+  xAxis:
+    - component: oh-time-axis
+      config:
+        gridIndex: 0
+  yAxis:
+    - component: oh-value-axis
+      config:
+        gridIndex: 0
+        min: "0"
+        max: "10"
+        name: Height
+    - component: oh-value-axis
+      config:
+        gridIndex: 0
+        name: Flow
+        min: "0"
+        max: "2000"
+  series:
+    - component: oh-time-series
+      config:
+        name: Height
+        gridIndex: 0
+        xAxisIndex: 0
+        yAxisIndex: 0
+        type: line
+        item: Vigicrue_Austerlitz_Height
+        markers:
+          - avg
+          - min
+          - max
+          - time
+        service: influxdb
+    - component: oh-time-series
+      config:
+        name: Flow
+        gridIndex: 0
+        xAxisIndex: 0
+        yAxisIndex: 1
+        type: line
+        item: Vigicrue_Austerlitz_Flow
+        service: influxdb
+```
 
 ## Full Example
 

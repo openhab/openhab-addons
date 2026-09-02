@@ -14,7 +14,6 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
-			<channel-group id="pollens" typeId="dept-pollens"/>
 			<channel-group id="indice" typeId="pollutant-ndx"/>
 			<channel-group id="o3" typeId="pollutant-mpc">
 				<label>Ozone Concentration</label>
@@ -29,6 +28,10 @@
 				<label>PM10 Concentration</label>
 			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>department</representation-property>
 

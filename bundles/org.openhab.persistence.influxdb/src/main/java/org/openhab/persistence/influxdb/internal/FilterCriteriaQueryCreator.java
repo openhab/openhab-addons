@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,15 +32,4 @@ public interface FilterCriteriaQueryCreator {
      * @return Created query as a String
      */
     String createQuery(FilterCriteria criteria, String retentionPolicy, @Nullable String alias);
-
-    default String getOperationSymbol(FilterCriteria.Operator operator, InfluxDBVersion version) {
-        return switch (operator) {
-            case EQ -> "=";
-            case LT -> "<";
-            case LTE -> "<=";
-            case GT -> ">";
-            case GTE -> ">=";
-            case NEQ -> version == InfluxDBVersion.V1 ? "<>" : "!=";
-        };
-    }
 }

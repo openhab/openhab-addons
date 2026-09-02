@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,5 +111,45 @@ public class X1HybridG4Data extends CommonLocalDeviceData {
     @Override
     public short getInverterWorkModeCode() {
         return getFromRawData(10);
+    }
+
+    @Override
+    public short getPowerUsage() {
+        return getFromRawData(38);
+    }
+
+    @Override
+    public double getTodayEnergy() {
+        return ((double) getFromRawData(13)) / 10;
+    }
+
+    @Override
+    public double getTotalPVEnergy() {
+        return ((double) packU16(12, 11)) / 10;
+    }
+
+    @Override
+    public double getTotalFeedInEnergy() {
+        return ((double) packU16(35, 34)) / 100;
+    }
+
+    @Override
+    public double getTotalConsumption() {
+        return ((double) packU16(37, 36)) / 100;
+    }
+
+    @Override
+    public double getTodayFeedInEnergy() {
+        return ((double) getFromRawData(39)) / 10;
+    }
+
+    @Override
+    public double getTodayBatteryDischargeEnergy() {
+        return ((double) getFromRawData(87)) / 10;
+    }
+
+    @Override
+    public double getTodayBatteryChargeEnergy() {
+        return ((double) getFromRawData(85)) / 10;
     }
 }

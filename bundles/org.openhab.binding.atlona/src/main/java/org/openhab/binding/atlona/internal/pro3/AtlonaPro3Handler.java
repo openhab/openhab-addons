@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -594,7 +594,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
      * @return {@link AtlonaPro3Config}
      */
     private AtlonaPro3Config getAtlonaConfig() {
-        return getThing().getConfiguration().as(AtlonaPro3Config.class);
+        return getConfigAs(AtlonaPro3Config.class);
     }
 
     /**

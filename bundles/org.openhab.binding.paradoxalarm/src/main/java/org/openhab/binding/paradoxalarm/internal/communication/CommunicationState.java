@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -314,9 +314,13 @@ public enum CommunicationState implements IResponseReceiver {
         @Override
         protected void runPhase(IParadoxInitialLoginCommunicator communicator, Object... args) {
             if (communicator instanceof IParadoxCommunicator comm) {
+                // initializeData() only queues requests — responses arrive asynchronously.
+                // Transition to ONLINE is deferred until the first complete RAM read cycle
+                // completes (see EvoCommunicator.receiveRamResponse).
                 comm.initializeData();
+            } else {
+                nextState().runPhase(communicator);
             }
-            nextState().runPhase(communicator);
         }
     },
     ONLINE {

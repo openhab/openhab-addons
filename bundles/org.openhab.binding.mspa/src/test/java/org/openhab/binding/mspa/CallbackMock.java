@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,7 @@ import org.openhab.core.types.TimeSeries;
 @NonNullByDefault
 class CallbackMock implements ThingHandlerCallback {
     Hashtable<String, State> states = new Hashtable<>();
+    private @Nullable ThingStatusInfo lastStatusInfo;
 
     public int numberOfUpdates() {
         return states.size();
@@ -58,6 +59,10 @@ class CallbackMock implements ThingHandlerCallback {
 
     public @Nullable State getState(String channel) {
         return states.get(channel);
+    }
+
+    public @Nullable ThingStatusInfo getThingStatus() {
+        return lastStatusInfo;
     }
 
     @Override
@@ -75,6 +80,7 @@ class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
+        lastStatusInfo = thingStatus;
     }
 
     @Override

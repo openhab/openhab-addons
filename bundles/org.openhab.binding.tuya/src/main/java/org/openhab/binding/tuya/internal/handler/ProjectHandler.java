@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ import org.openhab.binding.tuya.internal.cloud.TuyaOpenAPI;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceListInfo;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceSchema;
 import org.openhab.binding.tuya.internal.config.ProjectConfiguration;
-import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -47,14 +46,13 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ProjectHandler extends BaseThingHandler implements ApiStatusCallback {
     private final TuyaOpenAPI api;
-    private final Storage<String> storage;
+    protected @Nullable TuyaDiscoveryService discoveryService = null;
 
     private @Nullable ScheduledFuture<?> apiConnectFuture;
 
-    public ProjectHandler(Thing thing, HttpClient httpClient, Storage<String> storage, Gson gson) {
+    public ProjectHandler(Thing thing, HttpClient httpClient, Gson gson) {
         super(thing);
         this.api = new TuyaOpenAPI(this, scheduler, gson, httpClient);
-        this.storage = storage;
     }
 
     @Override
@@ -85,16 +83,20 @@ public class ProjectHandler extends BaseThingHandler implements ApiStatusCallbac
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } else {
             stopApiConnectFuture();
+
+            if (thing.getStatus() != ThingStatus.ONLINE) {
+                var discoveryService = this.discoveryService;
+                if (discoveryService != null) {
+                    discoveryService.startScan();
+                }
+            }
+
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
     public TuyaOpenAPI getApi() {
         return api;
-    }
-
-    public Storage<String> getStorage() {
-        return storage;
     }
 
     public CompletableFuture<List<DeviceListInfo>> getAllDevices(int page) {
@@ -123,6 +125,10 @@ public class ProjectHandler extends BaseThingHandler implements ApiStatusCallbac
     public void dispose() {
         stopApiConnectFuture();
         api.disconnect();
+    }
+
+    public void setDiscoveryService(@Nullable TuyaDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
     }
 
     @Override

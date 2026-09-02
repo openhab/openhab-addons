@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="twilio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Twilio Account Bridge -->
+	<bridge-type id="account">
+		<label>Twilio Account</label>
+		<description>A Twilio account that provides API access for sending SMS, MMS, WhatsApp messages, and making voice
+			calls.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="accountSid" type="text" required="true">
+				<label>Account SID</label>
+				<description>Your Twilio Account SID (starts with AC). Found in the Twilio Console dashboard.</description>
+			</parameter>
+			<parameter name="authToken" type="text" required="true">
+				<context>password</context>
+				<label>Auth Token</label>
+				<description>Your Twilio Auth Token. Found in the Twilio Console dashboard.</description>
+			</parameter>
+			<parameter name="publicUrl" type="text" required="false">
+				<label>Public URL</label>
+				<description>Public-facing base URL for webhook callbacks (e.g. https://my.domain.com). Required to receive incoming
+					messages and calls.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="autoConfigureWebhooks" type="boolean" required="false">
+				<label>Auto-Configure Webhooks</label>
+				<description>When enabled, automatically configures webhook URLs on Twilio phone numbers via the API. Requires
+					Public URL or Cloud Webhook to be configured.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="useCloudWebhook" type="boolean" required="false">
+				<label>Use openHAB Cloud Webhooks</label>
+				<description>When enabled, uses the openHAB Cloud service to provide publicly-reachable webhook URLs for receiving
+					incoming messages and calls. Requires the openHAB Cloud Connector add-on to be installed and connected. This
+					eliminates the need for port forwarding or a reverse proxy.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Twilio Phone Number Thing -->
+	<thing-type id="phone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Twilio Phone Number</label>
+		<description>Represents a Twilio phone number for sending and receiving SMS, MMS, WhatsApp messages, and voice calls.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<!-- Message state channels -->
+			<channel id="last-message-body" typeId="last-message-body"/>
+			<channel id="last-message-from" typeId="last-message-from"/>
+			<channel id="last-message-date" typeId="last-message-date"/>
+			<channel id="last-message-media-url" typeId="last-message-media-url"/>
+			<channel id="last-message-sid" typeId="last-message-sid"/>
+			<!-- Call state channels -->
+			<channel id="last-call-from" typeId="last-call-from"/>
+			<channel id="last-call-status" typeId="last-call-status"/>
+			<channel id="last-call-date" typeId="last-call-date"/>
+			<channel id="last-dtmf-digits" typeId="last-dtmf-digits"/>
+			<!-- Trigger channels -->
+			<channel id="sms-received" typeId="sms-received"/>
+			<channel id="whatsapp-received" typeId="whatsapp-received"/>
+			<channel id="call-received" typeId="call-received"/>
+			<channel id="dtmf-received" typeId="dtmf-received"/>
+			<channel id="message-status" typeId="message-status"/>
+			<channel id="call-status-update" typeId="call-status-update"/>
+		</channels>
+
+		<representation-property>phoneNumber</representation-property>
+
+		<config-description>
+			<parameter name="phoneNumber" type="text" required="true">
+				<label>Phone Number</label>
+				<description>Your Twilio phone number in E.164 format (e.g. +15551234567).</description>
+			</parameter>
+			<parameter name="voiceGreeting" type="text" required="false">
+				<label>Voice Greeting TwiML</label>
+				<description>TwiML returned when an incoming voice call is received. Use {gatherUrl} as a placeholder for the DTMF
+					callback URL.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="gatherResponse" type="text" required="false">
+				<label>Gather Response TwiML</label>
+				<description>TwiML returned after DTMF digits are gathered from a caller. Used as fallback when no rule responds
+					with respondWithTwiml.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="responseTimeout" type="integer" unit="s" min="1" max="14" required="false">
+				<label>Response Timeout</label>
+				<description>Seconds to wait for a rule to respond with TwiML via respondWithTwiml before using the default greeting
+					or gather response.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- State Channel Types -->
+	<channel-type id="last-message-body">
+		<item-type>String</item-type>
+		<label>Last Message Body</label>
+		<description>Body text of the last received SMS or WhatsApp message.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-message-from">
+		<item-type>String</item-type>
+		<label>Last Message From</label>
+		<description>Phone number of the last message sender.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-message-date">
+		<item-type>DateTime</item-type>
+		<label>Last Message Date</label>
+		<description>Timestamp of the last received message.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-message-media-url">
+		<item-type>String</item-type>
+		<label>Last Message Media URL</label>
+		<description>URL of the first media attachment from the last received MMS or WhatsApp message.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-message-sid" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Message SID</label>
+		<description>Twilio Message SID of the last received message.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-call-from">
+		<item-type>String</item-type>
+		<label>Last Call From</label>
+		<description>Phone number of the last incoming caller.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-call-status">
+		<item-type>String</item-type>
+		<label>Last Call Status</label>
+		<description>Status of the last call (e.g. ringing, in-progress, completed).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-call-date">
+		<item-type>DateTime</item-type>
+		<label>Last Call Date</label>
+		<description>Timestamp of the last incoming call.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-dtmf-digits">
+		<item-type>String</item-type>
+		<label>Last DTMF Digits</label>
+		<description>Last DTMF digits received from a caller during a voice call.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Trigger Channel Types -->
+	<channel-type id="sms-received">
+		<kind>trigger</kind>
+		<label>SMS Received</label>
+		<description>Triggered when an SMS or MMS message is received. Payload is a JSON object with from, to, body,
+			messageSid, numMedia, and mediaUrls fields.</description>
+		<event/>
+	</channel-type>
+
+	<channel-type id="whatsapp-received">
+		<kind>trigger</kind>
+		<label>WhatsApp Received</label>
+		<description>Triggered when a WhatsApp message is received. Payload is a JSON object with from, to, body, messageSid,
+			numMedia, and mediaUrls fields.</description>
+		<event/>
+	</channel-type>
+
+	<channel-type id="call-received">
+		<kind>trigger</kind>
+		<label>Call Received</label>
+		<description>Triggered when an incoming voice call is received. Payload is a JSON object with from, to, callSid, and
+			callStatus fields.</description>
+		<event/>
+	</channel-type>
+
+	<channel-type id="dtmf-received">
+		<kind>trigger</kind>
+		<label>DTMF Received</label>
+		<description>Triggered when DTMF digits are gathered from a caller. Payload is a JSON object with digits, callSid,
+			from, and to fields.</description>
+		<event/>
+	</channel-type>
+
+	<channel-type id="message-status">
+		<kind>trigger</kind>
+		<label>Message Status</label>
+		<description>Triggered when a message delivery status changes. Payload is a JSON object with messageSid,
+			messageStatus, and to fields.</description>
+		<event/>
+	</channel-type>
+
+	<channel-type id="call-status-update">
+		<kind>trigger</kind>
+		<label>Call Status Update</label>
+		<description>Triggered when a call status changes. Payload is a JSON object with callSid, callStatus, from, and to
+			fields.</description>
+		<event/>
+	</channel-type>
+
+</thing:thing-descriptions>

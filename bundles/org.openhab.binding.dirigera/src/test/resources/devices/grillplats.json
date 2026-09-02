@@ -1,0 +1,100 @@
+[
+	{
+		"deviceType": "outlet",
+		"isReachable": true,
+		"capabilities": {
+			"canReceive": [
+				"isOn",
+				"customName",
+				"windowOpen"
+			],
+			"canSend": []
+		},
+		"relationId": "27887dc3-151b-462f-bda6-105138ccc0ba",
+		"type": "outlet",
+		"deviceSet": [],
+		"room": {
+			"color": "ikea_pink_no_4",
+			"name": "Lobby HWR",
+			"icon": "rooms_drill",
+			"id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b"
+		},
+		"isHidden": false,
+		"remoteLinks": [],
+		"createdAt": "2026-03-23T18:58:32.000Z",
+		"lastSeen": "2026-03-23T21:08:51.000Z",
+		"attributes": {
+			"identifyPeriod": 0,
+			"permittingJoin": false,
+			"serialNumber": "UNKNOWN_SERIAL_NUMBER",
+			"otaScheduleStart": "00:00",
+			"otaProgress": 0,
+			"otaScheduleEnd": "00:00",
+			"customName": "GRILLPLATS plug",
+			"identifyStarted": "2026-03-06T11:09:24.000Z",
+			"otaPolicy": "autoUpdate",
+			"otaStatus": "upToDate",
+			"manufacturer": "IKEA of Sweden",
+			"discriminator": -1,
+			"setupCode": "",
+			"productCode": "E2491-EU",
+			"qrCode": "",
+			"otaState": "readyToCheck",
+			"isOn": false,
+			"hardwareVersion": "P2.0",
+			"model": "GRILLPLATS Plug",
+			"startupOnOff": "startPrevious",
+			"windowOpen": false,
+			"firmwareVersion": "1.4.6"
+		},
+		"id": "27887dc3-151b-462f-bda6-105138ccc0ba_1",
+		"customIcon": "products_control_outlet_3"
+	},
+	{
+		"deviceType": "electricalSensor",
+		"remoteLinks": [],
+		"createdAt": "2026-03-23T18:58:32.000Z",
+		"isReachable": true,
+		"lastSeen": "2026-03-23T21:08:51.000Z",
+		"capabilities": {
+			"canReceive": [
+				"energyConsumedAtLastReset",
+				"customName",
+				"windowOpen"
+			],
+			"canSend": []
+		},
+		"relationId": "27887dc3-151b-462f-bda6-105138ccc0ba",
+		"attributes": {
+			"permittingJoin": false,
+			"currentAmps": 0,
+			"currentVoltage": 237,
+			"otaScheduleEnd": "00:00",
+			"currentActivePower": 0,
+			"otaStatus": "upToDate",
+			"totalEnergyConsumedLastUpdated": "2026-03-23T18:58:32.000Z",
+			"manufacturer": "IKEA of Sweden",
+			"setupCode": "",
+			"qrCode": "",
+			"otaState": "readyToCheck",
+			"totalEnergyConsumed": 0,
+			"hardwareVersion": "P2.0",
+			"model": "GRILLPLATS Plug",
+			"windowOpen": false,
+			"firmwareVersion": "1.4.6",
+			"serialNumber": "UNKNOWN_SERIAL_NUMBER",
+			"otaScheduleStart": "00:00",
+			"otaProgress": 0,
+			"customName": "GRILLPLATS plug",
+			"otaPolicy": "autoUpdate",
+			"energyConsumedAtLastReset": 0,
+			"timeOfLastEnergyReset": "2026-03-23T18:58:32.000Z",
+			"discriminator": -1,
+			"productCode": "E2491-EU"
+		},
+		"id": "27887dc3-151b-462f-bda6-105138ccc0ba_2",
+		"type": "unknown",
+		"deviceSet": [],
+		"isHidden": false
+	}
+]

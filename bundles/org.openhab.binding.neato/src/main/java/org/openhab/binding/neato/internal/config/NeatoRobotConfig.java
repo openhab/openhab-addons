@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,7 @@ public class NeatoRobotConfig {
 
     @Override
     public String toString() {
-        return "NeatoRobotConfig [refresh=" + refresh + ", secret=" + secret + ", serial=" + serial + "]";
+        return "NeatoRobotConfig [refresh=" + refresh + ", secret=" + (secret != null && !secret.isBlank())
+                + ", serial=" + serial + "]";
     }
 }

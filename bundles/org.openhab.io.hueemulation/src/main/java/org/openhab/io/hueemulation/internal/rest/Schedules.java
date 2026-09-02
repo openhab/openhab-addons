@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -313,7 +313,6 @@ public class Schedules implements RegistryChangeListener<Rule> {
         ));
     }
 
-    @SuppressWarnings({ "null" })
     @POST
     @Path("{username}/schedules")
     @Operation(summary = "Create a new schedule", responses = {
@@ -325,7 +324,13 @@ public class Schedules implements RegistryChangeListener<Rule> {
         }
 
         HueScheduleEntry newScheduleData = cs.gson.fromJson(body, HueScheduleEntry.class);
-        if (newScheduleData == null || newScheduleData.name.isEmpty() || newScheduleData.localtime.isEmpty()) {
+        if (newScheduleData == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
+
+        String name = newScheduleData.name;
+        String localtime = newScheduleData.localtime;
+        if (name == null || name.isEmpty() || localtime == null || localtime.isEmpty()) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON,
                     "Invalid request: No name or localtime!");
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.easee.internal.handler.EaseeChargerHandler;
 import org.openhab.binding.easee.internal.handler.EaseeMasterChargerHandler;
 import org.openhab.binding.easee.internal.handler.EaseeSiteHandler;
+import org.openhab.binding.easee.internal.handler.EaseeUserHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -70,6 +71,8 @@ public class EaseeHandlerFactory extends BaseThingHandlerFactory {
             return new EaseeMasterChargerHandler(thing);
         } else if (THING_TYPE_CHARGER.equals(thingTypeUID)) {
             return new EaseeChargerHandler(thing);
+        } else if (THING_TYPE_USER.equals(thingTypeUID)) {
+            return new EaseeUserHandler(thing);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,7 +127,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             return;
         }
 
-        logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
+        logger.trace("Updating DanfossHRV data '{}'", getThing().getUID());
 
         for (Channel channel : Channel.values()) {
             if (Thread.interrupted()) {
@@ -219,7 +219,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
         DanfossAirUnitCommunicationController communicationController = this.communicationController;
         if (communicationController != null) {
-            communicationController.disconnect();
+            communicationController.close();
         }
         this.communicationController = null;
     }

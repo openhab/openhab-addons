@@ -23,9 +23,9 @@ No binding configuration required.
 
 ## Thing Configuration
 
-| Parameter | Description   | Required  |
-|----------|--------|-------------|
-| webThingURI | the URI of the WebThing | true  |
+| Parameter   | Description             | Required |
+|-------------|-------------------------|----------|
+| webThingURI | the URI of the WebThing | true     |
 
 Due to the discovery support, **no manual Thing configuration is required** in general. However, under certain circumstances textual
 Thing configuration may be preferred. In this case, the webThingURI has to be configured as shown in the webthing.things file below:
@@ -38,8 +38,8 @@ Thing webthing:generic:motionsensor [ webThingURI="http://192.168.1.27:9496/" ]
 
 The supported channels depend on the WebThing device that is connected. Each mappable **WebThing property will be mapped to a dedicated channel, automatically**. For instance, to support the _motion property_ of a Motion-Sensor WebThing, a dedicated _motion channel_ will be created, automatically.
 
-| Thing | channel  | type   | description                  |
-|--------|----------|--------|------------------------------|
+| Thing    | channel   | type      | description                                                                            |
+|----------|-----------|-----------|----------------------------------------------------------------------------------------|
 | WebThing | Automatic | Automatic | All channels will be generated automatically based on the detected WebThing properties |
 
 ## Full Example

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -26,21 +25,29 @@ public class SemanticTags {
      * Enumeration of all Tag namespaces defined by the Matter specification.
      */
     public enum Namespace {
-        AREA(16, AreaTag.values()),
-        CLOSURE(1, ClosureTag.values()),
-        COMPASS_DIRECTION(2, CompassDirectionTag.values()),
-        COMPASS_LOCATION(3, CompassLocationTag.values()),
-        DIRECTION(4, DirectionTag.values()),
+        CLOSURE_CABINET(72, ClosureCabinetTag.values()),
+        CLOSURE_COVERING(70, ClosureCoveringTag.values()),
+        CLOSURE(68, ClosureTag.values()),
+        CLOSURE_PANEL(69, ClosurePanelTag.values()),
+        CLOSURE_WINDOW(71, ClosureWindowTag.values()),
+        COMMODITY_TARIFF_CHRONOLOGY(11, CommodityTariffChronologyTag.values()),
+        COMMODITY_TARIFF_COMMODITY(13, CommodityTariffCommodityTag.values()),
+        COMMODITY_TARIFF_FLOW(19, CommodityTariffFlowTag.values()),
+        COMMON_AREA(16, CommonAreaTag.values()),
+        COMMON_CLOSURE(1, CommonClosureTag.values()),
+        COMMON_COMPASS_DIRECTION(2, CommonCompassDirectionTag.values()),
+        COMMON_COMPASS_LOCATION(3, CommonCompassLocationTag.values()),
+        COMMON_DIRECTION(4, CommonDirectionTag.values()),
+        COMMON_LANDMARK(17, CommonLandmarkTag.values()),
+        COMMON_LEVEL(5, CommonLevelTag.values()),
+        COMMON_LOCATION(6, CommonLocationTag.values()),
+        COMMON_NUMBER(7, CommonNumberTag.values()),
+        COMMON_POSITION(8, CommonPositionTag.values()),
+        COMMON_RELATIVE_POSITION(18, CommonRelativePositionTag.values()),
         ELECTRICAL_MEASUREMENT(10, ElectricalMeasurementTag.values()),
-        LANDMARK(17, LandmarkTag.values()),
         LAUNDRY(14, LaundryTag.values()),
-        LEVEL(5, LevelTag.values()),
-        LOCATION(6, LocationTag.values()),
-        NUMBER(7, NumberTag.values()),
-        POSITION(8, PositionTag.values()),
         POWER_SOURCE(15, PowerSourceTag.values()),
         REFRIGERATOR(65, RefrigeratorTag.values()),
-        RELATIVE_POSITION(18, RelativePositionTag.values()),
         ROOM_AIR_CONDITIONER(66, RoomAirConditionerTag.values()),
         SWITCHES(67, SwitchesTag.values());
 
@@ -68,107 +75,46 @@ public class SemanticTags {
     }
 
     /**
-     * Tags for the "Area" namespace.
+     * Tags for the "ClosureCabinet" namespace.
      */
-    public enum AreaTag implements BaseCluster.MatterEnum {
-        AISLE(0, "Aisle"),
-        ATTIC(1, "Attic"),
-        BACK_DOOR(2, "Back Door"),
-        BACK_YARD(3, "Back Yard"),
-        BALCONY(4, "Balcony"),
-        BALLROOM(5, "Ballroom"),
-        BATHROOM(6, "Bathroom"),
-        BEDROOM(7, "Bedroom"),
-        BORDER(8, "Border"),
-        BOXROOM(9, "Boxroom"),
-        BREAKFAST_ROOM(10, "Breakfast Room"),
-        CARPORT(11, "Carport"),
-        CELLAR(12, "Cellar"),
-        CLOAKROOM(13, "Cloakroom"),
-        CLOSET(14, "Closet"),
-        CONSERVATORY(15, "Conservatory"),
-        CORRIDOR(16, "Corridor"),
-        CRAFT_ROOM(17, "Craft Room"),
-        CUPBOARD(18, "Cupboard"),
-        DECK(19, "Deck"),
-        DEN(20, "Den"),
-        DINING(21, "Dining"),
-        DRAWING_ROOM(22, "Drawing Room"),
-        DRESSING_ROOM(23, "Dressing Room"),
-        DRIVEWAY(24, "Driveway"),
-        ELEVATOR(25, "Elevator"),
-        ENSUITE(26, "Ensuite"),
-        ENTRANCE(27, "Entrance"),
-        ENTRYWAY(28, "Entryway"),
-        FAMILY_ROOM(29, "Family Room"),
-        FOYER(30, "Foyer"),
-        FRONT_DOOR(31, "Front Door"),
-        FRONT_YARD(32, "Front Yard"),
-        GAME_ROOM(33, "Game Room"),
-        GARAGE(34, "Garage"),
-        GARAGE_DOOR(35, "Garage Door"),
-        GARDEN(36, "Garden"),
-        GARDEN_DOOR(37, "Garden Door"),
-        GUEST_BATHROOM(38, "Guest Bathroom"),
-        GUEST_BEDROOM(39, "Guest Bedroom"),
-        GUEST_ROOM(40, "Guest Room"),
-        GYM(41, "Gym"),
-        HALLWAY(42, "Hallway"),
-        HEARTH_ROOM(43, "Hearth Room"),
-        KIDS_ROOM(44, "Kids Room"),
-        KIDS_BEDROOM(45, "Kids Bedroom"),
-        KITCHEN(46, "Kitchen"),
-        LAUNDRY_ROOM(47, "Laundry Room"),
-        LAWN(48, "Lawn"),
-        LIBRARY(49, "Library"),
-        LIVING_ROOM(50, "Living Room"),
-        LOUNGE(51, "Lounge"),
-        MEDIA_TV_ROOM(52, "Media/TV Room"),
-        MUD_ROOM(53, "Mud Room"),
-        MUSIC_ROOM(54, "Music Room"),
-        NURSERY(55, "Nursery"),
-        OFFICE(56, "Office"),
-        OUTDOOR_KITCHEN(57, "Outdoor Kitchen"),
-        OUTSIDE(58, "Outside"),
-        PANTRY(59, "Pantry"),
-        PARKING_LOT(60, "Parking Lot"),
-        PARLOR(61, "Parlor"),
-        PATIO(62, "Patio"),
-        PLAY_ROOM(63, "Play Room"),
-        POOL_ROOM(64, "Pool Room"),
-        PORCH(65, "Porch"),
-        PRIMARY_BATHROOM(66, "Primary Bathroom"),
-        PRIMARY_BEDROOM(67, "Primary Bedroom"),
-        RAMP(68, "Ramp"),
-        RECEPTION_ROOM(69, "Reception Room"),
-        RECREATION_ROOM(70, "Recreation Room"),
-        ROOF(71, "Roof"),
-        SAUNA(72, "Sauna"),
-        SCULLERY(73, "Scullery"),
-        SEWING_ROOM(74, "Sewing Room"),
-        SHED(75, "Shed"),
-        SIDE_DOOR(76, "Side Door"),
-        SIDE_YARD(77, "Side Yard"),
-        SITTING_ROOM(78, "Sitting Room"),
-        SNUG(79, "Snug"),
-        SPA(80, "Spa"),
-        STAIRCASE(81, "Staircase"),
-        STEAM_ROOM(82, "Steam Room"),
-        STORAGE_ROOM(83, "Storage Room"),
-        STUDIO(84, "Studio"),
-        STUDY(85, "Study"),
-        SUN_ROOM(86, "Sun Room"),
-        SWIMMING_POOL(87, "Swimming Pool"),
-        TERRACE(88, "Terrace"),
-        TOILET(89, "Toilet"),
-        UTILITY_ROOM(90, "Utility Room"),
-        WARD(91, "Ward"),
-        WORKSHOP(92, "Workshop");
+    public enum ClosureCabinetTag implements BaseCluster.MatterEnum {
+        CABINET_DOOR(0, "CabinetDoor"),
+        DRAWER(1, "Drawer"),
+        FLAP(2, "Flap");
 
         private final Integer value;
         private final String label;
 
-        AreaTag(Integer value, String label) {
+        ClosureCabinetTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "ClosureCovering" namespace.
+     */
+    public enum ClosureCoveringTag implements BaseCluster.MatterEnum {
+        BLIND(0, "Blind"),
+        AWNING(1, "Awning"),
+        SHUTTER(2, "Shutter"),
+        VENETIAN(3, "Venetian"),
+        CURTAIN(4, "Curtain");
+
+        private final Integer value;
+        private final String label;
+
+        ClosureCoveringTag(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -188,9 +134,13 @@ public class SemanticTags {
      * Tags for the "Closure" namespace.
      */
     public enum ClosureTag implements BaseCluster.MatterEnum {
-        OPENING(0, "Opening"),
-        CLOSING(1, "Closing"),
-        STOP(2, "Stop");
+        COVERING(0, "Covering"),
+        WINDOW(1, "Window"),
+        BARRIER(2, "Barrier"),
+        CABINET(3, "Cabinet"),
+        GATE(4, "Gate"),
+        GARAGE_DOOR(5, "GarageDoor"),
+        DOOR(6, "Door");
 
         private final Integer value;
         private final String label;
@@ -212,22 +162,301 @@ public class SemanticTags {
     }
 
     /**
-     * Tags for the "CompassDirection" namespace.
+     * Tags for the "ClosurePanel" namespace.
      */
-    public enum CompassDirectionTag implements BaseCluster.MatterEnum {
+    public enum ClosurePanelTag implements BaseCluster.MatterEnum {
+        LIFT(0, "Lift"),
+        TILT(1, "Tilt"),
+        SLIDING(2, "Sliding"),
+        ROTATE(3, "Rotate");
+
+        private final Integer value;
+        private final String label;
+
+        ClosurePanelTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "ClosureWindow" namespace.
+     */
+    public enum ClosureWindowTag implements BaseCluster.MatterEnum {
+        ROOF(0, "Roof"),
+        FACADE(1, "Facade");
+
+        private final Integer value;
+        private final String label;
+
+        ClosureWindowTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommodityTariffChronology" namespace.
+     */
+    public enum CommodityTariffChronologyTag implements BaseCluster.MatterEnum {
+        CURRENT(0, "Current"),
+        PREVIOUS(1, "Previous"),
+        UPCOMING(2, "Upcoming");
+
+        private final Integer value;
+        private final String label;
+
+        CommodityTariffChronologyTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommodityTariffCommodity" namespace.
+     */
+    public enum CommodityTariffCommodityTag implements BaseCluster.MatterEnum {
+        ELECTRICAL_ENERGY(0, "ElectricalEnergy");
+
+        private final Integer value;
+        private final String label;
+
+        CommodityTariffCommodityTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommodityTariffFlow" namespace.
+     */
+    public enum CommodityTariffFlowTag implements BaseCluster.MatterEnum {
+        IMPORT(0, "Import"),
+        EXPORT(1, "Export");
+
+        private final Integer value;
+        private final String label;
+
+        CommodityTariffFlowTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonArea" namespace.
+     */
+    public enum CommonAreaTag implements BaseCluster.MatterEnum {
+        AISLE(0, "Aisle"),
+        ATTIC(1, "Attic"),
+        BACK_DOOR(2, "BackDoor"),
+        BACK_YARD(3, "BackYard"),
+        BALCONY(4, "Balcony"),
+        BALLROOM(5, "Ballroom"),
+        BATHROOM(6, "Bathroom"),
+        BEDROOM(7, "Bedroom"),
+        BORDER(8, "Border"),
+        BOXROOM(9, "Boxroom"),
+        BREAKFAST_ROOM(10, "BreakfastRoom"),
+        CARPORT(11, "Carport"),
+        CELLAR(12, "Cellar"),
+        CLOAKROOM(13, "Cloakroom"),
+        CLOSET(14, "Closet"),
+        CONSERVATORY(15, "Conservatory"),
+        CORRIDOR(16, "Corridor"),
+        CRAFT_ROOM(17, "CraftRoom"),
+        CUPBOARD(18, "Cupboard"),
+        DECK(19, "Deck"),
+        DEN(20, "Den"),
+        DINING(21, "Dining"),
+        DRAWING_ROOM(22, "DrawingRoom"),
+        DRESSING_ROOM(23, "DressingRoom"),
+        DRIVEWAY(24, "Driveway"),
+        ELEVATOR(25, "Elevator"),
+        ENSUITE(26, "Ensuite"),
+        ENTRANCE(27, "Entrance"),
+        ENTRYWAY(28, "Entryway"),
+        FAMILY_ROOM(29, "FamilyRoom"),
+        FOYER(30, "Foyer"),
+        FRONT_DOOR(31, "FrontDoor"),
+        FRONT_YARD(32, "FrontYard"),
+        GAME_ROOM(33, "GameRoom"),
+        GARAGE(34, "Garage"),
+        GARAGE_DOOR(35, "GarageDoor"),
+        GARDEN(36, "Garden"),
+        GARDEN_DOOR(37, "GardenDoor"),
+        GUEST_BATHROOM(38, "GuestBathroom"),
+        GUEST_BEDROOM(39, "GuestBedroom"),
+        RESERVED28(40, "Reserved28"),
+        GUEST_ROOM(41, "GuestRoom"),
+        GYM(42, "Gym"),
+        HALLWAY(43, "Hallway"),
+        HEARTH_ROOM(44, "HearthRoom"),
+        KIDS_ROOM(45, "KidsRoom"),
+        KIDS_BEDROOM(46, "KidsBedroom"),
+        KITCHEN(47, "Kitchen"),
+        RESERVED30(48, "Reserved30"),
+        LAUNDRY_ROOM(49, "LaundryRoom"),
+        LAWN(50, "Lawn"),
+        LIBRARY(51, "Library"),
+        LIVING_ROOM(52, "LivingRoom"),
+        LOUNGE(53, "Lounge"),
+        MEDIA_TV_ROOM(54, "MediaTvRoom"),
+        MUD_ROOM(55, "MudRoom"),
+        MUSIC_ROOM(56, "MusicRoom"),
+        NURSERY(57, "Nursery"),
+        OFFICE(58, "Office"),
+        OUTDOOR_KITCHEN(59, "OutdoorKitchen"),
+        OUTSIDE(60, "Outside"),
+        PANTRY(61, "Pantry"),
+        PARKING_LOT(62, "ParkingLot"),
+        PARLOR(63, "Parlor"),
+        PATIO(64, "Patio"),
+        PLAY_ROOM(65, "PlayRoom"),
+        POOL_ROOM(66, "PoolRoom"),
+        PORCH(67, "Porch"),
+        PRIMARY_BATHROOM(68, "PrimaryBathroom"),
+        PRIMARY_BEDROOM(69, "PrimaryBedroom"),
+        RAMP(70, "Ramp"),
+        RECEPTION_ROOM(71, "ReceptionRoom"),
+        RECREATION_ROOM(72, "RecreationRoom"),
+        RESERVED49(73, "Reserved49"),
+        ROOF(74, "Roof"),
+        SAUNA(75, "Sauna"),
+        SCULLERY(76, "Scullery"),
+        SEWING_ROOM(77, "SewingRoom"),
+        SHED(78, "Shed"),
+        SIDE_DOOR(79, "SideDoor"),
+        SIDE_YARD(80, "SideYard"),
+        SITTING_ROOM(81, "SittingRoom"),
+        SNUG(82, "Snug"),
+        SPA(83, "Spa"),
+        STAIRCASE(84, "Staircase"),
+        STEAM_ROOM(85, "SteamRoom"),
+        STORAGE_ROOM(86, "StorageRoom"),
+        STUDIO(87, "Studio"),
+        STUDY(88, "Study"),
+        SUN_ROOM(89, "SunRoom"),
+        SWIMMING_POOL(90, "SwimmingPool"),
+        TERRACE(91, "Terrace"),
+        UTILITY_ROOM(92, "UtilityRoom"),
+        WARD(93, "Ward"),
+        WORKSHOP(94, "Workshop"),
+        TOILET(95, "Toilet");
+
+        private final Integer value;
+        private final String label;
+
+        CommonAreaTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonClosure" namespace.
+     */
+    public enum CommonClosureTag implements BaseCluster.MatterEnum {
+        OPENING(0, "Opening"),
+        CLOSING(1, "Closing"),
+        STOP(2, "Stop");
+
+        private final Integer value;
+        private final String label;
+
+        CommonClosureTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonCompassDirection" namespace.
+     */
+    public enum CommonCompassDirectionTag implements BaseCluster.MatterEnum {
         NORTHWARD(0, "Northward"),
-        NORTH_EASTWARD(1, "North-Eastward"),
+        NORTH_EASTWARD(1, "NorthEastward"),
         EASTWARD(2, "Eastward"),
-        SOUTH_EASTWARD(3, "South-Eastward"),
+        SOUTH_EASTWARD(3, "SouthEastward"),
         SOUTHWARD(4, "Southward"),
-        SOUTH_WESTWARD(5, "South-Westward"),
+        SOUTH_WESTWARD(5, "SouthWestward"),
         WESTWARD(6, "Westward"),
-        NORTH_WESTWARD(7, "North-Westward");
+        NORTH_WESTWARD(7, "NorthWestward");
 
         private final Integer value;
         private final String label;
 
-        CompassDirectionTag(Integer value, String label) {
+        CommonCompassDirectionTag(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -244,22 +473,22 @@ public class SemanticTags {
     }
 
     /**
-     * Tags for the "CompassLocation" namespace.
+     * Tags for the "CommonCompassLocation" namespace.
      */
-    public enum CompassLocationTag implements BaseCluster.MatterEnum {
+    public enum CommonCompassLocationTag implements BaseCluster.MatterEnum {
         NORTH(0, "North"),
-        NORTH_EAST(1, "North-East"),
+        NORTH_EAST(1, "NorthEast"),
         EAST(2, "East"),
-        SOUTH_EAST(3, "South-East"),
+        SOUTH_EAST(3, "SouthEast"),
         SOUTH(4, "South"),
-        SOUTH_WEST(5, "South-West"),
+        SOUTH_WEST(5, "SouthWest"),
         WEST(6, "West"),
-        NORTH_WEST(7, "North-West");
+        NORTH_WEST(7, "NorthWest");
 
         private final Integer value;
         private final String label;
 
-        CompassLocationTag(Integer value, String label) {
+        CommonCompassLocationTag(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -276,9 +505,9 @@ public class SemanticTags {
     }
 
     /**
-     * Tags for the "Direction" namespace.
+     * Tags for the "CommonDirection" namespace.
      */
-    public enum DirectionTag implements BaseCluster.MatterEnum {
+    public enum CommonDirectionTag implements BaseCluster.MatterEnum {
         UPWARD(0, "Upward"),
         DOWNWARD(1, "Downward"),
         LEFTWARD(2, "Leftward"),
@@ -289,7 +518,255 @@ public class SemanticTags {
         private final Integer value;
         private final String label;
 
-        DirectionTag(Integer value, String label) {
+        CommonDirectionTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonLandmark" namespace.
+     */
+    public enum CommonLandmarkTag implements BaseCluster.MatterEnum {
+        AIR_CONDITIONER(0, "AirConditioner"),
+        AIR_PURIFIER(1, "AirPurifier"),
+        BACK_DOOR(2, "BackDoor"),
+        BAR_STOOL(3, "BarStool"),
+        BATH_MAT(4, "BathMat"),
+        BATHTUB(5, "Bathtub"),
+        BED(6, "Bed"),
+        BOOKSHELF(7, "Bookshelf"),
+        CHAIR(8, "Chair"),
+        CHRISTMAS_TREE(9, "ChristmasTree"),
+        COAT_RACK(10, "CoatRack"),
+        COFFEE_TABLE(11, "CoffeeTable"),
+        COOKING_RANGE(12, "CookingRange"),
+        COUCH(13, "Couch"),
+        COUNTERTOP(14, "Countertop"),
+        CRADLE(15, "Cradle"),
+        CRIB(16, "Crib"),
+        DESK(17, "Desk"),
+        DINING_TABLE(18, "DiningTable"),
+        DISHWASHER(19, "Dishwasher"),
+        DOOR(20, "Door"),
+        DRESSER(21, "Dresser"),
+        LAUNDRY_DRYER(22, "LaundryDryer"),
+        FAN(23, "Fan"),
+        FIREPLACE(24, "Fireplace"),
+        FREEZER(25, "Freezer"),
+        FRONT_DOOR(26, "FrontDoor"),
+        HIGH_CHAIR(27, "HighChair"),
+        KITCHEN_ISLAND(28, "KitchenIsland"),
+        LAMP(29, "Lamp"),
+        LITTER_BOX(30, "LitterBox"),
+        MIRROR(31, "Mirror"),
+        NIGHTSTAND(32, "Nightstand"),
+        OVEN(33, "Oven"),
+        PET_BED(34, "PetBed"),
+        PET_BOWL(35, "PetBowl"),
+        PET_CRATE(36, "PetCrate"),
+        REFRIGERATOR(37, "Refrigerator"),
+        SCRATCHING_POST(38, "ScratchingPost"),
+        SHOE_RACK(39, "ShoeRack"),
+        SHOWER(40, "Shower"),
+        SIDE_DOOR(41, "SideDoor"),
+        SINK(42, "Sink"),
+        SOFA(43, "Sofa"),
+        STOVE(44, "Stove"),
+        TABLE(45, "Table"),
+        TOILET(46, "Toilet"),
+        TRASH_CAN(47, "TrashCan"),
+        LAUNDRY_WASHER(48, "LaundryWasher"),
+        WINDOW(49, "Window"),
+        WINE_COOLER(50, "WineCooler");
+
+        private final Integer value;
+        private final String label;
+
+        CommonLandmarkTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonLevel" namespace.
+     */
+    public enum CommonLevelTag implements BaseCluster.MatterEnum {
+        LOW(0, "Low"),
+        MEDIUM(1, "Medium"),
+        HIGH(2, "High");
+
+        private final Integer value;
+        private final String label;
+
+        CommonLevelTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonLocation" namespace.
+     */
+    public enum CommonLocationTag implements BaseCluster.MatterEnum {
+        INDOOR(0, "Indoor"),
+        OUTDOOR(1, "Outdoor"),
+        INSIDE(2, "Inside"),
+        OUTSIDE(3, "Outside"),
+        ZONE(4, "Zone");
+
+        private final Integer value;
+        private final String label;
+
+        CommonLocationTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonNumber" namespace.
+     */
+    public enum CommonNumberTag implements BaseCluster.MatterEnum {
+        ZERO(0, "Zero"),
+        ONE(1, "One"),
+        TWO(2, "Two"),
+        THREE(3, "Three"),
+        FOUR(4, "Four"),
+        FIVE(5, "Five"),
+        SIX(6, "Six"),
+        SEVEN(7, "Seven"),
+        EIGHT(8, "Eight"),
+        NINE(9, "Nine"),
+        TEN(10, "Ten"),
+        ELEVEN(11, "Eleven"),
+        TWELVE(12, "Twelve"),
+        THIRTEEN(13, "Thirteen"),
+        FOURTEEN(14, "Fourteen"),
+        FIFTEEN(15, "Fifteen"),
+        SIXTEEN(16, "Sixteen"),
+        SEVENTEEN(17, "Seventeen"),
+        EIGHTEEN(18, "Eighteen"),
+        NINETEEN(19, "Nineteen"),
+        TWENTY(20, "Twenty"),
+        TWENTY_ONE(21, "TwentyOne"),
+        TWENTY_TWO(22, "TwentyTwo"),
+        TWENTY_THREE(23, "TwentyThree"),
+        TWENTY_FOUR(24, "TwentyFour"),
+        TWENTY_FIVE(25, "TwentyFive"),
+        TWENTY_SIX(26, "TwentySix"),
+        TWENTY_SEVEN(27, "TwentySeven"),
+        TWENTY_EIGHT(28, "TwentyEight"),
+        TWENTY_NINE(29, "TwentyNine"),
+        THIRTY(30, "Thirty");
+
+        private final Integer value;
+        private final String label;
+
+        CommonNumberTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonPosition" namespace.
+     */
+    public enum CommonPositionTag implements BaseCluster.MatterEnum {
+        LEFT(0, "Left"),
+        RIGHT(1, "Right"),
+        TOP(2, "Top"),
+        BOTTOM(3, "Bottom"),
+        MIDDLE(4, "Middle"),
+        ROW(5, "Row"),
+        COLUMN(6, "Column");
+
+        private final Integer value;
+        private final String label;
+
+        CommonPositionTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "CommonRelativePosition" namespace.
+     */
+    public enum CommonRelativePositionTag implements BaseCluster.MatterEnum {
+        UNDER(0, "Under"),
+        NEXT_TO(1, "NextTo"),
+        AROUND(2, "Around"),
+        ON(3, "On"),
+        ABOVE(4, "Above"),
+        FRONT_OF(5, "FrontOf"),
+        BEHIND(6, "Behind");
+
+        private final Integer value;
+        private final String label;
+
+        CommonRelativePositionTag(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -335,214 +812,18 @@ public class SemanticTags {
     }
 
     /**
-     * Tags for the "Landmark" namespace.
-     */
-    public enum LandmarkTag implements BaseCluster.MatterEnum {
-        AIR_CONDITIONER(0, "Air Conditioner"),
-        AIR_PURIFIER(1, "Air Purifier"),
-        BACK_DOOR(2, "Back Door"),
-        BAR_STOOL(3, "Bar Stool"),
-        BATH_MAT(4, "Bath Mat"),
-        BATHTUB(5, "Bathtub"),
-        BED(6, "Bed"),
-        BOOKSHELF(7, "Bookshelf"),
-        CHAIR(8, "Chair"),
-        CHRISTMAS_TREE(9, "Christmas Tree"),
-        COAT_RACK(10, "Coat Rack"),
-        COFFEE_TABLE(11, "Coffee Table"),
-        COOKING_RANGE(12, "Cooking Range"),
-        COUCH(13, "Couch"),
-        COUNTERTOP(14, "Countertop"),
-        CRADLE(15, "Cradle"),
-        CRIB(16, "Crib"),
-        DESK(17, "Desk"),
-        DINING_TABLE(18, "Dining Table"),
-        DISHWASHER(19, "Dishwasher"),
-        DOOR(20, "Door"),
-        DRESSER(21, "Dresser"),
-        LAUNDRY_DRYER(22, "Laundry Dryer"),
-        FAN(23, "Fan"),
-        FIREPLACE(24, "Fireplace"),
-        FREEZER(25, "Freezer"),
-        FRONT_DOOR(26, "Front Door"),
-        HIGH_CHAIR(27, "High Chair"),
-        KITCHEN_ISLAND(28, "Kitchen Island"),
-        LAMP(29, "Lamp"),
-        LITTER_BOX(30, "Litter Box"),
-        MIRROR(31, "Mirror"),
-        NIGHTSTAND(32, "Nightstand"),
-        OVEN(33, "Oven"),
-        PET_BED(34, "Pet Bed"),
-        PET_BOWL(35, "Pet Bowl"),
-        PET_CRATE(36, "Pet Crate"),
-        REFRIGERATOR(37, "Refrigerator"),
-        SCRATCHING_POST(38, "Scratching Post"),
-        SHOE_RACK(39, "Shoe Rack"),
-        SHOWER(40, "Shower"),
-        SIDE_DOOR(41, "Side Door"),
-        SINK(42, "Sink"),
-        SOFA(43, "Sofa"),
-        STOVE(44, "Stove"),
-        TABLE(45, "Table"),
-        TOILET(46, "Toilet"),
-        TRASH_CAN(47, "Trash Can"),
-        LAUNDRY_WASHER(48, "Laundry Washer"),
-        WINDOW(49, "Window"),
-        WINE_COOLER(50, "Wine Cooler");
-
-        private final Integer value;
-        private final String label;
-
-        LandmarkTag(Integer value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-
-        @Override
-        public Integer getValue() {
-            return value;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
-        }
-    }
-
-    /**
      * Tags for the "Laundry" namespace.
      */
     public enum LaundryTag implements BaseCluster.MatterEnum {
         NORMAL(0, "Normal"),
-        LIGHT_DRY(1, "Light Dry"),
-        EXTRA_DRY(2, "Extra Dry"),
-        NO_DRY(3, "No Dry");
+        LIGHT_DRY(1, "LightDry"),
+        EXTRA_DRY(2, "ExtraDry"),
+        NO_DRY(3, "NoDry");
 
         private final Integer value;
         private final String label;
 
         LaundryTag(Integer value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-
-        @Override
-        public Integer getValue() {
-            return value;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
-        }
-    }
-
-    /**
-     * Tags for the "Level" namespace.
-     */
-    public enum LevelTag implements BaseCluster.MatterEnum {
-        LOW(0, "Low"),
-        MEDIUM(1, "Medium"),
-        HIGH(2, "High");
-
-        private final Integer value;
-        private final String label;
-
-        LevelTag(Integer value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-
-        @Override
-        public Integer getValue() {
-            return value;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
-        }
-    }
-
-    /**
-     * Tags for the "Location" namespace.
-     */
-    public enum LocationTag implements BaseCluster.MatterEnum {
-        INDOOR(0, "Indoor"),
-        OUTDOOR(1, "Outdoor"),
-        INSIDE(2, "Inside"),
-        OUTSIDE(3, "Outside");
-
-        private final Integer value;
-        private final String label;
-
-        LocationTag(Integer value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-
-        @Override
-        public Integer getValue() {
-            return value;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
-        }
-    }
-
-    /**
-     * Tags for the "Number" namespace.
-     */
-    public enum NumberTag implements BaseCluster.MatterEnum {
-        ZERO(0, "Zero"),
-        ONE(1, "One"),
-        TWO(2, "Two"),
-        THREE(3, "Three"),
-        FOUR(4, "Four"),
-        FIVE(5, "Five"),
-        SIX(6, "Six"),
-        SEVEN(7, "Seven"),
-        EIGHT(8, "Eight"),
-        NINE(9, "Nine"),
-        TEN(10, "Ten");
-
-        private final Integer value;
-        private final String label;
-
-        NumberTag(Integer value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-
-        @Override
-        public Integer getValue() {
-            return value;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
-        }
-    }
-
-    /**
-     * Tags for the "Position" namespace.
-     */
-    public enum PositionTag implements BaseCluster.MatterEnum {
-        LEFT(0, "Left"),
-        RIGHT(1, "Right"),
-        TOP(2, "Top"),
-        BOTTOM(3, "Bottom"),
-        MIDDLE(4, "Middle"),
-        ROW(5, "Row"),
-        COLUMN(6, "Column");
-
-        private final Integer value;
-        private final String label;
-
-        PositionTag(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -614,37 +895,6 @@ public class SemanticTags {
     }
 
     /**
-     * Tags for the "RelativePosition" namespace.
-     */
-    public enum RelativePositionTag implements BaseCluster.MatterEnum {
-        UNDER(0, "Under"),
-        NEXT_TO(1, "Next To"),
-        AROUND(2, "Around"),
-        ON(3, "On"),
-        ABOVE(4, "Above"),
-        FRONT_OF(5, "Front Of"),
-        BEHIND(6, "Behind");
-
-        private final Integer value;
-        private final String label;
-
-        RelativePositionTag(Integer value, String label) {
-            this.value = value;
-            this.label = label;
-        }
-
-        @Override
-        public Integer getValue() {
-            return value;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
-        }
-    }
-
-    /**
      * Tags for the "RoomAirConditioner" namespace.
      */
     public enum RoomAirConditionerTag implements BaseCluster.MatterEnum {
@@ -681,8 +931,11 @@ public class SemanticTags {
         DOWN(4, "Down"),
         NEXT(5, "Next"),
         PREVIOUS(6, "Previous"),
-        ENTER_OK_SELECT(7, "Enter/OK/Select"),
-        CUSTOM(8, "Custom");
+        ENTER_OK_SELECT(7, "EnterOkSelect"),
+        CUSTOM(8, "Custom"),
+        OPEN(9, "Open"),
+        CLOSE(10, "Close"),
+        STOP(11, "Stop");
 
         private final Integer value;
         private final String label;

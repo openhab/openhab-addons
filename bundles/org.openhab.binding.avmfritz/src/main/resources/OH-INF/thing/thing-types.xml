@@ -489,6 +489,24 @@
 	</thing-type>
 
 	<!-- Supported FRITZ! groups and features -->
+	<thing-type id="FRITZ_GROUP_BLINDS">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo"/>
+		</supported-bridge-type-refs>
+
+		<label>Blinds Group</label>
+		<description>Group for blinds.</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+		<channels>
+			<channel id="rollershutter" typeId="rollershutter"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzgroup"/>
+	</thing-type>
+
 	<thing-type id="FRITZ_GROUP_HEATING">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox"/>

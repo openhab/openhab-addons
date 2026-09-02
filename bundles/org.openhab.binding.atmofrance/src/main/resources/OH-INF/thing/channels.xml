@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="atmofrance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="localdate">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$td/%1$tm"/>
+	</channel-type>
+
+	<channel-type id="concentration" advanced="true">
+		<item-type unitHint="gr/m³">Number:Density</item-type>
+		<label>Measure</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="index">
+		<item-type>Number</item-type>
+		<label>Air Quality</label>
+		<category>oh:atmofrance:aq</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Good</option>
+				<option value="1">Average</option>
+				<option value="2">Degraded</option>
+				<option value="3">Bad</option>
+				<option value="4">Very Bad</option>
+				<option value="5">Extremely Bad</option>
+				<option value="7">Event</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="pollen-index">
+		<item-type>Number</item-type>
+		<label>Pollen Index</label>
+		<category>oh:atmofrance:pollen</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Very Low</option>
+				<option value="1">Low</option>
+				<option value="2">Moderate</option>
+				<option value="3">High</option>
+				<option value="4">Very High</option>
+				<option value="5">Extremely High</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="index-adv" advanced="true">
+		<item-type>Number</item-type>
+		<label>Air Quality</label>
+		<category>oh:atmofrance:aq</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Good</option>
+				<option value="1">Average</option>
+				<option value="2">Degraded</option>
+				<option value="3">Bad</option>
+				<option value="4">Very Bad</option>
+				<option value="5">Extremely Bad</option>
+				<option value="7">Event</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alder-level">
+		<item-type>Number</item-type>
+		<label>Alder</label>
+		<category>oh:atmofrance:alder</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Very Low</option>
+				<option value="1">Low</option>
+				<option value="2">Moderate</option>
+				<option value="3">High</option>
+				<option value="4">Very High</option>
+				<option value="5">Extremely High</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="birch-level">
+		<item-type>Number</item-type>
+		<label>Birch Level</label>
+		<category>oh:atmofrance:birch</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Very Low</option>
+				<option value="1">Low</option>
+				<option value="2">Moderate</option>
+				<option value="3">High</option>
+				<option value="4">Very High</option>
+				<option value="5">Extremely High</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="olive-level">
+		<item-type>Number</item-type>
+		<label>Olive</label>
+		<category>oh:atmofrance:olive</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Very Low</option>
+				<option value="1">Low</option>
+				<option value="2">Moderate</option>
+				<option value="3">High</option>
+				<option value="4">Very High</option>
+				<option value="5">Extremely High</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="grasses-level">
+		<item-type>Number</item-type>
+		<label>Grasses</label>
+		<category>oh:atmofrance:grasses</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Very Low</option>
+				<option value="1">Low</option>
+				<option value="2">Moderate</option>
+				<option value="3">High</option>
+				<option value="4">Very High</option>
+				<option value="5">Extremely High</option>
+				<option value="9">Absent</option>
+
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="wormwood-level">
+		<item-type>Number</item-type>
+		<label>Wormwood</label>
+		<category>oh:atmofrance:wormwood</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Very Low</option>
+				<option value="1">Low</option>
+				<option value="2">Moderate</option>
+				<option value="3">High</option>
+				<option value="4">Very High</option>
+				<option value="5">Extremely High</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ragweed-level">
+		<item-type>Number</item-type>
+		<label>Ragweed</label>
+		<category>oh:atmofrance:ragweed</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Very Low</option>
+				<option value="1">Low</option>
+				<option value="2">Moderate</option>
+				<option value="3">High</option>
+				<option value="4">Very High</option>
+				<option value="5">Extremely High</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

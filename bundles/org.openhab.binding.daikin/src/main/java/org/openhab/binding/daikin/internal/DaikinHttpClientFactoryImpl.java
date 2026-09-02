@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.daikin.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -67,7 +66,7 @@ public class DaikinHttpClientFactoryImpl implements DaikinHttpClientFactory {
     }
 
     @Override
-    public @Nullable HttpClient getHttpClient() {
+    public HttpClient getHttpClient() {
         return httpClient;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,8 +50,8 @@ public class SceneHandler extends BaseHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void initializeDevice() {
+        super.initializeDevice();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readScene(config.id);
             handleUpdate(values);
@@ -62,6 +62,7 @@ public class SceneHandler extends BaseHandler {
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }
+            gateway().registerDevice(this, config.id);
 
             // check if different undo duration is configured
             if (values.has("undoAllowedDuration")) {

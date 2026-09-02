@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class BlindHandler extends LutronHandler {
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration().as(BlindConfig.class);
+        config = getConfigAs(BlindConfig.class);
         if (config.integrationId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;

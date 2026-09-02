@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,8 @@ public class EnergiDataServiceBindingConstants {
             CHANNEL_CO2_EMISSION_REALTIME);
 
     public static final Set<String> SUBSCRIPTION_CHANNELS = Stream
-            .concat(ELECTRICITY_CHANNELS.stream(), CO2_EMISSION_CHANNELS.stream()).collect(Collectors.toSet());
+            .concat(ELECTRICITY_CHANNELS.stream(), CO2_EMISSION_CHANNELS.stream())
+            .collect(Collectors.toUnmodifiableSet());
 
     // List of all properties
     public static final String PROPERTY_REMAINING_CALLS = "remainingCalls";

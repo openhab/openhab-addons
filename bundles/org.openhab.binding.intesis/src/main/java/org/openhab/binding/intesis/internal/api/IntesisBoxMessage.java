@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,11 +64,14 @@ public class IntesisBoxMessage {
     }
 
     public List<String> getLimitsValue() {
+        if (value.length() <= 2) {
+            return List.of();
+        }
         return Arrays.asList(value.substring(1, value.length() - 1).split(","));
     }
 
     public static @Nullable IntesisBoxMessage parse(String message) {
-        Matcher m = REGEX.matcher(message);
+        Matcher m = REGEX.matcher(message.trim());
         if (!m.find()) {
             return null;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
 /**
@@ -22,7 +24,8 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GetValueParser extends CommonRpcParser<Object[], Void> {
+@NonNullByDefault
+public class GetValueParser extends CommonRpcParser<Object[], @Nullable Void> {
     private HmDatapoint dp;
 
     public GetValueParser(HmDatapoint dp) {
@@ -30,9 +33,9 @@ public class GetValueParser extends CommonRpcParser<Object[], Void> {
     }
 
     @Override
-    public Void parse(Object[] message) throws IOException {
-        if (message != null && message.length > 0 && !(message[0] instanceof Map)) {
-            dp.setValue(convertToType(dp, message[0]));
+    public @Nullable Void parse(Object[] message) throws IOException {
+        if (message.length > 0 && !(message[0] instanceof Map)) {
+            dp.setValue(convertToType(dp.getType(), message[0]));
             adjustRssiValue(dp);
         }
         return null;

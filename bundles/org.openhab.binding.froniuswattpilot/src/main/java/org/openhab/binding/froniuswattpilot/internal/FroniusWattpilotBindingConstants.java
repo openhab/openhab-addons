@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,7 @@ public class FroniusWattpilotBindingConstants {
 
     // Wattpilot control channels
     public static final String CHANNEL_CHARGING_ALLOWED = "charging-allowed";
+    public static final String CHANNEL_CHARGING_AUTHORIZED = "charging-authorized";
     public static final String CHANNEL_CHARGING_MODE = "charging-mode";
     public static final String CHANNEL_CHARGING_CURRENT = "charging-current";
     public static final String CHANNEL_PV_SURPLUS_THRESHOLD = "pv-surplus-threshold";

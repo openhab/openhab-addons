@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if something goes wrong when converting values between openHAB and the binding.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class ConverterException extends Exception {
     private static final long serialVersionUID = 78045670450002L;
 

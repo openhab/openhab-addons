@@ -68,7 +68,7 @@
 	<channel-type id="heatingActive">
 		<item-type>Switch</item-type>
 		<label>Heating Active</label>
-		<description>Current state of the heater or heaters in room</description>
+		<description>Current state of the heater or heaters in the room</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Status</tag>
@@ -79,7 +79,7 @@
 	<channel-type id="independent">
 		<item-type>Switch</item-type>
 		<label>Independent Heater</label>
-		<description>ON if heater is an independent heater and not connected to a room</description>
+		<description>ON if the heater is independent and not connected to a room</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="masterSwitch">
@@ -94,7 +94,7 @@
 	<channel-type id="fanActive">
 		<item-type>Switch</item-type>
 		<label>Fan Active</label>
-		<description>Current state of heater fan (if available, OFF if not found)</description>
+		<description>Current state of the heater fan (if available; OFF if not present)</description>
 		<category>Flow</category>
 		<tags>
 			<tag>Switch</tag>
@@ -104,7 +104,7 @@
 	<channel-type id="window">
 		<item-type>Contact</item-type>
 		<label>Window State</label>
-		<description>Open window/cold air flow detection</description>
+		<description>Open window or cold air flow detection</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -159,7 +159,7 @@
 	<channel-type id="vacationMode">
 		<item-type>Switch</item-type>
 		<label>Vacation Mode</label>
-		<description>Toggles vacation mode. Start and end time must be preset before activating</description>
+		<description>Toggles vacation mode. Start and end times must be preset before activating</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -168,7 +168,7 @@
 	<channel-type id="vacationModeAdvanced">
 		<item-type>Switch</item-type>
 		<label>Advanced Vacation Mode</label>
-		<description>Use room Away mode temperatures instead of home global temperature</description>
+		<description>Use room Away mode temperatures instead of the home’s global temperature</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>

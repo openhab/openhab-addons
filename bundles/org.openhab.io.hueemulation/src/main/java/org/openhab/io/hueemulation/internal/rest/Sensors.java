@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -112,10 +112,9 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @Override
     public synchronized void added(Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
 
         if (!ALLOWED_ITEM_TYPES.contains(element.getType())) {
             return;
@@ -136,10 +135,14 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @Override
     public synchronized void updated(Item oldElement, Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
+
+        if (!ALLOWED_ITEM_TYPES.contains(element.getType())) {
+            removed(element);
+            return;
+        }
 
         String hueID = cs.mapItemUIDtoHueID(element);
 
@@ -194,7 +197,6 @@ public class Sensors implements RegistryChangeListener<Item> {
         return Response.ok(cs.gson.toJson(cs.ds.sensors.get(id))).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @GET
     @Path("{username}/sensors/{id}/config")
     @Operation(summary = "Return a sensor config. Always empty", responses = {
@@ -214,7 +216,6 @@ public class Sensors implements RegistryChangeListener<Item> {
         return Response.ok(cs.gson.toJson(sensor.config)).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @DELETE
     @Path("{username}/sensors/{id}")
     @Operation(summary = "Deletes the sensor that is represented by this id", responses = {
@@ -239,7 +240,6 @@ public class Sensors implements RegistryChangeListener<Item> {
         }
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/sensors/{id}")
     @Operation(summary = "Rename a sensor", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -255,6 +255,10 @@ public class Sensors implements RegistryChangeListener<Item> {
         }
 
         final HueChangeRequest changeRequest = cs.gson.fromJson(body, HueChangeRequest.class);
+
+        if (changeRequest == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
 
         String name = changeRequest.name;
         if (name == null || name.isEmpty()) {

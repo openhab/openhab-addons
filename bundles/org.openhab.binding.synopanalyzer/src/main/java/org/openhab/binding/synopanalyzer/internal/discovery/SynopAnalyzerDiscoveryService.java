@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -89,7 +89,7 @@ public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
             radius = nearest.getKey();
 
             thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_SYNOP, Integer.toString(station.idOmm)))
-                    .withLabel(String.format("Synop : %s", station.usualName))
+                    .withLabel(String.format("Synop: %s", station.usualName))
                     .withProperty(SynopAnalyzerConfiguration.STATION_ID, station.idOmm)
                     .withRepresentationProperty(SynopAnalyzerConfiguration.STATION_ID).build());
         } else {

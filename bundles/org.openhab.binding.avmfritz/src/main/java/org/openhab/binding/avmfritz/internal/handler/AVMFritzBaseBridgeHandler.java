@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
@@ -39,7 +38,6 @@ import org.openhab.binding.avmfritz.internal.dto.GroupModel;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateTemplatesCallback;
 import org.openhab.core.library.types.StringType;
@@ -148,7 +146,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     protected synchronized void manageConnections() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
         if (this.connection == null) {
-            this.connection = new FritzAhaWebInterface(config, this, httpClient);
+            FritzAhaWebInterface webInterface = new FritzAhaWebInterface(config, this, httpClient);
+            this.connection = webInterface;
+            webInterface.authenticate();
             stopPolling();
             startPolling();
         }
@@ -169,6 +169,12 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopPolling();
+        FritzAhaWebInterface webInterface = connection;
+        connection = null;
+        if (webInterface != null) {
+            webInterface.dispose();
+        }
+        super.dispose();
     }
 
     @Override
@@ -252,7 +258,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Called from {@link FritzAhaApplyTemplateCallback} to provide new templates for things.
+     * Called from {@link org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback} to
+     * provide new templates for things.
      *
      * @param templateList list of template models
      */
@@ -288,7 +295,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Builds a {@link ThingUID} from a device model. The UID is build from the
-     * {@link AVMFritzBindingConstants#BINDING_ID} and
+     * {@link org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants#BINDING_ID} and
      * value of {@link AVMFritzBaseModel#getProductName()} in which all characters NOT matching the RegEx [^a-zA-Z0-9_]
      * are replaced by "_".
      *
@@ -304,6 +311,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         if (thingTypeUID != null && (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
                 || SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)
                 || SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)
+                || SUPPORTED_POWER_METER_THING_TYPES.contains(thingTypeUID)
                 || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID))) {
             return new ThingUID(thingTypeUID, bridgeUID, thingName);
         } else if (device.isHeatingThermostat()) {
@@ -322,7 +330,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      */
     public String getThingTypeId(AVMFritzBaseModel device) {
         if (device instanceof GroupModel) {
-            if (device.isHeatingThermostat()) {
+            if (device.isHANFUNBlinds()) {
+                return GROUP_BLINDS;
+            } else if (device.isHeatingThermostat()) {
                 return GROUP_HEATING;
             } else if (device.isSwitchableOutlet()) {
                 return GROUP_SWITCH;
@@ -335,7 +345,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (device.isDimmableLight()) {
                 return DEVICE_HAN_FUN_DIMMABLE_BULB;
             }
-            List<String> interfaces = Arrays.asList(deviceModel.getEtsiunitinfo().getInterfaces().split(","));
+            List<String> interfaces = Arrays.stream(deviceModel.getEtsiunitinfo().getInterfaces().split(",")).toList();
             if (interfaces.contains(HAN_FUN_INTERFACE_ALERT)) {
                 return DEVICE_HAN_FUN_CONTACT;
             } else if (interfaces.contains(HAN_FUN_INTERFACE_SIMPLE_BUTTON)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -20,103 +25,104 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class CloudLogin1DTO {
     @SerializedName("serviceParam")
     @Expose
-    private String serviceParam;
+    private @Nullable String serviceParam;
     @SerializedName("qs")
     @Expose
-    private String qs;
+    private @Nullable String qs;
     @SerializedName("code")
     @Expose
-    private Integer code;
+    private @Nullable Integer code;
     @SerializedName("description")
     @Expose
-    private String description;
+    private @Nullable String description;
     @SerializedName("securityStatus")
     @Expose
-    private Integer securityStatus;
+    private @Nullable Integer securityStatus;
     @SerializedName("_sign")
     @Expose
-    private String sign;
+    private @Nullable String sign;
     @SerializedName("sid")
     @Expose
-    private String sid;
+    private @Nullable String sid;
     @SerializedName("result")
     @Expose
-    private String result;
+    private @Nullable String result;
     @SerializedName("captchaUrl")
     @Expose
-    private String captchaUrl;
+    private @Nullable String captchaUrl;
     @SerializedName("callback")
     @Expose
-    private String callback;
+    private @Nullable String callback;
     @SerializedName("location")
     @Expose
-    private String location;
+    private @Nullable String location;
     @SerializedName("pwd")
     @Expose
-    private Integer pwd;
+    private @Nullable Integer pwd;
     @SerializedName("child")
     @Expose
-    private Integer child;
+    private @Nullable Integer child;
     @SerializedName("desc")
     @Expose
-    private String desc;
+    private @Nullable String desc;
 
     public String getServiceParam() {
-        return serviceParam;
+        return Objects.requireNonNullElse(serviceParam, "");
     }
 
     public String getQs() {
-        return qs;
+        return Objects.requireNonNullElse(qs, "");
     }
 
     public Integer getCode() {
-        return code;
+        return Objects.requireNonNullElse(code, 0);
     }
 
     public String getDescription() {
-        return description;
+        return Objects.requireNonNullElse(description, "");
     }
 
     public Integer getSecurityStatus() {
-        return securityStatus;
+        return Objects.requireNonNullElse(securityStatus, -1);
     }
 
     public String getSign() {
-        return sign;
+        return Objects.requireNonNullElse(sign, "");
     }
 
     public String getSid() {
-        return sid;
+        return Objects.requireNonNullElse(sid, "");
     }
 
     public String getResult() {
-        return result;
+        return Objects.requireNonNullElse(result, "");
     }
 
     public String getCaptchaUrl() {
-        return captchaUrl;
+        return Objects.requireNonNullElse(captchaUrl, "");
     }
 
     public String getCallback() {
-        return callback;
+        return Objects.requireNonNullElse(callback, "");
     }
 
     public String getLocation() {
-        return location;
+        return Objects.requireNonNullElse(location, "");
     }
 
     public Integer getPwd() {
-        return pwd;
+        return Objects.requireNonNullElse(pwd, 0);
     }
 
     public Integer getChild() {
-        return child;
+        return Objects.requireNonNullElse(child, 0);
     }
 
     public String getDesc() {
-        return desc;
+        return Objects.requireNonNullElse(desc, "");
     }
 }

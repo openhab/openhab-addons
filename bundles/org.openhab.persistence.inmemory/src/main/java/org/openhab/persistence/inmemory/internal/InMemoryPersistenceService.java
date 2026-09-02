@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,6 +113,16 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         return persistMap.entrySet().stream().map(this::toItemInfo).collect(Collectors.toSet());
+    }
+
+    @Override
+    public @Nullable PersistenceItemInfo getItemInfo(String itemName, @Nullable String alias) {
+        String finalName = Objects.requireNonNullElse(alias, itemName);
+        PersistItem item = persistMap.get(finalName);
+        if (item == null) {
+            return null;
+        }
+        return toItemInfo(Map.entry(finalName, item));
     }
 
     @Override

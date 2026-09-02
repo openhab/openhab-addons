@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.siemensrds.internal;
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -222,7 +224,7 @@ public class RdsHandler extends BaseThingHandler {
             }
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "server response ok");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
 
             for (ChannelMap channel : CHAN_MAP) {
@@ -400,7 +402,8 @@ public class RdsHandler extends BaseThingHandler {
                 throw new RdsCloudException("missing configuration");
             }
 
-            String url = String.format(URL_POINTS, config.plantId);
+            String url = URL_POINTS
+                    .formatted(URLEncoder.encode(ARG_PARENT.formatted(config.plantId), StandardCharsets.UTF_8));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());

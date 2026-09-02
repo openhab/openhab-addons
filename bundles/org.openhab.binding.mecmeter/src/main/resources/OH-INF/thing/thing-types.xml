@@ -35,6 +35,8 @@
 			<channel-group id="app_energy_group" typeId="app_energy_group"/>
 		</channel-groups>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>

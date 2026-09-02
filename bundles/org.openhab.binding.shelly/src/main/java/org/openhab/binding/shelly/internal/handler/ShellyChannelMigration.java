@@ -1,0 +1,253 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.shelly.internal.handler;
+
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link ShellyChannelMigration} migrates legacy channel definitions of existing Things to the
+ * current channel schema: renamed channels get their replacement created next to them and channels
+ * with changed metadata are refreshed in place.
+ *
+ * @author Markus Michels - Initial contribution
+ */
+@NonNullByDefault
+public class ShellyChannelMigration {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyChannelMigration.class);
+
+    private record ChannelMigrationRule(int version, String channelId, @Nullable String replacementChannelId,
+            boolean refreshExistingChannel, @Nullable Predicate<ShellyDeviceProfile> condition) {
+        ChannelMigrationRule(int version, String channelId, @Nullable String replacementChannelId,
+                boolean refreshExistingChannel) {
+            this(version, channelId, replacementChannelId, refreshExistingChannel, null);
+        }
+    }
+
+    private static final List<ChannelMigrationRule> CHANNEL_MIGRATION_RULES = buildChannelMigrationRules();
+
+    private static List<ChannelMigrationRule> buildChannelMigrationRules() {
+        List<ChannelMigrationRule> rules = new ArrayList<>(List.of(
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTWATTS),
+                        CHANNEL_METER_CURRENTPOWER, true),
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALKWH),
+                        CHANNEL_METER_TOTALENERGY, true),
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_TOTALRET),
+                        CHANNEL_EMETER_RETURNEDENERGY, true),
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_REACTWATTS),
+                        CHANNEL_EMETER_REACTPOWER, false),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS),
+                        CHANNEL_DEVST_ACCUMULATEDPOWER, true),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL),
+                        CHANNEL_DEVST_TOTALENERGY, false),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED),
+                        CHANNEL_DEVST_ACCURETURNEDENERGY, false),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH),
+                        CHANNEL_DEVST_TOTALENERGY, false),
+                new ChannelMigrationRule(5, mkChannelId(CHANNEL_GROUP_NMETER, CHANNEL_NMETER_MTRESHHOLD),
+                        CHANNEL_NMETER_THRESHOLD, false),
+                new ChannelMigrationRule(5, mkWildcardChannelId(CHANNEL_GROUP_RELAY_CONTROL, CHANNEL_OUTPUT), null,
+                        true),
+                // Schema 6: energyHistMin1/2/3, energyAvgLast3Min and resetTotals are created as siblings
+                // of an existing anchor channel, so already-discovered Things pick them up automatically.
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_METER_ENERGYHISTMIN1, false, ShellyChannelMigration::hasMinuteEnergyHistory),
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_METER_ENERGYHISTMIN2, false, ShellyChannelMigration::hasMinuteEnergyHistory),
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_METER_ENERGYHISTMIN3, false, ShellyChannelMigration::hasMinuteEnergyHistory),
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_METER_ENERGYAVGLAST3MIN, false, ShellyChannelMigration::hasMinuteEnergyHistory),
+                // Per-meter reset only applies to non-3EM devices; 3EM resets once at the device level (below).
+                new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
+                        CHANNEL_EMETER_RESETTOTAL, false, ShellyChannelMigration::supportsPerMeterReset),
+                new ChannelMigrationRule(6, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER),
+                        CHANNEL_DEVST_RESETTOTAL, false, profile -> profile.is3EM)));
+        for (int i = 1; i <= 4; i++) {
+            rules.addAll(lightGroupMigrationRules(i));
+        }
+        return List.copyOf(rules);
+    }
+
+    private static List<ChannelMigrationRule> lightGroupMigrationRules(int index) {
+        String oldGroup = CHANNEL_GROUP_LIGHT_CHANNEL + index;
+        String newGroup = CHANNEL_GROUP_LIGHT_INDEX + index;
+        return List.of(
+                new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_BRIGHTNESS),
+                        mkChannelId(newGroup, CHANNEL_BRIGHTNESS), false, ShellyChannelMigration::isGen1Rgbw2),
+                new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_AUTOON),
+                        mkChannelId(newGroup, CHANNEL_TIMER_AUTOON), false, ShellyChannelMigration::isGen1Rgbw2),
+                new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_AUTOOFF),
+                        mkChannelId(newGroup, CHANNEL_TIMER_AUTOOFF), false, ShellyChannelMigration::isGen1Rgbw2),
+                new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_ACTIVE),
+                        mkChannelId(newGroup, CHANNEL_TIMER_ACTIVE), false, ShellyChannelMigration::isGen1Rgbw2));
+    }
+
+    // Gen2 switch/cover/pm1 report aenergy.by_minute; Gen1 /meter devices report counters[].
+    // EM/EM1/3EM (Gen2) and /emeter EM/3EM (Gen1) report neither.
+    private static boolean hasMinuteEnergyHistory(ShellyDeviceProfile profile) {
+        return profile.isGen2 ? !profile.is3EM && !profile.isEM1 : !profile.isEMeter;
+    }
+
+    // Gen1: only /emeter devices (EM) expose a reset API. 3EM resets at the device level, not per meter.
+    private static boolean supportsPerMeterReset(ShellyDeviceProfile profile) {
+        return !profile.is3EM && (profile.isGen2 || profile.isEMeter);
+    }
+
+    private static boolean isGen1Rgbw2(ShellyDeviceProfile profile) {
+        return profile.isRGBW2 && !profile.isGen2;
+    }
+
+    public static final int CHANNEL_SCHEMA_VERSION = CHANNEL_MIGRATION_RULES.stream()
+            .mapToInt(ChannelMigrationRule::version).max().orElse(0);
+
+    public static void migrateChannels(ShellyThingInterface thing) {
+        int currentVersion = getChannelSchemaVersion(thing);
+        if (currentVersion >= CHANNEL_SCHEMA_VERSION) {
+            return;
+        }
+
+        boolean updated = false;
+        for (ChannelMigrationRule rule : CHANNEL_MIGRATION_RULES) {
+            if (currentVersion < rule.version()) {
+                updated |= applyMigrationRule(thing, rule);
+            }
+        }
+        if (updated) {
+            thing.updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
+            LOGGER.debug("{}: Channel definitions migrated to schema version {}", thing.getThingName(),
+                    CHANNEL_SCHEMA_VERSION);
+        } else if (!thing.getThing().getChannels().isEmpty()) {
+            // Thing already has channels but none matched a rule (already on the current schema);
+            // stamp the version anyway so this scan is skipped on every subsequent poll.
+            thing.updateProperties(PROPERTY_CHANNEL_SCHEMA_VERSION, String.valueOf(CHANNEL_SCHEMA_VERSION));
+        }
+    }
+
+    private static int getChannelSchemaVersion(ShellyThingInterface thing) {
+        try {
+            return Integer.parseInt(thing.getProperty(PROPERTY_CHANNEL_SCHEMA_VERSION));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private static boolean applyMigrationRule(ShellyThingInterface thing, ChannelMigrationRule rule) {
+        Predicate<ShellyDeviceProfile> condition = rule.condition();
+        if (condition != null && !condition.test(thing.getProfile())) {
+            return false;
+        }
+
+        String thingName = thing.getThingName();
+        List<Channel> existingChannels = thing.getThing().getChannels();
+        List<Channel> matchingChannels = findChannels(existingChannels, rule.channelId());
+        String replacementChannelName = rule.replacementChannelId();
+        if (matchingChannels.isEmpty() && (replacementChannelName == null || replacementChannelName.isEmpty())) {
+            return false;
+        }
+
+        Map<String, Channel> channelUpdates = new HashMap<>();
+        Map<String, Channel> newOrReplacementChannels = new HashMap<>();
+
+        for (Channel channel : matchingChannels) {
+            String fullExistingId = channel.getUID().getId();
+            int sep = fullExistingId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR);
+            String groupPrefix = sep > 0 ? fullExistingId.substring(0, sep + 1) : "";
+
+            if (rule.refreshExistingChannel()) {
+                try {
+                    Channel updatedChannel = ShellyChannelDefinitions.createChannel(thing.getThing(), fullExistingId);
+                    if (updatedChannel != null && !getString(updatedChannel.getDescription())
+                            .equals(getString(channel.getDescription()))) {
+                        channelUpdates.put(fullExistingId, updatedChannel);
+                    }
+                } catch (IllegalArgumentException e) {
+                    LOGGER.debug("{}: Cannot refresh channel definition for {}", thingName, fullExistingId, e);
+                }
+            }
+
+            if (!groupPrefix.isEmpty()) {
+                String newChannelId;
+                if (replacementChannelName == null || replacementChannelName.isEmpty()) {
+                    newChannelId = fullExistingId;
+                } else if (replacementChannelName.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR) >= 0) {
+                    // Replacement id is already a full "group#name" id (e.g. a group-level rename); use as-is.
+                    newChannelId = replacementChannelName;
+                } else {
+                    newChannelId = groupPrefix + replacementChannelName;
+                }
+                if (findChannel(existingChannels, newChannelId) == null) {
+                    try {
+                        Channel newChannel = ShellyChannelDefinitions.createChannel(thing.getThing(), newChannelId);
+                        if (newChannel != null) {
+                            newOrReplacementChannels.put(newChannelId, newChannel);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        LOGGER.debug("{}: Cannot create replacement channel {}", thingName, newChannelId, e);
+                    }
+                }
+            }
+        }
+
+        return thing.updateThingChannels(channelUpdates, newOrReplacementChannels);
+    }
+
+    /**
+     * A rule's channelId is either "group#name" (matches that exact channel only) or
+     * "groupPrefix*#name" (matches every channel whose group starts with groupPrefix and whose
+     * name equals name — used for indexed groups: meter, meter1, meter2, ...). Every rule must use
+     * one of these two explicit forms; there is no implicit bare-name/any-group matching.
+     */
+    static List<Channel> findChannels(List<Channel> channels, String channelId) {
+        int sep = channelId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR);
+        if (sep <= 0) {
+            return List.of();
+        }
+        String channelName = channelId.substring(sep + 1);
+        boolean wildcard = channelId.charAt(sep - 1) == '*';
+        String groupPrefix = channelId.substring(0, wildcard ? sep - 1 : sep);
+
+        List<Channel> result = new ArrayList<>();
+        for (Channel channel : channels) {
+            ChannelUID uid = channel.getUID();
+            String fullId = uid.getId();
+            int idSep = fullId.indexOf(ChannelUID.CHANNEL_GROUP_SEPARATOR);
+            String group = idSep > 0 ? fullId.substring(0, idSep) : "";
+            boolean groupMatches = wildcard ? group.startsWith(groupPrefix) : group.equals(groupPrefix);
+            if (groupMatches && uid.getIdWithoutGroup().equals(channelName)) {
+                result.add(channel);
+            }
+        }
+        return result;
+    }
+
+    static @Nullable Channel findChannel(List<Channel> channels, String channelId) {
+        List<Channel> matches = findChannels(channels, channelId);
+        return matches.isEmpty() ? null : matches.get(0);
+    }
+}

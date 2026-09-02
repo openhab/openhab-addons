@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ public class Hourly {
     private double pop;
     private Precipitation rain;
     private Precipitation snow;
+    private double uvi;
 
     public int getDt() {
         return dt;
@@ -101,5 +102,9 @@ public class Hourly {
 
     public Precipitation getSnow() {
         return snow;
+    }
+
+    public double getUvi() {
+        return uvi;
     }
 }

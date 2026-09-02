@@ -13,11 +13,17 @@
 			<channel id="current_start" typeId="event_current_start"/>
 			<channel id="current_end" typeId="event_current_end"/>
 			<channel id="current_presence" typeId="event_current_presence"/>
+			<channel id="current_location" typeId="event_current_location"/>
 			<channel id="next_title" typeId="event_next_title"/>
 			<channel id="next_start" typeId="event_next_start"/>
 			<channel id="next_end" typeId="event_next_end"/>
+			<channel id="next_location" typeId="event_next_location"/>
 			<channel id="last_update" typeId="last_update"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description>
 			<parameter-group name="source">
@@ -60,7 +66,6 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
-
 	</bridge-type>
 
 	<channel-type id="event_current_title">
@@ -102,6 +107,15 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="event_current_location">
+		<item-type>String</item-type>
+		<label>Current Event Location</label>
+		<description>Location of the currently present event</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="event_next_title">
 		<item-type>String</item-type>
 		<label>Next Event Title</label>
@@ -130,6 +144,15 @@
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="event_next_location">
+		<item-type>String</item-type>
+		<label>Next Event Location</label>
+		<description>Location of the next event in calendar</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="result_start">

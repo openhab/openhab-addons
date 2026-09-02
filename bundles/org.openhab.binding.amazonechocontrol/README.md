@@ -130,13 +130,16 @@ See section _Smart Home Devices_ below for more information.
 | `discoverSmartHome`             | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and Alexa skill devices, 3...Discover direct, Alexa and openHAB skill devices                                                                |
 | `pollingIntervalSmartHomeAlexa` | 30      | Defines the time in seconds for openHAB to pull the state of the Alexa connected devices. The minimum is 10 seconds.                                                                                             |
 | `pollingIntervalSmartSkills`    | 120     | Defines the time in seconds for openHAB to pull the state of the over a skill connected devices. The minimum is 60 seconds.                                                                                      |
-| `activityRequestDelay`          | 10      | The number of seconds between a voice command was detected and the received command is requested from the server. The minimum is 2 seconds. Lower values improve response time but may result in loss of events. |
+| `activityRequestDelay`          | 10      | The number of seconds the binding waits between the voice command event and the history request. The minimum is 2 seconds. Amazon needs a moment to write a spoken command into the history.                     |
+| `activityRequestWindow`         | 120     | The number of seconds of voice history a request covers, counted backwards from the request time. When polling, it must be at least as large as the polling interval. The recommended minimum is 60 seconds.     |
+| `activityPollingInterval`       | 0       | The number of seconds between automatic voice history requests, for accounts without push events. 0 disables polling. Each poll is one request to Amazon; below 60 seconds risks rate limiting.                  |
 
 ### Channels
 
-| Channel Type ID | Item Type | Access Mode | Thing Type | Description                                      |
-|-----------------|-----------|-------------|------------|--------------------------------------------------|
-| `sendMessage`   | String    | W           | account    | Write Only! Sends a message to the Echo devices. |
+| Channel Type ID   | Item Type | Access Mode | Thing Type | Description                                                                      |
+|-------------------|-----------|-------------|------------|----------------------------------------------------------------------------------|
+| `sendMessage`     | String    | W           | account    | Write Only! Sends a message to the Echo devices.                                 |
+| `refreshActivity` | Switch    | R/W         | account    | ON requests the voice history; the channel answers OFF when the request is done. |
 
 ### Thing Configuration
 
@@ -189,6 +192,10 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 | notificationVolume    | Dimmer      | R           | echo, echoshow, echospot      | Notification volume                                                                                                                                                                                                                     |
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | Ascending alarm up to the configured volume                                                                                                                                                                                             |
 | doNotDisturb          | Switch      | R/W         | echo, echoshow, echospot      | Do Not Disturb mode enabled                                                                                                                                                                                                             |
+
+The `nextReminder`, `nextAlarm`, `nextMusicAlarm` and `nextTimer` channels are only polled from Amazon while at least one of them is linked to an item on any Echo thing of the account; linking a channel resumes the polling within a few seconds.
+The `nextReminder`, `nextAlarm`, `nextMusicAlarm` and `nextTimer` channels keep their last known value if a request to Amazon fails.
+After three consecutive failed requests they are set to `UNDEF`, because the binding does not know the state anymore.
 
 ## Advanced Feature Technically Experienced Users
 

@@ -1,28 +1,28 @@
 # Prowl Binding
 
-This is the binding for the [Prowl](https://www.prowlapp.com) iOS push service.
-It has been written from scratch and therefore it is not based on the original 1.x Prowl binding.
-It has no other purpose than sending push messages to iOS devices.
+This binding integrates the [Prowl](https://www.prowlapp.com) iOS push service.
+It was written from scratch and is not based on the original 1.x Prowl binding.
+Its only purpose is to send push messages to iOS devices.
 
 ## Binding Configuration
 
-The binding does not require any manual configuration on the binding level.
+The binding does not require any manual configuration at the binding level.
 
 ## Thing Configuration
 
-This binding has only one thing called _Broker_.
-If you want to use this binding, just add a broker instance and configure the API key, which you can generate on the Prowl website.
-You can also modify the _application_ property, which identifies the originator of these push messages.
-If you want to have specific refresh time for the remaining free push messages channel, you can edit the _refresh_ property.
-Anyway beware - every check consumes one free push message you can send in an hour.
+This binding has a single Thing called Broker.
+To use it, add a broker instance and configure the API key (generate it on the Prowl website).
+You can also set the application property, which identifies the originator of these push messages.
+If you want a specific refresh interval for the remaining free push-messages channel, set the refresh property.
+Be aware: every check consumes one of the free push messages you can send per hour.
 
 ## Channels
 
-The broker thing has only one channel keeping the number of free push messages, which can be sent.
+The broker Thing has one channel exposing the number of free push messages remaining this hour.
 
 | channel    | type   | description                                            |
 |------------|--------|--------------------------------------------------------|
-| remaining  | Number | This channel provides the number of free push messages |
+| remaining  | Number | The number of free push messages remaining this hour   |
 
 ## Example
 
@@ -34,10 +34,10 @@ Thing prowl:broker:mybroker "Prowl Broker" [ apiKey="000000000000000000000000000
 
 ### Rules
 
-Once you have created the broker thing with a valid API key, you can use the Prowl service in your rules.
-First you need to create an instance of the broker just before any call or on the top rules level. (replace the _mybroker_ with the right name of your instance).
-Then you can call method _pushNotification_, which requires two parameters - _event_ and _description_.
-There is also an optional third parameter _priority_ which represents the message priority (very low) -2,-1,0,1,2 (emergency). The default priority is 0.
+Once you’ve created the broker Thing with a valid API key, you can use the Prowl service in rules.
+First, create an instance of the broker before any call or at the top of the rules file (replace mybroker with your Thing ID).
+Then call the `pushNotification` method, which requires two parameters: event and description.
+An optional third parameter, priority, represents the message priority (very low) -2, -1, 0, 1, 2 (emergency). The default priority is 0.
 
 ```java
 val prowl = getActions("prowl","prowl:broker:mybroker")

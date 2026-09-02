@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,9 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ZwaveJSBridgeConfiguration {
 
+    public static final int DEFAULT_MAX_MESSAGE_SIZE = 16 * 1024 * 1024;
+
     public String hostname = "";
     public int port = 3000;
-    public int maxMessageSize = 2097152;
+    public int maxMessageSize = DEFAULT_MAX_MESSAGE_SIZE;
     public boolean configurationChannels = false;
 
     public boolean isValid() {

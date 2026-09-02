@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -28,12 +29,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.cm.Configuration;
@@ -48,6 +51,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class identifies Shelly devices by their mDNS service information.
+ *
+ * On discovery result
+ * - Extract IPv4 address from ServiceInfo.getInet4Addresses()
+ * - Read the gen TXT record ("2", "3", "4" → Gen2) and fall back to
+ * ShellyDeviceProfile.isGeneration2(serviceName) for older firmware that
+ * does not publish the property
+ * - Capture a local snapshot of this.bindingConfig (volatile field) to avoid a
+ * TOCTOU race with concurrent @Modified callbacks
+ * - Probe the device via HTTP to read /shelly or /settings and confirm its type
+ * - Call ShellyThingCreator.getThingUID() to map the device type string to a ThingTypeUID
+ * - Build and return a DiscoveryResult with the device's IP as deviceIp property
  *
  * @author Markus Michels - Initial contribution
  */
@@ -64,8 +78,10 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
 
     private final Logger logger = LoggerFactory.getLogger(ShellyMDNSDiscoveryParticipant.class);
-    private final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
+    private final ShellyBindingRuntimeConfig bindingConfig;
+    private final NetworkAddressService networkAddressService;
     private final ShellyTranslationProvider messages;
+    private final ShellyThingTable thingTable;
     private final HttpClient httpClient;
     private final ConfigurationAdmin configurationAdmin;
 
@@ -79,12 +95,18 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     @Activate
     public ShellyMDNSDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
             @Reference HttpClientFactory httpClientFactory, @Reference LocaleProvider localeProvider,
-            @Reference ShellyTranslationProvider translationProvider, ComponentContext componentContext) {
+            @Reference ShellyTranslationProvider translationProvider, @Reference ShellyThingTable thingTable,
+            @Reference NetworkAddressService networkAddressService, ComponentContext componentContext) {
         logger.debug("Activating Shelly mDNS discovery service");
         this.configurationAdmin = configurationAdmin;
         this.messages = translationProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        bindingConfig.updateFromProperties(componentContext.getProperties());
+        this.thingTable = thingTable;
+        this.networkAddressService = networkAddressService;
+
+        ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
+                .fromProperties(componentContext.getProperties());
+        bindingConfig = new ShellyBindingRuntimeConfig(rawConfig, -1, networkAddressService);
     }
 
     @Override
@@ -105,13 +127,15 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     @Modified
     protected void modified(final ComponentContext componentContext) {
         logger.debug("Shelly Binding Configuration refreshed");
-        bindingConfig.updateFromProperties(componentContext.getProperties());
+        ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
+                .fromProperties(componentContext.getProperties());
+        bindingConfig.update(rawConfig, networkAddressService);
     }
 
     @Override
     public @Nullable DiscoveryResult createResult(final ServiceInfo service) {
-        String serviceName = service.getName().toLowerCase(); // Shelly Duo: Name starts with "Shelly" rather than
-                                                              // "shelly"
+        // Shelly Duo: Name starts with "Shelly" rather than "shelly"
+        String serviceName = service.getName().toLowerCase(Locale.ROOT);
         if (!isValidShellyServiceName(serviceName)) {
             return null;
         }
@@ -128,22 +152,20 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         logger.debug("{}: Shelly device discovered: IP address={}", serviceName, address);
 
         try {
-            // Get device settings
+            // Get device settings — capture a consistent local snapshot; @Modified may run concurrently
+            ShellyBindingRuntimeConfig cfg = this.bindingConfig;
             Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
             if (serviceConfig.getProperties() != null) {
-                bindingConfig.updateFromProperties(serviceConfig.getProperties());
+                ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
+                        .fromProperties(serviceConfig.getProperties());
+                cfg = new ShellyBindingRuntimeConfig(rawConfig, -1, networkAddressService);
             }
-
-            ShellyThingConfiguration config = new ShellyThingConfiguration();
-            config.deviceIp = address;
-            config.userId = bindingConfig.defaultUserId;
-            config.password = bindingConfig.defaultPassword;
 
             String gen = getString(service.getPropertyString("gen"));
             boolean gen2 = "2".equals(gen) || "3".equals(gen) || "4".equals(gen)
                     || ShellyDeviceProfile.isGeneration2(serviceName);
-            return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, bindingConfig, httpClient,
-                    messages);
+            return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, cfg, httpClient, messages,
+                    thingTable);
         } catch (IOException e) {
             logger.debug("{}: Exception on processing serviceInfo '{}'", serviceName, service.getNiceTextString(), e);
             return null;

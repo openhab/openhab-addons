@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -30,14 +29,12 @@ public class LaundryWasherControlsCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0053;
     public static final String CLUSTER_NAME = "LaundryWasherControls";
     public static final String CLUSTER_PREFIX = "laundryWasherControls";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_SPIN_SPEEDS = "spinSpeeds";
     public static final String ATTRIBUTE_SPIN_SPEED_CURRENT = "spinSpeedCurrent";
     public static final String ATTRIBUTE_NUMBER_OF_RINSES = "numberOfRinses";
     public static final String ATTRIBUTE_SUPPORTED_RINSES = "supportedRinses";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the list of spin speeds available to the appliance in the currently selected mode. The spin speed
@@ -50,10 +47,9 @@ public class LaundryWasherControlsCluster extends BaseCluster {
      * Indicates the currently selected spin speed. It is the index into the SpinSpeeds list of the selected spin speed,
      * as such, this attribute can be an integer between 0 and the number of entries in SpinSpeeds - 1. If a value is
      * received that is outside of the defined constraints, a CONSTRAINT_ERROR shall be sent as the response. If a value
-     * is attempted to be written that doesn’t match a valid index (e.g. an index of 5 when the list has 4 values), a
+     * is attempted to be written that doesn't match a valid index (e.g. an index of 5 when the list has 4 values), a
      * CONSTRAINT_ERROR shall be sent as the response. If null is written to this attribute, there will be no spin speed
-     * for the
-     * selected cycle. If the value is null, there will be no spin speed on the current mode.
+     * for the selected cycle. If the value is null, there will be no spin speed on the current mode.
      */
     public Integer spinSpeedCurrent; // 1 uint8 RW VO
     /**
@@ -82,8 +78,8 @@ public class LaundryWasherControlsCluster extends BaseCluster {
         EXTRA(2, "Extra"),
         MAX(3, "Max");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NumberOfRinsesEnum(Integer value, String label) {
             this.value = value;
@@ -133,7 +129,6 @@ public class LaundryWasherControlsCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "spinSpeeds : " + spinSpeeds + "\n";
         str += "spinSpeedCurrent : " + spinSpeedCurrent + "\n";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,6 +156,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         assertThat("Could not get ItemRegistry", itemRegistry, is(notNullValue()));
         itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class);
         assertThat("Could not get ItemChannelLinkRegistry", itemChannelLinkRegistry, is(notNullValue()));
+        itemChannelLinkRegistry.waitForCompletedAsyncActivationTasks();
 
         coreItemFactory = new CoreItemFactory(mockedUnitProvider);
 

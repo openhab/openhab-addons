@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -229,7 +229,7 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
             return;
         }
 
-        final RioSourceConfig config = getThing().getConfiguration().as(RioSourceConfig.class);
+        final RioSourceConfig config = getConfigAs(RioSourceConfig.class);
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
             return;

@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Synop Analyzer Binding</name>
-	<description>This is the binding to download and interpret Synop messages</description>
+	<description>Binding that downloads and interprets SYNOP messages.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

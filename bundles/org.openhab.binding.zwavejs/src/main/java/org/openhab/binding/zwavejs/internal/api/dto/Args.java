@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,16 @@ public class Args {
     public int endpoint;
     public Object newValue;
     public Object prevValue;
+    /**
+     * See {@link org.openhab.binding.zwavejs.internal.handler.ZwaveJSBridgeHandler#normalizeValueNotification}.
+     */
+    public Object value;
     public String propertyName;
     public Object propertyKey;
+
+    public int event;
+    public int type;
+    public String label;
+    public String eventLabel;
+    public Object parameters;
 }

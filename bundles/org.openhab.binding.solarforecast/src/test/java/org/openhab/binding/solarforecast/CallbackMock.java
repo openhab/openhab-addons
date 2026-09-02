@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.solarforecast;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +56,21 @@ public class CallbackMock implements ThingHandlerCallback {
     Bridge bridge;
     Map<String, TimeSeries> seriesMap = new HashMap<>();
     Map<String, List<State>> stateMap = new HashMap<>();
-    ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+    String name = "unknown";
+    volatile ThingStatusInfo currentStatusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+
+    public CallbackMock() {
+    }
+
+    public void clear() {
+        currentStatusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+        seriesMap.clear();
+        stateMap.clear();
+    }
+
+    public CallbackMock(String name) {
+        this.name = name;
+    }
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
@@ -71,6 +89,25 @@ public class CallbackMock implements ThingHandlerCallback {
             stateList = new ArrayList<State>();
         }
         return stateList;
+    }
+
+    public State getLastState(String cuid) {
+        return getStateList(cuid).getLast();
+    }
+
+    public void waitForStateUpdates(String cuid, int count) {
+        Instant endWait = Instant.now().plus(5, ChronoUnit.SECONDS);
+        synchronized (this) {
+            while (getStateList(cuid).size() != count && Instant.now().isBefore(endWait)) {
+                try {
+                    wait(100);
+                } catch (InterruptedException e) {
+                    fail(e.getMessage());
+                }
+            }
+            assertEquals(count, getStateList(cuid).size(),
+                    getStateList(cuid).size() + " state updates received instead of " + count);
+        }
     }
 
     @Override
@@ -92,11 +129,29 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        currentInfo = thingStatus;
+        currentStatusInfo = thingStatus;
+        synchronized (this) {
+            notifyAll();
+        }
+    }
+
+    public void waitForStatus(ThingStatus status) {
+        Instant endWait = Instant.now().plus(5, ChronoUnit.SECONDS);
+        synchronized (this) {
+            while (currentStatusInfo.getStatus() != status && Instant.now().isBefore(endWait)) {
+                try {
+                    wait(100);
+                } catch (InterruptedException e) {
+                    fail(e.getMessage());
+                }
+            }
+            assertEquals(status, currentStatusInfo.getStatus(),
+                    "Thing " + name + " did not reach expected " + status + ", Status reached " + currentStatusInfo);
+        }
     }
 
     public ThingStatusInfo getStatus() {
-        return currentInfo;
+        return currentStatusInfo;
     }
 
     @Override

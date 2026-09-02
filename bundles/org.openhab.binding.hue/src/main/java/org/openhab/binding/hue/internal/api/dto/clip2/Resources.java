@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,8 +27,8 @@ public class Resources {
     private List<Error> errors = new ArrayList<>();
     private List<Resource> data = new ArrayList<>();
 
-    public List<String> getErrors() {
-        return errors.stream().map(Error::getDescription).collect(Collectors.toList());
+    public List<Error> getErrors() {
+        return errors;
     }
 
     public boolean hasErrors() {

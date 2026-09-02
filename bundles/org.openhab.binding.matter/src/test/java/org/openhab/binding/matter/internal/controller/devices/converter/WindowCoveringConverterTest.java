@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,7 @@ class WindowCoveringConverterTest extends BaseMatterConverterTest {
         ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#windowcovering-lift");
         converter.handleCommand(channelUID, new PercentType(50));
         verify(mockHandler, times(1)).sendClusterCommand(eq(1), eq(WindowCoveringCluster.CLUSTER_NAME),
-                eq(WindowCoveringCluster.goToLiftPercentage(50)));
+                eq(WindowCoveringCluster.goToLiftPercentage(5000)));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,11 +129,11 @@ public class MacTTSVoice implements Voice {
         Locale locale;
 
         if (variant != null) {
-            locale = new Locale(language, country, variant);
+            locale = Locale.of(language, country, variant);
         } else if (country != null) {
-            locale = new Locale(language, country);
+            locale = Locale.of(language, country);
         } else {
-            locale = new Locale(language);
+            locale = Locale.of(language);
         }
 
         return locale;

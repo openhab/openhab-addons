@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.discovery.dto;
 
-import static org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum.*;
+import static org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum.SECUREPASSTROUGH;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoEncoder.isBase64Encoded;
 
 import java.util.Base64;
@@ -32,7 +32,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public record TapoDiscoveryResult(@Expose @SerializedName("factory_default") boolean factoryDefault,
         @Expose @SerializedName("is_support_iot_cloud") boolean isSupportIOT,
-        @Expose @SerializedName("mgt_encrypt_schm") EncryptionShema encryptionShema, @Expose int role,
+        @Expose @SerializedName("tpap_preferred") boolean tpapPreferred,
+        @Expose @SerializedName("mgt_encrypt_schm") EncryptionSchema encryptionSchema, @Expose int role,
         @Expose int status, @Expose String alias, @Expose String appServerUrl, @Expose String deviceHwVer,
         @Expose @SerializedName(value = "deviceID", alternate = "device_id") String deviceId,
         @Expose @SerializedName(value = "deviceMac", alternate = "mac") String deviceMac,
@@ -42,16 +43,16 @@ public record TapoDiscoveryResult(@Expose @SerializedName("factory_default") boo
         @Expose String fwVer, @Expose String hwId, @Expose String ip, @Expose String isSameRegion,
         @Expose String oemId) {
 
-    public record EncryptionShema(@Expose @SerializedName("is_support_https") boolean isSupportHttps,
+    public record EncryptionSchema(@Expose @SerializedName("is_support_https") boolean isSupportHttps,
             @Expose @SerializedName("encrypt_type") String encryptType,
-            @Expose @SerializedName("http_port") int httpPort, @Expose int lv2) {
+            @Expose @SerializedName("http_port") int httpPort, @Expose int lv) {
     }
 
-    /* init new emty record */
+    /* init new empty record */
 
     public TapoDiscoveryResult() {
-        this(false, false, new EncryptionShema(false, SECUREPASSTROUGH.toString(), 80, 0), 0, 0, "", "", "", "", "", "",
-                "", "", "", "", "", "", "", "", "");
+        this(false, false, false, new EncryptionSchema(false, SECUREPASSTROUGH.toString(), 80, 0), 0, 0, "", "", "", "",
+                "", "", "", "", "", "", "", "", "", "", "");
     }
 
     /**********************************************
@@ -66,6 +67,11 @@ public record TapoDiscoveryResult(@Expose @SerializedName("factory_default") boo
     @Override
     public boolean isSupportIOT() {
         return Objects.requireNonNullElse(isSupportIOT, false);
+    }
+
+    @Override
+    public boolean tpapPreferred() {
+        return Objects.requireNonNullElse(tpapPreferred, false);
     }
 
     @Override
@@ -131,9 +137,9 @@ public record TapoDiscoveryResult(@Expose @SerializedName("factory_default") boo
     }
 
     @Override
-    public EncryptionShema encryptionShema() {
-        return Objects.requireNonNullElse(encryptionShema,
-                new EncryptionShema(false, SECUREPASSTROUGH.toString(), 80, 0));
+    public EncryptionSchema encryptionSchema() {
+        return Objects.requireNonNullElse(encryptionSchema,
+                new EncryptionSchema(false, SECUREPASSTROUGH.toString(), 80, 0));
     }
 
     @Override

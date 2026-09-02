@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoEncoder.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.ByteUtils.*;
 
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -30,6 +31,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.tapocontrol.internal.discovery.TapoUdpDiscovery;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.slf4j.Logger;
@@ -97,7 +99,9 @@ public class KlapSession {
         cipher = null;
     }
 
-    /* set sessionId (cookie) */
+    /**
+     * set sessionId (cookie) & save RemoteSeed & ServerHash
+     */
     public boolean setSession(ContentResponse response) throws TapoErrorHandler {
         try {
             /* get cookie */
@@ -132,7 +136,7 @@ public class KlapSession {
             byte[] bLocalSeedAuthHash = sha256Encode(concatByteArray);
 
             if (Arrays.equals(bLocalSeedAuthHash, serverHash)) {
-                logger.trace("handshake1 sucessfull");
+                logger.trace("handshake1 successful");
                 this.remoteSeed = remoteSeed;
                 this.serverHash = serverHash;
                 this.localSeedAuthHash = bLocalSeedAuthHash;
@@ -186,26 +190,55 @@ public class KlapSession {
     public boolean login(TapoCredentials credentials) throws TapoErrorHandler {
         try {
             authHash = generateAuthHash(credentials);
-            if (createHandshake1()) {
-                logger.trace("({}) handshake1 successfull", uid);
-                if (createHandshake2()) {
-                    logger.trace("({}) handshake2 successfull", uid);
-                    completeHandshake();
-                    return isHandshakeComplete();
-                }
-            } else {
-                throw new TapoErrorHandler(NO_ERROR, BINDING_ID);
+            return login();
+        } catch (TapoErrorHandler e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED, e.getMessage());
+        }
+    }
+
+    /**
+     * Recreate Handshake using existing credentials
+     */
+    public boolean login() throws TapoErrorHandler {
+        try {
+            /* check credentials exist */
+            if (authHash.length <= 1) { // SHA256 should be 32 bytes long
+                return false;
             }
+            try {
+                if (!createHandshake1()) {
+                    throw new TapoErrorHandler(NO_ERROR, BINDING_ID);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new TapoErrorHandler(ERR_API_UNKNOWN_COM_ERROR, BINDING_ID);
+            } catch (Exception ex) {
+                // Handshake1 failed - Try repeating after a UDP comms reset
+                if (!sendUdpDiscoveryMessage()) {
+                    throw new TapoErrorHandler(NO_ERROR, BINDING_ID);
+                } // now retry
+                if (!createHandshake1()) {
+                    throw new TapoErrorHandler(NO_ERROR, BINDING_ID);
+                }
+            }
+            logger.trace("({}) handshake1 successful", uid);
+            if (!createHandshake2()) {
+                return false;
+            }
+            logger.trace("({}) handshake2 successful", uid);
+            completeHandshake();
+            return isHandshakeComplete();
         } catch (TapoErrorHandler e) {
             throw e;
         } catch (Exception e) {
             throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED);
         }
-        return false;
     }
 
     /**
-     * Handle Handshake (set session)
+     * Do Handshake1 using a local seed & use response to set session (save RemoteSeed & check ServerHash)
      */
     private boolean createHandshake1()
             throws TimeoutException, InterruptedException, ExecutionException, TapoErrorHandler {
@@ -217,27 +250,55 @@ public class KlapSession {
             setSession(response);
             return seedIsOkay();
         } else {
+            reset();
             logger.debug("({}) invalid handshake1 response {}", uid, response.getStatus());
-            throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, "invalid response receicved");
+            throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, "invalid response received");
         }
     }
 
     /**
-     * Complete Handshake2 (set cipher)
+     * Complete Handshake2 (set cipher) using credentials, check for valid response
      */
     private boolean createHandshake2() throws TimeoutException, InterruptedException, ExecutionException,
             NoSuchAlgorithmException, TapoErrorHandler {
         String handshakeUrl = klap.getUrl() + "/" + DEVICE_CMD_HANDSHAKE2;
+        /* send Hash made from localSeed, RemoteSeed & authHash */
         byte[] byteArr = concatBytes(remoteSeed, localSeed, authHash);
         byte[] payloadBytes = sha256Encode(byteArr);
         ContentResponse response = sendHandshake(handshakeUrl, payloadBytes, DEVICE_CMD_HANDSHAKE2);
-
         if (response.getStatus() == 200) {
             return true;
         } else {
-            logger.debug("({}) invalid handshake1 response {}", uid, response.getStatus());
+            reset();
+            logger.debug("({}) invalid handshake2 response {}", uid, response.getStatus());
             throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, response.getReason());
         }
+    }
+
+    /**
+     * Send the UDP discovery message to the device - sometimes needed after a power outage, prior to login
+     *
+     * @return success or failed
+     */
+    private boolean sendUdpDiscoveryMessage() {
+        var httpDelegator = klap.httpDelegator;
+        try {
+            var bridge = httpDelegator.getBridge();
+            var udpSender = new TapoUdpDiscovery(bridge);
+            var url = httpDelegator.getBaseUrl();
+            var urlparts = url.split("://"); // strip http:// from start
+            if (urlparts.length > 1) {
+                url = urlparts[1];
+            }
+            url = url.split(":")[0]; // strip port from end
+            var addr = InetAddress.getByName(url);
+            udpSender.sendAllPorts(addr);
+        } catch (Exception ex) {
+            logger.trace("({}) sendRequestRetryable error {}", uid, ex.getMessage());
+            httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_LOGIN, ex.getMessage()));
+            return false;
+        }
+        return true;
     }
 
     /************************
@@ -245,7 +306,7 @@ public class KlapSession {
      ************************/
 
     /**
-     * generate auth-hash from credentials
+     * generate SHA256 auth-hash from credentials (username & password)
      */
     private byte[] generateAuthHash(TapoCredentials credentials) throws NoSuchAlgorithmException, TapoErrorHandler {
         byte[] bUsername = sha1Encode(credentials.username().getBytes(StandardCharsets.UTF_8));
@@ -316,7 +377,9 @@ public class KlapSession {
         return (expireAt - (System.currentTimeMillis())) <= 40 * 1000;
     }
 
-    /* return true if seeds are set */
+    /**
+     * return true if seeds are set (serverHash matches localSeedAuthHash)
+     */
     public boolean seedIsOkay() {
         return serverHash.length > 0 && Arrays.equals(localSeedAuthHash, serverHash);
     }

@@ -4,11 +4,6 @@
         "timestamp": 1694184107,
         "int_value": 2
     },
-    "doorLockStatusOverall": {
-        "timestamp_in_ms": 1694723570000,
-        "timestamp": 1694723570,
-        "int_value": 0
-    },
     "precondSeatFrontRight": {
         "timestamp_in_ms": 1692956198000,
         "bool_value": false,

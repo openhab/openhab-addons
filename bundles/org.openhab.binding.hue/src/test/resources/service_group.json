@@ -1,0 +1,40 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "e61613f2-c9f3-4fc0-9617-fcd22e0644d3",
+			"children": [
+				{
+					"rid": "c898e228-8b14-47b1-b5a8-09c757f2905f",
+					"rtype": "motion"
+				},
+				{
+					"rid": "6c383f5a-8a23-4476-8ae6-79dd62e648e6",
+					"rtype": "light_level"
+				},
+				{
+					"rid": "97244487-dd25-4f4c-b829-8eb5ffb82c29",
+					"rtype": "motion"
+				},
+				{
+					"rid": "18597697-61dc-4090-9bc3-c7f5704f020e",
+					"rtype": "light_level"
+				}
+			],
+			"services": [
+				{
+					"rid": "b8d9b259-bca9-4050-bd35-5f7e86df0c5a",
+					"rtype": "grouped_motion"
+				},
+				{
+					"rid": "1c742a16-196e-4d60-ae42-1a2f3db6a895",
+					"rtype": "grouped_light_level"
+				}
+			],
+			"metadata": {
+				"name": "Sensor group"
+			},
+			"type": "service_group"
+		}
+	]
+}

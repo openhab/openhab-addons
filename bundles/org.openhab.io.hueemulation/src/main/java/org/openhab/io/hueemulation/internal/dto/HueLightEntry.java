@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,9 @@ import com.google.gson.JsonSerializer;
  */
 @NonNullByDefault
 public class HueLightEntry {
+
+    public static final String DEFAULT_ARCHETYPE = "unknownarchetype";
+
     public AbstractHueState state = new AbstractHueState();
     public final String type;
     public final String modelid;
@@ -46,24 +49,27 @@ public class HueLightEntry {
     public final @Nullable String luminaireuniqueid = null;
     public final @Nullable String swconfigid;
     public final @Nullable String productid;
-    public @Nullable Boolean friendsOfHue = true;
     public final @Nullable String colorGamut;
     public @Nullable Boolean hascolor = null;
 
     public String name;
     /** Associated item UID */
-    public @NonNullByDefault({}) transient GenericItem item;
+    public transient GenericItem item;
     public transient DeviceType deviceType;
     public transient @Nullable Command lastCommand = null;
     public transient @Nullable HueStateChange lastHueChange = null;
 
     public static class Config {
-        public final String archetype = "classicbulb";
+        public final String archetype;
         public final String function = "functional";
         public final String direction = "omnidirectional";
+
+        public Config(String archetype) {
+            this.archetype = archetype;
+        }
     }
 
-    public Config config = new Config();
+    public Config config = new Config("classicbulb");
 
     public static class Streaming {
         public boolean renderer = false;
@@ -90,13 +96,24 @@ public class HueLightEntry {
      * @param deviceType The device type decides which capabilities this device has
      */
     public HueLightEntry(GenericItem item, String uniqueid, DeviceType deviceType) {
-        String label = item.getLabel();
+        this(item, uniqueid, deviceType, uniqueid);
+    }
+
+    /**
+     * Create a hue device.
+     *
+     * @param item The associated item
+     * @param uniqueid The unique id
+     * @param deviceType The device type decides which capabilities this device has
+     * @param name The name of the device
+     */
+    public HueLightEntry(GenericItem item, String uniqueid, DeviceType deviceType, String name) {
         this.item = item;
         this.deviceType = deviceType;
+        this.name = name;
         this.uniqueid = uniqueid;
         switch (deviceType) {
             case ColorType:
-                this.name = label != null ? label : "";
                 this.type = "Extended Color light";
                 this.modelid = "LCT010";
                 this.colorGamut = "C";
@@ -110,7 +127,6 @@ public class HueLightEntry {
                 break;
             case WhiteType:
                 /** Hue White A19 - 3nd gen - white, 2700K only */
-                this.name = label != null ? label : "";
                 this.type = "Dimmable light";
                 this.modelid = "LWB006";
                 this.colorGamut = null;
@@ -123,7 +139,6 @@ public class HueLightEntry {
                 this.capabilities.certified = true;
                 break;
             case WhiteTemperatureType:
-                this.name = label != null ? label : "";
                 this.type = "Color temperature light";
                 this.modelid = "LTW001";
                 this.colorGamut = "2200K-6500K";
@@ -137,21 +152,16 @@ public class HueLightEntry {
                 break;
             case SwitchType:
             default:
-                /**
-                 * Pretend to be an OSRAM plug, there is no native Philips Hue plug on the market.
-                 * Those are supported by most of the external apps and Alexa.
-                 */
-                this.name = label != null ? label : "";
-                this.type = "On/off light";
-                this.modelid = "Plug 01";
+                this.type = "On/Off plug-in unit";
+                this.modelid = "LOM001";
                 this.colorGamut = null;
-                this.manufacturername = "OSRAM";
-                this.productname = "On/Off plug";
-                this.swconfigid = null;
-                this.swversion = "V1.04.12";
-                this.productid = null;
+                this.manufacturername = "Signify Netherlands B.V.";
+                this.swconfigid = "0CF38B30";
+                this.swversion = "1.145.2";
+                this.productid = "SmartPlug_OnOff_v01-00_01";
                 this.hascolor = false;
-                this.friendsOfHue = null;
+                this.productname = "Hue smart plug";
+                this.capabilities.certified = true;
                 break;
         }
 
@@ -159,7 +169,7 @@ public class HueLightEntry {
     }
 
     /**
-     * This custom serializer updates the light state and label, before serializing.
+     * This custom serializer updates the light state, before serializing.
      */
     @NonNullByDefault({})
     public static class Serializer implements JsonSerializer<HueLightEntry> {
@@ -171,10 +181,6 @@ public class HueLightEntry {
         public JsonElement serialize(HueLightEntry product, Type type, JsonSerializationContext context) {
             product.state = StateUtils.adjustedColorStateFromItemState(product.item.getState(), product.deviceType,
                     product.lastCommand, product.lastHueChange);
-            String label = product.item.getLabel();
-            if (label != null) {
-                product.name = label;
-            }
 
             return context.serialize(product, HueDeviceHelper.class);
         }
@@ -186,16 +192,13 @@ public class HueLightEntry {
      *
      * @param element A replace item
      */
-    public void updateItem(GenericItem element) {
+    public void updateItem(GenericItem element, String name) {
         item = element;
         state = StateUtils.colorStateFromItemState(item.getState(), deviceType);
 
         lastCommand = null;
         lastHueChange = null;
 
-        String label = element.getLabel();
-        if (label != null) {
-            name = label;
-        }
+        this.name = name;
     }
 }

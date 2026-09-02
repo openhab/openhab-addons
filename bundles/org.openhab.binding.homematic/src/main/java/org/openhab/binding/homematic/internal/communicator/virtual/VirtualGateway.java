@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.communicator.HomematicGatewayAdapter;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
@@ -27,6 +28,7 @@ import org.openhab.binding.homematic.internal.model.HmInterface;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface VirtualGateway extends HomematicGateway {
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,8 @@ public class ModbusTcpConfiguration {
     private int reconnectAfterMillis;
     private int afterConnectionDelayMillis;
     private int connectTimeoutMillis = 10_000;
+    private int receiveTimeoutMillis = 3_000;
+
     private boolean enableDiscovery;
     private boolean rtuEncoded;
 
@@ -117,5 +119,13 @@ public class ModbusTcpConfiguration {
 
     public void setDiscoveryEnabled(boolean enableDiscovery) {
         this.enableDiscovery = enableDiscovery;
+    }
+
+    public int getReceiveTimeoutMillis() {
+        return receiveTimeoutMillis;
+    }
+
+    public void setReceiveTimeoutMillis(int receiveTimeoutMillis) {
+        this.receiveTimeoutMillis = receiveTimeoutMillis;
     }
 }

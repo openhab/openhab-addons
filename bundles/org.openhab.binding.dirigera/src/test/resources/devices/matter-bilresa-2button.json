@@ -1,0 +1,48 @@
+        {
+	"id": "040bf20b-b1b0-463b-af4b-1227a711d70e_2",
+	"relationId": "040bf20b-b1b0-463b-af4b-1227a711d70e",
+	"type": "controller",
+	"deviceType": "genericSwitch",
+	"createdAt": "2026-01-03T18:57:30.000Z",
+	"isReachable": true,
+	"lastSeen": "2026-01-04T00:55:07.000Z",
+	"attributes": {
+		"identifyPeriod": 0,
+		"identifyStarted": "2025-12-11T14:53:30.000Z",
+		"switchLabel": "button 2",
+		"customName": "BILRESA dual button",
+		"firmwareVersion": "1.8.5",
+		"hardwareVersion": "P2.0",
+		"manufacturer": "IKEA of Sweden",
+		"model": "BILRESA dual button",
+		"productCode": "E2489",
+		"serialNumber": "UNKNOWN_SERIAL_NUMBER",
+		"discriminator": -1,
+		"permittingJoin": false,
+		"qrCode": "",
+		"setupCode": "",
+		"windowOpen": false,
+		"otaPolicy": "autoUpdate",
+		"otaProgress": 0,
+		"otaScheduleEnd": "00:00",
+		"otaScheduleStart": "00:00",
+		"otaState": "readyToCheck",
+		"otaStatus": "upToDate",
+		"batteryPercentage": 68,
+		"controlMode": "shortcut"
+	},
+	"capabilities": {
+		"canSend": [],
+		"canReceive": [
+			"customName",
+			"windowOpen",
+			"controlModeLight",
+			"controlModeSpeaker",
+			"controlModeBlind",
+			"controlModeShortcutController"
+		]
+	},
+	"deviceSet": [],
+	"remoteLinks": [],
+	"isHidden": false
+}

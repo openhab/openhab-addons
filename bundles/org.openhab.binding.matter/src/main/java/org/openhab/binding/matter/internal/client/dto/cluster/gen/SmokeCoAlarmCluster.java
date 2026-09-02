@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -30,7 +29,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x005C;
     public static final String CLUSTER_NAME = "SmokeCoAlarm";
     public static final String CLUSTER_PREFIX = "smokeCoAlarm";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_EXPRESSED_STATE = "expressedState";
     public static final String ATTRIBUTE_SMOKE_STATE = "smokeState";
@@ -46,7 +44,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     public static final String ATTRIBUTE_SMOKE_SENSITIVITY_LEVEL = "smokeSensitivityLevel";
     public static final String ATTRIBUTE_EXPIRY_DATE = "expiryDate";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the visibly- and audibly-expressed state of the alarm. When multiple alarm conditions are being
@@ -61,17 +58,17 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      */
     public ExpressedStateEnum expressedState; // 0 ExpressedStateEnum R V
     /**
-     * Indicates whether the device’s smoke sensor is currently triggering a smoke alarm.
+     * Indicates whether the device's smoke sensor is currently triggering a smoke alarm.
      */
     public AlarmStateEnum smokeState; // 1 AlarmStateEnum R V
     /**
-     * Indicates whether the device’s CO sensor is currently triggering a CO alarm.
+     * Indicates whether the device's CO sensor is currently triggering a CO alarm.
      */
     public AlarmStateEnum coState; // 2 AlarmStateEnum R V
     /**
      * Indicates whether the power resource fault detection mechanism is currently triggered at the device. If the
      * detection mechanism is triggered, this attribute shall be set to Warning or Critical, otherwise it shall be set
-     * to Normal. The battery state shall also be reflected in the Power Source cluster representing the device’s
+     * to Normal. The battery state shall also be reflected in the Power Source cluster representing the device's
      * battery using the appropriate supported attributes and events.
      */
     public AlarmStateEnum batteryAlert; // 3 AlarmStateEnum R V
@@ -251,8 +248,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AlarmStateEnum(Integer value, String label) {
             this.value = value;
@@ -275,8 +272,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         STANDARD(1, "Standard"),
         LOW(2, "Low");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SensitivityEnum(Integer value, String label) {
             this.value = value;
@@ -305,8 +302,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         INTERCONNECT_SMOKE(7, "Interconnect Smoke"),
         INTERCONNECT_CO(8, "Interconnect Co");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ExpressedStateEnum(Integer value, String label) {
             this.value = value;
@@ -328,8 +325,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         NOT_MUTED(0, "Not Muted"),
         MUTED(1, "Muted");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MuteStateEnum(Integer value, String label) {
             this.value = value;
@@ -351,8 +348,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         NORMAL(0, "Normal"),
         EXPIRED(1, "Expired");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EndOfServiceEnum(Integer value, String label) {
             this.value = value;
@@ -376,8 +373,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         WARNING(2, "Warning"),
         CRITICAL(3, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ContaminationStateEnum(Integer value, String label) {
             this.value = value;
@@ -441,7 +438,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "expressedState : " + expressedState + "\n";
         str += "smokeState : " + smokeState + "\n";

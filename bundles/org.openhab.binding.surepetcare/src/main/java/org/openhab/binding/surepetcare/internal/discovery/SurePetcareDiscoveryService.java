@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,6 +148,9 @@ public class SurePetcareDiscoveryService extends AbstractThingHandlerDiscoverySe
                 break;
             case PET_FEEDER:
                 typeUID = THING_TYPE_FEEDER_DEVICE;
+                break;
+            case PET_WATER:
+                typeUID = THING_TYPE_WATER_DEVICE;
                 break;
             case UNKNOWN:
             default:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,8 +38,8 @@ public class WledState {
     public PresetState[] presetState = new PresetState[1];
 
     public class JsonResponse {
-        public List<String> effects = new ArrayList<>();
-        public List<String> palettes = new ArrayList<>();
+        public @Nullable List<String> effects = new ArrayList<>();
+        public @Nullable List<String> palettes = new ArrayList<>();
     }
 
     public void unpackJsonObjects() {

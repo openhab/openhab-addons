@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="homeconnectdirect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Home Connect Direct Binding</name>
+	<description>The binding integrates the Home Connect devices into openHAB. It connects to household appliances from
+		brands such as Bosch and Siemens. The connection is established locally with the devices.</description>
+	<connection>local</connection>
+
+	<config-description>
+		<parameter name="loginEnabled" type="boolean" required="false">
+			<default>false</default>
+			<label>Enforce Password Protection</label>
+			<description>This configuration parameter enables you to activate or deactivate password protection for the console
+				interface. When enabled, users must provide a password to access the console.</description>
+		</parameter>
+		<parameter name="loginPassword" type="text" required="false">
+			<label>Password</label>
+			<context>password</context>
+			<default></default>
+			<description>Console password</description>
+		</parameter>
+		<parameter name="messageQueueSize" type="integer" min="10" max="86400">
+			<label>Message Queue Size</label>
+			<description>This is the maximum size of the message queue per home appliance. It specifies the maximum number of
+				messages that can be stored. The higher this value is, the more memory is used.</description>
+			<default>300</default>
+		</parameter>
+	</config-description>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_homeconnect._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
+
+</addon:addon>

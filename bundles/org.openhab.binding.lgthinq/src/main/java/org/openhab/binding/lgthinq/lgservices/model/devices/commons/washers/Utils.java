@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ public class Utils {
     public static Map<String, CourseDefinition> getGenericCourseDefinitions(JsonNode courseNode, CourseType type,
             String notSelectedCourseKey) {
         Map<String, CourseDefinition> coursesDef = new HashMap<>();
-        courseNode.fields().forEachRemaining(e -> {
+        courseNode.properties().forEach(e -> {
             CourseDefinition cd = new CourseDefinition();
             JsonNode thisCourseNode = e.getValue();
             cd.setCourseName(thisCourseNode.path("_comment").textValue());

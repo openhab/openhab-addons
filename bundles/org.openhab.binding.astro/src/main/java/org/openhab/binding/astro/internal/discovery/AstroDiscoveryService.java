@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.astro.internal.discovery;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.config.AstroThingConfig.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -59,14 +57,15 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
 
     private final LocationProvider locationProvider;
 
+    // All access must be guarded by "this"
     private @Nullable ScheduledFuture<?> astroDiscoveryJob;
-    private @Nullable PointType previousLocation;
+    private volatile @Nullable PointType previousLocation;
 
     @Activate
     public AstroDiscoveryService(final @Reference LocationProvider locationProvider,
             final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider,
             @Nullable Map<String, Object> configProperties) {
-        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, true);
+        super(Set.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, true);
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;
@@ -85,7 +84,7 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void startBackgroundDiscovery() {
+    protected synchronized void startBackgroundDiscovery() {
         if (astroDiscoveryJob == null) {
             astroDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> {
                 PointType currentLocation = locationProvider.getLocation();
@@ -103,11 +102,13 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Astro device background discovery");
-        ScheduledFuture<?> discoveryJob = astroDiscoveryJob;
-        if (discoveryJob != null) {
-            discoveryJob.cancel(true);
+        synchronized (this) {
+            ScheduledFuture<?> discoveryJob = astroDiscoveryJob;
+            if (discoveryJob != null) {
+                discoveryJob.cancel(true);
+            }
+            astroDiscoveryJob = null;
         }
-        astroDiscoveryJob = null;
     }
 
     public void createResults(PointType location) {

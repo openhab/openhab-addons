@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ahawastecollection.internal;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -82,7 +81,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
             return collectionDates;
         } catch (final IOException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return Collections.emptyMap();
+            return Map.of();
         }
     }
 
@@ -194,12 +193,14 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
         switch (channelId) {
             case AhaWasteCollectionBindingConstants.BIOWASTE:
                 return WasteType.BIO_WASTE;
-            case AhaWasteCollectionBindingConstants.LEIGHTWEIGHT_PACKAGING:
+            case AhaWasteCollectionBindingConstants.LIGHTWEIGHT_PACKAGING:
                 return WasteType.LIGHT_PACKAGES;
             case AhaWasteCollectionBindingConstants.PAPER:
                 return WasteType.PAPER;
             case AhaWasteCollectionBindingConstants.GENERAL_WASTE:
                 return WasteType.GENERAL_WASTE;
+            case AhaWasteCollectionBindingConstants.CHRISTMAS_TREE:
+                return WasteType.CHRISTMAS_TREES;
             default:
                 throw new IllegalArgumentException("Unknown channel type: " + channelId);
         }

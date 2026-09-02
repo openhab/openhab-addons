@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ import org.openhab.core.thing.profiles.i18n.ProfileTypeI18nLocalizationService;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.util.BundleResolver;
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceCountingStateProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.DebounceStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceTimeStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericCommandTriggerProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericToggleSwitchTriggerProfile;
@@ -51,6 +52,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.RoundStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.StateFilterProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.ThresholdStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.TimeRangeCommandProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.TimeweightedAverageStateProfile;
 import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -69,12 +71,14 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     public static final ProfileTypeUID GENERIC_TOGGLE_SWITCH_UID = new ProfileTypeUID(SCOPE, "toggle-switch");
     public static final ProfileTypeUID DEBOUNCE_COUNTING_UID = new ProfileTypeUID(SCOPE, "debounce-counting");
     public static final ProfileTypeUID DEBOUNCE_TIME_UID = new ProfileTypeUID(SCOPE, "debounce-time");
+    public static final ProfileTypeUID DEBOUNCE_STATE_UID = new ProfileTypeUID(SCOPE, "debounce-state");
     public static final ProfileTypeUID INVERT_UID = new ProfileTypeUID(SCOPE, "invert");
     public static final ProfileTypeUID ROUND_UID = new ProfileTypeUID(SCOPE, "round");
     public static final ProfileTypeUID THRESHOLD_UID = new ProfileTypeUID(SCOPE, "threshold");
     public static final ProfileTypeUID TIME_RANGE_COMMAND_UID = new ProfileTypeUID(SCOPE, "time-range-command");
     public static final ProfileTypeUID STATE_FILTER_UID = new ProfileTypeUID(SCOPE, "state-filter");
     public static final ProfileTypeUID INACTIVITY_UID = new ProfileTypeUID(SCOPE, "inactivity");
+    public static final ProfileTypeUID TIME_WEIGHTED_AVERAGE_UID = new ProfileTypeUID(SCOPE, "time-weighted-average");
 
     private static final ProfileType PROFILE_TYPE_GENERIC_COMMAND = ProfileTypeBuilder
             .newTrigger(GENERIC_COMMAND_UID, "Generic Command") //
@@ -89,6 +93,11 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             .newState(DEBOUNCE_COUNTING_UID, "Debounce (Counting)").build();
     private static final ProfileType PROFILE_TYPE_DEBOUNCE_TIME = ProfileTypeBuilder
             .newState(DEBOUNCE_TIME_UID, "Debounce (Time)").build();
+    private static final ProfileType PROFILE_TYPE_DEBOUNCE_STATE = ProfileTypeBuilder
+            .newState(DEBOUNCE_STATE_UID, "Debounce (State)") //
+            .withSupportedItemTypes(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT) //
+            .withSupportedItemTypesOfChannel(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT) //
+            .build();
     private static final ProfileType PROFILE_TYPE_INVERT = ProfileTypeBuilder.newState(INVERT_UID, "Invert / Negate")
             .withSupportedItemTypes(CoreItemFactory.CONTACT, CoreItemFactory.DIMMER, CoreItemFactory.NUMBER,
                     CoreItemFactory.PLAYER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.SWITCH) //
@@ -96,8 +105,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
                     CoreItemFactory.PLAYER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.SWITCH) //
             .build();
     private static final ProfileType PROFILE_TYPE_ROUND = ProfileTypeBuilder.newState(ROUND_UID, "Round")
-            .withSupportedItemTypes(CoreItemFactory.NUMBER) //
-            .withSupportedItemTypesOfChannel(CoreItemFactory.NUMBER) //
+            .withSupportedItemTypes(CoreItemFactory.NUMBER, CoreItemFactory.DATETIME) //
+            .withSupportedItemTypesOfChannel(CoreItemFactory.NUMBER, CoreItemFactory.DATETIME) //
             .build();
     private static final ProfileType PROFILE_TYPE_THRESHOLD = ProfileTypeBuilder.newState(THRESHOLD_UID, "Threshold") //
             .withSupportedItemTypesOfChannel(CoreItemFactory.DIMMER, CoreItemFactory.NUMBER) //
@@ -110,17 +119,22 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             .build();
     private static final ProfileType PROFILE_STATE_FILTER = ProfileTypeBuilder
             .newState(STATE_FILTER_UID, "State Filter").build();
-
     private static final ProfileType PROFILE_TYPE_INACTIVITY = ProfileTypeBuilder
             .newState(INACTIVITY_UID, "No Input Activity").withSupportedItemTypes(CoreItemFactory.SWITCH).build();
+    private static final ProfileType PROFILE_TIME_WEIGHTED_AVERAGE = ProfileTypeBuilder
+            .newState(TIME_WEIGHTED_AVERAGE_UID, "Time-Weighted Average")
+            .withSupportedItemTypesOfChannel(CoreItemFactory.NUMBER).withSupportedItemTypes(CoreItemFactory.NUMBER)
+            .build();
 
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
-            GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,
-            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID);
+            GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, DEBOUNCE_STATE_UID, INVERT_UID,
+            ROUND_UID, THRESHOLD_UID, TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID,
+            TIME_WEIGHTED_AVERAGE_UID);
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Set.of(PROFILE_TYPE_GENERIC_COMMAND,
             PROFILE_TYPE_GENERIC_TOGGLE_SWITCH, PROFILE_TYPE_DEBOUNCE_COUNTING, PROFILE_TYPE_DEBOUNCE_TIME,
-            PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD, PROFILE_TYPE_TIME_RANGE_COMMAND,
-            PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY);
+            PROFILE_TYPE_DEBOUNCE_STATE, PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD,
+            PROFILE_TYPE_TIME_RANGE_COMMAND, PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY,
+            PROFILE_TIME_WEIGHTED_AVERAGE);
 
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
@@ -153,6 +167,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             return new DebounceCountingStateProfile(callback, context);
         } else if (DEBOUNCE_TIME_UID.equals(profileTypeUID)) {
             return new DebounceTimeStateProfile(callback, context);
+        } else if (DEBOUNCE_STATE_UID.equals(profileTypeUID)) {
+            return new DebounceStateProfile(callback, context);
         } else if (INVERT_UID.equals(profileTypeUID)) {
             return new InvertStateProfile(callback);
         } else if (ROUND_UID.equals(profileTypeUID)) {
@@ -165,6 +181,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             return new StateFilterProfile(callback, context, itemRegistry);
         } else if (INACTIVITY_UID.equals(profileTypeUID)) {
             return new InactivityProfile(callback, context, linkRegistry);
+        } else if (TIME_WEIGHTED_AVERAGE_UID.equals(profileTypeUID)) {
+            return new TimeweightedAverageStateProfile(callback, context);
         }
         return null;
     }

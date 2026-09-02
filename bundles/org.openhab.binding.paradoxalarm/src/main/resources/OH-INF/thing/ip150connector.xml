@@ -10,9 +10,13 @@
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
-			<channel id="communicationCommand" typeId="command"/>
+			<channel id="communicationCommand" typeId="bridgeCommand"/>
 			<channel id="communicationState" typeId="communicationState"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="refresh" type="integer" min="1" max="600">
@@ -50,12 +54,12 @@
 				<description>The time to wait before a reconnect occurs after socket timeout. Value is in seconds</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="maxZones" type="integer" unit="s">
+			<parameter name="maxZones" type="integer">
 				<label>Max Zones</label>
 				<description>Maximum number of configured zones to check (from zone 1 to maxZones)</description>
 				<default>0</default>
 			</parameter>
-			<parameter name="maxPartitions" type="integer" unit="s">
+			<parameter name="maxPartitions" type="integer">
 				<label>Max Partitions</label>
 				<description>Maximum number of configured partitions to check (from partition 1 to maxPartitions)</description>
 				<default>0</default>
@@ -68,10 +72,18 @@
 		</config-description>
 	</bridge-type>
 
-	<channel-type id="command">
+	<channel-type id="bridgeCommand">
 		<item-type>String</item-type>
 		<label>Communicator Command</label>
 		<description>Send Command</description>
+		<state>
+			<options>
+				<option value="LOGIN">Login</option>
+				<option value="LOGOUT">Logout</option>
+				<option value="RESET">Reset</option>
+				<option value="SYNC_TIME">Sync Panel Time</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="communicationState">
 		<item-type>String</item-type>

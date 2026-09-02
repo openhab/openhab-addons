@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,13 +32,11 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x002A;
     public static final String CLUSTER_NAME = "OtaSoftwareUpdateRequestor";
     public static final String CLUSTER_PREFIX = "otaSoftwareUpdateRequestor";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_DEFAULT_OTA_PROVIDERS = "defaultOtaProviders";
     public static final String ATTRIBUTE_UPDATE_POSSIBLE = "updatePossible";
     public static final String ATTRIBUTE_UPDATE_STATE = "updateState";
     public static final String ATTRIBUTE_UPDATE_STATE_PROGRESS = "updateStateProgress";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * This field is a list of ProviderLocation whose entries shall be set by Administrators, either during
      * Commissioning or at a later time, to set the ProviderLocation for the default OTA Provider Node to use for
@@ -59,7 +56,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     public Boolean updatePossible; // 1 bool R V
     /**
      * This field shall reflect the current state of the OTA Requestor with regards to obtaining software updates. See
-     * Section 11.20.7.4.2, “UpdateStateEnum Type” for possible values.
+     * Section 11.20.7.4.2, "UpdateStateEnum Type" for possible values.
      * This field SHOULD be updated in a timely manner whenever OTA Requestor internal state updates.
      */
     public UpdateStateEnum updateState; // 2 UpdateStateEnum R V
@@ -197,8 +194,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         UPDATE_AVAILABLE(1, "Update Available"),
         URGENT_UPDATE_AVAILABLE(2, "Urgent Update Available");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AnnouncementReasonEnum(Integer value, String label) {
             this.value = value;
@@ -227,8 +224,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         ROLLING_BACK(7, "Rolling Back"),
         DELAYED_ON_USER_CONSENT(8, "Delayed On User Consent");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private UpdateStateEnum(Integer value, String label) {
             this.value = value;
@@ -253,8 +250,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         TIME_OUT(3, "Time Out"),
         DELAY_BY_PROVIDER(4, "Delay By Provider");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChangeReasonEnum(Integer value, String label) {
             this.value = value;
@@ -287,8 +284,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
      * If the accessing fabric index is 0, this command shall fail with an UNSUPPORTED_ACCESS status code.
      */
     public static ClusterCommand announceOtaProvider(BigInteger providerNodeId, Integer vendorId,
-            AnnouncementReasonEnum announcementReason, OctetString metadataForNode, Integer endpoint,
-            Integer fabricIndex) {
+            AnnouncementReasonEnum announcementReason, OctetString metadataForNode, Integer endpoint) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (providerNodeId != null) {
             map.put("providerNodeId", providerNodeId);
@@ -305,16 +301,12 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         if (endpoint != null) {
             map.put("endpoint", endpoint);
         }
-        if (fabricIndex != null) {
-            map.put("fabricIndex", fabricIndex);
-        }
         return new ClusterCommand("announceOtaProvider", map);
     }
 
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "defaultOtaProviders : " + defaultOtaProviders + "\n";
         str += "updatePossible : " + updatePossible + "\n";
         str += "updateState : " + updateState + "\n";

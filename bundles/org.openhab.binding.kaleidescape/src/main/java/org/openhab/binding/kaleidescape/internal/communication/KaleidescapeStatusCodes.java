@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,7 +144,7 @@ public class KaleidescapeStatusCodes {
         EOTF.put("03", "HDR10");
         EOTF.put("04", RESERVED);
         EOTF.put("05", "Dolby Vision - standard");
-        EOTF.put("03", "Dolby Vision - low-latency");
+        EOTF.put("06", "Dolby Vision - low-latency");
     }
 
     // map to lookup readiness state

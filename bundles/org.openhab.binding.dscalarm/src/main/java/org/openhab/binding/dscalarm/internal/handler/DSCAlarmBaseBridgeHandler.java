@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,9 @@ import org.slf4j.LoggerFactory;
  * @author Russell Stephens - Initial Contribution
  */
 public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
+
+    private static final List<DSCAlarmCode> EVL_WIRELESS_LOW_BATTERY_CODES = List
+            .of(DSCAlarmCode.HomeAutomationTroubleRestore, DSCAlarmCode.WirelessSensorLowBatteryRestore);
 
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmBaseBridgeHandler.class);
 
@@ -535,7 +538,9 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (DSCAlarmCode.BypassedZonesBitfield.equals(dscAlarmCode)) {
+        if (DSCAlarmCode.BypassedZonesBitfield.equals(dscAlarmCode)
+                || (EVL_WIRELESS_LOW_BATTERY_CODES.contains(dscAlarmCode)
+                        && dscAlarmProtocol.equals(DSCAlarmProtocol.ENVISALINK_TPI))) {
             List<Thing> allZoneThings = findAllZoneThings();
             for (Thing zone : allZoneThings) {
                 handleIncomingMessage(event, zone, dscAlarmThingType);

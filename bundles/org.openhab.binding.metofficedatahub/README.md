@@ -22,7 +22,7 @@ This will give you the API key required for the bridge.
 This binding consists of a bridge for connecting to the Met Office Data Hub service with your account.
 You can then add things to get the forecast's for a specific location (site), using this bridge.
 
-This binding supports the follow thing types:
+This binding supports the follow Thing types:
 
 | Type UID | Discovery | Description                                                                                 |
 |----------|-----------|---------------------------------------------------------------------------------------------|
@@ -36,10 +36,11 @@ This binding supports the follow thing types:
 The bridge counts the total number of requests from 00:00 -> 23:59 under its properties during the runtime of the system.
 (This reset's if OH restarts, or the binding resets).
 
-| Name               | Type   | Description                                                                               | Default Values |
-|--------------------|--------|-------------------------------------------------------------------------------------------|----------------|
-| siteRateDailyLimit | Number | This is a daily poll limit for the SiteSpecific API, while the Thing ID remains the same. | 250            |
-| siteApiKey         | String | The API Key for the Site Specific subscription in your MET Office Data Hub account.       |                |
+| Name                 | Type    | Description                                                                               | Default Values |
+|----------------------|---------|-------------------------------------------------------------------------------------------|----------------|
+| siteRateDailyLimit   | Number  | This is a daily poll limit for the SiteSpecific API, while the Thing ID remains the same. | 250            |
+| siteApiKey           | String  | The API Key for the Site Specific subscription in your MET Office Data Hub account.       |                |
+| disableKeyValidation | Boolean | If enabled, the binding will skip validation of the key format.                           | false          |
 
 **NOTE:** siteRateDailyLimit: This **should** prevent any more poll's for the rest of the day to the SiteSpecific API, once this limit is reached as a failsafe against a bad configuration, if you don't reboot / delete and re-add the bridge. This is reset at 00:00UTC in-line with MET Office DataHub behaviours.
 

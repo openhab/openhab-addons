@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sedif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="monthly-consumption">
+		<label>Monthly Consumption</label>
+		<channels>
+			<channel id="this-month" typeId="consumption">
+				<label>This Month Consumption</label>
+			</channel>
+			<channel id="last-month" typeId="consumption">
+				<label>Last Month Consumption</label>
+			</channel>
+			<channel id="month-2" typeId="consumption">
+				<label>Month -2 Consumption</label>
+			</channel>
+			<channel id="consumption" typeId="consumption">
+				<label>Consumption</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

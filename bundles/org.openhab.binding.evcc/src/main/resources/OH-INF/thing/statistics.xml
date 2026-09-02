@@ -42,7 +42,7 @@
 
 	<channel-type id="avg-co2-type">
 		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
-		<label>Average C02</label>
+		<label>Average CO2</label>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Info</tag>

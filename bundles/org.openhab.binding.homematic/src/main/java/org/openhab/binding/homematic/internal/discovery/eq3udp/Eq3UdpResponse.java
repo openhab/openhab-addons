@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.homematic.internal.discovery.eq3udp;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Extracts a UDP response from a Homematic CCU gateway.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 
+@NonNullByDefault
 public class Eq3UdpResponse {
     private int senderId;
     private String deviceTypeId;

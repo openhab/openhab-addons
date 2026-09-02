@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fsinternetradio.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 
 /**
@@ -19,7 +21,7 @@ import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
  *
  * @author Markus Rathgeb - Initial contribution
  */
-
+@NonNullByDefault
 public class HandlerUtils {
 
     /**
@@ -28,7 +30,7 @@ public class HandlerUtils {
      * @param handler the handler
      * @return the managed radio object
      */
-    public static FrontierSiliconRadio getRadio(final FSInternetRadioHandler handler) {
+    public @Nullable static FrontierSiliconRadio getRadio(final FSInternetRadioHandler handler) {
         return handler.radio;
     }
 }

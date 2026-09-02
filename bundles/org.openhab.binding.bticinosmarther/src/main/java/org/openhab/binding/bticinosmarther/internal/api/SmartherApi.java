@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.bticinosmarther.internal.SmartherBindingConsta
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -257,7 +256,7 @@ public class SmartherApi {
                     ModuleStatus.class);
 
             final Chronothermostat chronothermostat = moduleStatus.toChronothermostat();
-            return (chronothermostat != null) ? chronothermostat.getPrograms() : Collections.emptyList();
+            return (chronothermostat != null) ? chronothermostat.getPrograms() : List.of();
         } catch (JsonSyntaxException e) {
             throw new SmartherGatewayException(e.getMessage());
         }

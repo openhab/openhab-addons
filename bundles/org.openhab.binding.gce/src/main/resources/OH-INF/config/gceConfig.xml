@@ -9,7 +9,7 @@
 		<parameter name="hostname" type="text" required="true">
 			<context>network-address</context>
 			<label>Network Address</label>
-			<description>Network/IP address of the IPX800 without http(s) prefix.</description>
+			<description>Network/IP address of the IPX800 without the http(s) prefix.</description>
 		</parameter>
 		<parameter name="portNumber" type="integer" required="false">
 			<label>Port Number</label>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,12 @@ public class EpsonProjectorConfiguration {
     public int maxVolume = 20;
 
     /**
-     * Boolean to indicate if source list should be retrieved from projector
+     * Boolean to indicate if source list should be retrieved from projector.
      */
     public boolean loadSourceList;
+
+    /**
+     * 'Monitor' password used to authenticate with the projector.
+     */
+    public String password = "";
 }

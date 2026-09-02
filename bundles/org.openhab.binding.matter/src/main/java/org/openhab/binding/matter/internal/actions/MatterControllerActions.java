@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,6 +76,7 @@ public class MatterControllerActions implements ThingActions {
                 handler.startScan(code).get();
                 return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_DEVICE_ADDED);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 return handler.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_PAIRING_FAILED,
                         e.getLocalizedMessage());
             } catch (ExecutionException e) {
@@ -104,7 +105,12 @@ public class MatterControllerActions implements ThingActions {
             if (client != null) {
                 try {
                     return client.getAllDataForAllNodes().get();
-                } catch (InterruptedException | ExecutionException e) {
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return handler.getTranslation(
+                            MatterBindingConstants.THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA_FAILED,
+                            e.getLocalizedMessage());
+                } catch (ExecutionException e) {
                     return handler.getTranslation(
                             MatterBindingConstants.THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA_FAILED,
                             e.getLocalizedMessage());

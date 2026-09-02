@@ -124,6 +124,22 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="airPollutionHourlyTimeSeries">
+		<label>Air Pollution Hourly Forecast</label>
+		<description>Hourly air pollution forecast.</description>
+		<channels>
+			<channel id="airQualityIndex" typeId="air-quality-index"/>
+			<channel id="particulateMatter2dot5" typeId="particulate-matter-2dot5"/>
+			<channel id="particulateMatter10" typeId="particulate-matter-10"/>
+			<channel id="carbonMonoxide" typeId="carbon-monoxide"/>
+			<channel id="nitrogenMonoxide" typeId="nitrogen-monoxide"/>
+			<channel id="nitrogenDioxide" typeId="nitrogen-dioxide"/>
+			<channel id="ozone" typeId="ozone"/>
+			<channel id="sulphurDioxide" typeId="sulphur-dioxide"/>
+			<channel id="ammonia" typeId="ammonia"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="oneCallCurrent">
 		<label>One Call API Current Weather</label>
 		<description>Current weather data from the One Call API.</description>
@@ -181,6 +197,7 @@
 			<channel id="pressure" typeId="system.barometric-pressure"/>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
 			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="uvindex" typeId="uvindex"/>
 			<channel id="wind-speed" typeId="system.wind-speed"/>
 			<channel id="wind-direction" typeId="system.wind-direction"/>
 			<channel id="gust-speed" typeId="gust-speed"/>
@@ -356,6 +373,32 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="oneCallForecast">
+		<label>One Call Forecast</label>
+		<description>Unified 5-day weather forecast TimeSeries merging One Call API 3.0 hourly data (0–48 h) with Forecast5
+			3-hourly data (48–120 h). The dew-point and uvindex channels are only populated for the 0–48 h window.</description>
+		<channels>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="uvindex" typeId="uvindex"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
+		</channels>
+	</channel-group-type>
+
 	<!-- Channels for OpenWeatherMap Binding -->
 	<channel-type id="station-id">
 		<item-type>String</item-type>
@@ -435,8 +478,8 @@
 		<item-type>Number</item-type>
 		<label>Moon Phase</label>
 		<description>Moon phase for the given day. 0 and 1 are 'new moon', 0.25 is 'first quarter moon', 0.5 is 'full moon'
-			and 0.75 is 'last quarter moon'. The periods in between are called 'waxing crescent', 'waxing gibous', 'waning
-			gibous', and 'waning crescent', respectively.</description>
+			and 0.75 is 'last quarter moon'. The periods in between are called 'waxing crescent', 'waxing gibbous', 'waning
+			gibbous', and 'waning crescent', respectively.</description>
 		<category>Moon</category>
 		<tags>
 			<tag>Forecast</tag>
@@ -760,25 +803,25 @@
 	</channel-type>
 
 	<channel-type id="cloudiness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Cloudiness</label>
 		<description>Current cloudiness.</description>
 		<category>Sun_Clouds</category>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-cloudiness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Forecasted Cloudiness</label>
 		<description>Forecasted cloudiness.</description>
 		<category>Sun_Clouds</category>
 		<tags>
 			<tag>Forecast</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain">
@@ -890,7 +933,7 @@
 	</channel-type>
 
 	<channel-type id="particulate-matter-2dot5">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Particulate Matter - PM2.5</label>
 		<description>Current density of particles less than 2.5 µm in diameter.</description>
 		<tags>
@@ -901,7 +944,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-particulate-matter-2dot5">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Forecasted Particulate Matter - PM2.5</label>
 		<description>Forecasted density of particles less than 2.5 µm in diameter.</description>
 		<tags>
@@ -912,9 +955,9 @@
 	</channel-type>
 
 	<channel-type id="forecasted-particulate-matter-10">
-		<item-type>Number:Density</item-type>
-		<label>Particulate Matter - PM10</label>
-		<description>Current density of particles less than 10 µm in diameter.</description>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Forecasted Particulate Matter - PM10</label>
+		<description>Forecasted density of particles less than 10 µm in diameter.</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>ParticulateMatter</tag>
@@ -923,9 +966,9 @@
 	</channel-type>
 
 	<channel-type id="particulate-matter-10">
-		<item-type>Number:Density</item-type>
-		<label>Forecasted Particulate Matter - PM10</label>
-		<description>Forecasted density of particles less than 10 µm in diameter.</description>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Particulate Matter - PM10</label>
+		<description>Current density of particles less than 10 µm in diameter.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>ParticulateMatter</tag>
@@ -934,7 +977,7 @@
 	</channel-type>
 
 	<channel-type id="carbon-monoxide">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Carbon Monoxide</label>
 		<description>Current concentration of carbon monoxide.</description>
 		<tags>
@@ -945,7 +988,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-carbon-monoxide">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Forecasted Carbon Monoxide</label>
 		<description>Forecasted concentration of carbon monoxide.</description>
 		<tags>
@@ -956,7 +999,7 @@
 	</channel-type>
 
 	<channel-type id="nitrogen-monoxide">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Nitrogen Monoxide</label>
 		<description>Current concentration of nitrogen monoxide.</description>
 		<tags>
@@ -966,7 +1009,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-nitrogen-monoxide">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Forecasted Nitrogen Monoxide</label>
 		<description>Forecasted concentration of nitrogen monoxide.</description>
 		<tags>
@@ -976,7 +1019,7 @@
 	</channel-type>
 
 	<channel-type id="nitrogen-dioxide">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Nitrogen Dioxide</label>
 		<description>Current concentration of nitrogen dioxide.</description>
 		<tags>
@@ -986,7 +1029,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-nitrogen-dioxide">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Forecasted Nitrogen Dioxide</label>
 		<description>Forecasted concentration of nitrogen dioxide.</description>
 		<tags>
@@ -996,7 +1039,7 @@
 	</channel-type>
 
 	<channel-type id="ozone">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ozone</label>
 		<description>Current concentration of ozone.</description>
 		<tags>
@@ -1007,7 +1050,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-ozone">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Forecasted Ozone</label>
 		<description>Forecasted concentration of ozone.</description>
 		<tags>
@@ -1018,7 +1061,7 @@
 	</channel-type>
 
 	<channel-type id="sulphur-dioxide">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Sulphur Dioxide</label>
 		<description>Current concentration of sulphur dioxide.</description>
 		<tags>
@@ -1028,7 +1071,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-sulphur-dioxide">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Forecasted Sulphur Dioxide</label>
 		<description>Forecasted concentration of sulphur dioxide.</description>
 		<tags>
@@ -1038,7 +1081,7 @@
 	</channel-type>
 
 	<channel-type id="ammonia">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ammonia</label>
 		<description>Current concentration of ammonia.</description>
 		<tags>
@@ -1048,7 +1091,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-ammonia">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Forecasted Ammonia</label>
 		<description>Forecasted concentration of ammonia.</description>
 		<tags>
@@ -1068,7 +1111,7 @@
 	</channel-type>
 
 	<channel-type id="precip-probability">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Precipitation Probability</label>
 		<description>Forecasted precipitation probability.</description>
 		<category>Rain</category>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -247,6 +247,17 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             playlistCommand.append(" ").append(title);
         }
         sendCommand(playlistCommand.toString());
+    }
+
+    /**
+     * Requests an immediate one-shot status response for the given player.
+     * The response includes the core player state such as the playlist track
+     * count.
+     *
+     * @param mac player mac address
+     */
+    void requestStatus(String mac) {
+        sendCommand(mac + " status - 1");
     }
 
     public void setPlayingTime(String mac, int time) {

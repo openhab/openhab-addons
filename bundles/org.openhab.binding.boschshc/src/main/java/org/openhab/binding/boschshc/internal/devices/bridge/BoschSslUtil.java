@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,7 +149,7 @@ public class BoschSslUtil {
 
     private X509Certificate generateClientCertificate(KeyPair keyPair)
             throws GeneralSecurityException, OperatorCreationException {
-        final String dirName = "CN=" + getBoschShcClientId() + ", O=openHAB, L=None, ST=None, C=None";
+        final String dirName = "CN=" + getBoschShcClientId() + ", O=openHAB, L=None, ST=None";
         logger.debug("Creating a new self signed certificate: {}", dirName);
         final Instant now = Instant.now();
         final Date notBefore = Date.from(now);

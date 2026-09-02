@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -155,7 +155,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
             socket.setSoTimeout(2000);
             socket.setReuseAddress(true);
             socket.setNetworkInterface(ni);
-            socket.joinGroup(m);
+            socket.joinGroup(new InetSocketAddress(m, port), ni);
 
             logger.trace("Joined UPnP Multicast group on Interface: {}", ni.getName());
             byte[] requestMessage = COLOR_TOUCH_DISCOVERY_MESSAGE.getBytes(StandardCharsets.UTF_8);

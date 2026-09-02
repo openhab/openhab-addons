@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,15 +50,14 @@ public class AlarmEventCapability extends HomeSecurityThingCapability {
         handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
                 event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
 
-        final String message = event.getName();
-        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE,
-                message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getName()));
     }
 
     @Override
     public List<NAObject> updateReadings() {
-        return Objects.requireNonNull(
+        return pullMode() ? Objects.requireNonNull(
                 getSecurityCapability().map(cap -> cap.getDeviceLastEvent(handler.getId(), moduleType.apiName))
-                        .map(event -> List.of((NAObject) event)).orElse(List.of()));
+                        .map(event -> List.of((NAObject) event)).orElse(List.of()))
+                : List.of();
     }
 }

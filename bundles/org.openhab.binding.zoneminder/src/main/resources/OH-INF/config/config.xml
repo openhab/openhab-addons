@@ -17,71 +17,73 @@
 
 		<!-- Parameter Group url-info -->
 		<parameter name="host" type="text" required="true" groupName="url-info">
-			<label>Server</label>
-			<description>ZoneMinder server name or IP address</description>
+			<label>Host</label>
+			<description>Host name or IP address of the ZoneMinder server.</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="useSSL" type="boolean" required="true" groupName="url-info">
-			<label>Use https</label>
-			<description>Enables use of https for connection to ZoneMinder</description>
+			<label>Use Secure Connection</label>
+			<description>Use HTTP or HTTPS for connection to ZoneMinder. Default is HTTP.</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="portNumber" type="integer" min="1" max="65535" required="false" groupName="url-info">
 			<label>Port Number</label>
-			<description>Port Number (leave blank if Zoneminder installed on default port)</description>
+			<description>Port number if not on ZoneMinder default port 80.</description>
 		</parameter>
 		<parameter name="urlPath" type="text" required="true" groupName="url-info">
 			<label>URL Path</label>
-			<description>URL path (Default is /zm. Use / if Zoneminder installed under the root directory)</description>
+			<description>Path where ZoneMinder is installed. Default is /zm. Enter / if ZoneMinder is installed under the root
+				directory.</description>
 			<default>/zm</default>
 		</parameter>
 
 		<!-- Parameter Group config-info -->
 		<parameter name="refreshInterval" type="integer" min="2" unit="s" required="true" groupName="config-info">
 			<label>Refresh Interval</label>
-			<description>Interval in seconds at which monitor status is updated</description>
+			<description>Frequency in seconds at which monitor status will be updated.</description>
 			<default>5</default>
 		</parameter>
 		<parameter name="defaultAlarmDuration" type="integer" unit="s" required="false" groupName="config-info">
 			<label>Default Alarm Duration</label>
-			<description>Duration in seconds after which the alarm will be turned off</description>
+			<description>Sets the default alarm duration for discovered monitors (in seconds).</description>
 			<default>60</default>
 		</parameter>
 		<parameter name="defaultImageRefreshInterval" type="integer" unit="s" required="false"
 			groupName="config-info">
 			<label>Default Image Refresh Interval</label>
-			<description>Interval in seconds at which monitor image snapshot will be updated</description>
+			<description>Sets the image refresh interval in seconds for discovered monitors. Leave empty to not set an image
+				refresh interval.</description>
 		</parameter>
 		<parameter name="discoveryEnabled" type="boolean" required="true" groupName="config-info">
 			<label>Background Discovery Enabled</label>
-			<description>Enable/disable background discovery of monitors</description>
+			<description>Enable or disable the automatic discovery of monitors. Default is enabled.</description>
 			<default>true</default>
 		</parameter>
 
 		<!-- Parameter Group auth-info -->
 		<parameter name="user" type="text" required="false" groupName="auth-info">
-			<label>User Name</label>
-			<description>User name (if authentication enabled in ZoneMinder)</description>
+			<label>User ID</label>
+			<description>User ID of the ZoneMinder user when using authentication.</description>
 		</parameter>
 		<parameter name="pass" type="text" required="false" groupName="auth-info">
 			<label>Password</label>
-			<description>Password (if authentication enabled in ZoneMinder)</description>
+			<description>Password of the ZoneMinder user when using authentication.</description>
 			<context>password</context>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:zoneminder:monitor">
 		<parameter name="monitorId" type="text" required="true">
-			<label>Monitor Id</label>
-			<description>Id of the monitor</description>
+			<label>Monitor ID</label>
+			<description>ID of monitor defined in ZoneMinder.</description>
 		</parameter>
 		<parameter name="imageRefreshInterval" type="integer" unit="s" required="false" min="1">
 			<label>Image Refresh Interval</label>
-			<description>Interval in seconds with which monitor image is refreshed</description>
+			<description>Interval in seconds at which the snapshot image channel will be updated.</description>
 		</parameter>
 		<parameter name="alarmDuration" type="integer" unit="s" required="false">
 			<label>Alarm Duration</label>
-			<description>Duration in seconds after which the alarm will be turned off</description>
+			<description>Duration the alarm will run once triggered by the triggerAlarm channel.</description>
 		</parameter>
 	</config-description>
 

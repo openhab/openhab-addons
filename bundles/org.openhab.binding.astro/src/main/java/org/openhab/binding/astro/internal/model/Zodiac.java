@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,22 +12,27 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.time.Instant;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Holds the sign of the zodiac.
  *
  * @author Gerhard Riegler - Initial contribution
+ * @author Gaël L'hopital - Immutable & Instant
  */
-public class Zodiac {
-    private ZodiacSign sign;
-
-    public Zodiac(ZodiacSign sign) {
-        this.sign = sign;
+@NonNullByDefault
+public record Zodiac(ZodiacSign sign, InstantRange range) {
+    public Zodiac(int index, Instant start, Instant end) {
+        this(ZodiacSign.values()[index], new InstantRange(start, end));
     }
 
-    /**
-     * Returns the sign of the zodiac.
-     */
-    public ZodiacSign getSign() {
-        return sign;
+    public Instant getStart() {
+        return range.getStart();
+    }
+
+    public Instant getEnd() {
+        return range.getEnd();
     }
 }

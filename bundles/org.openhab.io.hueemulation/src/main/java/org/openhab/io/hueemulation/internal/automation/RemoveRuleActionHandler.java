@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.openhab.core.config.core.Configuration;
  * This action module type allows to remove a rule from the rule registry.
  * <p>
  * This is very useful for rules that should execute only once etc.
- * 
+ *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
@@ -40,7 +40,6 @@ public class RemoveRuleActionHandler extends BaseModuleHandler<Action> implement
 
     private RuleRegistry ruleRegistry;
 
-    @SuppressWarnings({ "null", "unused" })
     public RemoveRuleActionHandler(final Action module, RuleRegistry ruleRegistry) {
         super(module);
         this.ruleRegistry = ruleRegistry;
@@ -49,14 +48,15 @@ public class RemoveRuleActionHandler extends BaseModuleHandler<Action> implement
             throw new IllegalArgumentException("'Configuration' can not be empty.");
         }
 
-        ruleUID = (String) config.get(CFG_REMOVE_UID);
+        String ruleUID = (String) config.get(CFG_REMOVE_UID);
         if (ruleUID == null) {
             throw new IllegalArgumentException("'ruleUIDs' property must not be null.");
         }
+        this.ruleUID = ruleUID;
     }
 
     @Override
-    public @Nullable Map<String, Object> execute(Map<String, Object> context) {
+    public @Nullable Map<String, @Nullable Object> execute(Map<String, Object> context) {
         ruleRegistry.remove(ruleUID);
         return null;
     }

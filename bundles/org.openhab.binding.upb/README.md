@@ -4,8 +4,8 @@ Universal Powerline Bus (UPB) is a protocol for communication over household ele
 
 ## Supported Things
 
-The binding has not yet been tested with a variety of devices, so specific device support is limited.
-Instead the binding provides some generic devices, and allows adding channels that match the type of device.
+The binding has not yet been tested with a wide variety of devices, so specific device support is limited.
+Instead, the binding provides some generic devices and allows adding channels that match the type of device.
 
 - `serial-pim` - Serial PIM
 - `generic` - Generic UPB device
@@ -21,7 +21,7 @@ The following binding configuration parameters are supported:
 
 | Parameter                | Description                                    | Config   | Default |
 | ------------------------ | ---------------------------------------------- |--------- | ------- |
-| networkId                | Default UPB network ID (0-255)                 | Optional | -       |
+| networkId                | Default UPB network ID (0–255)                 | Optional | -       |
 
 ## Thing Configuration
 
@@ -29,7 +29,7 @@ The following binding configuration parameters are supported:
 
 You need a Powerline Interface Module (PIM) for the binding to work.
 This is a piece of equipment that connects a computer to the powerline.
-There are a few different PIM interfaces but this binding only supports serial PIMs.
+There are a few different PIM interfaces, but this binding only supports serial PIMs.
 
 The `serial-pim` takes the following configuration parameters:
 
@@ -39,7 +39,7 @@ The `serial-pim` takes the following configuration parameters:
 
 ### Generic device
 
-The `generic` thing type supports most UPB devices such as dimmers, light switches,
+The `generic` Thing type supports most UPB devices such as dimmers, light switches,
 and appliance modules. It has the following configuration parameters:
 
 | Parameter                | Description                                    | Config   | Default        |
@@ -52,11 +52,8 @@ and appliance modules. It has the following configuration parameters:
 The `virtual` pseudo-device does not correspond to any real device on the UPB network.
 It is nevertheless useful for reading and setting the current scene.
 The device has two channels, `linkActivated` and `linkDeactivated`.
-If a device on the UPB network activates or de-activates a scene by broadcasting a link
-activation command, the link ID (or scene number) can be read from
-the corresponding channel.
-Similarly, updating the channel with a link ID will send out the
-corresponding link command on the UPB network.
+If a device on the UPB network activates or deactivates a scene by broadcasting a link activation command, the link ID (or scene number) can be read from the corresponding channel.
+Similarly, updating the channel with a link ID will send out the corresponding link command on the UPB network.
 
 ## Channels
 
@@ -75,7 +72,7 @@ The virtual device supports the `link` channel type:
 
 ## Full Example
 
-Here is a sample `.things configuration file:
+Here is a sample `.things` configuration file:
 
 ```java
 Bridge upb:serial-pim:pim "UPB PIM" @ "Basement" [port="/dev/ttyUSB0"] {

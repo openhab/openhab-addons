@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>Pi-hole Binding</name>
 	<description>This is the binding for Pi-hole.</description>
-	<connection>cloud</connection>
+	<connection>local</connection>
 
 </addon:addon>

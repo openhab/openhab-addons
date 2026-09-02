@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,7 +72,7 @@ public abstract class CommonLocalDeviceData implements LocalData {
         short major = getFromRawData(indexMajor);
         short minor = getFromRawData(indexMinor);
         if (major == 0) {
-            return minor;
+            return Short.toUnsignedLong(minor);
         }
 
         return Integer.toUnsignedLong(major << 16 | minor & 0xFFFF);

@@ -4,7 +4,7 @@ Binding supporting the DIRIGERA Gateway from IKEA.
 
 ## Supported Things
 
-The DIRIGERA `bridge` is providing the connection to all devices and scenes.  
+The DIRIGERA `bridge` is providing the connection to all devices and scenes.
 
 Refer to below sections which devices are supported and are covered by `things` connected to the DIRIGERA bridge.
 
@@ -19,6 +19,7 @@ Refer to below sections which devices are supported and are covered by `things` 
 | `dimmable-light`      | Light with brightness support                              | [Lights](#dimmable-lights)                | TRÅDFRI                                   |
 | `temperature-light`   | Light with color temperature support                       | [Lights](#temperature-lights)             | TRÅDFRI, FLOALT                           |
 | `color-light`         | Light with color support                                   | [Lights](#color-lights)                   | TRÅDFRI, ORMANÅS                          |
+| `light-set`           | Group of lights controlled as one logical unit             | [Lights](#light-set)                      | Set of lights which are handled together  |
 | `light-controller`    | Controller to handle light attributes                      | [Controller](#light-controller)           | TRÅDFRI, RODRET,STYRBAAR                  |
 | `motion-sensor`       | Sensor detecting motion events                             | [Sensors](#motion-sensor)                 | TRÅDFRI                                   |
 | `motion-light-sensor` | Sensor detecting motion events and measures light level    | [Sensors](#motion-light-sensor)           | VALLHORN                                  |
@@ -33,6 +34,29 @@ Refer to below sections which devices are supported and are covered by `things` 
 | `water-sensor`        | Sensor to detect water leaks                               | [Sensors](#water-sensor)                  | BADRING                                   |
 | `repeater`            | Repeater to strengthen signal                              | [Repeater](#repeater)                     | TRÅDFRI                                   |
 | `scene`               | Scene from IKEA Home smart app which can be triggered      | [Scenes](#scenes)                         | -                                         |
+
+New products are based on Matter standard.
+If they are paired with the DIRIGERA gateway via IKEA home smart App they can be integrated with the following things.
+Each thing depends on the underlying hardware and channels are created based on the delivered values, e.g.
+
+- `ota` channels for devices which can receive updates
+- `battery` channels for battery powered devices
+- `link` channels if device can be linked to a controller or sensor
+- `startup` channel if device _power on_ behavior can be configured
+
+Examples are MYGGSPRAY as `occupancy-sensor` which also provides a `light-sensor` or TIMMERFLOTTE as `environment-sensor` delivers temperature and humidity while ALPSTUGA also measures CO2 and particulate matter.
+
+| ThingTypeUID          | Description                                               | Section                                   | Products                                  |
+|-----------------------|-----------------------------------------------------------|-------------------------------------------|-------------------------------------------|
+| `occupancy-sensor`    | Sensor to detect presence of people                       | [Sensors](#occupancy-sensor)              | MYGGSPRAY                                 |
+| `light-sensor`        | Sensor providing illuminance measures                     | [Sensors](#light-sensor)                  | included in MYGGSPRAY                     |
+| `environment-sensor`  | Sensor measuring temperature, humidity and air quality    | [Sensors](#environment-sensor)            | TIMMERFLOTTE, ALPSTUGA                    |
+| `open-close-sensor`   | Sensor detecting open/closed doors, windows or drawers    | [Sensors](#open-close-sensor)             | MYGGBETT                                  |
+| `water-leak-sensor`   | Sensor detecting water leaks                              | [Sensors](#water-leak-sensor)             | KLIPPBOK                                  |
+| `two-button-switch`   | Controller with 2 programmable buttons                    | [Controller](#two-button-switch)          | BILRESA dual button                       |
+| `three-button-switch` | Controller with 3 programmable buttons                    | [Controller](#three-button-switch)        | BILRESA scroll wheel                      |
+| `matter-light`        | LED light (based on Matter standard)                      | [Lights](#matter-light)                   | KAJPLATS series                           |
+| `matter-outlet`       | Power plug with electricity measurements                  | [Plugs](#smart-power-plug-matter)         | GRILLPLATS, TOFSMYGGA                     |
 
 ## Discovery
 
@@ -156,7 +180,7 @@ The channels are declared advanced and can be used for setup procedure.
 
 | Channel               | Type                  | Read/Write | Description                                      | Advanced |
 |-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `links`               | String                | RW         | Linked controllers and sensors                   |    X     |
+| `links`               | String                | RW         | Linked controllers, sensors and devices          |    X     |
 | `link-candidates`     | String                | RW         | Candidates which can be linked                   |    X     |
 
 ![Link Candidates](doc/link-candidates.png)
@@ -264,11 +288,13 @@ Light devices in several variants.
 Can be light bulbs, LED stripes, remote driver and more.
 Configuration contains
 
-| Name              | Type    | Description                                                         | Default | Required |
-|-------------------|---------|---------------------------------------------------------------------|---------|----------|
-| `id`              | text    | Unique id of this device / scene                                    | N/A     | yes      |
-| `fadeTime`        | integer | Required time for fade sequnce to color or brightness               | 750     | yes      |
-| `fadeSequence`    | integer | Define sequence if several light parameters are changed at once     | 0       | yes      |
+| Name                  | Type    | Description                                                     | Default | Required |
+|-----------------------|---------|-----------------------------------------------------------------|---------|----------|
+| `id`                  | text    | Unique id of this device / scene                                | N/A     | yes      |
+| `fadeTime`            | integer | Required time for fade sequence to color or brightness          | 750     | yes      |
+| `fadeSequence`        | integer | Define sequence if several light parameters are changed at once | 0       | yes      |
+| `colorTemperatureMin` | integer | Overwrite minimum color temperature from light device in kelvin | N/A     | no       |
+| `colorTemperatureMax` | integer | Overwrite maximum color temperature from light device in kelvin | N/A     | no       |
 
 `fadeTime` adjust fading time according to your device.
 Current behavior shows commands are acknowledged while device is fading  but not executed correctly.
@@ -342,14 +368,46 @@ Light with color support.
 | `power`                   | Switch                | RW         | Power state of light                                 |          |
 | `brightness`              | Dimmer                | RW         | Brightness of light in percent                       |          |
 | `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
-| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |          |
-| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |    X     |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |    X     |
+| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |          |
 
 Channel `color` can receive
 
 - ON / OFF
 - numbers from 0 to 100 as brightness in percent where 0 will switch the light OFF, any other > 0 switches light ON
 - triple values for hue, saturation, brightness
+
+## Light Set
+
+A Light Set is a group of individual lights that the IKEA Home smart app manages under a single logical device.
+The `light-set` thing maps to this group and provides the same channels as [Color Lights](#color-lights).
+
+| Channel                   | Type                  | Read/Write | Description                                          | Advanced |
+|---------------------------|-----------------------|------------|------------------------------------------------------|----------|
+| `power`                   | Switch                | RW         | Power state of the light set                         |          |
+| `brightness`              | Dimmer                | RW         | Brightness of the light set in percent               |          |
+| `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature in Kelvin                          |    X     |
+| `color`                   | Color                 | RW         | Color with hue, saturation and brightness            |          |
+| `startup`                 | Number                | RW         | Startup behavior after power cutoff                  |          |
+| `custom-name`             | String                | RW         | Name given in the IKEA Home smart app                |          |
+
+### Availability (ONLINE / OFFLINE)
+
+The `light-set` thing tracks reachability individually for each member bulb.
+It reports **ONLINE** as long as at least one member is reachable.
+It goes **OFFLINE** only when every member reports `isReachable=false`.
+
+### Important: Inconsistent State
+
+Because each member bulb inside a set can be controlled independently, like a physical switch, or another openHAB rule, the actual state of the individual bulbs may diverge from each other.
+The `light-set` channels reflect the state reported by whichever member sent the most recent websocket update.
+This means the channel values represent the state of one member, not a guaranteed aggregate of all members.
+
+**Sets are designed as a control surface, not a state mirror.**
+Use the `light-set` channels to issue uniform commands to the group.
+Do not rely on the channel state to accurately reflect what every individual bulb in the set is currently doing.
+If per-bulb state accuracy is required, add each bulb as its own `color-light` thing alongside the set.
 
 ## Power Plugs
 
@@ -389,6 +447,21 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 Smart plug provides `energy-total` measuring energy consumption over lifetime and `energy-reset` measuring energy consumption from `reset-date` till now.
 Channel `reset-date` is writable and will set the date time to the timestamp of command execution.
 Past and future timestamps are not possible and will be ignored.
+
+## Smart Power Plug Matter
+
+Smart plug based on Matter standard.
+Provides the power and energy measurement channels listed below.
+Additional [Smart Power Plug](#smart-power-plug) channels such as child lock or status light configuration are not supported by the Matter variant.
+
+| Channel               | Type                      | Read/Write | Description                                  |
+|-----------------------|---------------------------|------------|----------------------------------------------|
+| `electric-power`      | Number:Power              | R          | Electric power delivered by plug             |
+| `energy-total`        | Number:Energy             | R          | Total energy consumption                     |
+| `energy-reset`        | Number:Energy             | R          | Energy consumption since last reset          |
+| `reset-date`          | DateTime                  | RW         | Date and time of last reset                  |
+| `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            |
+| `electric-voltage`    | Number:ElectricPotential  | R          | Electric potential of plug                   |
 
 ## Sensors
 
@@ -578,6 +651,112 @@ If command 0 (Trigger) is sent scene will be executed.
 There's a 30 seconds time slot to send command 1 (Undo).
 The countdown is updating `trigger` channel state which can be evaluated if an undo operation is still possible.
 State will switch to `Undef` after countdown.
+
+## Occupancy Sensor
+
+Sensor to detect presence of people.
+Currently IKEA's product portfolio provides only motion sensors without additional presence detection.
+Nevertheless they are registered as _occupancy_ which is a bit misleading.
+Maybe there will be extensions in the future.
+
+| Channel               | Type                  | Read/Write | Description                                      |
+|-----------------------|-----------------------|------------|--------------------------------------------------|
+| `motion`              | Switch                | R          | Motion detected by the device                    |
+| `active-duration`     | Number:Time           | RW         | Keep connected devices active for this duration  |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |
+| `schedule`            | Number                | RW         | Schedule when the sensor shall be active         |
+| `schedule-start`      | DateTime              | RW         | Start time of sensor activity                    |
+| `schedule-end`        | DateTime              | RW         | End time of sensor activity                      |
+
+## Light Sensor
+
+Sensor measuring illuminance.
+
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `illuminance`         | Number:Illuminance    | R          | Illuminance in Lux                           |
+
+## Environment Sensor
+
+Environment measures for temperature, humidity and air quality.
+
+| Channel              | Type                 | Read/Write | Description                           |
+|----------------------|----------------------|------------|---------------------------------------|
+| `temperature`        | Number:Temperature   | R          | Current indoor temperature            |
+| `humidity`           | Number:Dimensionless | R          | Current atmospheric relative humidity |
+| `particulate-matter` | Number:Density       | R          | Category 2.5 particulate matter       |
+| `co2`                | Number:Dimensionless | R          | CO₂ concentration                     |
+
+## Open Close Sensor
+
+Sensor detecting open/closed doors, windows or drawers.
+
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `contact`             | Contact               | R          | State if door or window is open or closed    |
+
+## Water Leak Sensor
+
+Sensor detecting water leaks.
+
+| Channel               | Type                  | Read/Write | Description                                  |
+|-----------------------|-----------------------|------------|----------------------------------------------|
+| `leak`                | Switch                | R          | Water leak detection                         |
+
+## Two Button Switch
+
+Controller with 2 programmable buttons
+
+| Channel               | Type                  | Read/Write | Description                                  | Advanced  |
+|-----------------------|-----------------------|------------|----------------------------------------------|-----------|
+| `top-button`          | Trigger               | R          | Press triggers for top button                |           |
+| `lower-button`        | Trigger               | R          | Press triggers for lower button              |           |
+| `control-mode`        | Number                | RW         | Select which device type shall be controlled |    X      |
+| `links`               | String                | RW         | Linked controllers, sensors and devices      |    X      |
+| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X      |
+
+Trigger channels providing `SINGLE_PRESS`, `DOUBLE_PRESS` and `LONG_PRESS` as trigger values.
+The `control-mode` needs to be correct before linking other devices to the controller.
+
+## Three Button Switch
+
+Controller with 3 programmable buttons, BILRESA scroll wheel controller.
+There are 3 buttons covering scroll down, scroll up and press.
+In addition this controller provides switching between 3 groups.
+Group names are
+
+- `switch-1`, `switch-2` and `switch-3` for trigger and link channels
+- `switch` group covers general device information like `ota` and `battery` information
+
+| Channel               | Type                  | Read/Write | Description                                  | Advanced  |
+|-----------------------|-----------------------|------------|----------------------------------------------|-----------|
+| `button-press`        | Trigger               | R          | Triggers for button press                    |           |
+| `scroll-up`           | Trigger               | R          | Triggers for scroll up                       |           |
+| `scroll-down`         | Trigger               | R          | Triggers for scroll down                     |           |
+| `control-mode`        | Number                | RW         | Select which device type shall be controlled |    X      |
+| `links`               | String                | RW         | Linked controllers, sensors and devices      |    X      |
+| `link-candidates`     | String                | RW         | Candidates which can be linked               |    X      |
+
+Trigger channels providing `SINGLE_PRESS`, `DOUBLE_PRESS` and `LONG_PRESS` as trigger values.
+
+Pitfalls and problems:
+
+- be careful with _Add Equipment to Model_ and item names. Ensure item name for each group is different, otherwise item is connected to all group channels.
+- before linking the controller to other devices like lights ensure the `control-mode` fits
+- right now triggers are **not** exposed so you cannot used them to control devices outside of DIRIGERA
+
+## Matter Light
+
+LED light (based on Matter standard).
+Channels are created based on the capabilities of the LED light.
+
+| Channel                   | Type                  | Read/Write | Description                                          | Advanced |
+|---------------------------|-----------------------|------------|------------------------------------------------------|----------|
+| `power`                   | Switch                | RW         | Power state of light                                 |          |
+| `brightness`              | Dimmer                | RW         | Brightness of light in percent                       |          |
+| `color-temperature`       | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| `color-temperature-abs`   | Number:Temperature    | RW         | Color temperature of a bulb in Kelvin                |    X     |
+| `color`                   | Color                 | RW         | Color of light with hue, saturation and brightness   |          |
 
 ## Known Limitations
 

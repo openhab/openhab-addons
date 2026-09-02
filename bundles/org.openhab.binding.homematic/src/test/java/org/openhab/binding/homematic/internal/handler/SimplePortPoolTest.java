@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,9 +28,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Florian Stolte - Initial Contribution
  */
+@NonNullByDefault
 public class SimplePortPoolTest {
 
-    private SimplePortPool simplePortPool;
+    private SimplePortPool simplePortPool = new SimplePortPool();
 
     @BeforeEach
     public void setup() {

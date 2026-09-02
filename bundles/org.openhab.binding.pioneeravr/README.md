@@ -6,21 +6,21 @@ This binding integrates Pioneer AVRs.
 
 The binding can auto-discover the Pioneer AVRs present on your local network.
 The auto-discovery is enabled by default.
-To disable it, you can create a file in the services directory called pioneeravr.cfg with the following content:
+To disable it, you can create a file in the services directory called `pioneeravr.cfg` with the following content:
 
 ```ini
 #Put your configuration here
 org.openhab.pioneeravr:enableAutoDiscovery=false
 ```
 
-This configuration parameter only control the PioneerAVR auto-discovery process, not the openHAB auto-discovery.
+This configuration parameter only controls the PioneerAVR auto-discovery process, not the openHAB auto-discovery.
 Moreover, if the openHAB auto-discovery is disabled, the PioneerAVR auto-discovery is disabled too.
 
 ## Thing configuration
 
-In the things folder, create a file called pioneeravr.things (or any other name) and configure your AVRs inside.
+In the things folder, create a file called `pioneeravr.things` (or any other name) and configure your AVRs inside.
 
-The binding can control AVRs through the local network (ipAvr/ipAvrUnsupported thing type) or through a Serial connection (serialAvr) if the AVR is directly connected to your computer.
+The binding can control AVRs through the local network (ipAvr/ipAvrUnsupported Thing type) or through a serial connection (serialAvr) if the AVR is directly connected to your computer.
 
 Configuration of ipAvr/ipAvrUnsupported:
 
@@ -89,7 +89,9 @@ Here after are the ID values of the input sources (depending on you AVR input so
 
 ## Listening Modes
 
-The _Listening Mode_ is set by user to instruct the AVR how to treat the audio signal and do upscaling, downscaling and amplification. This settings corresponds to the settings made with the remote control or front panel. What the AVR actually does with each setting/input-signal-combination can be read out using the _Playing Listening Mode_ channel.
+The _Listening Mode_ is set by the user to instruct the AVR how to treat the audio signal and do upscaling, downscaling, and amplification.
+This setting corresponds to the settings made with the remote control or front panel.
+What the AVR actually does with each setting/input-signal-combination can be read out using the _Playing Listening Mode_ channel.
 
 - 0001: STEREO (cyclic)
 - 0010: STANDARD (cyclic)
@@ -149,7 +151,8 @@ The _Listening Mode_ is set by user to instruct the AVR how to treat the audio s
 
 ## Playing Listening Modes
 
-The _Playing Listening Mode_ is the Listening Mode that is actually playing as opposed to the _Listening Mode_ set by the user. The _Playing Listening Mode_ is what the display on the device shows.
+The _Playing Listening Mode_ is the Listening Mode that is actually playing, as opposed to the _Listening Mode_ set by the user.
+The _Playing Listening Mode_ is what the display on the device shows.
 
 - 0101: [)(]PLIIx MOVIE
 - 0102: [)(]PLII MOVIE

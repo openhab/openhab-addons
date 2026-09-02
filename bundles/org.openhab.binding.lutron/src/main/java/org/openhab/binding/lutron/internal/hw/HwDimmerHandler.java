@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public class HwDimmerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        HwDimmerConfig config = getThing().getConfiguration().as(HwDimmerConfig.class);
+        HwDimmerConfig config = getConfigAs(HwDimmerConfig.class);
 
         address = config.getAddress();
         if (address == null || address.isEmpty()) {

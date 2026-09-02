@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,11 @@ public class VigiCruesException extends Exception {
     private static final long serialVersionUID = -7781683052187130152L;
 
     public VigiCruesException(Throwable e) {
-        super(null, e);
+        super(e.getMessage(), e);
+    }
+
+    public VigiCruesException(String msg, Throwable e) {
+        super(msg, e);
     }
 
     public VigiCruesException(String msg) {

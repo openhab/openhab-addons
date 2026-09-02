@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,6 +78,12 @@ public class FeicanHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         final FeicanConfiguration config = getConfigAs(FeicanConfiguration.class);
+
+        if (config.ipAddress.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/configuration-ip-address-not-set");
+            return;
+        }
 
         logger.debug("Initializing Feican Wifi RGWB Bulb on IP address {}", config.ipAddress);
         try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         this.bridgeHandler = getBridgeHandler();
-        this.config = getThing().getConfiguration().as(PlayerConfig.class);
+        this.config = getConfigAs(PlayerConfig.class);
 
         if (bridgeHandler == null || getThing().getBridgeUID() == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");

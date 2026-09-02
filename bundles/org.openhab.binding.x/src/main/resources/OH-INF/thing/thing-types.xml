@@ -5,7 +5,7 @@
 
 	<thing-type id="account">
 		<label>X Account</label>
-		<description>Account uses for sending posts</description>
+		<description>Account used for sending posts</description>
 
 		<channels>
 			<channel id="lastpost" typeId="lastpost"/>
@@ -29,8 +29,8 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false" unit="min" min="1">
-				<label>Refresh Time</label>
-				<description>Refresh Time for This Account in Mins</description>
+				<label>Refresh Interval</label>
+				<description>Refresh interval for this account (minutes)</description>
 				<default>30</default>
 			</parameter>
 		</config-description>
@@ -40,7 +40,7 @@
 	<channel-type id="lastpost">
 		<item-type>String</item-type>
 		<label>Last Post</label>
-		<description>Users Last Post</description>
+		<description>User's last post</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

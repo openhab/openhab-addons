@@ -9,13 +9,13 @@
 		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
-			<parameter name="apiKey" type="text" required="true">
-				<label>apiKey</label>
-				<description>apiKey provided by Teslascope</description>
+			<parameter name="personalAccessToken" type="text" required="true">
+				<label>Personal Access Token</label>
+				<description>Personal Access Token provided by Teslascope</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Interval the account is polled in sec.</description>
+				<description>Interval at which the account is polled (in seconds).</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -76,6 +76,7 @@
 			<channel id="location" typeId="location"/>
 			<channel id="min-available-temp" typeId="min-available-temp"/>
 			<channel id="max-available-temp" typeId="max-available-temp"/>
+			<channel id="miles-since-reset" typeId="miles-since-reset"/>
 			<channel id="outside-temp" typeId="outside-temp"/>
 			<channel id="passenger-front-door" typeId="passenger-front-door"/>
 			<channel id="passenger-rear-door" typeId="passenger-rear-door"/>
@@ -89,6 +90,8 @@
 			<channel id="right-temp-direction" typeId="right-temp-direction"/>
 			<channel id="scheduled-charging-pending" typeId="scheduled-charging-pending"/>
 			<channel id="scheduled-charging-start" typeId="scheduled-charging-start"/>
+			<channel id="self-driving-miles-since-reset" typeId="self-driving-miles-since-reset"/>
+			<channel id="self-driving-percentage" typeId="self-driving-percentage"/>
 			<channel id="sentry-mode" typeId="sentry-mode"/>
 			<channel id="shift-state" typeId="shift-state"/>
 			<channel id="side-mirror-heaters" typeId="side-mirror-heaters"/>
@@ -115,8 +118,10 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
+
+		<representation-property>publicID</representation-property>
 
 		<config-description>
 			<parameter name="publicID" type="text" required="true">
@@ -125,7 +130,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="10">
 				<label>Refresh Interval</label>
-				<description>Interval the API is polled in sec.</description>
+				<description>Interval at which the API is polled (in seconds).</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -270,7 +275,7 @@
 	<channel-type id="charge-port-latch">
 		<item-type>Switch</item-type>
 		<label>Charge Port Latch</label>
-		<description>Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)</description>
+		<description>Indicates the Charge Port Latch status (ON/OFF if latched/unlatched)</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -672,8 +677,30 @@
 	</channel-type>
 	<channel-type id="wiper-blade-heater" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Wiperblade Heater</label>
-		<description>Indicates if the wiperblade heater is switched on</description>
+		<label>Wiper Blade Heater</label>
+		<description>Indicates if the wiper blade heater is switched on</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="self-driving-miles-since-reset" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Self-Driving Distance</label>
+		<description>Self Driving distance since reset</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="miles-since-reset" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Driving Distance</label>
+		<description>Driving distance since reset</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="self-driving-percentage">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Self-Driving Percentage</label>
+		<description>Percentage of driving that is on FSD</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

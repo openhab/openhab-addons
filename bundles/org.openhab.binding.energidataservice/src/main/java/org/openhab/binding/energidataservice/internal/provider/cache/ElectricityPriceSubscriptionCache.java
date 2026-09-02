@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,6 +51,18 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
     public void flush() {
         Instant firstHourStart = getFirstHourStart();
         priceMap.entrySet().removeIf(entry -> entry.getKey().isBefore(firstHourStart));
+    }
+
+    @Override
+    public boolean put(Map<Instant, BigDecimal> records) {
+        if (priceMap.equals(records)) {
+            return false;
+        }
+
+        priceMap.clear();
+        priceMap.putAll(records);
+        flush();
+        return true;
     }
 
     /**

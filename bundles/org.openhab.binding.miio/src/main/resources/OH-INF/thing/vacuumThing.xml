@@ -185,7 +185,7 @@
 	</channel-type>
 	<channel-type id="led_status" advanced="true">
 		<item-type>Number</item-type>
-		<label>Led Status</label>
+		<label>LED Status</label>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 
@@ -197,7 +197,7 @@
 	</channel-type>
 	<channel-type id="mop_mode">
 		<item-type>Number</item-type>
-		<label>Water Box Mode</label>
+		<label>Mop Mode</label>
 		<state min="300" max="303" step="1" pattern="%.0f%%" readOnly="false">
 			<options>
 				<option value="300">Standard</option>
@@ -248,18 +248,18 @@
 	</channel-type>
 	<channel-type id="is_mop_drying">
 		<item-type>Switch</item-type>
-		<label>Mop Cleaning Active</label>
+		<label>Mop Drying Active</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="collect_dust">
 		<item-type>Switch</item-type>
 		<label>Start Collecting Dust</label>
-		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
+		<description>Once the vacuum cleaner is docked, you can start collecting the dust</description>
 	</channel-type>
 	<channel-type id="clean_mop_start">
 		<item-type>Switch</item-type>
 		<label>Start Mop Wash</label>
-		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop</description>
+		<description>Once the vacuum cleaner is docked, you can start washing the mop</description>
 	</channel-type>
 	<channel-type id="clean_mop_stop">
 		<item-type>Switch</item-type>
@@ -289,22 +289,22 @@
 	</channel-type>
 	<channel-type id="main_brush_time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Main Brush Time till Replacement</label>
+		<label>Main Brush Time Until Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="side_brush_time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Side Brush Time till Replacement</label>
+		<label>Side Brush Time Until Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="filter_time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Filter Time till Replacement</label>
+		<label>Filter Time Until Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sensor_dirt_time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Sensor Dirt Time till Cleaning</label>
+		<label>Sensor Dirt Time Until Cleaning</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -360,8 +360,8 @@
 		<state>
 			<options>
 				<option value="none">Select Consumable</option>
-				<option value="main_brush_work_time">Reset Mainbrush</option>
-				<option value="side_brush_work_time">Reset Sidebrush</option>
+				<option value="main_brush_work_time">Reset Main Brush</option>
+				<option value="side_brush_work_time">Reset Side Brush</option>
 				<option value="filter_work_time">Reset Filter</option>
 				<option value="sensor_dirty_time">Reset Sensors</option>
 			</options>

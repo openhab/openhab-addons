@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class CurrentPrices {
     public boolean estimate;
     public @NonNullByDefault({}) AdvancedPrice advancedPrice;
 
-    public class AdvancedPrice {
+    public static class AdvancedPrice {
         public double low;
         public double predicted;
         public double high;

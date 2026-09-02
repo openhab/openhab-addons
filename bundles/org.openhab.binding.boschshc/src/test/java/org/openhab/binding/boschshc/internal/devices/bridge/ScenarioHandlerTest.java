@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,8 +71,8 @@ class ScenarioHandlerTest {
 
     private @NonNullByDefault({}) ScenarioHandler fixture;
 
-    private @NonNullByDefault({}) @Mock BoschHttpClient httpClient;
-    private @NonNullByDefault({}) @Mock Request request;
+    private @Mock @NonNullByDefault({}) BoschHttpClient httpClient;
+    private @Mock @NonNullByDefault({}) Request request;
 
     @BeforeEach
     void beforeEach() {

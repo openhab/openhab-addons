@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
-public class FineOffsetGatewayQueryService extends GatewayQueryService {
+public class FineOffsetGatewayQueryService extends TcpGatewayQueryService {
     private static final Protocol PROTOCOL = Protocol.DEFAULT;
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayQueryService.class);
 

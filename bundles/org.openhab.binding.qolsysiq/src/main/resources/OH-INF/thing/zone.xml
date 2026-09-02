@@ -8,7 +8,7 @@
 			<bridge-type-ref id="partition"/>
 		</supported-bridge-type-refs>
 		<label>Zone</label>
-		<description>A Qolsys IQ Zone</description>
+		<description>A Qolsys IQ zone</description>
 		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="zoneState"/>
@@ -29,21 +29,21 @@
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>Zone ID</label>
-				<description>The Zone ID.</description>
+				<description>The zone ID.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 	<channel-type id="zoneStatus">
 		<item-type>String</item-type>
 		<label>Zone Status</label>
-		<description>The zone status.</description>
+		<description>The zone status</description>
 		<state readOnly="true">
 			<options>
 				<option value="ACTIVE">Active</option>
 				<option value="CLOSED">Closed</option>
 				<option value="OPEN">Open</option>
 				<option value="FAILURE">Failure</option>
-				<option value="IDlE">Idle</option>
+				<option value="IDLE">Idle</option>
 				<option value="TAMPER">Tamper</option>
 			</options>
 		</state>

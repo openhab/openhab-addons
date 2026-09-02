@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,5 +25,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface DeviceStatusListener {
     void processDeviceStatus(Map<Integer, Object> deviceStatus);
 
-    void connectionStatus(boolean status);
+    void connectionStatus(boolean status, int initialDelay);
 }

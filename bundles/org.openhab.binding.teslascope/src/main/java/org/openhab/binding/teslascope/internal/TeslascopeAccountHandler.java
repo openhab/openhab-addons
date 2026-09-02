@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link TeslascopeAccountHandler} is responsible for handling commands, which are
@@ -47,12 +48,11 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(TeslascopeAccountHandler.class);
-
     private @Nullable TeslascopeAccountConfiguration config;
     private @Nullable ScheduledFuture<?> pollFuture;
 
     private final TeslascopeWebTargets webTargets;
+    private final Logger logger = LoggerFactory.getLogger(TeslascopeAccountHandler.class);
 
     private final Gson gson = new Gson();
 
@@ -66,54 +66,43 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     }
 
     public String getVehicleList() {
-        try {
-            return webTargets.getVehicleList(config.apiKey);
-        } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication problem: " + e.getMessage());
-            return "";
-        } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication problem: " + e.getMessage());
-            return "";
+        TeslascopeAccountConfiguration config = this.config;
+        if (config != null) {
+            try {
+                return webTargets.getVehicleList(config.personalAccessToken);
+            } catch (TeslascopeAuthenticationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication problem: " + e.getMessage());
+            } catch (TeslascopeCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication problem: " + e.getMessage());
+            }
+        }
+        return "";
+    }
+
+    public String getDetailedInformation(String publicID)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        TeslascopeAccountConfiguration config = this.config;
+        if (config != null) {
+            return webTargets.getDetailedInformation(publicID, config.personalAccessToken);
+        }
+        return "";
+    }
+
+    public void sendCommand(String publicID, String command)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        TeslascopeAccountConfiguration config = this.config;
+        if (config != null) {
+            webTargets.sendCommand(publicID, config.personalAccessToken, command);
         }
     }
 
-    public String getDetailedInformation(String publicID) {
-        try {
-            return webTargets.getDetailedInformation(publicID, config.apiKey);
-        } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication problem: " + e.getMessage());
-            return "";
-        } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication problem: " + e.getMessage());
-            return "";
-        }
-    }
-
-    public void sendCommand(String publicID, String command) {
-        try {
-            webTargets.sendCommand(publicID, config.apiKey, command);
-        } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication problem: " + e.getMessage());
-        } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication problem: " + e.getMessage());
-        }
-    }
-
-    public void sendCommand(String publicID, String command, String params) {
-        try {
-            webTargets.sendCommand(publicID, config.apiKey, command, params);
-        } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication problem: " + e.getMessage());
-        } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication problem: " + e.getMessage());
+    public void sendCommand(String publicID, String command, String params)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        TeslascopeAccountConfiguration config = this.config;
+        if (config != null) {
+            webTargets.sendCommand(publicID, config.personalAccessToken, command, params);
         }
     }
 
@@ -124,15 +113,16 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(TeslascopeAccountConfiguration.class);
-        if (config.apiKey.isBlank()) {
+        TeslascopeAccountConfiguration localConfig = config = getConfigAs(TeslascopeAccountConfiguration.class);
+        if (localConfig.personalAccessToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-api-key");
+                    "@text/offline.conf-error.no-credentials");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
 
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, 300, TimeUnit.SECONDS);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, localConfig.refreshInterval,
+                TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -145,16 +135,29 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     private void pollStatus() {
         String responseVehicleList = getVehicleList();
-        JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
-        if (jsonArrayVehicleList.size() > 0) {
-            VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
-            if (vehicleList == null) {
+
+        if (responseVehicleList == null || responseVehicleList.isBlank()) {
+            return; // Status is already updated to OFFLINE in getVehicleList()
+        }
+
+        try {
+            JsonArray jsonArrayVehicleList = JsonParser.parseString(responseVehicleList).getAsJsonArray();
+            if (jsonArrayVehicleList.size() > 0) {
+                VehicleList vehicleList = gson.fromJson(jsonArrayVehicleList.get(0), VehicleList.class);
+                if (vehicleList == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error.no-vehicles");
+                    return;
+                }
+                updateStatus(ThingStatus.ONLINE);
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error.no-vehicles");
             }
-        } else {
+        } catch (JsonSyntaxException e) {
+            logger.debug("Failed to parse vehicle list JSON: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-vehicles");
+                    "@text/offline.comm-error.no-json");
         }
     }
 

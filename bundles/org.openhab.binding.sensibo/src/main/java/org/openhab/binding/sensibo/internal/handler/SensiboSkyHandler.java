@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -109,10 +109,9 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     }
 
     private String getMacAddress() {
-        if (config.isPresent()) {
-            return config.get().macAddress;
-        }
-        throw new IllegalArgumentException("No configuration present");
+        return config.flatMap(config -> Optional.ofNullable(config.macAddress))
+                .map(macAddress -> macAddress.replaceAll("[^0-9A-Fa-f]", "").toUpperCase())
+                .orElseThrow(() -> new IllegalArgumentException("No configuration present"));
     }
 
     @Override

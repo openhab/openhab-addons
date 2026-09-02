@@ -1,7 +1,7 @@
 import { Logger } from "@matter/general";
 import { ClusterId, ValidationError } from "@matter/main/types";
 import { ClusterModel, MatterModel } from "@matter/model";
-import { SupportedAttributeClient } from "@matter/protocol";
+import { SupportedAttributeClient } from "@project-chip/matter.js/cluster";
 import { convertJsonDataWithModel, toJSON } from "../../util/Json";
 import { capitalize } from "../../util/String";
 import { ControllerNode } from "../ControllerNode";

@@ -11,20 +11,17 @@
 			<default>net-control</default>
 			<description>Hostname or IP address of the device</description>
 		</parameter>
-		<parameter name="udpSendPort" type="integer" required="true">
-			<context>port-send</context>
+		<parameter name="udpSendPort" type="integer" min="1" max="65535" required="true">
 			<label>Send Port</label>
 			<default>75</default>
 			<description>UDP port to send data to the device (in the anel web UI, it's the receive port!)</description>
 		</parameter>
-		<parameter name="udpReceivePort" type="integer" required="true">
-			<context>port-receive</context>
+		<parameter name="udpReceivePort" type="integer" min="1" max="65535" required="true">
 			<label>Receive Port</label>
 			<default>77</default>
 			<description>UDP port to receive data from the device (in the anel web UI, it's the send port!)</description>
 		</parameter>
 		<parameter name="user" type="text" required="true">
-			<context>user</context>
 			<label>User</label>
 			<default>user7</default>
 			<description>User to access the device (make sure it has rights to change relay / IO states!)</description>

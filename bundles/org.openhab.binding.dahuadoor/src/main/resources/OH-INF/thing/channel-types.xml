@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dahuadoor"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="bell-button">
+		<kind>trigger</kind>
+		<label>Doorbell Button</label>
+		<description>Triggered when doorbell button is pressed.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<event>
+			<options>
+				<option value="PRESSED">Pressed</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="door-image">
+		<item-type>Image</item-type>
+		<label>Door Image</label>
+		<description>Snapshot image taken when doorbell is pressed.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="open-door">
+		<item-type>Switch</item-type>
+		<label>Open Door</label>
+		<description>Controls the door lock relay.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="webrtc-url">
+		<item-type>String</item-type>
+		<label>WebRTC Proxy Path</label>
+		<description>Relative proxy path used by MainUI widgets to communicate with the binding.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="sip-registered">
+		<item-type>Switch</item-type>
+		<label>SIP Registered</label>
+		<description>ON when the device has successfully registered with the SIP server.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sip-call-state">
+		<item-type>String</item-type>
+		<label>SIP Call State</label>
+		<description>Current SIP call state (IDLE, RINGING, ANSWERING, ACTIVE, TERMINATING, HUNGUP).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 /**
- * Delegate allowing AOP-style interception of calls, either before Invocation, or upon a {@link ScriptException} being
- * thrown.
+ * Delegate allowing AOP-style interception of calls, either before invocation, after invocation, upon a
+ * {@link ScriptException} being thrown, or on receiving the script code.
  *
  * @param <T> The delegate class
  * @author Jonathan Gilbert - Initial contribution

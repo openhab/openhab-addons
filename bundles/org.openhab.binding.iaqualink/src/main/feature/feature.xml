@@ -4,6 +4,7 @@
 
 	<feature name="openhab-binding-iaqualink" description="iAqualink Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">mvn:org.openhab.osgiify/software.amazon.awssdk.crt.aws-crt/0.44.0</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.iaqualink/${project.version}</bundle>
 	</feature>
 </features>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="stiebeleltron-heatpump-allwpm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+		<label>Stiebel Eltron Heat Pump (WPM compatible)</label>
+		<description>A Stiebel Eltron Heat Pump (WPM compatible) thing with extended function support connected through Modbus
+			to an ISG</description>
+		<category>heating</category>
+
+		<channel-groups>
+			<channel-group id="systemInformationAllWpm" typeId="system-information-allwpm"/>
+			<channel-group id="systemParameterAllWpm" typeId="system-parameter-allwpm"/>
+			<channel-group id="systemStateAllWpm" typeId="system-state-allwpm"/>
+			<channel-group id="energyRuntimeInformationAllWpm" typeId="energy-runtime-information-allwpm"/>
+			<channel-group id="sgReadyEnergyManagementSettings" typeId="sg-ready-energy-management-settings"/>
+			<channel-group id="sgReadyEnergyManagementSystemInformation"
+				typeId="sg-ready-energy-management-system-information"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:stiebeleltron:heatpump-v2-config"/>
+
+	</thing-type>
+
+
+</thing:thing-descriptions>

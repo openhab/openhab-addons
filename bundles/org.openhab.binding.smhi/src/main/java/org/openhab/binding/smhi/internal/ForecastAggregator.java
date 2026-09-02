@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.smhi.internal;
 
+import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
+
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * @author Anders Alfredsson - Initial contribution
@@ -31,13 +34,19 @@ public class ForecastAggregator {
      *
      * @param timeSeries
      * @param dayOffset
-     * @param parameter
+     * @param metadata
      * @return
      */
-    public static Optional<BigDecimal> max(TimeSeries timeSeries, int dayOffset, String parameter) {
-        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
-        return dayForecasts.stream().map(forecast -> forecast.getParameter(parameter)).filter(Optional::isPresent)
-                .map(Optional::get).max(BigDecimal::compareTo);
+    public static State max(SmhiTimeSeries timeSeries, int dayOffset, @Nullable ParameterMetadata metadata) {
+        if (metadata == null) {
+            return UnDefType.UNDEF;
+        }
+
+        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
+        return dayForecasts.stream().map(forecast -> forecast.getParameter(metadata.name()))
+                .filter(p -> !metadata.missingValue().equals(p)).max(BigDecimal::compareTo)
+                .map(value -> Util.getParameterAsState(metadata, value))
+                .orElseGet(() -> Util.getParameterAsState(metadata, metadata.missingValue()));
     }
 
     /**
@@ -45,13 +54,19 @@ public class ForecastAggregator {
      *
      * @param timeSeries
      * @param dayOffset
-     * @param parameter
+     * @param metadata
      * @return
      */
-    public static Optional<BigDecimal> min(TimeSeries timeSeries, int dayOffset, String parameter) {
-        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
-        return dayForecasts.stream().map(forecast -> forecast.getParameter(parameter)).filter(Optional::isPresent)
-                .map(Optional::get).min(BigDecimal::compareTo);
+    public static State min(SmhiTimeSeries timeSeries, int dayOffset, @Nullable ParameterMetadata metadata) {
+        if (metadata == null) {
+            return UnDefType.UNDEF;
+        }
+
+        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
+        return dayForecasts.stream().map(forecast -> forecast.getParameter(metadata.name()))
+                .filter(p -> !metadata.missingValue().equals(p)).min(BigDecimal::compareTo)
+                .map(value -> Util.getParameterAsState(metadata, value))
+                .orElseGet(() -> Util.getParameterAsState(metadata, metadata.missingValue()));
     }
 
     /**
@@ -60,27 +75,26 @@ public class ForecastAggregator {
      *
      * @param timeSeries
      * @param dayOffset
-     * @param parameter
+     * @param baseMetadata
+     * @param totalMetadata
      * @return
      */
-    public static Optional<BigDecimal> total(TimeSeries timeSeries, int dayOffset, String parameter) {
-        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
+    public static State total(SmhiTimeSeries timeSeries, int dayOffset, @Nullable ParameterMetadata baseMetadata,
+            @Nullable ParameterMetadata totalMetadata) {
+        if (baseMetadata == null || totalMetadata == null) {
+            return UnDefType.UNDEF;
+        }
+
+        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, true);
         if (dayForecasts.size() == 1) {
-            return dayForecasts.get(0).getParameter(parameter);
+            return dayForecasts.getFirst().getParameterAsState(baseMetadata);
         }
-        List<BigDecimal> values = new ArrayList<>();
-        for (int i = 0; i < dayForecasts.size(); i++) {
-            Forecast current = dayForecasts.get(i);
-            long hours;
-            if (i == 0) {
-                hours = current.getValidTime().until(dayForecasts.get(i + 1).getValidTime(), ChronoUnit.HOURS);
-            } else {
-                hours = dayForecasts.get(i - 1).getValidTime().until(current.getValidTime(), ChronoUnit.HOURS);
-            }
-            values.add(Objects.requireNonNull(current.getParameter(parameter)
-                    .map(value -> value.multiply(BigDecimal.valueOf(hours))).orElse(BigDecimal.ZERO)));
-        }
-        return values.stream().reduce(BigDecimal::add);
+        return dayForecasts.stream().map(forecast -> {
+            BigDecimal hours = BigDecimal
+                    .valueOf(forecast.getIntervalStartTime().until(forecast.getTime(), ChronoUnit.HOURS));
+            return forecast.getParameter(baseMetadata.name()).multiply(hours);
+        }).reduce(BigDecimal::add).map(value -> Util.getParameterAsState(totalMetadata, value))
+                .orElseGet(() -> Util.getParameterAsState(totalMetadata, DEFAULT_MISSING_VALUE));
     }
 
     /**
@@ -90,12 +104,17 @@ public class ForecastAggregator {
      *
      * @param timeSeries
      * @param dayOffset
-     * @param parameter
+     * @param metadata
      * @return
      */
-    public static Optional<BigDecimal> noonOrFirst(TimeSeries timeSeries, int dayOffset, String parameter) {
-        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
-        return dayForecasts.stream().filter(forecast -> forecast.getValidTime().getHour() >= 12).findFirst()
-                .flatMap(forecast -> forecast.getParameter(parameter));
+    public static State noonOrFirst(SmhiTimeSeries timeSeries, int dayOffset, @Nullable ParameterMetadata metadata) {
+        if (metadata == null) {
+            return UnDefType.UNDEF;
+        }
+
+        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
+        return dayForecasts.stream().filter(forecast -> forecast.getTime().getHour() >= 12).findFirst()
+                .map(f -> f.getParameterAsState(metadata))
+                .orElseGet(() -> Util.getParameterAsState(metadata, metadata.missingValue()));
     }
 }

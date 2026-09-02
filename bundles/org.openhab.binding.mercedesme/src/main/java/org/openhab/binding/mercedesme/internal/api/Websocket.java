@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -184,13 +185,16 @@ public class Websocket extends RestApi {
     private boolean sendMessage() {
         if (!commandQueue.isEmpty()) {
             ClientMessage message = commandQueue.remove(0);
-            logger.trace("Send Message {}", message.getAllFields());
+            if (logger.isTraceEnabled()) {
+                logger.trace("Send Message {}", message.getAllFields());
+            }
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
                 Session localSession = session;
                 if (localSession != null) {
                     localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                    logger.trace("Send Message {} done", message.getAllFields());
                     return true;
                 } else {
                     logger.warn("Cannot send message {} - no session available", message.getAllFields());
@@ -199,7 +203,6 @@ public class Websocket extends RestApi {
             } catch (IOException e) {
                 logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
             }
-            logger.info("Send Message {} done", message.getAllFields());
         }
         return false;
     }
@@ -318,7 +321,7 @@ public class Websocket extends RestApi {
             try {
                 String pingId = UUID.randomUUID().toString();
                 pingPongMap.put(pingId, Instant.now());
-                localSession.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
+                localSession.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)));
             } catch (IOException e) {
                 logger.warn("Websocket ping failed {}", e.getMessage());
             }
@@ -331,7 +334,7 @@ public class Websocket extends RestApi {
         for (int i = 0; i < frame.getPayloadLength(); i++) {
             bytes[i] = buffer.get(i);
         }
-        String payloadString = new String(bytes);
+        String payloadString = new String(bytes, StandardCharsets.UTF_8);
         Instant sent = pingPongMap.remove(payloadString);
         if (sent == null) {
             logger.debug("Websocket received pong without ping {}", payloadString);

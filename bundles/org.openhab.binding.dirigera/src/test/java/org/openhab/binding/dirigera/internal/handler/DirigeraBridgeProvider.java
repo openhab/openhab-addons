@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.MODEL_KEY_DEVICES;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +26,11 @@ import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.Constants;
+import org.openhab.binding.dirigera.internal.FileReader;
+import org.openhab.binding.dirigera.internal.ResourceReaderMock;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DicoveryServiceMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
-import org.openhab.binding.dirigera.internal.mock.DirigeraHandlerManipulator;
 import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.test.storage.VolatileStorageService;
@@ -56,9 +58,10 @@ public class DirigeraBridgeProvider {
      * @return Bridge
      */
     public static Bridge prepareSimuBridge(String homeFile, boolean discovery, List<String> knownDevicesd) {
+        ResourceReaderMock.setProvider(new FileReader());
         String ipAddress = "1.2.3.4";
         HttpClient httpMock = mock(HttpClient.class);
-        DirigeraAPISimu.fileName = homeFile;
+
         /**
          * Prepare persistence
          */
@@ -69,7 +72,7 @@ public class DirigeraBridgeProvider {
         JSONObject storageObject = new JSONObject();
         JSONArray knownDevices = new JSONArray(knownDevicesd);
         knownDevices.put("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
-        storageObject.put(PROPERTY_DEVICES, knownDevices.toString());
+        storageObject.put(MODEL_KEY_DEVICES, knownDevices.toString());
         storageObject.put(PROPERTY_TOKEN, "unit-test");
         mockStorage.put(ipAddress, storageObject.toString());
 
@@ -82,6 +85,8 @@ public class DirigeraBridgeProvider {
          */
         DirigeraHandlerManipulator hubHandler = new DirigeraHandlerManipulator(hubBridge, httpMock, mockStorage,
                 new DicoveryServiceMock());
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(httpMock, hubHandler, homeFile);
+        hubHandler.setAPIHandler(apiSimu);
         hubBridge.setHandler(hubHandler);
         CallbackMock bridgeCallback = new CallbackMock();
         hubHandler.setCallback(bridgeCallback);

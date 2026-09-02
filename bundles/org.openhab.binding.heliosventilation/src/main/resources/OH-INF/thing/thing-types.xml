@@ -36,9 +36,11 @@
 			<channel id="co2State" typeId="co2_state"/>
 			<channel id="rhState" typeId="rh_state"/>
 			<channel id="winterMode" typeId="winter_state"/>
-			<channel id="adjustInveral" typeId="adjust_interval"/>
+			<channel id="adjustInterval" typeId="adjust_interval"/>
 		</channels>
-
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>

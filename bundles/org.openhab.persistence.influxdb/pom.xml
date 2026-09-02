@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.1.0-SNAPSHOT</version>
+    <version>5.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.influxdb</artifactId>
@@ -18,7 +18,7 @@
     <bnd.importpackage>!javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*</bnd.importpackage>
     <retrofit.version>2.10.0</retrofit.version>
     <influx2.version>7.0.0</influx2.version>
-    <influx1.version>2.24</influx1.version>
+    <influx1.version>2.25</influx1.version>
     <io.reactivex.rxjava3>3.1.8</io.reactivex.rxjava3>
   </properties>
 
@@ -107,7 +107,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20231013</version>
+      <version>${json.version}</version>
     </dependency>
 
     <dependency>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,7 +129,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.info("Initializing mylink");
-        config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
+        config = getConfigAs(SomfyMyLinkConfiguration.class);
 
         commandExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
 
@@ -367,7 +367,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void thingUpdated(Thing thing) {
-        SomfyMyLinkConfiguration newConfig = thing.getConfiguration().as(SomfyMyLinkConfiguration.class);
+        setThing(thing);
+        SomfyMyLinkConfiguration newConfig = getConfigAs(SomfyMyLinkConfiguration.class);
         config = newConfig;
     }
 

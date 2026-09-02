@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
-import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.CHANNEL_RESET;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -67,12 +67,12 @@ import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.KNXFormatException;
-import tuwien.auto.calimero.datapoint.CommandDP;
-import tuwien.auto.calimero.datapoint.Datapoint;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXException;
+import io.calimero.KNXFormatException;
+import io.calimero.datapoint.CommandDP;
+import io.calimero.datapoint.Datapoint;
 
 /**
  * The {@link DeviceThingHandler} is responsible for handling commands and state updates sent to and received from the
@@ -509,8 +509,8 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     updateStatus(ThingStatus.ONLINE);
                     DeviceConfig config = getConfigAs(DeviceConfig.class);
                     if (!filledDescription && config.getFetch()) {
-                        Future<?> descriptionJob = this.descriptionJob;
-                        if (descriptionJob == null || descriptionJob.isCancelled()) {
+                        Future<?> currentDescriptionJob = this.descriptionJob;
+                        if (currentDescriptionJob == null || currentDescriptionJob.isCancelled()) {
                             long initialDelay = Math.round(config.getPingInterval() * random.nextFloat());
                             this.descriptionJob = getBackgroundScheduler().schedule(() -> {
                                 filledDescription = describeDevice(address);
@@ -537,17 +537,22 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         DeviceConfig config = getConfigAs(DeviceConfig.class);
         try {
             if (!config.getAddress().isEmpty()) {
-                updateStatus(ThingStatus.UNKNOWN);
                 address = new IndividualAddress(config.getAddress());
 
                 long pingInterval = config.getPingInterval();
-                long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
+                if (pingInterval <= 0) {
+                    logger.debug("Polling disabled for '{}' (pingInterval={})", getThing().getUID(), pingInterval);
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.UNKNOWN);
+                    long initialPingDelay = Math.round(INITIAL_PING_DELAY * random.nextFloat());
 
-                ScheduledFuture<?> pollingJob = this.pollingJob;
-                if ((pollingJob == null || pollingJob.isCancelled())) {
-                    logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
-                    this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(this::pollDeviceStatus,
-                            initialPingDelay, pingInterval, TimeUnit.SECONDS);
+                    ScheduledFuture<?> currentPollingJob = this.pollingJob;
+                    if ((currentPollingJob == null || currentPollingJob.isCancelled())) {
+                        logger.debug("'{}' will be polled every {}s", getThing().getUID(), pingInterval);
+                        this.pollingJob = getBackgroundScheduler().scheduleWithFixedDelay(this::pollDeviceStatus,
+                                initialPingDelay, pingInterval, TimeUnit.SECONDS);
+                    }
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.ArgumentMatchers;
 import org.openhab.binding.ntp.internal.NtpBindingConstants;
 import org.openhab.binding.ntp.internal.handler.NtpHandler;
@@ -61,6 +63,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
@@ -76,6 +79,7 @@ import org.openhab.core.types.State;
  * @author Markus Rathgeb - Migrated tests from Groovy to pure Java
  * @author Erdoan Hadzhiyusein - Migrated tests to Java 8 and integrated the new DateTimeType
  */
+@Execution(ExecutionMode.SAME_THREAD)
 public class NtpOSGiTest extends JavaOSGiTest {
     private static TimeZone systemTimeZone;
     private static Locale locale;
@@ -123,6 +127,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     }
 
     @BeforeAll
+    @SuppressWarnings({ "PMD.SetDefaultTimeZone", "PMD.SetDefaultLocale" })
     public static void setUpClass() {
         // Initializing a new local server on this port
         timeServer = new SimpleNTPServer(TEST_PORT);
@@ -158,6 +163,10 @@ public class NtpOSGiTest extends JavaOSGiTest {
         itemRegistry = getService(ItemRegistry.class);
         assertNotNull(itemRegistry);
 
+        ItemChannelLinkRegistry itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class);
+        assertNotNull(itemChannelLinkRegistry);
+        itemChannelLinkRegistry.waitForCompletedAsyncActivationTasks();
+
         channelTypeUID = new ChannelTypeUID(NtpBindingConstants.BINDING_ID + ":channelType");
         channelTypeProvider = mock(ChannelTypeProvider.class);
         when(channelTypeProvider.getChannelType(any(ChannelTypeUID.class), nullable(Locale.class)))
@@ -178,6 +187,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     }
 
     @AfterAll
+    @SuppressWarnings({ "PMD.SetDefaultTimeZone", "PMD.SetDefaultLocale" })
     public static void tearDownClass() {
         // Stopping the local time server
         timeServer.stopServer();

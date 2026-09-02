@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,31 @@
  */
 package org.openhab.automation.pythonscripting.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.module.ModuleDescriptor.Version;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.ConfigParser;
+import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Context;
+import org.openhab.core.OpenHAB;
+import org.openhab.core.config.core.Configuration;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Processes Python Configuration Parameters.
@@ -29,62 +48,260 @@ public class PythonScriptEngineConfiguration {
 
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineConfiguration.class);
 
-    private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
-    private static final String CFG_HELPER_ENABLED = "helperEnabled";
-    private static final String CFG_SCOPE_ENABLED = "scopeEnabled";
-    private static final String CFG_DEPENDENCY_TRACKING_ENABLED = "dependencyTrackingEnabled";
-    private static final String CFG_CACHING_ENABLED = "cachingEnabled";
-    private static final String CFG_JYTHON_EMULATION = "jythonEmulation";
+    private static final String SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE = "polyglot.engine.userResourceCache";
+    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
+    private static final String SYSTEM_PROPERTY_JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-    public static final int INJECTION_DISABLED = 0;
-    public static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 1;
-    public static final int INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS = 2;
-    private int injectionEnabled = 0;
-    private boolean helperEnabled = false;
-    private boolean scopeEnabled = false;
-    private boolean dependencyTrackingEnabled = false;
-    private boolean cachingEnabled = false;
-    private boolean jythonEmulation = false;
+    public static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
+    public static final String RESOURCE_SEPARATOR = "/";
+
+    public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
+    public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
+    public static final Path PYTHON_TYPINGS_PATH = PYTHON_DEFAULT_PATH.resolve("typings");
+    public static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
+
+    public static final Path PYTHON_WRAPPER_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
+    public static final Path PYTHON_INIT_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
+
+    private static final int INJECTION_DISABLED = 1;
+    private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY = 2;
+    private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 3;
+    private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 4;
+
+    private static final int DEBUGGER_PORT_DEFAULT = 9230;
+
+    /** The default lock acquisition timeout in seconds */
+    private static final long LOCK_ACQUISITION_TIMEOUT_DEFAULT = 5L;
+
+    // The variable names must match the configuration keys in config.xml
+    public static class PythonScriptingConfiguration {
+        public int injectionEnabled = INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
+        public boolean dependencyTrackingEnabled = true;
+        public boolean cachingEnabled = true;
+        public boolean jythonEmulation = false;
+        public boolean debuggerEnabled = false;
+        public int debuggerPort = DEBUGGER_PORT_DEFAULT;
+        public String pipModules = "";
+        public long lockAcquisitionTimeout = LOCK_ACQUISITION_TIMEOUT_DEFAULT;
+    }
+
+    private PythonScriptingConfiguration configuration = new PythonScriptingConfiguration();
+    private Path bytecodeDirectory;
+    private Path tempDirectory;
+    private Path venvDirectory;
+    private @Nullable Path venvExecutable = null;
+
+    private Version bundleVersion = Version
+            .parse(FrameworkUtil.getBundle(PythonScriptEngineConfiguration.class).getVersion().toString());
+
+    private Version graalVersion = Version.parse("0.0.0");
+    private Version providedHelperLibVersion = Version.parse("0.0.0");
+    private @Nullable Version installedHelperLibVersion = null;
+
+    public static Version parseHelperLibVersion(@Nullable String version) throws IllegalArgumentException {
+        // substring(1) => remove leading 'v'
+        return Version.parse(version != null && version.startsWith("v") ? version.substring(1) : version);
+    }
+
+    static {
+        // disable warning about missing TruffleAttach library (is only available in graalvm)
+        System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
+    }
+
+    @Activate
+    public PythonScriptEngineConfiguration(Map<String, Object> config) {
+        Path userdataDir = Paths.get(OpenHAB.getUserDataFolder());
+
+        String tmpDir = System.getProperty(SYSTEM_PROPERTY_JAVA_IO_TMPDIR);
+        if (tmpDir != null) {
+            tempDirectory = Paths.get(tmpDir);
+        } else {
+            tempDirectory = userdataDir.resolve("tmp");
+        }
+
+        try {
+            InputStream is = PythonScriptEngineConfiguration.class
+                    .getResourceAsStream(RESOURCE_SEPARATOR + "build.properties");
+            if (is != null) {
+                Properties p = new Properties();
+                p.load(is);
+                String version = p.getProperty("helperlib.version");
+                providedHelperLibVersion = parseHelperLibVersion(version);
+                version = FrameworkUtil.getBundle(Context.class).getVersion().toString();
+                graalVersion = Version.parse(version);
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to load build.properties");
+        }
+
+        Properties props = System.getProperties();
+        props.setProperty(SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE,
+                userdataDir.resolve("cache").resolve("org.graalvm.polyglot").toString());
+        props.setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
+
+        String packageName = PythonScriptEngineConfiguration.class.getPackageName();
+        packageName = packageName.substring(0, packageName.lastIndexOf("."));
+        Path bindingDirectory = userdataDir.resolve("cache").resolve(packageName);
+        bytecodeDirectory = PythonScriptEngineHelper.initDirectory(bindingDirectory.resolve("resources"));
+        venvDirectory = PythonScriptEngineHelper.initDirectory(bindingDirectory.resolve("venv"));
+
+        Path venvPythonBin = venvDirectory.resolve("bin").resolve("graalpy");
+        if (Files.exists(venvPythonBin)) {
+            venvExecutable = venvPythonBin;
+        }
+
+        installedHelperLibVersion = PythonScriptEngineHelper.initHelperLib(this, providedHelperLibVersion);
+
+        configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
+    }
+
+    public void init(PythonScriptEngineFactory factory) {
+        PythonScriptEngineHelper.initPipModules(this, factory);
+    }
 
     /**
      * Update configuration
      *
      * @param config Configuration parameters to apply to ScriptEngine
+     * @param initial
      */
-    void update(Map<String, ?> config) {
-        logger.trace("Python Script Engine Configuration: {}", config);
+    public void modified(Map<String, Object> config, PythonScriptEngineFactory factory) {
+        int oldInjectionEnabled = configuration.injectionEnabled;
+        boolean oldDependencyTrackingEnabled = isDependencyTrackingEnabled();
+        String oldPipModules = configuration.pipModules;
+        boolean oldDebuggerEnabled = configuration.debuggerEnabled;
+        int oldDebuggerPort = configuration.debuggerPort;
+        long oldLockAcquisitionTimeout = configuration.lockAcquisitionTimeout;
 
-        this.scopeEnabled = ConfigParser.valueAsOrElse(config.get(CFG_SCOPE_ENABLED), Boolean.class, true);
-        this.helperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_HELPER_ENABLED), Boolean.class, true);
-        this.injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
-                INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS);
-        this.dependencyTrackingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEPENDENCY_TRACKING_ENABLED),
-                Boolean.class, true);
-        this.cachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_CACHING_ENABLED), Boolean.class, true);
-        this.jythonEmulation = ConfigParser.valueAsOrElse(config.get(CFG_JYTHON_EMULATION), Boolean.class, false);
+        configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
+
+        if (!oldPipModules.equals(configuration.pipModules)) {
+            PythonScriptEngineHelper.initPipModules(this, factory);
+        }
+
+        if (oldInjectionEnabled != configuration.injectionEnabled) {
+            logger.warn(
+                    "Changed helper module setting for Python Scripting. Please resave your python scripts to apply this change.");
+        }
+        if (oldDependencyTrackingEnabled != isDependencyTrackingEnabled()) {
+            logger.warn(
+                    "{} dependency tracking for Python Scripting. Please resave your python scripts to apply this change.",
+                    isDependencyTrackingEnabled() ? "Enabled" : "Disabled");
+        }
+        if (oldDebuggerEnabled != configuration.debuggerEnabled) {
+            logger.warn("{} debugger for Python Scripting. Restart openHAB to apply this change.",
+                    configuration.debuggerEnabled ? "Enabled" : "Disabled");
+        } else if (oldDebuggerPort != configuration.debuggerPort) {
+            logger.warn("Reconfigured debugger for Python Scripting. Restart openHAB to apply this change.");
+        }
+        if (oldLockAcquisitionTimeout != configuration.lockAcquisitionTimeout) {
+            logger.warn(
+                    "Python Scripting lock acquisition timeout changed from {} to {} seconds. Rules created with JavaScript scripts might need to be reloaded for the changes to apply.",
+                    oldLockAcquisitionTimeout, configuration.lockAcquisitionTimeout);
+        }
     }
 
-    public boolean isScopeEnabled() {
-        return scopeEnabled;
+    public void setHelperLibVersion(Version version) {
+        installedHelperLibVersion = version;
+    }
+
+    public boolean isInjectionEnabledForAllScripts() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_ALL_SCRIPTS;
+    }
+
+    public boolean isInjectionEnabledForScriptModules() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
+    }
+
+    public boolean isInjectionEnabledForTransformations() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS;
     }
 
     public boolean isHelperEnabled() {
-        return helperEnabled;
-    }
-
-    public boolean isInjection(int type) {
-        return injectionEnabled == type;
+        return configuration.injectionEnabled > 0;
     }
 
     public boolean isDependencyTrackingEnabled() {
-        return dependencyTrackingEnabled;
+        return configuration.dependencyTrackingEnabled;
     }
 
     public boolean isCachingEnabled() {
-        return cachingEnabled;
+        return configuration.cachingEnabled;
     }
 
     public boolean isJythonEmulation() {
-        return jythonEmulation;
+        return configuration.jythonEmulation;
+    }
+
+    public boolean isDebuggerEnabled() {
+        return configuration.debuggerEnabled;
+    }
+
+    public int getDebuggerPort() {
+        return configuration.debuggerPort;
+    }
+
+    public String getPIPModules() {
+        return configuration.pipModules;
+    }
+
+    public Path getBytecodeDirectory() {
+        return bytecodeDirectory;
+    }
+
+    public Path getTempDirectory() {
+        return tempDirectory;
+    }
+
+    public Path getVEnvDirectory() {
+        return venvDirectory;
+    }
+
+    public @Nullable Path getVEnvExecutable() {
+        return venvExecutable;
+    }
+
+    public boolean isVEnvEnabled() {
+        return venvExecutable != null;
+    }
+
+    public Version getBundleVersion() {
+        return bundleVersion;
+    }
+
+    public Version getGraalVersion() {
+        return graalVersion;
+    }
+
+    public Version getProvidedHelperLibVersion() {
+        return providedHelperLibVersion;
+    }
+
+    public @Nullable Version getInstalledHelperLibVersion() {
+        return installedHelperLibVersion;
+    }
+
+    /**
+     * @return The log acquisition timeout in milliseconds.
+     */
+    public long getLockAcquisitionTimeout() {
+        return TimeUnit.SECONDS.toMillis(configuration.lockAcquisitionTimeout);
+    }
+
+    /**
+     * Returns the current configuration as a map.
+     * This is used to display the configuration in the console.
+     */
+    public Map<String, String> getConfigurations() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> objectMap = objectMapper.convertValue(configuration,
+                new TypeReference<Map<String, Object>>() {
+                });
+        return objectMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            if (entry.getValue() instanceof List<?> listValue) {
+                return listValue.stream().map(Object::toString).collect(Collectors.joining("\n"));
+            }
+            return entry.getValue().toString();
+        }));
     }
 }

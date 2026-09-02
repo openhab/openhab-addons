@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,5 +33,9 @@ public class Constants {
     public static final String NOISE_EQ = "noise_LAeq";
     public static final String NOISE_MIN = "noise_LA_min";
     public static final String NOISE_MAX = "noise_LA_max";
+
+    public static final String RADIATION_CPM = "counts_per_minute";
+    public static final String RADIATION_PULSES = "hv_pulses";
+
     public static final int UNDEF = -1;
 }

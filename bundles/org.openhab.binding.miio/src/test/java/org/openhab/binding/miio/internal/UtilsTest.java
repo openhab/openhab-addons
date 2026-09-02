@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,20 +34,20 @@ public class UtilsTest {
         tokenString = "6614";
         assertEquals("6614", Utils.obfuscateToken(tokenString));
 
-        tokenString = "66147986";
-        assertEquals("66147986", Utils.obfuscateToken(tokenString));
+        tokenString = "6614****";
+        assertEquals("6614****", Utils.obfuscateToken(tokenString));
 
         tokenString = "6614798643fe781563c1";
-        assertEquals("66147986XXXXXXXXXXXX", Utils.obfuscateToken(tokenString));
+        assertEquals("6614****************", Utils.obfuscateToken(tokenString));
 
         tokenString = "6614798643fe781563c1eebe";
-        assertEquals("66147986XXXXXXXXXXXXXXXX", Utils.obfuscateToken(tokenString));
+        assertEquals("6614********************", Utils.obfuscateToken(tokenString));
 
         tokenString = "6614798643fe781563c1eebeda22479a";
-        assertEquals("66147986XXXXXXXXXXXXXXXXda22479a", Utils.obfuscateToken(tokenString));
+        assertEquals("6614********************da22479a", Utils.obfuscateToken(tokenString));
 
         tokenString = "6614798643fe781563c1eebeda22479a6614798643fe781563c1eebeda22479a";
-        assertEquals("66147986XXXXXXXXXXXXXXXXda22479a6614798643fe781563c1eebeda22479a",
+        assertEquals("6614********************da22479a6614798643fe781563c1eebeda22479a",
                 Utils.obfuscateToken(tokenString));
     }
 

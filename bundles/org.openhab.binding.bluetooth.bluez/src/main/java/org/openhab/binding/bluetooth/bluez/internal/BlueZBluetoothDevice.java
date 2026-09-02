@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,6 +36,7 @@ import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEventListener;
 import org.openhab.binding.bluetooth.bluez.internal.events.CharacteristicUpdateEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.ConnectedEvent;
+import org.openhab.binding.bluetooth.bluez.internal.events.DeviceRemovedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.ManufacturerDataEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.NameEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.RssiEvent;
@@ -73,6 +75,9 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     // Device from native lib
     private @Nullable BluetoothDevice device = null;
 
+    // Bridge handler kept to allow re-resolving a stale BlueZ device object on demand.
+    private final BlueZBridgeHandler bridgeHandler;
+
     /**
      * Constructor
      *
@@ -81,12 +86,24 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      */
     public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);
+        this.bridgeHandler = adapter;
         logger.debug("Creating DBusBlueZ device with address '{}'", address);
     }
 
     @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public synchronized void updateBlueZDevice(@Nullable BluetoothDevice blueZDevice) {
-        if (this.device != null && this.device == blueZDevice) {
+        BluetoothDevice cachedDevice = this.device;
+        if (cachedDevice != null && cachedDevice == blueZDevice) {
+            // Same cached BlueZ object as last time. Normally nothing to do, but the GATT may have
+            // resolved since we first saw it (e.g. a connect that completed after this object was
+            // already cached). If we're connected but still have no services, fall through and
+            // re-run service discovery instead of short-circuiting forever.
+            if (!Boolean.TRUE.equals(cachedDevice.isConnected()) || !getServices().isEmpty()) {
+                return;
+            }
+            logger.debug("Re-evaluating services for already-cached connected device {}", address);
+            setConnectionState(ConnectionState.CONNECTED);
+            discoverServices();
             return;
         }
         logger.debug("updateBlueZDevice({})", blueZDevice);
@@ -111,6 +128,12 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
         if (Boolean.TRUE.equals(blueZDevice.isConnected())) {
             setConnectionState(ConnectionState.CONNECTED);
+        } else {
+            // A fresh device object while we are not connected means the device (re)appeared and is
+            // available but not in a connection. Notify DISCOVERED so the handler can connect to it
+            // proactively (for alwaysConnected things) instead of waiting for the next reconnect poll.
+            // This mirrors how the BlueGiga binding signals discovery.
+            setConnectionState(ConnectionState.DISCOVERED);
         }
 
         discoverServices();
@@ -153,6 +176,35 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         }
     }
 
+    /**
+     * Called when BlueZ removes this device's object (ObjectManager InterfacesRemoved). The removal
+     * means the connection is gone and any cached GATT services belong to a dead object; because the
+     * {@code Connected=false} signal can be missed under continuous discovery, the cached state could
+     * otherwise stay {@code CONNECTED} and the reconnect job would never reconnect. Drop the cached
+     * device, clear services, and mark disconnected so a clean reconnect can happen once the device
+     * reappears (a fresh object then arrives via {@link #updateBlueZDevice}, which notifies
+     * {@code DISCOVERED} and triggers a proactive reconnect).
+     */
+    @Override
+    public synchronized void onDeviceRemoved(DeviceRemovedEvent event) {
+        logger.debug("BlueZ removed device object for {}; clearing cached state to allow reconnect", address);
+        resetForRemoval();
+    }
+
+    /**
+     * Drops the cached BlueZ device object and GATT services and marks the device disconnected, so a
+     * clean reconnect can happen once it reappears (a fresh object then arrives via
+     * {@link #updateBlueZDevice}, which notifies {@code DISCOVERED} and triggers a proactive
+     * reconnect). Called both when BlueZ removes this device object directly and when the adapter it
+     * lives under is removed (the bridge cascades the reset to all of its devices, since BlueZ does
+     * not reliably emit a per-device removal before removing the adapter).
+     */
+    synchronized void resetForRemoval() {
+        this.device = null;
+        supportedServices.clear();
+        setConnectionState(ConnectionState.DISCONNECTED);
+    }
+
     @Override
     public boolean connect() {
         logger.debug("Connect({})", device);
@@ -160,6 +212,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         BluetoothDevice dev = device;
         if (dev != null) {
             if (Boolean.FALSE.equals(dev.isConnected())) {
+                // BlueZ Device.Connect() is unreliable while the adapter is actively discovering
+                // (the call blocks / does not complete). Pause discovery first; the bridge's periodic
+                // refresh job resumes it shortly after.
+                bridgeHandler.stopDiscovery();
                 try {
                     boolean ret = dev.connect();
                     logger.debug("Connect result: {}", ret);
@@ -205,12 +261,34 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return false;
     }
 
+    /**
+     * Returns the device's GATT services, refreshing the underlying bluez-dbus cache first if it is
+     * empty while the device is connected. bluez-dbus latches its service list on the first
+     * {@code getGattServices()} call and never re-queries; after a reconnect the cache can be left
+     * empty, which makes every characteristic lookup fail with "characteristic is missing" even
+     * though the device is connected and the GATT is resolved. Forcing a refresh here lets reads and
+     * notifications recover without recreating the Thing.
+     */
+    private List<BluetoothGattService> getGattServicesRefreshed(BluetoothDevice dev) {
+        List<BluetoothGattService> services = dev.getGattServices();
+        if (services.isEmpty() && Boolean.TRUE.equals(dev.isConnected())) {
+            try {
+                logger.debug("GATT service cache empty while connected for {}; refreshing before lookup", address);
+                dev.refreshGattServices();
+                services = dev.getGattServices();
+            } catch (RuntimeException ex) {
+                logger.debug("Failed to refresh GATT services for {}: {}", address, ex.getMessage());
+            }
+        }
+        return services;
+    }
+
     private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUID(String uuid) {
         BluetoothDevice dev = device;
         if (dev == null) {
             return null;
         }
-        for (BluetoothGattService service : dev.getGattServices()) {
+        for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
             for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
                 if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
                     return characteristic;
@@ -225,7 +303,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         if (dev == null) {
             return null;
         }
-        for (BluetoothGattService service : dev.getGattServices()) {
+        for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
             if (dBusPath.startsWith(service.getDbusPath())) {
                 for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
                     if (characteristic != null && dBusPath.startsWith(characteristic.getDbusPath())) {
@@ -308,7 +386,14 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public void onServicesResolved(ServicesResolvedEvent event) {
         if (event.isResolved()) {
-            notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
+            // Populate our service/characteristic list from the now-resolved GATT and notify
+            // listeners. BlueZ can deliver ServicesResolved=true while our own supportedServices list
+            // is still empty (e.g. right after a reconnect, before discoverServices() has run); firing
+            // SERVICES_DISCOVERED then makes listeners (e.g. the generic handler's channel builder) run
+            // against an empty list and miss every characteristic. discoverServices() populates the
+            // list and fires SERVICES_DISCOVERED once the GATT is resolved with services present -
+            // including on a reconnect where the list is unchanged - so it is the correct trigger here.
+            discoverServices();
         }
     }
 
@@ -387,6 +472,21 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         if (dev == null) {
             return false;
         }
+        // bluez-dbus caches the GATT service list: getGattServices() latches `servicesDiscovered`
+        // true on its first call and never re-queries afterwards. The bridge's periodic refresh
+        // calls this before the device is connected, so the cache gets latched EMPTY and stays
+        // empty even after a later connect resolves the GATT. Whenever BlueZ reports the device
+        // connected but our cached service list is empty, force a re-query. (We don't gate on
+        // isServicesResolved(): that property is not always surfaced by the wrapper even when the
+        // GATT is in fact resolved, and refreshGattServices() is a harmless no-op when it isn't.)
+        try {
+            if (dev.getGattServices().isEmpty() && Boolean.TRUE.equals(dev.isConnected())) {
+                logger.debug("GATT service cache is empty while connected for {}; refreshing", address);
+                dev.refreshGattServices();
+            }
+        } catch (RuntimeException ex) {
+            logger.debug("Failed to refresh GATT services for {}: {}", address, ex.getMessage());
+        }
         if (dev.getGattServices().size() > getServices().size()) {
             for (BluetoothGattService dBusBlueZService : dev.getGattServices()) {
                 BluetoothService service = new BluetoothService(UUID.fromString(dBusBlueZService.getUuid()),
@@ -405,6 +505,14 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                 }
                 addService(service);
             }
+        }
+        // Notify whenever the GATT is resolved with services present, not only when our list just
+        // grew. On a reconnect BlueZ re-fires ServicesResolved=true while our supportedServices map
+        // is already fully populated from the previous connection (it is only cleared on object
+        // removal), so the "grew" check above is false. Consumers such as ConnectedBluetoothHandler
+        // re-arm their notifications/polling off SERVICES_DISCOVERED, so swallowing it here leaves the
+        // Thing online but silent after every reconnect. The notification is idempotent for listeners.
+        if (!getServices().isEmpty()) {
             notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
         return true;

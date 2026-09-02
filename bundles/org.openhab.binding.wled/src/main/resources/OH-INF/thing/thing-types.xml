@@ -23,6 +23,10 @@
 			<channel id="syncSend" typeId="syncSend"/>
 			<channel id="syncReceive" typeId="syncReceive"/>
 		</channels>
+		<properties>
+			<property name="macAddress"></property>
+		</properties>
+		<representation-property>macAddress</representation-property>
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
@@ -84,6 +88,7 @@
 			<channel id="grouping" typeId="grouping"/>
 			<channel id="spacing" typeId="spacing"/>
 		</channels>
+		<representation-property>segmentIndex</representation-property>
 		<config-description>
 			<parameter name="segmentIndex" type="integer" min="0">
 				<label>Segment Index</label>

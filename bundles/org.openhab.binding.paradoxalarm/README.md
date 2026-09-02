@@ -7,101 +7,110 @@ With the power of openHAB this binding can be used for complex decision rules co
 Examples:
 
 - All partitions are armed, therefore there is no one at home.
-- Window is opened for more than 10 minutes and temperature outside is bellow XXX degrees, send mail/any other supported notification to particular people.
+- Window is opened for more than 10 minutes and temperature outside is below XXX degrees, send mail/any other supported notification to particular people.
 
 ## Supported Paradox panels/systems
 
-Currently binding supports the following panels: EVO192, EVO48(not tested), EVO96(not tested)
+Currently binding supports the following panels: EVO192, EVO48 (not tested), EVO96 (not tested)
 
 ## Supported Things
 
-| Thing     | Thing Type | Description                                                                                                                                                                        |
-|-----------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ip150     | Bridge     | The bridge is used to communicate with IP150 ethernet module attached to Paradox security system.                                                                                  |
-| panel     | Thing      | This is representation of Paradox panel. Has the general information about the main panel module, i.e. serial number, firmware/hardware/software versions, panel type, etc...      |
-| partition | Thing      | The partition is grouped aggregation of multiple zones. It's also referred in Paradox Babyware as "Area".                                                                          |
-| zone      | Thing      | Paradox zone. Can be anything - magnetic, motion or any other opened/closed sensor. State channel is contact, "low battery" and "is tampered" channels are switch, label is String |
+| Thing     | Thing Type | Description                                                                                                                                                                            |
+|-----------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ip150     | Bridge     | The bridge is used to communicate with the IP150 ethernet module attached to the Paradox security system.                                                                              |
+| panel     | Thing      | This is the representation of the Paradox panel. Has the general information about the main panel module, such as serial number, firmware/hardware/software versions, panel type, etc. |
+| partition | Thing      | The partition is a grouped aggregation of multiple zones. It's also referred to in Paradox Babyware as "Area".                                                                         |
+| zone      | Thing      | Paradox zone. Can be anything - magnetic, motion, or any other opened/closed sensor. State channel is contact, "low battery" and "is tampered" channels are switch, label is String.   |
 
 ## Things configuration
 
 ### IP150 Bridge Parameters
 
-| Parameter         | Description                                                                                                                             |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| refresh           | Value is in seconds. Defines the refresh interval when the binding polls from paradox system. Optional parameter. Default 5 seconds.    |
-| ip150Password     | The password to your IP150 (not your panel PIN). Mandatory parameter.                                                                   |
-| pcPassword        | The panel programming code 3012 setting. Optional parameter. Default value is 0000.                                                     |
-| ipAddress         | IP address or hostname of your IP150. If hostname is used must be resolvable by OpenHAB. Mandatory parameter.                           |
-| port              | The port used for data communication. Optional parameter. Default value is 10000.                                                       |
-| panelType         | If parameter is passed, auto-discovery of panel type will be skipped. Provide string - EVO48, EVO96, EVO192, etc... Optional parameter. |
-| reconnectWaitTime | Value is in seconds. The time to wait before a reconnect occurs after socket timeout. Optional parameter. Default value is 30 seconds.  |
-| maxPartitions     | Sets maximum partitions to use during refresh. If not set, maximum allowed amount from panelType will be used. Optional parameter.      |
-| maxZones          | Sets maximum zones to use during refresh. If not set, maximum allowed amount from panelType will be used. Optional parameter.           |
-| encrypt           | Sets if encryption has to be used. Optional parameter. Default value is false                                                           |
+| Parameter         | Description                                                                                                                              |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| refresh           | Value is in seconds. Defines the refresh interval when the binding polls from the Paradox system. Optional parameter. Default 5 seconds. |
+| ip150Password     | The password to your IP150 (not your panel PIN). Mandatory parameter.                                                                    |
+| pcPassword        | The panel programming code 3012 setting. Optional parameter. Default value is 0000.                                                      |
+| ipAddress         | IP address or hostname of your IP150. If hostname is used, it must be resolvable by openHAB. Mandatory parameter.                        |
+| port              | The port used for data communication. Optional parameter. Default value is 10000.                                                        |
+| panelType         | If parameter is passed, auto-discovery of panel type will be skipped. Provide string - EVO48, EVO96, EVO192, etc. Optional parameter.    |
+| reconnectWaitTime | Value is in seconds. The time to wait before a reconnect occurs after socket timeout. Optional parameter. Default value is 30 seconds.   |
+| maxPartitions     | Sets maximum partitions to use during refresh. If not set, the maximum allowed amount from panelType will be used. Optional parameter.   |
+| maxZones          | Sets maximum zones to use during refresh. If not set, the maximum allowed amount from panelType will be used. Optional parameter.        |
+| encrypt           | Sets if encryption has to be used. Optional parameter. Default value is false.                                                           |
 
 ### IP150 Bridge Channels
 
-| Channel             | Description                                    |
-|---------------------|------------------------------------------------|
-|communicationCommand | Possible values [LOGOUT, LOGIN, RESET]         |
-|communicationState   | Shows the communication status to Paradox. Different from Bridge status. Bridge may be online and able to receive commands but communication may be offline due to various reasons. Possible values [Offline, Online] |
+| Channel              | Description                                                                                                                            |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| communicationCommand | Possible values [LOGOUT, LOGIN, RESET, SYNC_TIME]                                                                                      |
+| communicationState   | Shows the communication status to Paradox (may differ from Bridge status). Values: [Offline, Online].                                 |
 
 #### Communication Command Values
 
-| Value  | Description                                                                        |
-|--------|------------------------------------------------------------------------------------|
-| LOGOUT | Logs out and disconnects from Paradox alarm system                                 |
-| LOGIN  | Creates socket if necessary, connects to paradox system and uses the logon data from the thing parameters to connect.|
-| RESET  | Does logout and then login with recreation of communicator objects inside the code.|
+| Value     | Description                                                                                                                    |
+|-----------|--------------------------------------------------------------------------------------------------------------------------------|
+| LOGOUT    | Logs out and disconnects from Paradox alarm system.                                                                            |
+| LOGIN     | Creates socket if necessary, connects to Paradox system, and uses the logon data from the Thing parameters to connect.        |
+| RESET     | Does logout and then login with recreation of communicator objects inside the code.                                            |
+| SYNC_TIME | Pushes the current openHAB host time to the panel clock on demand.                                                             |
+
+**Note on SYNC_TIME timezone:** The time sent to the panel uses the JVM default timezone of the openHAB host (i.e. the timezone configured for the Java process or the OS).
+If the host runs in UTC (e.g. a Docker container without an explicit timezone setting) but the panel is installed in a different timezone, the panel clock will be set to the wrong local time.
+To avoid this, ensure the openHAB host timezone matches the timezone where the panel is located — for example, by setting the `TZ` environment variable on the container.
 
 ### Entities (zones, partitions) Configuration
 
-| Value             | Description                                                                        |
-|-------------------|------------------------------------------------------------------------------------|
-| id                | The numeric ID of the zone/partition                                               |
-| disarmEnabled     | Optional boolean flag. Valid for partitions. When set to true the command DISARM will be allowed for the partition where the flag is enabled. CAUTION: Enabling DISARM command can be dangerous. If attacker can gain access to your openHAB (via API or UI), this command can be used to disarm your armed partition (area) |
+| Value         | Description                                                                                                                                                                                                    |
+|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id            | The numeric ID of the zone/partition.                                                                                                                                                                          |
+| disarmEnabled | Optional boolean. When set to true, enables DISARM command for the partition. **CAUTION:** Enabling this can be dangerous if openHAB access is compromised, allowing attackers to disarm your armed partition. |
 
 ### Panel Channels
 
-| Channel                  | Type                       | Description                                                                               |
-|--------------------------|----------------------------|-------------------------------------------------------------------------------------------|
-| state                    | String                     | Overall panel state                                                                       |
-| inputVoltage             | Number:ElectricPotential   | Supply Voltage                                                                            |
-| boardVoltage             | Number:ElectricPotential   | Board DC Voltage                                                                          |
-| batteryVoltage           | Number:ElectricPotential   | Battery Voltage                                                                           |
-| panelTime                | DateTime                   | Panel internal time (Timezone is set to default zone of the Java virtual machine)         |
+| Channel                      | Type                       | Description                                                                               |
+|------------------------------|----------------------------|-------------------------------------------------------------------------------------------|
+| state                        | String                     | Overall panel state                                                                       |
+| inputVoltage                 | Number:ElectricPotential   | Supply Voltage                                                                            |
+| boardVoltage                 | Number:ElectricPotential   | Board DC Voltage                                                                          |
+| batteryVoltage               | Number:ElectricPotential   | Battery Voltage                                                                           |
+| panelTime                    | DateTime                   | Panel internal time (Timezone is set to the default zone of the Java virtual machine).    |
+| acTrouble                    | Switch                     | AC power supply failure                                                                   |
+| batteryTrouble               | Switch                     | Backup battery failure                                                                    |
+| moduleSupervisionTrouble     | Switch                     | A bus module has lost supervision                                                         |
+| communicationTrouble         | Switch                     | PC/reporting communication failure                                                        |
 
 ### Partition Channels
 
-| Channel                  | Type    | Description                                                                                   |
-|--------------------------|---------|-----------------------------------------------------------------------------------------------|
-| partitionLabel           | String  | Label of partition inside Paradox configuration                                               |
-| state                    | String  | Calculated overall state of the partition (Armed, Disarmed, In Alarm)                         |
-| detailedState            | String  | Calculated detailed state of the partition based on partition state bits (see below table for possible values)             |
-| additionalState          | String  | This used to be a channel where all different states were consolidated as semi-colon separated string. With implementation of each state as channel additional states should be no longer used. (deprecated channel)                             |
-| readyToArm               | Switch  | Partition is Ready to arm                                                                     |
-| inExitDelay              | Switch  | Partition is in Exit delay                                                                    |
-| inEntryDelay             | Switch  | Partition in Entry Delay                                                                      |
-| inTrouble                | Switch  | Partition has trouble                                                                         |
-| alarmInMemory            | Switch  | Partition has alarm in memory                                                                 |
-| zoneBypass               | Switch  | Partition is in Zone Bypass                                                                   |
-| zoneInTamperTrouble      | Switch  | Partition is in Tamper Trouble                                                                |
-| zoneInLowBatteryTrouble  | Switch  | Partition has zone in Low Battery Trouble                                                     |
-| zoneInFireLoopTrouble    | Switch  | Partition has zone in Fire Loop Trouble                                                       |
-| zoneInSupervisionTrouble | Switch  | Partition has zone in Supervision Trouble                                                     |
-| stayInstantReady         | Switch  | Partition is in state Stay Instant Ready                                                      |
-| forceReady               | Switch  | Partition is in state Force Ready                                                             |
-| bypassReady              | Switch  | Partition is in state Bypass Ready                                                            |
-| inhibitReady             | Switch  | Partition is in state Inhibit Ready                                                           |
-| allZonesClosed           | Contact | All zones in partition are currently closed                                                   |
-| command                  | String  | Command to be send to partition. Can be (ARM, DISARM, FORCE_ARM, INSTANT_ARM, STAY_ARM, BEEP) |
+| Channel                  | Type    | Description                                                                                                                |
+|--------------------------|---------|----------------------------------------------------------------------------------------------------------------------------|
+| partitionLabel           | String  | Label of partition inside Paradox configuration                                                                            |
+| state                    | String  | Calculated overall state of the partition (Armed, Disarmed, In Alarm)                                                      |
+| detailedState            | String  | Calculated detailed state of the partition based on partition state bits (see below table for possible values).            |
+| additionalState          | String  | Deprecated. Previously consolidated multiple states as semi-colon separated string; use individual state channels instead. |
+| readyToArm               | Switch  | Partition is Ready to arm                                                                                                  |
+| inExitDelay              | Switch  | Partition is in Exit delay                                                                                                 |
+| inEntryDelay             | Switch  | Partition in Entry Delay                                                                                                   |
+| inTrouble                | Switch  | Partition has trouble                                                                                                      |
+| alarmInMemory            | Switch  | Partition has alarm in memory                                                                                              |
+| zoneBypass               | Switch  | Partition is in Zone Bypass                                                                                                |
+| zoneInTamperTrouble      | Switch  | Partition is in Tamper Trouble                                                                                             |
+| zoneInLowBatteryTrouble  | Switch  | Partition has zone in Low Battery Trouble                                                                                  |
+| zoneInFireLoopTrouble    | Switch  | Partition has zone in Fire Loop Trouble                                                                                    |
+| zoneInSupervisionTrouble | Switch  | Partition has zone in Supervision Trouble                                                                                  |
+| stayInstantReady         | Switch  | Partition is in state Stay Instant Ready                                                                                   |
+| forceReady               | Switch  | Partition is in state Force Ready                                                                                          |
+| bypassReady              | Switch  | Partition is in state Bypass Ready                                                                                         |
+| inhibitReady             | Switch  | Partition is in state Inhibit Ready                                                                                        |
+| allZonesClosed           | Contact | All zones in partition are currently closed.                                                                               |
+| command                  | String  | Command to be sent to partition. Can be (ARM, DISARM, FORCE_ARM, INSTANT_ARM, STAY_ARM, BEEP).                             |
 
 ### Partition Detailed State Values
 
 | Overall state value      | Detailed state value (depending on the sub-state)                                            |
 |--------------------------|----------------------------------------------------------------------------------------------|
 | InAlarm                  | Silent Alarm, Audible Alarm, Fire Alarm, In Alarm (if none of the first three)               |
-| Armed                    | Away Armed, Stay Armed, NoEntry Armed, Armed (if none of the first three)                    |
+| Armed                    | Away Armed, Stay Armed, No Entry Armed, Armed (if none of the first three)                   |
 | Disarmed                 | Disarmed                                                                                     |
 
 ### Zone Channels
@@ -112,14 +121,14 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | openedState                        | Contact | Zone opened / closed                                                           |
 | tamperedState                      | Switch  | Zone is tampered                                                               |
 | supervisionTrouble                 | Switch  | Zone is in supervision trouble                                                 |
-| inTxDelay                          | Switch  | Zone is in txDelay                                                             |
+| inTxDelay                          | Switch  | Zone is in TX delay                                                            |
 | shutdown                           | Switch  | Zone is shutdown                                                               |
 | bypassed                           | Switch  | Zone is bypassed                                                               |
-| hasActivatedIntellizoneDelay       | Switch  | Zone is has an activated Intellizone delay                                     |
-| hasActivatedEntryDelay             | Switch  | Zone is has an activated entry delay                                           |
+| hasActivatedIntellizoneDelay       | Switch  | Zone has an activated Intellizone delay                                        |
+| hasActivatedEntryDelay             | Switch  | Zone has an activated entry delay                                              |
 | presentlyInAlarm                   | Switch  | Zone is currently in alarm                                                     |
 | generatedAlarm                     | Switch  | Zone has generated an alarm                                                    |
-| command                            | String  | Command for zone. Can be (BYPASS, CLEAR_BYPASS)                                |
+| command                            | String  | Command for zone. Can be (BYPASS, CLEAR_BYPASS).                               |
 
 ## Example Things Configuration
 
@@ -155,10 +164,14 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
     String paradoxSendCommand "Send command to IP150" {channel="paradoxalarm:ip150:ip150:communicationCommand"}
 
     String panelState "Paradox panel state: [%s]"<network> (Paradox) { channel = "paradoxalarm:ip150:ip150:communicationState" }
-    Number paradoxAcVoltage “Input Voltage: [%.1f V]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:inputVoltage” }
-    Number paradoxDcVoltage “Board DC Voltage: [%.1f V]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:boardVoltage” }
-    Number paradoxBatteryVoltage “Battery Voltage: [%.1f V]” (Paradox) { channel = “paradoxalarm:panel:ip150:panel:batteryVoltage” }
-    DateTime paradoxTime "Paradox Time: [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1tS]" <lock> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:panelTime" }
+    Number paradoxAcVoltage "Input Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:inputVoltage" }
+    Number paradoxDcVoltage "Board DC Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:boardVoltage" }
+    Number paradoxBatteryVoltage "Battery Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:batteryVoltage" }
+    DateTime paradoxTime "Paradox Time: [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1tS]" <time> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:panelTime" }
+    Switch paradoxAcTrouble "AC Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:acTrouble" }
+    Switch paradoxBatteryTrouble "Battery Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:batteryTrouble" }
+    Switch paradoxModuleSupervisionTrouble "Module Supervision Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:moduleSupervisionTrouble" }
+    Switch paradoxCommunicationTrouble "Communication Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:communicationTrouble" }
 
 //PARTITIONS
     String partition1State "Magnetic sensors - Floor 1: [%s]" (Partitions) { channel = "paradoxalarm:partition:ip150:partition1:state" }
@@ -175,13 +188,17 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
     Text label="Security" icon="lock" {
         Frame label="IP150 communication" {
             Text item=panelState valuecolor=[panelState=="Online"="green", panelState=="Offline"="red"]
-            Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset"]
+            Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset", "SYNC_TIME"="Sync Time"]
         }
         Frame label="Panel" {
             Text item=paradoxTime
             Text item=paradoxAcVoltage
             Text item=paradoxDcVoltage
             Text item=paradoxBatteryVoltage
+            Text item=paradoxAcTrouble label="AC Trouble [MAP(yesno.map):%s]" valuecolor=[paradoxAcTrouble=="ON"="red", paradoxAcTrouble=="OFF"="green"]
+            Text item=paradoxBatteryTrouble label="Battery Trouble [MAP(yesno.map):%s]" valuecolor=[paradoxBatteryTrouble=="ON"="red", paradoxBatteryTrouble=="OFF"="green"]
+            Text item=paradoxModuleSupervisionTrouble label="Module Supervision Trouble [MAP(yesno.map):%s]" valuecolor=[paradoxModuleSupervisionTrouble=="ON"="red", paradoxModuleSupervisionTrouble=="OFF"="green"]
+            Text item=paradoxCommunicationTrouble label="Communication Trouble [MAP(yesno.map):%s]" valuecolor=[paradoxCommunicationTrouble=="ON"="red", paradoxCommunicationTrouble=="OFF"="green"]
         }
         Frame label="Partitions" {
             Text item=partition1State valuecolor=[partition1State=="Disarmed"="green", partition1State=="Armed"="red"]

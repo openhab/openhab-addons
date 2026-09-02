@@ -18,7 +18,7 @@
 	<!-- StatusB -->
 	<channel-type id="statusB">
 		<item-type>Switch</item-type>
-		<label>Alarm B Status</label>
+		<label>Alarm Zone B Status</label>
 		<description>Status of the B zone of your alarm</description>
 		<tags>
 			<tag>Alarm</tag>
@@ -78,7 +78,7 @@
 	<channel-type id="alarm">
 		<kind>trigger</kind>
 		<label>Alarm</label>
-		<description>Status of the alarm of your alarm</description>
+		<description>Alarm events from your system</description>
 		<tags>
 			<tag>Alarm</tag>
 		</tags>
@@ -126,7 +126,7 @@
 	<channel-type id="lastEventInvoker">
 		<item-type>String</item-type>
 		<label>Alarm Last Event Invoker</label>
-		<description>The last event invoker</description>
+		<description>Invoker of the last event</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -142,7 +142,7 @@
 	<channel-type id="lastCheckTime">
 		<item-type>DateTime</item-type>
 		<label>Alarm Last Check Time</label>
-		<description>Date and time of last status check of your alarm</description>
+		<description>Date and time of the last status check of your alarm</description>
 		<state readOnly="true"/>
 	</channel-type>
 

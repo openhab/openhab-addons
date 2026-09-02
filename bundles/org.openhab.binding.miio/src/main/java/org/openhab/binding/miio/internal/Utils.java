@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,10 +90,10 @@ public final class Utils {
     }
 
     public static String obfuscateToken(String tokenString) {
-        if (tokenString.length() > 8) {
-            return tokenString.substring(0, 8)
-                    .concat((tokenString.length() < 24) ? tokenString.substring(8).replaceAll(".", "X")
-                            : tokenString.substring(8, 24).replaceAll(".", "X").concat(tokenString.substring(24)));
+        if (tokenString.length() > 4) {
+            return tokenString.substring(0, 4)
+                    .concat((tokenString.length() < 24) ? tokenString.substring(4).replaceAll(".", "*")
+                            : tokenString.substring(4, 24).replaceAll(".", "*").concat(tokenString.substring(24)));
         } else {
             return tokenString;
         }

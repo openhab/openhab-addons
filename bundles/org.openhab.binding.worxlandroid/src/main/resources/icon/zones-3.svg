@@ -1,0 +1,12 @@
+<svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 12H2A10 10 0 0112 2zM12 12V2c5.523 0 10 4.477 10 10H12z" fill="#767676" />
+  <path d="M13 13h10c0 5.523-4.477 10-10 10V13z" fill="#2a7617" />
+  <path d="M12 12v10C6.477 22 2 17.523 2 12h10z" fill="#767676" /><text style="white-space:pre" x="6.187" y="10.486"
+    fill="#fff" font-family="Arial,sans-serif" font-size="9" font-weight="700">1</text><text style="white-space:pre"
+    x="37.928" y="7.522" fill="#333" font-family="Arial,sans-serif" font-size=".9">Enter your text here</text><text
+    style="white-space:pre" x="12.861" y="10.486" fill="#fff" font-family="Arial,sans-serif" font-size="9"
+    font-weight="700">2</text><text style="white-space:pre" x="6.187" y="19.585" fill="#fff"
+    font-family="Arial,sans-serif" font-size="9" font-weight="700">3</text><text style="white-space:pre" x="13.861"
+    y="20.585" fill="#fff" font-family="Arial,sans-serif" font-size="9" font-weight="700">4</text>
+  <path fill="none" d="M0 0h24v24H0z" />
+</svg>

@@ -178,6 +178,7 @@
 		<label>Artwork Color Temperature</label>
 		<description>Set/get color temperature of the artwork displayed. Minimum value is -5 and
 			maximum 5.</description>
+		<state min="-5" max="5"/>
 	</channel-type>
 
 	<channel-type id="artworkorientation">

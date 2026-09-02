@@ -6,7 +6,7 @@
 
 	<thing-type id="yioRemoteDock">
 		<label>YIO Remote Dock</label>
-		<description>YIOremote Dock Binding Thing</description>
+		<description>YIO Remote Dock thing</description>
 		<channel-groups>
 			<channel-group id="input" typeId="input"/>
 			<channel-group id="output" typeId="output"/>
@@ -14,26 +14,26 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Network Address</label>
-				<description>Network address of the YIO Remote Dock</description>
+				<description>Network address of the YIO Remote Dock.</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="accessToken" type="text" required="true">
 				<label>Access Token</label>
-				<description>The authentication token for the access currently 0</description>
+				<description>Authentication token (default is 0).</description>
 				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>
 	<channel-group-type id="input">
 		<label>Inputs</label>
-		<description>The channels used for Input</description>
+		<description>Channels used for input</description>
 		<channels>
 			<channel id="receiverswitch" typeId="receiverswitch"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="output">
 		<label>Outputs</label>
-		<description>The channels used for Output</description>
+		<description>Channels used for output</description>
 		<channels>
 			<channel id="status" typeId="status"/>
 		</channels>
@@ -41,12 +41,12 @@
 	<channel-type id="receiverswitch">
 		<item-type>Switch</item-type>
 		<label>Receiver Switch</label>
-		<description>The switch to enable disable the IR receiving diode/function</description>
+		<description>Enable/disable the IR receiver diode/function.</description>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>The status of the YIO Dock. If the receiver is on than the recognized IR code will be displayed otherwise
-			the IR send status is displayed of the last IR code send.</description>
+		<description>Status of the YIO Dock. If the receiver is on, the recognized IR code is displayed; otherwise the send
+			status of the last IR code is displayed.</description>
 	</channel-type>
 </thing:thing-descriptions>

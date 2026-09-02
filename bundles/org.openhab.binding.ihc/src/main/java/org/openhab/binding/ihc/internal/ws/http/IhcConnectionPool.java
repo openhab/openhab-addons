@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ public class IhcConnectionPool {
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                    logger.trace("Trusting server cert: {}", certs[0].getIssuerDN());
+                    logger.trace("Trusting server cert: {}", certs[0].getIssuerX500Principal().getName());
                 }
             } };
 

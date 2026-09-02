@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,8 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
 
     @Override
     public ThingTypeUID getThingTypeUID() {
-        String type = getData().getInstallation().getClimates().get(0).getDevice().getGui().getLabel();
+        Gui gui = getData().getInstallation().getClimates().get(0).getDevice().getGui();
+        String type = gui != null ? gui.getLabel() : null;
         if ("SMOKE".equals(type)) {
             return THING_TYPE_SMOKEDETECTOR;
         } else if ("WATER".equals(type)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api1;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -101,7 +102,6 @@ public class Shelly1CoapJSonDTO {
     public static class CoIotDevDescription {
         public List<CoIotDescrBlk> blk;
         public List<CoIotDescrSen> sen;
-        // public List<CoIotDescrAct> act;
 
         public CoIotDevDescription() {
             blk = new ArrayList<>();
@@ -149,7 +149,7 @@ public class Shelly1CoapJSonDTO {
                     CoIotDescrBlk blk = new CoIotDescrBlk();
                     in.beginObject();
                     while (in.hasNext()) {
-                        switch (in.nextName().toUpperCase()) {
+                        switch (in.nextName().toUpperCase(Locale.ROOT)) {
                             case "I":
                                 blk.id = in.nextString();
                                 break;
@@ -182,7 +182,7 @@ public class Shelly1CoapJSonDTO {
                     in.beginObject();
                     while (in.hasNext()) {
                         String tag = in.nextName();
-                        switch (tag.toUpperCase()) {
+                        switch (tag.toUpperCase(Locale.ROOT)) {
                             case "I":
                                 sen.id = in.nextString();
                                 break;

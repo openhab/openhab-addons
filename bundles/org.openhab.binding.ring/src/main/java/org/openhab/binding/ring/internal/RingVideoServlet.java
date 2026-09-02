@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ring.internal;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
@@ -125,8 +124,14 @@ public class RingVideoServlet extends HttpServlet {
 
         logger.debug("RingVideo: {} video '{}' requested", request.getMethod(), filename);
 
-        Path fullPath = videoPaths.stream().map(p -> p.resolve(filename)).filter(Files::exists).findFirst()
-                .orElse(null);
+        Path fullPath = videoPaths.stream().map(p -> {
+            Path targetPath = p.resolve(filename).normalize();
+            // Prevent directory traversal attacks
+            if (!targetPath.startsWith(p.normalize())) {
+                return null;
+            }
+            return targetPath;
+        }).filter(p -> p != null && Files.exists(p)).findFirst().orElse(null);
 
         if (fullPath != null) {
             String mimeType = URLConnection.guessContentTypeFromName(filename);

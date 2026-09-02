@@ -1,4 +1,4 @@
-# Xiaomi Wifi devices (Mi IO) Binding
+# Xiaomi Wifi Devices (Mi IO) Binding
 
 This binding is used to control Xiaomi products implementing the Mi IO protocol.
 This protocol is used for most of Xiaomi Mi Ecosystem wifi devices which is branded as MiJia.
@@ -10,14 +10,15 @@ If your Xiaomi wifi device is controlled by the mihome app, most likely it commu
 
 The following things types are available:
 
-| ThingType        | Description                                                                                                              |
-|------------------|--------------------------------------------------------------------------------------------------------------------------|
-| miio:generic     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
-| miio:vacuum      | For Xiaomi/RoboRock Robot Vacuum products                                                                                         |
-| miio:basic       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
-| miio:gateway     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                  |
-| miio:lumi        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function            |
-| miio:unsupported | For experimenting with other devices which use the Mi IO protocol or to build experimental support                                                       |
+| ThingType          | Description                                                                                                                                                                |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------                                                  |
+| `miio:cloud`       | Cloud Connector — manages Xiaomi cloud authentication and provides device tokens to all other things. Add one per openHAB instance.                                        |
+| `miio:generic`     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
+| `miio:vacuum`      | For Xiaomi/Roborock Robot Vacuum products                                                                                                                                  |
+| `miio:basic`       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration                                                        |
+| `miio:gateway`     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                                                                    |
+| `miio:lumi`        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function                                                              |
+| `miio:unsupported` | For experimenting with other devices which use the Mi IO protocol or to build experimental support                                                                         |
 
 # Discovery
 
@@ -37,7 +38,7 @@ Use the one of the regional servers: cn,de,i2,tw,ru,sg,us.
 Multiple servers can be separated with comma, or leave blank to test all known servers.
 See [binding configuration](#binding-configuration) for more details about the binding config.
 
-## Tokens without cloud access
+## Tokens Without Cloud Access
 
 Some devices provide the token upon discovery. This may depends on the firmware version.
 If the device does not discover your token, it needs to be retrieved from the Mi Home app.
@@ -54,23 +55,86 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
-The list of the known countries and related servers is available [in the country servers](#country-servers) section.
+No binding configuration is required.
+Cloud functionality is provided through the dedicated **Cloud Connector** thing (`miio:cloud`) described below.
 
-After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud.
-For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
+> **Note:** Entering cloud credentials directly in the binding configuration page (username / password fields) is **deprecated** and no longer has any effect.
+> Please migrate to the Cloud Connector thing as described in the [Cloud Connector Thing](#cloud-connector-thing) section.
 
-To enter your cloud details go to the bindings page, click the Xiaomi Mi IO binding and than configure.
-![Binding Config](doc/miioBindingConfig.jpg)
+## Cloud Connector Thing
 
-In the configuration page, enter your userID /passwd and county(s) or leave the countries servers blank.
-![Binding Config](doc/miioBindingConfig2.jpg)
+Cloud access — needed to retrieve device tokens and to show vacuum maps — is managed by a dedicated `miio:cloud` thing called the **Cloud Connector**.
 
-The binding also supports the discovery of devices via the cloud. This may be useful if the device is on a separate subnet. (note, after accepting such a device on a different subnet, the communication needs to be set to cloud in order to have it working.)
+### Why a Separate Thing?
+
+The Cloud Connector thing allows openHAB to surface the Xiaomi login flow as regular channels.
+This makes it possible to scan a QR code directly from the openHAB UI, respond to captcha challenges, and handle two-factor authentication without leaving openHAB.
+Stored session tokens are persisted back into the thing configuration so that subsequent binding restarts reuse the existing session automatically (TOKEN login fast-path).
+
+### Discovery and Creation
+
+The binding automatically proposes a Cloud Connector discovery result in the inbox on startup.
+Accept it, or manually add a thing of type `miio:cloud` with the ID `cloudConnector`.
+
+### Cloud Connector Thing Configuration
+
+| Parameter              | Type    | Required | Description                                                                                                                                                                         |
+|------------------------|---------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| username               | text    | false    | Xiaomi account e-mail address. Only used with `PASSWORD` login method.                                                                                                              |
+| password               | text    | false    | Xiaomi account password. Only used with `PASSWORD` login method.                                                                                                                    |
+| login-method           | text    | false    | Login method: `QRCODE` (default — scan QR code with Mi Home app) or `PASSWORD` (username + password, may require captcha / 2FA). Options: `QR Code (Default)`, `Password Login`     |
+| country                | text    | false    | Regional server(s) to connect to (e.g. `de`, `sg,de`). Separate multiple values with a comma. Leave blank to try all known servers.                                                 |
+| cloud-discovery-mode   | text    | false    | Enable cloud-based device discovery. Options: `Local Only (Default)` (default), `Online Supported`, `All Devices (Advanced)`.                                                       |
+| user-id                | text    | false    | _(Advanced)_ Xiaomi user ID — retrieved automatically after successful login. Do not edit manually.                                                                                 |
+| client-id              | text    | false    | _(Advanced)_ Unique client identifier — generated automatically on first use. Do not change unless you know what you are doing.                                                     |
+| service-token          | text    | false    | _(Advanced)_ Xiaomi service token — retrieved automatically after successful login. Do not edit manually.                                                                           |
+| ssecurity              | text    | false    | _(Advanced)_ Xiaomi ssecurity value — retrieved automatically after successful login. Do not edit manually.                                                                         |
+
+### Cloud Connector Channels
+
+| Channel             | Type    | Description                                                                                                                                                 |
+|---------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| login-image         | Image   | Displays the QR code to scan (QR code login) or the captcha image to solve (password login). Use the openHAB UI or a sidecar image item to view this image. |
+| captcha-response    | String  | Send the text visible in the captcha image to this channel when a captcha is required.                                                                      |
+| two-fa              | String  | Send the 2FA / email verification code to this channel when two-factor authentication is required.                                                          |
+| trigger-login       | Switch  | Turn `ON` to cancel any in-progress login and start a fresh login sequence (new QR code). Resets to `OFF` automatically. Has a 30-second cooldown.          |
+
+### Login Flow: QR Code (Default)
+
+1. Add and accept the Cloud Connector thing.
+1. The `login-image` channel shows an orange hourglass while the QR code is being fetched.
+1. Within about one second a QR code appears in the `login-image` channel.
+1. Open the **Mi Home** app → Me → tap your account photo → **Sign out** is shown if already signed in, otherwise go to **Settings → Xiaomi Account → Scan QR code**.
+1. Scan the QR code. The thing status changes to ONLINE and device tokens are retrieved automatically.
+1. After a successful login the session credentials are persisted into the thing configuration; subsequent openHAB restarts will reuse the session without requiring a new QR scan.
+1. If the QR code expires (after ~5 minutes) before you scan it, turn the `trigger-login` channel ON to obtain a fresh QR code.
+
+### Login Flow: Username + Password
+
+1. Set `login-method` to `PASSWORD` and enter your `username` and `password` in the thing configuration.
+1. The binding attempts to log in automatically.
+1. If a **captcha** is required, the `login-image` channel shows the captcha image. Send the text you see to the `captcha-response` channel.
+1. If **two-factor authentication** is required, an e-mail code is sent to your account. Send the code to the `two-fa` channel.
+1. After a successful login the session credentials are persisted; subsequent restarts skip the password flow automatically.
+
+### Migration from Binding-Level Credentials
+
+In previous versions, cloud credentials were entered in the binding configuration page.
+That mechanism is now **deprecated and ignored**.
+To migrate:
+
+1. Open the openHAB UI and accept the **Cloud Connector** discovery result from the inbox (or add a `miio:cloud` thing manually).
+1. Configure the thing: set `login-method`, `username`/`password` (if using password login), and `country`.
+1. Remove the old credentials from the binding configuration page (optional but recommended to avoid confusion).
+1. After a successful login all devices will automatically start using the new cloud connection.
+
+The binding also supports the discovery of devices via the cloud. This may be useful if the device is on a separate subnet.
+Set `cloud-discovery-mode` on the Cloud Connector thing to `supported` or `all` to enable this.
+Note: after accepting a device discovered via the cloud on a different subnet, set the device communication to `cloud` in the thing configuration.
 
 ## Thing Configuration
 
-Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
+Each Xiaomi device (Thing) needs the IP address and token configured to be able to communicate. See discovery for details.
 Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
 The configuration for model is automatically retrieved from the device in normal operation.
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
@@ -90,7 +154,7 @@ Note: Suggest to use the cloud communication only for devices that require it.
 It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 Note2: communications parameter is not available for lumi devices. Lumi devices communicate using the bridge/gateway.
 
-### Example Thing file
+### Example Thing File
 
 `Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]`
 
@@ -102,7 +166,7 @@ in case of gateway, instead of defining it as a Thing, use Bridge
 
 `Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]`
 
-# Advanced: Getting unsupported devices to work with the binding
+# Advanced: Getting Unsupported Devices to Work with the Binding
 
 Newer devices may not yet be supported.
 However, many devices share large similarities with existing devices.
@@ -110,39 +174,39 @@ The binding allows to try/test if your new device is working with database files
 
 There are 3 ways to get unsupported devices working:
 
-- by overriding the model with the model of a similar supported device. E.g. this works great for roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
+- by overriding the model with the model of a similar supported device. E.g. this works great for Roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
 - by switching on the `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel, this works for most newer devices. See [Create support for new devices based on online published spec database](#create-support-for-new-devices-based-on-online-published-spec-database)
 - by switching on the `(experimental) Create channels / test properties for unsupported devices (legacy protocol)` channel. This works for older / legacy devices. It test all known properties to see which are supported by your device. See [Supported property test for unsupported devices](#supported-property-test-for-unsupported-devices)
 
-## Substitute model for unsupported devices
+## Substitute Model for Unsupported Devices
 
 Replace the model with the model which is already supported.
-For this, first remove your unsupported thing. Manually add a miio:basic thing.
+For this, first remove your unsupported Thing. Manually add a miio:basic Thing.
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository or this readme for the modelId of similar devices.
 
-## Create support for new devices based on online published spec database
+## Create Support for New Devices Based on Online Published Spec Database
 
 The unsupported device has a `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel. When switching on, it will try to build support based on the published spec from [https://home.miot-spec.com/](https://home.miot-spec.com/).
 It will test all properties are in the spec for your device, which may take few minutes.
 A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
 The experimental database file is saved to the conf/misc/miio folder (see below chapter).
-The thing will go offline and will come back online as basic device, supporting the found channels.
+The Thing will go offline and will come back online as basic device, supporting the found channels.
 If this does not happen automatically, restart the binding or restart openHAB in order to have the new database file picked up.
 
 Please validate and feedback if all channels and actions are working, and share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
 
-## Supported property test for unsupported devices
+## Supported Property Test for Unsupported Devices
 
 The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
 A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
 If supported properties are found, an experimental database file is saved to the conf/misc/miio folder (see below chapter).
-The thing will go offline and will come back online as basic device, supporting the found channels.
+The Thing will go offline and will come back online as basic device, supporting the found channels.
 The database file may need to be modified to display the right channel names.
 After validation, please share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
 
-## Advanced: adding local database files to support new devices
+## Advanced: Adding Local Database Files to Support New Devices
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
@@ -153,7 +217,7 @@ If this folder is created after the start of the binding, you may need to restar
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used.
 For format, please check the current database files in openHAB GitHub.
 
-# FAQ.. what to do in case of problems
+# FAQ: What to Do in Case of Problems
 
 If your device is not getting online:
 
@@ -183,20 +247,23 @@ Alternatively as described above, double check for multiple connections for sing
 _Your device is on a different subnet?_
 This is in most cases not working.
 Firmware of the device don't accept commands coming from other subnets.
-Set the communication in the thing configuration to 'cloud'.
+Set the communication in the Thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
-The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
-If the problem persists you can try the following:
+The most common problem is a wrong or missing user-id/password, or the Cloud Connector thing has not been set up yet.
+Cloud credentials are no longer configured on the binding configuration page — see the [Cloud Connector Thing](#cloud-connector-thing) section for setup instructions.
+If the Cloud Connector thing is configured and still not working, try the following:
 
-- Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required, but the binding currently has no possibilities to handle this.
-In order to pass validation your (openHAB server) ip need to be validated/confirmed.
-Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and logon to your account. Note: use the same external ip address as your openHAB server, e.g.  you may need to disable your VPN.
-- If above is not possible or fails, You can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
+- Use the **QR code** login method instead of password login, as it avoids captcha / account-verification issues.
+- Turn the `triggerlogin` channel ON to restart the login sequence and get a fresh QR code.
+- Xiaomi Account verification might be needed. For some users login by the binding is unsuccessful as account verification is required.
+  In order to pass validation your (openHAB server) ip needs to be validated/confirmed.
+  Browse to [https://account.xiaomi.com/](https://account.xiaomi.com/) and log on to your account. Note: use the same external IP address as your openHAB server, e.g. you may need to disable your VPN.
+- If above is not possible or fails, you can try to find in the binding debug logging a `location url`. Try to login using this url (just after it fails) with your browser.
 - Several users also reported success by resetting their Xiaomi password.
 
-If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies.
-As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
+If it still fails, try restarting openHAB (not just the binding) to clear the cookies.
+Enable TRACE logging on `org.openhab.binding.miio.internal.cloud` for detailed diagnostics.
 
 _My Roborock vacuum is not found or not reacting_
 Did you link the vacuum with the Roborock app?
@@ -206,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 360 different models.
+Currently the miio binding supports more than 370 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -234,7 +301,7 @@ Currently the miio binding supports more than 360 different models.
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press1   | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press2   | No           |            |
 | Gosund Smart Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes          |            |
-| Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          | Device only works with cloud connection (stays offline with direct connection). Select in your thing configuration Communication Method 'Cloud' |
+| Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          |            |
 | Mi Smart Antibacterial Humidifier  | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes          |            |
 | Mi S Smart Humidifer               | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes          |            |
 | Xiaomi Smart Humidifier 2          | miio:basic       | [deerma.humidifier.jsq2w](#deerma-humidifier-jsq2w) | Yes          |            |
@@ -367,59 +434,59 @@ Currently the miio binding supports more than 360 different models.
 | CHINGMI Smart Power Strip v1       | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes          |            |
 | Rockrobo Xiaowa Sweeper v2         | miio:unsupported | roborock.sweeper.e2v2  | No           |            |
 | Rockrobo Xiaowa Sweeper v3         | miio:unsupported | roborock.sweeper.e2v3  | No           |            |
-| Roborock S6 Pure                   | miio:vacuum      | [roborock.vacuum.a08](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T7 Pro                    | miio:vacuum      | [roborock.vacuum.a09](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S6 MaxV                   | miio:vacuum      | [roborock.vacuum.a10](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T7                        | miio:vacuum      | [roborock.vacuum.a11](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T7S                       | miio:vacuum      | [roborock.vacuum.a14](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S7                        | miio:vacuum      | [roborock.vacuum.a15](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S4 Max                    | miio:vacuum      | [roborock.vacuum.a19](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T7S Plus                  | miio:vacuum      | [roborock.vacuum.a23](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10S Pro                  | miio:vacuum      | [roborock.vacuum.a26](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S7 MaxV                   | miio:vacuum      | [roborock.vacuum.a27](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a29](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a30](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q5                        | miio:vacuum      | [roborock.vacuum.a34](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T8                        | miio:vacuum      | [roborock.vacuum.a37](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#robo-rock-vacuum-channels) | Yes          |            |
-| Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S6 Pure                   | miio:vacuum      | [roborock.vacuum.a08](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T7 Pro                    | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S6 MaxV                   | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T7                        | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T7S                       | miio:vacuum      | [roborock.vacuum.a14](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S7                        | miio:vacuum      | [roborock.vacuum.a15](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S4 Max                    | miio:vacuum      | [roborock.vacuum.a19](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T7S Plus                  | miio:vacuum      | [roborock.vacuum.a23](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10S Pro                  | miio:vacuum      | [roborock.vacuum.a26](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S7 MaxV                   | miio:vacuum      | [roborock.vacuum.a27](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a29](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a30](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q5                        | miio:vacuum      | [roborock.vacuum.a34](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T8                        | miio:vacuum      | [roborock.vacuum.a37](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#roborock-vacuum-channels) | Yes          |            |
+| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#roborock-vacuum-channels) | Yes          |            |
+| Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-channels) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
-| Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock P5                        | miio:vacuum      | [roborock.vacuum.p5](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S4                        | miio:vacuum      | [roborock.vacuum.s4](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum S4v2               | miio:vacuum      | [roborock.vacuum.s4v2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S5                        | miio:vacuum      | [roborock.vacuum.s5](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S5 Max                    | miio:vacuum      | [roborock.vacuum.s5e](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S6                        | miio:vacuum      | [roborock.vacuum.s6](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T4                        | miio:vacuum      | [roborock.vacuum.t4](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T4 v2              | miio:vacuum      | [roborock.vacuum.t4v2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T4 v3              | miio:vacuum      | [roborock.vacuum.t4v3](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T6                        | miio:vacuum      | [roborock.vacuum.t6](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T6 v2              | miio:vacuum      | [roborock.vacuum.t6v2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T6 v3              | miio:vacuum      | [roborock.vacuum.t6v3](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7                 | miio:vacuum      | [roborock.vacuum.t7](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7p                | miio:vacuum      | [roborock.vacuum.t7p](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7pv2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7pv3](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7v2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7v3](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum S6                 | miio:vacuum      | [rockrobo.vacuum.s6](#robo-rock-vacuum-channels) | Yes          |            |
-| Mi Robot Vacuum                    | miio:vacuum      | [rockrobo.vacuum.v1](#robo-rock-vacuum-channels) | Yes          |            |
+| Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-channels) | Yes          |            |
+| Roborock P5                        | miio:vacuum      | [roborock.vacuum.p5](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S4                        | miio:vacuum      | [roborock.vacuum.s4](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum S4v2               | miio:vacuum      | [roborock.vacuum.s4v2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S5                        | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S5 Max                    | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S6                        | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T4                        | miio:vacuum      | [roborock.vacuum.t4](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T4 v2              | miio:vacuum      | [roborock.vacuum.t4v2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T4 v3              | miio:vacuum      | [roborock.vacuum.t4v3](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T6                        | miio:vacuum      | [roborock.vacuum.t6](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T6 v2              | miio:vacuum      | [roborock.vacuum.t6v2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T6 v3              | miio:vacuum      | [roborock.vacuum.t6v3](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7                 | miio:vacuum      | [roborock.vacuum.t7](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7p                | miio:vacuum      | [roborock.vacuum.t7p](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7pv2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7pv3](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7v2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7v3](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum S6                 | miio:vacuum      | [rockrobo.vacuum.s6](#roborock-vacuum-channels) | Yes          |            |
+| Mi Robot Vacuum                    | miio:vacuum      | [rockrobo.vacuum.v1](#roborock-vacuum-channels) | Yes          |            |
 | ROIDMI EVE vacuum                  | miio:basic       | [roidmi.vacuum.v60](#roidmi-vacuum-v60) | Yes          |            |
 | ROIDMI EVA                         | miio:basic       | [roidmi.vacuum.v66](#roidmi-vacuum-v66) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | PTX OneKey Switch (WIFI)           | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes          |            |
@@ -473,6 +540,8 @@ Currently the miio binding supports more than 360 different models.
 | Mi Bedside Lamp                    | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes          |            |
 | Mi Bedside Lamp 2                  | miio:basic       | [yeelink.light.bslamp2](#yeelink-light-bslamp2) | Yes          |            |
 | Yeelight Bedside Lamp II           | miio:basic       | [yeelink.light.bslamp3](#yeelink-light-bslamp3) | Yes          |            |
+| Yeelight LED Ceiling Light Pro     | miio:basic       | [yeelink.light.ceila](#yeelink-light-ceila) | Yes          |            |
+| Yeelight Arwen Ceiling Light       | miio:basic       | [yeelink.light.ceilb](#yeelink-light-ceilb) | Yes          |            |
 | Yeelight Ceiling Light             | miio:basic       | [yeelink.light.ceiling1](#yeelink-light-ceiling1) | Yes          |            |
 | Yeelight Ceiling Light SE          | miio:basic       | [yeelink.light.ceiling2](#yeelink-light-ceiling2) | Yes          |            |
 | Yeelight LED Ceiling Light         | miio:basic       | [yeelink.light.ceiling3](#yeelink-light-ceiling3) | Yes          |            |
@@ -629,7 +698,7 @@ All devices have available the following channels (marked as advanced) besides t
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See <https://github.com/marcelrv/XiaomiRobotVacuumProtocol> for all known available commands.
 
-### Robo Rock vacuum Channels
+### Roborock Vacuum Channels
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|
@@ -673,11 +742,11 @@ The way to customize this is to create a file with the name `mapConfig.json` in 
 If the binding finds this file it will read the map rendering preferences from there.
 If the file is available but invalid json, it will create a new file with all the default values for you to customize.
 This allows you to control the colors, if logo is displayed, if and what text is rendered etc.
-To (re-)read the file either restart openHAB, restart the binding or alternatively edit the thing and make (any) minor change.
+To (re-)read the file either restart openHAB, restart the binding or alternatively edit the Thing and make (any) minor change.
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 
-### Basic, gateway and lumi Things channels
+### Basic, Gateway and Lumi Things Channels
 
 ### Mi Air Frying Pan (<a name="careli-fryer-maf01">careli.fryer.maf01</a>) Channels
 
@@ -4061,6 +4130,33 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorflow                  | Switch               | Color Flow                               |            |
 | name                       | String               | Name                                     |            |
 
+### Yeelight LED Ceiling Light Pro (<a name="yeelink-light-ceila">yeelink.light.ceila</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","light-brightness-up"="Light Brightness Up","light-brightness-down"="Light Brightness Down"]` |
+| on                         | Switch               | Light - Switch Status                    |            |
+| mode                       | Number               | Light - Mode                             | Value mapping `["0"="Day","1"="Night"]` |
+| brightness                 | Number:Dimensionless | Light - Brightness                       |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
+
+### Yeelight Arwen Ceiling Light (<a name="yeelink-light-ceilb">yeelink.light.ceilb</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","light-brightness-up"="Light Brightness Up","light-brightness-down"="Light Brightness Down"]` |
+| on                         | Switch               | Light - Switch Status                    |            |
+| mode                       | Number               | Light - Mode                             | Value mapping `["0"="Day","1"="Night"]` |
+| brightness                 | Number:Dimensionless | Light - Brightness                       |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on1                        | Switch               | Ambient Light - Switch Status            |            |
+| mode1                      | Number               | Ambient Light - Mode                     | Value mapping `["1"="RGB","3"="HSV"]` |
+| brightness1                | Number:Dimensionless | Ambient Light - Brightness               |            |
+| color_temperature1         | Number:Temperature   | Ambient Light - Color Temperature        |            |
+| color                      | Number               | Ambient Light - Color                    |            |
+| saturability               | Number:Dimensionless | Ambient Light - Saturability             |            |
+| flow                       | Number               | Ambient Light - Flow                     | Value mapping `["0"="NOFLOW","1"="FLOWING"]` |
+
 ### Yeelight Ceiling Light (<a name="yeelink-light-ceiling1">yeelink.light.ceiling1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -6444,7 +6540,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | lp_autooff_delay           | Number               | Low Power Limit Time                     |            |
 | lp_threshold               | Number               | Low Power Threshold                      |            |
 
-## Example item file Rockrobo vacuum
+## Example Item File Roborock Vacuum
 
 ```java
 Group  gVac     "Xiaomi Robot Vacuum"      <fan>
@@ -6490,11 +6586,11 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
-### Basic, gateway and lumi Things item files examples
+### Basic, Gateway and Lumi Things Item File Examples
 
 ### Mi Air Frying Pan (careli.fryer.maf01) item file lines
 
-note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fryer "Mi Air Frying Pan" <status>
@@ -6518,7 +6614,7 @@ Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_po
 
 ### Mi Smart Air Fryer (3.5L) (careli.fryer.maf02) item file lines
 
-note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fryer "Mi Smart Air Fryer (3.5L)" <status>
@@ -6540,7 +6636,7 @@ Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_po
 
 ### Mi Air Frying Pan (careli.fryer.maf03) item file lines
 
-note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fryer "Mi Air Frying Pan" <status>
@@ -6564,7 +6660,7 @@ Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_po
 
 ### Qingping Air Monitor Lite (cgllc.airm.cgdn1) item file lines
 
-note: Autogenerated example. Replace the id (airm) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airm) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airm "Qingping Air Monitor Lite" <status>
@@ -6586,7 +6682,7 @@ String tempature_unit "Settings - Tempature Unit" (G_airm) {channel="miio:basic:
 
 ### Mi Multifunction Air Monitor (cgllc.airmonitor.b1) item file lines
 
-note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airmonitor "Mi Multifunction Air Monitor" <status>
@@ -6600,7 +6696,7 @@ Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic
 
 ### Qingping Air Monitor (cgllc.airmonitor.s1) item file lines
 
-note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airmonitor "Qingping Air Monitor" <status>
@@ -6614,7 +6710,7 @@ Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic
 
 ### Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway) (chuangmi.plug.212a01) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway)" <status>
@@ -6637,7 +6733,7 @@ String bt_gw_devices "Connected BT Gateway Devices" (G_plug) {channel="miio:basi
 
 ### Mi Smart Plug WiFi (chuangmi.plug.hmi205) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Smart Plug WiFi" <status>
@@ -6648,7 +6744,7 @@ Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 
 ### Mi Smart Plug (WiFi) (chuangmi.plug.hmi206) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Smart Plug (WiFi)" <status>
@@ -6660,7 +6756,7 @@ Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 
 ### Mi Smart Wi-Fi Plug (Bluetooth Gateway) (chuangmi.plug.hmi208) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Smart Wi-Fi Plug (Bluetooth Gateway)" <status>
@@ -6672,7 +6768,7 @@ Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 
 ### Mi Plug Mini (chuangmi.plug.m1) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Plug Mini" <status>
@@ -6683,7 +6779,7 @@ Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 
 ### Mi Smart Plug (Wi-Fi) Basic (chuangmi.plug.m3) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Smart Plug (Wi-Fi) Basic" <status>
@@ -6694,7 +6790,7 @@ Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 
 ### Mi Smart Power Plug (chuangmi.plug.v1) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Smart Power Plug" <status>
@@ -6705,7 +6801,7 @@ Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:
 
 ### Mi Smart Power Plug v2 (chuangmi.plug.v2) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Smart Power Plug v2" <status>
@@ -6715,7 +6811,7 @@ Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 
 ### MIJIA Smart  Plug Enhanced (chuangmi.plug.v3) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "MIJIA Smart  Plug Enhanced" <status>
@@ -6727,7 +6823,7 @@ Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 
 ### Gosund Smart Plug (cuco.plug.cp1) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Gosund Smart Plug" <status>
@@ -6740,7 +6836,7 @@ Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
 
 ### Xiaomi Smart Plug 2 (Wi-Fi) (cuco.plug.v2eur) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Xiaomi Smart Plug 2 (Wi-Fi)" <status>
@@ -6766,7 +6862,7 @@ Number:Power power1 "Max Power Limit - Power" (G_plug) {channel="miio:basic:plug
 
 ### Mi Smart Antibacterial Humidifier (deerma.humidifier.jsq) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Mi Smart Antibacterial Humidifier" <status>
@@ -6781,7 +6877,7 @@ Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:hu
 
 ### Mi S Smart Humidifer  (deerma.humidifier.jsq1) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Mi S Smart Humidifer " <status>
@@ -6797,7 +6893,7 @@ Switch wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:hum
 
 ### Xiaomi Smart Humidifier 2 (deerma.humidifier.jsq2w) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Xiaomi Smart Humidifier 2" <status>
@@ -6822,7 +6918,7 @@ Switch overtop_humidity "Overtop Humidity" (G_humidifier) {channel="miio:basic:h
 
 ### Mi Smart Antibacterial Humidifier (deerma.humidifier.jsq5) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Mi Smart Antibacterial Humidifier" <status>
@@ -6840,7 +6936,7 @@ Switch the_tank_filed "Custom - The Tank Filed" (G_humidifier) {channel="miio:ba
 
 ### Mi Smart Humidifer S (deerma.humidifier.jsqs) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Mi Smart Humidifer S" <status>
@@ -6858,7 +6954,7 @@ Switch the_tank_filed "Custom - The Tank Filed" (G_humidifier) {channel="miio:ba
 
 ### Mi Smart Humidifier (deerma.humidifier.mjjsq) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Mi Smart Humidifier" <status>
@@ -6873,7 +6969,7 @@ Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:hu
 
 ### Mi Fresh Air Ventilator A1-150 (dmaker.airfresh.a1) item file lines
 
-note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airfresh "Mi Fresh Air Ventilator A1-150" <status>
@@ -6896,7 +6992,7 @@ String airFreshResetFilterA1 "Reset Filter" (G_airfresh) {channel="miio:basic:ai
 
 ### Mi Fresh Air Ventilator (dmaker.airfresh.t2017) item file lines
 
-note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airfresh "Mi Fresh Air Ventilator" <status>
@@ -6923,7 +7019,7 @@ String airFreshResetFilter "Reset Filter" (G_airfresh) {channel="miio:basic:airf
 
 ### Mi Smart Standing Fan 2 Lite (dmaker.fan.1c) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Smart Standing Fan 2 Lite" <status>
@@ -6940,7 +7036,7 @@ Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" 
 
 ### Mi Smart Standing Fan 1X (dmaker.fan.p5) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Smart Standing Fan 1X" <status>
@@ -6957,7 +7053,7 @@ Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
 
 ### Mi Smart Standing Fan 1C (dmaker.fan.p8) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Smart Standing Fan 1C" <status>
@@ -6974,7 +7070,7 @@ Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" 
 
 ### Mi Smart Tower Fan (dmaker.fan.p9) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Smart Tower Fan" <status>
@@ -6994,7 +7090,7 @@ Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" 
 
 ### Mi Smart Standing Fan 2 (dmaker.fan.p10) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Smart Standing Fan 2" <status>
@@ -7014,7 +7110,7 @@ Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" 
 
 ### Mi Smart Standing Fan Pro (dmaker.fan.p15) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Smart Standing Fan Pro" <status>
@@ -7034,7 +7130,7 @@ String actions "Actions" (G_fan) {channel="miio:basic:fan:actions"}
 
 ### Mi Smart Standing Fan 2 (dmaker.fan.p18) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Smart Standing Fan 2" <status>
@@ -7054,7 +7150,7 @@ Switch physical_controls_locked "Physical Control Locked - Physical Control Lock
 
 ### Mi Robot Vacuum Mop 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Mi Robot Vacuum Mop 1C STYTJ01ZHM" <status>
@@ -7094,7 +7190,7 @@ String TimeZone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:TimeZo
 
 ### Dreame Robot Vacuum-Mop F9 (dreame.vacuum.p2008) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Dreame Robot Vacuum-Mop F9" <status>
@@ -7134,7 +7230,7 @@ Number save_map_status "Vslam Extend - Save Map Status" (G_vacuum) {channel="mii
 
 ### Dreame Robot Vacuum D9  (dreame.vacuum.p2009) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Dreame Robot Vacuum D9 " <status>
@@ -7179,7 +7275,7 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 
 ### Dreame Bot W10 (dreame.vacuum.p2027) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Dreame Bot W10" <status>
@@ -7235,7 +7331,7 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 
 ### Dreame Bot Z10 Pro (dreame.vacuum.p2028) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Dreame Bot Z10 Pro" <status>
@@ -7290,7 +7386,7 @@ Number dust_enable "Collect Dust - Dust Enable" (G_vacuum) {channel="miio:basic:
 
 ### Dreame Bot L10 Pro (dreame.vacuum.p2029) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Dreame Bot L10 Pro" <status>
@@ -7341,7 +7437,7 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 
 ### Trouver Robot LDS Vacuum-Mop Finder (dreame.vacuum.p2036) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Trouver Robot LDS Vacuum-Mop Finder" <status>
@@ -7386,7 +7482,7 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 
 ### Mi Robot Vacuum-Mop 2 Pro+ (dreame.vacuum.p2041o) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Mi Robot Vacuum-Mop 2 Pro+" <status>
@@ -7431,7 +7527,7 @@ Number save_map_status "Vslam Extend - Save Map Status" (G_vacuum) {channel="mii
 
 ### Mijia Omni Robot Vacuum-Mop (dreame.vacuum.p2114o) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Mijia Omni Robot Vacuum-Mop" <status>
@@ -7485,7 +7581,7 @@ Number:Time mop_left_time "Mop - Mop Left Time" (G_vacuum) {channel="miio:basic:
 
 ### MOVA Z500 Robot Vacuum and Mop Cleaner (dreame.vacuum.p2156o) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "MOVA Z500 Robot Vacuum and Mop Cleaner" <status>
@@ -7530,7 +7626,7 @@ Number save_map_status "Vslam Extend - Save Map Status" (G_vacuum) {channel="mii
 
 ### MOVA L600 Robot Vacuum and Mop Cleaner (dreame.vacuum.p2157) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "MOVA L600 Robot Vacuum and Mop Cleaner" <status>
@@ -7575,7 +7671,7 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 
 ### Dreame Bot D9 Max (dreame.vacuum.p2259) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Dreame Bot D9 Max" <status>
@@ -7626,7 +7722,7 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 
 ### Xiaomi Robot Vacuum X10 (dreame.vacuum.r2209) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Xiaomi Robot Vacuum X10" <status>
@@ -7682,7 +7778,7 @@ Number dust_enable "Collect Dust - Dust Enable" (G_vacuum) {channel="miio:basic:
 
 ### DreameBot L10s Ultra (dreame.vacuum.r2228o) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "DreameBot L10s Ultra" <status>
@@ -7760,7 +7856,7 @@ Number:Dimensionless silverion_life_level "Silver Ion - Silverion Life Level" (G
 
 ### HUIZUO ARIES For Bedroom (huayi.light.ari013) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO ARIES For Bedroom" <status>
@@ -7771,7 +7867,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO ARIES For Living Room (huayi.light.aries) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO ARIES For Living Room" <status>
@@ -7782,7 +7878,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO Fan Light (huayi.light.fanwy) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO Fan Light" <status>
@@ -7797,7 +7893,7 @@ Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
 
 ### HUIZUO Fan Light(2020) (huayi.light.fanwy2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO Fan Light(2020)" <status>
@@ -7818,7 +7914,7 @@ Switch flabellum "Presets - Flabellum" (G_light) {channel="miio:basic:light:flab
 
 ### HUIZUO PEGASUS For Living Room (huayi.light.peg091) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO PEGASUS For Living Room" <status>
@@ -7829,7 +7925,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO PEGASUS For Bedroom (huayi.light.peg093) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO PEGASUS For Bedroom" <status>
@@ -7840,7 +7936,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO PISCES For Bedroom (huayi.light.pis123) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO PISCES For Bedroom" <status>
@@ -7851,7 +7947,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO PISCES For Living Room (huayi.light.pisces) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO PISCES For Living Room" <status>
@@ -7862,7 +7958,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO TAURUS For Bedroom (huayi.light.tau023) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO TAURUS For Bedroom" <status>
@@ -7873,7 +7969,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO TAURUS For Living Room (huayi.light.taurus) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO TAURUS For Living Room" <status>
@@ -7884,7 +7980,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO VIRGO For Bedroom (huayi.light.vir063) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO VIRGO For Bedroom" <status>
@@ -7895,7 +7991,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO VIRGO For Living Room (huayi.light.virgo) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO VIRGO For Living Room" <status>
@@ -7906,7 +8002,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO Ceiling Light (huayi.light.wy) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO Ceiling Light" <status>
@@ -7917,7 +8013,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO LIANGCHEN(BLE Mesh) (huayi.light.wy200) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO LIANGCHEN(BLE Mesh)" <status>
@@ -7928,7 +8024,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO SAG Downlight (BLE Mesh) (huayi.light.wy201) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO SAG Downlight (BLE Mesh)" <status>
@@ -7939,7 +8035,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO Bulb (BLE Mesh) (huayi.light.wy202) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO Bulb (BLE Mesh)" <status>
@@ -7950,7 +8046,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO YONG Downlight (BLE Mesh) (huayi.light.wy203) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO YONG Downlight (BLE Mesh)" <status>
@@ -7961,7 +8057,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### huayi.light.wy204 (huayi.light.wy204) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "huayi.light.wy204" <status>
@@ -7972,7 +8068,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### HUIZUO Heating Lamp (huayi.light.wyheat) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO Heating Lamp" <status>
@@ -7987,7 +8083,7 @@ Switch screenshow "Other - Screenshow" (G_light) {channel="miio:basic:light:scre
 
 ### HUIZUO ZIWEI Ceiling Lamp (huayi.light.zw131) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "HUIZUO ZIWEI Ceiling Lamp" <status>
@@ -7998,7 +8094,7 @@ Number:Temperature color_temperature "Light - Color Temperature" (G_light) {chan
 
 ### Mi Robot Vacuum-Mop 2 Pro (ijai.vacuum.v3) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Mi Robot Vacuum-Mop 2 Pro" <status>
@@ -8069,7 +8165,7 @@ String multi_prop_dnd "Disturb - Multi Prop Dnd" (G_vacuum) {channel="miio:basic
 
 ### Xiaomi Robot Vacuum-Mop 2S (ijai.vacuum.v19) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Xiaomi Robot Vacuum-Mop 2S" <status>
@@ -8145,7 +8241,7 @@ String multi_prop_dnd "Disturb - Multi Prop Dnd" (G_vacuum) {channel="miio:basic
 
 ### IKEA E27 white spectrum opal (ikea.light.led1545g12) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "IKEA E27 white spectrum opal" <status>
@@ -8156,7 +8252,7 @@ Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:ligh
 
 ### IKEA E27 white spectrum clear (ikea.light.led1546g12) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "IKEA E27 white spectrum clear" <status>
@@ -8167,7 +8263,7 @@ Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:ligh
 
 ### IKEA E14 white spectrum (ikea.light.led1536g5) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "IKEA E14 white spectrum" <status>
@@ -8178,7 +8274,7 @@ Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:ligh
 
 ### IKEA GU10 white spectrum (ikea.light.led1537r6) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "IKEA GU10 white spectrum" <status>
@@ -8189,7 +8285,7 @@ Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:ligh
 
 ### IKEA E27 warm white (ikea.light.led1623g12) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "IKEA E27 warm white" <status>
@@ -8200,7 +8296,7 @@ Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:ligh
 
 ### IKEA GU10 warm white (ikea.light.led1650r5) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "IKEA GU10 warm white" <status>
@@ -8211,7 +8307,7 @@ Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:ligh
 
 ### IKEA E14 warm white (ikea.light.led1649c5) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "IKEA E14 warm white" <status>
@@ -8222,7 +8318,7 @@ Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:ligh
 
 ### Xiaomiyoupin Curtain Controller (Wi-Fi) (lumi.curtain.hagl05) item file lines
 
-note: Autogenerated example. Replace the id (curtain) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (curtain) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_curtain "Xiaomiyoupin Curtain Controller (Wi-Fi)" <status>
@@ -8241,7 +8337,7 @@ Number adjust_value "Motor_controller - Adjust_value" (G_curtain) {channel="miio
 
 ### Mi Air Purifier virtual (lumi.gateway.mgl03) item file lines
 
-note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_gateway "Mi Air Purifier virtual" <status>
@@ -8254,7 +8350,7 @@ String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:d
 
 ### Mi smart Home Gateway Hub (lumi.gateway.mieu01) item file lines
 
-note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_gateway "Mi smart Home Gateway Hub" <status>
@@ -8275,7 +8371,7 @@ String doorbell_push "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:
 
 ### Mi smart Home Gateway Hub v1 (lumi.gateway.v1) item file lines
 
-note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_gateway "Mi smart Home Gateway Hub v1" <status>
@@ -8288,7 +8384,7 @@ String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:d
 
 ### Mi smart Home GatewayHub v2 (lumi.gateway.v2) item file lines
 
-note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_gateway "Mi smart Home GatewayHub v2" <status>
@@ -8301,7 +8397,7 @@ String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:d
 
 ### Mi smart Home Gateway Hub v3 (lumi.gateway.v3) item file lines
 
-note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_gateway "Mi smart Home Gateway Hub v3" <status>
@@ -8314,7 +8410,7 @@ String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:d
 
 ### Aqara LED Light Bulb (Tunable White) (lumi.light.aqcn02) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Aqara LED Light Bulb (Tunable White)" <status>
@@ -8325,7 +8421,7 @@ Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:ligh
 
 ### Door lock (lumi.lock.v1) item file lines
 
-note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_lock "Door lock" <status>
@@ -8335,7 +8431,7 @@ String log "Device Log" (G_lock) {channel="miio:lumi:lock:log"}
 
 ### Aqara Door Lock (lumi.lock.aq1) item file lines
 
-note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_lock "Aqara Door Lock" <status>
@@ -8345,7 +8441,7 @@ String log "Device Log" (G_lock) {channel="miio:lumi:lock:log"}
 
 ### Aqara Door Lock S2 (lumi.lock.acn02) item file lines
 
-note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_lock "Aqara Door Lock S2" <status>
@@ -8355,7 +8451,7 @@ String log "Device Log" (G_lock) {channel="miio:lumi:lock:log"}
 
 ### Aqara Door lock S2 Pro (lumi.lock.acn03) item file lines
 
-note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_lock "Aqara Door lock S2 Pro" <status>
@@ -8365,7 +8461,7 @@ String log "Device Log" (G_lock) {channel="miio:lumi:lock:log"}
 
 ### Mi Smart Plug (Zigbee) (lumi.plug.mmeu01) item file lines
 
-note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_plug "Mi Smart Plug (Zigbee)" <status>
@@ -8379,7 +8475,7 @@ String log "Device Log" (G_plug) {channel="miio:lumi:plug:log"}
 
 ### Mi Window and Door Sensor (lumi.sensor_magnet.v2) item file lines
 
-note: Autogenerated example. Replace the id (sensor_magnet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (sensor_magnet) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_sensor_magnet "Mi Window and Door Sensor" <status>
@@ -8388,7 +8484,7 @@ String log "Device Log" (G_sensor_magnet) {channel="miio:lumi:sensor_magnet:log"
 
 ### Mi Motion Sensor (lumi.sensor_motion.aq2) item file lines
 
-note: Autogenerated example. Replace the id (sensor_motion) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (sensor_motion) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_sensor_motion "Mi Motion Sensor" <status>
@@ -8397,7 +8493,7 @@ String log "Device Log" (G_sensor_motion) {channel="miio:lumi:sensor_motion:log"
 
 ### Mi Motion Sensor (lumi.sensor_motion.v2) item file lines
 
-note: Autogenerated example. Replace the id (sensor_motion) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (sensor_motion) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_sensor_motion "Mi Motion Sensor" <status>
@@ -8406,7 +8502,7 @@ String log "Device Log" (G_sensor_motion) {channel="miio:lumi:sensor_motion:log"
 
 ### Mi Temperature and Humidity Sensor (lumi.sensor_ht.v1) item file lines
 
-note: Autogenerated example. Replace the id (sensor_ht) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (sensor_ht) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_sensor_ht "Mi Temperature and Humidity Sensor" <status>
@@ -8416,7 +8512,7 @@ Number:Dimensionless humidity "Humidity" (G_sensor_ht) {channel="miio:lumi:senso
 
 ### Water Leak Sensor (lumi.sensor_wleak.aq1) item file lines
 
-note: Autogenerated example. Replace the id (sensor_wleak) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (sensor_wleak) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_sensor_wleak "Water Leak Sensor" <status>
@@ -8426,7 +8522,7 @@ String log "Device Log" (G_sensor_wleak) {channel="miio:lumi:sensor_wleak:log"}
 
 ### Aqara Temperature and Humidity Sensor (lumi.weather.v1) item file lines
 
-note: Autogenerated example. Replace the id (weather) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (weather) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_weather "Aqara Temperature and Humidity Sensor" <status>
@@ -8437,7 +8533,7 @@ Number:Pressure pressure "pressure" (G_weather) {channel="miio:lumi:weather:pres
 
 ### Mi Robot Vacuum-Mop Essential (mijia.vacuum.v2) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Mi Robot Vacuum-Mop Essential" <status>
@@ -8470,7 +8566,7 @@ Number mop_status "Other Status - Mop Status" (G_vacuum) {channel="miio:basic:va
 
 ### Mijia Smart Pet Water Dispenser (mmgg.pet_waterer.s1) item file lines
 
-note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
@@ -8488,7 +8584,7 @@ Number:Time no_water_time "No Water Flag - No Water Time" (G_pet_waterer) {chann
 
 ### Mijia Smart Pet Water Dispenser (mmgg.pet_waterer.s2) item file lines
 
-note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
@@ -8507,7 +8603,7 @@ Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channe
 
 ### Mijia Smart Pet Water Dispenser (mmgg.pet_waterer.s3) item file lines
 
-note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_pet_waterer "Mijia Smart Pet Water Dispenser" <status>
@@ -8526,7 +8622,7 @@ Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channe
 
 ### XIAOWAN Smart Pet Water Dispenser (mmgg.pet_waterer.s4) item file lines
 
-note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_pet_waterer "XIAOWAN Smart Pet Water Dispenser" <status>
@@ -8545,7 +8641,7 @@ Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channe
 
 ### MR.BOND (mrbond.airer.m1pro) item file lines
 
-note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airer "MR.BOND" <status>
@@ -8560,7 +8656,7 @@ Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 
 ### MR.BOND (mrbond.airer.m1s) item file lines
 
-note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airer "MR.BOND" <status>
@@ -8575,7 +8671,7 @@ Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 
 ### MR.BOND (mrbond.airer.m1super) item file lines
 
-note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airer "MR.BOND" <status>
@@ -8590,7 +8686,7 @@ Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 
 ### WIDETECH WDH318EFW1 Internet Dehumidifier (nwt.derh.wdh318efw1) item file lines
 
-note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_derh "WIDETECH WDH318EFW1 Internet Dehumidifier" <status>
@@ -8612,7 +8708,7 @@ String alarm "Alarm" (G_derh) {channel="miio:basic:derh:alarm"}
 
 ### Philips Zhirui Ceiling Lamp Bedroom 40W (philips.light.bceiling1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Zhirui Ceiling Lamp Bedroom 40W" <status>
@@ -8631,7 +8727,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 ### Philips Zhirui Ceiling Lamp Bedroom 28W (philips.light.bceiling2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Zhirui Ceiling Lamp Bedroom 28W" <status>
@@ -8650,7 +8746,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 ### Philips ZhiRui E27 bulb (philips.light.bulb) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiRui E27 bulb" <status>
@@ -8665,7 +8761,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### Philips ZhiRui E14 Candle Lamp Frosted version (philips.light.candle) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiRui E14 Candle Lamp Frosted version" <status>
@@ -8679,7 +8775,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 ### Philips ZhiRui E14 Candle Lamp Crystal version (philips.light.candle2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiRui E14 Candle Lamp Crystal version" <status>
@@ -8693,7 +8789,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 ### Mijia Philips Color Bulb (philips.light.cbulb) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mijia Philips Color Bulb" <status>
@@ -8709,7 +8805,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### Philips Light (philips.light.cbulbs) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Light" <status>
@@ -8725,7 +8821,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### Philips Connected Ceiling (philips.light.ceiling) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Connected Ceiling" <status>
@@ -8739,7 +8835,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 ### Philips Light (philips.light.dcolor) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Light" <status>
@@ -8755,7 +8851,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### ZhiRui Dimmable Downlight (philips.light.dlight) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "ZhiRui Dimmable Downlight" <status>
@@ -8774,7 +8870,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Philips ZhiRui Downlight (philips.light.downlight) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiRui Downlight" <status>
@@ -8789,7 +8885,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### Philips Wi-Fi bulb E27 White (philips.light.hbulb) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Wi-Fi bulb E27 White" <status>
@@ -8804,7 +8900,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### Philips ZhiYi Ceiling Lamp FL 40W (philips.light.lnblight1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiYi Ceiling Lamp FL 40W" <status>
@@ -8823,7 +8919,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 ### Philips ZhiYi Ceiling Lamp FL 28W (philips.light.lnblight2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiYi Ceiling Lamp FL 28W" <status>
@@ -8842,7 +8938,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 ### Philips ZhiYi Ceiling Lamp FL 80W (philips.light.lnlrlight) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiYi Ceiling Lamp FL 80W" <status>
@@ -8861,7 +8957,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 ### Philips Zhirui Ceiling Lamp Living room 80W (philips.light.lrceiling) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Zhirui Ceiling Lamp Living room 80W" <status>
@@ -8880,7 +8976,7 @@ Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 
 ### Zhirui Ceiling Lamp Nordic 80W (philips.light.mceil) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Nordic 80W" <status>
@@ -8899,7 +8995,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Zhirui Ceiling Lamp Nordic 40W (philips.light.mceilm) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Nordic 40W" <status>
@@ -8918,7 +9014,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Zhirui Ceiling Lamp Nordic 28W (philips.light.mceils) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Nordic 28W" <status>
@@ -8937,7 +9033,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Philips Smart Lamp (philips.light.mono1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Smart Lamp" <status>
@@ -8948,7 +9044,7 @@ Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 
 ### Philips ZhiRui Bedside Lamp (philips.light.moonlight) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiRui Bedside Lamp" <status>
@@ -8964,7 +9060,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 ### Zhirui Ceiling Lamp Black 80W (philips.light.obceil) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Black 80W" <status>
@@ -8983,7 +9079,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Zhirui Ceiling Lamp Black 40W (philips.light.obceim) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Black 40W" <status>
@@ -9002,7 +9098,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Zhirui Ceiling Lamp Black 28W (philips.light.obceis) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Black 28W" <status>
@@ -9021,7 +9117,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Mijia Philips Study Desk Lamp (philips.light.rwread) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mijia Philips Study Desk Lamp" <status>
@@ -9034,7 +9130,7 @@ Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 
 ### Zhirui Ceiling Lamp Starry 80W (philips.light.sceil) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Starry 80W" <status>
@@ -9053,7 +9149,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Zhirui Ceiling Lamp Starry 40W (philips.light.sceilm) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Starry 40W" <status>
@@ -9072,7 +9168,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Zhirui Ceiling Lamp Starry 28W (philips.light.sceils) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Starry 28W" <status>
@@ -9091,7 +9187,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Philips EyeCare Connected Desk Lamp gen2. (philips.light.sread1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips EyeCare Connected Desk Lamp gen2." <status>
@@ -9106,7 +9202,7 @@ Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 
 ### Mijia Philips Desk Lamp 2S (philips.light.sread2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mijia Philips Desk Lamp 2S" <status>
@@ -9121,7 +9217,7 @@ Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 
 ### Philips Connected Lights (philips.light.virtual) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips Connected Lights" <status>
@@ -9136,7 +9232,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### Zhirui Ceiling Lamp Gorgeous 80W (philips.light.xzceil) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Gorgeous 80W" <status>
@@ -9155,7 +9251,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Zhirui Ceiling Lamp Gorgeous 40W (philips.light.xzceim) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Gorgeous 40W" <status>
@@ -9174,7 +9270,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Zhirui Ceiling Lamp Gorgeous 28W (philips.light.xzceis) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Zhirui Ceiling Lamp Gorgeous 28W" <status>
@@ -9193,7 +9289,7 @@ String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 
 ### Philips ZhiYi Ceiling lamp (philips.light.zyceiling) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiYi Ceiling lamp" <status>
@@ -9207,7 +9303,7 @@ Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 
 ### Philips ZhiYi Desk Lamp (philips.light.zysread) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiYi Desk Lamp" <status>
@@ -9222,7 +9318,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### Philips ZhiYi Strip (philips.light.zystrip) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Philips ZhiYi Strip" <status>
@@ -9237,7 +9333,7 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 
 ### CHINGMI Smart Power Strip v1 (qmi.powerstrip.v1) item file lines
 
-note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
@@ -9255,7 +9351,7 @@ Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic
 
 ### ROIDMI EVE vacuum (roidmi.vacuum.v60) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "ROIDMI EVE vacuum" <status>
@@ -9311,7 +9407,7 @@ Number sweep_mode "Sweep - Sweep Mode" (G_vacuum) {channel="miio:basic:vacuum:sw
 
 ### ROIDMI EVA (roidmi.vacuum.v66) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "ROIDMI EVA" <status>
@@ -9376,7 +9472,7 @@ Number:Time back_clean_freq "Basestation - Back Clean Freq" (G_vacuum) {channel=
 
 ### PTX OneKey Switch (WIFI) (090615.switch.xswitch01) item file lines
 
-note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_switch "PTX OneKey Switch (WIFI)" <status>
@@ -9386,7 +9482,7 @@ String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch
 
 ### PTX Twokey switch(wifi) (090615.switch.xswitch02) item file lines
 
-note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_switch "PTX Twokey switch(wifi)" <status>
@@ -9398,7 +9494,7 @@ String switch2name "Switch Name 2" (G_switch) {channel="miio:basic:switch:switch
 
 ### PTX ThreeKey Switch (WIFI) (090615.switch.xswitch03) item file lines
 
-note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_switch "PTX ThreeKey Switch (WIFI)" <status>
@@ -9412,7 +9508,7 @@ String switch3name "Switch Name 3" (G_switch) {channel="miio:basic:switch:switch
 
 ### SCISHARE Smart Capsule Coffee Machine (scishare.coffee.s1102) item file lines
 
-note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_coffee "SCISHARE Smart Capsule Coffee Machine" <status>
@@ -9425,7 +9521,7 @@ Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
 
 ### Xiaomi Scishare Smart Capsule Coffee Machine (scishare.coffee.s1301) item file lines
 
-note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_coffee "Xiaomi Scishare Smart Capsule Coffee Machine" <status>
@@ -9438,7 +9534,7 @@ Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
 
 ### Viomi Cleaning Robot V-RVCLM21B (viomi.vacuum.v6) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Viomi Cleaning Robot V-RVCLM21B" <status>
@@ -9462,7 +9558,7 @@ Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap
 
 ### Mi Robot Vacuum-Mop P (viomi.vacuum.v7) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
@@ -9486,7 +9582,7 @@ Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap
 
 ### Mi Robot Vacuum-Mop P (viomi.vacuum.v8) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
@@ -9510,7 +9606,7 @@ Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap
 
 ### Viomi S9 (viomi.vacuum.v18) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Viomi S9" <status>
@@ -9578,7 +9674,7 @@ Number:Dimensionless download_progress "Voice - Download Progress" (G_vacuum) {c
 
 ### VIOMI Internet Electric Water Heater 1A (60L) (viomi.waterheater.e1) item file lines
 
-note: Autogenerated example. Replace the id (waterheater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterheater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterheater "VIOMI Internet Electric Water Heater 1A (60L)" <status>
@@ -9596,7 +9692,7 @@ Number appointEnd "Appoint End" (G_waterheater) {channel="miio:basic:waterheater
 
 ### Mi Inverter Air Conditioner (1.5HP) (xiaomi.aircondition.ma1) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Inverter Air Conditioner (1.5HP)" <status>
@@ -9616,7 +9712,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 ### Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1) (xiaomi.aircondition.ma2) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1)" <status>
@@ -9636,7 +9732,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 ### Mi Vertical Air Conditioner (2HP) (xiaomi.aircondition.ma4) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Vertical Air Conditioner (2HP)" <status>
@@ -9656,7 +9752,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 ### Mi Smart Vertical Air Conditioner C1 (2HP / Inverter / China Energy Label Level 1) (xiaomi.aircondition.ma5) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Vertical Air Conditioner C1 (2HP / Inverter / China Energy Label Level 1)" <status>
@@ -9676,7 +9772,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 ### Mi Smart Air Conditioner C1 (1.5HP / Conventional / China Energy Label Level 3) (xiaomi.aircondition.ma6) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner C1 (1.5HP / Conventional / China Energy Label Level 3)" <status>
@@ -9696,7 +9792,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 ### Mi Smart Air Conditioner C1 (1HP / Inverter / China Energy Label Level 1) (xiaomi.aircondition.ma9) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner C1 (1HP / Inverter / China Energy Label Level 1)" <status>
@@ -9716,7 +9812,7 @@ Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:bas
 
 ### Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level 1) (xiaomi.aircondition.mc1) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level 1)" <status>
@@ -9743,7 +9839,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level 1) (xiaomi.aircondition.mc2) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level 1)" <status>
@@ -9770,7 +9866,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level <1) (xiaomi.aircondition.mc4) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level <1)" <status>
@@ -9797,7 +9893,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level <1) (xiaomi.aircondition.mc5) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level <1)" <status>
@@ -9824,7 +9920,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Vertical Air Conditioner A (2HP / Inverter / China Energy Label Level <1) (xiaomi.aircondition.mc6) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Vertical Air Conditioner A (2HP / Inverter / China Energy Label Level <1)" <status>
@@ -9851,7 +9947,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Vertical Air Conditioner A (3HP / Inverter / China Energy Label Level <1) (xiaomi.aircondition.mc7) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Vertical Air Conditioner A (3HP / Inverter / China Energy Label Level <1)" <status>
@@ -9878,7 +9974,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Ultra Electricity Saving Air Conditioner(1.5HP/Inverter/New China Energy Label Level 3) (xiaomi.aircondition.mc8) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner(1.5HP/Inverter/New China Energy Label Level 3)" <status>
@@ -9905,7 +10001,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Ultra Electricity Saving Vertical Air Conditioner(2HP/Inverter/New China Energy Label Level 3) (xiaomi.aircondition.mc9) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner(2HP/Inverter/New China Energy Label Level 3)" <status>
@@ -9932,7 +10028,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Ultra Electricity Saving Vertical Air Conditioner (2HP/Inverter/New China Energy Label Level 1) (xiaomi.aircondition.c10) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner (2HP/Inverter/New China Energy Label Level 1)" <status>
@@ -9959,7 +10055,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Ultra Electricity Saving Vertical Air Conditioner (3HP/Inverter/New China Energy Label Level 1) (xiaomi.aircondition.c11) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner (3HP/Inverter/New China Energy Label Level 1)" <status>
@@ -9986,7 +10082,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Air Conditioner C (1HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mh1) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner C (1HP / Inverter / New China Energy Label Level 1)" <status>
@@ -10013,7 +10109,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Air Conditioner C (1.5HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mh2) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner C (1.5HP / Inverter / New China Energy Label Level 1)" <status>
@@ -10040,7 +10136,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Ultra Electricity Saving Air Conditioner(1HP/Inverter/New China Energy Label Level 3) (xiaomi.aircondition.mh3) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner(1HP/Inverter/New China Energy Label Level 3)" <status>
@@ -10067,7 +10163,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Air Conditioner X (1HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt1) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner X (1HP / Inverter / New China Energy Label Level 1)" <status>
@@ -10094,7 +10190,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Air Conditioner X (1.5HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt2) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Air Conditioner X (1.5HP / Inverter / New China Energy Label Level 1)" <status>
@@ -10121,7 +10217,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Gentle Breeze Air Conditioner (1HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt3) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Gentle Breeze Air Conditioner (1HP / Inverter / New China Energy Label Level 1)" <status>
@@ -10148,7 +10244,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Gentle Breeze Air Conditioner (1.5HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt4) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Gentle Breeze Air Conditioner (1.5HP / Inverter / New China Energy Label Level 1)" <status>
@@ -10175,7 +10271,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Gentle Breeze Vertical Air Conditioner (3HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt5) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Gentle Breeze Vertical Air Conditioner (3HP / Inverter / New China Energy Label Level 1)" <status>
@@ -10202,7 +10298,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1) (xiaomi.aircondition.mt7) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1)" <status>
@@ -10229,7 +10325,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1) (xiaomi.aircondition.mt8) item file lines
 
-note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1)" <status>
@@ -10256,7 +10352,7 @@ String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:airconditio
 
 ### Xiaomi Robot Vacuum X20+ (xiaomi.vacuum.c102gl) item file lines
 
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_vacuum "Xiaomi Robot Vacuum X20+" <status>
@@ -10312,7 +10408,7 @@ Number total_clean_area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 
 ### Uclean Smart Toilet Seat (xjx.toilet.pro) item file lines
 
-note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_toilet "Uclean Smart Toilet Seat" <status>
@@ -10325,7 +10421,7 @@ Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_le
 
 ### Uclean Smart Toilet pure (xjx.toilet.pure) item file lines
 
-note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_toilet "Uclean Smart Toilet pure" <status>
@@ -10338,7 +10434,7 @@ Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_le
 
 ### Uclean Smart Toilet relax (xjx.toilet.relax) item file lines
 
-note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_toilet "Uclean Smart Toilet relax" <status>
@@ -10351,7 +10447,7 @@ Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_le
 
 ### Whale Spout Smart Toilet Zero (xjx.toilet.zero) item file lines
 
-note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_toilet "Whale Spout Smart Toilet Zero" <status>
@@ -10364,7 +10460,7 @@ Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_le
 
 ### Yeelight Smart Bath Heater Pro (yeelink.bhf_light.v1) item file lines
 
-note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_bhf_light "Yeelight Smart Bath Heater Pro" <status>
@@ -10378,7 +10474,7 @@ Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio
 
 ### Yeelight Smart Bath Heater (yeelink.bhf_light.v2) item file lines
 
-note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_bhf_light "Yeelight Smart Bath Heater" <status>
@@ -10392,7 +10488,7 @@ Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio
 
 ### Mi Bedside Lamp (yeelink.light.bslamp1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi Bedside Lamp" <status>
@@ -10408,7 +10504,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Mi Bedside Lamp 2 (yeelink.light.bslamp2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi Bedside Lamp 2" <status>
@@ -10424,7 +10520,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Bedside Lamp II (yeelink.light.bslamp3) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Bedside Lamp II" <status>
@@ -10438,9 +10534,42 @@ Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
+### Yeelight LED Ceiling Light Pro (yeelink.light.ceila) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Light Pro" <status>
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number mode "Light - Mode" (G_light) {channel="miio:basic:light:mode"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
+```
+
+### Yeelight Arwen Ceiling Light (yeelink.light.ceilb) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Yeelight Arwen Ceiling Light" <status>
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number mode "Light - Mode" (G_light) {channel="miio:basic:light:mode"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
+Switch on1 "Ambient Light - Switch Status" (G_light) {channel="miio:basic:light:on1"}
+Number mode1 "Ambient Light - Mode" (G_light) {channel="miio:basic:light:mode1"}
+Number:Dimensionless brightness1 "Ambient Light - Brightness" (G_light) {channel="miio:basic:light:brightness1"}
+Number:Temperature color_temperature1 "Ambient Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature1"}
+Number color "Ambient Light - Color" (G_light) {channel="miio:basic:light:color"}
+Number:Dimensionless saturability "Ambient Light - Saturability" (G_light) {channel="miio:basic:light:saturability"}
+Number flow "Ambient Light - Flow" (G_light) {channel="miio:basic:light:flow"}
+```
+
 ### Yeelight Ceiling Light (yeelink.light.ceiling1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light" <status>
@@ -10456,7 +10585,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Ceiling Light SE (yeelink.light.ceiling2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light SE" <status>
@@ -10472,7 +10601,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight LED Ceiling Light (yeelink.light.ceiling3) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Ceiling Light" <status>
@@ -10488,7 +10617,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight LED Ceiling Light (yeelink.light.ceiling4) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Ceiling Light" <status>
@@ -10509,7 +10638,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling4.ambi) item file lines
 
-note: Autogenerated example. Replace the id (ceiling4) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (ceiling4) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_ceiling4 "Yeelight LED Ceiling Ambi Lamp" <status>
@@ -10525,7 +10654,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:
 
 ### Mi LED Ceiling Light (yeelink.light.ceiling5) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi LED Ceiling Light" <status>
@@ -10541,7 +10670,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight HaoShi LED Ceiling Lamp Pro (yeelink.light.ceiling6) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight HaoShi LED Ceiling Lamp Pro" <status>
@@ -10557,7 +10686,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Haoshi Ceiling Lamp (yeelink.light.ceiling7) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Haoshi Ceiling Lamp" <status>
@@ -10573,7 +10702,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### LED Ceiling Light Crystal Plus (yeelink.light.ceiling8) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "LED Ceiling Light Crystal Plus" <status>
@@ -10589,7 +10718,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight HaoShi LED Ceiling Lamp Pro (yeelink.light.ceiling9) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight HaoShi LED Ceiling Lamp Pro" <status>
@@ -10605,7 +10734,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Crystal Pendant Lamp (yeelink.light.ceiling10) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Crystal Pendant Lamp" <status>
@@ -10626,7 +10755,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling10.ambi) item file lines
 
-note: Autogenerated example. Replace the id (ceiling10) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (ceiling10) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_ceiling10 "Yeelight LED Ceiling Ambi Lamp" <status>
@@ -10642,7 +10771,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling10) {channel="miio
 
 ### Yeelight Ceiling Light 320 1S (yeelink.light.ceiling11) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light 320 1S" <status>
@@ -10658,7 +10787,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Stylized Ceiling Light  Pro (yeelink.light.ceiling12) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Stylized Ceiling Light  Pro" <status>
@@ -10674,7 +10803,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Ceiling Light (yeelink.light.ceiling13) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light" <status>
@@ -10690,7 +10819,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Ceiling Light Mini (yeelink.light.ceiling14) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light Mini" <status>
@@ -10706,7 +10835,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Ceiling Light 480 1S (yeelink.light.ceiling15) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light 480 1S" <status>
@@ -10722,7 +10851,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Xingyu Ceiling Light (yeelink.light.ceiling16) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Xingyu Ceiling Light" <status>
@@ -10738,7 +10867,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight ShaoHua Celing Light (yeelink.light.ceiling17) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight ShaoHua Celing Light" <status>
@@ -10754,7 +10883,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Ceiling Light Pro (yeelink.light.ceiling18) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light Pro" <status>
@@ -10770,7 +10899,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Ceiling Light Pro (yeelink.light.ceiling19) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light Pro" <status>
@@ -10786,7 +10915,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling19.ambi) item file lines
 
-note: Autogenerated example. Replace the id (ceiling19) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (ceiling19) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_ceiling19 "Yeelight LED Ceiling Ambi Lamp" <status>
@@ -10802,7 +10931,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling19) {channel="miio
 
 ### Yeelight Ceiling Light (yeelink.light.ceiling20) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Ceiling Light" <status>
@@ -10818,7 +10947,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling20.ambi) item file lines
 
-note: Autogenerated example. Replace the id (ceiling20) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (ceiling20) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_ceiling20 "Yeelight LED Ceiling Ambi Lamp" <status>
@@ -10834,7 +10963,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_ceiling20) {channel="miio
 
 ### Mi Smart LED Living Room Ceiling Light (yeelink.light.ceiling21) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi Smart LED Living Room Ceiling Light" <status>
@@ -10850,7 +10979,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Mi Smart LED Ceiling Light (yeelink.light.ceiling22) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi Smart LED Ceiling Light" <status>
@@ -10866,7 +10995,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Mi Smart LED Ceiling Light (350mm) (yeelink.light.ceiling23) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi Smart LED Ceiling Light (350mm)" <status>
@@ -10882,7 +11011,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Jade Smart LED Ceiling Light C2001 (yeelink.light.ceil26) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Jade Smart LED Ceiling Light C2001" <status>
@@ -10898,7 +11027,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Color Bulb (yeelink.light.color1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Color Bulb" <status>
@@ -10914,7 +11043,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight LED Bulb (Color) (yeelink.light.color2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Bulb (Color)" <status>
@@ -10930,7 +11059,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Mi LED Smart Bulb (White and Color) (yeelink.light.color3) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi LED Smart Bulb (White and Color)" <status>
@@ -10946,7 +11075,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight LED Bulb 1S（Color） (yeelink.light.color4) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Bulb 1S（Color）" <status>
@@ -10962,7 +11091,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Mi Smart LED Bulb Essential (White and Color) (yeelink.light.color5) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi Smart LED Bulb Essential (White and Color)" <status>
@@ -10978,7 +11107,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Smart LED Bulb 1SE (color) (yeelink.light.colora) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Smart LED Bulb 1SE (color)" <status>
@@ -10994,7 +11123,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Smart LED Bulb W3 (color) (yeelink.light.colorb) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Smart LED Bulb W3 (color)" <status>
@@ -11010,7 +11139,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight LED Bulb (Tunable) (yeelink.light.ct2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Bulb (Tunable)" <status>
@@ -11024,7 +11153,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Mi LED Desk Lamp (yeelink.light.lamp1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi LED Desk Lamp" <status>
@@ -11038,7 +11167,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Mi Smart LED Desk Lamp Pro (yeelink.light.lamp2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi Smart LED Desk Lamp Pro" <status>
@@ -11052,7 +11181,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight LED Lamp (yeelink.light.lamp3) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Lamp" <status>
@@ -11066,7 +11195,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Mi LED Desk Lamp 1S (yeelink.light.lamp4) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi LED Desk Lamp 1S" <status>
@@ -11080,7 +11209,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Smart Desk Lamp Prime (yeelink.light.lamp5) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Smart Desk Lamp Prime" <status>
@@ -11094,7 +11223,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight (yeelink.light.lamp6) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight" <status>
@@ -11108,7 +11237,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight LED Light Sensor Desk Lamp V1 (yeelink.light.lamp7) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Light Sensor Desk Lamp V1" <status>
@@ -11122,7 +11251,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight (yeelink.light.lamp8) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight" <status>
@@ -11136,7 +11265,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Star LED Table Lamp (yeelink.light.lamp9) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Star LED Table Lamp" <status>
@@ -11150,7 +11279,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Star Floor Lamp (yeelink.light.lamp10) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Star Floor Lamp" <status>
@@ -11164,7 +11293,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Screen Light Bar (yeelink.light.lamp15) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Screen Light Bar" <status>
@@ -11183,7 +11312,7 @@ Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:ligh
 
 ### Yeelight Bulb (yeelink.light.mono1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Bulb" <status>
@@ -11197,7 +11326,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight White Bulb v2 (yeelink.light.mono2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight White Bulb v2" <status>
@@ -11211,7 +11340,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight LED Bulb 1S（Dimmable） (yeelink.light.mono4) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Bulb 1S（Dimmable）" <status>
@@ -11225,7 +11354,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight LED Filament Bulb (yeelink.light.mono5) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED Filament Bulb" <status>
@@ -11239,7 +11368,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Mi Smart LED Bulb (yeelink.light.mono6) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Mi Smart LED Bulb" <status>
@@ -11253,7 +11382,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight LED smart bulb W3(dimmable) (yeelink.light.monoa) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight LED smart bulb W3(dimmable)" <status>
@@ -11267,7 +11396,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight GU10 Smart Bulb W1(dimmable) (yeelink.light.monob) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight GU10 Smart Bulb W1(dimmable)" <status>
@@ -11281,7 +11410,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Whiteglow Panel Light (yeelink.light.panel1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Whiteglow Panel Light" <status>
@@ -11297,7 +11426,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yeelight Lightstrip (yeelink.light.strip1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Lightstrip" <status>
@@ -11313,7 +11442,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Lightstrip Plus (yeelink.light.strip2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Lightstrip Plus" <status>
@@ -11329,7 +11458,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Willow LED Lightstrip (yeelink.light.strip4) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yeelight Willow LED Lightstrip" <status>
@@ -11343,7 +11472,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Light Group (Mi & Yeelight) (yeelink.light.virtual) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Light Group (Mi & Yeelight)" <status>
@@ -11357,7 +11486,7 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 
 ### Yeelight Smart Dual Control Module (yeelink.switch.sw1) item file lines
 
-note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_switch "Yeelight Smart Dual Control Module" <status>
@@ -11374,7 +11503,7 @@ String rc_list "Extension - Rc List" (G_switch) {channel="miio:basic:switch:rc-l
 
 ### Yilai Ceiling Light Aiyue 480 (yilai.light.ceiling1) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yilai Ceiling Light Aiyue 480" <status>
@@ -11390,7 +11519,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yilai Ceiling Lamp Hefeng 430 (yilai.light.ceiling2) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yilai Ceiling Lamp Hefeng 430" <status>
@@ -11406,7 +11535,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Yilai Ceiling Lamp Hefeng Pro (yilai.light.ceiling3) item file lines
 
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_light "Yilai Ceiling Lamp Hefeng Pro" <status>
@@ -11422,7 +11551,7 @@ Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:bas
 
 ### Mi Water Purifier lx2 (yunmi.waterpuri.lx2) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier lx2" <status>
@@ -11456,7 +11585,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier (Under Counter) (yunmi.waterpuri.lx3) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier (Under Counter)" <status>
@@ -11490,7 +11619,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier lx4 (yunmi.waterpuri.lx4) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier lx4" <status>
@@ -11524,7 +11653,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier 1A/400G Pro (yunmi.waterpuri.lx5) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier 1A/400G Pro" <status>
@@ -11558,7 +11687,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier (Under Counter) (yunmi.waterpuri.lx6) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier (Under Counter)" <status>
@@ -11592,7 +11721,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier 500G/500G Pro (yunmi.waterpuri.lx7) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier 500G/500G Pro" <status>
@@ -11626,7 +11755,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier 600G (yunmi.waterpuri.lx8) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier 600G" <status>
@@ -11658,7 +11787,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier D1 (yunmi.waterpuri.lx9) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier D1" <status>
@@ -11692,7 +11821,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier lx10 (yunmi.waterpuri.lx10) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier lx10" <status>
@@ -11726,7 +11855,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier C1 (Triple Setting) (yunmi.waterpuri.lx11) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier C1 (Triple Setting)" <status>
@@ -11760,7 +11889,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier S1 (yunmi.waterpuri.lx12) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpuri "Mi Water Purifier S1" <status>
@@ -11794,7 +11923,7 @@ Number lightMode "Light Mode" (G_waterpuri) {channel="miio:basic:waterpuri:light
 
 ### Mi Water Purifier v1 (yunmi.waterpurifier.v1) item file lines
 
-note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpurifier "Mi Water Purifier v1" <status>
@@ -11828,7 +11957,7 @@ Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifi
 
 ### Mi Water Purifier v2 (yunmi.waterpurifier.v2) item file lines
 
-note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpurifier "Mi Water Purifier v2" <status>
@@ -11862,7 +11991,7 @@ Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifi
 
 ### Mi Water Purifier (Under sink) v3 (yunmi.waterpurifier.v3) item file lines
 
-note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpurifier "Mi Water Purifier (Under sink) v3" <status>
@@ -11896,7 +12025,7 @@ Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifi
 
 ### Mi Water Purifier v4 (yunmi.waterpurifier.v4) item file lines
 
-note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_waterpurifier "Mi Water Purifier v4" <status>
@@ -11930,7 +12059,7 @@ Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifi
 
 ### Smartmi Ventilation System (zhimi.airfresh.va2) item file lines
 
-note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airfresh "Smartmi Ventilation System" <status>
@@ -11952,7 +12081,7 @@ Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:a
 
 ### Smartmi Fresh Air System (Heating) (zhimi.airfresh.va4) item file lines
 
-note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airfresh "Smartmi Fresh Air System (Heating)" <status>
@@ -11974,7 +12103,7 @@ Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:a
 
 ### Mi Fresh Air Ventilator C1-80 (zhimi.airfresh.ua1) item file lines
 
-note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airfresh "Mi Fresh Air Ventilator C1-80" <status>
@@ -11995,7 +12124,7 @@ Number:Temperature temperature "Custom Service - Temperature" (G_airfresh) {chan
 
 ### Mi PM2.5 Air Quality Monitor (zhimi.airmonitor.v1) item file lines
 
-note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airmonitor "Mi PM2.5 Air Quality Monitor" <status>
@@ -12011,7 +12140,7 @@ Number night_end "Night End Time" (G_airmonitor) {channel="miio:basic:airmonitor
 
 ### Xiaomi Smart Air Purifier 4 Compact (zhimi.airp.cpa4) item file lines
 
-note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airp "Xiaomi Smart Air Purifier 4 Compact" <status>
@@ -12035,7 +12164,7 @@ Number aqi_updata_heartbeat "Aqi - Aqi Updata Heartbeat" (G_airp) {channel="miio
 
 ### Mi Air Purifier 3C (zhimi.airp.mb4a) item file lines
 
-note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airp "Mi Air Purifier 3C" <status>
@@ -12057,7 +12186,7 @@ Number:Time aqi_updata_heartbeat "Custom Service - Aqi Updata Heartbeat" (G_airp
 
 ### Xiaomi Smart Air Purifier 4 (zhimi.airp.mb5) item file lines
 
-note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airp "Xiaomi Smart Air Purifier 4" <status>
@@ -12094,7 +12223,7 @@ Number aqi_state "Aqi - Aqi State" (G_airp) {channel="miio:basic:airp:aqi_state"
 
 ### Xiaomi Smart Air Purifier 4 Lite (zhimi.airp.rmb1) item file lines
 
-note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airp "Xiaomi Smart Air Purifier 4 Lite" <status>
@@ -12120,7 +12249,7 @@ Number aqi_updata_heartbeat "Aqi - Aqi Updata Heartbeat" (G_airp) {channel="miio
 
 ### Xiaomi Smart Air Purifier 4 Pro (zhimi.airp.vb4) item file lines
 
-note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airp) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airp "Xiaomi Smart Air Purifier 4 Pro" <status>
@@ -12157,7 +12286,7 @@ Number aqi_state "Aqi - Aqi State" (G_airp) {channel="miio:basic:airp:aqi_state"
 
 ### Mi Air Purifier 2 (mini) (zhimi.airpurifier.m1) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 2 (mini)" <status>
@@ -12181,7 +12310,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier 2 (zhimi.airpurifier.m2) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 2" <status>
@@ -12205,7 +12334,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.ma1) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 2S" <status>
@@ -12229,7 +12358,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.ma2) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 2S" <status>
@@ -12253,7 +12382,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier 3 (zhimi.airpurifier.ma4) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 3" <status>
@@ -12311,7 +12440,7 @@ Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.mb1) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 2S" <status>
@@ -12335,7 +12464,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier 3/3H (zhimi.airpurifier.mb3) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 3/3H" <status>
@@ -12394,7 +12523,7 @@ Number country_code "Others - National Code" (G_airpurifier) {channel="miio:basi
 
 ### Mi Air Purifier 3C (zhimi.airpurifier.mb4) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 3C" <status>
@@ -12415,7 +12544,7 @@ Number:Time aqi_updata_heartbeat "Custom Service - Aqi Updata Heartbeat" (G_airp
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.mc1) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 2S" <status>
@@ -12439,7 +12568,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier 2H (zhimi.airpurifier.mc2) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier 2H" <status>
@@ -12463,7 +12592,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier Super (zhimi.airpurifier.sa1) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier Super" <status>
@@ -12487,7 +12616,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier MAX / MAX Pro (zhimi.airpurifier.sa2) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier MAX / MAX Pro" <status>
@@ -12511,7 +12640,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier v1 (zhimi.airpurifier.v1) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier v1" <status>
@@ -12535,7 +12664,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier v2 (zhimi.airpurifier.v2) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier v2" <status>
@@ -12559,7 +12688,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier v3 (zhimi.airpurifier.v3) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier v3" <status>
@@ -12583,7 +12712,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier v5 (zhimi.airpurifier.v5) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier v5" <status>
@@ -12607,7 +12736,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier Pro v6 (zhimi.airpurifier.v6) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier Pro v6" <status>
@@ -12631,7 +12760,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier Pro v7 (zhimi.airpurifier.v7) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier Pro v7" <status>
@@ -12655,7 +12784,7 @@ Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:c
 
 ### Mi Air Purifier Pro H (zhimi.airpurifier.vb2) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Mi Air Purifier Pro H" <status>
@@ -12714,7 +12843,7 @@ Number country_code "Others - Country Code" (G_airpurifier) {channel="miio:basic
 
 ### Smartmi Air Purifier (zhimi.airpurifier.za1) item file lines
 
-note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airpurifier "Smartmi Air Purifier" <status>
@@ -12754,7 +12883,7 @@ Switch gesture_status "Others - Gesture Status" (G_airpurifier) {channel="miio:b
 
 ### Mi Standing Fan (zhimi.fan.sa1) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Standing Fan" <status>
@@ -12775,7 +12904,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 ### Mi Smart Fan (zhimi.fan.v1) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Mi Smart Fan" <status>
@@ -12800,7 +12929,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 ### Smartmi DC Pedestal Fan (zhimi.fan.v2) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Smartmi DC Pedestal Fan" <status>
@@ -12825,7 +12954,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 ### Smartmi DC Pedestal Fan (zhimi.fan.v3) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Smartmi DC Pedestal Fan" <status>
@@ -12850,7 +12979,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 ### Smartmi Inverter Pedestal Fan (zhimi.fan.za1) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Smartmi Inverter Pedestal Fan" <status>
@@ -12871,7 +13000,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 ### Smartmi Standing Fan 2 (zhimi.fan.za3) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Smartmi Standing Fan 2" <status>
@@ -12891,7 +13020,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 ### Smartmi Standing Fan 2S (zhimi.fan.za4) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Smartmi Standing Fan 2S" <status>
@@ -12911,7 +13040,7 @@ String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 
 ### Smartmi Standing Fan 3  (zhimi.fan.za5) item file lines
 
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_fan "Smartmi Standing Fan 3 " <status>
@@ -12936,7 +13065,7 @@ Number:Dimensionless speed_level "Custom Service - Speed Level" (G_fan) {channel
 
 ### Mi Smart Space Heater S (zhimi.heater.ma2) item file lines
 
-note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_heater "Mi Smart Space Heater S" <status>
@@ -12954,7 +13083,7 @@ Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basi
 
 ### Mi Smart Baseboard Heater E (zhimi.heater.ma3) item file lines
 
-note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_heater "Mi Smart Baseboard Heater E" <status>
@@ -12973,7 +13102,7 @@ Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basi
 
 ### Mi Smart Space Heater S (zhimi.heater.mc2) item file lines
 
-note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_heater "Mi Smart Space Heater S" <status>
@@ -12992,7 +13121,7 @@ Number country_code "Private Service - Country Code" (G_heater) {channel="miio:b
 
 ### Smartmi Smart Fan (zhimi.heater.na1) item file lines
 
-note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_heater "Smartmi Smart Fan" <status>
@@ -13009,7 +13138,7 @@ Switch return_to_middle "Private Service - Return To Middle" (G_heater) {channel
 
 ### Smartmi Smart Fan Heater (zhimi.heater.nb1) item file lines
 
-note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_heater "Smartmi Smart Fan Heater" <status>
@@ -13030,7 +13159,7 @@ Switch hw_en "Private Service - Hw En" (G_heater) {channel="miio:basic:heater:hw
 
 ### Smartmi Radiant Heater Smart Version (zhimi.heater.za1) item file lines
 
-note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_heater "Smartmi Radiant Heater Smart Version" <status>
@@ -13047,7 +13176,7 @@ Number:Time usedhours "Run Time" (G_heater) {channel="miio:basic:heater:usedhour
 
 ### Smartmi Smart Convector Heater 1S (zhimi.heater.za2) item file lines
 
-note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
@@ -13065,7 +13194,7 @@ Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basi
 
 ### Smartmi Smart Convector Heater 1S (zhimi.heater.zb1) item file lines
 
-note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
@@ -13084,7 +13213,7 @@ Number country_code "Private-Service - Country-Code" (G_heater) {channel="miio:b
 
 ### Smartmi Evaporative Humidifier (zhimi.humidifier.ca1) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
@@ -13106,7 +13235,7 @@ Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:chi
 
 ### Smartmi Evaporative Humidifer 2 (zhimi.humidifier.ca4) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifer 2" <status>
@@ -13131,7 +13260,7 @@ Switch clean "Clean Mode" (G_humidifier) {channel="miio:basic:humidifier:clean"}
 
 ### Smartmi Evaporative Humidifier (zhimi.humidifier.cb1) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
@@ -13151,7 +13280,7 @@ Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:chi
 
 ### Smartmi Evaporative Humidifier (zhimi.humidifier.cb2) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
@@ -13171,7 +13300,7 @@ Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:chi
 
 ### Smartmi Humidifier (zhimi.humidifier.v1) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_humidifier "Smartmi Humidifier" <status>
@@ -13193,7 +13322,7 @@ Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:chi
 
 ### Mi Smart Power Strip (zimi.powerstrip.v2) item file lines
 
-note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_powerstrip "Mi Smart Power Strip" <status>

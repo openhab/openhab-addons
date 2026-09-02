@@ -9,7 +9,7 @@
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
 		<label>Milight RGBCCT</label>
-		<description>LED globe with full Colour, and both cool and warm whites.</description>
+		<description>LED globe with full Colour and both cool and warm whites.</description>
 		<category>Lightbulb</category>
 		<channels>
 			<channel id="colourTemperature" typeId="system.color-temperature"/>
@@ -125,7 +125,7 @@
 	<channel-type id="command" advanced="true">
 		<item-type>String</item-type>
 		<label>Command</label>
-		<description>Send a raw command to the globe/s.</description>
+		<description>Send a raw command to the globe(s).</description>
 		<state>
 			<options>
 				<option value="next_mode">Next Mode</option>
@@ -159,7 +159,7 @@
 	<channel-type id="discoMode" advanced="true">
 		<item-type>String</item-type>
 		<label>Disco Mode</label>
-		<description>Switch to a Disco mode directly.</description>
+		<description>Switch to a disco mode directly.</description>
 		<state>
 			<options>
 				<option value="0">Disco 0</option>

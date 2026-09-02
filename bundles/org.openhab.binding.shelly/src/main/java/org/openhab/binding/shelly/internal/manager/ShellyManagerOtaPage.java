@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -55,8 +54,10 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
     protected final Logger logger = LoggerFactory.getLogger(ShellyManagerOtaPage.class);
 
     public ShellyManagerOtaPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
-        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory);
+            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
+            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
+        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
+                firmwareArch);
     }
 
     @Override
@@ -83,13 +84,12 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
         ShellyManagerInterface th = getThingHandlers().get(uid);
         if (th != null) {
             properties = fillProperties(new HashMap<>(), uid, th);
-            ShellyThingConfiguration config = getThingConfig(th, properties);
             ShellyDeviceProfile profile = th.getProfile();
             String deviceType = getDeviceType(properties);
 
+            String mode = getString(profile.device.mode);
             String uri = !url.isEmpty() && connection.equals(CONNECTION_TYPE_CUSTOM) ? url
-                    : getFirmwareUrl(config.deviceIp, deviceType, profile.device.mode, version,
-                            connection.equals(CONNECTION_TYPE_LOCAL));
+                    : getFirmwareUrl(deviceType, mode, version, connection.equals(CONNECTION_TYPE_LOCAL));
             if (connection.equalsIgnoreCase(CONNECTION_TYPE_INTERNET)) {
                 // If target
                 // - contains "update=xx" then use -> ?update=true for release and ?beta=true for beta
@@ -101,8 +101,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
                 }
             } else if (connection.equalsIgnoreCase(CONNECTION_TYPE_LOCAL)) {
                 // redirect to local server -> http://<oh-ip>:<oh-port>/shelly/manager/ota?deviceType=xxx&version=xxx
-                String modeParm = !profile.device.mode.isEmpty() ? "&" + URLPARM_DEVMODE + "=" + profile.device.mode
-                        : "";
+                String modeParm = !mode.isEmpty() ? "&" + URLPARM_DEVMODE + "=" + mode : "";
                 url = URLPARM_URL + "=http://" + localIp + ":" + localPort + SHELLY_MGR_OTA_URI + urlEncode(
                         "?" + URLPARM_DEVTYPE + "=" + deviceType + modeParm + "&" + URLPARM_VERSION + "=" + version);
             } else if (connection.equalsIgnoreCase(CONNECTION_TYPE_CUSTOM)) {
@@ -157,7 +156,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
         String failure = getMessage("fwupdate.notfound", deviceType, version, url);
         try {
             if (url.isEmpty()) {
-                url = getFirmwareUrl("", deviceType, deviceMode, version, true);
+                url = getFirmwareUrl(deviceType, deviceMode, version, true);
                 if (url.isEmpty()) {
                     logger.warn("ShellyManager: {}", failure);
                     return new ShellyMgrResponse(failure, HttpStatus.BAD_REQUEST_400);
@@ -189,7 +188,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
         }
     }
 
-    protected String getFirmwareUrl(String deviceIp, String deviceType, String mode, String version, boolean local)
+    protected String getFirmwareUrl(String deviceType, String mode, String version, boolean local)
             throws ShellyApiException {
         switch (version) {
             case FWPROD:

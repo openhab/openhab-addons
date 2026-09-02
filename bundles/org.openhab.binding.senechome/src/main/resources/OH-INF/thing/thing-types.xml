@@ -94,7 +94,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -108,9 +108,9 @@
 				<description>Rate of refreshing details (in s)</description>
 				<default>15</default>
 			</parameter>
-			<parameter name="limitationTresholdValue" type="integer" min="0" max="100" unit="%">
-				<label>Limitation Treshold</label>
-				<description>Treshold in percent, defines when limitation state is enabled</description>
+			<parameter name="limitationThresholdValue" type="integer" min="0" max="100" unit="%">
+				<label>Limitation Threshold</label>
+				<description>Threshold in percent, defines when limitation state is enabled</description>
 				<default>95</default>
 			</parameter>
 			<parameter name="limitationDuration" type="integer" unit="s" min="1" max="1200">
@@ -758,12 +758,12 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="wallbox1ChargingPower">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Wallbox 1 charging Power</label>
 		<category>Power</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Power</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

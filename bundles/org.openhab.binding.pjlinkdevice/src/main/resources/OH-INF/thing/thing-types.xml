@@ -6,7 +6,7 @@
 
 	<thing-type id="pjLinkDevice">
 		<label>PJLink Device</label>
-		<description>A PJLink compatible device, e.g. a digital projector</description>
+		<description>A PJLink-compatible device, e.g., a digital projector.</description>
 		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
@@ -30,7 +30,7 @@
 			</parameter-group>
 			<parameter-group name="refresh">
 				<label>Polling Settings</label>
-				<description>Use these settings to configure how the status of the PJLink device will be refreshed</description>
+				<description>Use these settings to configure how the status of the PJLink device is refreshed.</description>
 			</parameter-group>
 			<parameter name="ipAddress" type="text" required="true" min="1" groupName="basic">
 				<context>network-address</context>
@@ -61,20 +61,17 @@
 			<parameter name="refreshPower" type="boolean" groupName="refresh">
 				<default>false</default>
 				<label>Poll for Power State</label>
-				<description>Enable polling for the power state. Only considered if the refreshInterval interval is greater than
-					zero.</description>
+				<description>Enable polling for the power state. Only used if the refresh interval is greater than zero.</description>
 			</parameter>
 			<parameter name="refreshMute" type="boolean" groupName="refresh">
 				<default>false</default>
 				<label>Poll for Mute State</label>
-				<description>Enable polling for the mute state. Only considered if the refreshInterval interval is greater than
-					zero.</description>
+				<description>Enable polling for the mute state. Only used if the refresh interval is greater than zero.</description>
 			</parameter>
 			<parameter name="refreshInputChannel" type="boolean" groupName="refresh">
 				<default>false</default>
 				<label>Poll for Selected Input Channel</label>
-				<description>Enable polling for the selected input channel. Only considered if the refreshInterval interval is
-					greater than zero.</description>
+				<description>Enable polling for the selected input channel. Only used if the refresh interval is greater than zero.</description>
 			</parameter>
 			<parameter name="refreshLampState" type="boolean" groupName="refresh">
 				<default>false</default>
@@ -88,7 +85,7 @@
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
-		<description>Power ON/OFF the projector</description>
+		<description>Turn the projector on or off.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>
@@ -98,13 +95,13 @@
 	<channel-type id="input">
 		<item-type>String</item-type>
 		<label>Input</label>
-		<description>Select the input signal to use</description>
+		<description>Set the input source.</description>
 	</channel-type>
 
 	<channel-type id="audioMute">
 		<item-type>Switch</item-type>
 		<label>Audio Mute</label>
-		<description>Select the audio mute status</description>
+		<description>Set the audio mute state.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>SoundVolume</tag>
@@ -114,7 +111,7 @@
 	<channel-type id="videoMute">
 		<item-type>Switch</item-type>
 		<label>Video Mute</label>
-		<description>Select the video mute status</description>
+		<description>Set the video mute state.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Brightness</tag>
@@ -124,7 +121,7 @@
 	<channel-type id="audioAndVideoMute">
 		<item-type>Switch</item-type>
 		<label>Audio and Video Mute</label>
-		<description>Select the audio and video mute status</description>
+		<description>Set the audio and video mute state.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>MediaControl</tag>
@@ -134,12 +131,12 @@
 	<channel-type id="lampHours">
 		<item-type>Number</item-type>
 		<label>Lamp Hours</label>
-		<description>How long the lamp has been in use (in hours)</description>
+		<description>How long the lamp has been in use (in hours).</description>
 		<state readOnly="true" pattern="%d h"/>
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
 				<label>Lamp Number</label>
-				<description>Show used hours for this lamp</description>
+				<description>Show the used hours for this lamp.</description>
 				<default>1</default>
 			</parameter>
 		</config-description>
@@ -153,7 +150,7 @@
 		<config-description>
 			<parameter name="lampNumber" type="integer" min="1" max="8">
 				<label>Lamp Number</label>
-				<description>Show activity for this lamp</description>
+				<description>Show whether this lamp is active.</description>
 				<default>1</default>
 			</parameter>
 		</config-description>

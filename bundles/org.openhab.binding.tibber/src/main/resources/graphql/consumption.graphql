@@ -1,0 +1,28 @@
+{
+  viewer {
+    home(id: \"%s\") {
+      consumption(
+        resolution: %s
+        last: %s
+        %s
+      ) {
+        edges {
+          cursor
+          node {
+            from
+            to
+            consumption
+            cost
+            consumptionUnit
+            currency
+          }
+        }
+        pageInfo {
+          hasPreviousPage
+          startCursor
+          count
+        }
+      }
+    }
+  }
+}

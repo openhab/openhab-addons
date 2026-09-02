@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,6 +87,6 @@ class RvcOperationalStateConverterTest extends BaseMatterConverterTest {
     void testInitState() {
         converter.initState();
         verify(mockHandler, times(1)).updateState(eq(1), eq("rvcoperationalstate-state"),
-                eq(new DecimalType(RvcOperationalStateCluster.OperationalStateEnum.ERROR.value)));
+                eq(new DecimalType(RvcOperationalStateCluster.OperationalStateEnum.ERROR.getValue())));
     }
 }

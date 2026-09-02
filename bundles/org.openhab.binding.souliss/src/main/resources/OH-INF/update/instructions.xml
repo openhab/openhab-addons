@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="souliss:t31">
+		<instruction-set targetVersion="1">
+			<update-channel id="fire">
+				<type>souliss:buttonReadOnly</type>
+				<label>Fire</label>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="souliss:t41">
+		<instruction-set targetVersion="1">
+			<update-channel id="statusAlarm">
+				<type>souliss:buttonReadOnly</type>
+				<label>Alarm Status</label>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="souliss:t42">
+		<instruction-set targetVersion="1">
+			<update-channel id="statusAlarm">
+				<type>souliss:buttonReadOnly</type>
+				<label>Alarm Status</label>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="souliss:t58">
+		<instruction-set targetVersion="1">
+			<update-channel id="value">
+				<type>souliss:pressure</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

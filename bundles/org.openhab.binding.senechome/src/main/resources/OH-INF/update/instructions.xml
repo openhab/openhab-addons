@@ -15,6 +15,13 @@
 			<remove-channel id="liveEnergyWallbox1"/>
 		</instruction-set>
 
+		<instruction-set targetVersion="2">
+			<update-channel id="wallbox1ChargingPower">
+				<type>senechome:wallbox1ChargingPower</type>
+			</update-channel>
+
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,6 +81,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -187,6 +188,10 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
             itemChannelLinkProvider = getService(ManagedItemChannelLinkProvider.class);
             assertThat(itemChannelLinkProvider, is(notNullValue()));
         });
+
+        ItemChannelLinkRegistry itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class);
+        assertThat(itemChannelLinkRegistry, is(notNullValue()));
+        itemChannelLinkRegistry.waitForCompletedAsyncActivationTasks();
 
         waitForAssert(() -> {
             unitProvider = getService(UnitProvider.class);
@@ -631,7 +636,7 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
         String channnelID = SystemInfoBindingConstants.CHANNEL_STORAGE_NAME;
         String acceptedItemType = "String";
 
-        StringType mockedStorageName = new StringType("Mocked Storage Name");
+        StringType mockedStorageName = new StringType("/mocked/mount/point");
         when(mockedSystemInfo.getStorageName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageName);
 
         initializeThingWithChannel(channnelID, acceptedItemType);

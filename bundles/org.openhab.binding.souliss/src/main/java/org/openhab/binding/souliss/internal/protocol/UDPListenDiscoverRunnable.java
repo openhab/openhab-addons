@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
                         localDecoder.decodeVNetDatagram(packet);
                     }
                 }
-
             } catch (BindException e) {
                 logger.warn("UDP Port busy, Souliss already listening? {} ", e.getLocalizedMessage());
                 try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,9 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class DimmableLightDevice extends BaseDevice {
 
-    private State lastOnOffState = OnOffType.OFF;
+    // Level 0 is not permitted with the Lighting feature, so an off light reports the minimum instead
+    private static final int MIN_LEVEL = 1;
+    private int lastLevel = MIN_LEVEL;
 
     public DimmableLightDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client, GenericItem item) {
         super(metadataRegistry, client, item);
@@ -60,9 +62,9 @@ public class DimmableLightDevice extends BaseDevice {
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
         PercentType level = Optional.ofNullable(primaryItem.getStateAs(PercentType.class))
                 .orElseGet(() -> new PercentType(0));
-        lastOnOffState = level.intValue() > 0 ? OnOffType.ON : OnOffType.OFF;
+        lastLevel = ValueUtils.percentToLevel(level);
         attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
-                Math.max(1, ValueUtils.percentToLevel(level)));
+                lastLevel);
         attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, level.intValue() > 0);
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
     }
@@ -79,9 +81,7 @@ public class DimmableLightDevice extends BaseDevice {
                 updateOnOff(OnOffType.from(Boolean.valueOf(data.toString())));
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
-                if (lastOnOffState == OnOffType.ON) {
-                    updateLevel(ValueUtils.levelToPercent(((Double) data).intValue()));
-                }
+                updateLevel(ValueUtils.levelToPercentWhenOn(((Double) data).intValue()));
                 break;
             default:
                 break;
@@ -90,47 +90,39 @@ public class DimmableLightDevice extends BaseDevice {
 
     @Override
     public void updateState(Item item, State state) {
+        PercentType brightness = state instanceof HSBType hsb ? hsb.getBrightness() : state.as(PercentType.class);
+        if (brightness == null) {
+            return;
+        }
+        setEndpointStates(lightStates(brightness));
+    }
+
+    private List<AttributeState> lightStates(PercentType brightness) {
+        boolean on = brightness.intValue() > 0;
+        if (on) {
+            lastLevel = ValueUtils.percentToLevel(brightness);
+        }
         List<AttributeState> states = new ArrayList<>();
-        if (state instanceof HSBType hsb) {
-            states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, ValueUtils.percentToLevel(hsb.getBrightness())));
-            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    hsb.getBrightness().intValue() > 0));
-            lastOnOffState = hsb.getBrightness().intValue() > 0 ? OnOffType.ON : OnOffType.OFF;
-        } else if (state instanceof PercentType percentType) {
-            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    percentType.intValue() > 0));
-            if (percentType.intValue() > 0) {
-                states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                        LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, ValueUtils.percentToLevel(percentType)));
-                lastOnOffState = OnOffType.ON;
-            } else {
-                lastOnOffState = OnOffType.OFF;
-            }
-        } else if (state instanceof OnOffType onOffType) {
-            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF,
-                    onOffType == OnOffType.ON));
-            lastOnOffState = onOffType;
-        }
-        if (!states.isEmpty()) {
-            setEndpointStates(states);
-        }
+        states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX, LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
+                on ? lastLevel : MIN_LEVEL));
+        states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
+        return states;
     }
 
     private void updateOnOff(OnOffType onOffType) {
-        lastOnOffState = onOffType;
         if (primaryItem instanceof GroupItem groupItem) {
-            groupItem.send(onOffType);
+            groupItem.send(onOffType, MATTER_SOURCE);
         } else {
-            ((SwitchItem) primaryItem).send(onOffType);
+            ((SwitchItem) primaryItem).send(onOffType, MATTER_SOURCE);
         }
     }
 
     private void updateLevel(PercentType level) {
+        lastLevel = ValueUtils.percentToLevel(level);
         if (primaryItem instanceof GroupItem groupItem) {
-            groupItem.send(level);
+            groupItem.send(level, MATTER_SOURCE);
         } else {
-            ((DimmerItem) primaryItem).send(level);
+            ((DimmerItem) primaryItem).send(level, MATTER_SOURCE);
         }
     }
 }

@@ -4,25 +4,26 @@ This binding integrates the [Nanoleaf Light Panels](https://nanoleaf.me/en/consu
 
 ![Image](doc/Nanoleaf.jpg)
 
-It enables you to authenticate, control, and obtain information of a Light Panel's device.
+It enables you to authenticate, control, and obtain information from the device.
 The binding uses the [Nanoleaf OpenAPI](https://forum.nanoleaf.me/docs/openapi), which requires firmware version [1.5.0](https://helpdesk.nanoleaf.me/hc/en-us/articles/214006129-Light-Panels-Firmware-Release-Notes) or higher.
 
 ![Image](doc/LightPanels2_small.jpg) ![Image](doc/the-worm-small.png) ![Image](doc/NanoCanvas_small.jpg)
 
 ## Supported Things
 
-Nanoleaf provides a bunch of devices of which some are connected to Wifi whereas other use the new Thread Technology. This binding only supports devices that are connected through Wifi.
+Nanoleaf provides a range of devices, some connected via WiFi while others use the new Thread technology.
+This binding only supports devices that are connected through Wi-Fi.
 
 Currently Nanoleaf's "Light Panels" and "Canvas/Shapes" devices are supported.
 
-The binding supports two thing types: controller and lightpanel.
+The binding supports two Thing types: controller and lightpanel.
 
-The controller thing is the bridge for the individually attached panels/canvas and can be perceived as the Nanoleaf device at the wall as a whole (either called "light panels", "canvas" or "shapes" by Nanoleaf).
-With the controller thing you can control channels which affect all panels, e.g. selecting effects or setting the brightness.
+The controller Thing is the bridge for the individually attached panels/canvas and can be perceived as the Nanoleaf device on the wall as a whole (called "Light Panels", "Canvas", or "Shapes" by Nanoleaf).
+With the controller Thing you can control channels which affect all panels, e.g., selecting effects or setting the brightness.
 
-The lightpanel (singular) thing controls one of the individual panels/canvas that are connected to each other.
+The lightpanel (singular) Thing controls one of the individual panels/canvas that are connected to each other.
 Each individual panel has therefore its own id assigned to it.
-You can set the **color** for each panel and in the case of a Nanoleaf Canvas or Shapes you can even detect single / double **touch events** related to an individual panel or **swipe events** on the whole device which opens a whole new world of controlling any other device within your openHAB environment.
+You can set the **color** for each panel and, in the case of a Nanoleaf Canvas or Shapes, you can even detect single/double **touch events** related to an individual panel or **swipe events** on the whole device, which opens a whole new world of controlling any other device within your openHAB environment.
 
 | Nanoleaf Name          | Type | Description                                                | supported | touch support |
 | ---------------------- | ---- | ---------------------------------------------------------- | --------- | ------------- |
@@ -36,34 +37,34 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 | Lines                  | NL59 | Lines                                                      |     X     |               |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 
-  x = Supported  (-) = unknown (no device available to test)
+  X = Supported  (-) = Unknown (no device available to test)
 
 ## Discovery
 
 ### Adding the Controller as a Thing
 
-To add a nanoleaf controller, go to your inbox and start a scan.
+To add a Nanoleaf controller, go to your inbox and start a scan.
 Then choose "Nanoleaf Binding".
 A controller (bridge) device is discovered automatically using mDNS in your local network.
 Alternatively, you can also provide a things file (see below for more details).
-After the device is discovered and added as a thing, it needs a valid authentication token that must be obtained by pairing it with your openHAB instance.
+After the device is discovered and added as a Thing, it needs a valid authentication token that must be obtained by pairing it with your openHAB instance.
 Without the token the light panels remain in status OFFLINE.
 
 The binding supports pairing of the device with your openHAB instance as follows:
 
-1. Make sure that the authentication token field in your Nanoleaf controller thing configuration is left empty.
-1. Hold down the on-off button of the controller for 5-7 seconds until the LED starts flashing/cycling in a pattern, which turns the device in pairing mode, and openHAB will try to request an authentication token for it.
+1. Make sure that the authentication token field in your Nanoleaf controller Thing configuration is left empty.
+1. Hold down the on-off button of the controller for 5–7 seconds until the LED starts flashing/cycling in a pattern, which turns the device into pairing mode; openHAB will then try to request an authentication token for it.
 
-Once your openHAB instance successfully requested and stored the authentication token in the controller's thing configuration, the controller status changes to ONLINE, and you can start linking the channels to your items.
+Once your openHAB instance successfully requested and stored the authentication token in the controller's Thing configuration, the controller status changes to ONLINE, and you can start linking the channels to your items.
 
-Tip: if you press (2) just before adding the item from the inbox it usually catches the auth token right away and if you are lucky it already automatically starts discovering the panels in one turn (see below).
+Tip: If you perform step (2) just before adding the item from the inbox, it usually catches the auth token right away and may automatically start discovering the panels in one go (see below).
 
-### Adding the invidual light panels as a thing
+### Adding the individual light panels as Things
 
-After you have added the controller as a thing and it has been successfully paired as described as above, the individual panels connected to it can be discovered by **starting another scan** for the Nanoleaf binding.
-All connected panels will be added as separate things to the inbox.
+After you have added the controller as a Thing and it has been successfully paired as described above, the individual panels connected to it can be discovered by **starting another scan** for the Nanoleaf binding.
+All connected panels will be added as separate Things to the inbox.
 
-Troubleshooting: In seldom cases (in particular together with updating the binding) things or items do not work as expected, are offline or may not be detected.
+Troubleshooting: In rare cases (in particular after updating the binding), Things or Items do not work as expected, are OFFLINE, or may not be detected.
 In this case:
 
 - remove the panels (maybe twice by force removing it)
@@ -73,17 +74,15 @@ In this case:
 
 ### Panel Layout
 
-If you want to program individual panels, it can be hard to figure out which panel has which ID. To make this easier, there is Layout channel on the Nanoleaf controller thing in openHAB.
-The easiest way to visualize the layout of the individual panels is to open the controller thing in the openHAB UI, go to Channels and add a new item to the Layout channel.
-Clicking on that image or adding it to a dashboard will show a picture of your canvas with the individual thing ID in the picture.
+If you want to program individual panels, it can be hard to figure out which panel has which ID. To make this easier, there is a Layout channel on the Nanoleaf controller Thing in openHAB.
+The easiest way to visualize the layout of the individual panels is to open the controller Thing in the openHAB UI, go to Channels and add a new item to the Layout channel.
+Clicking on that image or adding it to a dashboard will show a picture of your canvas with the individual Thing ID in the picture.
 
-If your canvas has elements we dont know how to draw a layout for yet, please reach out, and we will ask for some information and will try to add support for your elements.
+If your canvas has elements we don't know how to draw a layout for yet, please reach out, and we will ask for some information and will try to add support for your elements.
 
 ![Image](doc/Layout.png)
 
-There is an alternative method for canvas that use square panels, you can request the layout through a [console command](https://www.openhab.org/docs/administration/console.html):
-
-then issue the following command:
+There is an alternative method for canvases that use square panels: you can request the layout through a [console command](https://www.openhab.org/docs/administration/console.html). Issue the following command:
 
 ```shell
 openhab:nanoleaf layout [<thingUID>]
@@ -91,7 +90,7 @@ openhab:nanoleaf layout [<thingUID>]
 
 The `thingUID` is an optional parameter. If it is not provided, the command loops through all Nanoleaf controller things it can find and prints the layout for each of them.
 
-Compare the following output with the right picture at the beginning of the article
+Compare the following output with the right picture at the beginning of the article.
 
 ```text
             31413                    9162       13276
@@ -104,72 +103,72 @@ Compare the following output with the right picture at the beginning of the arti
 
 ```
 
-As mentioned above this only works for the squared panels.
-It is recommended to instead use the layout-channel described below which works for all designs.
+As mentioned above, this only works for square panels.
+It is recommended to instead use the layout channel described below, which works for all designs.
 
 ## State
 
 The state channel shows an image of the panels on the wall.
-You have to configure things for each panel to get the correct color.
-Since the colors of the panels can make it difficult to see the panel ids, please use the layout channel where the background color is always white to identify them.
-For state to work, you need to set static colors to your panel.
+You have to configure Things for each panel to get the correct color.
+Since the colors of the panels can make it difficult to see the panel IDs, please use the layout channel where the background color is always white to identify them.
+For state to work, you need to set static colors to your panels.
 This is because Nanoleaf does not return updates on colors for dynamic effects and animations.
 
 ![Image](doc/NanoCanvas_rendered.png)
 
 ## Thing Configuration
 
-The controller thing has the following parameters:
+The controller Thing has the following parameters:
 
 | Config          | Description                                                                           |
 | --------------- | ------------------------------------------------------------------------------------- |
 | address         | IP address or hostname of the light panels controller (e.g. 192.168.1.100)            |
-| port            | Port number of the light panels contoller. Default is 16021                           |
+| port            | Port number of the light panels controller. Default is 16021                          |
 | authToken       | The authentication token received from the controller after successful pairing.       |
 | refreshInterval | Interval in seconds to refresh the state of the light panels settings. Default is 60. |
 | deviceType      | Defines the type `lightpanels` (triangle) or `canvas` (square or hexagon)             |
 
-**Important note on the topic of IPV6 ip addresses:**
+**Important note on the topic of IPv6 addresses:**
 
 With firmware version 8.5.2 or newer, panels may change between being OFFLINE and ONLINE.
-This is because if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices which leads to an unstable behaviour.
+This is because if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices which leads to unstable behavior.
 To avoid this, the binding will only discover devices based on their IPv4 address.
 
 Reboot your server after the change.
 
-The lightpanel thing has the following parameters:
+The lightpanel Thing has the following parameters:
 
 | Config          | Description                                                                           |
 | --------------- | ------------------------------------------------------------------------------------- |
 | id              | ID assigned by the controller to the individual panel (e.g. 158)                      |
 
-The IDs of the individual panels can be determined by starting another scan once the controller is configured and online.
+The IDs of the individual panels can be determined by starting another scan once the controller is configured and ONLINE.
 This discovers all connected panels with their IDs.
 
 ## Channels
 
 The controller bridge has the following channels:
 
-| Channel             | Item Type          | Description                                                                                       | Read Only |
-|---------------------|--------------------|---------------------------------------------------------------------------------------------------|-----------|
-| color               | Color              | Color, power and brightness of all light panels                                                   | No        |
-| colorTemperature    | Dimmer             | Color temperature (in percent) of all light panels                                                | No        |
-| colorTemperatureAbs | Number:Temperature | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                   | No        |
-| colorMode           | String             | Color mode of the light panels                                                                    | Yes       |
-| effect              | String             | Selected effect of the light panels                                                               | No        |
-| layout              | Image              | Shows the layout of your panels with IDs.                                                         | Yes       |
-| rhythmState         | Switch             | Connection state of the rhythm module                                                             | Yes       |
-| rhythmActive        | Switch             | Activity state of the rhythm module                                                               | Yes       |
-| rhythmMode          | Number             | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                     | No        |
-| state               | Image              | Shows the current state of your panels with colors.                                               | Yes       |
-| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported. | Yes       |
+| Channel             | Item Type          | Description                                                                                           | Read Only |
+|---------------------|--------------------|-------------------------------------------------------------------------------------------------------|-----------|
+| color               | Color              | Color, power, and brightness of all light panels                                                      | No        |
+| colorTemperature    | Dimmer             | Color temperature (in percent) of all light panels                                                    | No        |
+| colorTemperatureAbs | Number:Temperature | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                       | No        |
+| colorMode           | String             | Color mode of the light panels                                                                        | Yes       |
+| effect              | String             | Selected effect of the light panels                                                                   | No        |
+| layout              | Image              | Shows the layout of your panels with IDs.                                                             | Yes       |
+| rhythmState         | Switch             | Connection state of the rhythm module                                                                 | Yes       |
+| rhythmActive        | Switch             | Activity state of the rhythm module                                                                   | Yes       |
+| rhythmMode          | Number             | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                         | No        |
+| state               | Image              | Shows the current state of your panels with colors.                                                   | Yes       |
+| swipe               | Trigger            | [Canvas / Shapes Only] Detects swipes over the panel. LEFT, RIGHT, UP, and DOWN events are supported. | Yes       |
 
-A lightpanel thing has the following channels:
+A lightpanel Thing has the following channels:
 
 | Channel             | Type      | Description                                                                                                           | Read Only |
 |---------------------|-----------|-----------------------------------------------------------------------------------------------------------------------|-----------|
 | color               | Color     | Color of the individual light panel                                                                                   | No        |
-| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED, LONG_PRESSED and DOUBLE_PRESSED events are supported. | Yes       |
+| tap                 | Trigger   | [Canvas / Shapes Only] Sends gesture events. SHORT_PRESSED, LONG_PRESSED, and DOUBLE_PRESSED events are supported.    | Yes       |
 
 The color channels support full color control with hue, saturation and brightness values.
 For example, brightness of _all_ panels at once can be controlled by defining a dimmer item for the color channel of the _controller thing_.
@@ -177,9 +176,9 @@ The same applies to the color channel of an individual lightpanel.
 
 ### Limitations Assigning Specific Colors on Individual Panels
 
-- Due to the way the API of the nanoleaf is designed, each time a color is assigned to a panel, it will be directly sent to that panel. The result is that if you send colors to several panels more or less at the same time, they will not be set at the same time but one after the other and rather appear like a sequence but as a one shot.
-- Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that as soon as you set an individual panel the "static effect" is set, which disables the chosen dynamic effect. The nanoleaf app shows that a static effect is now running, too.
-- The colors of the current state cannot be retrieved due to the high frequency of color changes that cannot be read quickly enough from the canvas, so all panels go to OFF
+- Due to the way the API of the Nanoleaf is designed, each time a color is assigned to a panel, it is sent directly to that panel. If you send colors to several panels at roughly the same time, they will not be set simultaneously but one after the other, appearing as a sequence.
+- Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel, which means that as soon as you set an individual panel the "static effect" is set, disabling the chosen dynamic effect. The Nanoleaf app shows that a static effect is now running, too.
+- The colors of the current state cannot be retrieved due to the high frequency of color changes that cannot be read quickly enough from the canvas, so all panels go to OFF.
 - The first panelColor command is applied to that panel (and of course then all subsequent commands)
 - The fact that it is called a static effect does not mean that you cannot create animations. The Rainbow rule below shows a good example for the whole canvas. Just replace the controller item with a panel item and you will get the rainbow effect with an individual panel.
 
@@ -187,17 +186,17 @@ The same applies to the color channel of an individual lightpanel.
 
 Nanoleaf's Canvas introduces a whole new experience by supporting touch. This allows single and double taps on individual panels to be detected and processed via rules.
 
-Note that even gestures like up, down, left, right can be detected on the whole set of panels though not on an individual panel.
+Note that gestures like up, down, left, and right can be detected on the whole set of panels, though not on an individual panel.
 The four swipe gestures are supported by the binding.
 See below for an example on how to use it.
 
-To detect single and double taps the panel provides a _tap_ channel while the controller provides a _swipe_ channel to detect swipes.
+To detect single and double taps, the panel provides a _tap_ channel, while the controller provides a _swipe_ channel to detect swipes.
 
-Keep in mind that the double tap is used as an already built-in functionality by default when you buy the nanoleaf: it switches all panels (hence the controller) to on or off like a light switch for all the panels at once.
+Keep in mind that the double tap is used as a built-in functionality by default when you buy the Nanoleaf: it switches all panels (hence the controller) on or off like a light switch for all the panels at once.
 To circumvent that
 
-- Within the nanoleaf app go to the dashboard and choose your device. Enter the settings for that device by clicking the cog icon in the upper right corner.
-- Enable "Touch Gesture" (the first radio button) and make sure that none of the gestures you use with openHAB is active. In general, it is recommended not to enable "touch sensitive gestures" (the second radio button). This prevents unexpected interference between openhHAB rules and Nanoleaf settings.
+- Within the Nanoleaf app go to the dashboard and choose your device. Enter the settings for that device by clicking the cog icon in the upper right corner.
+- Enable "Touch Gesture" (the first radio button) and make sure that none of the gestures you use with openHAB is active. In general, it is recommended not to enable "Touch Sensitive Gestures" (the second radio button). This prevents unexpected interference between openHAB rules and Nanoleaf settings.
 
 - To still have the possibility to switch on the whole canvas device with all its panels by double tapping a specific panel, you can easily write a rule that triggers on the tap channel of that panel and then sends an ON to the color channel of the controller. See the example below on Panel 1.
 
@@ -216,7 +215,7 @@ Bridge nanoleaf:controller:MyLightPanels @ "mylocation" [ address="192.168.1.100
 }
 ```
 
-If you define your device statically in the thing file, auto-discovery of the same thing is suppressed by using
+If you define your device statically in the Thing file, auto-discovery of the same Thing is suppressed by using
 
 - the [address="..." ]  of the controller
 - and the [id=123] of the lightpanel
@@ -253,7 +252,7 @@ Switch NanoleafRhythmState "Rhythm connected [MAP(nanoleaf.map):%s]" { channel="
 Switch NanoleafRhythmActive "Rhythm active [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmActive" }
 Number NanoleafRhythmSource  "Rhythm source [%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmMode" }
 
-// note that the next to items use the exact same channel but the two different types Color and Dimmer to control different parameters
+// Note that the next two items use the exact same channel but two different types (Color and Dimmer) to control different parameters
 Color PanelColor "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:color" }
 Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:color" }
 Switch Panel2Color "Panel 2" { channel="nanoleaf:lightpanel:MyLightPanels:158:color" }
@@ -364,16 +363,16 @@ var oldEffect = null
 
 The idea behind that rule is to use one panel to switch on / off brightness control for a specific openHAB item.
 
- - In this case the panel with the id=36604 has been created as a thing.
+ - In this case the panel with the id=36604 has been created as a Thing.
  - The controller color item is named SZNanoCanvas_Color
  - The controller effect item that holds the last chosen effect is SZNanoCanvas_Effect
- - Also that thing has channel to control the color of the panel
+ - Also that Thing has channel to control the color of the panel
 
 We use that specific panel to toggle the brightness swipe mode on or off.
 We indicate that mode by  setting the canvas to red. When switching it
 off we make sure we return the effect that was on before.
 Only if the brightness swipe mode is ON we then use this to control the brightness of
-another thing which in this case is a lamp. Every swipe changes the brightness by 10.
+another Thing which in this case is a lamp. Every swipe changes the brightness by 10.
 By extending it further this would also allow to select different items to control by
 tapping different panels before.
 

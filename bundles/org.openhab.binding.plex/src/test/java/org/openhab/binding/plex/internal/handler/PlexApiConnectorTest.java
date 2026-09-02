@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,8 @@ import org.openhab.binding.plex.internal.config.PlexServerConfiguration;
  */
 @NonNullByDefault
 public class PlexApiConnectorTest {
-    private @NonNullByDefault({}) @Mock ScheduledExecutorService scheduler;
-    private @NonNullByDefault({}) @Mock HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    private @Mock @NonNullByDefault({}) HttpClient httpClient;
 
     private @NonNullByDefault({}) PlexApiConnector plexApiConnector;
 

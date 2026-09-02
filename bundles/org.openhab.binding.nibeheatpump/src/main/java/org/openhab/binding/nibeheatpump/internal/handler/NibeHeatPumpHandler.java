@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,6 @@ import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.Type
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
@@ -386,10 +385,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             }
             int decimals = (int) Math.log10(variableInfo.factor);
             value = v.movePointRight(decimals).intValue();
-        } else if ((command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType)
-                && variableInfo.factor == 1) {
-            value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
-                    || command.equals(OpenClosedType.OPEN)) ? 1 : 0;
+        } else if ((command instanceof OnOffType || command instanceof UpDownType) && variableInfo.factor == 1) {
+            value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) ? 1 : 0;
         } else {
             throw new CommandTypeNotSupportedException();
         }

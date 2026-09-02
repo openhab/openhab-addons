@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class OppoStatusCodes {
 
     // map to lookup disc type
     public static final Map<String, String> DISC_TYPE = Map.ofEntries(entry("BDMV", "BD-MV"),
-            entry("DVDV", "DVD-VIDEO"), entry("DVDA", "DVD-AUDIO"), entry("SACD", "SACD"), entry("CDDA", "CDDA"),
+            entry("DVDV", "DVD-VIDEO"), entry("DVDA", "DVD-AUDIO"), entry(SACD, SACD), entry(CDDA, CDDA),
             entry("HDCD", "HDCD"), entry("DATA", "DATA-DISC"), entry("VCD2", "VCD2"), entry("SVCD", "SVCD"),
             entry("UHBD", "UHBD"), entry("UNKN", UNKNOW_DISC));
 

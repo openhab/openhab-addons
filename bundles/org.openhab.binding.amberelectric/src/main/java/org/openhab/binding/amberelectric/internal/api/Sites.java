@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class Sites {
     public String activeFrom = "";
     public int intervalLength;
 
-    public class Channels {
+    public static class Channels {
         public String identifier = "";
         public String type = "";
         public String tariff = "";

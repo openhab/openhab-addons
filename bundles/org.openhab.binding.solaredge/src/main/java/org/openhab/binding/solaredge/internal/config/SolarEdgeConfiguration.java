@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ public class SolarEdgeConfiguration {
     private Integer syncTimeout = 120;
     private Integer liveDataPollingInterval = 10;
     private Integer aggregateDataPollingInterval = 60;
+    private Integer batteryCriticalLevel = 10;
 
     public String getTokenOrApiKey() {
         return tokenOrApiKey;
@@ -81,6 +82,14 @@ public class SolarEdgeConfiguration {
         this.aggregateDataPollingInterval = aggregateDataPollingInterval;
     }
 
+    public Integer getBatteryCriticalLevel() {
+        return batteryCriticalLevel;
+    }
+
+    public void setBatteryCriticalLevel(Integer batteryCriticalLevel) {
+        this.batteryCriticalLevel = batteryCriticalLevel;
+    }
+
     public boolean isMeterInstalled() {
         return meterInstalled;
     }
@@ -102,7 +111,7 @@ public class SolarEdgeConfiguration {
         return getClass().getSimpleName() + "{ tokenOrApiKey=" + getTokenOrApiKey() + ", solarId=" + getSolarId()
                 + ", meterInstalled=" + isMeterInstalled() + ", usePrivateApi=" + isUsePrivateApi()
                 + ", live data pollingInterval=" + getLiveDataPollingInterval() + ", aggregate data pollingInterval="
-                + getAggregateDataPollingInterval() + ", asyncTimeout=" + getAsyncTimeout() + ", syncTimeout="
-                + getSyncTimeout() + "}";
+                + getAggregateDataPollingInterval() + ", batteryCriticalLevel=" + getBatteryCriticalLevel()
+                + ", asyncTimeout=" + getAsyncTimeout() + ", syncTimeout=" + getSyncTimeout() + "}";
     }
 }

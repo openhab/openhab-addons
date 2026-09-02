@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,6 +43,7 @@ public class MikrotikBindingConstants {
     public static final String CHANNEL_TOTAL_MEM = "totalMemory";
     public static final String CHANNEL_USED_MEM = "usedMemory";
     public static final String CHANNEL_CPU_LOAD = "cpuLoad";
+    public static final String CHANNEL_UPDATE_AVAILABLE = "updateAvailable";
 
     public static final String CHANNEL_COMMENT = "comment";
 
@@ -67,6 +68,11 @@ public class MikrotikBindingConstants {
     public static final String CHANNEL_RX_DROPS = "rxDrops";
     public static final String CHANNEL_TX_ERRORS = "txErrors";
     public static final String CHANNEL_RX_ERRORS = "rxErrors";
+
+    // Ethernet PoE
+    public static final String CHANNEL_POE_OUT_STATE = "poeOutState";
+    public static final String CHANNEL_POE_OUT_STATUS = "poeOutStatus";
+    public static final String CHANNEL_POE_OUT_POWER = "poeOutPower";
 
     // Ethernet interface channel list
     public static final String CHANNEL_DEFAULT_NAME = "defaultName";

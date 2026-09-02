@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Message;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.binding.matter.internal.client.dto.ws.Request;
 import org.openhab.binding.matter.internal.client.dto.ws.Response;
@@ -94,9 +95,11 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool("matter.MatterWebsocketClient");
 
-    protected final Gson gson = new GsonBuilder().registerTypeAdapter(Node.class, new NodeDeserializer())
+    protected final Gson gson = new GsonBuilder().serializeNulls()
+            .registerTypeAdapter(Node.class, new NodeDeserializer())
             .registerTypeAdapter(BigInteger.class, new BigIntegerSerializer())
             .registerTypeHierarchyAdapter(BaseCluster.MatterEnum.class, new MatterEnumDeserializer())
+            .registerTypeHierarchyAdapter(BaseCluster.MatterEnum.class, new MatterEnumSerializer())
             .registerTypeAdapter(AttributeChangedMessage.class, new AttributeChangedMessageDeserializer())
             .registerTypeAdapter(EventTriggeredMessage.class, new EventTriggeredMessageDeserializer())
             .registerTypeAdapter(OctetString.class, new OctetStringDeserializer())
@@ -367,6 +370,22 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                             }
                         }
                         break;
+                    case "updateAvailable":
+                        logger.debug("updateAvailable message {}", event.data);
+                        OtaUpdateAvailableMessage otaMessage = gson.fromJson(event.data,
+                                OtaUpdateAvailableMessage.class);
+                        if (otaMessage == null) {
+                            logger.debug("invalid OtaUpdateAvailableMessage");
+                            return;
+                        }
+                        for (MatterClientListener listener : clientListeners) {
+                            try {
+                                listener.onEvent(otaMessage);
+                            } catch (Exception e) {
+                                logger.debug("Error notifying listener", e);
+                            }
+                        }
+                        break;
                     case "ready":
                         for (MatterClientListener listener : clientListeners) {
                             listener.onReady();
@@ -404,14 +423,13 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
 
     protected CompletableFuture<JsonElement> sendMessage(String namespace, String functionName, @Nullable Object args[],
             int timeoutSeconds) {
-        if (timeoutSeconds <= 0) {
-            timeoutSeconds = REQUEST_TIMEOUT_SECONDS;
-        }
+        final int effectiveTimeoutSeconds = timeoutSeconds > 0 ? timeoutSeconds : REQUEST_TIMEOUT_SECONDS;
         CompletableFuture<JsonElement> responseFuture = new CompletableFuture<>();
 
         Session session = this.session;
         if (session == null) {
             logger.debug("Could not send {} {} : no valid session", namespace, functionName);
+            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null));
             return responseFuture;
         }
         String requestId = UUID.randomUUID().toString();
@@ -426,9 +444,9 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             CompletableFuture<JsonElement> future = pendingRequests.remove(requestId);
             if (future != null && !future.isDone()) {
                 future.completeExceptionally(new TimeoutException(String.format(
-                        "Request %s:%s timed out after %d seconds", namespace, functionName, REQUEST_TIMEOUT_SECONDS)));
+                        "Request %s:%s timed out after %d seconds", namespace, functionName, effectiveTimeoutSeconds)));
             }
-        }, timeoutSeconds, TimeUnit.SECONDS);
+        }, effectiveTimeoutSeconds, TimeUnit.SECONDS);
 
         return responseFuture;
     }
@@ -638,10 +656,25 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             if (BaseCluster.MatterEnum.class.isAssignableFrom(rawType) && rawType.isEnum()) {
                 @SuppressWarnings("unchecked")
                 Class<? extends BaseCluster.MatterEnum> enumType = (Class<? extends BaseCluster.MatterEnum>) rawType;
-                return BaseCluster.MatterEnum.fromValue(enumType, value);
+                try {
+                    return BaseCluster.MatterEnum.fromValue(enumType, value);
+                } catch (IllegalArgumentException e) {
+                    // Some devices report values outside the values defined by the Matter spec. Treat these as null
+                    // rather than failing the deserialization of the entire cluster.
+                    logger.debug("Unknown value {} for enum {}, returning null", value, rawType.getSimpleName());
+                    return null;
+                }
             }
 
             throw new JsonParseException("Unable to deserialize " + typeOfT);
+        }
+    }
+
+    @NonNullByDefault({})
+    class MatterEnumSerializer implements JsonSerializer<BaseCluster.MatterEnum> {
+        @Override
+        public JsonElement serialize(BaseCluster.MatterEnum src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(src.getValue());
         }
     }
 
@@ -681,7 +714,24 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         @Override
         public OctetString deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
-            return new OctetString(json.getAsString());
+            if (json.isJsonPrimitive()) {
+                // Handle hex string format: "AABBCCDD"
+                return new OctetString(json.getAsString());
+            } else if (json.isJsonObject()) {
+                // Handle Buffer object format: {"type": "Buffer", "data": [170, 187, 204, 221]}
+                JsonObject obj = json.getAsJsonObject();
+                if (obj.has("data")) {
+                    JsonArray dataArray = obj.getAsJsonArray("data");
+                    byte[] bytes = new byte[dataArray.size()];
+                    for (int i = 0; i < dataArray.size(); i++) {
+                        bytes[i] = dataArray.get(i).getAsByte();
+                    }
+                    return new OctetString(bytes);
+                }
+                throw new JsonParseException("OctetString object missing 'data' field: " + json);
+            } else {
+                throw new JsonParseException("Unexpected OctetString format: " + json);
+            }
         }
     }
 

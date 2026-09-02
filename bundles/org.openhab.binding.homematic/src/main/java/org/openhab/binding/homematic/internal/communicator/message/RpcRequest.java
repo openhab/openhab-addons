@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.homematic.internal.communicator.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A RPC request definition for sending data to the Homematic server.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcRequest<T> {
 
     /**
@@ -32,5 +36,6 @@ public interface RpcRequest<T> {
     /**
      * Returns the name of the rpc method.
      */
+    @Nullable
     String getMethodName();
 }

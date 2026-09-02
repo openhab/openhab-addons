@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>transformation</type>
-	<name>XSLT transformation</name>
-	<description>Transform input using the XML Stylesheet Language for Transformations (XSLT).</description>
+	<name>XSLT Transformation</name>
+	<description>Transforms input using the XML Stylesheet Language for Transformations (XSLT).</description>
 	<connection>none</connection>
 
 </addon:addon>

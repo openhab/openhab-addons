@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,15 @@ public class ChromecastScheduler {
     private @Nullable ScheduledFuture<?> connectFuture;
     private @Nullable ScheduledFuture<?> refreshFuture;
 
+    /**
+     * Set by {@link #destroy()}, after which this scheduler refuses to schedule anything else.
+     * Cancelling the outstanding futures is not enough on its own: a connection callback that is
+     * already running can outlive destroy() and call back in to schedule more work, and a fixed
+     * delay refresh installed at that point would stay scheduled indefinitely and keep the
+     * disposed coordinator reachable.
+     */
+    private boolean destroyed;
+
     public ChromecastScheduler(ScheduledExecutorService scheduler, long connectDelay, Runnable connectRunnable,
             Runnable refreshRunnable) {
         this.scheduler = scheduler;
@@ -48,11 +57,16 @@ public class ChromecastScheduler {
     }
 
     public synchronized void destroy() {
+        destroyed = true;
         cancelConnect();
         cancelRefresh();
     }
 
     public synchronized void scheduleConnect() {
+        if (destroyed) {
+            logger.debug("Not scheduling connection, scheduler was destroyed");
+            return;
+        }
         cancelConnect();
         logger.debug("Scheduling connection");
         connectFuture = scheduler.schedule(connectRunnable, connectDelay, TimeUnit.SECONDS);
@@ -68,6 +82,10 @@ public class ChromecastScheduler {
     }
 
     public synchronized void scheduleRefresh() {
+        if (destroyed) {
+            logger.debug("Not scheduling refresh, scheduler was destroyed");
+            return;
+        }
         cancelRefresh();
         logger.debug("Scheduling refresh with a delay of 1 second");
         // With an initial delay of 1 second the refresh job can be restarted when several channels are refreshed at

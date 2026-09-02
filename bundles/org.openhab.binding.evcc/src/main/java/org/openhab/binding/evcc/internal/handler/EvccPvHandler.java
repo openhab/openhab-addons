@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,35 +36,34 @@ public class EvccPvHandler extends EvccBaseThingHandler {
 
     public EvccPvHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        Map<String, String> props = thing.getProperties();
-        String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
-        index = Integer.parseInt(indexString);
+        this.index = Integer.parseInt(getPropertyOrConfigValue(PROPERTY_INDEX));
+        type = PROPERTY_TYPE_PV;
     }
 
     @Override
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
+            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
             commonInitialize(state);
         });
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
-        state = state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
-        super.updateFromEvccState(state);
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+        state = state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
+        updateStatesFromApiResponse(state);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_MEMBER_PV) ? state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject()
+        return state.has(JSON_KEY_PV) ? state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject()
                 : new JsonObject();
     }
 }

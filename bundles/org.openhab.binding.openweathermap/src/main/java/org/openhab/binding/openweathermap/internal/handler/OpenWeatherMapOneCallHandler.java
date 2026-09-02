@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -578,6 +578,9 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 break;
             case CHANNEL_CLOUDINESS:
                 state = getQuantityTypeState(forecastData.getClouds(), PERCENT);
+                break;
+            case CHANNEL_UVINDEX:
+                state = getDecimalTypeState(forecastData.getUvi());
                 break;
             case CHANNEL_VISIBILITY:
                 State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)

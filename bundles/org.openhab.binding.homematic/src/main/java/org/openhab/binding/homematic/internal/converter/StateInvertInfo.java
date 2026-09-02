@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class StateInvertInfo {
     private String deviceType;
     private int minChannel;

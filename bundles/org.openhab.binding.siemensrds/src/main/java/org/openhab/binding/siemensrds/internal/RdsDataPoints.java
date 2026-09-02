@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,12 +86,7 @@ public class RdsDataPoints {
      * response from the given urlString
      */
     protected static String httpGenericGetJson(String apiKey, String token, String urlString) throws IOException {
-        /*
-         * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-         * preferred JETTY library; the reason is that JETTY does not allow sending the
-         * square brackets characters "[]" verbatim over HTTP connections
-         */
-        URL url = new URL(urlString);
+        URL url = URI.create(urlString).toURL();
         HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
         https.setRequestMethod(HTTP_GET);
@@ -128,12 +125,7 @@ public class RdsDataPoints {
      */
     private void httpSetPointValueJson(String apiKey, String token, String pointUrl, String json)
             throws RdsCloudException, ProtocolException, MalformedURLException, IOException {
-        /*
-         * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-         * preferred JETTY library; the reason is that JETTY does not allow sending the
-         * square brackets characters "[]" verbatim over HTTP connections
-         */
-        URL url = new URL(pointUrl);
+        URL url = URI.create(pointUrl).toURL();
 
         HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
@@ -275,7 +267,8 @@ public class RdsDataPoints {
                 valueFilter = String.join(",", set);
             }
 
-            String url = String.format(URL_VALUES, valueFilter);
+            String url = URL_VALUES
+                    .formatted(URLEncoder.encode(ARG_POINT.formatted(valueFilter), StandardCharsets.UTF_8));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());

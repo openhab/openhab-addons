@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,12 +32,10 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0453;
     public static final String CLUSTER_NAME = "ThreadNetworkDirectory";
     public static final String CLUSTER_PREFIX = "threadNetworkDirectory";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_PREFERRED_EXTENDED_PAN_ID = "preferredExtendedPanId";
     public static final String ATTRIBUTE_THREAD_NETWORKS = "threadNetworks";
     public static final String ATTRIBUTE_THREAD_NETWORK_TABLE_SIZE = "threadNetworkTableSize";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the Thread Extended PAN ID value for the Thread network designated by the user to be their preferred
      * network for commissioning of Thread devices. If not null, the value of this attribute shall match the
@@ -65,9 +62,9 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
      */
     public List<ThreadNetworkStruct> threadNetworks; // 1 list R V
     /**
-     * This attribute shall indicate the maximum number of entries that can be held in the ThreadNetworks list; it shall
-     * be at least 2 times the number of SupportedFabrics advertised in the Operational Credentials Cluster on the root
-     * endpoint of this node.
+     * Indicates the maximum number of entries that can be held in the ThreadNetworks list; it shall be at least 2 times
+     * the number of SupportedFabrics advertised in the Operational Credentials Cluster on the root endpoint of this
+     * node.
      */
     public Integer threadNetworkTableSize; // 2 uint8 R V
 
@@ -114,7 +111,7 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
     /**
      * Adds an entry to the ThreadNetworks attribute with the specified Thread Operational Dataset.
      * If there is an existing entry with the Extended PAN ID then the Thread Operational Dataset for that entry is
-     * replaced. As a result, changes to the network parameters (e.g. Channel, Network Name, PSKc, …) of an existing
+     * replaced. As a result, changes to the network parameters (e.g. Channel, Network Name, PSKc, ...) of an existing
      * entry with a given Extended PAN ID can be made using this command.
      */
     public static ClusterCommand addNetwork(OctetString operationalDataset) {
@@ -150,7 +147,6 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "preferredExtendedPanId : " + preferredExtendedPanId + "\n";
         str += "threadNetworks : " + threadNetworks + "\n";
         str += "threadNetworkTableSize : " + threadNetworkTableSize + "\n";

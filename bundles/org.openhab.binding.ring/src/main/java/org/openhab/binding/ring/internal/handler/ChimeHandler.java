@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,8 @@ public class ChimeHandler extends RingDeviceHandler {
     protected void minuteTick() {
         logger.debug("ChimeHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
-            initialize();
+            logger.debug("Device data is not yet available for {}. Skipping tick.", getThing().getUID().getId());
+            return;
         }
     }
 }

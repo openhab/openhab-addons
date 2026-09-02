@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="modbus:e3dc">
+		<instruction-set targetVersion="1">
+			<add-channel id="pv-perf-ratio" groupIds="power">
+				<type>modbus:perf-ratio-channel</type>
+				<label>PV Performance Ratio</label>
+				<description>Performance ratio of actual energy produced and installed kWp</description>
+			</add-channel>
+			<add-channel id="string1-perf-ratio" groupIds="strings">
+				<type>modbus:perf-ratio-channel</type>
+				<label>String 1 Ratio</label>
+				<description>Performance ratio of actual energy produced and installed kWp</description>
+			</add-channel>
+			<add-channel id="string2-perf-ratio" groupIds="strings">
+				<type>modbus:perf-ratio-channel</type>
+				<label>String 2 Ratio</label>
+				<description>Performance ratio of actual energy produced and installed kWp</description>
+			</add-channel>
+			<add-channel id="string3-perf-ratio" groupIds="strings">
+				<type>modbus:perf-ratio-channel</type>
+				<label>String 3 Ratio</label>
+				<description>Performance ratio of actual energy produced and installed kWp</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

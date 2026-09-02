@@ -1,9 +1,4 @@
 {
-	"doorLockStatusOverall": {
-		"timestamp_in_ms": 1693926313000,
-		"timestamp": 1693926313,
-		"int_value": 0
-	},
 	"chargeCouplerACStatus": {
 		"timestamp_in_ms": 1693923754000,
 		"timestamp": 1693923754,

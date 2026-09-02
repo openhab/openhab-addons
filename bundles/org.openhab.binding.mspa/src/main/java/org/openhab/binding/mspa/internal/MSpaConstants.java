@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,6 +73,7 @@ public class MSpaConstants {
     public static final String CHANNEL_UVC = "uvc";
     public static final String CHANNEL_OZONE = "ozone";
     public static final String CHANNEL_LOCK = "lock";
+    public static final String CHANNEL_FAULT = "fault";
 
     public static final String PROPERTY_DEVICE_ID = "deviceId";
     public static final String PROPERTY_PRODUCT_SERIES = "productSeries";
@@ -80,6 +81,7 @@ public class MSpaConstants {
 
     public static final String UNKNOWN = "unknown";
     public static final String EMPTY = "";
+    public static final String FAULT_STATE_NONE = "NONE";
 
     public static final String COMMAND_TEMPLATE = new String("{\"desired\": {\"state\": {\"desired\": {%s}}}}");
 

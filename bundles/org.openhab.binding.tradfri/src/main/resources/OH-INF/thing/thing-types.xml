@@ -253,7 +253,7 @@
 		<item-type>Switch</item-type>
 
 		<label>Disable LED</label>
-		<description>Disables the LED's on the Air Purifier.</description>
+		<description>Disables the LEDs on the Air Purifier.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
@@ -304,7 +304,7 @@
 	</channel-type>
 
 	<channel-type id="filter-check-next">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="d">Number:Time</item-type>
 
 		<label>Next Filter Check</label>
 		<description>The number of minutes before the next filter check (or time since check is required if below 0).</description>
@@ -314,7 +314,7 @@
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="filter-check-alarm">
@@ -330,7 +330,7 @@
 	</channel-type>
 
 	<channel-type id="filter-uptime">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="wk">Number:Time</item-type>
 
 		<label>Filter Uptime</label>
 		<description>The duration for which the current filter was used.</description>
@@ -340,7 +340,7 @@
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%.2f week"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

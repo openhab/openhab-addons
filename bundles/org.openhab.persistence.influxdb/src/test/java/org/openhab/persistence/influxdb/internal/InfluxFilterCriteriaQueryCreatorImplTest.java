@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,8 +85,9 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:true, columns:["_time"])"""));
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 
     @Test
@@ -108,9 +109,10 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:%s, stop:%s)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:true, columns:["_time"])""", INFLUX2_DATE_FORMATTER.format(now.toInstant()),
-                INFLUX2_DATE_FORMATTER.format(tomorrow.toInstant()));
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> keep(columns:["_measurement", "_time", "_value"])""",
+                INFLUX2_DATE_FORMATTER.format(now.toInstant()), INFLUX2_DATE_FORMATTER.format(tomorrow.toInstant()));
         assertThat(queryV2, equalTo(expectedQueryV2));
     }
 
@@ -129,9 +131,10 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
                 \t|> filter(fn: (r) => (r["_field"] == "value" and r["_value"] <= 90))
-                \t|> sort(desc:true, columns:["_time"])"""));
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 
     @Test
@@ -149,9 +152,10 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
+                \t|> group(columns:["_measurement"])
                 \t|> sort(desc:true, columns:["_time"])
-                \t|> limit(n:10, offset:20)"""));
+                \t|> limit(n:10, offset:20)
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 
     @Test
@@ -168,8 +172,9 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:false, columns:["_time"])"""));
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:false, columns:["_time"])
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 
     @Test
@@ -178,12 +183,54 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY, null);
+        // group() collapses the per-series tables so last() returns the single most recent point
+        // across the whole measurement; group() + last() pushes down as one ReadGroupAggregate.
         assertThat(queryV2, equalTo("""
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> last()"""));
+                \t|> group(columns:["_measurement"])
+                \t|> last()
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
+    }
+
+    @Test
+    public void testAliasUsedForItemTagFilter() {
+        // Data is stored with TAG_ITEM_NAME = alias, so the tag filter must use the alias,
+        // not the item name, otherwise queries return no results when alias != itemName.
+        FilterCriteria criteria = createBaseCriteria();
+        String alias = "aliasName";
+        MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, alias);
+        when(metadataRegistry.get(metadataKey)).thenReturn(new Metadata(metadataKey, "measurementName", Map.of()));
+
+        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY, alias);
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y, stop:100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "measurementName")
+                \t|> filter(fn: (r) => r["item"] == "aliasName")
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> keep(columns:["_measurement", "_time", "_value", "item"])"""));
+    }
+
+    @Test
+    public void testPageSizeOneWithOffsetDoesNotUseLast() {
+        // pageSize == 1 but pageNumber > 0 needs an offset, so the last() optimization must not
+        // kick in; it would ignore the offset and always return the most recent point.
+        FilterCriteria criteria = createBaseCriteria();
+        criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
+        criteria.setPageSize(1);
+        criteria.setPageNumber(3);
+        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY, null);
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y, stop:100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> limit(n:1, offset:3)
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 
     private FilterCriteria createBaseCriteria() {
@@ -210,8 +257,9 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "measurementName")
                 \t|> filter(fn: (r) => r["item"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value", "item"])
-                \t|> sort(desc:true, columns:["_time"])"""));
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> keep(columns:["_measurement", "_time", "_value", "item"])"""));
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("key1", "val1", "key2", "val2")));
 
@@ -224,7 +272,8 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 from(bucket:"origin")
                 \t|> range(start:-100y, stop:100y)
                 \t|> filter(fn: (r) => r["_measurement"] == "sampleItem")
-                \t|> keep(columns:["_measurement", "_time", "_value"])
-                \t|> sort(desc:true, columns:["_time"])"""));
+                \t|> group(columns:["_measurement"])
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 }

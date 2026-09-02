@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,8 +53,8 @@ import org.openhab.core.util.HexUtils;
 public class GenericEEP extends EEP {
 
     final List<Class<? extends State>> supportedStates = Collections
-            .unmodifiableList(List.of(DateTimeType.class, DecimalType.class, HSBType.class, OnOffType.class,
-                    OpenClosedType.class, PercentType.class, PlayPauseType.class, PointType.class,
+            .unmodifiableList(List.<Class<? extends State>> of(DateTimeType.class, DecimalType.class, HSBType.class,
+                    OnOffType.class, OpenClosedType.class, PercentType.class, PlayPauseType.class, PointType.class,
                     RewindFastforwardType.class, StringListType.class, StringType.class, UpDownType.class));
 
     public GenericEEP() {

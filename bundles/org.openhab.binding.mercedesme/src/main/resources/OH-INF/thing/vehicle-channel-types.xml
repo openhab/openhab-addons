@@ -8,14 +8,14 @@
 		<label>Lock Status/Control</label>
 		<state>
 			<options>
-				<option value="0">Locked</option>
-				<option value="1">Unlocked</option>
+				<option value="2">Locked</option>
+				<option value="0">Unlocked</option>
 			</options>
 		</state>
 		<command>
 			<options>
-				<option value="0">Lock</option>
-				<option value="1">Unlock</option>
+				<option value="2">Lock</option>
+				<option value="0">Unlock</option>
 			</options>
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

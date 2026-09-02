@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Bat
  * The Sensors supported by the gateway.
  *
  * @author Andreas Berger - Initial contribution
+ * @author Giovanni Fabiani - Add support for WS85 sensor
  */
 @NonNullByDefault
 public enum Sensor {
@@ -38,20 +39,37 @@ public enum Sensor {
     WH41(LEVEL_OR_DC),
     WH45(LEVEL_OR_DC),
     WH51(VOLTAGE_BROAD_STEPS),
+    WH54(VOLTAGE_FINE_STEPS),
     WH55(LEVEL),
     WH57(LEVEL),
     WH65(LOW_HIGH),
     WH68(VOLTAGE_FINE_STEPS),
     WH80(VOLTAGE_FINE_STEPS),
-    WH90(VOLTAGE_FINE_STEPS);
+    WH90(VOLTAGE_FINE_STEPS),
+    WS85(VOLTAGE_FINE_STEPS),
+    WN20(LOW_HIGH),
+    WN38(VOLTAGE_FINE_STEPS);
 
-    private final BatteryStatus.Type batteryStatusTpe;
+    private final BatteryStatus.Type batteryStatusType;
 
-    Sensor(BatteryStatus.Type batteryStatusTpe) {
-        this.batteryStatusTpe = batteryStatusTpe;
+    Sensor(BatteryStatus.Type batteryStatusType) {
+        this.batteryStatusType = batteryStatusType;
     }
 
     public BatteryStatus getBatteryStatus(byte data) {
-        return new BatteryStatus(batteryStatusTpe, data);
+        return new BatteryStatus(batteryStatusType, data);
+    }
+
+    /**
+     * Interprets the battery field as reported by the Ecowitt HTTP API. Unlike the binary protocol, the HTTP API
+     * reports the battery of voltage-based sensors already as a 0-5 level (5 = full) rather than a raw voltage, so
+     * those are read as {@link BatteryStatus.Type#LEVEL}; all other sensor types share the binary encoding.
+     */
+    public BatteryStatus getHttpBatteryStatus(byte data) {
+        BatteryStatus.Type type = switch (batteryStatusType) {
+            case VOLTAGE_BROAD_STEPS, VOLTAGE_FINE_STEPS -> LEVEL;
+            default -> batteryStatusType;
+        };
+        return new BatteryStatus(type, data);
     }
 }

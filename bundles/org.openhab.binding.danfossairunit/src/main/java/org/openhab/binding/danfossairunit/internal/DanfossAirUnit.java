@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,15 +93,6 @@ public class DanfossAirUnit {
         return ((result[0] & 0xff) << 24) | ((result[1] & 0xff) << 16) | ((result[2] & 0xff) << 8) | (result[3] & 0xff);
     }
 
-    private float getTemperature(Parameter parameter) throws IOException, UnexpectedResponseValueException {
-        short shortTemp = getShort(parameter);
-        float temp = ((float) shortTemp) / 100;
-        if (temp <= -274 || temp > 100) {
-            throw new UnexpectedResponseValueException("Invalid temperature: %s".formatted(temp));
-        }
-        return temp;
-    }
-
     private Instant getTimestamp(Parameter parameter) throws IOException, UnexpectedResponseValueException {
         byte[] result = communicationController.sendRobustRequest(parameter);
         return asInstant(result);
@@ -131,9 +122,9 @@ public class DanfossAirUnit {
         return b & 0xFF;
     }
 
-    private static float asPercentByte(byte b) {
-        float f = asUnsignedByte(b);
-        return f * 100 / 255;
+    private static BigDecimal asPercentByte(byte b) {
+        return BigDecimal.valueOf(asUnsignedByte(b)).multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(255),
+                1, RoundingMode.HALF_UP);
     }
 
     public String getUnitName() throws IOException {
@@ -201,39 +192,47 @@ public class DanfossAirUnit {
     }
 
     public QuantityType<Dimensionless> getHumidity() throws IOException {
-        BigDecimal value = BigDecimal.valueOf(asPercentByte(getByte(Parameter.HUMIDITY)));
-        return new QuantityType<>(value.setScale(1, RoundingMode.HALF_UP), Units.PERCENT);
+        BigDecimal value = asPercentByte(getByte(Parameter.HUMIDITY));
+        return new QuantityType<>(value, Units.PERCENT);
     }
 
     public QuantityType<Temperature> getRoomTemperature() throws IOException, UnexpectedResponseValueException {
-        return getTemperatureAsDecimalType(Parameter.ROOM_TEMPERATURE);
+        return getTemperatureAsQuantityType(Parameter.ROOM_TEMPERATURE);
     }
 
     public QuantityType<Temperature> getRoomTemperatureCalculated()
             throws IOException, UnexpectedResponseValueException {
-        return getTemperatureAsDecimalType(Parameter.ROOM_TEMPERATURE_CALCULATED);
+        return getTemperatureAsQuantityType(Parameter.ROOM_TEMPERATURE_CALCULATED);
     }
 
     public QuantityType<Temperature> getOutdoorTemperature() throws IOException, UnexpectedResponseValueException {
-        return getTemperatureAsDecimalType(Parameter.OUTDOOR_TEMPERATURE);
+        return getTemperatureAsQuantityType(Parameter.OUTDOOR_TEMPERATURE);
     }
 
     public QuantityType<Temperature> getSupplyTemperature() throws IOException, UnexpectedResponseValueException {
-        return getTemperatureAsDecimalType(Parameter.SUPPLY_TEMPERATURE);
+        return getTemperatureAsQuantityType(Parameter.SUPPLY_TEMPERATURE);
     }
 
     public QuantityType<Temperature> getExtractTemperature() throws IOException, UnexpectedResponseValueException {
-        return getTemperatureAsDecimalType(Parameter.EXTRACT_TEMPERATURE);
+        return getTemperatureAsQuantityType(Parameter.EXTRACT_TEMPERATURE);
     }
 
     public QuantityType<Temperature> getExhaustTemperature() throws IOException, UnexpectedResponseValueException {
-        return getTemperatureAsDecimalType(Parameter.EXHAUST_TEMPERATURE);
+        return getTemperatureAsQuantityType(Parameter.EXHAUST_TEMPERATURE);
     }
 
-    private QuantityType<Temperature> getTemperatureAsDecimalType(Parameter parameter)
+    private QuantityType<Temperature> getTemperatureAsQuantityType(Parameter parameter)
             throws IOException, UnexpectedResponseValueException {
-        BigDecimal value = BigDecimal.valueOf(getTemperature(parameter));
-        return new QuantityType<>(value.setScale(1, RoundingMode.HALF_UP), SIUnits.CELSIUS);
+        short raw = getShort(parameter);
+
+        if (raw < -27315 || raw > 10000) {
+            BigDecimal invalid = BigDecimal.valueOf(raw).movePointLeft(2);
+            throw new UnexpectedResponseValueException("Invalid temperature: %s".formatted(invalid));
+        }
+
+        BigDecimal value = BigDecimal.valueOf(raw).movePointLeft(2).setScale(1, RoundingMode.HALF_UP);
+
+        return new QuantityType<>(value, SIUnits.CELSIUS);
     }
 
     public DecimalType getBatteryLife() throws IOException {
@@ -241,8 +240,8 @@ public class DanfossAirUnit {
     }
 
     public DecimalType getFilterLife() throws IOException {
-        BigDecimal value = BigDecimal.valueOf(asPercentByte(getByte(Parameter.FILTER_LIFE)));
-        return new DecimalType(value.setScale(1, RoundingMode.HALF_UP));
+        BigDecimal value = asPercentByte(getByte(Parameter.FILTER_LIFE));
+        return new DecimalType(value);
     }
 
     public DecimalType getFilterPeriod() throws IOException {

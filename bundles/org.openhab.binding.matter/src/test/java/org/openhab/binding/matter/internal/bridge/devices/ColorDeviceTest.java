@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MATTER_SOURCE;
 
 import java.util.List;
 import java.util.Map;
@@ -89,29 +90,39 @@ class ColorDeviceTest {
     @Test
     void testHandleMatterEventOnOff() {
         device.handleMatterEvent("onOff", "onOff", true);
-        verify(colorItem).send(OnOffType.ON);
+        verify(colorItem).send(OnOffType.ON, MATTER_SOURCE);
 
         device.handleMatterEvent("onOff", "onOff", false);
-        verify(colorItem).send(OnOffType.OFF);
+        verify(colorItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventColor() {
         // Turn device on first and wait for future completion
         device.handleMatterEvent("onOff", "onOff", true);
-        verify(colorItem).send(OnOffType.ON);
+        verify(colorItem).send(OnOffType.ON, MATTER_SOURCE);
         device.updateState(colorItem, initialHSBState);
 
         device.handleMatterEvent("colorControl", "currentHue", Double.valueOf(127));
         device.handleMatterEvent("colorControl", "currentSaturation", Double.valueOf(127));
 
-        verify(colorItem).send(new HSBType(new DecimalType(180), new PercentType(50), new PercentType(50)));
+        verify(colorItem).send(new HSBType(new DecimalType(180), new PercentType(50), new PercentType(50)),
+                MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventLevel() {
         device.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(127));
-        verify(colorItem).send(new PercentType(50));
+        verify(colorItem).send(new PercentType(50), MATTER_SOURCE);
+    }
+
+    @Test
+    void testALevelAlwaysMeansOn() {
+        // the bridge turns a light off with an onOff event, so no level may read back as off
+        device.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(1));
+        device.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(2));
+        device.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(4));
+        verify(colorItem, Mockito.times(3)).send(new PercentType(1), MATTER_SOURCE);
     }
 
     @Test
@@ -131,16 +142,19 @@ class ColorDeviceTest {
         // First call assertions
         List<AttributeState> firstStates = capturedCalls.get(0);
         assertEquals(4, firstStates.size());
+        assertEquals("levelControl", firstStates.get(0).clusterName);
+        assertEquals("onOff", firstStates.get(1).clusterName);
 
         assertListContains(firstStates, "onOff", "onOff", true);
         assertListContains(firstStates, "levelControl", "currentLevel", 254);
         assertListContains(firstStates, "colorControl", "currentHue", 127);
         assertListContains(firstStates, "colorControl", "currentSaturation", 254);
 
-        // Second call assertions
+        // Second call assertions, an off light reports the minimum level
         List<AttributeState> secondStates = capturedCalls.get(1);
-        assertEquals(3, secondStates.size());
+        assertEquals(4, secondStates.size());
         assertListContains(secondStates, "onOff", "onOff", false);
+        assertListContains(secondStates, "levelControl", "currentLevel", 1);
         assertListContains(secondStates, "colorControl", "currentHue", 127);
         assertListContains(secondStates, "colorControl", "currentSaturation", 254);
     }

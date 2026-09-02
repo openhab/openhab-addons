@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -488,7 +487,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
         services.put(CHANNEL_TV_CHANNEL, new TvChannelService(this, connectionManager));
         services.put(CHANNEL_POWER, new PowerService(this, connectionManager));
         services.put(CHANNEL_SEARCH_CONTENT, new SearchContentService(this, connectionManager));
-        channelServices = Collections.unmodifiableMap(services);
+
+        channelServices = Map.copyOf(services);
     }
 
     /**
@@ -532,10 +532,13 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     public synchronized void postUpdateThing(ThingStatus status, ThingStatusDetail statusDetail, String msg) {
         logger.trace("postUpdateThing {} {} {}", status, statusDetail, msg);
         if (status == ThingStatus.ONLINE) {
-            PhilipsTVService powerService = channelServices.get(CHANNEL_POWER);
-            if (powerService != null) {
-                powerService.handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
+            if (!config.skipPowerRefresh) {
+                PhilipsTVService powerService = channelServices.get(CHANNEL_POWER);
+                if (powerService != null) {
+                    powerService.handleCommand(CHANNEL_POWER, RefreshType.REFRESH);
+                }
             }
+
             if (!msg.equalsIgnoreCase(STANDBY_MSG)) {
                 startDeviceHealthJob(5, TimeUnit.SECONDS);
                 pendingPowerOn = false;
@@ -679,7 +682,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     @Override
     public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
             @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-        return Collections.emptyList();
+        return List.of();
     }
 
     public void dispose() {

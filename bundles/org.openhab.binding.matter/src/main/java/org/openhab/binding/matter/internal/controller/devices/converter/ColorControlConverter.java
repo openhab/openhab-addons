@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -227,7 +226,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 EnhancedColorModeEnum newColorMode = lastColorMode;
                 if (message.value instanceof ColorControlCluster.ColorModeEnum colorMode) {
                     try {
-                        newColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.value);
+                        newColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.getValue());
                     } catch (IllegalArgumentException e) {
                         logger.debug("Unknown color mode: {}", numberValue);
                     }
@@ -257,7 +256,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 logger.debug("enhancedCurrentHue not supported yet");
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
-                updateBrightness(ValueUtils.levelToPercent(numberValue));
+                updateBrightness(ValueUtils.levelToPercentWhenOn(numberValue));
                 break;
             case OnOffCluster.ATTRIBUTE_ON_OFF:
                 updateOnOff((Boolean) message.value);
@@ -286,9 +285,14 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 levelControlOptionsBitmap = levelControlCluster.options;
             }
         }
-        lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), ValueUtils.levelToPercent(brightness));
-        lastColorMode = Optional.ofNullable(initializingCluster.enhancedColorMode).orElseGet(
-                () -> MatterEnum.fromValue(EnhancedColorModeEnum.class, initializingCluster.colorMode.value));
+        lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), ValueUtils.levelToPercentWhenOn(brightness));
+        EnhancedColorModeEnum enhancedColorMode = initializingCluster.enhancedColorMode;
+        ColorControlCluster.ColorModeEnum colorMode = initializingCluster.colorMode;
+        if (enhancedColorMode != null) {
+            lastColorMode = enhancedColorMode;
+        } else if (colorMode != null) {
+            lastColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.getValue());
+        }
         lastOnOff = onOff;
         lastX = initializingCluster.currentX != null ? initializingCluster.currentX : 0;
         lastY = initializingCluster.currentY != null ? initializingCluster.currentY : 0;
@@ -378,9 +382,8 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
 
     private void updateColorHSB() {
         float hueValue = lastHue * 360.0f / 254.0f;
-        float saturationValue = lastSaturation * 100.0f / 254.0f;
         DecimalType hue = new DecimalType(Float.valueOf(hueValue).toString());
-        PercentType saturation = new PercentType(Float.valueOf(saturationValue).toString());
+        PercentType saturation = ValueUtils.saturationToPercent(lastSaturation);
         updateColorHSB(hue, saturation);
         hueSaturationState = ColorUpdateState.READY;
     }
@@ -428,7 +431,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
 
     private void changeColorHueSaturation(HSBType color) {
         int hue = (int) (color.getHue().floatValue() * 254.0f / 360.0f + 0.5f);
-        int saturation = ValueUtils.percentToLevel(color.getSaturation());
+        int saturation = ValueUtils.percentToSaturation(color.getSaturation());
         handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, ColorControlCluster
                 .moveToHueAndSaturation(hue, saturation, 0, initializingCluster.options, initializingCluster.options));
     }

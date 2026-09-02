@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,7 @@ public class SystemInfoDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (UnknownHostException ex) {
             hostname = DEFAULT_THING_ID;
-            logger.info("Hostname can not be resolved. Computer name will be set to the default one: {}",
+            logger.debug("Hostname cannot be resolved. Computer name will be set to the default one: {}",
                     DEFAULT_THING_ID);
         }
 

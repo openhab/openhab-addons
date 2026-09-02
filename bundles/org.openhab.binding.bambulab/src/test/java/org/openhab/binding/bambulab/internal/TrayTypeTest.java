@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,6 +115,7 @@ class TrayTypeTest {
     @MethodSource
     void testPerformsCaseInsensitiveComparisonForAllEnumValues(String given, TrayType trayType) {
         assertThat(TrayType.findTrayType(given))//
+                .withFailMessage("For %s findTrayType should return %s", given, trayType)//
                 .isPresent()//
                 .hasValueSatisfying(type -> assertThat(type).isEqualTo(trayType));
     }
@@ -122,9 +123,10 @@ class TrayTypeTest {
     static Stream<Arguments> testPerformsCaseInsensitiveComparisonForAllEnumValues() {
         return Arrays.stream(TrayType.values())//
                 .flatMap(trayType -> Stream.of(//
-                        Arguments.of(trayType.name().toUpperCase(), trayType), //
-                        Arguments.of(trayType.name().toLowerCase(), trayType), //
-                        Arguments.of(trayType.name().charAt(0) + trayType.name().substring(1).toLowerCase(),
+                        Arguments.of(trayType.getTypeName().toUpperCase(), trayType), //
+                        Arguments.of(trayType.getTypeName().toLowerCase(), trayType), //
+                        Arguments.of(
+                                trayType.getTypeName().charAt(0) + trayType.getTypeName().substring(1).toLowerCase(),
                                 trayType)));
     }
 }

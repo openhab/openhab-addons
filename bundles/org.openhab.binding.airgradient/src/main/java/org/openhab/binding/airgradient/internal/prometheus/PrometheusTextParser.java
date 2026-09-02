@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Prometheus text format parser.
@@ -33,7 +32,7 @@ public class PrometheusTextParser {
         String[] lines = text.split("\\r?\\n");
         List<PrometheusMetric> metrics = new ArrayList<>(lines.length);
         for (String line : lines) {
-            @Nullable
+
             PrometheusMetric metric = PrometheusMetric.parse(line);
             if (metric != null) {
                 metrics.add(metric);

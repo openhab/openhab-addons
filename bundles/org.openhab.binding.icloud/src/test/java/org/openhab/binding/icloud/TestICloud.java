@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,13 @@ import static org.openhab.binding.icloud.internal.ICloudBindingConstants.THING_T
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.bouncycastle.crypto.CryptoException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +33,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.openhab.binding.icloud.internal.ICloudApiResponseException;
 import org.openhab.binding.icloud.internal.ICloudBindingConstants;
 import org.openhab.binding.icloud.internal.ICloudService;
+import org.openhab.binding.icloud.internal.SrpPassword;
 import org.openhab.binding.icloud.internal.handler.ICloudDeviceHandler;
 import org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudAccountDataResponse;
 import org.openhab.binding.icloud.internal.utilities.JsonUtils;
@@ -88,8 +91,24 @@ public class TestICloud {
     }
 
     @Test
+    public void testSrpPassword() {
+        String password = "testpassword";
+        byte[] salt = new byte[] { 1, 2, 3, 4 };
+
+        int iterations = 20622;
+        int keyLength = 32;
+        SrpPassword srpPassword = new SrpPassword(password);
+        srpPassword.setEncryptInfo(salt, iterations, keyLength);
+
+        byte[] expected = new byte[] { 66, -77, 114, 66, -54, -84, 100, 100, 77, 71, -77, 83, -6, -42, 88, 43, -78, 95,
+                35, 45, -105, 111, -9, 106, 12, -89, -111, 63, -36, -34, -101, -104 };
+        assertArrayEquals(expected, srpPassword.encode());
+    }
+
+    @Test
     @EnabledIfSystemProperty(named = "icloud.test.email", matches = ".*", disabledReason = "Only for manual execution.")
-    public void testAuth() throws IOException, InterruptedException, ICloudApiResponseException, JsonSyntaxException {
+    public void testAuth() throws IOException, InterruptedException, ICloudApiResponseException, JsonSyntaxException,
+            CryptoException, NoSuchAlgorithmException {
         File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
         logger.info(jsonStorageFile.toString());
 

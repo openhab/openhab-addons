@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,7 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
     @Override
     public void initialize() {
         // Get serial port number from config
-        cm11aConfig = getThing().getConfiguration().as(Cm11aConfig.class);
+        cm11aConfig = getConfigAs(Cm11aConfig.class);
         logger.trace("********* cm11a initialize started *********");
 
         // Verify the configuration is valid

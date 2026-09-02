@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,8 +93,8 @@ public class ModeSelectDevice extends BaseDevice {
                         logger.debug("Invalid semantic tag format (expected namespace.tag): {}", tagString);
                         continue;
                     }
-                    String namespaceName = tagParts[0].toUpperCase();
-                    String tagName = tagParts[1].toUpperCase().replace('-', '_').replace(' ', '_');
+                    String namespaceName = tagParts[0].toUpperCase(Locale.ROOT);
+                    String tagName = tagParts[1].toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_');
                     try {
                         SemanticTags.Namespace namespaceEnum = SemanticTags.Namespace.valueOf(namespaceName);
                         SemanticTags.Namespace existingNamespace = standardNamespace.get();
@@ -173,26 +174,26 @@ public class ModeSelectDevice extends BaseDevice {
         String value = modeMappings.get(mode);
         if (value != null) {
             if (primaryItem instanceof GroupItem groupItem) {
-                groupItem.send(new StringType(value));
+                groupItem.send(new StringType(value), MATTER_SOURCE);
             } else if (primaryItem instanceof StringItem stringItem) {
-                stringItem.send(new StringType(value));
+                stringItem.send(new StringType(value), MATTER_SOURCE);
             } else if (primaryItem instanceof NumberItem numberItem) {
-                numberItem.send(new DecimalType(value));
+                numberItem.send(new DecimalType(value), MATTER_SOURCE);
             } else if (primaryItem instanceof SwitchItem switchItem) {
-                switchItem.send(OnOffType.from(value));
+                switchItem.send(OnOffType.from(value), MATTER_SOURCE);
             } else if (primaryItem instanceof RollershutterItem rollershutterItem) {
-                switch (value.toUpperCase()) {
+                switch (value.toUpperCase(Locale.ROOT)) {
                     case "UP":
                     case "DOWN":
-                        rollershutterItem.send(UpDownType.valueOf(value.toUpperCase()));
+                        rollershutterItem.send(UpDownType.valueOf(value.toUpperCase(Locale.ROOT)), MATTER_SOURCE);
                         break;
                     case "STOP":
                     case "MOVE":
-                        rollershutterItem.send(StopMoveType.valueOf(value.toUpperCase()));
+                        rollershutterItem.send(StopMoveType.valueOf(value.toUpperCase(Locale.ROOT)), MATTER_SOURCE);
                         break;
                     default:
                         try {
-                            rollershutterItem.send(new PercentType(Integer.parseInt(value)));
+                            rollershutterItem.send(new PercentType(Integer.parseInt(value)), MATTER_SOURCE);
                         } catch (NumberFormatException ignored) {
                         }
                         break;

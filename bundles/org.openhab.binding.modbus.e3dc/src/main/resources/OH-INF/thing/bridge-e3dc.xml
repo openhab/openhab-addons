@@ -16,15 +16,32 @@
 			<channel-group id="strings" typeId="string-values"/>
 			<channel-group id="emergency" typeId="emergency-values"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="refresh" type="integer" min="1000" unit="ms">
 				<label>Refresh Interval</label>
 				<description>Refresh Rate of E3DC values in Milliseconds</description>
 				<default>2000</default>
 			</parameter>
-			<parameter name="batteryCapacity" type="decimal">
+			<parameter name="batteryCapacity" type="decimal" step="0.001">
 				<label>Battery Capacity</label>
 				<description>Capacity of the built in battery in kWh</description>
+			</parameter>
+			<parameter name="string1Kwp" type="decimal" step="0.001">
+				<label>String 1 kWp</label>
+				<description>String 1 kilowatt peak installed</description>
+			</parameter>
+			<parameter name="string2Kwp" type="decimal" step="0.001">
+				<label>String 2 kWp</label>
+				<description>String 2 kilowatt peak installed</description>
+			</parameter>
+			<parameter name="string3Kwp" type="decimal" step="0.001">
+				<label>String 3 kWp</label>
+				<description>String 3 kilowatt peak installed</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

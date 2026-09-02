@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.teleinfo.util;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -30,7 +32,12 @@ public final class TestUtils {
     }
 
     public static File getTestFile(String testResourceName) {
-        URL url = TestUtils.class.getClassLoader().getResource(testResourceName);
+        ClassLoader classLoader = TestUtils.class.getClassLoader();
+        assertNotNull(classLoader);
+
+        URL url = classLoader.getResource(testResourceName);
+        assertNotNull(url);
+
         try {
             return new File(url.toURI());
         } catch (URISyntaxException e) {

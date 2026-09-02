@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,6 +84,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     private @Nullable ScheduledFuture<?> pollingJob;
     private long lastEventReceived = 0;
     private int updatePeriod = 0;
+    private String parentalControlPasscode = "";
 
     protected KaleidescapeConnector connector = new KaleidescapeDefaultConnector();
     protected int metaRuntimeMultiple = 1;
@@ -93,7 +94,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     protected boolean isMuted = false;
     protected boolean isLoadHighlightedDetails = false;
     protected boolean isLoadAlbumDetails = false;
-    protected String friendlyName = EMPTY;
     protected Object sequenceLock = new Object();
 
     public KaleidescapeHandler(Thing thing, SerialPortManager serialPortManager, HttpClient httpClient) {
@@ -133,6 +133,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         final Integer updatePeriod = config.updatePeriod;
         this.isLoadHighlightedDetails = config.loadHighlightedDetails;
         this.isLoadAlbumDetails = config.loadAlbumDetails;
+        this.parentalControlPasscode = config.parentalControlPasscode;
 
         if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
             configError = "undefined serialPort and host configuration settings; please set one of them";
@@ -258,8 +259,42 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     case MUSIC_CONTROL:
                         handleControlCommand(command);
                         break;
-                    case CHANNEL_TYPE_SENDCMD:
+                    case SENDCMD:
                         connector.sendCommand(command.toString());
+                        break;
+                    case SEARCH:
+                        final String srchStr = command.toString().replace(":", "\\:");
+
+                        if (srchStr.isBlank()) {
+                            logger.debug("Search string was blank");
+                            return;
+                        }
+
+                        scheduler.execute(() -> {
+                            synchronized (sequenceLock) {
+                                try {
+                                    connector.sendCommand("GO_MOVIE_LIST");
+
+                                    // Wait .5 seconds for the MOVIE LIST screen to load
+                                    TimeUnit.MILLISECONDS.sleep(500);
+
+                                    connector.sendCommand("FILTER_LIST");
+                                    for (int i = 0; i < srchStr.length(); i++) {
+                                        connector.sendCommand("KEYBOARD_CHARACTER:" + srchStr.charAt(i));
+                                    }
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    return;
+                                } catch (KaleidescapeException e) {
+                                    logger.debug("Error searching for: {}", srchStr, e);
+                                    return;
+                                }
+                            }
+                        });
+                        break;
+                    case PARENTAL_CONTROL_LEVEL:
+                        connector.sendCommand(
+                                "SET_PARENTAL_CONTROL_LEVEL:" + command + ":" + this.parentalControlPasscode);
                         break;
                     default:
                         logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
@@ -294,11 +329,15 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
      * Close the connection with the Kaleidescape component
      */
     private synchronized void closeConnection() {
+        if (getThing().getChannel(SYSTEM_READINESS_STATE) != null) {
+            updateState(SYSTEM_READINESS_STATE, new StringType("Offline"));
+        }
+
         if (connector.isConnected()) {
             connector.close();
-            connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
         }
+        connector.removeEventListener(this);
     }
 
     @Override
@@ -323,7 +362,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
             if (ThingStatusDetail.BRIDGE_OFFLINE.equals(thing.getStatusInfo().getStatusDetail())) {
                 // no longer in standby, update the status
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
         } catch (IllegalArgumentException e) {
             logger.debug("Unhandled message: key {} = {}", evt.getKey(), evt.getValue());
@@ -359,8 +398,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
                             // Premiere Players and Cinema One support music
                             if (thingTypeUID.equals(THING_TYPE_PLAYER) || thingTypeUID.equals(THING_TYPE_CINEMA_ONE)) {
-                                initialCommands.addAll(Arrays.asList(GET_MUSIC_NOW_PLAYING_STATUS,
-                                        GET_MUSIC_PLAY_STATUS, GET_MUSIC_TITLE));
+                                initialCommands.addAll(
+                                        List.of(GET_MUSIC_NOW_PLAYING_STATUS, GET_MUSIC_PLAY_STATUS, GET_MUSIC_TITLE));
                             }
 
                             // everything after Premiere Player supports GET_SYSTEM_READINESS_STATE
@@ -368,9 +407,14 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                                 initialCommands.add(GET_SYSTEM_READINESS_STATE);
                             }
 
-                            // only Strato supports the GET_*_COLOR commands
+                            // Alto & Strato support GET_PARENTAL_CONTROL_LEVEL
+                            if (thingTypeUID.equals(THING_TYPE_ALTO) || thingTypeUID.equals(THING_TYPE_STRATO)) {
+                                initialCommands.add(GET_PARENTAL_CONTROL_LEVEL);
+                            }
+
+                            // only Strato supports the GET_*_COLOR & GET_VIDEO_MODE2 commands
                             if (thingTypeUID.equals(THING_TYPE_STRATO)) {
-                                initialCommands.addAll(Arrays.asList(GET_VIDEO_COLOR, GET_CONTENT_COLOR));
+                                initialCommands.addAll(List.of(GET_VIDEO_COLOR, GET_CONTENT_COLOR, GET_VIDEO_MODE2));
                             }
 
                             initialCommands.forEach(command -> {
@@ -396,7 +440,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                         return;
                     }
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
+                    updateStatus(ThingStatus.ONLINE);
                     lastEventReceived = System.currentTimeMillis();
                 }
             }
@@ -518,6 +562,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             case VIDEO_MODE_HDMI:
                 connector.sendCommand(GET_VIDEO_MODE, cache.get("VIDEO_MODE"));
                 break;
+            case VIDEO_MODE2:
+                connector.sendCommand(GET_VIDEO_MODE2, cache.get("VIDEO_MODE2"));
+                break;
             case VIDEO_COLOR:
             case VIDEO_COLOR_EOTF:
                 connector.sendCommand(GET_VIDEO_COLOR, cache.get("VIDEO_COLOR"));
@@ -547,6 +594,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 break;
             case CHILD_MODE_STATE:
                 connector.sendCommand(GET_CHILD_MODE_STATE, cache.get("CHILD_MODE_STATE"));
+                break;
+            case PARENTAL_CONTROL_LEVEL:
+                connector.sendCommand(GET_PARENTAL_CONTROL_LEVEL, cache.get("PARENTAL_CONTROL_LEVEL"));
                 break;
             case SYSTEM_READINESS_STATE:
                 connector.sendCommand(GET_SYSTEM_READINESS_STATE, cache.get("SYSTEM_READINESS_STATE"));

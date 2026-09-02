@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.ecovacs.internal.api.impl;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -32,17 +33,24 @@ import org.jivesoftware.smack.iqrequest.AbstractIqRequestHandler;
 import org.jivesoftware.smack.packet.ErrorIQ;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.packet.IqData;
 import org.jivesoftware.smack.packet.StanzaError;
-import org.jivesoftware.smack.provider.IQProvider;
+import org.jivesoftware.smack.packet.XmlEnvironment;
+import org.jivesoftware.smack.parsing.SmackParsingException;
+import org.jivesoftware.smack.provider.IqProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.SASLErrorException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.PacketParserUtils;
+import org.jivesoftware.smack.xml.XmlPullParser;
+import org.jivesoftware.smack.xml.XmlPullParserException;
 import org.jivesoftware.smackx.ping.PingManager;
+import org.jxmpp.JxmppContext;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.openhab.binding.ecovacs.internal.api.EcovacsApi.Credentials;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration;
 import org.openhab.binding.ecovacs.internal.api.EcovacsApiException;
 import org.openhab.binding.ecovacs.internal.api.EcovacsDevice;
@@ -51,7 +59,6 @@ import org.openhab.binding.ecovacs.internal.api.commands.GetFirmwareVersionComma
 import org.openhab.binding.ecovacs.internal.api.commands.IotDeviceCommand;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Device;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
-import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
@@ -60,7 +67,6 @@ import org.openhab.binding.ecovacs.internal.api.util.XPathUtils;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.XmlPullParser;
 
 import com.google.gson.Gson;
 
@@ -141,7 +147,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                     return command.convertResponse(responseObj, ProtocolVersion.XML, gson);
                 }
             }
-        } catch (DataParsingException | ParserConfigurationException | TransformerException e) {
+        } catch (Exception e) {
             throw new EcovacsApiException(e);
         }
 
@@ -163,24 +169,24 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     public void connect(final EventListener listener, final ScheduledExecutorService scheduler)
             throws EcovacsApiException {
         EcovacsApiConfiguration config = api.getConfig();
-        PortalLoginResponse loginData = api.getLoginData();
-        if (loginData == null) {
+        Credentials creds = api.getCredentials();
+        if (creds == null) {
             throw new EcovacsApiException("Can not connect when not logged in");
         }
 
         logger.trace("{}: Connecting to XMPP", getSerialNumber());
 
-        String password = String.format("0/%s/%s", loginData.getResource(), loginData.getToken());
+        String password = String.format("0/%s/%s", creds.resource(), creds.token());
         String host = String.format("msg-%s.%s", config.getContinent(), config.getRealm());
 
         try {
-            Jid ownAddress = JidCreate.from(loginData.getUserId(), config.getRealm(), loginData.getResource());
+            Jid ownAddress = JidCreate.from(creds.userId(), config.getRealm(), creds.resource());
             Jid targetAddress = JidCreate.from(device.getDid(), device.getDeviceClass() + ".ecorobot.net", "atom");
 
             XMPPTCPConnectionConfiguration connConfig = XMPPTCPConnectionConfiguration.builder().setHost(host)
-                    .setPort(5223).setUsernameAndPassword(loginData.getUserId(), password)
-                    .setResource(loginData.getResource()).setXmppDomain(config.getRealm())
-                    .setCustomX509TrustManager(TrustAllTrustManager.getInstance()).setSendPresence(false).build();
+                    .setPort(5223).setUsernameAndPassword(creds.userId(), password).setResource(creds.resource())
+                    .setXmppDomain(config.getRealm()).setCustomX509TrustManager(TrustAllTrustManager.getInstance())
+                    .setSendPresence(false).build();
 
             XMPPTCPConnection conn = new XMPPTCPConnection(connConfig);
             conn.addConnectionListener(new ConnectionListener() {
@@ -434,9 +440,12 @@ public class EcovacsXmppDevice implements EcovacsDevice {
         }
     }
 
-    private static class CommandIQProvider extends IQProvider<@Nullable DeviceCommandIQ> {
+    private static class CommandIQProvider extends IqProvider<@Nullable DeviceCommandIQ> {
+
         @Override
-        public @Nullable DeviceCommandIQ parse(@Nullable XmlPullParser parser, int initialDepth) throws Exception {
+        public @Nullable DeviceCommandIQ parse(@Nullable XmlPullParser parser, int initialDepth, @Nullable IqData data,
+                @Nullable XmlEnvironment xmlEnvironment, @Nullable JxmppContext jxmppContext)
+                throws XmlPullParserException, IOException, SmackParsingException, ParseException {
             @Nullable
             DeviceCommandIQ packet = null;
 
@@ -446,17 +455,28 @@ public class EcovacsXmppDevice implements EcovacsDevice {
 
             outerloop: while (true) {
                 switch (parser.next()) {
-                    case XmlPullParser.START_TAG:
+                    case START_ELEMENT:
                         if (parser.getDepth() == initialDepth + 1) {
                             String id = parser.getAttributeValue("", "id");
                             String payload = PacketParserUtils.parseElement(parser).toString();
                             packet = new DeviceCommandIQ(id, payload);
                         }
                         break;
-                    case XmlPullParser.END_TAG:
+                    case END_ELEMENT:
                         if (parser.getDepth() == initialDepth) {
                             break outerloop;
                         }
+                        break;
+                    case COMMENT:
+                    case END_DOCUMENT:
+                    case ENTITY_REFERENCE:
+                    case IGNORABLE_WHITESPACE:
+                    case OTHER:
+                    case PROCESSING_INSTRUCTION:
+                    case START_DOCUMENT:
+                    case TEXT_CHARACTERS:
+                        break;
+                    default:
                         break;
                 }
             }

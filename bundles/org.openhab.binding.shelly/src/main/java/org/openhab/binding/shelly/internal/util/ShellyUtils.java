@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.shelly.internal.util;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,7 +21,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.DateTimeException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,7 +31,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -138,6 +134,14 @@ public class ShellyUtils {
         return group + "#" + channel;
     }
 
+    /**
+     * Channel id matching any group starting with groupPrefix (e.g. meter, meter1, meter2, ...).
+     * Used for channel migration rules that must apply to every indexed meter group of a Thing.
+     */
+    public static String mkWildcardChannelId(String groupPrefix, String channel) {
+        return groupPrefix + "*#" + channel;
+    }
+
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
     }
@@ -197,6 +201,14 @@ public class ShellyUtils {
         return "";
     }
 
+    /**
+     * A deprecated split channel (e.g. brightness$Switch/brightness$Value) carries a $-suffix that
+     * is not part of the real ChannelUID; strip it before passing the id to core APIs like isLinked().
+     */
+    public static String stripDeprecatedSuffix(String channelId) {
+        return channelId.contains("$") ? substringBefore(channelId, "$") : channelId;
+    }
+
     public static String getMessage(Exception e) {
         String message = e.getMessage();
         return message != null ? message : "";
@@ -226,6 +238,11 @@ public class ShellyUtils {
 
     public static DecimalType getDecimal(@Nullable Double value) {
         return new DecimalType((value != null ? value : 0));
+    }
+
+    public static DecimalType getDecimal(@Nullable Double value, int digits) {
+        BigDecimal bd = BigDecimal.valueOf(value != null ? value : 0);
+        return new DecimalType(bd.setScale(digits, RoundingMode.HALF_UP));
     }
 
     public static DecimalType getDecimal(@Nullable Integer value) {
@@ -296,14 +313,14 @@ public class ShellyUtils {
     }
 
     public static DateTimeType getTimestamp() {
-        return new DateTimeType(ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        return new DateTimeType(Instant.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
     public static DateTimeType getTimestamp(String zone, long timestamp) {
         try {
-            ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
-            ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
-            int delta = zdt.getOffset().getTotalSeconds();
+            ZoneId zoneId = zone.isEmpty() ? ZoneId.systemDefault() : ZoneId.of(zone);
+            Instant instant = Instant.ofEpochSecond(timestamp);
+            int delta = zoneId.getRules().getOffset(instant).getTotalSeconds();
             return new DateTimeType(Instant.ofEpochSecond(timestamp - delta));
         } catch (DateTimeException e) {
             // Unable to convert device's timezone, use system one
@@ -317,23 +334,6 @@ public class ShellyUtils {
         }
         String time = DATE_TIME.format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
         return time.replace('T', ' ').replace('-', '/');
-    }
-
-    public static Integer getLightIdFromGroup(String groupName) {
-        if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
-        }
-        return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
-    }
-
-    public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return !profile.isRGBW2 || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
-    }
-
-    public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return profile.isBulb || profile.isDuo ? CHANNEL_GROUP_WHITE_CONTROL
-                : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 
     public static DecimalType mapSignalStrength(int dbm) {

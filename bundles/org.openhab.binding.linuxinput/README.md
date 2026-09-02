@@ -35,7 +35,7 @@ The `libevdev` library has to be installed for this plugin to work.
 
 ## Thing Configuration
 
-Each thing has has to be explicitly enabled after it is configured.
+Each Thing has has to be explicitly enabled after it is configured.
 While it is enabled _all_ of the generated events will be consumed by openHAB.
 The device will not be available for normal input processing!
 

@@ -69,7 +69,7 @@
 				<context>network-address</context>
 				<label>Port</label>
 				<description>Port of the FENECON device</description>
-				<default>8084</default>
+				<default>80</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">

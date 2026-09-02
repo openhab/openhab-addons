@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="modbus:sungrow-inverter">
+		<instruction-set targetVersion="1">
+			<!-- Add new channel groups -->
+			<update:add-channel-group id="sg-power-flow-information">
+				<type>sg-power-flow-information</type>
+				<label>Power Flow Information</label>
+			</update:add-channel-group>
+			<update:add-channel-group id="sg-backup-information">
+				<type>sg-backup-information</type>
+				<label>Backup Information</label>
+			</update:add-channel-group>
+			<update:add-channel-group id="sg-settings">
+				<type>sg-settings</type>
+				<label>Settings Information</label>
+			</update:add-channel-group>
+
+			<!-- Remove channels from sg-overview -->
+			<update:remove-channel id="sg-reactive-power"/>
+			<update:remove-channel id="sg-grid-frequency"/>
+
+			<!-- Add channel to sg-overview -->
+			<update:add-channel id="sg-running-state">
+				<type>sg-running-state</type>
+				<label>Running State</label>
+			</update:add-channel>
+
+			<!-- Add channels to sg-mppt-information -->
+			<update:add-channel id="sg-mppt3-voltage">
+				<type>sg-mppt3-voltage</type>
+				<label>MPPT3 Voltage</label>
+			</update:add-channel>
+			<update:add-channel id="sg-mppt3-current">
+				<type>sg-mppt3-current</type>
+				<label>MPPT3 Current</label>
+			</update:add-channel>
+			<update:add-channel id="sg-mppt4-voltage">
+				<type>sg-mppt4-voltage</type>
+				<label>MPPT4 Voltage</label>
+			</update:add-channel>
+			<update:add-channel id="sg-mppt4-current">
+				<type>sg-mppt4-current</type>
+				<label>MPPT4 Current</label>
+			</update:add-channel>
+
+			<!-- Add channels to sg-battery-information -->
+			<update:add-channel id="sg-battery-power-signed">
+				<type>sg-battery-power-signed</type>
+				<label>Battery Power signed</label>
+			</update:add-channel>
+			<update:add-channel id="sg-battery-power-wide-range">
+				<type>sg-battery-power-wide-range</type>
+				<label>Battery Power WR</label>
+			</update:add-channel>
+			<update:add-channel id="sg-battery-capacity-high-precision">
+				<type>sg-battery-capacity-high-precision</type>
+				<label>Battery Capacity HP</label>
+			</update:add-channel>
+
+			<!-- Add channels to sg-grid-information -->
+			<update:add-channel id="sg-daily-output-energy">
+				<type>sg-daily-output-energy</type>
+				<label>Daily Output Energy</label>
+			</update:add-channel>
+			<update:add-channel id="sg-total-output-energy">
+				<type>sg-total-output-energy</type>
+				<label>Total Output Energy</label>
+			</update:add-channel>
+			<update:add-channel id="sg-grid-frequency">
+				<type>sg-grid-frequency</type>
+				<label>Grid Frequency</label>
+			</update:add-channel>
+			<update:add-channel id="sg-grid-frequency-high-precision">
+				<type>sg-grid-frequency-high-precision</type>
+				<label>Grid Frequency HP</label>
+			</update:add-channel>
+			<update:add-channel id="sg-drm-state">
+				<type>sg-drm-state</type>
+				<label>DRM State</label>
+			</update:add-channel>
+
+			<!-- Add channels to sg-power-flow-information -->
+			<update:add-channel id="sg-power-flow-status-pv-power">
+				<type>sg-power-flow-status-pv-power</type>
+				<label>PV Generation</label>
+			</update:add-channel>
+			<update:add-channel id="sg-power-flow-status-battery-charging">
+				<type>sg-power-flow-status-battery-charging</type>
+				<label>Battery Charging</label>
+			</update:add-channel>
+			<update:add-channel id="sg-power-flow-status-battery-discharging">
+				<type>sg-power-flow-status-battery-discharging</type>
+				<label>Battery Discharging</label>
+			</update:add-channel>
+			<update:add-channel id="sg-power-flow-status-positive-load-power">
+				<type>sg-power-flow-status-positive-load-power</type>
+				<label>Load Active</label>
+			</update:add-channel>
+			<update:add-channel id="sg-power-flow-status-feed-in-power">
+				<type>sg-power-flow-status-feed-in-power</type>
+				<label>Feed Into Grid</label>
+			</update:add-channel>
+			<update:add-channel id="sg-power-flow-status-import-from-grid">
+				<type>sg-power-flow-status-import-from-grid</type>
+				<label>Import From Grid</label>
+			</update:add-channel>
+			<update:add-channel id="sg-power-flow-status-negative-load-power">
+				<type>sg-power-flow-status-negative-load-power</type>
+				<label>Load Power Generated</label>
+			</update:add-channel>
+
+			<!-- Add channels to sg-backup-information -->
+			<update:add-channel id="sg-phase-a-backup-current">
+				<type>sg-phase-a-backup-current</type>
+				<label>Phase A Backup Current</label>
+			</update:add-channel>
+			<update:add-channel id="sg-phase-b-backup-current">
+				<type>sg-phase-b-backup-current</type>
+				<label>Phase B Backup Current</label>
+			</update:add-channel>
+			<update:add-channel id="sg-phase-c-backup-current">
+				<type>sg-phase-c-backup-current</type>
+				<label>Phase C Backup Current</label>
+			</update:add-channel>
+			<update:add-channel id="sg-phase-a-backup-power">
+				<type>sg-phase-a-backup-power</type>
+				<label>Phase A Backup Power</label>
+			</update:add-channel>
+			<update:add-channel id="sg-phase-b-backup-power">
+				<type>sg-phase-b-backup-power</type>
+				<label>Phase B Backup Power</label>
+			</update:add-channel>
+			<update:add-channel id="sg-phase-c-backup-power">
+				<type>sg-phase-c-backup-power</type>
+				<label>Phase C Backup Power</label>
+			</update:add-channel>
+			<update:add-channel id="sg-total-backup-power">
+				<type>sg-total-backup-power</type>
+				<label>Total Backup Power</label>
+			</update:add-channel>
+			<update:add-channel id="sg-phase-a-backup-voltage">
+				<type>sg-phase-a-backup-voltage</type>
+				<label>Phase A Backup Voltage</label>
+			</update:add-channel>
+			<update:add-channel id="sg-phase-b-backup-voltage">
+				<type>sg-phase-b-backup-voltage</type>
+				<label>Phase B Backup Voltage</label>
+			</update:add-channel>
+			<update:add-channel id="sg-phase-c-backup-voltage">
+				<type>sg-phase-c-backup-voltage</type>
+				<label>Phase C Backup Voltage</label>
+			</update:add-channel>
+			<update:add-channel id="sg-backup-frequency">
+				<type>sg-backup-frequency</type>
+				<label>Backup Frequency</label>
+			</update:add-channel>
+
+			<!-- Add channels to sg-settings -->
+			<update:add-channel id="sg-export-limit-min">
+				<type>sg-export-limit-min</type>
+				<label>Export Limit Min</label>
+			</update:add-channel>
+			<update:add-channel id="sg-export-limit-max">
+				<type>sg-export-limit-max</type>
+				<label>Export Limit Max</label>
+			</update:add-channel>
+			<update:add-channel id="sg-bdc-rated-power">
+				<type>sg-bdc-rated-power</type>
+				<label>BDC Rated Power</label>
+			</update:add-channel>
+			<update:add-channel id="sg-max-charging-current-bms">
+				<type>sg-max-charging-current-bms</type>
+				<label>Max. Charging Current</label>
+			</update:add-channel>
+			<update:add-channel id="sg-max-discharging-current-bms">
+				<type>sg-max-discharging-current-bms</type>
+				<label>Max. Discharging Current</label>
+			</update:add-channel>
+
+			<!-- Update channel type for sg-power-factor -->
+			<update:update-channel id="sg-power-factor">
+				<type>sg-power-factor</type>
+			</update:update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

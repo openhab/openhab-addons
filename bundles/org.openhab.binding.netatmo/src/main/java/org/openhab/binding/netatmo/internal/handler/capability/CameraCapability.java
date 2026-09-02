@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,8 +73,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
         this.personChannelUID = new ChannelUID(thingUID, GROUP_LAST_EVENT, CHANNEL_EVENT_PERSON_ID);
-        this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(CameraChannelHelper.class::isInstance)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+        this.cameraHelper = channelHelpers.stream().filter(CameraChannelHelper.class::isInstance)
+                .map(CameraChannelHelper.class::cast).findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "CameraCapability must find a CameraChannelHelper, please file a bug report."));
     }
 
@@ -99,8 +99,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
         vpnUrl = newVpnUrl;
         if (!SdCardStatus.SD_CARD_WORKING.equals(newData.getSdStatus())) {
             statusReason = newData.getSdStatus().toString();
-        }
-        if (!AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {
+        } else if (!AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {
             statusReason = newData.getAlimStatus().toString();
         }
     }
@@ -132,20 +131,19 @@ public class CameraCapability extends HomeSecurityThingCapability {
         updatePictureIfUrlPresent(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
         handler.updateState(group, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
                 event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
-        final String message = event.getName();
-        handler.updateState(group, CHANNEL_EVENT_MESSAGE,
-                message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
+        handler.updateState(group, CHANNEL_EVENT_MESSAGE, toStringType(event.getName()));
         State personId = event.getPersons().isEmpty() ? UnDefType.NULL
                 : toStringType(event.getPersons().values().iterator().next().getId());
         handler.updateState(personChannelUID, personId);
     }
 
-    private void updatePictureIfUrlPresent(@Nullable String snapShotUrl, String group, String pictureChannel,
+    private void updatePictureIfUrlPresent(@Nullable String url, String group, String pictureChannel,
             String urlChannel) {
-        if (snapShotUrl != null) {
-            handler.updateState(group, pictureChannel, toRawType(snapShotUrl));
-            handler.updateState(group, urlChannel, toStringType(snapShotUrl));
+        if (url == null || url.isBlank()) {
+            return;
         }
+        handler.updateState(group, pictureChannel, toRawType(url));
+        handler.updateState(group, urlChannel, toStringType(url));
     }
 
     @Override
@@ -185,28 +183,32 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
     public @Nullable String ping(String vpnUrl) {
         return getSecurityCapability().map(cap -> {
-            UriBuilder builder = UriBuilder.fromPath(cap.ping(vpnUrl));
-            URI apiLocalUrl = null;
-            try {
-                apiLocalUrl = builder.build();
-                if (apiLocalUrl.getHost().startsWith("169.254.")) {
-                    logger.warn("Suspicious local IP address received: {}", apiLocalUrl);
-                    Configuration config = handler.getThing().getConfiguration();
-                    if (config.containsKey(IP_ADDRESS)) {
-                        String provided = (String) config.get(IP_ADDRESS);
-                        apiLocalUrl = builder.host(provided).build();
-                        logger.info("Using {} as local url for '{}'", apiLocalUrl, thingUID);
-                    } else {
-                        logger.debug("No alternative ip Address provided, keeping API answer");
+            URI apiLocalUri = null;
+            String localUrl = cap.ping(vpnUrl);
+            if (localUrl != null) {
+                try {
+                    UriBuilder builder = UriBuilder.fromPath(localUrl);
+                    apiLocalUri = builder.build();
+                    if (apiLocalUri.getHost().startsWith("169.254.")) {
+                        logger.warn("Suspicious local IP address received: {}", apiLocalUri);
+                        Configuration config = handler.getThing().getConfiguration();
+                        if (config.containsKey(IP_ADDRESS)) {
+                            String provided = (String) config.get(IP_ADDRESS);
+                            apiLocalUri = builder.host(provided).build();
+                            logger.info("Using {} as local url for '{}'", apiLocalUri, thingUID);
+                        } else {
+                            logger.debug("No alternative ip Address provided, keeping API answer");
+                        }
                     }
+                } catch (UriBuilderException e) { // Crashed at first URI build
+                    logger.warn("API returned a badly formatted local url address for '{}': {}", thingUID,
+                            e.getMessage());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Invalid fallback address provided in configuration for '{}' keeping API answer: {}",
+                            thingUID, e.getMessage());
                 }
-            } catch (UriBuilderException e) { // Crashed at first URI build
-                logger.warn("API returned a badly formatted local url address for '{}': {}", thingUID, e.getMessage());
-            } catch (IllegalArgumentException e) {
-                logger.warn("Invalid fallback address provided in configuration for '{}' keeping API answer: {}",
-                        thingUID, e.getMessage());
             }
-            return apiLocalUrl != null ? apiLocalUrl.toString() : null;
+            return apiLocalUri != null ? apiLocalUri.toString() : null;
         }).orElse(null);
     }
 }

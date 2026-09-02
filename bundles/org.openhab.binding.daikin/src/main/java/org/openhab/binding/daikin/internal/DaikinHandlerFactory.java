@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
     private final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
-    private final @Nullable HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
     public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider,

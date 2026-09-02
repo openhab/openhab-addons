@@ -21,7 +21,7 @@
 			<channel id="fuel-remain" typeId="fuel-remain"/>
 			<channel id="fuel-open" typeId="fuel-open"/>
 			<channel id="range-hybrid" typeId="range-hybrid"/>
-			<channel id="radius-hybrid" typeId="radius-fuel"/>
+			<channel id="radius-hybrid" typeId="radius-hybrid"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

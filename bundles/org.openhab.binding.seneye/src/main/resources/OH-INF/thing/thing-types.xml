@@ -43,7 +43,7 @@
 
 			<parameter name="poll_time" type="integer" required="false" min="1" max="1440">
 				<label>Polling Time</label>
-				<description>How often (in minutes) does the seneye needs to be checked ?</description>
+				<description>How often (in minutes) the seneye needs to be checked</description>
 				<default>5</default>
 			</parameter>
 
@@ -91,7 +91,7 @@
 	<channel-type id="o2">
 		<item-type>Number</item-type>
 		<label>O2</label>
-		<description>The O2 Level</description>
+		<description>The oxygen level</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
@@ -100,7 +100,7 @@
 	<channel-type id="lux">
 		<item-type>Number</item-type>
 		<label>LUX</label>
-		<description>The LUX Light Level</description>
+		<description>The lux light level</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Illuminance</tag>
@@ -110,13 +110,13 @@
 	<channel-type id="par">
 		<item-type>Number</item-type>
 		<label>PAR</label>
-		<description>The PAR Light Level</description>
+		<description>The PAR light level</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="kelvin">
 		<item-type>Number</item-type>
 		<label>Kelvin</label>
-		<description>The Kelvin Light Level</description>
+		<description>The kelvin light level</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>ColorTemperature</tag>
@@ -126,31 +126,31 @@
 	<channel-type id="lastreading">
 		<item-type>DateTime</item-type>
 		<label>Last Reading</label>
-		<description>The last time your seneye is checked</description>
+		<description>The last time the seneye was checked</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="slideexpires">
 		<item-type>DateTime</item-type>
 		<label>Slide Expiration</label>
-		<description>The time your slide expires</description>
+		<description>The time the slide expires</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="wrongslide">
 		<item-type>String</item-type>
 		<label>Wrong Slide</label>
-		<description>The Wrong Slide is in use (becomes 1 when the slide has expired)</description>
+		<description>Wrong slide is in use (becomes 1 when the slide has expired)</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="slideserial">
 		<item-type>String</item-type>
 		<label>Slide Serial Number</label>
-		<description>The serial Number of the currently installed slide</description>
+		<description>The serial number of the currently installed slide</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="outofwater">
 		<item-type>String</item-type>
 		<label>Out of Water</label>
-		<description>The Sensor is reporting being out of the water</description>
+		<description>The sensor is reporting being out of the water</description>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>Level</tag>

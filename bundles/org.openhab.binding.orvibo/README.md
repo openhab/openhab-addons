@@ -1,15 +1,15 @@
 # Orvibo Binding
 
 This binding integrates Orvibo devices that communicate using UDP.
-Primarily this was designed for S20 Wifi Sockets but other products using the same protocol may be implemented in future.
+Primarily this was designed for S20 Wi‑Fi sockets, but other products using the same protocol may be implemented in the future.
 
 ## Supported Things
 
-- S20 Wifi Sockets
+- S20 Wi‑Fi sockets
 
 ## Discovery
 
-This binding can automatically discover devices that have already been added to the Wifi network.  Please see the check your instruction manual or the help guide in the app for instructions on how to add your device to your Wifi network.
+This binding can automatically discover devices that have already been added to the Wi‑Fi network. Please see the instruction manual or the in‑app help guide for instructions on how to add your device to your Wi‑Fi network.
 
 ## Binding Configuration
 
@@ -17,9 +17,9 @@ This binding does not require any special configuration.
 
 ## Thing Configuration
 
-This is optional, it is recommended to let the binding discover and add Orvibo devices.
+This is optional; it is recommended to let the binding discover and add Orvibo devices.
 To manually configure an S20 Thing you must specify its deviceId (MAC address).
-In the thing file, this looks like:
+In the Thing file, this looks like:
 
 ```java
 Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
@@ -39,9 +39,9 @@ Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
 Switch MySwitch              "Switch state [%s]"  { channel="orvibo:s20:mysocket:power" }
 ```
 
-## `orbivo.sitemap` Example
+## `orvibo.sitemap` Example
 
-Using the above things channels and items
+Using the above Things and Items
 Sitemap:
 
 ```perl

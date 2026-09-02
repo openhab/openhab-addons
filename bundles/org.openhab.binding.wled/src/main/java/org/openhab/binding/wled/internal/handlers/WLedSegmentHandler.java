@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -285,7 +285,11 @@ public class WLedSegmentHandler extends BaseThingHandler {
             WledApi localAPI = localBridgeHandler.api;
             if (localAPI != null) {
                 updateStatus(ThingStatus.ONLINE);
-                updateStateDescriptionProviders();
+                if (bridge.getStatus() == ThingStatus.ONLINE) {
+                    // only update the providers once the bridge is ready, otherwise this will be done once it goes
+                    // online via bridgeStatusChanged()
+                    updateStateDescriptionProviders();
+                }
                 if (!localBridgeHandler.hasWhite) {
                     logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
                     removeWhiteChannels();

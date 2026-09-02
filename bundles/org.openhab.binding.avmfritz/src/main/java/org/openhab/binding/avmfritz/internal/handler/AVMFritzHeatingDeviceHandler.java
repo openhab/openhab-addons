@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,11 +31,11 @@ public class AVMFritzHeatingDeviceHandler extends DeviceHandler implements AVMFr
 
     @Override
     public void setBoostMode(long duration) {
-        handleAction(MODE_BOOST, duration);
+        handleAction(HEATING_MODE_BOOST, duration);
     }
 
     @Override
     public void setWindowOpenMode(long duration) {
-        handleAction(MODE_WINDOW_OPEN, duration);
+        handleAction(HEATING_MODE_WINDOW_OPEN, duration);
     }
 }

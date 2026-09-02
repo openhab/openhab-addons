@@ -1,7 +1,7 @@
 # Pushbullet Binding
 
-The Pushbullet binding allows you to notify supported devices of a message using the [Pushbullet API](https://docs.pushbullet.com).
-To get started you need to [create an account](#creating-an-account) and [obtain an access token](#obtaining-an-access-token).
+This binding allows you to notify supported devices using the [Pushbullet API](https://docs.pushbullet.com).
+To get started, [create an account](#creating-an-account) and [obtain an access token](#obtaining-an-access-token).
 
 ## Supported Things
 
@@ -24,27 +24,27 @@ Currently the binding does not support any channels.
 ## Rule Action
 
 This binding includes rule actions for sending notes.
-Two different actions available:
+Three different actions are available:
 
-- `sendPushbulletNote(String recipient, String messsage)`
-- `sendPushbulletNote(String recipient, String title, String messsage)`
+- `sendPushbulletNote(String recipient, String message)`
+- `sendPushbulletNote(String recipient, String title, String message)`
 - `sendPushbulletLink(String recipient, String url)`
-- `sendPushbulletLink(String recipient, String title, String messsage, String url)`
+- `sendPushbulletLink(String recipient, String title, String message, String url)`
 - `sendPushbulletFile(String recipient, String content)`
-- `sendPushbulletFile(String recipient, String title, String messsage, String content)`
-- `sendPushbulletFile(String recipient, String title, String messsage, String content, String fileName)`
+- `sendPushbulletFile(String recipient, String title, String message, String content)`
+- `sendPushbulletFile(String recipient, String title, String message, String content, String fileName)`
 
-Since there is a separate rule action instance for each `bot` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
-The first parameter always has to be `pushbullet` and the second is the full Thing UID of the bot that should be used.
-Once this action instance is retrieved, you can invoke the action method on it.
+Since there is a separate rule action instance for each `bot` Thing, retrieve it through `getActions(scope, thingUID)`.
+The first parameter must be `pushbullet` and the second is the full Thing UID of the bot that should be used.
+Once this action instance is retrieved, invoke the action method on it.
 
-The recipient can either be an email address, a channel tag or `null`.
-If it is not specified or properly formatted, the note will be broadcast to all of the user account's devices.
+The recipient can be an email address, a channel tag, or `null`.
+If not specified or improperly formatted, the note is broadcast to all of the user account's devices.
 
-The file content can be an image URL, a local file path or an Image item state.
+The file content can be an image URL, a local file path, or an Image item state.
 
 The file name is used in the upload link and how it appears in the push message for non-image content.
-If it is not specified, it is automatically determined from the image URL or file path.
+If not specified, it is automatically determined from the image URL or file path.
 For Image item state content, it defaults to `image.jpg`.
 
 For the `sendPushbulletNote` action, parameter `message` is required.
@@ -75,23 +75,23 @@ actions.sendPushbulletFile("someone@example.com", null, null, "/path/to/somefile
 actions.sendPushbulletFile("someone@example.com", ImageItem.state.toFullString)
 ```
 
-## Creating an account
+## Creating an Account
 
 A Pushbullet account is linked to either a Google or Facebook account.
 
 - Go to the [Pushbullet](https://www.pushbullet.com) website.
 - Select either "Sign up with Google" or "Sign up with Facebook".
-- Complete the signup process as guided by the pushbullet web site.
+- Complete the signup process as guided by the Pushbullet website.
 
-## Obtaining an access token
+## Obtaining an Access Token
 
 An access token is linked to a Pushbullet account.
 
 - Go to your [Pushbullet account settings](https://www.pushbullet.com/#settings/account) page.
-- Click on "Create Access Token".
+- Click "Create Access Token".
 - Copy the created access token.
 
-## Rate limits
+## Rate Limits
 
 As of 2024, free accounts are [limited](https://docs.pushbullet.com/#limits) to 500 pushes per month.
-Going over will result in a warning message being logged indicating when your account rate limit will reset.
+Exceeding this limit will result in a warning message being logged indicating when your account rate limit will reset.

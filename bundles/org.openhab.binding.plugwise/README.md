@@ -23,7 +23,7 @@ The binding supports the following Plugwise devices:
 
 ## Discovery
 
-Automatic device discovery runs every 3 minutes which can be sped up by starting a manual discovery.
+Automatic device discovery runs every three minutes, which can be sped up by starting a manual discovery.
 All Circle, Circle+ and Stealth devices are discovered immediately after adding the Stick. Battery powered devices like the Scan, Sense and Switch are discovered when they are awake.
 The Scan and Sense can be woken by pressing the "Wake" button.
 The Switch is detected when it is awake after switching the left or right button.
@@ -37,7 +37,7 @@ The binding uses full MAC addresses i.e. also the fine print on the sticker.
 If you don't want to get off your chair, climb up ladders and unplug devices all across your home, causing all sorts of havoc; you can also find them in Source. Open `Settings > Appliances`. Then double click on an appliance.
 Click on the little Circle icon to the right of the short Address to see the details of a module and the full MAC address.
 
-Similarly the MAC addresses of the Scan, Sense and Switch can also be obtained from the Appliances screen by double clicking them in the `Sensors and other modules` list.
+Similarly, the MAC addresses of the Scan, Sense, and Switch can also be obtained from the Appliances screen by double-clicking them in the `Sensors and other modules` list.
 
 ### Stick
 

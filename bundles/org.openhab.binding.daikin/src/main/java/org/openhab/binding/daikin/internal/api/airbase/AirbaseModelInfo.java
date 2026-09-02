@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AirbaseModelInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseModelInfo.class);
-
     public String ret = "";
     public int zonespresent;
     public int commonzone;
@@ -43,7 +41,8 @@ public class AirbaseModelInfo {
     }
 
     public static AirbaseModelInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(AirbaseModelInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

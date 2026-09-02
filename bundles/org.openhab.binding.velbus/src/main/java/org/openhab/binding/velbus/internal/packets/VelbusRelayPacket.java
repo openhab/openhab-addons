@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.openhab.binding.velbus.internal.VelbusModuleAddress;
  * send commands to a Velbus relay module.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Add new constructor
  */
 @NonNullByDefault
 public class VelbusRelayPacket extends VelbusPacket {
@@ -33,6 +34,13 @@ public class VelbusRelayPacket extends VelbusPacket {
         super(velbusChannelIdentifier.getAddress(), PRIO_HI);
 
         this.channel = velbusChannelIdentifier.getChannelByte();
+        this.command = command;
+    }
+
+    public VelbusRelayPacket(VelbusModuleAddress velbusModuleAddress, byte channel, byte command) {
+        super(velbusModuleAddress.getAddress(), PRIO_HI);
+
+        this.channel = channel;
         this.command = command;
     }
 

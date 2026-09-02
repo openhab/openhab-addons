@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>transformation</type>
-	<name>Regex transformation</name>
-	<description>Transforms a source string on basis of the regular expression (regex) search pattern.</description>
+	<name>Regex Transformation</name>
+	<description>Transforms a source string based on a regular expression (regex) search pattern.</description>
 	<connection>none</connection>
 
 </addon:addon>

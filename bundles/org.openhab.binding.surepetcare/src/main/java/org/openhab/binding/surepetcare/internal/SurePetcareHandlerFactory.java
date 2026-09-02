@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,6 +79,8 @@ public class SurePetcareHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_FLAP_DEVICE)) {
             return new SurePetcareDeviceHandler(thing, petcareAPI);
         } else if (thingTypeUID.equals(THING_TYPE_FEEDER_DEVICE)) {
+            return new SurePetcareDeviceHandler(thing, petcareAPI);
+        } else if (thingTypeUID.equals(THING_TYPE_WATER_DEVICE)) {
             return new SurePetcareDeviceHandler(thing, petcareAPI);
         } else if (thingTypeUID.equals(THING_TYPE_PET)) {
             return new SurePetcarePetHandler(thing, petcareAPI);

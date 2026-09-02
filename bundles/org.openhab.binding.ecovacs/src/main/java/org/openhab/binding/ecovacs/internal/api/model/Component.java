@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,8 @@ public enum Component {
     BRUSH("Brush", "brush"),
     SIDE_BRUSH("SideBrush", "sideBrush"),
     DUST_CASE_HEAP("DustCaseHeap", "heap"),
-    UNIT_CARE("" /* not supported in XML */, "unitCare");
+    UNIT_CARE("" /* not supported in XML */, "unitCare"),
+    ROUND_MOP("" /* not supported in XML */, "roundMop");
 
     public final String xmlValue;
     public final String jsonValue;

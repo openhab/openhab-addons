@@ -25,7 +25,7 @@
 			</parameter>
 			<parameter name="pingInterval" type="integer">
 				<label>Ping Interval</label>
-				<description>Interval (in seconds) between attempts to poll the device status</description>
+				<description>Interval (in seconds) between attempts to poll the device status (0 disables polling)</description>
 				<default>600</default>
 			</parameter>
 			<parameter name="readInterval" type="integer">
