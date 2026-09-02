@@ -296,6 +296,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 Double limit = toAmps(command);
                 if (limit != null) {
                     currentLimitAmps = limit;
+                    // A charge-limit clears any explicit power-limit, so the last command wins rather than a
+                    // once-set power-limit shadowing every later amps command.
+                    powerLimitWatts = 0;
                     if (!paused) {
                         applyLimit();
                     }

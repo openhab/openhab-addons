@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -98,6 +99,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private static final int MAX_BOOT_CONFIG_ATTEMPTS = 3;
     private static final long BOOT_READY_GRACE_MILLIS = 1000;
     private static final int PENDING_SEND_LIMIT = 32;
+    private static final long PENDING_SEND_TIMEOUT_SECONDS = 30;
     private static final int OUTBOUND_LIMIT = 64;
 
     private final Logger logger = LoggerFactory.getLogger(OcppChargePointHandler.class);
@@ -314,6 +316,15 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         new IllegalStateException("Charger " + chargePointId + " not ready and its queue is full"));
             }
             pendingSends.add(pending);
+            // Bound the wait: a charger that connects but never becomes operational must not hang a queued command
+            // until the liveness watchdog. If it is still queued when this fires, fail it; otherwise it already
+            // drained.
+            scheduler.schedule(() -> {
+                if (pendingSends.remove(pending)) {
+                    future.completeExceptionally(new TimeoutException("Charger " + chargePointId
+                            + " did not become ready within " + PENDING_SEND_TIMEOUT_SECONDS + "s"));
+                }
+            }, PENDING_SEND_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (session == null) {
                 if (pendingSends.remove(pending)) {
                     future.completeExceptionally(
