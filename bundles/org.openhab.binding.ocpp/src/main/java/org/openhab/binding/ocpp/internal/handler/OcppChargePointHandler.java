@@ -943,13 +943,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     static long livenessThreshold(int heartbeatOverride, OptionalInt reportedHeartbeat, int serverDefault) {
-        int effective = heartbeatOverride;
-        if (effective <= 0) {
-            effective = reportedHeartbeat.orElse(0);
-        }
-        if (effective <= 0) {
-            effective = serverDefault;
-        }
+        // Size from the longer of the interval negotiated in BootNotification (override, else server default) and the
+        // one the charger reports it uses, so a charger keeping (or reporting a stale) interval is never reaped while
+        // still beating. Only when neither is known fall back to 300.
+        int negotiated = heartbeatOverride > 0 ? heartbeatOverride : serverDefault;
+        int effective = Math.max(negotiated, reportedHeartbeat.orElse(0));
         if (effective <= 0) {
             effective = 300;
         }
