@@ -90,11 +90,17 @@ The `wattHoursToday` and `wattHoursSevenDays` consumption channels are not avail
 
 The `inverter` thing has the following channels:
 
-| channel         | type         | description                          |
-|-----------------|--------------|--------------------------------------|
-| lastReportWatts | Number:Power | Last reported power delivery         |
-| maxReportWatts  | Number:Power | Maximum reported power               |
-| lastReportDate  | DateTime     | Date of last reported power delivery |
+| channel            | type          | description                           |
+|--------------------|---------------|---------------------------------------|
+| lastReportWatts    | Number:Power  | Last reported power delivery          |
+| maxReportWatts     | Number:Power  | Maximum reported power                |
+| lastReportDate     | DateTime      | Date of last reported power delivery  |
+| wattHoursToday     | Number:Energy | Watt hours produced today             |
+| wattHoursSevenDays | Number:Energy | Watt hours produced the last 7 days   |
+| wattHoursLifetime  | Number:Energy | Watt hours produced over the lifetime |
+| wattsNow           | Number:Power  | Latest watts produced                 |
+
+The `wattHoursToday`, `wattHoursSevenDays`, `wattHoursLifetime` and `wattsNow` inverter channels are only available if the Envoy gateway supports the per-device energy data endpoint.
 
 The following channels are only available if supported by the Envoy gateway:
 
@@ -136,9 +142,13 @@ Number:Energy envoyWattHoursToday    "Watt Hours Today [%d %unit%]"   { channel=
 Number:Energy envoyWattHours7Days    "Watt Hours 7 Days [%.1f kWh]"   { channel="enphase:envoy:789012:production#wattHoursSevenDays" }
 Number:Energy envoyWattHoursLifetime "Watt Hours Lifetime [%.1f kWh]" { channel="enphase:envoy:789012:production#wattHoursLifetime" }
 
-Number:Power i1LastReportWatts "Last Report [%d %unit%]"                          { channel="enphase:inverter:789012:123456:lastReportWatts" }
-Number:Power i1MaxReportWatts  "Max Report [%d %unit%]"                           { channel="enphase:inverter:789012:123456:maxReportWatts" }
-DateTime     i1LastReportDate  "Last Report Date [%1$tY-%1$tm-%1$td %1$tH:%1$tM]" { channel="enphase:inverter:789012:123456:lastReportDate" }
+Number:Power  i1LastReportWatts    "Last Report [%d %unit%]"                          { channel="enphase:inverter:789012:123456:lastReportWatts" }
+Number:Power  i1MaxReportWatts     "Max Report [%d %unit%]"                           { channel="enphase:inverter:789012:123456:maxReportWatts" }
+DateTime      i1LastReportDate     "Last Report Date [%1$tY-%1$tm-%1$td %1$tH:%1$tM]" { channel="enphase:inverter:789012:123456:lastReportDate" }
+Number:Energy i1WattHoursToday     "Watt Hours Today [%d %unit%]"                     { channel="enphase:inverter:789012:123456:wattHoursToday" }
+Number:Energy i1WattHoursSevenDays "Watt Hours 7 Days [%.1f kWh]"                    { channel="enphase:inverter:789012:123456:wattHoursSevenDays" }
+Number:Energy i1WattHoursLifetime  "Watt Hours Lifetime [%.1f kWh]"                   { channel="enphase:inverter:789012:123456:wattHoursLifetime" }
+Number:Power  i1WattsNow           "Watts Now [%d %unit%]"                            { channel="enphase:inverter:789012:123456:wattsNow" }
 
 Number:Power i2LastReportWatts "Last Report [%d %unit%]"                          { channel="enphase:inverter:789012:223456:lastReportWatts" }
 Number:Power i21MaxReportWatts "Max Report [%d %unit%]"                           { channel="enphase:inverter:789012:223456:maxReportWatts" }
