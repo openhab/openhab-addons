@@ -57,6 +57,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.dto.AscendingAlarmModelTO;
@@ -1482,16 +1483,18 @@ public class Connection {
         }
     }
 
+    private HttpRequestBuilder.Builder notificationsRequest(HttpMethod method, String subPath) {
+        return requestBuilder.builder(method, getAlexaServer() + "/api/notifications" + subPath)
+                .withHeader("User-Agent", NOTIFICATIONS_USER_AGENT);
+    }
+
     public List<NotificationTO> getNotifications() throws ConnectionException {
         // propagates the exception: an empty list is indistinguishable from "no notifications set"
-        return requestBuilder.get(getAlexaServer() + "/api/notifications")
-                .withHeader("User-Agent", NOTIFICATIONS_USER_AGENT)
-                .syncSend(NotificationListResponseTO.class).notifications;
+        return notificationsRequest(HttpMethod.GET, "").syncSend(NotificationListResponseTO.class).notifications;
     }
 
     public NotificationTO getNotification(String notificationId) throws ConnectionException {
-        String url = getAlexaServer() + "/api/notifications/" + notificationId;
-        return requestBuilder.get(url).syncSend(NotificationTO.class);
+        return notificationsRequest(HttpMethod.GET, "/" + notificationId).syncSend(NotificationTO.class);
     }
 
     public @Nullable NotificationTO createNotification(DeviceTO device, String type, @Nullable String label,
@@ -1517,13 +1520,13 @@ public class Connection {
         request.isSaveInFlight = true;
         request.isRecurring = false;
 
-        String url = getAlexaServer() + "/api/notifications/createReminder";
-        return requestBuilder.put(url).withContent(request).syncSend(NotificationTO.class);
+        return notificationsRequest(HttpMethod.PUT, "/createReminder").withContent(request)
+                .syncSend(NotificationTO.class);
     }
 
     public void deleteNotification(String notificationId) {
         try {
-            requestBuilder.delete(getAlexaServer() + "/api/notifications/" + notificationId).syncSend();
+            notificationsRequest(HttpMethod.DELETE, "/" + notificationId).syncSend();
         } catch (ConnectionException e) {
             logger.warn("Failed to delete notification {}: {}", notificationId, e.getMessage());
         }
