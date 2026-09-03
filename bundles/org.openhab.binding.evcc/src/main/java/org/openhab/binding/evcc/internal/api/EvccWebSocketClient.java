@@ -62,7 +62,6 @@ public class EvccWebSocketClient {
             java.util.function.Consumer<JsonObject> onFullState,
             java.util.function.BiConsumer<String, JsonElement> onPartialUpdate, Runnable onConnected,
             Runnable onDisconnected) {
-
         this.wsUrl = wsUrl;
         this.scheduler = scheduler;
         this.onFullState = onFullState;
@@ -115,10 +114,13 @@ public class EvccWebSocketClient {
     }
 
     private void scheduleReconnect() {
-        if (reconnectJob == null || reconnectJob.isDone()) {
-            reconnectJob = scheduler.schedule(this::connect, 10, TimeUnit.SECONDS);
-            logger.info("Scheduled EVCC WebSocket reconnect in 10 seconds");
+        ScheduledFuture<?> job = reconnectJob;
+        if (job != null && !job.isDone()) {
+            return;
         }
+
+        reconnectJob = scheduler.schedule(this::connect, 10, TimeUnit.SECONDS);
+        logger.info("Scheduled EVCC WebSocket reconnect in 10 seconds");
     }
 
     private void startWatchdog() {
@@ -177,8 +179,9 @@ public class EvccWebSocketClient {
             return;
         }
 
-        if (obj.entrySet().isEmpty())
+        if (obj.entrySet().isEmpty()) {
             return;
+        }
 
         if (isFullState(obj)) {
             onFullState.accept(obj);

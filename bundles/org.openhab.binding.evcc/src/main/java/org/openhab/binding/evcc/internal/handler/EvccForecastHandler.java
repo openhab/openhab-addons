@@ -172,7 +172,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     @Override
     public void handleUpdate(String key, JsonElement value) {
         JsonArray forecastArray;
-        if (subType.equals("solar") && value instanceof JsonObject solar) {
+        if ("solar".equals(subType) && value instanceof JsonObject solar) {
             forecastArray = solar.has("timeseries") ? solar.getAsJsonArray("timeseries") : new JsonArray();
             modifyJSON(solar);
             float scale = solar.get(JSON_KEY_SCALE).getAsFloat();
@@ -190,11 +190,53 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
 
         for (JsonElement data : forecastArray) {
+            ForecastData parsed = null;
             if (data instanceof JsonObject obj) {
-                ForecastData parsed = parser.apply(obj);
-                if (parsed != null) {
+                // Old format: objects with "start", "end", "value" fields
+                parsed = parser.apply(obj);
+            } else if (data instanceof JsonArray arr) {
+                // New array formats
+                try {
+                    if (arr.size() == 2) {
+                        // Solar format: [timestamp, value]
+                        long timestamp = arr.get(0).getAsLong();
+                        String timestampStr = Instant.ofEpochSecond(timestamp).toString();
+                        double value = arr.get(1).getAsNumber().doubleValue();
+
+                        StateResolver resolver = StateResolver.getInstance();
+                        State state = resolver.resolveState("forecast-value", new JsonPrimitive(value));
+                        if (state != null) {
+                            parsed = new ForecastData(state, timestampStr);
+                        }
+                    } else if (arr.size() >= 3) {
+                        // Other forecast format: [start_timestamp, end_timestamp, value]
+                        long startTimestamp = arr.get(0).getAsLong();
+                        String timestampStr = Instant.ofEpochSecond(startTimestamp).toString();
+                        double value = arr.get(2).getAsNumber().doubleValue();
+
+                        StateResolver resolver = StateResolver.getInstance();
+                        State state = resolver.resolveState("forecast-value", new JsonPrimitive(value));
+                        if (state != null) {
+                            parsed = new ForecastData(state, timestampStr);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to parse array forecast entry: {}", arr, e);
+                }
+            }
+
+            if (parsed != null) {
+                try {
                     Instant time = OffsetDateTime.parse(parsed.timestamp()).toInstant();
                     timeSeries.add(time, parsed.value());
+                } catch (Exception e) {
+                    // Fallback for direct timestamp format
+                    try {
+                        Instant time = Instant.parse(parsed.timestamp());
+                        timeSeries.add(time, parsed.value());
+                    } catch (Exception ex) {
+                        logger.debug("Failed to parse timestamp: {}", parsed.timestamp(), ex);
+                    }
                 }
             }
         }

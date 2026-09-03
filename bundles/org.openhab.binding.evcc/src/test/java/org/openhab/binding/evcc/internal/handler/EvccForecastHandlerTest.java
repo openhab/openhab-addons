@@ -147,7 +147,11 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
                         List.of(scaleChannel, todayChannel, tomorrowChannel, dayChannel));
                 when(thing.getChannels()).thenReturn(channels);
             } else {
-                when(thing.getChannels()).thenReturn(new ArrayList<>());
+                Channel forecastChannel = mock(Channel.class);
+                ChannelUID uid = new ChannelUID(thing.getUID(), "forecast-" + forecastSubtype);
+                when(forecastChannel.getUID()).thenReturn(uid);
+                List<Channel> channels = new ArrayList<>(List.of(forecastChannel));
+                when(thing.getChannels()).thenReturn(channels);
             }
             handler = spy(createHandler());
             EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
@@ -164,7 +168,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             assertTrue(updateStateCalled);
             assertEquals(1, updateStateCounter);
             assertTrue(sendTimeSeriesCalled);
-            assertEquals(72, timeSeriesCount);
+            assertEquals(328, timeSeriesCount);
         }
 
         @Test
@@ -176,7 +180,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             assertTrue(updateStateCalled);
             assertEquals(1, updateStateCounter);
             assertTrue(sendTimeSeriesCalled);
-            assertEquals(24, timeSeriesCount);
+            assertEquals(612, timeSeriesCount);
         }
 
         @Test
@@ -188,7 +192,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             assertTrue(updateStateCalled);
             assertEquals(1, updateStateCounter);
             assertTrue(sendTimeSeriesCalled);
-            assertEquals(24, timeSeriesCount);
+            assertEquals(612, timeSeriesCount);
         }
 
         @Test
@@ -200,7 +204,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             assertTrue(updateStateCalled);
             assertEquals(6, updateStateCounter);
             assertTrue(sendTimeSeriesCalled);
-            assertEquals(72, timeSeriesCount);
+            assertEquals(488, timeSeriesCount);
         }
     }
 }
