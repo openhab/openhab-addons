@@ -40,6 +40,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.FailMode;
@@ -123,6 +124,24 @@ public class HttpRequestBuilderTest {
     }
 
     @Test
+    public void testARedirectIsHandedToTheCallerAndNotFollowedWhenAutoRedirectIsOff() throws Exception {
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
+
+        HttpFields headers = new HttpFields();
+        headers.add("Location", "https://www.amazon.com/ap/cvf/request?arb=1");
+
+        CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
+        RequestParams params = new RequestParams(HttpMethod.POST, "email=x&password=y", false, Map.of());
+        requestBuilder.new HttpResponseListener(httpResponse, params, false, FailMode.RETRY)
+                .onComplete(resultWithStatus(302, headers));
+
+        verify(httpClient, never()).newRequest(any(URI.class));
+        assertThat(httpResponse.get().statusCode(), is(302));
+    }
+
+    @Test
     public void testACustomUserAgentReplacesTheClientAgentInsteadOfAddingASecondOne() {
         Request request = mock(Request.class, RETURNS_SELF);
 
@@ -143,12 +162,24 @@ public class HttpRequestBuilderTest {
     }
 
     @Test
+    public void testACustomAcceptLanguageReplacesTheDefaultInsteadOfAddingASecondOne() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("Accept-Language", "de-DE,de;q=0.9").send();
+
+        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "de-DE,de;q=0.9");
+        verify(request, never()).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
+        verify(request, never()).header(eq("Accept-Language"), anyString());
+    }
+
+    @Test
     public void testARequestWithoutAnOverrideKeepsTheAppUserAgent() {
         Request request = mock(Request.class, RETURNS_SELF);
 
         requestBuilderFor(request).get(REQUEST_URI.toString()).send();
 
         verify(request).agent(contains("AmazonWebView"));
+        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
     }
 
     private HttpRequestBuilder requestBuilderFor(Request request) {
@@ -158,11 +189,15 @@ public class HttpRequestBuilderTest {
     }
 
     private Result throttledResult(HttpFields headers) {
+        return resultWithStatus(400, headers);
+    }
+
+    private Result resultWithStatus(int status, HttpFields headers) {
         Request request = mock(Request.class);
         when(request.getURI()).thenReturn(REQUEST_URI);
         Response response = mock(Response.class);
         when(response.getRequest()).thenReturn(request);
-        when(response.getStatus()).thenReturn(400);
+        when(response.getStatus()).thenReturn(status);
         when(response.getHeaders()).thenReturn(headers);
         when(response.getReason()).thenReturn("Bad Request");
         Result result = mock(Result.class);
