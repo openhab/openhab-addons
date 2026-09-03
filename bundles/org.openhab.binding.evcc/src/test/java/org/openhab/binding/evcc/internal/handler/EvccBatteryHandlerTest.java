@@ -98,9 +98,11 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
 
     @SuppressWarnings("null")
     @Test
-    public void testInitializeThingFromLatestStateIsNotInitialized() {
+    public void testInitializeThingFromLatestStateWithoutInitialize() {
+        // When initializeThingFromLatestState is called without first calling initialize(),
+        // the status should remain UNKNOWN because initialize() is responsible for setting
+        // the status based on the bridge handler and cached state availability.
         handler.initializeThingFromLatestState(exampleResponse);
-        verify(handler).initializeThingFromLatestState(batteryState);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
@@ -108,13 +110,6 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
         handler.initialize();
-        assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testInitializeThingFromLatestStateIsInitialized() {
-        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 

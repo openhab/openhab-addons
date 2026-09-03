@@ -116,8 +116,11 @@ public class EvccPvHandlerTest extends AbstractThingHandlerTestClass<EvccPvHandl
     @SuppressWarnings("null")
     @Test
     public void testInitializeThingFromLatestStateIsInitialized() {
-        handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
+        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
 
+        handler.initialize();
         handler.initializeThingFromLatestState(testState);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }

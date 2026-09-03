@@ -114,15 +114,9 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
 
         @Test
         public void handlerIsInitialized() {
-
+            handler.initialize();
             handler.initializeThingFromLatestState(exampleResponse);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
-        }
-
-        @Test
-        public void handlerIsNotInitialized() {
-            handler.initializeThingFromLatestState(exampleResponse);
-            assertSame(ThingStatus.OFFLINE, lastThingStatus);
         }
     }
 
@@ -164,6 +158,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         @Test
         public void co2ForecastSubtype() {
             setup("co2");
+            handler.initialize();
             handler.initializeThingFromLatestState(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);
@@ -175,6 +170,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         @Test
         public void feedinForecastSubtype() {
             setup("feedin");
+            handler.initialize();
             handler.initializeThingFromLatestState(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);
@@ -186,6 +182,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         @Test
         public void gridForecastSubtype() {
             setup("grid");
+            handler.initialize();
             handler.initializeThingFromLatestState(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);
@@ -197,6 +194,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         @Test
         public void solarForecastSubtype() {
             setup("solar");
+            handler.initialize();
             handler.initializeThingFromLatestState(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);

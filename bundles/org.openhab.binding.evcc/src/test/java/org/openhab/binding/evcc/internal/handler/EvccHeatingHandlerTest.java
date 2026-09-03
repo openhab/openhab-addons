@@ -119,6 +119,7 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
+        handler.initialize();
         handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }

@@ -223,7 +223,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
     public void createChannelsAndSetStatesFromApiResponse(JsonObject jsonState) {
         updateStatesFromApiResponse(jsonState);
-        updateStatus(ThingStatus.ONLINE);
     }
 
     public void updateStatesFromApiResponse(JsonObject jsonState) {

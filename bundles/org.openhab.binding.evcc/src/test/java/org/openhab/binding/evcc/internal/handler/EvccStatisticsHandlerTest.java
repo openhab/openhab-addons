@@ -94,17 +94,10 @@ public class EvccStatisticsHandlerTest extends AbstractThingHandlerTestClass<Evc
 
         @Test
         public void handlerIsInitialized() {
-
-            handler.initializeThingFromLatestState(exampleResponse);
+            handler.initialize();
             assertTrue(updateStateCalled);
             assertEquals(16, updateStateCounter);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
-        }
-
-        @Test
-        public void handlerIsNotInitialized() {
-            handler.initializeThingFromLatestState(exampleResponse);
-            assertSame(ThingStatus.OFFLINE, lastThingStatus);
         }
     }
 }
