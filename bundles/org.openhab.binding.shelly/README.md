@@ -1,3 +1,10 @@
+---
+children:
+  - ["doc/ShellyManager", "Shelly Manager"]
+  - ["doc/AdvancedUsers", "Advanced Users"]
+  - ["doc/UseCaseSmartRoller", "Smartify Roller Shutters with openHAB and Shelly"]
+---
+
 # Shelly Binding
 
 This Binding integrates [Shelly devices](https://shelly.cloud) developed by Allterco.
