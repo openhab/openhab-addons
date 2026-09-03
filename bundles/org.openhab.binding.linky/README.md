@@ -1,3 +1,9 @@
+---
+children:
+  - ["doc/myelectricaldata/index", "MyElectricalData"]
+  - ["doc/enedis/index", "Enedis"]
+---
+
 # Linky Binding
 
 This binding enables the exploitation of electricity consumption data, mainly for the French market.
