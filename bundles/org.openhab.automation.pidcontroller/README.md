@@ -67,7 +67,8 @@ After one decay time the I-part has fallen to about 37% of its value, after thre
 While the deviation is still increasing in the direction the I-part is already pushing, which is when integral action is actually needed, the I-part accumulates normally and is not faded out.
 
 Choose the decay time from how long the I-part should be allowed to stay saturated once the demand has gone, and keep it well above the `loopTime`.
-A decay that is too fast caps the I-part the controller can build up at all: for a constant error the I-part settles near `ki * error * integralDecayTime`, so a control loop that needs a large steady-state I-part to hold its actuator open needs a correspondingly long decay time.
+A decay that is too fast caps the I-part the controller can build up at all: for a constant error the I-part settles near `ki * error * integralDecayTime / loopTime`, with `loopTime` in seconds, so a control loop that needs a large steady-state I-part to hold its actuator open needs a correspondingly long decay time.
+The loop period matters because the controller integrates once per invocation: at a 60 s `loopTime` the same gains and decay time settle sixty times lower than at 1 s.
 0 (the default) disables the fade-out and keeps the classic behaviour.
 
 ### Integral Hold

@@ -109,9 +109,22 @@ class PIDController {
         // caller can then report the plant condition continuously, without having to decide when to stop reporting it
         // for the loop to be able to recover.
         final double integralStep = error * lastInvocationMs / loopTimeMs;
-        if (!integralHold
-                || (directionalIntegralHold && Math.abs(integralResult + integralStep) < Math.abs(integralResult))) {
+        if (!integralHold) {
             integralResult += integralStep;
+        } else if (directionalIntegralHold) {
+            // Apply only the part of the step that moves the accumulator towards zero.
+            //
+            // Comparing the endpoints instead, |result + step| < |result|, rejects a
+            // recovery step outright once it is larger than twice the accumulator, because
+            // overshooting zero lands further out than it started. The accumulator then
+            // sticks at its current value for as long as the hold is asserted, which is the
+            // opposite of what directional holding is for. Clamping at zero keeps the
+            // intent - never wind further out, always allow unwinding - without that gap.
+            if (integralResult > 0 && integralStep < 0) {
+                integralResult = Math.max(0, integralResult + integralStep);
+            } else if (integralResult < 0 && integralStep > 0) {
+                integralResult = Math.min(0, integralResult + integralStep);
+            }
         }
 
         // Integral decay: bleed the accumulator towards zero while the error is no longer moving away from the

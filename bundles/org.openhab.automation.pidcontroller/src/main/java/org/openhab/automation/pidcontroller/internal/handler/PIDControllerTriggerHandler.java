@@ -75,6 +75,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private @Nullable String eInspector;
     private ItemRegistry itemRegistry;
     private @Nullable String integralHoldItemName;
+    private boolean integralHoldItemMissing;
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
             BundleContext bundleContext) {
@@ -170,6 +171,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         }
         try {
             State state = itemRegistry.getItem(itemName).getState();
+            integralHoldItemMissing = false;
             if (state instanceof OnOffType onOff) {
                 return onOff == OnOffType.ON;
             }
@@ -178,7 +180,15 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
             }
             return false;
         } catch (ItemNotFoundException e) {
-            logger.warn("Integral hold Item '{}' not found, continuing to integrate", itemName);
+            // Only on the transition into the missing state: this runs on every
+            // calculation, so logging unconditionally turns a single typo into one warning
+            // per loopTime, which at the documented 1s loop is 86400 a day. The flag is
+            // cleared again when the Item comes back, so an Item recreated at runtime is
+            // picked up silently and a later disappearance is still reported.
+            if (!integralHoldItemMissing) {
+                integralHoldItemMissing = true;
+                logger.warn("Integral hold Item '{}' not found, continuing to integrate", itemName);
+            }
             return false;
         }
     }

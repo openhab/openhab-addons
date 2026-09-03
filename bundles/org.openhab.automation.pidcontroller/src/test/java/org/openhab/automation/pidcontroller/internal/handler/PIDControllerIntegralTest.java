@@ -211,12 +211,27 @@ class PIDControllerIntegralTest {
         assertTrue(wound > 0, "precondition: the I-part is positive");
 
         // A reversed error large enough to cross zero must not be able to wind the accumulator up
-        // on the far side while the hold is still active.
-        double crossed = wound;
+        // on the far side while the hold is still active, but it must still unwind: a single step
+        // bigger than twice the accumulator used to be rejected whole, leaving it stuck.
+        double crossed = controller.calculate(100, 0, LOOP_TIME_MS, LOOP_TIME_MS, true).getIntegralPart();
+        assertEquals(0, crossed, 0.001, "one oversized recovery step must unwind to zero, not be rejected");
+
         for (int i = 0; i < 100; i++) {
             crossed = controller.calculate(100, 0, LOOP_TIME_MS, LOOP_TIME_MS, true).getIntegralPart();
         }
-        assertTrue(Math.abs(crossed) <= Math.abs(wound) + 0.001,
-                "the accumulator must never end further from zero than it started while held");
+        assertEquals(0, crossed, 0.001, "and must not wind up on the far side while still held");
+    }
+
+    @Test
+    void directionalHoldUnwindsGraduallyWhenTheStepIsSmall() {
+        PIDController controller = createController(0, true);
+        double wound = settle(controller, 0, 1, 5);
+        assertTrue(wound > 0, "precondition: the I-part is positive");
+
+        // A recovery step smaller than the accumulator is applied in full, so the unwind is
+        // gradual rather than a jump to zero.
+        double first = controller.calculate(0.5, 0, LOOP_TIME_MS, LOOP_TIME_MS, true).getIntegralPart();
+        assertTrue(first < wound, "the accumulator must move towards zero");
+        assertTrue(first > 0, "and must not jump past zero when the step does not reach it");
     }
 }
