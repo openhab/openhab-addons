@@ -111,11 +111,21 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         }
 
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
-            updateStatus(ThingStatus.ONLINE);
             handler.register(this);
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
+            JsonObject state = getStateFromCachedState(stateOpt);
+            if (!state.isEmpty()) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        });
     }
 
     @Override

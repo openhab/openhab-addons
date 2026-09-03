@@ -52,14 +52,14 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            handler.register(this);
-            updateStatus(ThingStatus.ONLINE);
             JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
+            handler.register(this);
             initializeThingFromLatestState(stateOpt);
+            updateStatus(ThingStatus.ONLINE);
         });
     }
 
@@ -82,7 +82,6 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     public void initializeThingFromLatestState(JsonObject state) {
         state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
         if (state.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
         updateStatus(ThingStatus.ONLINE);

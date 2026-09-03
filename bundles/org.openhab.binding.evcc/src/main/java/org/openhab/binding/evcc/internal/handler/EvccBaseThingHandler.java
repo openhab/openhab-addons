@@ -222,6 +222,11 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     public void createChannelsAndSetStatesFromApiResponse(JsonObject jsonState) {
+        updateStatesFromApiResponse(jsonState);
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    public void updateStatesFromApiResponse(JsonObject jsonState) {
         if (jsonState.isEmpty()) {
             return;
         }
@@ -230,10 +235,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         boolean channelsChanged = syncThingChannels(channels, jsonState, validChannelIds);
         if (channelsChanged) {
             updateThing(editThing().withChannels(channels).build());
-            updateStatus(ThingStatus.ONLINE);
         }
         updateChannelStates(getThing().getChannels(), jsonState, validChannelIds);
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private Set<String> extractValidChannelIds(JsonObject jsonState) {

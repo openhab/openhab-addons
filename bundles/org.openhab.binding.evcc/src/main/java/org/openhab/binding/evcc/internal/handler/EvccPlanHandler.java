@@ -88,7 +88,12 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
             buildLocalizedMaps(handler);
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES, vehicleID);
             if (index == 0) {
@@ -96,9 +101,9 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
             } else {
                 endpoint = String.join("/", endpoint, API_PATH_PLAN_REPEATING);
             }
-            updateStatus(ThingStatus.ONLINE);
             handler.register(this);
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
+            updateStatus(ThingStatus.ONLINE);
+        });
     }
 
     @Override
@@ -116,10 +121,8 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         if (state.has(JSON_KEY_VEHICLES)) {
             state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleID);
             if (state.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
-            updateStatus(ThingStatus.ONLINE);
             if (index == 0) {
                 if (state.has(JSON_KEY_PLAN)) {
                     state = state.getAsJsonObject(JSON_KEY_PLAN);
@@ -138,7 +141,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
                 // Check the bounds
                 if (cachedRepeatingPlans.size() < index) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                     return;
                 }
                 // Get the corresponding repeating plan
