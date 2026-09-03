@@ -1,3 +1,11 @@
+---
+children:
+  - ["doc/things", "Examples for Things"]
+  - ["items", "Examples for Items"]
+  - ["sitemaps", "Examples for Sitemaps"]
+  - ["rules", "Examples for Rules"]
+---
+
 # Velux Binding
 
 This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>Velux Bridge KLF200</B>, which is able to control 200 actuators.
