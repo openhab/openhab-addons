@@ -100,11 +100,17 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
             endpoint = handler.getBaseURL();
-            updateStatus(ThingStatus.ONLINE);
             handler.register(this);
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
+            initializeThingFromLatestState(stateOpt);
+            updateStatus(ThingStatus.ONLINE);
+        });
     }
 
     private void modifyJSON(JsonObject state) {

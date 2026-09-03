@@ -1,0 +1,20 @@
+[ERROR] Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:2.44.3:check (codestyle_check) on project org.openhab.binding.evcc: The following files had format violations:
+[ERROR]     src\main\java\org\openhab\binding\evcc\internal\handler\EvccBatteryHandler.java
+[ERROR]         @@ -93,8 +93,7 @@
+[ERROR]          ��������if�(battElement�==�null�||�battElement.isJsonNull())�{
+[ERROR]          ������������return�new�JsonObject();
+[ERROR]          ��������}
+[ERROR]         -��������JsonArray�battArray�=�battElement.isJsonArray()
+[ERROR]         -����������������?�(JsonArray)�battElement
+[ERROR]         +��������JsonArray�battArray�=�battElement.isJsonArray()�?�(JsonArray)�battElement
+[ERROR]          ����������������:�((JsonObject)�battElement).getAsJsonArray("devices");
+[ERROR]          ��������if�(battArray.size()�<=�index)�{
+[ERROR]          ������������return�new�JsonObject();
+[ERROR] Run 'mvn spotless:apply' to fix these violations.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

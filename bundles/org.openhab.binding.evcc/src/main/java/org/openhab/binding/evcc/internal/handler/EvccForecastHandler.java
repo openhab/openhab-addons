@@ -60,11 +60,16 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            if (stateOpt.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
             endpoint = handler.getBaseURL();
-            updateStatus(ThingStatus.ONLINE);
             handler.register(this);
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
+            updateStatus(ThingStatus.ONLINE);
+        });
     }
 
     @Override
@@ -107,7 +112,6 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
         if (state.isJsonNull() || state.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
         JsonArray forecastArray = new JsonArray();
@@ -124,11 +128,9 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             }
             default -> {
                 logger.warn("Unknown forecast type: {}", subType);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
         propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private JsonArray extractCorrespondingForecast(JsonObject state) {
@@ -140,7 +142,6 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 return state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonArray(subType);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return new JsonArray();
         }
     }
