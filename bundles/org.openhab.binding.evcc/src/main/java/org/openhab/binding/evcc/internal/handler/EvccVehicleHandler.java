@@ -75,12 +75,12 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public String getIdentifier() {
-        return Objects.requireNonNullElse(vehicleId, "");
+        return Objects.requireNonNullElse(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID), "");
     }
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
+        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
         createChannelsAndSetStatesFromApiResponse(state);
     }
 
@@ -111,7 +111,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         }
 
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
             JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -123,9 +123,9 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             if (!state.isEmpty()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
-        });
+        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED));
     }
 
     @Override
