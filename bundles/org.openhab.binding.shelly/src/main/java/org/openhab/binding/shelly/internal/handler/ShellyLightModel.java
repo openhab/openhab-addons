@@ -19,6 +19,7 @@ import static org.openhab.core.util.LightModel.LedOperatingMode.*;
 import static org.openhab.core.util.LightModel.LightCapabilities.*;
 import static org.openhab.core.util.LightModel.RgbDataType.*;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -102,8 +103,8 @@ public class ShellyLightModel extends LightModel {
     private final boolean isBulb;
     private final boolean isDuo;
     private final boolean isVintage;
-    private final boolean isG3DuoBulb;
-    private final boolean isG3ColorBulb;
+    private final boolean isG3ColorTempBulb;
+    private final boolean isG3FullColorBulb;
     private final boolean isProfileLIGHT;
     private final boolean isProfileRGB;
     private final boolean isProfileRGBW;
@@ -270,8 +271,8 @@ public class ShellyLightModel extends LightModel {
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2White = THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID);
         isRGBW2Color = THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID);
-        isG3DuoBulb = THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID); // TODO mapping in #20909 is wrong
-        isG3ColorBulb = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID); // TODO mapping in #20909 is wrong
+        isG3ColorTempBulb = THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID); // TODO mapping in #20909 may be wrong
+        isG3FullColorBulb = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID); // TODO mapping in #20909 may be wrong
 
         // initialize some flags from the device configured operating profile (Generation 2/3)
         isProfileLIGHT = SHELLY2_PROFILE_LIGHT.equals(configProfile);
@@ -394,9 +395,11 @@ public class ShellyLightModel extends LightModel {
 
     /**
      * Check if the color has been changed since lock() was called.
+     * Note: a change in color temperature is also considered a color change.
      */
     public boolean isColorDirty() {
-        return !Arrays.equals(baselineRGBX, cacheRGBX);
+        return !Arrays.equals(baselineRGBX, cacheRGBX)
+                || !Objects.equals(baselineColorTemperature, super.getColorTemperature());
     }
 
     /**
@@ -432,6 +435,20 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
+     * Get the minimum color temperature in Kelvin.
+     */
+    public BigDecimal getColorTemperatureMinimumKelvin() {
+        return BigDecimal.valueOf(Math.round(reciprocal(configGetMirekControlWarmest())));
+    }
+
+    /**
+     * Get the maximum color temperature in Kelvin.
+     */
+    public BigDecimal getColorTemperatureMaximumKelvin() {
+        return BigDecimal.valueOf(Math.round(reciprocal(configGetMirekControlCoolest())));
+    }
+
+    /**
      * Set the color temperature.
      */
     public void setColorTemp(double kelvin) {
@@ -448,9 +465,11 @@ public class ShellyLightModel extends LightModel {
 
     /**
      * Check if the color temperature has been changed since lock() was called.
+     * Note: a change in color is also considered a color temperature change.
      */
     public boolean isColorTempDirty() {
-        return !Objects.equals(baselineColorTemperature, super.getColorTemperature());
+        return !Objects.equals(baselineColorTemperature, super.getColorTemperature())
+                || !Arrays.equals(baselineRGBX, cacheRGBX);
     }
 
     /**
@@ -676,7 +695,7 @@ public class ShellyLightModel extends LightModel {
 
     @Override
     public String toString() {
-        return "mode:%s, power:%s, gain/bri:%s, rgbw:%s, color-temp:%s, color-temp-abs:%s, effect:%s".formatted(
+        return "mode:%s, power:%s, gain/bri:%s, rgbw:%s, temperature:%s, temperature-abs:%s, effect:%s".formatted(
                 getMode(), getOnOffState(), getBrightnessState(), Arrays.toString(getRGBX()),
                 getColorTemperaturePercentState(), getColorTemperatureAbsoluteState(), getEffectState());
     }
@@ -733,8 +752,8 @@ public class ShellyLightModel extends LightModel {
             (isDuo) ||
             (isBulb) ||
             (isRGBW2White) || 
-            (isG3DuoBulb) ||
-            (isG3ColorBulb) ||
+            (isG3ColorTempBulb) ||
+            (isG3FullColorBulb) ||
             (isProfileCCTX2) ||
             (isProfileLIGHT) ||
             (isProfileRGBCCT) ||
@@ -759,7 +778,7 @@ public class ShellyLightModel extends LightModel {
         // @formatter:off
            (isBulb) ||
            (isRGBW2Color) || 
-           (isG3ColorBulb) ||
+           (isG3FullColorBulb) ||
            (isProfileRGB) ||
            (isProfileRGBW) ||
            (isProfileRGBCCT && channelGroupNumber == 0) || 
@@ -783,8 +802,8 @@ public class ShellyLightModel extends LightModel {
         // @formatter:off
             (isDuo && !isVintage) || // Vintage bulb is white-only!
             (isBulb) ||
-            (isG3DuoBulb) || 
-            (isG3ColorBulb) || 
+            (isG3ColorTempBulb) || 
+            (isG3FullColorBulb) || 
             (isProfileCCTX2) ||
             (isProfileRGBCCT && channelGroupNumber > 0) 
         // @formatter:on
@@ -839,8 +858,8 @@ public class ShellyLightModel extends LightModel {
             (isDuo) || 
             (isBulb) ||
             (isRGBW2Color) ||
-            (isG3DuoBulb) ||
-            (isG3ColorBulb) ||
+            (isG3ColorTempBulb) ||
+            (isG3FullColorBulb) ||
             (isProfileRGB) ||
             (isProfileRGBW) ||
             (isProfileRGBCCT && channelGroupNumber == 0) || 
@@ -866,13 +885,5 @@ public class ShellyLightModel extends LightModel {
             (isProfileRGBX2LIGHT && channelGroupNumber > 0)
         // @formatter:on
         ;
-    }
-
-    public int getMinColorTempKelvin() {
-        return (int) Math.round(reciprocal(configGetMirekControlWarmest()));
-    }
-
-    public int getMaxColorTempKelvin() {
-        return (int) Math.round(reciprocal(configGetMirekControlCoolest()));
     }
 }

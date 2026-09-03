@@ -474,17 +474,17 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
 
         // MAIN GROUP:
-        if (model.isDirty() && groupNumber == 0 && model.supportsOnOffChannel()) {
+        group = CHANNEL_GROUP_MAIN_CONTROL;
+        if (model.supportsColorChannel() && model.isColorDirty()) {
+            updated |= updateChannel(group, CHANNEL_COLOR_PICKER, model.getColorState());
+        }
+        if (model.supportsBrightnessChannel() && model.isBrightnessDirty()) {
+            updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
+        }
+        if (model.supportsColorTempChannel() && model.isColorTempDirty()) {
             group = CHANNEL_GROUP_MAIN_CONTROL;
-            if (model.configGetLightCapabilities().supportsColor()) {
-                updated |= updateChannel(group, CHANNEL_COLOR_PICKER, model.getColorState());
-            } else if (model.configGetLightCapabilities().supportsBrightness()) {
-                updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
-            }
-            if (model.configGetLightCapabilities().supportsColorTemperature()) {
-                updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
-                updated |= updateChannel(group, CHANNEL_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
-            }
+            updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
+            updated |= updateChannel(group, CHANNEL_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
         }
 
         return updated;

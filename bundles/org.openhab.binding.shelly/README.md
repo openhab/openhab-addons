@@ -1223,7 +1223,6 @@ totalEnergy might reset on restart depending on device type and firmware version
 |          | timerActive  | Switch       | yes       | ON: An auto-on/off timer is active                                                                           |
 | meter    | currentPower | Number       | yes       | Current power consumption in Watts (all channels)                                                            |
 
-
 `Note`:
 channel1..channel4 are deprecated, use light1..light4 instead (same channels, without the button trigger).
 Already-discovered Things get the light1..light4 channels created automatically; channel1..channel4 are kept for backward compatibility.

@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -83,15 +84,15 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         boolean hasOptions = stateOptions != null && !stateOptions.isEmpty();
 
         boolean hasColorTempRange = false;
-        BigDecimal min = null;
-        BigDecimal max = null;
+        BigDecimal minKelvin = null;
+        BigDecimal maxKelvin = null;
 
         if (CHANNEL_COLOR_TEMP_ABS.equals(channel.getUID().getIdWithoutGroup())
                 && handler instanceof ShellyLightHandler lightHandler
                 && lightHandler.getLightModelByChannel(channel) instanceof ShellyLightModel model
                 && model.supportsColorTempChannel(true)) {
-            min = BigDecimal.valueOf(model.getMinColorTempKelvin());
-            max = BigDecimal.valueOf(model.getMaxColorTempKelvin());
+            minKelvin = model.getColorTemperatureMinimumKelvin();
+            maxKelvin = model.getColorTemperatureMaximumKelvin();
             hasColorTempRange = true;
         }
 
@@ -102,12 +103,12 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create(originalStateDescription);
 
         if (hasOptions) {
-            builder = builder.withOptions(stateOptions);
+            builder = builder.withOptions(Objects.requireNonNull(stateOptions));
         }
 
         if (hasColorTempRange) {
-            builder = builder.withMinimum(min);
-            builder = builder.withMaximum(max);
+            builder = builder.withMinimum(Objects.requireNonNull(minKelvin));
+            builder = builder.withMaximum(Objects.requireNonNull(maxKelvin));
             builder = builder.withPattern("%.0f K");
         }
 
