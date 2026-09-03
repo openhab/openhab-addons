@@ -86,7 +86,6 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         Configuration configuration = mock(Configuration.class);
         when(configuration.get("index")).thenReturn("0");
-        when(configuration.get("id")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
 
