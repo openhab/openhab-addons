@@ -27,9 +27,8 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_EVENT_COUNTER;
 import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_EVENT_PRESENCE;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
@@ -59,7 +58,7 @@ import org.openhab.core.thing.Thing;
 import com.google.gson.Gson;
 
 /**
- * Unit tests for Shelly Presence Gen4 JSON parsing — TypeAdapterFactory and NotifyEvent handling.
+ * Unit tests for Shelly Presence Gen4 JSON parsing, status polling and NotifyEvent handling.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -82,61 +81,29 @@ public class ShellyPresenceTest {
     }
 
     @Test
-    void statusAdapterCollectsZoneAndInjectsId() {
-        String json = "{\"sys\":{\"available_updates\":{}},\"presencezone:200\":{\"value\":true,\"num_objects\":2}}";
-        Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
+    void presenceZoneGetStatusResponseDeserializes() {
+        String json = "{\"id\":200,\"value\":true,\"num_objects\":2}";
+        Shelly2StatusPresence zone = Objects.requireNonNull(gson.fromJson(json, Shelly2StatusPresence.class));
 
-        var zones = Objects.requireNonNull(result.presenceZones);
-        assertThat(zones.size(), is(1));
-        Shelly2StatusPresence zone = zones.get(0);
-        assertThat("id injected from key", zone.id, is(200));
+        assertThat(zone.id, is(200));
         assertThat(zone.value, is(true));
         assertThat(zone.numObjects, is(2));
     }
 
     @Test
-    void statusAdapterHandlesPresenceOff() {
-        String json = "{\"sys\":{\"available_updates\":{}},\"presencezone:200\":{\"value\":false,\"num_objects\":0}}";
+    void illuminationPublishesWithoutANumericLuxValue() throws ShellyApiException {
+        // real Presence Gen4 hardware never reports a numeric lux value, only the illumination category
+        String json = "{\"sys\":{\"available_updates\":{}},\"illuminance:0\":{\"id\":0,\"illumination\":\"dark\"}}";
         Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
+        Fixture f = build();
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
 
-        Shelly2StatusPresence zone = Objects.requireNonNull(result.presenceZones).get(0);
-        assertThat(zone.value, is(false));
-        assertThat(zone.numObjects, is(0));
-    }
+        f.rpc.updateIlluminanceStatus(sdata, result.illuminance0);
 
-    @Test
-    void statusAdapterPresenceNullWhenNoZoneKeys() {
-        String json = "{\"sys\":{\"available_updates\":{}}}";
-        Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
-
-        assertThat(result.presenceZones, is(nullValue()));
-    }
-
-    @Test
-    void statusAdapterSkipsNullPresenceZoneEntry() {
-        String json = "{\"sys\":{\"available_updates\":{}}," + "\"presencezone:200\":null,"
-                + "\"presencezone:201\":{\"value\":true,\"num_objects\":1}}";
-        Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
-
-        var zones = Objects.requireNonNull(result.presenceZones, "null zone entry must be skipped");
-        assertThat(zones.size(), is(1));
-        assertThat(zones.get(0).id, is(201));
-        assertThat(zones.get(0).value, is(true));
-    }
-
-    @Test
-    void statusAdapterCollectsMultipleZones() {
-        String json = "{\"sys\":{\"available_updates\":{}},"
-                + "\"presencezone:200\":{\"value\":true,\"num_objects\":1},"
-                + "\"presencezone:201\":{\"value\":false,\"num_objects\":0}}";
-        Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
-
-        var zones = Objects.requireNonNull(result.presenceZones);
-        assertThat(zones.size(), is(2));
-        boolean hasZone200 = zones.stream().anyMatch(z -> Integer.valueOf(200).equals(z.id));
-        boolean hasZone201 = zones.stream().anyMatch(z -> Integer.valueOf(201).equals(z.id));
-        assertThat("zone 200 present", hasZone200, is(true));
-        assertThat("zone 201 present", hasZone201, is(true));
+        var lux = Objects.requireNonNull(sdata.lux);
+        assertThat(lux.isValid, is(true));
+        assertThat(lux.value, is(nullValue()));
+        assertThat(lux.illumination, is("dark"));
     }
 
     @Test
@@ -281,85 +248,52 @@ public class ShellyPresenceTest {
     }
 
     @Test
-    void statusZoneMatchingTheMainZoneUpdatesSensorData() throws ShellyApiException {
+    void presenceStatusUpdatesSensorDataFromTheFetchedZone() throws ShellyApiException {
         Fixture f = build();
         ShellyStatusSensor sdata = new ShellyStatusSensor();
 
-        f.rpc.updatePresenceStatus(sdata, zones(statusZone(200, true, 3)));
+        f.rpc.updatePresenceStatus(sdata, statusZone(200, true, 3));
 
         assertThat(sdata.presence, is(true));
         assertThat(sdata.objectCount, is(3));
     }
 
     @Test
-    void statusZoneFromAnotherZoneLeavesSensorDataUnchanged() throws ShellyApiException {
-        Fixture f = build();
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-
-        f.rpc.updatePresenceStatus(sdata, zones(statusZone(201, true, 3)));
-
-        assertThat(sdata.presence, is(nullValue()));
-        assertThat(sdata.objectCount, is(nullValue()));
-    }
-
-    @Test
-    void statusPicksTheConfiguredMainZoneOutOfSeveralZones() throws ShellyApiException {
-        Fixture f = build("presencezone:201");
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-
-        f.rpc.updatePresenceStatus(sdata, zones(statusZone(200, false, 0), statusZone(201, true, 5)));
-
-        assertThat(sdata.presence, is(true));
-        assertThat(sdata.objectCount, is(5));
-    }
-
-    @Test
-    void statusWithoutZonesLeavesSensorDataUnchanged() throws ShellyApiException {
+    void presenceStatusWithNoZoneLeavesSensorDataUnchanged() throws ShellyApiException {
         Fixture f = build();
         ShellyStatusSensor sdata = new ShellyStatusSensor();
 
         f.rpc.updatePresenceStatus(sdata, null);
-        f.rpc.updatePresenceStatus(sdata, zones());
 
         assertThat(sdata.presence, is(nullValue()));
         assertThat(sdata.objectCount, is(nullValue()));
     }
 
     @Test
-    void statusZoneWithoutValuesKeepsThePreviousReadings() throws ShellyApiException {
+    void presenceStatusZoneWithoutValuesKeepsThePreviousReadings() throws ShellyApiException {
         Fixture f = build();
         ShellyStatusSensor sdata = new ShellyStatusSensor();
         sdata.presence = true;
         sdata.objectCount = 2;
 
-        f.rpc.updatePresenceStatus(sdata, zones(statusZone(200, null, null)));
+        f.rpc.updatePresenceStatus(sdata, statusZone(200, null, null));
 
         assertThat(sdata.presence, is(true));
         assertThat(sdata.objectCount, is(2));
     }
 
     @Test
-    void malformedMainZoneKeyFallsBackToTheDefaultZone() throws ShellyApiException {
-        Fixture f = build("presencezone:not-a-number");
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-
-        f.rpc.updatePresenceStatus(sdata, zones(statusZone(200, true, 1)));
-
-        assertThat(sdata.presence, is(true));
-        assertThat(sdata.objectCount, is(1));
+    void mainZoneIdIsParsedFromTheConfiguredZoneKey() {
+        assertThat(Shelly2ApiClient.getPresenceMainZoneId("presencezone:201"), is(201));
+        assertThat(Shelly2ApiClient.getPresenceMainZoneId("presencezone:0"), is(0));
     }
 
     @Test
-    void zoneIdIsParsedFromTheComponentKey() {
-        assertThat(Shelly2PresenceZoneAdapter.zoneIdFromKey("presencezone:200"), is(200));
-        assertThat(Shelly2PresenceZoneAdapter.zoneIdFromKey("presencezone:0"), is(0));
-    }
-
-    @Test
-    void zoneIdIsNullForAKeyWithoutAUsableId() {
-        assertThat(Shelly2PresenceZoneAdapter.zoneIdFromKey("presencezone"), is(nullValue()));
-        assertThat(Shelly2PresenceZoneAdapter.zoneIdFromKey("presencezone:"), is(nullValue()));
-        assertThat(Shelly2PresenceZoneAdapter.zoneIdFromKey("presencezone:main"), is(nullValue()));
+    void malformedMainZoneKeyFallsBackToTheDefaultZone() {
+        assertThat(Shelly2ApiClient.getPresenceMainZoneId("presencezone:not-a-number"),
+                is(SHELLY2_PRESENCE_DEFAULT_ZONE_ID));
+        assertThat(Shelly2ApiClient.getPresenceMainZoneId("presencezone"), is(SHELLY2_PRESENCE_DEFAULT_ZONE_ID));
+        assertThat(Shelly2ApiClient.getPresenceMainZoneId("presencezone:"), is(SHELLY2_PRESENCE_DEFAULT_ZONE_ID));
     }
 
     private static Shelly2StatusPresence statusZone(int id, @Nullable Boolean value, @Nullable Integer numObjects) {
@@ -368,10 +302,6 @@ public class ShellyPresenceTest {
         zone.value = value;
         zone.numObjects = numObjects;
         return zone;
-    }
-
-    private static ArrayList<Shelly2StatusPresence> zones(Shelly2StatusPresence... entries) {
-        return new ArrayList<>(List.of(entries));
     }
 
     private static String presenceEventJson(String component, boolean value) {
