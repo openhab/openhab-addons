@@ -338,7 +338,8 @@ public class AmazonEchoControlServlet extends HttpServlet {
             LoginDialogPage signInPage = LoginDialogPage.signIn();
             returnHtml(resp, uriParts, html, signInPage.host(), signInPage.linkBase(uriParts));
         } catch (ConnectionException e) {
-            logger.warn("get failed with uri syntax error", e);
+            logger.warn("Failed to load the sign-in page: {}", e.getMessage());
+            logger.debug("Failed to load the sign-in page", e);
         }
     }
 
