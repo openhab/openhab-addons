@@ -581,6 +581,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
             addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
+            // TODO maybe remove this ??
             // dynamically add color channels (in case any were missing in thing-type xml)
             if (profile.hasColorTag(idx)) {
                 addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER);

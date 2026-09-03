@@ -41,6 +41,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -498,6 +499,24 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     public @Nullable ShellyLightModel getLightModelByGroupNumber(int groupNumber) {
         ShellyLightModel model = lightModels.get(groupNumber);
         return model;
+    }
+
+    public @Nullable ShellyLightModel getLightModelByChannel(Channel channel) {
+        String groupId = channel.getUID().getGroupId();
+        if (groupId == null) {
+            return null;
+        }
+        if (CHANNEL_GROUP_MAIN_CONTROL.equals(groupId)) {
+            return getLightModelByGroupNumber(0);
+        }
+        if (CHANNEL_GROUP_WHITE_CONTROL.equals(groupId)) {
+            return getLightModelByGroupNumber(0);
+        }
+        if (groupId.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
+            int groupNumber = ShellyLightModel.getChannelGroupNumber(channel.getUID());
+            return getLightModelByGroupNumber(groupNumber);
+        }
+        return null;
     }
 
     @Override

@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.shelly.internal.provider;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.Channel;
@@ -70,14 +73,44 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         if (thing == null) {
             return null;
         }
+
         ShellyThingInterface handler = (ShellyThingInterface) thing.getHandler();
         if (handler == null) {
             return null;
         }
 
         List<StateOption> stateOptions = handler.getStateOptions(uid);
-        return stateOptions == null ? null
-                : StateDescriptionFragmentBuilder.create(originalStateDescription).withOptions(stateOptions).build()
-                        .toStateDescription();
+        boolean hasOptions = stateOptions != null && !stateOptions.isEmpty();
+
+        boolean hasColorTempRange = false;
+        BigDecimal min = null;
+        BigDecimal max = null;
+
+        if (CHANNEL_COLOR_TEMP_ABS.equals(channel.getUID().getIdWithoutGroup())
+                && handler instanceof ShellyLightHandler lightHandler
+                && lightHandler.getLightModelByChannel(channel) instanceof ShellyLightModel model
+                && model.supportsColorTempChannel(true)) {
+            min = BigDecimal.valueOf(model.getMinColorTempKelvin());
+            max = BigDecimal.valueOf(model.getMaxColorTempKelvin());
+            hasColorTempRange = true;
+        }
+
+        if (!hasOptions && !hasColorTempRange) {
+            return null;
+        }
+
+        StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create(originalStateDescription);
+
+        if (hasOptions) {
+            builder = builder.withOptions(stateOptions);
+        }
+
+        if (hasColorTempRange) {
+            builder = builder.withMinimum(min);
+            builder = builder.withMaximum(max);
+            builder = builder.withPattern("%.0f K");
+        }
+
+        return builder.build().toStateDescription();
     }
 }

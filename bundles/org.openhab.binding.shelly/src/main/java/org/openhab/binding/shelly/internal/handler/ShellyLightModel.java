@@ -867,4 +867,12 @@ public class ShellyLightModel extends LightModel {
         // @formatter:on
         ;
     }
+
+    public int getMinColorTempKelvin() {
+        return (int) Math.round(reciprocal(configGetMirekControlWarmest()));
+    }
+
+    public int getMaxColorTempKelvin() {
+        return (int) Math.round(reciprocal(configGetMirekControlCoolest()));
+    }
 }
