@@ -290,7 +290,6 @@
 		<category>Alarm</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Alarm</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -340,7 +339,6 @@
 		<category>Camera</category>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Control</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
