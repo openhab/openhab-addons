@@ -221,6 +221,7 @@ public class Utils {
         return switch (region) {
             case Constants.REGION_APAC -> Constants.WEBSOCKET_USER_AGENT_PA;
             case Constants.REGION_CHINA -> Constants.WEBSOCKET_USER_AGENT_CN;
+            case Constants.REGION_NORAM -> Constants.WEBSOCKET_USER_AGENT_US;
             default -> Constants.WEBSOCKET_USER_AGENT;
         };
     }
@@ -479,15 +480,23 @@ public class Utils {
     }
 
     /**
-     * Checks proto VehicleAttributeStatus is nil
+     * Checks proto VehicleAttributeStatus has no usable value, either because the nil_value oneof
+     * is set, or because status reports the value was not received, is invalid or is not available.
+     * A non-VALID status must be checked explicitly: the backend can send a default int_value/
+     * double_value of 0 together with such a status instead of setting nil_value, which would
+     * otherwise be forwarded as if it were a real reading (e.g. State of Charge briefly showing 0%
+     * during charging).
      *
      * @param value - proto value
-     * @return true if nil value is present, false otherwise
+     * @return true if no usable value is present, false otherwise
      */
     public static boolean isNil(@Nullable VehicleAttributeStatus value) {
         if (value != null) {
-            if (value.hasNilValue()) {
-                return value.getNilValue();
+            if (value.hasNilValue() && value.getNilValue()) {
+                return true;
+            }
+            if (value.getStatus() != VehicleEvents.AttributeStatus.VALUE_VALID_VALUE) {
+                return true;
             }
         }
         return false;

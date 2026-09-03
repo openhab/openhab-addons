@@ -23,6 +23,9 @@ import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.unit.ImperialUnits;
 
+import com.daimler.mbcarkit.proto.VehicleEvents.AttributeStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
+
 /**
  * {@link UtilsTest} for helper functions
  *
@@ -81,6 +84,43 @@ class UtilsTest {
         assertEquals(2, Utils.getChargeProgramNumber("HOME_CHARGE_PROGRAM"), "Home");
         assertEquals(3, Utils.getChargeProgramNumber("WORK_CHARGE_PROGRAM"), "Work");
         assertEquals(-1, Utils.getChargeProgramNumber("UNKNOWN"), "Unknown");
+    }
+
+    @Test
+    public void testIsNilForNilValueFlag() {
+        // Arrange
+        VehicleAttributeStatus nilFlagged = VehicleAttributeStatus.newBuilder().setNilValue(true).build();
+
+        // Act & Assert
+        assertTrue(Utils.isNil(nilFlagged), "nil_value = true must be reported as nil");
+    }
+
+    @Test
+    public void testIsNilForNonValidStatusWithDefaultValue() {
+        // Arrange - backend reports status without setting nil_value; int_value stays at the
+        // protobuf default of 0 and must not be mistaken for a real reading (e.g. State of Charge
+        // briefly reported as 0% during charging)
+        VehicleAttributeStatus notReceived = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setIntValue(0).build();
+        VehicleAttributeStatus invalid = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_INVALID_VALUE).setIntValue(0).build();
+        VehicleAttributeStatus notAvailable = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_NOT_AVAILABLE_VALUE).setIntValue(0).build();
+
+        // Act & Assert
+        assertTrue(Utils.isNil(notReceived), "status = VALUE_NOT_RECEIVED must be reported as nil");
+        assertTrue(Utils.isNil(invalid), "status = VALUE_INVALID must be reported as nil");
+        assertTrue(Utils.isNil(notAvailable), "status = VALUE_NOT_AVAILABLE must be reported as nil");
+    }
+
+    @Test
+    public void testIsNilForValidStatus() {
+        // Arrange
+        VehicleAttributeStatus valid = VehicleAttributeStatus.newBuilder().setStatus(AttributeStatus.VALUE_VALID_VALUE)
+                .setIntValue(74).build();
+
+        // Act & Assert
+        assertFalse(Utils.isNil(valid), "status = VALUE_VALID with a populated value must not be reported as nil");
     }
 
     @Test

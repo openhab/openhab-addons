@@ -572,6 +572,40 @@ class VehicleHandlerTest {
     }
 
     @Test
+    public void testDoorLockUnlockSelection() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of(MB_KEY_COMMAND_DOORS_LOCK, "true"));
+        AccountHandlerMock ahm = new AccountHandlerMock();
+        ahm.config.pin = "1234";
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        vh.accountHandler = ahm;
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = vehicleConfig;
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+
+        ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_VEHICLE, "lock");
+
+        // Lock (2) requires no PIN - see DoorsLock in vehicle-commands.proto
+        vh.handleCommand(cuid, new DecimalType(2));
+        assertEquals("doorsLock", ahm.getCommand().get("commandType"), "Lock Command Type");
+
+        // Unlock (0) requires the account's PIN - see DoorsUnlock in vehicle-commands.proto
+        vh.handleCommand(cuid, new DecimalType(0));
+        assertEquals("doorsUnlock", ahm.getCommand().get("commandType"), "Unlock Command Type");
+        assertEquals("1234", ahm.getCommand().get("pin"), "Unlock PIN");
+
+        // Missing PIN must block the unlock command - previous doorsUnlock trace must remain untouched
+        ahm.config.pin = Constants.NOT_SET;
+        vh.handleCommand(cuid, new DecimalType(0));
+        assertEquals("doorsUnlock", ahm.getCommand().get("commandType"), "Unlock blocked without PIN");
+        assertEquals("1234", ahm.getCommand().get("pin"), "Unlock blocked without PIN keeps last trace");
+    }
+
+    @Test
     /**
      * Testing UNRECOGNIZED (-1) values in CommandStatus which throws Exception
      */
