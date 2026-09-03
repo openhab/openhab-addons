@@ -24,6 +24,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ShellyPresenceJsonDTO {
     public static final String SHELLYRPC_METHOD_PRESENCE_SETSENSOR = "Presence.SetSensor";
+    public static final String SHELLYRPC_METHOD_PRESENCEZONE_GETSTATUS = "PresenceZone.GetStatus";
     public static final String SHELLY2_PRESENCE_ZONE_PREFIX = "presencezone:";
     public static final int SHELLY2_PRESENCE_DEFAULT_ZONE_ID = 200;
     public static final String SHELLY2_EVENT_PRESENCE = "presence";

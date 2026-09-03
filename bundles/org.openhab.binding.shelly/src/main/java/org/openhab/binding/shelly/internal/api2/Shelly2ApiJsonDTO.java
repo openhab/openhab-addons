@@ -25,12 +25,10 @@ import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBl
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -696,7 +694,6 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Integer ct; // color temperature in Kelvin (CCT component)
         }
 
-        @JsonAdapter(Shelly2PresenceZoneAdapter.class)
         public static class Shelly2DeviceStatusResult {
             public class Shelly2DeviceStatusBle {
 
@@ -1001,11 +998,6 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("lora:100")
             public Shelly2DeviceStatusLora lora100;
-
-            // Filled by Shelly2PresenceZoneAdapter from the dynamic presencezone:<id> keys; the
-            // serialized name is synthetic so Gson never binds a device key to this field.
-            @SerializedName("_presenceZoneList")
-            public @Nullable ArrayList<Shelly2StatusPresence> presenceZones;
         }
 
         public class Shelly2DeviceStatusSys {

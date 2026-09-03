@@ -652,7 +652,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateHumidityStatus(sensorData, result.humidity0);
         updateTemperatureStatus(sensorData, result.temperature0);
         updateIlluminanceStatus(sensorData, result.illuminance0);
-        updatePresenceStatus(sensorData, result.presenceZones);
+        // presence/objectCount are not part of the aggregate status; they're polled separately via
+        // PresenceZone.GetStatus (see Shelly2ApiRpc#getStatus) and pushed live via NotifyEvent.
         updateSmokeStatus(sensorData, result.smoke0);
         Shelly2DeviceStatusFlood flood0 = result.flood0;
         if (flood0 != null) {
@@ -1524,34 +1525,41 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (sdata.lux == null) {
             sdata.lux = new ShellySensorLux();
         }
-        sdata.lux.isValid = value.lux != null;
-        sdata.lux.value = getDouble(value.lux);
+        // The illuminance component doesn't report an is_valid flag; some devices (e.g. Presence Gen4) only ever
+        // provide the illumination category and never a numeric lux value, so isValid must not be derived from
+        // lux being present, and a missing lux must stay null rather than being coerced to a bogus 0.0 reading.
+        sdata.lux.isValid = true;
+        sdata.lux.value = value.lux;
         sdata.lux.illumination = getString(value.illumination);
     }
 
-    protected void updatePresenceStatus(ShellyStatusSensor sdata, @Nullable ArrayList<Shelly2StatusPresence> zones)
-            throws ShellyApiException {
-        if (zones == null || zones.isEmpty()) {
+    protected void updatePresenceStatus(ShellyStatusSensor sdata, @Nullable Shelly2StatusPresence zone) {
+        if (zone == null) {
             return;
         }
-        int mainZoneId = getPresenceMainZoneId(getProfile().presenceMainZoneKey);
-        for (Shelly2StatusPresence zone : zones) {
-            Integer zoneId = zone.id;
-            if (zoneId != null && zoneId.intValue() == mainZoneId) {
-                if (zone.value != null) {
-                    sdata.presence = zone.value;
-                }
-                if (zone.numObjects != null) {
-                    sdata.objectCount = zone.numObjects;
-                }
-                break;
-            }
+        if (zone.value != null) {
+            sdata.presence = zone.value;
+        }
+        if (zone.numObjects != null) {
+            sdata.objectCount = zone.numObjects;
         }
     }
 
-    private static int getPresenceMainZoneId(String mainZoneKey) {
-        Integer zoneId = Shelly2PresenceZoneAdapter.zoneIdFromKey(mainZoneKey);
+    protected static int getPresenceMainZoneId(String mainZoneKey) {
+        Integer zoneId = zoneIdFromKey(mainZoneKey);
         return zoneId != null ? zoneId : SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
+    }
+
+    private static @Nullable Integer zoneIdFromKey(String zoneKey) {
+        int colon = zoneKey.indexOf(':');
+        if (colon >= 0) {
+            try {
+                return Integer.parseInt(zoneKey.substring(colon + 1));
+            } catch (NumberFormatException e) {
+                // malformed key, treated as unknown zone
+            }
+        }
+        return null;
     }
 
     protected void updateSmokeStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusSmoke value) {

@@ -87,6 +87,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptLi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse.ShellyScriptListEntry;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
@@ -847,6 +848,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         fillDeviceStatus(status, ds, false);
+        if (profile.isPresence) {
+            updatePresenceZoneStatus(profile);
+        }
         if (getBool(profile.settings.rangeExtender)) {
             try {
                 // Get List of AP clients
@@ -1098,6 +1102,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         params.enable = enable;
         apiRequest(SHELLYRPC_METHOD_PRESENCE_SETSENSOR, params, String.class);
         sensorData.sensorEnable = enable; // status has no such field, keep the cached config in sync
+    }
+
+    /**
+     * presence/objectCount aren't part of the aggregate Shelly.GetStatus response — the main zone's current state
+     * has to be polled explicitly. Live updates in between full polls still come from NotifyEvent.
+     */
+    private void updatePresenceZoneStatus(ShellyDeviceProfile profile) {
+        int mainZoneId = getPresenceMainZoneId(profile.presenceMainZoneKey);
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.id = mainZoneId;
+        try {
+            Shelly2StatusPresence zone = apiRequest(SHELLYRPC_METHOD_PRESENCEZONE_GETSTATUS, params,
+                    Shelly2StatusPresence.class);
+            updatePresenceStatus(sensorData, zone);
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Unable to read presence zone {} status", thingName, mainZoneId, e);
+        }
     }
 
     @Override
