@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -110,7 +109,6 @@ public class Cloud {
             data.addProperty("deviceId", DEVICE_ID);
             data.addProperty("src", cloudProvider.appid());
             DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
-            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
             data.addProperty("stamp", fmt.format(new Date()));
         }
 
@@ -271,7 +269,6 @@ public class Cloud {
             iotData.addProperty("reqId", StringUtils.getRandomString(32, "0123456789abcdef"));
             iotData.addProperty("src", cloudProvider.appid());
             DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
-            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
             iotData.addProperty("stamp", fmt.format(new Date()));
             newData.add("iotData", iotData);
 
@@ -310,11 +307,16 @@ public class Cloud {
      * @param deviceId The AC Device ID to be modified
      * @return token and key
      */
-    public TokenKey getToken(String deviceId) {
+    public TokenKey getToken(String deviceId, String tokenKeyMethod) {
         long i = Long.valueOf(deviceId);
 
         JsonObject args = new JsonObject();
-        args.addProperty("udpid", security.getUdpId(Utils.toIntTo6ByteArray(i, ByteOrder.BIG_ENDIAN)));
+        if ("LittleEndian".equals(tokenKeyMethod)) {
+            args.addProperty("udpid", security.getUdpId(Utils.toIntTo6ByteArray(i, ByteOrder.LITTLE_ENDIAN)));
+        } else {
+            args.addProperty("udpid", security.getUdpId(Utils.toIntTo6ByteArray(i, ByteOrder.BIG_ENDIAN)));
+        }
+
         args.addProperty("applianceCodes", deviceId);
         JsonObject response = apiRequest("/v1/iot/secure/getToken", args, null);
 

@@ -309,7 +309,7 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
         logger.debug("Retrieving Token and/or Key from cloud");
         Cloud cloud = new Cloud(config.email, config.password, cloudProvider, httpClient);
         if (cloud.login()) {
-            TokenKey tk = cloud.getToken(config.deviceId);
+            TokenKey tk = cloud.getToken(config.deviceId, config.tokenKeyMethod);
             Configuration configuration = editConfiguration();
 
             configuration.put(CONFIG_TOKEN, tk.token());

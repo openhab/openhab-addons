@@ -10,7 +10,8 @@ A Midea device is likely supported if it uses one of the following Android apps 
 | NetHome Plus (com.midea.aircondition)     | Note: Reports that this cloud is offline | NetHome Plus |         |
 | SmartHome (com.midea.ai.overseas)         | Full Support of key and token updates    | SmartHome    | Yes     |
 
-Note: The Midea device must already be set-up with the app on your WiFi network with a fixed IP Address to be discovered.
+Notes: The Midea device must already be set-up with the app on your WiFi network with a fixed IP Address to be discovered.
+After discovery by openHAB, if not using the app, device access to the internet is not needed.
 
 ## Supported Things
 
@@ -29,24 +30,25 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-| Parameter      | Required ?  | Comment                                                           | Default                     | Advanced |
-|----------------|-------------|-------------------------------------------------------------------|-----------------------------|----------|
-| ipAddress      | Yes         | IP Address of the device.                                         |                             |          |
-| ipPort         | Yes         | IP port of the device                                             | 6444                        | Yes      |
-| deviceId       | Yes         | ID of the device. Leave 0 to do ID discovery.                     | 0                           | Yes      |
-| cloud          | Yes for V.3 | Your Cloud Provider name (or default).                            | NetHome Plus                |          |
-| email          | Yes for V.3 | Email for your cloud account.                                     |                             |          |
-| password       | Yes for V.3 | Password for your cloud account.                                  |                             |          |
-| token          | Yes for V.3 | Secret Token - Retrieved from cloud                               |                             | Yes      |
-| key            | Yes for V.3 | Secret Key - Retrieved from cloud                                 |                             | Yes      |
-| pollingTime    | Yes         | Frequency to Poll AC Status in seconds. Minimum is 30.            | 60 seconds                  |          |
-| keyTokenUpdate | No          | Frequency to update key-token from cloud in hours.  NOT ADVISED   | 0 hours (disabled)          | Yes      |
-| energyPoll     | Yes         | Frequency to poll energy data (if supported)                      | 0 minutes (disabled)        |          |
-| timeout        | Yes         | Socket connection timeout in seconds. Min. is 2, max. 10.         | 4 seconds                   | Yes      |
-| promptTone     | Yes         | "Ding" tone when command is received and executed.                | false                       |          |
-| version        | Yes         | Version 3 has token, key and cloud requirements.                  | 3                           | Yes      |
-| energyDecode   | Yes         | Binary Coded Decimal (BCD) = true. Big-endian = false.            | true                        | Yes      |
-| deviceType     | Yes         | (Air Conditioner) `ac`  and (Dehumidifier) `a1`                   | ac                          | Yes      |
+| Parameter      | Required ?  | Comment                                                              | Default                | Advanced |
+|----------------|-------------|----------------------------------------------------------------------|------------------------|----------|
+| ipAddress      | Yes         | IP Address of the device.                                            |                        |          |
+| ipPort         | Yes         | IP port of the device                                                | 6444                   | Yes      |
+| deviceId       | Yes         | ID of the device. Leave 0 to do ID discovery.                        | 0                      | Yes      |
+| cloud          | Yes for V.3 | Your Cloud Provider name (or default).                               | SmartHome              |          |
+| email          | Yes for V.3 | Email for your cloud account.                                        |                        |          |
+| password       | Yes for V.3 | Password for your cloud account.                                     |                        |          |
+| token          | Yes for V.3 | Secret Token - Retrieved from cloud                                  |                        | Yes      |
+| key            | Yes for V.3 | Secret Key - Retrieved from cloud                                    |                        | Yes      |
+| pollingTime    | Yes         | Frequency to Poll AC Status in seconds. Minimum is 30.               | 60 seconds             |          |
+| keyTokenUpdate | No          | Frequency to update key-token from cloud in hours.  NOT ADVISED      | 0 hours (disabled)     | Yes      |
+| energyPoll     | Yes         | Frequency to poll energy data (if supported)                         | 0 minutes (disabled)   |          |
+| timeout        | Yes         | Socket connection timeout in seconds. Min. is 2, max. 10.            | 4 seconds              | Yes      |
+| promptTone     | Yes         | "Ding" tone when command is received and executed.                   | false                  |          |
+| version        | Yes         | Version 3 has token, key and cloud requirements.                     | 3                      | Yes      |
+| energyDecode   | Yes         | Binary Coded Decimal (BCD) = true. BigEndian = false.                | true                   | Yes      |
+| deviceType     | Yes         | (Air Conditioner) `ac`  and (Dehumidifier) `a1`                      | ac                     | Yes      |
+| tokenKeyMethod | Yes         | If Handshake error at first, try LittleEndian, refresh token & key   | BigEndian              | Yes      |
 
 ## Channels
 
@@ -91,7 +93,7 @@ Note:  After discovery, the thing properties dropdown on the Thing UI page will 
 
 ```java
 Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g SmartHome)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, energyPoll = 0, timeout=4, promptTone="false", version="3", energyDecode="true", deviceType="ac"] 
-Thing mideaac:a1:mideaac "myDehumidifier" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g SmartHome)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, energyPoll = 0, timeout=4, promptTone="false", version="3", deviceType="a1"] 
+Thing mideaac:a1:mideaac "myDehumidifier" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g SmartHome)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, energyPoll = 0, timeout=4, promptTone="false", version="3", deviceType="a1", tokenKeyMethod="BigEndian"] 
 ```
 
 ### `demo.items` AC Example

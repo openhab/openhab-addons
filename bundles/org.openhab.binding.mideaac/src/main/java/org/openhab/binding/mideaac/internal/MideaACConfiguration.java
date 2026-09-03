@@ -109,6 +109,11 @@ public class MideaACConfiguration {
     public boolean energyDecode = true;
 
     /**
+     * Token and Key Method Big Endian or Little Endian
+     */
+    public String tokenKeyMethod = "BigEndian";
+
+    /**
      * Check during initialization that the params are valid
      * 
      * @return true(valid), false (not valid)
