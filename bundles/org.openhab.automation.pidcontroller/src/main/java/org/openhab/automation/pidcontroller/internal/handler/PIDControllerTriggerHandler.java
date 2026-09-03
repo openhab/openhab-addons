@@ -15,6 +15,7 @@ package org.openhab.automation.pidcontroller.internal.handler;
 import static org.openhab.automation.pidcontroller.internal.PIDControllerConstants.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -75,7 +76,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private @Nullable String eInspector;
     private ItemRegistry itemRegistry;
     private @Nullable String integralHoldItemName;
-    private boolean integralHoldItemMissing;
+    private final Set<String> warnedItemProblems = new HashSet<>();
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
             BundleContext bundleContext) {
@@ -160,6 +161,30 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     }
 
     /**
+     * Whether this is the first time the given problem has been seen, and records it.
+     *
+     * <p>
+     * Every one of these checks runs on each calculation, so logging unconditionally turns a
+     * single misconfigured Item name into one warning per {@code loopTime}: at the documented
+     * 1s loop that is 86400 a day, and {@link #updateItem} multiplies it by the four inspector
+     * Items. The key is the failure kind plus the Item name, so each Item reports
+     * independently and two different problems with the same Item do not mask one another.
+     * Clearing the key on success lets an Item recreated at runtime recover silently while a
+     * later failure is still reported.
+     *
+     * <p>
+     * The caller logs its own constant format string rather than passing one in, which
+     * Checkstyle requires so that the placeholders can be verified.
+     */
+    private boolean firstReportOf(String key) {
+        return warnedItemProblems.add(key);
+    }
+
+    private void clearWarning(String key) {
+        warnedItemProblems.remove(key);
+    }
+
+    /**
      * Whether the caller is currently reporting that the actuator cannot act on the process, in which case the I-part
      * must not keep accumulating. Anything that is not a definite "on" leaves the controller integrating, so a missing
      * or uninitialised item cannot silently freeze the loop.
@@ -171,7 +196,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         }
         try {
             State state = itemRegistry.getItem(itemName).getState();
-            integralHoldItemMissing = false;
+            clearWarning("hold:" + itemName);
             if (state instanceof OnOffType onOff) {
                 return onOff == OnOffType.ON;
             }
@@ -180,13 +205,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
             }
             return false;
         } catch (ItemNotFoundException e) {
-            // Only on the transition into the missing state: this runs on every
-            // calculation, so logging unconditionally turns a single typo into one warning
-            // per loopTime, which at the documented 1s loop is 86400 a day. The flag is
-            // cleared again when the Item comes back, so an Item recreated at runtime is
-            // picked up silently and a later disappearance is still reported.
-            if (!integralHoldItemMissing) {
-                integralHoldItemMissing = true;
+            if (firstReportOf("hold:" + itemName)) {
                 logger.warn("Integral hold Item '{}' not found, continuing to integrate", itemName);
             }
             return false;
@@ -222,15 +241,21 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
         try {
             input = getItemValueAsNumber(inputItem);
+            clearWarning("value:" + inputItem.getName());
         } catch (PIDException e) {
-            logger.warn("Input item: {}: {}", inputItem.getName(), e.getMessage());
+            if (firstReportOf("value:" + inputItem.getName())) {
+                logger.warn("Input item: {}: {}", inputItem.getName(), e.getMessage());
+            }
             return;
         }
 
         try {
             setpoint = getItemValueAsNumber(setpointItem);
+            clearWarning("value:" + setpointItem.getName());
         } catch (PIDException e) {
-            logger.warn("Setpoint item: {}: {}", setpointItem.getName(), e.getMessage());
+            if (firstReportOf("value:" + setpointItem.getName())) {
+                logger.warn("Setpoint item: {}: {}", setpointItem.getName(), e.getMessage());
+            }
             return;
         }
 
@@ -251,10 +276,13 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         if (itemName != null) {
             try {
                 itemRegistry.getItem(itemName);
+                clearWarning("missing:" + itemName);
                 eventPublisher.post(ItemEventFactory.createStateEvent(itemName,
                         Double.isFinite(value) ? new DecimalType(value) : UnDefType.UNDEF));
             } catch (ItemNotFoundException e) {
-                logger.warn("Item doesn't exist: {}", itemName);
+                if (firstReportOf("missing:" + itemName)) {
+                    logger.warn("Item doesn't exist: {}", itemName);
+                }
             }
         }
     }
