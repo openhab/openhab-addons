@@ -178,6 +178,67 @@ Each firmware has its own way to enable SSH and install public keys:
 - **Standard OpenSSH** — For generic Linux devices, use `ssh-copy-id` or append the public key to `$HOME/.ssh/authorized_keys`.
   See [OpenSSH manual](https://www.openssh.com/manual.html).
 
+### Linux Host SSH Setup
+
+Use a dedicated, key-only account instead of root or a shared password when monitoring a general-purpose Linux host.
+The following example creates an `ohmon` account with a locked password:
+
+```bash
+sudo useradd --create-home --shell /bin/bash ohmon
+sudo usermod --append --groups adm ohmon
+sudo passwd --lock ohmon
+```
+
+On Debian-family systems, the `adm` group commonly grants access to system logs and the journal.
+Other distributions may use a different group, such as `systemd-journal`; grant only the access required by the commands the binding uses.
+
+Install the public key used by the openHAB service:
+
+```bash
+sudo install -d -m 700 -o ohmon -g ohmon /home/ohmon/.ssh
+sudo install -m 600 -o ohmon -g ohmon /path/to/openhab-key.pub /home/ohmon/.ssh/authorized_keys
+```
+
+`authorized_keys` contains the text from the public `.pub` key, not the `.pub` file as an attachment.
+The corresponding private key stays on the openHAB host in `$OPENHAB_USERDATA/ddwrt/keys/` or the openHAB service user's `$HOME/.ssh/` directory.
+Do not copy the private key to the monitored host.
+
+Specify a username for each entry in the network bridge's `hostnames` list when the devices use different accounts:
+
+```text
+root@192.168.1.1, ohmon@192.168.1.20, ohmon@192.168.1.21
+```
+
+DD-WRT and OpenWrt appliances commonly continue to use `root`, while general-purpose Linux hosts should use the dedicated account.
+Saving the bridge configuration after changing a per-host username also retries any suspended authentication attempts.
+
+The read-only monitoring features do not require general sudo access.
+If the reboot channel is enabled, the device handler invokes `sudo reboot` for a non-root session.
+Permit only the exact reboot executable by creating `/etc/sudoers.d/ohmon-ddwrt`, for example:
+
+```sudoers
+ohmon ALL=(root) NOPASSWD: /usr/sbin/reboot
+```
+
+Check the executable path on the monitored host with `command -v reboot`; it must match the sudoers rule exactly.
+Set the required permissions and validate the file before relying on it:
+
+```bash
+sudo chmod 440 /etc/sudoers.d/ohmon-ddwrt
+sudo visudo -cf /etc/sudoers.d/ohmon-ddwrt
+```
+
+Verify the account and permissions without rebooting the host:
+
+```bash
+ssh -o BatchMode=yes ohmon@HOST id
+ssh ohmon@HOST journalctl -n 1 --no-pager
+ssh ohmon@HOST sudo -n -l /usr/sbin/reboot
+```
+
+Do not grant `ohmon` unrestricted sudo, and keep password authentication disabled.
+Radio enable and disable operations on generic Linux may require additional privileges; do not grant them broadly by default.
+
 ## Thing Configuration
 
 ### `network` Bridge Configuration
