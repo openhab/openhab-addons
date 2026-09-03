@@ -130,8 +130,11 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
         @Test
         public void handlerIsInitialized() {
-            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
+            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+            handler.bridgeHandler = bridgeHandler;
+            when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
+            handler.initialize();
             handler.initializeThingFromLatestState(exampleResponse);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
         }

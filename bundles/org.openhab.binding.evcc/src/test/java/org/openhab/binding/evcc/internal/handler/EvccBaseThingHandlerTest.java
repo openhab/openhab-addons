@@ -112,8 +112,7 @@ public class EvccBaseThingHandlerTest {
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertTrue(handler.createChannelCalled);
             assertTrue(handler.updateThingCalled);
-            assertTrue(handler.updateStatusCalled);
-            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+            assertFalse(handler.updateStatusCalled); // Status update is not called anymore
         }
 
         @Test
@@ -122,15 +121,14 @@ public class EvccBaseThingHandlerTest {
             state.add("capacity", new JsonPrimitive(5.5));
             @SuppressWarnings("null")
             Channel mockChannel = mock(Channel.class);
-            when(thing.getChannel(anyString())).thenReturn(mockChannel);
+            when(thing.getChannel(any(ChannelUID.class))).thenReturn(mockChannel);
 
             handler.createChannelsAndSetStatesFromApiResponse(state);
 
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertFalse(handler.createChannelCalled);
-            assertFalse(handler.updateThingCalled); // Should not update thing if channel exists
-            assertTrue(handler.updateStatusCalled);
-            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+            assertFalse(handler.updateThingCalled);
+            assertFalse(handler.updateStatusCalled); // Status update is not called anymore
         }
 
         @Test
@@ -145,8 +143,7 @@ public class EvccBaseThingHandlerTest {
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertFalse(handler.createChannelCalled);
             assertFalse(handler.updateThingCalled);
-            assertTrue(handler.updateStatusCalled); // Status is updated even if nothing else happens
-            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+            assertFalse(handler.updateStatusCalled); // Status update is not called anymore
         }
 
         @Test
@@ -156,8 +153,7 @@ public class EvccBaseThingHandlerTest {
             handler.createChannelsAndSetStatesFromApiResponse(state);
             assertFalse(handler.createChannelCalled);
             assertFalse(handler.updateThingCalled);
-            assertTrue(handler.updateStatusCalled);
-            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+            assertFalse(handler.updateStatusCalled); // Status update is not called anymore
         }
     }
 

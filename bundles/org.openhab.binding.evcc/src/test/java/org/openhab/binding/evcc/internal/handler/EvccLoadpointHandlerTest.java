@@ -144,8 +144,11 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
+        handler.initialize();
         handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }

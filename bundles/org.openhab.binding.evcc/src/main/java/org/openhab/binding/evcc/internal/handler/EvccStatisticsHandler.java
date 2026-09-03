@@ -84,7 +84,6 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
         if (state.isEmpty()) {
             return;
         }
-        updateStatus(ThingStatus.ONLINE);
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
             logger.debug("Extracting statistics for {}", statisticsKey);
