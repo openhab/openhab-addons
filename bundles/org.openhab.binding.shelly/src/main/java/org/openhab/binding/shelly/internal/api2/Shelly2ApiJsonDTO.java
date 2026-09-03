@@ -24,6 +24,8 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBase
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -95,9 +97,6 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SMOKE_SETCONFIG = "Smoke.SetConfig";
     public static final String SHELLYRPC_METHOD_SMOKE_MUTE = "Smoke.Mute";
     public static final String SHELLYRPC_METHOD_FLOOD_SETCONFIG = "Flood.SetConfig";
-    public static final String SHELLYRPC_METHOD_PRESENCE_SETSENSOR = "Presence.SetSensor";
-    public static final String SHELLY2_PRESENCE_ZONE_PREFIX = "presencezone:";
-    public static final int SHELLY2_PRESENCE_DEFAULT_ZONE_ID = 200;
     public static final String SHELLYRPC_METHOD_SCRIPT_LIST = "Script.List";
     public static final String SHELLYRPC_METHOD_SCRIPT_SETCONFIG = "Script.SetConfig";
     public static final String SHELLYRPC_METHOD_SCRIPT_GETSTATUS = "Script.GetStatus";
@@ -177,8 +176,6 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_RESTART = "scheduled_restart";
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
-    public static final String SHELLY2_EVENT_PRESENCE = "presence";
-    public static final String SHELLY2_EVENT_COUNTER = "counter";
     public static final String SHELLY2_EVENT_FLOOD_ALARM = "flood.alarm";
     public static final String SHELLY2_EVENT_FLOOD_ALARM_OFF = "flood.alarm_off";
     public static final String SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED = "flood.cable_unplugged";
@@ -493,19 +490,6 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Boolean rxEnabled;
         }
 
-        public static class Shelly2DevConfigPresence {
-            public @Nullable Boolean enable;
-            @SerializedName("main_zone")
-            public @Nullable String mainZone;
-        }
-
-        public static class Shelly2SettingsPresence {
-            public @Nullable Integer id;
-            public @Nullable String name;
-            public @Nullable Boolean enable;
-        }
-
-        @JsonAdapter(Shelly2PresenceZoneAdapters.ConfigZoneFactory.class)
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -611,10 +595,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("lora:100")
             public Shelly2DeviceConfigLora lora100;
 
-            @SerializedName("presence")
-            public @Nullable Shelly2DevConfigPresence presence0;
-            @SerializedName("_presenceZoneList")
-            public @Nullable ArrayList<Shelly2SettingsPresence> presence;
+            public @Nullable Shelly2DevConfigPresence presence;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -715,14 +696,7 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Integer ct; // color temperature in Kelvin (CCT component)
         }
 
-        public static class Shelly2StatusPresence {
-            public @Nullable Integer id;
-            public @Nullable Boolean value;
-            @SerializedName("num_objects")
-            public @Nullable Integer numObjects;
-        }
-
-        @JsonAdapter(Shelly2PresenceZoneAdapters.StatusZoneFactory.class)
+        @JsonAdapter(Shelly2PresenceZoneAdapter.class)
         public static class Shelly2DeviceStatusResult {
             public class Shelly2DeviceStatusBle {
 
@@ -1028,8 +1002,10 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("lora:100")
             public Shelly2DeviceStatusLora lora100;
 
+            // Filled by Shelly2PresenceZoneAdapter from the dynamic presencezone:<id> keys; the
+            // serialized name is synthetic so Gson never binds a device key to this field.
             @SerializedName("_presenceZoneList")
-            public @Nullable ArrayList<Shelly2StatusPresence> presence;
+            public @Nullable ArrayList<Shelly2StatusPresence> presenceZones;
         }
 
         public class Shelly2DeviceStatusSys {

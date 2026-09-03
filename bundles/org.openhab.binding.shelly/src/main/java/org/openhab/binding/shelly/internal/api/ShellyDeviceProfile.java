@@ -16,6 +16,8 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_ZONE_PREFIX;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -118,7 +120,7 @@ public class ShellyDeviceProfile {
     public boolean isFlood; // true for Shelly Flood (any generation)
     public boolean isWall; // true: Shelly Wall Display
     public boolean isPresence; // true: Shelly Presence Gen4 (mmWave radar)
-    public String presenceMainZoneKey = "presencezone:200";
+    public String presenceMainZoneKey = SHELLY2_PRESENCE_ZONE_PREFIX + SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
     public String floodAlarmMode = ""; // Flood Gen4: alarm mode from Flood.GetConfig
     public int reportHoldoff = 0; // Flood Gen4: report holdoff in seconds

@@ -68,12 +68,12 @@
 
 	<thing-type id="shellypluspresence">
 		<label>Shelly Presence</label>
-		<description>Shelly Presence Gen4 — mmWave occupancy and motion sensor with ambient light</description>
+		<description>Shelly Presence Gen4 - mmWave occupancy and motion sensor with ambient light</description>
 		<category>MotionDetector</category>
 		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
-			<channel-group id="control" typeId="presenceControl"/>
+			<channel-group id="control" typeId="control"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -103,15 +103,10 @@
 		<state min="0" max="60" step="5" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-group-type id="presenceControl">
-		<label>Presence Control</label>
-		<description>Control the mmWave radar sensor</description>
-	</channel-group-type>
-
 	<channel-type id="sensorPresence">
 		<item-type>Switch</item-type>
 		<label>Presence Detected</label>
-		<description>Occupancy state of the default detection zone (ON = presence detected)</description>
+		<description>Occupancy state of the main detection zone (ON = presence detected)</description>
 		<category>Motion</category>
 		<tags>
 			<tag>Status</tag>
@@ -123,7 +118,7 @@
 	<channel-type id="sensorObjectCount">
 		<item-type>Number</item-type>
 		<label>Object Count</label>
-		<description>Number of objects/persons currently detected in the zone</description>
+		<description>Number of objects/persons currently detected in the main zone</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>

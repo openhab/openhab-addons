@@ -231,6 +231,8 @@ Battery powered devices need to wake up by pressing the button, they will stay a
 
 The binding uses mDNS to discover the Shelly devices.
 They periodically announce their presence, which is used by the binding to find them on the local network.
+Most devices announce themselves as a web server (`_http._tcp`), newer firmware releases use a Shelly-specific announcement (`_shelly._tcp`) instead.
+The binding listens to both, so no additional setup is required.
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
 `Important for Generation 1 Devices:`
@@ -1733,17 +1735,20 @@ The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
 ### Shelly Presence Gen4 (thing-type: shellypluspresence)
 
 Mains-powered (USB-C) mmWave radar occupancy sensor.
-`presence` and `objectCount` are pushed in real time when the device reports a change and are also refreshed on every poll cycle, the remaining channels are updated on the poll cycle.
-The device supports up to 10 detection zones; the binding reports the default zone, which is the one the device also uses for its own presence indication.
+`presence` and `objectCount` are pushed in real time when the device reports a change and are also refreshed on every poll cycle.
+The remaining channels are updated on the poll cycle.
+The device supports up to 10 detection zones.
+The binding reports the zone that is selected as main zone in the Shelly App, which is the same zone the device uses for its own presence indication.
+Readings from the other zones are not published.
 
-| Group   | Channel      | Type              | read-only | Description                                              |
-| ------- | ------------ | ----------------- | --------- | -------------------------------------------------------- |
-| sensors | presence     | Switch            | yes       | ON: Occupancy detected in the default detection zone     |
-|         | objectCount  | Number            | yes       | Number of persons/objects currently detected in the zone |
-|         | lux          | Number:Illuminance | yes      | Brightness in Lux                                        |
-|         | illumination | String            | yes       | Ambient light class (dark / twilight / bright)           |
-|         | lastUpdate   | DateTime          | yes       | Timestamp of the last update                             |
-| control | sensorEnable | Switch            | r/w       | Enable or disable the mmWave radar sensor                |
+| Group   | Channel      | Type               | read-only | Description                                                   |
+| ------- | ------------ | ------------------ | --------- | ------------------------------------------------------------- |
+| sensors | presence     | Switch             | yes       | ON: Occupancy detected in the main detection zone              |
+|         | objectCount  | Number             | yes       | Number of persons/objects currently detected in the main zone  |
+|         | lux          | Number:Illuminance | yes       | Brightness in Lux                                              |
+|         | illumination | String             | yes       | Ambient light class (dark / twilight / bright)                 |
+|         | lastUpdate   | DateTime           | yes       | Timestamp of the last update                                   |
+| control | sensorEnable | Switch             | r/w       | Enable or disable the mmWave radar sensor                      |
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 

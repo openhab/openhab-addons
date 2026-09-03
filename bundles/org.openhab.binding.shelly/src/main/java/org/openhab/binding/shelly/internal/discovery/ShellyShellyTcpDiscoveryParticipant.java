@@ -35,6 +35,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = MDNSDiscoveryParticipant.class)
 public class ShellyShellyTcpDiscoveryParticipant extends ShellyMDNSDiscoveryParticipant {
 
+    private static final String SERVICE_TYPE = "_shelly._tcp.local.";
+
     @Activate
     public ShellyShellyTcpDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
             @Reference HttpClientFactory httpClientFactory, @Reference LocaleProvider localeProvider,
@@ -46,6 +48,6 @@ public class ShellyShellyTcpDiscoveryParticipant extends ShellyMDNSDiscoveryPart
 
     @Override
     public String getServiceType() {
-        return "_shelly._tcp.local.";
+        return SERVICE_TYPE;
     }
 }
