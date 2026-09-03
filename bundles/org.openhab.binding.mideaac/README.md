@@ -4,13 +4,13 @@ This binding integrates Air Conditioners (type AC) and Dehumidifiers that use th
 
 A Midea device is likely supported if it uses one of the following Android apps or it's iOS equivalent.
 
-| Cloud Provider                               | Comment                                  | Options      | Default |
-|----------------------------------------------|------------------------------------------|--------------|---------|
-| Midea Air (com.midea.aircondition.obm)       | Full Support of key and token updates    | Midea Air    |         |
-| NetHome Plus (com.midea.aircondition)        | Full Support of key and token updates    | NetHome Plus | Yes     |
-| SmartHome/MSmartHome (com.midea.ai.overseas) | Note: Reports that this cloud is offline | MSmartHome   |         |
+| Cloud Provider                            | Comment                                  | Options      | Default |
+|-------------------------------------------|------------------------------------------|--------------|---------|
+| Midea Air (com.midea.aircondition.obm)    | Note: Reports that this cloud is offline | Midea Air    |         |
+| NetHome Plus (com.midea.aircondition)     | Note: Reports that this cloud is offline | NetHome Plus |         |
+| SmartHome (com.midea.ai.overseas)         | Full Support of key and token updates    | SmartHome    | Yes     |
 
-Note: The Midea device must already be set-up on your WiFi network with a fixed IP Address to be discovered.
+Note: The Midea device must already be set-up with the app on your WiFi network with a fixed IP Address to be discovered.
 
 ## Supported Things
 
@@ -19,9 +19,9 @@ This binding supports Thing types (Air Conditioner) `ac`  and (Dehumidifier) `a1
 ## Discovery
 
 Once the thing is on your network, activating the Inbox scan with this binding will send an IP broadcast message.
-Every responding unit gets added to the Inbox. When adding each thing, the required parameters will be populated with either
-discovered values or the default settings. For a V.3 device, in the unlikely event the defaults did not get the token and key,
-enter your cloud provider, email and password.
+Every responding unit gets added to the Inbox. When adding each thing, the required parameters will be populated with
+discovered values. For a V.3 device, enter your cloud provider, email and password. There is no longer a default option.
+Save your token and key in a safe place in case a cloud is shutdown. They do not expire.
 
 ## Binding Configuration
 
@@ -35,12 +35,12 @@ No binding configuration is required.
 | ipPort         | Yes         | IP port of the device                                             | 6444                        | Yes      |
 | deviceId       | Yes         | ID of the device. Leave 0 to do ID discovery.                     | 0                           | Yes      |
 | cloud          | Yes for V.3 | Your Cloud Provider name (or default).                            | NetHome Plus                |          |
-| email          | No          | Email for your cloud account (or default).                        | <nethome+us@mailinator.com> |          |
-| password       | No          | Password for your cloud account (or default).                     | password1                   |          |
+| email          | Yes for V.3 | Email for your cloud account.                                     |                             |          |
+| password       | Yes for V.3 | Password for your cloud account.                                  |                             |          |
 | token          | Yes for V.3 | Secret Token - Retrieved from cloud                               |                             | Yes      |
 | key            | Yes for V.3 | Secret Key - Retrieved from cloud                                 |                             | Yes      |
 | pollingTime    | Yes         | Frequency to Poll AC Status in seconds. Minimum is 30.            | 60 seconds                  |          |
-| keyTokenUpdate | No          | Frequency to update key-token from cloud in hours.  Minimum is 24 | 0 hours (disabled)          | Yes      |
+| keyTokenUpdate | No          | Frequency to update key-token from cloud in hours.  NOT ADVISED   | 0 hours (disabled)          | Yes      |
 | energyPoll     | Yes         | Frequency to poll energy data (if supported)                      | 0 minutes (disabled)        |          |
 | timeout        | Yes         | Socket connection timeout in seconds. Min. is 2, max. 10.         | 4 seconds                   | Yes      |
 | promptTone     | Yes         | "Ding" tone when command is received and executed.                | false                       |          |
@@ -90,15 +90,8 @@ Note:  After discovery, the thing properties dropdown on the Thing UI page will 
 ### `demo.things` Examples
 
 ```java
-Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, energyPoll = 0, timeout=4, promptTone="false", version="3", energyDecode="true", deviceType="ac"] 
-Thing mideaac:a1:mideaac "myDehumidifier" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, energyPoll = 0, timeout=4, promptTone="false", version="3", deviceType="a1"] 
-```
-
-Minimal IP Address Option to use the built-in defaults.
-
-```java
-Thing mideaac:ac:air_conditioner "myAC" @ "myRoom" [ ipAddress="192.168.0.200"] or
-Thing mideaac:a1:dehumidifier "myDehumidifier" @ "myRoom" [ ipAddress="192.168.0.200"]
+Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g SmartHome)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, energyPoll = 0, timeout=4, promptTone="false", version="3", energyDecode="true", deviceType="ac"] 
+Thing mideaac:a1:mideaac "myDehumidifier" @ "Room" [ ipAddress="192.168.1.200", ipPort=6444, deviceId="deviceId", cloud="your cloud (e.g SmartHome)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, keyTokenUpdate = 0, energyPoll = 0, timeout=4, promptTone="false", version="3", deviceType="a1"] 
 ```
 
 ### `demo.items` AC Example

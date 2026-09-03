@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -48,8 +49,9 @@ import com.google.gson.JsonObject;
  * Token and Key.
  *
  * @author Jacek Dobrowolski - Initial contribution
- * @author Bob Eckhoff - JavaDoc and changed getQueryString for special characters
- *         to allow for default email with a "+"
+ * @author Bob Eckhoff - JavaDoc and changed getQueryString for special
+ *         characters to allow for default email with a "+" and
+ *         to update the SmartHome cloud requirements.
  */
 @NonNullByDefault
 public class Cloud {
@@ -58,6 +60,7 @@ public class Cloud {
     private static final int CLIENT_TYPE = 1; // Android
     private static final int FORMAT = 2; // JSON
     private static final String LANGUAGE = "en_US";
+    private static final String DEVICE_ID = StringUtils.getRandomString(16, "0123456789abcdef");
 
     private HttpClient httpClient;
 
@@ -91,10 +94,11 @@ public class Cloud {
     }
 
     /**
-     * This is called during the loginId(), login() and getToken() methods to send a HHTP Post
-     * to the cloud provider. There are two different messages and formats separated
-     * by the type of Cloud Provider (proxied or Not). The return is msg "ok", "errorCode":"0"
-     * There is also information for the next message or the key and token themselves.
+     * This is called during the loginId(), login() and getToken() methods to send a
+     * HTTP Post to the cloud provider. There are two different messages
+     * and formats separated by the type of Cloud Provider (proxied or Not).
+     * The return is msg "ok", "errorCode":"0" (ideally).
+     * There is also information for the next message or the key and token.
      */
     private @Nullable JsonObject apiRequest(String endpoint, @Nullable JsonObject args, @Nullable JsonObject data) {
         if (data == null) {
@@ -103,24 +107,26 @@ public class Cloud {
             data.addProperty("format", FORMAT);
             data.addProperty("clientType", CLIENT_TYPE);
             data.addProperty("language", LANGUAGE);
+            data.addProperty("deviceId", DEVICE_ID);
             data.addProperty("src", cloudProvider.appid());
             DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
+            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
             data.addProperty("stamp", fmt.format(new Date()));
         }
 
-        // For the getLoginId() this adds the email account
-        // For the login() this adds the email account and the encrpted password
-        // For the getToken() this adds the udpid
-        if (args != null) {
-            for (Map.Entry<String, JsonElement> entry : args.entrySet()) {
-                data.add(entry.getKey(), entry.getValue().getAsJsonPrimitive());
-            }
+        // Add the proxy request ID before endpoint-specific arguments so the signed
+        // request follows the same field order as the SmartHome client.
+        if (!data.has("reqId") && !cloudProvider.proxied().isBlank()) {
+            data.addProperty("reqId", StringUtils.getRandomString(32, "0123456789abcdef"));
         }
 
-        // This adds the first 16 characters of a 16 byte string
-        // if Cloud provider uses proxied and wasn't added by the method()
-        if (!data.has("reqId") && !cloudProvider.proxied().isBlank()) {
-            data.addProperty("reqId", StringUtils.getRandomHex(16));
+        // For the getLoginId() this adds the email account
+        // For the login() this adds the email account and the encrypted password
+        // For the getToken() this adds the udpid and deviceID
+        if (args != null) {
+            for (Map.Entry<String, JsonElement> entry : args.entrySet()) {
+                data.add(entry.getKey(), entry.getValue());
+            }
         }
 
         String url = cloudProvider.apiurl() + endpoint;
@@ -145,6 +151,8 @@ public class Cloud {
 
         request.header("secretVersion", "1");
 
+        request.header("random", random);
+
         // Add the sign to the header, different for proxied
         if (!cloudProvider.proxied().isBlank()) {
             String sign = security.newSign(json, random);
@@ -158,14 +166,12 @@ public class Cloud {
             request.header("sign", sign);
         }
 
-        request.header("random", random);
-
         // If available, blank if not
         request.header("accessToken", accessToken);
 
         logger.debug("Request headers: {}", request.getHeaders().toString());
 
-        // Different formats for proxied
+        // Different formats for proxied or not
         if (!cloudProvider.proxied().isBlank()) {
             request.content(new StringContentProvider(json));
         } else {
@@ -246,14 +252,13 @@ public class Cloud {
         }
 
         logger.trace("Using loginId: {}", loginId);
-        logger.trace("Using password: {}", password);
 
         if (!cloudProvider.proxied().isBlank()) {
-            // This is for the MSmartHome (proxied) cloud
+            // This is for the (proxied) cloud
             JsonObject newData = new JsonObject();
-
             JsonObject data = new JsonObject();
             data.addProperty("platform", FORMAT);
+            data.addProperty("deviceId", DEVICE_ID);
             newData.add("data", data);
 
             JsonObject iotData = new JsonObject();
@@ -263,9 +268,10 @@ public class Cloud {
             iotData.addProperty("loginAccount", loginAccount);
             iotData.addProperty("password", security.encryptPassword(loginId, password));
             iotData.addProperty("pushToken", Utils.tokenUrlsafe(120));
-            iotData.addProperty("reqId", StringUtils.getRandomHex(16));
+            iotData.addProperty("reqId", StringUtils.getRandomString(32, "0123456789abcdef"));
             iotData.addProperty("src", cloudProvider.appid());
             DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
+            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
             iotData.addProperty("stamp", fmt.format(new Date()));
             newData.add("iotData", iotData);
 
@@ -309,6 +315,7 @@ public class Cloud {
 
         JsonObject args = new JsonObject();
         args.addProperty("udpid", security.getUdpId(Utils.toIntTo6ByteArray(i, ByteOrder.BIG_ENDIAN)));
+        args.addProperty("applianceCodes", deviceId);
         JsonObject response = apiRequest("/v1/iot/secure/getToken", args, null);
 
         if (response == null) {
@@ -331,10 +338,12 @@ public class Cloud {
     public boolean getLoginId() {
         JsonObject args = new JsonObject();
         args.addProperty("loginAccount", loginAccount);
+
         JsonObject response = apiRequest("/v1/user/login/id/get", args, null);
         if (response == null) {
             return false;
         }
+
         loginId = response.get("loginId").getAsString();
         return true;
     }
