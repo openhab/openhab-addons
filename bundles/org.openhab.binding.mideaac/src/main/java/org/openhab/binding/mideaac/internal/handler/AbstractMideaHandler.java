@@ -101,6 +101,7 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
             return;
         }
 
+        rememberTokenKeyMethod();
         updateStatus(ThingStatus.UNKNOWN);
 
         initConnectionManagerFromConfig();
@@ -153,7 +154,10 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
      * retrieval and return false to stop current initialization.
      */
     private boolean ensureTokenKeyOrStartRetrieval() {
-        if (config.version != 3 || config.isV3ConfigValid()) {
+        @Nullable
+        String rememberedMethod = properties.get(PROPERTY_TOKEN_KEY_METHOD);
+        boolean tokenKeyMethodChanged = rememberedMethod != null && !rememberedMethod.equals(config.tokenKeyMethod);
+        if (config.version != 3 || (!tokenKeyMethodChanged && config.isV3ConfigValid())) {
             logger.debug("Valid token and key for V.3 device {}", thing.getUID());
             return true;
         }
@@ -315,6 +319,7 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
             configuration.put(CONFIG_TOKEN, tk.token());
             configuration.put(CONFIG_KEY, tk.key());
             updateConfiguration(configuration);
+            rememberTokenKeyMethod();
 
             logger.trace("Token: {}", tk.token());
             logger.trace("Key: {}", tk.key());
@@ -324,6 +329,11 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration_error_invalid_token ");
         }
+    }
+
+    private void rememberTokenKeyMethod() {
+        properties.put(PROPERTY_TOKEN_KEY_METHOD, config.tokenKeyMethod);
+        updateProperties(properties);
     }
 
     private void stopScheduler() {

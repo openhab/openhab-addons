@@ -51,8 +51,8 @@ public record CloudProvider(String name, String appkey, String appid, String api
             case "Midea Air":
                 return new CloudProvider("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
-            // Only working cloud provider at the moment is SmartHome
-            case "SmartHome":
+            // Only working cloud provider at the moment is SmartHome (renamed from MSmartHome)
+            case "MSmartHome", "SmartHome":
                 return new CloudProvider("SmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                         "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
                         "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");

@@ -110,6 +110,7 @@ public class MideaACBindingConstants {
     // Properties from LAN Discovery
     public static final String PROPERTY_SN = "sn";
     public static final String PROPERTY_SSID = "ssid";
+    public static final String PROPERTY_TOKEN_KEY_METHOD = "tokenKeyMethod";
 
     // Capabilities properties discoverable
     public static final String PROPERTY_ANION = "anion";

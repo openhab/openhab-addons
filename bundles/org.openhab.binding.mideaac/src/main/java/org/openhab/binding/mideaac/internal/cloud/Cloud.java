@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -109,6 +110,7 @@ public class Cloud {
             data.addProperty("deviceId", DEVICE_ID);
             data.addProperty("src", cloudProvider.appid());
             DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
+            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
             data.addProperty("stamp", fmt.format(new Date()));
         }
 
@@ -269,6 +271,7 @@ public class Cloud {
             iotData.addProperty("reqId", StringUtils.getRandomString(32, "0123456789abcdef"));
             iotData.addProperty("src", cloudProvider.appid());
             DateFormat fmt = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ROOT);
+            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
             iotData.addProperty("stamp", fmt.format(new Date()));
             newData.add("iotData", iotData);
 
