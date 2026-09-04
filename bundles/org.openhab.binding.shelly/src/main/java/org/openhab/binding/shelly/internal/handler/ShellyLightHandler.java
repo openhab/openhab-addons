@@ -236,14 +236,10 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_TIMER_AUTOON:
-                logger.debug("{}: setAutoTimer() channel {}, command {}, model {})", thingName, channelUID, command,
-                        model);
                 api.setAutoTimer(model.getApiLightIndex(), SHELLY_TIMER_AUTOON, getNumber(command).doubleValue());
                 return WhatUpdated.OTHER;
 
             case CHANNEL_TIMER_AUTOOFF:
-                logger.debug("{}: setAutoTimer() channel {}, command {}, model {})", thingName, channelUID, command,
-                        model);
                 api.setAutoTimer(model.getApiLightIndex(), SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 return WhatUpdated.OTHER;
 
@@ -402,8 +398,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 && lights.get(apiLightIndex) instanceof ShellySettingsRgbwLight ls) {
             String group = channelGroupSuffix == 0 ? CHANNEL_GROUP_LIGHT_CONTROL
                     : CHANNEL_GROUP_LIGHT_INDEX + channelGroupSuffix;
-            logger.debug("{}: updateChannelsFromLightStatusDTO() with group {} {}", thingName, group,
-                    new Gson().toJson(ls));
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOON, toQuantityType(getDouble(ls.autoOn), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOOFF, toQuantityType(getDouble(ls.autoOff), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
