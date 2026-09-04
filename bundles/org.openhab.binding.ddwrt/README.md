@@ -34,6 +34,10 @@ After adding and configuring the `network` bridge, the binding automatically dis
 - **Clients** — from radio association lists, DHCP lease tables, and ARP/neighbor caches on each device
 - **Firewall rules** — from DD-WRT nvram `filter_rule` entries (DD-WRT gateway devices only)
 
+For clients without a hostname supplied by the router, discovery reuses a friendly name published by another openHAB
+Thing or inbox result when it has the same MAC address. Router-supplied hostnames take precedence. If neither source has
+a name, discovery uses the existing OUI-based name or a stable `client-<MAC>` fallback so the client is not omitted.
+
 Discovery results appear in the openHAB inbox after each device refresh cycle.
 
 ## Quick Start
