@@ -34,7 +34,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -130,18 +129,17 @@ public class ShellyLightModel extends LightModel {
      * given {@link ThingTypeUID},the component index, and the {@link ShellyDeviceProfile}.
      * 
      * @param handler the ShellyLightHandler that owns this model
-     * @param channelGroupNumber the channel group number of the light within the device
+     * @param channelGroupSuffix the channel group suffix number
      * @param deviceProfile the ShellyDeviceProfile for the device
      * @param stepSize the step size for the light model
      * @return a new ShellyLightModel with the correct parameters
      */
-    public static ShellyLightModel create(ShellyLightHandler handler, int channelGroupNumber,
+    public static ShellyLightModel create(ShellyLightHandler handler, int channelGroupSuffix,
             ShellyDeviceProfile deviceProfile, double stepSize) {
-        Parameters required = getRequiredParameters(handler, channelGroupNumber, deviceProfile.device.profile);
-        return new ShellyLightModel(handler, channelGroupNumber, deviceProfile.device.profile,
-                required.lightCapabilities, required.rgbDataType, required.ledOperatingMode,
-                reciprocal(deviceProfile.maxTemp), reciprocal(deviceProfile.minTemp), stepSize,
-                required.modelOperatingMode, required.isOperatingModeReadOnly);
+        Parameters required = getRequiredParameters(handler, channelGroupSuffix, deviceProfile.device.profile);
+        return new ShellyLightModel(handler, channelGroupSuffix, required.lightCapabilities, required.rgbDataType,
+                required.ledOperatingMode, required.modelOperatingMode, required.isOperatingModeReadOnly, deviceProfile,
+                stepSize);
     }
 
     /**
@@ -239,23 +237,20 @@ public class ShellyLightModel extends LightModel {
      * 
      * @param handler the ShellyLightHandler that owns this model
      * @param channelGroupNumber the channel group number of the light within the device
-     * @param configProfile the Shelly Gen 2/3 device profile (if any), may be null e.g. for Gen 1 devices
      * @param lightCapabilities the required light capabilities
      * @param rgbDataType the required RGB data type
      * @param ledOperatingMode the required LED operating mode
-     * @param mirekCoolest the coolest supported color temperature in mirek
-     * @param mirekWarmest the warmest supported color temperature in mirek
-     * @param stepSize the step size for the light model
      * @param operatingMode the baseline COLOR/WHITE operating mode
      * @param isOperatingModeReadOnly true if the operating mode is read-only, false otherwise
+     * @param stepSize the step size for the light model
      * @throws IllegalArgumentException if the parameters are invalid
      */
-    private ShellyLightModel(ShellyLightHandler handler, int channelGroupNumber, @Nullable String configProfile,
-            LightCapabilities lightCapabilities, RgbDataType rgbDataType, LedOperatingMode ledOperatingMode,
-            Double mirekCoolest, Double mirekWarmest, Double stepSize, Mode operatingMode,
-            boolean isOperatingModeReadOnly) throws IllegalArgumentException {
+    private ShellyLightModel(ShellyLightHandler handler, int channelGroupNumber, LightCapabilities lightCapabilities,
+            RgbDataType rgbDataType, LedOperatingMode ledOperatingMode, Mode operatingMode,
+            boolean isOperatingModeReadOnly, ShellyDeviceProfile profile, Double stepSize)
+            throws IllegalArgumentException {
 
-        super(lightCapabilities, rgbDataType, null, mirekCoolest, mirekWarmest, stepSize, null, null);
+        super(lightCapabilities, rgbDataType, null, null, null, stepSize, null, null);
         super.setLedOperatingMode(ledOperatingMode);
 
         this.handler = handler;
@@ -275,6 +270,7 @@ public class ShellyLightModel extends LightModel {
         isG3FullColorBulb = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID); // TODO mapping in #20909 may be wrong
 
         // initialize some flags from the device configured operating profile (Generation 2/3)
+        String configProfile = profile.device.profile;
         isProfileLIGHT = SHELLY2_PROFILE_LIGHT.equals(configProfile);
         isProfileRGB = SHELLY2_PROFILE_RGB.equals(configProfile);
         isProfileRGBW = SHELLY2_PROFILE_RGBW.equals(configProfile);
@@ -289,13 +285,17 @@ public class ShellyLightModel extends LightModel {
         cacheRGBX = new int[rgbxLength];
         super.setRGBx(Arrays.stream(cacheRGBX).mapToDouble(i -> (double) i).toArray());
 
+        int minKelvin = profile.getMinTemp(apiLightIndex);
+        int maxKelvin = profile.getMaxTemp(apiLightIndex);
+        this.setColorTempRange(minKelvin, maxKelvin);
+
         logger.debug(
                 "{}: created model from thingTypeUID:{} configProfile:{} with capabilities:{}, rgbDataType:{}, "
                         + "ledOperatingMode:{}, shellyMode:{}, isModeReadOnly:{}, ct-range: [{} K..{} K] => "
                         + "ShellyLightModel(chanGroup:{}, apiIndex:{}) <= {}",
                 handler.thingName, thingTypeUID, configProfile, lightCapabilities, rgbDataType, ledOperatingMode,
-                baselineOperatingMode, isOperatingModeReadOnly, Math.round(reciprocal(mirekWarmest)),
-                Math.round(reciprocal(mirekCoolest)), apiLightIndex, channelGroupNumber, this);
+                baselineOperatingMode, isOperatingModeReadOnly, minKelvin, maxKelvin, apiLightIndex, channelGroupNumber,
+                this);
     }
 
     /**
@@ -459,8 +459,8 @@ public class ShellyLightModel extends LightModel {
     }
 
     public void setColorTempRange(int minKelvin, int maxKelvin) {
-        configSetMirekControlCoolest(reciprocal(maxKelvin));
-        configSetMirekControlWarmest(reciprocal(minKelvin));
+        super.configSetMirekControlCoolest(reciprocal(maxKelvin));
+        super.configSetMirekControlWarmest(reciprocal(minKelvin));
     }
 
     /**
@@ -534,27 +534,8 @@ public class ShellyLightModel extends LightModel {
     /**
      * Get the the channel group number within the device.
      */
-    public int getChannelGroupNumber() {
+    public int getChannelGroupSuffix() {
         return channelGroupNumber;
-    }
-
-    /**
-     * Extracts the channel group number from the channel UID. Returns 0 if the channel is not in
-     * a group, or the group id does not have a numeric suffix. Main color channels have no group
-     * number suffix which is equivalent to group 0, while white channels are in groups 1 .. n
-     *
-     * @param channelUID the channel UID
-     * @return the channel group number, or 0
-     */
-    public static int getChannelGroupNumber(ChannelUID channelUID) {
-        String groupId = channelUID.getGroupId();
-        if (groupId != null) {
-            try {
-                return Integer.parseInt(groupId.replaceAll("\\D+(\\d+)", "$1"));
-            } catch (NumberFormatException e) {
-            }
-        }
-        return 0;
     }
 
     /**

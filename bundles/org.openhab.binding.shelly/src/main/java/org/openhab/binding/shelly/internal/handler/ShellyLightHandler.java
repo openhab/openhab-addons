@@ -41,7 +41,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -61,7 +60,7 @@ import com.google.gson.Gson;
 public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLightModelHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
 
-    // map of ShellyLightModels keyed on their channel group number within the device (or 0 for primary light)
+    // map of ShellyLightModels keyed on their channel group number suffix (or 0 for primary light)
     protected final Map<Integer, ShellyLightModel> lightModels = new ConcurrentHashMap<>();
 
     /**
@@ -91,12 +90,12 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         try {
             acquireLock();
             try {
-                int channelGroupNumber = ShellyLightModel.getChannelGroupNumber(channelUID);
-                ShellyLightModel model = lightModels.get(channelGroupNumber);
+                int channelGroupSuffix = extractChannelGroupSuffix(channelUID);
+                ShellyLightModel model = lightModels.get(channelGroupSuffix);
                 if (model == null) {
-                    model = ShellyLightModel.create(this, channelGroupNumber, profile, DIM_STEPSIZE);
+                    model = ShellyLightModel.create(this, channelGroupSuffix, profile, DIM_STEPSIZE);
                     model.acquire();
-                    lightModels.put(channelGroupNumber, model);
+                    lightModels.put(channelGroupSuffix, model);
                 }
                 WhatUpdated whatUpdated = updateLightModelFromChannelCommand(model, channelUID, command);
                 switch (whatUpdated) {
@@ -132,17 +131,17 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         boolean updated = false;
         try {
             acquireLock();
-            for (int i = 0; i < status.lights.size(); i++) {
-                ShellyStatusLightChannel light = status.lights.get(i);
-                int groupNo = profile.inColor ? i : i + 1;
-                ShellyLightModel model = lightModels.get(groupNo);
+            for (int apiLightIndex = 0; apiLightIndex < status.lights.size(); apiLightIndex++) {
+                ShellyStatusLightChannel light = status.lights.get(apiLightIndex);
+                int channelGroupSuffix = profile.getLightComponentId(apiLightIndex);
+                ShellyLightModel model = lightModels.get(channelGroupSuffix);
                 if (model == null) {
-                    model = ShellyLightModel.create(this, groupNo, profile, DIM_STEPSIZE);
+                    model = ShellyLightModel.create(this, channelGroupSuffix, profile, DIM_STEPSIZE);
                     model.acquire();
-                    lightModels.put(groupNo, model);
+                    lightModels.put(channelGroupSuffix, model);
                 }
                 updateLightModelFromStatus(model, light);
-                updated |= updateChannelsFromLightStatusDTO(light, i, groupNo);
+                updated |= updateChannelsFromLightStatusDTO(light, apiLightIndex, channelGroupSuffix);
             }
         } finally {
             updated |= releaseLock();
@@ -236,11 +235,15 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 return WhatUpdated.LIGHT_MODEL;
 
             case CHANNEL_TIMER_AUTOON:
-                api.setAutoTimer(model.getChannelGroupNumber(), SHELLY_TIMER_AUTOON, getNumber(command).doubleValue());
+                logger.debug("{}: setAutoTimer() channel {}, command {}, model {})", thingName, channelUID, command,
+                        model);
+                api.setAutoTimer(model.getApiLightIndex(), SHELLY_TIMER_AUTOON, getNumber(command).doubleValue());
                 return WhatUpdated.OTHER;
 
             case CHANNEL_TIMER_AUTOOFF:
-                api.setAutoTimer(model.getChannelGroupNumber(), SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
+                logger.debug("{}: setAutoTimer() channel {}, command {}, model {})", thingName, channelUID, command,
+                        model);
+                api.setAutoTimer(model.getApiLightIndex(), SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 return WhatUpdated.OTHER;
 
             default: // non- light commands will be handled by the generic handler
@@ -380,22 +383,26 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * PHASE 2: Updates the channels from the incoming light status DTO (write before read)
      *
      * @param light the incoming light status DTO
-     * @param lightIndex the light Index
-     * @param groupNo the channel group number
+     * @param apiLightIndex the API light index
+     * @param channelGroupSuffix the channel group suffix
      * @return true if any channel was updated, false otherwise
      */
-    private boolean updateChannelsFromLightStatusDTO(ShellyStatusLightChannel light, int lightIndex, int groupNo) {
+    private boolean updateChannelsFromLightStatusDTO(ShellyStatusLightChannel light, int apiLightIndex,
+            int channelGroupSuffix) {
         if (logger.isTraceEnabled()) {
             logger.trace("{}: updateChannelsFromLightStatusDTO() with {}", thingName, new Gson().toJson(light));
         }
         boolean updated = false;
-        createLightChannels(light, lightIndex);
+        createLightChannels(light, apiLightIndex);
 
         // TIMERS:
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
-        if (lights != null && lightIndex < lights.size()
-                && lights.get(lightIndex) instanceof ShellySettingsRgbwLight ls) {
-            String group = groupNo == 0 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupNo;
+        if (lights != null && apiLightIndex < lights.size()
+                && lights.get(apiLightIndex) instanceof ShellySettingsRgbwLight ls) {
+            String group = channelGroupSuffix == 0 ? CHANNEL_GROUP_LIGHT_CONTROL
+                    : CHANNEL_GROUP_LIGHT_INDEX + channelGroupSuffix;
+            logger.debug("{}: updateChannelsFromLightStatusDTO() with group {} {}", thingName, group,
+                    new Gson().toJson(ls));
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOON, toQuantityType(getDouble(ls.autoOn), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOOFF, toQuantityType(getDouble(ls.autoOff), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
@@ -420,7 +427,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         logger.trace("{}: updateDirtyChannelsForLightModel({})", thingName, model);
         boolean updated = false;
         String group = null;
-        int groupNumber = model.getChannelGroupNumber();
+        int groupSuffix = model.getChannelGroupSuffix();
 
         // ON-OFF:
         if ((model.supportsOnOffChannel()) && model.isOnOffDirty()) {
@@ -462,13 +469,13 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // BRIGHTNESS:
         if (model.supportsBrightnessChannel() && model.isBrightnessDirty()) {
-            group = groupNumber == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupNumber;
+            group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupSuffix;
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
         }
 
         // COLOR TEMP:
         if (model.supportsColorTempChannel() && model.isColorTempDirty()) {
-            group = groupNumber == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupNumber;
+            group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupSuffix;
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
         }
@@ -490,32 +497,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     }
 
     @Override
-    public @Nullable ShellyLightModel getLightModelByIndex(int apiLightIndex) {
+    public @Nullable ShellyLightModel getLightModelByApiLightIndex(int apiLightIndex) {
         return lightModels.values().stream().filter(m -> m.getApiLightIndex() == apiLightIndex).findFirst()
                 .orElse(null);
-    }
-
-    public @Nullable ShellyLightModel getLightModelByGroupNumber(int groupNumber) {
-        ShellyLightModel model = lightModels.get(groupNumber);
-        return model;
-    }
-
-    public @Nullable ShellyLightModel getLightModelByChannel(Channel channel) {
-        String groupId = channel.getUID().getGroupId();
-        if (groupId == null) {
-            return null;
-        }
-        if (CHANNEL_GROUP_MAIN_CONTROL.equals(groupId)) {
-            return getLightModelByGroupNumber(0);
-        }
-        if (CHANNEL_GROUP_WHITE_CONTROL.equals(groupId)) {
-            return getLightModelByGroupNumber(0);
-        }
-        if (groupId.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
-            int groupNumber = ShellyLightModel.getChannelGroupNumber(channel.getUID());
-            return getLightModelByGroupNumber(groupNumber);
-        }
-        return null;
     }
 
     @Override
@@ -534,5 +518,62 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
         logger.debug("{}: all light models released", thingName);
         return result;
+    }
+
+    /**
+     * Extracts the channel group number from the channel UID. Returns 0 if the channel is not in a group, or
+     * the group id does not have a numeric suffix. Main color channels have no group number suffix which is
+     * equivalent to group suffix 0, while white channels have group suffices 1 .. n
+     *
+     * @param channelUID the channel UID
+     * @return the channel group suffix number, or 0
+     */
+    private static int extractChannelGroupSuffix(ChannelUID channelUID) {
+        String groupId = channelUID.getGroupId();
+        if (groupId != null) {
+            try {
+                return Integer.parseInt(groupId.replaceAll("\\D+(\\d+)", "$1"));
+            } catch (NumberFormatException e) {
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the light model for the given channel group suffix number, or null if no such model exists.
+     * Main color channels have no group number suffix which is equivalent to group suffix 0, while white
+     * channels have group suffices 1 .. n
+     *
+     * @param channelGroupSuffix the channel group suffix number
+     * @return the light model, or null
+     */
+    public @Nullable ShellyLightModel getLightModelByChannelGroupSuffix(int channelGroupSuffix) {
+        ShellyLightModel model = lightModels.get(channelGroupSuffix);
+        return model;
+    }
+
+    /**
+     * Returns the light model for the given channel, or null if no such model exists. Main color channels
+     * have no group number suffix which is equivalent to group suffix 0, while white channels have group
+     * suffices 1 .. n
+     *
+     * @param channel the channel
+     * @return the light model, or null
+     */
+    public @Nullable ShellyLightModel getLightModelByChannelUID(ChannelUID channelUID) {
+        String groupId = channelUID.getGroupId();
+        if (groupId == null) {
+            return null;
+        }
+        if (CHANNEL_GROUP_MAIN_CONTROL.equals(groupId)) {
+            return lightModels.get(0);
+        }
+        if (CHANNEL_GROUP_WHITE_CONTROL.equals(groupId)) {
+            return lightModels.get(0);
+        }
+        if (groupId.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
+            return lightModels.get(extractChannelGroupSuffix(channelUID));
+        }
+        return null;
     }
 }

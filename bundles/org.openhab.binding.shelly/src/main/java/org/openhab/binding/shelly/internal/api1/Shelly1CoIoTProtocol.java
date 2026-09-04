@@ -149,8 +149,8 @@ public class Shelly1CoIoTProtocol {
                     case "white":
                     case "gain":
                     case "effect":
-                        if (lightModelHandler != null && lightModelHandler
-                                .getLightModelByIndex(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
+                        if (lightModelHandler != null && lightModelHandler.getLightModelByApiLightIndex(
+                                getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {
                                 case "red":
                                     model.setColor(R, (int) s.value);
@@ -277,7 +277,7 @@ public class Shelly1CoIoTProtocol {
                 }
             } else if (profile.isLight) {
                 if (lightModelHandler != null
-                        && lightModelHandler.getLightModelByIndex(id - 1) instanceof ShellyLightModel model) {
+                        && lightModelHandler.getLightModelByApiLightIndex(id - 1) instanceof ShellyLightModel model) {
                     if (brightness != -1) {
                         if (ShellyLightModel.Mode.COLOR == model.getMode()) {
                             model.setGain((int) brightness);

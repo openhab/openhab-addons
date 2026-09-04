@@ -26,8 +26,10 @@ import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -66,12 +68,17 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         ChannelTypeUID uid = channel.getChannelTypeUID();
-        if (uid == null || !BINDING_ID.equals(channel.getUID().getThingUID().getBindingId())
-                || originalStateDescription == null) {
+        if (uid == null || originalStateDescription == null) {
             return null;
         }
 
-        Thing thing = thingRegistry.get(channel.getUID().getThingUID());
+        ChannelUID channelUID = channel.getUID();
+        ThingUID thingUID = channelUID.getThingUID();
+        if (!BINDING_ID.equals(thingUID.getBindingId())) {
+            return null;
+        }
+
+        Thing thing = thingRegistry.get(thingUID);
         if (thing == null) {
             return null;
         }
@@ -88,9 +95,9 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         BigDecimal minKelvin = null;
         BigDecimal maxKelvin = null;
 
-        if (CHANNEL_COLOR_TEMP_ABS.equals(channel.getUID().getIdWithoutGroup())
+        if (CHANNEL_COLOR_TEMP_ABS.equals(channelUID.getIdWithoutGroup())
                 && handler instanceof ShellyLightHandler lightHandler
-                && lightHandler.getLightModelByChannel(channel) instanceof ShellyLightModel model
+                && lightHandler.getLightModelByChannelUID(channelUID) instanceof ShellyLightModel model
                 && model.supportsColorTempChannel(true)) {
             minKelvin = model.getColorTemperatureMinimumKelvin();
             maxKelvin = model.getColorTemperatureMaximumKelvin();

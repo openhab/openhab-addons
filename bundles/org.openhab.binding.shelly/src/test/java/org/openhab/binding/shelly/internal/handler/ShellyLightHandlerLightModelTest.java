@@ -118,7 +118,7 @@ class ShellyLightHandlerLightModelTest {
 
         try {
             handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByIndex(0);
+            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
             assertNotNull(model);
             int[] rgbx = model.getRGBX();
             assertArrayEquals(new int[] { 255, 0, 0, 0 }, rgbx);
@@ -137,7 +137,7 @@ class ShellyLightHandlerLightModelTest {
 
         try {
             handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByIndex(0);
+            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
             assertArrayEquals(new int[] { 255, 0, 0, 0 }, model.getRGBX());
@@ -156,7 +156,7 @@ class ShellyLightHandlerLightModelTest {
 
         try {
             handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByIndex(0);
+            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
             assertEquals(new PercentType(42), model.getBrightnessState());
@@ -176,7 +176,7 @@ class ShellyLightHandlerLightModelTest {
 
         try {
             handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByIndex(0);
+            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
             assertEquals(new PercentType(25), model.getBrightnessState());
@@ -195,7 +195,7 @@ class ShellyLightHandlerLightModelTest {
 
         try {
             handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByIndex(0);
+            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
             assertArrayEquals(new int[] { 0, 0, 0, 255 }, model.getRGBX());
@@ -215,7 +215,7 @@ class ShellyLightHandlerLightModelTest {
 
         try {
             handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByIndex(0);
+            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
             assertArrayEquals(new int[] { 0, 0, 255, 0 }, model.getRGBX());
@@ -235,7 +235,7 @@ class ShellyLightHandlerLightModelTest {
 
         try {
             handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByIndex(0);
+            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
             assertEquals(new PercentType(73), model.getBrightnessState());
@@ -268,7 +268,7 @@ class ShellyLightHandlerLightModelTest {
 
         assertTrue(updated);
         Map<String, State> updates = handler.getChannelUpdates();
-        assertNotNull(handler.getLightModelByIndex(0));
+        assertNotNull(handler.getLightModelByApiLightIndex(0));
         assertEquals(OnOffType.ON, updates.get("control#power"));
         assertEquals(PercentType.HUNDRED, updates.get("color#red"));
         assertEquals(PercentType.ZERO, updates.get("color#green"));
@@ -292,7 +292,7 @@ class ShellyLightHandlerLightModelTest {
 
         assertTrue(updated);
         Map<String, State> updates = handler.getChannelUpdates();
-        assertNotNull(handler.getLightModelByIndex(0));
+        assertNotNull(handler.getLightModelByApiLightIndex(0));
 
         assertEquals(new PercentType(80), updates.get("white#brightness"));
         assertEquals(QuantityType.valueOf(4000, Units.KELVIN), updates.get("white#temperature-abs"));
@@ -314,7 +314,7 @@ class ShellyLightHandlerLightModelTest {
 
         handler.updateDeviceStatus(new ShellySettingsStatus());
 
-        ShellyLightModel model = handler.getLightModelByIndex(0);
+        ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
         assertNotNull(model);
         assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
     }
@@ -901,7 +901,7 @@ class ShellyLightHandlerLightModelTest {
 
         try {
             handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByGroupNumber(channelGroupNo);
+            ShellyLightModel model = handler.getLightModelByChannelGroupSuffix(channelGroupNo);
             assertNotNull(model, "expected light model for lightId " + channelGroupNo);
             assertEquals(expectedMode, model.getMode(), "unexpected operating mode");
             assertEquals(expectedApiLightIndex, model.getApiLightIndex(), "unexpected API light index");

@@ -872,7 +872,7 @@ public class ShellyComponents {
             if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
                 try {
                     lightModelHandler.acquireLock();
-                    ShellyLightModel model = lightModelHandler.getLightModelByIndex(0);
+                    ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(0);
                     if (model == null) {
                         throw new ShellyApiException("updateLightMode() failed: index:0 model missing");
                     }
@@ -918,7 +918,7 @@ public class ShellyComponents {
             if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
                 try {
                     lightModelHandler.acquireLock();
-                    ShellyLightModel model = lightModelHandler.getLightModelByIndex(id);
+                    ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(id);
                     if (model == null) {
                         throw new ShellyApiException("updateLightMode() failed: index:%d model missing".formatted(id));
                     }

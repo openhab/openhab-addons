@@ -37,6 +37,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.State;
+import org.slf4j.LoggerFactory;
 
 import sun.misc.Unsafe;
 
@@ -95,11 +96,11 @@ public class ShellyTestLightHandler extends ShellyLightHandler {
 
             Field baseLog = ShellyBaseHandler.class.getDeclaredField("logger");
             baseLog.setAccessible(true);
-            baseLog.set(handler, org.slf4j.LoggerFactory.getLogger("ShellyTest"));
+            baseLog.set(handler, LoggerFactory.getLogger("ShellyTest"));
 
             Field lightLog = ShellyLightHandler.class.getDeclaredField("logger");
             lightLog.setAccessible(true);
-            lightLog.set(handler, org.slf4j.LoggerFactory.getLogger("ShellyTest"));
+            lightLog.set(handler, LoggerFactory.getLogger("ShellyTest"));
 
             Thing thing = mock(Thing.class);
 
