@@ -1745,10 +1745,12 @@ Readings from the other zones are not published.
 | ------- | ------------ | ------------------ | --------- | ------------------------------------------------------------- |
 | sensors | presence     | Switch             | yes       | ON: Occupancy detected in the main detection zone              |
 |         | objectCount  | Number             | yes       | Number of persons/objects currently detected in the main zone  |
-|         | lux          | Number:Illuminance | yes       | Brightness in Lux                                              |
+|         | lux          | Number:Illuminance | yes       | Brightness in Lux (see note below)                              |
 |         | illumination | String             | yes       | Ambient light class (dark / twilight / bright)                 |
 |         | lastUpdate   | DateTime           | yes       | Timestamp of the last update                                   |
 | control | sensorEnable | Switch             | r/w       | Enable or disable the mmWave radar sensor                      |
+
+Real Presence Gen4 hardware never reports a numeric lux value, only the `illumination` class - `lux` stays `NULL`/undefined.
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 
