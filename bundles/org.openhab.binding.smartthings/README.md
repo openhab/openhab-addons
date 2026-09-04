@@ -1,3 +1,9 @@
+---
+children:
+  - ["doc/SmartthingsInstallation", "Installation of Smartthings code"]
+  - ["doc/Troubleshooting", "Smartthings Binding Troubleshooting Guidelines"]
+---
+
 # Samsung Smartthings Binding
 
 This binding integrates the Samsung Smartthings Hub into openHAB.
