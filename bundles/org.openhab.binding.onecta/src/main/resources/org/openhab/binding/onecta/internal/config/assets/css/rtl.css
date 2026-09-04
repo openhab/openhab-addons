@@ -1,0 +1,10 @@
+/* line 5, src/assets/scss/rtl.scss */
+.jumbotron {
+  direction: ltr;
+  text-align: left;
+  margin: 0 2em 0 1em;
+  padding-right: 1em;
+  margin: 0 !important;
+}
+
+/*# sourceMappingURL=../../../scss */
