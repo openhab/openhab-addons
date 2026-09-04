@@ -47,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  */
 @NonNullByDefault
-@Component(service = { DynamicStateDescriptionProvider.class, ShellyStateDescriptionProvider.class })
+@Component(service = { DynamicStateDescriptionProvider.class, ShellyStateDescriptionProvider.class }, immediate = true)
 public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     private final ThingRegistry thingRegistry;
 
@@ -66,7 +66,8 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         ChannelTypeUID uid = channel.getChannelTypeUID();
-        if (uid == null || !BINDING_ID.equals(uid.getBindingId()) || originalStateDescription == null) {
+        if (uid == null || !BINDING_ID.equals(channel.getUID().getThingUID().getBindingId())
+                || originalStateDescription == null) {
             return null;
         }
 

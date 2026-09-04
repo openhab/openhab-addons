@@ -13,7 +13,9 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYRGBW2_WHITE;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -595,7 +597,7 @@ public class ShellyChannelDefinitions {
             }
 
             // dynamically add main control channels
-            if (idx == 0 && (profile.hasColorTag(0) || status.brightness != null || status.temp != null)) {
+            if (supportsMainGroup(thing, profile)) {
                 if (profile.hasColorTag(0)) {
                     addChannel(thing, add, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER);
                 } else {
@@ -607,6 +609,12 @@ public class ShellyChannelDefinitions {
         }
 
         return add;
+    }
+
+    private static boolean supportsMainGroup(Thing thing, ShellyDeviceProfile profile) {
+        return !THING_TYPE_SHELLYRGBW2_WHITE.equals(thing.getThingTypeUID())
+                && !SHELLY2_PROFILE_LIGHT.equals(profile.device.profile)
+                && !SHELLY2_PROFILE_CCTX2.equals(profile.device.profile);
     }
 
     public static Map<String, Channel> createInputChannels(final Thing thing, final ShellyDeviceProfile profile,
