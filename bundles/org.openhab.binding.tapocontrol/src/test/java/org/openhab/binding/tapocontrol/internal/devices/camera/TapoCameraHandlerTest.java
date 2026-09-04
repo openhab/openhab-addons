@@ -183,7 +183,7 @@ class TapoCameraHandlerTest {
         assertEquals(OnOffType.ON, updatedStates.get("privacy#privacyMode"));
         // manualAlarm reflects momentary siren commands, not the persistent alarm config polled here
         assertFalse(updatedStates.containsKey("alarm#manualAlarm"));
-        assertEquals(new StringType("both"), updatedStates.get("alarm#alarmMode"));
+        assertEquals(new StringType("off"), updatedStates.get("alarm#alarmMode"));
         assertEquals(new StringType("motion"), updatedStates.get("alarm#lastAlarmType"));
         assertNotNull(updatedStates.get("alarm#lastAlarmTime"));
         assertEquals(OnOffType.ON, updatedStates.get("motionDetection#enabled"));
@@ -407,5 +407,37 @@ class TapoCameraHandlerTest {
         handler.processCommand(new ChannelUID(THING_UID, "alarm#manualAlarm"), OnOffType.ON);
 
         assertEquals(OnOffType.ON, updatedStates.get("alarm#manualAlarm"));
+    }
+
+    @Test
+    void alarmModeReportsConfiguredModesWhenEnabled() throws Exception {
+        respondWith(Map.of("lens_mask#lens_mask_info", "{\"enabled\":\"on\"}", //
+                "msg_alarm#chn1_msg_alarm_info", "{\"enabled\":\"on\",\"alarm_mode\":[\"sound\",\"light\"]}", //
+                "system#last_alarm_info", "{}", "motion_detection#motion_det", "{}", //
+                "led#config", "{}", "preset#preset", "{}"));
+        handler.simulateInitialize();
+        awaitTerminalStatus();
+
+        assertEquals(new StringType("both"), updatedStates.get("alarm#alarmMode"));
+    }
+
+    @Test
+    void pollIsNoopAfterDispose() throws Exception {
+        respondWith(Map.of("lens_mask#lens_mask_info", "{\"enabled\":\"on\"}", //
+                "msg_alarm#chn1_msg_alarm_info", "{}", "system#last_alarm_info", "{}", //
+                "motion_detection#motion_det", "{}", "led#config", "{}", "preset#preset", "{}"));
+        handler.simulateInitialize();
+        awaitTerminalStatus();
+        assertEquals(ThingStatus.ONLINE, lastStatus.getStatus());
+
+        handler.dispose();
+        statuses.clear();
+        updatedStates.clear();
+
+        // Poll triggered after dispose must not touch the (now detached) api or push new state
+        handler.poll();
+
+        assertTrue(statuses.isEmpty());
+        assertTrue(updatedStates.isEmpty());
     }
 }

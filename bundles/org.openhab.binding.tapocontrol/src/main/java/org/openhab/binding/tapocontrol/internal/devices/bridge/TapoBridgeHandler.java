@@ -140,11 +140,6 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * delayed OneTime StartupJob
      */
     private void delayedStartUp() {
-        if (disposed) {
-            // dispose() already cancelled the jobs it knew about; running past this point would
-            // schedule a new cloud polling job that nothing will ever cancel again
-            return;
-        }
         loginCloud();
         startCloudScheduler();
         TapoDiscoveryService discovery = discoveryService;

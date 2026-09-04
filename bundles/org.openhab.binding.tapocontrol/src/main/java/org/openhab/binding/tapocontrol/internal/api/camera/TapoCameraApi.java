@@ -226,6 +226,10 @@ public class TapoCameraApi {
                     envelopeJson);
             int errorCode = outerResponse.get("error_code").getAsInt();
             if (errorCode != 0) {
+                if (errorCode == ERROR_AUTH_FAILURE) {
+                    LOGGER.debug("{}: session invalidated by camera", baseUrl);
+                    clearSession();
+                }
                 throw new TapoCameraApiException("secured command failed", errorCode);
             }
             if (outerResponse.has("result") && outerResponse.get("result").isJsonObject()

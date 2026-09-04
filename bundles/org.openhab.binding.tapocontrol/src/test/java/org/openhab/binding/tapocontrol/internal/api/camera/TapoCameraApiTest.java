@@ -198,6 +198,23 @@ class TapoCameraApiTest {
     }
 
     @Test
+    void sendSecuredClearsSessionOnOuterAuthError() throws Exception {
+        responses.add("{\"error_code\":-40413,\"result\":{\"data\":{\"nonce\":\"" + NONCE + "\",\"device_confirm\":\""
+                + DEVICE_CONFIRM + "\"}}}");
+        responses.add("{\"error_code\":0,\"result\":{\"stok\":\"TOKEN\",\"start_seq\":10}}");
+        api.login();
+        assertTrue(api.isLoggedIn());
+        TapoCameraSession session = api.getSession();
+        assertNotNull(session);
+        assertTrue(session.secure());
+
+        responses.add("{\"error_code\":-40401}");
+        var e = assertThrows(TapoCameraApiException.class, () -> api.sendCommand(TapoCameraCommands.getLedConfig()));
+        assertEquals(-40401, e.getErrorCode());
+        assertFalse(api.isLoggedIn());
+    }
+
+    @Test
     void legacySendCommandPostsPlainPayload() throws Exception {
         responses.add("{\"error_code\":-40413}");
         responses.add("{\"error_code\":0,\"result\":{\"stok\":\"T\"}}");

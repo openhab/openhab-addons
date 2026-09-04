@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.tapocontrol.internal;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,7 +29,10 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 class TapoControlHandlerFactoryTest {
     @Test
@@ -50,5 +56,22 @@ class TapoControlHandlerFactoryTest {
         factory.createHandler(bridge);
 
         verify(httpClientFactory).createHttpClient(eq("tapocontrol"), any(SslContextFactory.class));
+    }
+
+    @Test
+    void cameraHandlerRemovedOnRemoveHandler() {
+        HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClientFactory.createHttpClient(anyString(), any(SslContextFactory.class))).thenReturn(httpClient);
+        Thing camera = ThingBuilder.create(TapoThingConstants.CAMERA_THING_TYPE, "camera1").build();
+
+        TapoControlHandlerFactory factory = new TapoControlHandlerFactory(httpClientFactory,
+                mock(TapoStateDescriptionProvider.class));
+        ThingHandler handler = factory.createHandler(camera);
+        assertNotNull(handler);
+        assertTrue(factory.handlersWithHttpClient.contains(handler));
+
+        factory.removeHandler(handler);
+        assertFalse(factory.handlersWithHttpClient.contains(handler));
     }
 }

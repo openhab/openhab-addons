@@ -184,11 +184,6 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * delayed OneTime StartupJob
      */
     private void delayedStartUp() {
-        if (disposed) {
-            // dispose() already cancelled the jobs it knew about; running past this point would
-            // schedule a new polling job that nothing will ever cancel again
-            return;
-        }
         connect();
         startPollingScheduler();
     }

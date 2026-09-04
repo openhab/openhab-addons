@@ -65,7 +65,7 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
             .create();
     private final Logger logger = LoggerFactory.getLogger(TapoControlHandlerFactory.class);
-    private final Set<ThingHandler> handlersWithHttpClient = new HashSet<>();
+    final Set<ThingHandler> handlersWithHttpClient = new HashSet<>();
     private final HttpClientFactory httpClientFactory;
     private @Nullable HttpClient httpClient;
     private @Nullable HttpClient cameraHttpClient;
@@ -115,10 +115,12 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-        for (ThingHandler handler : handlersWithHttpClient) {
-            handler.dispose();
+        synchronized (handlersWithHttpClient) {
+            for (ThingHandler handler : handlersWithHttpClient) {
+                handler.dispose();
+            }
+            handlersWithHttpClient.clear();
         }
-        handlersWithHttpClient.clear();
         HttpClient client = httpClient;
         if (client != null) {
             try {
@@ -135,6 +137,14 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
                 logger.debug("unable to stop cameraHttpClient");
             }
         }
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        synchronized (handlersWithHttpClient) {
+            handlersWithHttpClient.remove(thingHandler);
+        }
+        super.removeHandler(thingHandler);
     }
 
     /**
@@ -157,7 +167,9 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
 
         if (SUPPORTED_BRIDGE_UIDS.contains(thingTypeUID)) {
             TapoBridgeHandler bridgeHandler = new TapoBridgeHandler((Bridge) thing, getHttpClient());
-            handlersWithHttpClient.add(bridgeHandler);
+            synchronized (handlersWithHttpClient) {
+                handlersWithHttpClient.add(bridgeHandler);
+            }
             return bridgeHandler;
         } else if (SUPPORTED_HUB_UIDS.contains(thingTypeUID)) {
             return new TapoHubHandler(thing);
@@ -181,7 +193,9 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             return new TapoLightSwitchHandler(thing);
         } else if (SUPPORTED_CAMERA_UIDS.contains(thingTypeUID)) {
             TapoCameraHandler cameraHandler = new TapoCameraHandler(thing, getCameraHttpClient());
-            handlersWithHttpClient.add(cameraHandler);
+            synchronized (handlersWithHttpClient) {
+                handlersWithHttpClient.add(cameraHandler);
+            }
             return cameraHandler;
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
             return new TapoUniversalDeviceHandler(thing);
