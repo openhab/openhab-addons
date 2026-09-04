@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param appid application id
  * @param apiurl application url
  * @param signkey sign key for AES
- * @param iotkey iot key - MSmarthome only
- * @param hmackey hmac key - MSmarthome only
- * @param proxied proxy - MSmarthome only
+ * @param iotkey iot key - Smarthome only
+ * @param hmackey hmac key - Smarthome only
+ * @param proxied proxy - Smarthome only
  *
  * @author Jacek Dobrowolski - Initial Contribution
  * @author Bob Eckhoff - JavaDoc and conversion to record, NetHome Plus as default
@@ -44,16 +44,16 @@ public record CloudProvider(String name, String appkey, String appid, String api
      */
     public static CloudProvider getCloudProvider(String name) {
         switch (name) {
+            // Reported in HA version of the Midea binding that these clouds have been shutdown.
             case "NetHome Plus":
                 return new CloudProvider("NetHome Plus", "3742e9e5842d4ad59c2db887e12449f9", "1017",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
             case "Midea Air":
                 return new CloudProvider("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
-            // Reported in HA version of the Midea binding that this cloud has been shutdown.
-            // There is a possible v2 version of security down the road?
-            case "MSmartHome":
-                return new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
+            // Only working cloud provider at the moment is SmartHome (renamed from MSmartHome)
+            case "MSmartHome", "SmartHome":
+                return new CloudProvider("SmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                         "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
                         "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");
         }

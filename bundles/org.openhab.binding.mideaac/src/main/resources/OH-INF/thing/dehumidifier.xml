@@ -53,24 +53,22 @@
 				<description>Cloud Provider name for email and password.</description>
 				<options>
 					<option value=""></option>
-					<option value="MSmartHome">MSmartHome</option>
+					<option value="SmartHome">SmartHome</option>
 					<option value="Midea Air">Midea Air</option>
 					<option value="NetHome Plus">NetHome Plus</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<default>NetHome Plus</default>
+				<default>SmartHome</default>
 			</parameter>
 			<parameter name="email" type="text" required="false">
 				<context>email</context>
 				<label>Email</label>
 				<description>Email for cloud account chosen in Cloud Provider.</description>
-				<default>nethome+us@mailinator.com</default>
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password for cloud account chosen in Cloud Provider.</description>
-				<default>password1</default>
 			</parameter>
 			<parameter name="token" type="text" required="false">
 				<label>Token</label>
@@ -121,6 +119,17 @@
 				<label>Device Type</label>
 				<description>ac or a1(dehumidifier) discoverable</description>
 				<default>a1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tokenKeyMethod" type="text" required="true">
+				<label>Token Key Method</label>
+				<description>BigEndian or LittleEndian for token and key.</description>
+				<options>
+					<option value="BigEndian">BigEndian</option>
+					<option value="LittleEndian">LittleEndian</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>BigEndian</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
