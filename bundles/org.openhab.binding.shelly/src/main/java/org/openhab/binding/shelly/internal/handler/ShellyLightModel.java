@@ -92,7 +92,7 @@ public class ShellyLightModel extends LightModel {
      */
     private final int[] cacheRGBX;
     private final int rgbxLength;
-    private final int channelGroupNumber;
+    private final int channelGroupSuffix;
     private final int apiLightIndex;
     private final ShellyLightHandler handler;
     private final ReentrantLock lock = new ReentrantLock();
@@ -236,7 +236,7 @@ public class ShellyLightModel extends LightModel {
      * Private constructor to create a ShellyLightModel with the given parameters.
      * 
      * @param handler the ShellyLightHandler that owns this model
-     * @param channelGroupNumber the channel group number of the light within the device
+     * @param channelGroupSuffix the channel group number of the light within the device
      * @param lightCapabilities the required light capabilities
      * @param rgbDataType the required RGB data type
      * @param ledOperatingMode the required LED operating mode
@@ -245,7 +245,7 @@ public class ShellyLightModel extends LightModel {
      * @param stepSize the step size for the light model
      * @throws IllegalArgumentException if the parameters are invalid
      */
-    private ShellyLightModel(ShellyLightHandler handler, int channelGroupNumber, LightCapabilities lightCapabilities,
+    private ShellyLightModel(ShellyLightHandler handler, int channelGroupSuffix, LightCapabilities lightCapabilities,
             RgbDataType rgbDataType, LedOperatingMode ledOperatingMode, Mode operatingMode,
             boolean isOperatingModeReadOnly, ShellyDeviceProfile profile, Double stepSize)
             throws IllegalArgumentException {
@@ -254,7 +254,7 @@ public class ShellyLightModel extends LightModel {
         super.setLedOperatingMode(ledOperatingMode);
 
         this.handler = handler;
-        this.channelGroupNumber = channelGroupNumber;
+        this.channelGroupSuffix = channelGroupSuffix;
         this.operatingMode = operatingMode;
         this.baselineOperatingMode = operatingMode;
         this.isOperatingModeReadOnly = isOperatingModeReadOnly;
@@ -279,7 +279,7 @@ public class ShellyLightModel extends LightModel {
         isProfileCCTX2 = SHELLY2_PROFILE_CCTX2.equals(configProfile);
 
         boolean noPrimary = isProfileLIGHT || isProfileCCTX2 || isRGBW2White;
-        apiLightIndex = noPrimary ? channelGroupNumber - 1 : channelGroupNumber;
+        apiLightIndex = noPrimary ? channelGroupSuffix - 1 : channelGroupSuffix;
 
         rgbxLength = super.getRGBx().length;
         cacheRGBX = new int[rgbxLength];
@@ -292,9 +292,9 @@ public class ShellyLightModel extends LightModel {
         logger.debug(
                 "{}: created model from thingTypeUID:{} configProfile:{} with capabilities:{}, rgbDataType:{}, "
                         + "ledOperatingMode:{}, shellyMode:{}, isModeReadOnly:{}, ct-range: [{} K..{} K] => "
-                        + "ShellyLightModel(chanGroup:{}, apiIndex:{}) <= {}",
+                        + "ShellyLightModel(apiIndex:{}, groupSuffix:{}) <= {}",
                 handler.thingName, thingTypeUID, configProfile, lightCapabilities, rgbDataType, ledOperatingMode,
-                baselineOperatingMode, isOperatingModeReadOnly, minKelvin, maxKelvin, apiLightIndex, channelGroupNumber,
+                baselineOperatingMode, isOperatingModeReadOnly, minKelvin, maxKelvin, channelGroupSuffix, apiLightIndex,
                 this);
     }
 
@@ -304,8 +304,8 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void handleCommand(Command command) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => handleCommand({})", handler.thingName,
-                apiLightIndex, channelGroupNumber, command);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => handleCommand({})", handler.thingName,
+                apiLightIndex, channelGroupSuffix, command);
         super.handleCommand(command);
         if (command instanceof HSBType) {
             setMode(Mode.COLOR);
@@ -319,8 +319,8 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void handleColorTemperatureCommand(Command command) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => handleColorTemperatureCommand({})",
-                handler.thingName, apiLightIndex, channelGroupNumber, command);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => handleColorTemperatureCommand({})",
+                handler.thingName, apiLightIndex, channelGroupSuffix, command);
         super.handleColorTemperatureCommand(command);
         setMode(Mode.WHITE);
     }
@@ -336,8 +336,8 @@ public class ShellyLightModel extends LightModel {
      * Set the brightness (i.e. the brightness when color temperature mode).
      */
     public void setBrightness(int brightness) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setBrightness({})", handler.thingName,
-                apiLightIndex, channelGroupNumber, brightness);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setBrightness({})", handler.thingName,
+                apiLightIndex, channelGroupSuffix, brightness);
         super.setBrightness(brightness);
         setMode(Mode.WHITE);
     }
@@ -347,8 +347,8 @@ public class ShellyLightModel extends LightModel {
      */
     public void setBrightness(Command command) {
         if (!(command instanceof HSBType)) {
-            logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setBrightness({})", handler.thingName,
-                    apiLightIndex, channelGroupNumber, command);
+            logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setBrightness({})", handler.thingName,
+                    apiLightIndex, channelGroupSuffix, command);
             super.handleCommand(command);
             setMode(Mode.WHITE);
         }
@@ -386,8 +386,8 @@ public class ShellyLightModel extends LightModel {
      * Set the color component at the given RGBX index.
      */
     public void setColor(RGBX index, int value) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setColor({},{})", handler.thingName,
-                apiLightIndex, channelGroupNumber, index, value);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setColor({},{})", handler.thingName,
+                apiLightIndex, channelGroupSuffix, index, value);
         int[] rgbx = getRGBX();
         rgbx[index.ordinal()] = value;
         setRGBX(rgbx);
@@ -452,8 +452,8 @@ public class ShellyLightModel extends LightModel {
      * Set the color temperature.
      */
     public void setColorTemp(double kelvin) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setColorTemp({})", handler.thingName,
-                apiLightIndex, channelGroupNumber, kelvin);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setColorTemp({})", handler.thingName,
+                apiLightIndex, channelGroupSuffix, kelvin);
         super.setMirek(reciprocal(kelvin));
         setMode(Mode.WHITE);
     }
@@ -483,8 +483,8 @@ public class ShellyLightModel extends LightModel {
      * Set the effect.
      */
     public void setEffect(int value) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setEffect({})", handler.thingName,
-                apiLightIndex, channelGroupNumber, value);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setEffect({})", handler.thingName,
+                apiLightIndex, channelGroupSuffix, value);
         effect = value;
     }
 
@@ -506,8 +506,8 @@ public class ShellyLightModel extends LightModel {
      * Set gain (i.e. the brightness when color mode).
      */
     public void setGain(double gain) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setGain({})", handler.thingName, apiLightIndex,
-                channelGroupNumber, gain);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setGain({})", handler.thingName,
+                apiLightIndex, channelGroupSuffix, gain);
         super.setBrightness(gain);
         setMode(Mode.COLOR);
     }
@@ -517,8 +517,8 @@ public class ShellyLightModel extends LightModel {
      */
     public void setGain(Command command) {
         if (!(command instanceof HSBType)) {
-            logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setGain({})", handler.thingName,
-                    apiLightIndex, channelGroupNumber, command);
+            logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setGain({})", handler.thingName,
+                    apiLightIndex, channelGroupSuffix, command);
             super.handleCommand(command);
             setMode(Mode.COLOR);
         }
@@ -535,7 +535,7 @@ public class ShellyLightModel extends LightModel {
      * Get the the channel group number within the device.
      */
     public int getChannelGroupSuffix() {
-        return channelGroupNumber;
+        return channelGroupSuffix;
     }
 
     /**
@@ -561,8 +561,8 @@ public class ShellyLightModel extends LightModel {
      */
     public void setMode(Mode shellyMode) {
         if (!isOperatingModeReadOnly) {
-            logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setMode({})", handler.thingName,
-                    apiLightIndex, channelGroupNumber, shellyMode);
+            logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setMode({})", handler.thingName,
+                    apiLightIndex, channelGroupSuffix, shellyMode);
             this.operatingMode = shellyMode;
         }
     }
@@ -583,8 +583,8 @@ public class ShellyLightModel extends LightModel {
      */
     @Override
     public void setOnOff(boolean on) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setOnOff({})", handler.thingName,
-                apiLightIndex, channelGroupNumber, on);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setOnOff({})", handler.thingName,
+                apiLightIndex, channelGroupSuffix, on);
         super.setOnOff(on);
     }
 
@@ -606,8 +606,8 @@ public class ShellyLightModel extends LightModel {
      * Set the RGBX values.
      */
     public void setRGBX(int[] rgbx) {
-        logger.trace("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => setRGBX({})", handler.thingName, apiLightIndex,
-                channelGroupNumber, rgbx);
+        logger.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setRGBX({})", handler.thingName,
+                apiLightIndex, channelGroupSuffix, rgbx);
         refreshCache(rgbx);
         super.setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
         setMode(Mode.COLOR);
@@ -700,8 +700,8 @@ public class ShellyLightModel extends LightModel {
         baselineOperatingMode = operatingMode;
         baselineBrightness = super.getBrightness(true);
         baselineColorTemperature = super.getColorTemperature();
-        logger.debug("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => acquired", handler.thingName, apiLightIndex,
-                channelGroupNumber);
+        logger.debug("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => acquired", handler.thingName, apiLightIndex,
+                channelGroupSuffix);
     }
 
     /**
@@ -711,8 +711,8 @@ public class ShellyLightModel extends LightModel {
      */
     public boolean release() {
         boolean updated = handler.updateChannelsFromLightModel(this);
-        logger.debug("{}: ShellyLightModel(apiIndex:{}, chanGroup:{}) => released ({}modified)", handler.thingName,
-                apiLightIndex, channelGroupNumber, isDirty() ? "" : "un");
+        logger.debug("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => released ({}modified)", handler.thingName,
+                apiLightIndex, channelGroupSuffix, isDirty() ? "" : "un");
         lock.unlock();
         return updated;
     }
@@ -762,8 +762,8 @@ public class ShellyLightModel extends LightModel {
            (isG3FullColorBulb) ||
            (isProfileRGB) ||
            (isProfileRGBW) ||
-           (isProfileRGBCCT && channelGroupNumber == 0) || 
-           (isProfileRGBX2LIGHT && channelGroupNumber == 0)
+           (isProfileRGBCCT && channelGroupSuffix == 0) || 
+           (isProfileRGBX2LIGHT && channelGroupSuffix == 0)
         // @formatter:on
         ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.COLOR == operatingMode);
     }
@@ -786,7 +786,7 @@ public class ShellyLightModel extends LightModel {
             (isG3ColorTempBulb) || 
             (isG3FullColorBulb) || 
             (isProfileCCTX2) ||
-            (isProfileRGBCCT && channelGroupNumber > 0) 
+            (isProfileRGBCCT && channelGroupSuffix > 0) 
         // @formatter:on
         ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
     }
@@ -843,8 +843,8 @@ public class ShellyLightModel extends LightModel {
             (isG3FullColorBulb) ||
             (isProfileRGB) ||
             (isProfileRGBW) ||
-            (isProfileRGBCCT && channelGroupNumber == 0) || 
-            (isProfileRGBX2LIGHT && channelGroupNumber == 0)
+            (isProfileRGBCCT && channelGroupSuffix == 0) || 
+            (isProfileRGBX2LIGHT && channelGroupSuffix == 0)
         // @formatter:on
         ;
     }
@@ -861,9 +861,9 @@ public class ShellyLightModel extends LightModel {
         // @formatter:off
             (isRGBW2White) ||
             (isProfileCCTX2) ||
-            (isProfileRGBCCT && channelGroupNumber > 0) || 
+            (isProfileRGBCCT && channelGroupSuffix > 0) || 
             (isProfileLIGHT) ||
-            (isProfileRGBX2LIGHT && channelGroupNumber > 0)
+            (isProfileRGBX2LIGHT && channelGroupSuffix > 0)
         // @formatter:on
         ;
     }
