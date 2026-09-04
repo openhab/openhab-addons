@@ -52,12 +52,6 @@
 			<default>0</default>
 			<unitLabel>m</unitLabel>
 		</parameter>
-		<parameter name="rainSwitchHoldoff" type="integer" required="false" min="0">
-			<label>Rain Switch Holdoff (min)</label>
-			<description>Minutes the Rain Switch channel stays ON after the last rain report. Default: 10</description>
-			<default>10</default>
-			<unitLabel>min</unitLabel>
-		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

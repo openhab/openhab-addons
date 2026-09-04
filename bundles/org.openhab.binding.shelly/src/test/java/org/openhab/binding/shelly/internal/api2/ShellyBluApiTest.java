@@ -23,7 +23,6 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELL
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYBLUWS90;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -175,7 +174,6 @@ public class ShellyBluApiTest {
         api.onNotifyEvent(rainPacket);
 
         assertThat("rain flag decoded from the packet", api.getSensorStatus().rain, is(equalTo(true)));
-        assertThat("lastRain recorded when rain is detected", api.getSensorStatus().lastRain, is(notNullValue()));
     }
 
     @Test
@@ -192,12 +190,9 @@ public class ShellyBluApiTest {
                 """;
 
         api.onNotifyEvent(rainPacket);
-        Instant lastRain = api.getSensorStatus().lastRain;
-
         api.onNotifyEvent(dryPacket);
 
         assertThat("rain flag follows the packet", api.getSensorStatus().rain, is(equalTo(false)));
-        assertThat("lastRain is not refreshed by a dry packet", api.getSensorStatus().lastRain, is(equalTo(lastRain)));
     }
 
     @Test
@@ -219,8 +214,6 @@ public class ShellyBluApiTest {
 
         assertThat("rain stays reported when a follow-up packet omits the moisture field", api.getSensorStatus().rain,
                 is(equalTo(true)));
-        assertThat("lastRain stays set when a follow-up packet omits the moisture field",
-                api.getSensorStatus().lastRain, is(notNullValue()));
     }
 
     @Test
@@ -235,12 +228,10 @@ public class ShellyBluApiTest {
         api.onNotifyEvent(rainPacket);
 
         ShellyStatusSensor first = api.getSensorStatus();
-        Instant lastRain = first.lastRain;
         Double apparentTemp = first.apparentTemp;
 
         ShellyStatusSensor second = api.getSensorStatus();
 
-        assertThat("a status read must not touch the accumulated rain state", second.lastRain, is(equalTo(lastRain)));
         assertThat("a status read must not recompute derived values", second.apparentTemp, is(equalTo(apparentTemp)));
         assertThat("a status read must not clear the rain flag", second.rain, is(equalTo(true)));
     }

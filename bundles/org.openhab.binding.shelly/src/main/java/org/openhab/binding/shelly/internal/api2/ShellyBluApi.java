@@ -343,10 +343,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.distance = blu.distance;
                         }
                         if (blu.rain != null) {
-                            // sensorData is the monitor the polling thread derives the rain switch under
-                            synchronized (sensorData) {
-                                sensorData.rain = getDouble(blu.rain) > 0;
-                            }
+                            sensorData.rain = getDouble(blu.rain) > 0;
                         }
                         // BTHome sends the WS90's Speed object twice per packet: average speed, then gust speed
                         Double[] speeds = blu.speeds;
@@ -357,15 +354,13 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             }
                         }
                         // BTHome sends the WS90's Direction object twice per packet: wind direction, then gust
-                        // direction
+                        // direction (the gust direction is not exposed - the device reports the same value as the
+                        // wind direction, so it carries no extra information)
                         Double[] directions = blu.directions;
                         if (directions != null && directions.length >= 1) {
                             Double direction = directions[0];
                             sensorData.windDirection = direction;
                             sensorData.windDirectionStr = direction != null ? windDirectionLabel(direction) : null;
-                            if (directions.length >= 2) {
-                                sensorData.gustDirection = directions[1];
-                            }
                         }
                         if (blu.uvIndex != null) {
                             sensorData.uvIndex = blu.uvIndex;
@@ -392,13 +387,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             if (pressure != null) {
                                 sensorData.seaLevelPressure = seaLevelPressure(pressure, tC,
                                         resolveAltitude(t.getThingConfig().getAltitude()));
-                            }
-                            // blu.rain only tells whether this packet carried the field, the state itself is
-                            // accumulated in sensorData
-                            synchronized (sensorData) {
-                                if (blu.rain != null && Boolean.TRUE.equals(sensorData.rain)) {
-                                    sensorData.lastRain = Instant.now();
-                                }
                             }
                         }
                         Long firmware32 = blu.firmware32;

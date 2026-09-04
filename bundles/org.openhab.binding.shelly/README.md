@@ -458,7 +458,6 @@ You could also create a rule to catch those status changes or device alarms (see
 | favoriteDOWN       | 0-4: Favorite id for DOWN (see Roller Favorites)              | no        | 0 = no favorite id                                 |
 | enableBluGateway   | true: Activate BLU gateway support (install script)           | no        | false                                              |
 | altitude           | Station altitude (m) for sea-level pressure (WS90 only)       | no        | 0 = use openHAB system location altitude           |
-| rainSwitchHoldoff  | Minutes to keep `rainSwitch` ON after last rain (WS90 only)   | no        | 10                                                 |
 
 ### General Notes
 
@@ -2299,13 +2298,11 @@ See notes on discovery of Shelly BLU devices above.
 |         | windDirection    | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
 |         | windDirectionStr | String               | yes       | Wind direction as 16-point compass rose label (N, NNE, NE, ...)                     |
 |         | gustSpeed        | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
-|         | gustDirection    | Number:Angle         | yes       | Wind gust direction in degrees (0-360)                                              |
 |         | pressure         | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
 |         | seaLevelPressure | Number:Pressure      | yes       | Atmospheric pressure reduced to sea level using the `altitude` configuration        |
 |         | dewPoint         | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
 |         | apparentTemp     | Number:Temperature   | yes       | Perceived ("feels like") temperature from temperature, humidity and wind (Steadman) |
 |         | rainStatus       | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
-|         | rainSwitch       | Switch               | yes       | ON: Rain detected within the last `rainSwitchHoldoff` minutes, OFF otherwise        |
 |         | precipitation    | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
 |         | lastUpdate       | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
 | battery | batteryLevel     | Number               | yes       | Battery Level in %                                                                  |
@@ -2314,10 +2311,24 @@ See notes on discovery of Shelly BLU devices above.
 |         | firmware         | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
 
 The `rainStatus` channel latches ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
-`rainSwitch` is a binding-side alternative driven by the same rain events but with a configurable holdoff (`rainSwitchHoldoff`), useful for rules that need a predictable, tunable ON duration instead of the sensor's own latch behavior.
 
 The WS90 reports additional metrics (hourly/24h rainfall totals, all-time high/low records) that are not exposed as channels.
 These are cumulative statistics tracked by the sensor itself rather than live measurements, and are better handled with openHAB's own persistence/rules (e.g. via `rrd4j` or `influxdb` on `precipitation`/`temperature`) than duplicated as binding channels.
+
+A debounced "is it raining" switch (holding ON for a while after `rainStatus` turns OFF) can be built with a small rule instead of a binding feature:
+
+```java
+rule "WS90 Rain Switch with hold-off"
+when
+    Item ShellyWS90_RainStatus changed
+then
+    if (ShellyWS90_RainStatus.state == ON) {
+        RainSwitch.postUpdate(ON)
+    } else {
+        createTimer(now.plusMinutes(10), [ | RainSwitch.postUpdate(OFF) ])
+    }
+end
+```
 
 ## Shelly Wall Displays
 

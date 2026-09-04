@@ -16,7 +16,6 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 
@@ -548,32 +547,6 @@ public class ShellyComponents {
     }
 
     /**
-     * The holdoff keeps the switch ON for the configured minutes after the last packet reporting rain, evaluated
-     * against the wall clock on every status update so it also expires once the station goes quiet. A holdoff of 0
-     * follows the sensor's own rain reading with no delay.
-     */
-    private static boolean isRaining(ShellyStatusSensor sdata, int holdoffMin) {
-        if (holdoffMin == 0) {
-            return getBool(sdata.rain);
-        }
-        Instant lastRain = sdata.lastRain;
-        return lastRain != null && Instant.now().isBefore(lastRain.plusSeconds(holdoffMin * 60L));
-    }
-
-    /**
-     * Derives and publishes the rain switch atomically on the sensor data, the monitor the BLU event thread writes
-     * rain/lastRain under, so a poll can't publish a state it derived before an event that already published a
-     * newer one.
-     */
-    private static boolean updateRainSwitch(ShellyThingInterface thingHandler, ShellyStatusSensor sdata) {
-        int holdoffMin = thingHandler.getThingConfig().getRainSwitchHoldoff();
-        synchronized (sdata) {
-            return thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH,
-                    OnOffType.from(isRaining(sdata, holdoffMin)));
-        }
-    }
-
-    /**
      * Update Sensor channel
      *
      * @param thingHandler Thing Handler instance
@@ -765,10 +738,6 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP,
                         toQuantityType(getDouble(sdata.gustSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
             }
-            if (sdata.gustDirection != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTDIR,
-                        toQuantityType(getDouble(sdata.gustDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
-            }
             if (sdata.pressure != null) {
                 Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
@@ -800,10 +769,6 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SEALEVEL_PRESSURE,
                         toQuantityType(getDouble(sdata.seaLevelPressure), DIGITS_PRESSURE, hpa));
             }
-            if (profile.isWS90) {
-                updated |= updateRainSwitch(thingHandler, sdata);
-            }
-
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
             if ((profile.settings.externalPower != null) || (sdata.charger != null)) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,

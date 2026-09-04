@@ -55,7 +55,6 @@ public class ShellyThingConfiguration {
 
     // BLU Weather WS90
     private int altitude = 0; // station altitude in meters, for sea-level pressure calculation
-    private int rainSwitchHoldoff = 10; // minutes to keep rainSwitch ON after last rain report
 
     public String getDeviceIp() {
         return deviceIp;
@@ -129,10 +128,6 @@ public class ShellyThingConfiguration {
         return altitude;
     }
 
-    public int getRainSwitchHoldoff() {
-        return rainSwitchHoldoff;
-    }
-
     @Override
     public String toString() {
         return "Device address=" + deviceAddress + ", HTTP user/password=" + userId + "/"
@@ -140,6 +135,6 @@ public class ShellyThingConfiguration {
                 + "Events: Button: " + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush
                 + ", Roller: " + eventsRoller + "Sensor: " + eventsSensorReport + ", CoIoT: " + eventsCoIoT + "\n"
                 + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender + "\n" + "Altitude="
-                + altitude + ", Rain Switch Holdoff=" + rainSwitchHoldoff;
+                + altitude;
     }
 }

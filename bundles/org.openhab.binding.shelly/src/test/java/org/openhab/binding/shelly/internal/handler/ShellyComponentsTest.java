@@ -13,8 +13,6 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -28,12 +26,9 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_RSTATE_OPEN;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -66,7 +61,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -680,7 +674,6 @@ public class ShellyComponentsTest {
         sdata.windDirectionStr = "SE";
         sdata.apparentTemp = 17.9;
         sdata.seaLevelPressure = 1013.25;
-        sdata.lastRain = Instant.now();
         ShellyThingInterface handler = ws90HandlerWith(sdata);
 
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
@@ -690,7 +683,6 @@ public class ShellyComponentsTest {
                 argThat(s -> closeTo(s, 17.9)));
         verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_SEALEVEL_PRESSURE),
                 argThat(s -> closeTo(s, 1013.25)));
-        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.ON);
     }
 
     @Test
@@ -702,122 +694,6 @@ public class ShellyComponentsTest {
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR_STR), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_APPARENT_TEMP), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_SEALEVEL_PRESSURE), any());
-        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.OFF);
-    }
-
-    @Test
-    void updateSensorsWs90RainSwitchStaysOnWithinHoldoffAfterRainStopped() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.rain = false;
-        sdata.lastRain = Instant.now().minusSeconds(5 * 60L);
-        ShellyThingInterface handler = ws90HandlerWith(sdata, holdoffConfig(10));
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.ON);
-    }
-
-    @Test
-    void updateSensorsWs90RainSwitchExpiresOnStatusUpdateWithoutNewPacket() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.rain = true;
-        sdata.lastRain = Instant.now().minusSeconds(11 * 60L);
-        ShellyThingInterface handler = ws90HandlerWith(sdata, holdoffConfig(10));
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.OFF);
-    }
-
-    @Test
-    void updateSensorsWs90RainSwitchFollowsRainStatusWithZeroHoldoff() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.rain = true;
-        sdata.lastRain = Instant.now().minusSeconds(60 * 60L);
-        ShellyThingInterface handler = ws90HandlerWith(sdata, holdoffConfig(0));
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.ON);
-
-        sdata.rain = false;
-        ShellyThingInterface dryHandler = ws90HandlerWith(sdata, holdoffConfig(0));
-
-        ShellyComponents.updateSensors(dryHandler, new ShellySettingsStatus());
-
-        verify(dryHandler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.OFF);
-    }
-
-    @Test
-    void updateSensorsWs90DoesNotWriteDerivedRainStateIntoSharedSensorData() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.rain = false;
-        Instant lastRain = Instant.now().minusSeconds(11 * 60L);
-        sdata.lastRain = lastRain;
-        ShellyThingInterface handler = ws90HandlerWith(sdata, holdoffConfig(10));
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        assertThat(sdata.lastRain, is(lastRain));
-        assertThat(sdata.rain, is(false));
-    }
-
-    @Test
-    void updateSensorsWs90RainEventCannotInterleaveBetweenDeriveAndPublishOfRainSwitch() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.rain = false;
-        ShellyThingInterface handler = ws90HandlerWith(sdata, holdoffConfig(10));
-
-        AtomicBoolean writerStillBlocked = new AtomicBoolean();
-        AtomicReference<@Nullable Instant> seenWhilePublishing = new AtomicReference<>();
-        AtomicReference<@Nullable Thread> writer = new AtomicReference<>();
-        when(handler.updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_RAIN_SWITCH), any()))
-                .thenAnswer(invocation -> {
-                    Thread rainEvent = new Thread(() -> {
-                        synchronized (sdata) {
-                            sdata.rain = true;
-                            sdata.lastRain = Instant.now();
-                        }
-                    });
-                    writer.set(rainEvent);
-                    rainEvent.start();
-                    rainEvent.join(500);
-                    writerStillBlocked.set(rainEvent.isAlive());
-                    seenWhilePublishing.set(sdata.lastRain);
-                    return true;
-                });
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        Thread rainEvent = writer.get();
-        assertNotNull(rainEvent);
-        rainEvent.join(5000);
-        assertThat(writerStillBlocked.get(), is(true));
-        assertThat(seenWhilePublishing.get(), is(nullValue()));
-        assertThat(sdata.lastRain, is(notNullValue()));
-    }
-
-    @Test
-    void updateSensorsWs90PollAfterRainEventPublishesOn() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.rain = false;
-        ShellyThingInterface handler = ws90HandlerWith(sdata, holdoffConfig(10));
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.OFF);
-
-        Thread rainEvent = new Thread(() -> {
-            synchronized (sdata) {
-                sdata.rain = true;
-                sdata.lastRain = Instant.now();
-            }
-        });
-        rainEvent.start();
-        rainEvent.join(5000);
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_RAIN_SWITCH, OnOffType.ON);
     }
 
     @Test
@@ -871,7 +747,6 @@ public class ShellyComponentsTest {
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDSP), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTSP), any());
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_RAINST), any());
     }
 
@@ -907,32 +782,6 @@ public class ShellyComponentsTest {
                 argThat(s -> closeTo(s, 12.5)));
         verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRECIPITATION),
                 argThat(s -> closeTo(s, 2.1)));
-    }
-
-    @Test
-    void updateSensorsWs90GustDirectionIndependentFromWindDirection() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.windDirection = 270.0;
-        sdata.gustDirection = 290.0;
-        ShellyThingInterface handler = ws90HandlerWith(sdata);
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR),
-                argThat(s -> closeTo(s, 270.0)));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR),
-                argThat(s -> closeTo(s, 290.0)));
-    }
-
-    @Test
-    void updateSensorsWs90NullGustDirectionSkipsChannel() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.windDirection = 270.0;
-        ShellyThingInterface handler = ws90HandlerWith(sdata);
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR), any());
     }
 
     @Test
@@ -972,10 +821,9 @@ public class ShellyComponentsTest {
         Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile, sdata);
 
         for (String channelId : new String[] { CHANNEL_SENSOR_TEMP, CHANNEL_SENSOR_HUM, CHANNEL_SENSOR_RAINST,
-                CHANNEL_SENSOR_WINDSP, CHANNEL_SENSOR_WINDDIR, CHANNEL_SENSOR_GUSTSP, CHANNEL_SENSOR_GUSTDIR,
-                CHANNEL_SENSOR_UV, CHANNEL_SENSOR_PRESSURE, CHANNEL_SENSOR_DEWPOINT, CHANNEL_SENSOR_PRECIPITATION,
-                CHANNEL_SENSOR_WINDDIR_STR, CHANNEL_SENSOR_APPARENT_TEMP, CHANNEL_SENSOR_SEALEVEL_PRESSURE,
-                CHANNEL_SENSOR_RAIN_SWITCH }) {
+                CHANNEL_SENSOR_WINDSP, CHANNEL_SENSOR_WINDDIR, CHANNEL_SENSOR_GUSTSP, CHANNEL_SENSOR_UV,
+                CHANNEL_SENSOR_PRESSURE, CHANNEL_SENSOR_DEWPOINT, CHANNEL_SENSOR_PRECIPITATION,
+                CHANNEL_SENSOR_WINDDIR_STR, CHANNEL_SENSOR_APPARENT_TEMP, CHANNEL_SENSOR_SEALEVEL_PRESSURE }) {
             assertThat(channelId + " channel created",
                     channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelId),
                     is(true));
@@ -1031,10 +879,6 @@ public class ShellyComponentsTest {
         when(handler.areChannelsCreated()).thenReturn(true);
         when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
         return handler;
-    }
-
-    private static ShellyThingConfiguration holdoffConfig(int minutes) {
-        return new Configuration(Map.of("rainSwitchHoldoff", minutes)).as(ShellyThingConfiguration.class);
     }
 
     @Test
