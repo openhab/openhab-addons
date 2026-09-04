@@ -1268,8 +1268,11 @@ public class Connection {
 
             Thread.sleep(delay);
         } catch (ConnectionException e) {
-            logger.warn("Sequence node for {} failed: {}", queueObject.deviceSerialNumbers, e.getMessage());
-            logger.debug("Failed to execute sequence node", e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sequence node for {} failed: {}", queueObject.deviceSerialNumbers, e.getMessage(), e);
+            } else {
+                logger.warn("Sequence node for {} failed: {}", queueObject.deviceSerialNumbers, e.getMessage());
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Sequence node execution interrupted");
