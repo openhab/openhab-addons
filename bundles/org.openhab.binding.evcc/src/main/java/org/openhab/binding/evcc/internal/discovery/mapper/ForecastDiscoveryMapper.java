@@ -44,7 +44,7 @@ public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
     public Collection<DiscoveryResult> discover(JsonObject state, EvccWsBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
         JsonObject forecasts = state.getAsJsonObject(JSON_KEY_FORECAST);
-        if (forecasts == null) {
+        if (forecasts == null || forecasts.isEmpty()) {
             return results;
         }
         for (Map.Entry<String, JsonElement> entry : forecasts.entrySet()) {

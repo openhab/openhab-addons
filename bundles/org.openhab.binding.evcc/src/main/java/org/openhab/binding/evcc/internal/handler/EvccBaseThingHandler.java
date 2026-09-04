@@ -55,6 +55,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -197,11 +198,16 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return null;
     }
 
-    private String getChannelLabel(String thingKey) {
+    protected String getChannelLabel(String thingKey) {
         @Nullable
         String tmp = Optional.ofNullable(bridgeHandler).map(handler -> {
             String labelKey = "channel-type.evcc." + thingKey + ".label";
-            BundleContext ctx = FrameworkUtil.getBundle(EvccBridgeHandler.class).getBundleContext();
+            @Nullable
+            Bundle bundle = FrameworkUtil.getBundle(EvccWsBridgeHandler.class);
+            if (bundle == null || bundle.getBundleContext() == null) {
+                return thingKey;
+            }
+            BundleContext ctx = bundle.getBundleContext();
             TranslationProvider tp = handler.getI18nProvider();
             Locale locale = handler.getLocaleProvider().getLocale();
             return tp.getText(ctx.getBundle(), labelKey, thingKey, locale);

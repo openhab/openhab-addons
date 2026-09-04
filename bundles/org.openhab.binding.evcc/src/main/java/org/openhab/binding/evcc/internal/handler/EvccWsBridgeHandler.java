@@ -185,24 +185,41 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     // --------------------------------------------------------------------
 
     private void mergeIntoState(String key, JsonElement value) {
-        String[] parts = key.split("\\.");
-        if (parts.length != 3) {
+        String[] parts = key.split("\\.", 2);
+        if (parts.length < 1) {
             return;
         }
 
-        int index = Integer.parseInt(parts[1]);
-        lastState.remove(key);
-        JsonArray arr = lastState.getAsJsonArray(parts[0]);
-        if (arr == null) {
-            arr = new JsonArray();
-            lastState.add(parts[0], arr);
-        }
+        String root = parts[0];
 
-        while (arr.size() <= index) {
-            arr.add(new JsonObject());
+        if (parts.length == 2) {
+            String[] indexParts = parts[1].split("\\.", 2);
+            if (indexParts.length == 2 && indexParts[0].matches("\\d+")) {
+                // Indexed array format: loadpoints.0.power
+                int index = Integer.parseInt(indexParts[0]);
+                lastState.remove(key);
+                JsonArray arr = lastState.getAsJsonArray(root);
+                if (arr == null) {
+                    arr = new JsonArray();
+                    lastState.add(root, arr);
+                }
+                while (arr.size() <= index) {
+                    arr.add(new JsonObject());
+                }
+                arr.get(index).getAsJsonObject().add(indexParts[1], value);
+            } else {
+                // Nested object format: forecast.co2
+                JsonObject obj = lastState.getAsJsonObject(root);
+                if (obj == null) {
+                    obj = new JsonObject();
+                    lastState.add(root, obj);
+                }
+                obj.add(parts[1], value);
+            }
+        } else {
+            // Root-level key
+            lastState.add(root, value);
         }
-
-        arr.get(index).getAsJsonObject().add(parts[2], value);
     }
 
     // --------------------------------------------------------------------
