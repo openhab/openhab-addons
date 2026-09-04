@@ -1267,8 +1267,15 @@ public class Connection {
             requestBuilder.post(getAlexaServer() + "/api/behaviors/preview").withContent(request).syncSend();
 
             Thread.sleep(delay);
-        } catch (ConnectionException | InterruptedException e) {
-            logger.warn("execute sequence node fails with unexpected error", e);
+        } catch (ConnectionException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sequence node for {} failed: {}", queueObject.deviceSerialNumbers, e.getMessage(), e);
+            } else {
+                logger.warn("Sequence node for {} failed: {}", queueObject.deviceSerialNumbers, e.getMessage());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Sequence node execution interrupted");
         } finally {
             removeObjectFromQueueAfterExecutionCompletion(queueObject);
         }

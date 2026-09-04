@@ -618,7 +618,11 @@ public class EchoHandler extends BaseThingHandler {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
         } catch (ConnectionException e) {
-            logger.warn("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage(), e);
+            } else {
+                logger.warn("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage());
+            }
         } catch (RuntimeException e) {
             logger.warn("RuntimeException in handle command for channel '{}': {}", channelUID, e.getMessage(), e);
         }
@@ -678,7 +682,11 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         } catch (ConnectionException e) {
-            logger.warn("Failed to update notification state: {}", e.getMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to update notification state: {}", e.getMessage(), e);
+            } else {
+                logger.warn("Failed to update notification state: {}", e.getMessage());
+            }
         }
         if (stopCurrentNotification) {
             stopCurrentNotification();

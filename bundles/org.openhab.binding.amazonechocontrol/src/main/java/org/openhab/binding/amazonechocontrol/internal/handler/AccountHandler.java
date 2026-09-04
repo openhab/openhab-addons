@@ -715,7 +715,11 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             try {
                 connection.setEnabledFlashBriefings(flashBriefingConfiguration);
             } catch (ConnectionException e) {
-                logger.warn("Set flash-briefing profile failed", e);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Failed to set flash-briefing profile: {}", e.getMessage(), e);
+                } else {
+                    logger.warn("Failed to set flash-briefing profile: {}", e.getMessage());
+                }
             }
         }
         updateFlashBriefingHandlers();
