@@ -1001,7 +1001,7 @@ public class ShellyComponents {
         if (!obsolete.isEmpty()) {
             thingHandler.removeChannels(obsolete);
         }
-        if (!profile.settings.loraDetected && !profile.addOnFw.isEmpty()) {
+        if (!profile.settings.loraDetected) {
             profile.addOnFw = "";
             thingHandler.removeProperty(PROPERTY_ADDON_FIRMWARE);
         }

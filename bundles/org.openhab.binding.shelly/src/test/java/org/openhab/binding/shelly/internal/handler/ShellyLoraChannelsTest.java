@@ -237,6 +237,22 @@ public class ShellyLoraChannelsTest {
     }
 
     @Test
+    void updateDeviceStatusRemovesFirmwarePropertyOnRecreatedProfileEvenWithEmptyAddOnFw() {
+        ShellyThingInterface handler = mock(ShellyThingInterface.class);
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1);
+        // simulates getProfile(true): a fresh profile starts with addOnFw empty even though
+        // the Thing still carries the property from before the reload
+        when(handler.getProfile()).thenReturn(profile);
+        Thing thing = thing();
+        when(handler.getThing()).thenReturn(thing);
+        when(handler.areChannelsCreated()).thenReturn(true);
+
+        ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
+
+        verify(handler).removeProperty(PROPERTY_ADDON_FIRMWARE);
+    }
+
+    @Test
     void updateDeviceStatusRemovesRxChannelsWhenRxDisabled() {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         when(handler.getProfile()).thenReturn(loraProfile(false));
