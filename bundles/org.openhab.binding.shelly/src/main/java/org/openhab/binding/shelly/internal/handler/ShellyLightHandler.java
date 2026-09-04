@@ -13,7 +13,9 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYRGBW2_WHITE;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -133,15 +135,14 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             acquireLock();
             for (int apiLightIndex = 0; apiLightIndex < status.lights.size(); apiLightIndex++) {
                 ShellyStatusLightChannel light = status.lights.get(apiLightIndex);
-                int channelGroupSuffix = profile.getLightComponentId(apiLightIndex);
-                ShellyLightModel model = lightModels.get(channelGroupSuffix);
+                ShellyLightModel model = getLightModelByApiLightIndex(apiLightIndex);
                 if (model == null) {
-                    model = ShellyLightModel.create(this, channelGroupSuffix, profile, DIM_STEPSIZE);
+                    model = ShellyLightModel.create(this, getChannelGroupSuffix(apiLightIndex), profile, DIM_STEPSIZE);
                     model.acquire();
-                    lightModels.put(channelGroupSuffix, model);
+                    lightModels.put(model.getChannelGroupSuffix(), model);
                 }
                 updateLightModelFromStatus(model, light);
-                updated |= updateChannelsFromLightStatusDTO(light, apiLightIndex, channelGroupSuffix);
+                updated |= updateChannelsFromLightStatusDTO(light, apiLightIndex, model.getChannelGroupSuffix());
             }
         } finally {
             updated |= releaseLock();
@@ -575,5 +576,15 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             return lightModels.get(extractChannelGroupSuffix(channelUID));
         }
         return null;
+    }
+
+    /*
+     * Helper method to determine the channel group suffix for a given API light index.
+     */
+    private int getChannelGroupSuffix(int apiLightIndex) {
+        boolean noPrimary = THING_TYPE_SHELLYRGBW2_WHITE.equals(getThing().getThingTypeUID())
+                || SHELLY2_PROFILE_LIGHT.equals(profile.device.profile)
+                || SHELLY2_PROFILE_CCTX2.equals(profile.device.profile);
+        return noPrimary ? apiLightIndex + 1 : apiLightIndex;
     }
 }
