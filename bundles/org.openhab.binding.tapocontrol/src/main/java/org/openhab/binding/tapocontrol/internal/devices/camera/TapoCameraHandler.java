@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -142,7 +143,7 @@ public class TapoCameraHandler extends BaseThingHandler {
             return;
         }
         boolean retriedAuth = false;
-        while (cameraApi == api) {
+        while (Objects.equals(cameraApi, api)) {
             try {
                 ensureLoggedIn(cameraApi);
                 readDeviceInfo(cameraApi);
@@ -151,7 +152,7 @@ public class TapoCameraHandler extends BaseThingHandler {
                 readMotion(cameraApi);
                 readLed(cameraApi);
                 readPresets(cameraApi);
-                if (cameraApi != api) {
+                if (!Objects.equals(cameraApi, api)) {
                     return;
                 }
                 updateStatus(ThingStatus.ONLINE);
@@ -178,7 +179,7 @@ public class TapoCameraHandler extends BaseThingHandler {
     private void ensureLoggedIn(TapoCameraApi cameraApi) throws TapoCameraApiException {
         if (!cameraApi.isLoggedIn()) {
             cameraApi.login();
-            if (cameraApi != api) {
+            if (!Objects.equals(cameraApi, api)) {
                 return;
             }
             // features may come back after reconnect
@@ -210,7 +211,7 @@ public class TapoCameraHandler extends BaseThingHandler {
             @Nullable TapoCameraFeature feature, String module, String section) throws StopCycleException {
         try {
             JsonObject response = cameraApi.sendCommand(command);
-            if (cameraApi != api) {
+            if (!Objects.equals(cameraApi, api)) {
                 return null;
             }
             // Some camera firmwares (e.g. C125) return secured-command results unwrapped, i.e. the
@@ -224,7 +225,7 @@ public class TapoCameraHandler extends BaseThingHandler {
             JsonObject sectionObj = moduleObj.getAsJsonObject(section);
             return sectionObj != null ? sectionObj : null;
         } catch (TapoCameraApiException e) {
-            if (cameraApi != api) {
+            if (!Objects.equals(cameraApi, api)) {
                 return null;
             }
             if (!isCapabilityBoundary(e.getErrorCode())) {
@@ -275,7 +276,7 @@ public class TapoCameraHandler extends BaseThingHandler {
         }
         JsonObject json = readSection(cameraApi, TapoCameraCommands.getDeviceInfo(), null,
                 TapoCameraCommands.MODULE_DEVICE_INFO, TapoCameraCommands.SECTION_BASIC_INFO);
-        if (json == null || cameraApi != api) {
+        if (json == null || !Objects.equals(cameraApi, api)) {
             return;
         }
         TapoDeviceInfo info = TapoDeviceInfo.fromJson(json);
@@ -297,17 +298,17 @@ public class TapoCameraHandler extends BaseThingHandler {
         }
         JsonObject alarmJson = readSection(cameraApi, TapoCameraCommands.getAlertConfig(), TapoCameraFeature.ALARM,
                 TapoCameraCommands.MODULE_MSG_ALARM, TapoCameraCommands.SECTION_MSG_ALARM_INFO);
-        if (alarmJson != null && cameraApi == api) {
+        if (alarmJson != null && Objects.equals(cameraApi, api)) {
             TapoMsgAlarmInfo alarm = TapoMsgAlarmInfo.fromJson(alarmJson);
             updateState(channel(CHANNEL_GROUP_CAMERA_ALARM, CHANNEL_ALARM_MODE),
                     new StringType(alarm.enabled() ? alarmModeLabel(alarm.alarmModes()) : "off"));
         }
-        if (cameraApi != api) {
+        if (!Objects.equals(cameraApi, api)) {
             return;
         }
         JsonObject lastAlarmJson = readSection(cameraApi, TapoCameraCommands.getLastAlarmInfo(),
                 TapoCameraFeature.ALARM, TapoCameraCommands.MODULE_SYSTEM, TapoCameraCommands.SECTION_LAST_ALARM_INFO);
-        if (lastAlarmJson != null && cameraApi == api) {
+        if (lastAlarmJson != null && Objects.equals(cameraApi, api)) {
             TapoLastAlarmInfo lastAlarm = TapoLastAlarmInfo.fromJson(lastAlarmJson);
             if (!lastAlarm.type().isEmpty()) {
                 updateState(channel(CHANNEL_GROUP_CAMERA_ALARM, CHANNEL_LAST_ALARM_TYPE),
@@ -343,7 +344,7 @@ public class TapoCameraHandler extends BaseThingHandler {
         }
         JsonObject json = readSection(cameraApi, TapoCameraCommands.getLensMaskInfo(), TapoCameraFeature.PRIVACY,
                 TapoCameraCommands.MODULE_LENS_MASK, TapoCameraCommands.SECTION_LENS_MASK_INFO);
-        if (json != null && cameraApi == api) {
+        if (json != null && Objects.equals(cameraApi, api)) {
             updateState(channel(CHANNEL_GROUP_CAMERA_PRIVACY, CHANNEL_PRIVACY_MODE),
                     OnOffType.from(TapoLensMaskInfo.fromJson(json).enabled()));
         }
@@ -356,7 +357,7 @@ public class TapoCameraHandler extends BaseThingHandler {
         JsonObject json = readSection(cameraApi, TapoCameraCommands.getDetectionConfig(),
                 TapoCameraFeature.MOTION_DETECTION, TapoCameraCommands.MODULE_MOTION_DETECTION,
                 TapoCameraCommands.SECTION_MOTION_DET);
-        if (json != null && cameraApi == api) {
+        if (json != null && Objects.equals(cameraApi, api)) {
             TapoMotionDetection detection = TapoMotionDetection.fromJson(json);
             if (detection.enabled() != null) {
                 updateState(channel(CHANNEL_GROUP_CAMERA_MOTION, CHANNEL_MOTION_ENABLED),
@@ -375,7 +376,7 @@ public class TapoCameraHandler extends BaseThingHandler {
         }
         JsonObject json = readSection(cameraApi, TapoCameraCommands.getLedConfig(), TapoCameraFeature.LED,
                 TapoCameraCommands.MODULE_LED, TapoCameraCommands.SECTION_LED_CONFIG);
-        if (json != null && cameraApi == api) {
+        if (json != null && Objects.equals(cameraApi, api)) {
             updateState(channel(CHANNEL_GROUP_CAMERA_SYSTEM, CHANNEL_LED_STATUS),
                     OnOffType.from(TapoLedInfo.fromJson(json).enabled()));
         }
@@ -387,7 +388,7 @@ public class TapoCameraHandler extends BaseThingHandler {
         }
         JsonObject json = readSection(cameraApi, TapoCameraCommands.getPresets(), TapoCameraFeature.PRESETS,
                 TapoCameraCommands.MODULE_PRESET, TapoCameraCommands.SECTION_PRESET);
-        if (json != null && cameraApi == api) {
+        if (json != null && Objects.equals(cameraApi, api)) {
             presets = TapoPresets.fromJson(json);
         }
     }
