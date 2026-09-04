@@ -47,7 +47,6 @@ public enum ProcessingPhase {
     )),
 
     DIRECTIVES(Set.of( //
-            SubstitutionPlaceholder.class, //
             IfPlaceholder.class, //
             ElseIfPlaceholder.class, //
             ElsePlaceholder.class, //
@@ -55,7 +54,12 @@ public enum ProcessingPhase {
             VarPlaceholder.class //
     )),
 
-    STANDARD(combine(DIRECTIVES, //
+    DIRECTIVES_WITH_SUBSTITUTIONS(combine( //
+            DIRECTIVES, //
+            SubstitutionPlaceholder.class //
+    )),
+
+    STANDARD(combine(DIRECTIVES_WITH_SUBSTITUTIONS, //
             IncludePlaceholder.class, //
             InsertPlaceholder.class //
     )),

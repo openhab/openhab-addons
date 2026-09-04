@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal.core;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -112,6 +113,10 @@ public class StructuralMerger {
         List<MergeEntry> mergeEntries = new ArrayList<>();
         List<DeclarationEntry> declarationEntries = new ArrayList<>();
 
+        EvaluationContext directiveContext = valueMode == ValueMode.PRESERVE
+                ? scopeContext.withProcessingPhase(ProcessingPhase.DIRECTIVES)
+                : scopeContext;
+
         // Phase 1: Evaluate keys, directives, and entry values into local scope
         for (Map.Entry<Object, @Nullable Object> rawEntry : map.entrySet()) {
             Object transformedKey = transformer.transform(rawEntry.getKey(), scopeContext);
@@ -132,7 +137,7 @@ public class StructuralMerger {
                 }
                 case Directive directive -> {
                     Object value = directiveProcessor.processMapDirective(directive, rawEntry.getValue(), ifChainState,
-                            transformer, scopeContext);
+                            transformer, directiveContext);
                     addMapEntries(value, resolved, declarationEntries);
                 }
                 default -> {
@@ -314,11 +319,8 @@ public class StructuralMerger {
             }
 
             Object targetValue = mutableTarget.get(sourceKey);
-            if (targetValue instanceof RemovePlaceholder) {
-                mutableTarget.remove(sourceKey);
-                continue;
-            }
-            if (targetValue instanceof FreezePlaceholder) {
+            if (targetValue instanceof RemovePlaceholder || targetValue instanceof FreezePlaceholder) {
+                // Keep RemovePlaceholder in mutableTarget so subsequent !deep passes skip sourceKey
                 continue;
             }
 
@@ -398,18 +400,45 @@ public class StructuralMerger {
         return copy;
     }
 
-    private @Nullable Object copySource(@Nullable Object value) {
-        if (value instanceof Map<?, ?> map) {
-            return copyMap(map);
+    public @Nullable Object copySource(@Nullable Object source) {
+        return copySource(source, new IdentityHashMap<>());
+    }
+
+    private @Nullable Object copySource(@Nullable Object source, Map<Object, Object> visited) {
+        if (source == null) {
+            return null;
         }
-        if (value instanceof List<?> list) {
-            List<@Nullable Object> copy = new ArrayList<>(list.size());
-            for (Object item : list) {
-                copy.add(copySource(item));
+
+        Object cachedCopy = visited.get(source);
+        if (cachedCopy != null) {
+            return cachedCopy;
+        }
+
+        if (source instanceof Map<?, ?> map) {
+            Map<Object, @Nullable Object> copy = new LinkedHashMap<>(map.size());
+            visited.put(source, copy);
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                Object key = entry.getKey();
+                if (key != null) {
+                    Object keyCopy = copySource(key, visited);
+                    if (keyCopy != null) {
+                        copy.put(keyCopy, copySource(entry.getValue(), visited));
+                    }
+                }
             }
             return copy;
         }
-        return value;
+
+        if (source instanceof List<?> list) {
+            List<@Nullable Object> copy = new ArrayList<>(list.size());
+            visited.put(source, copy);
+            for (Object item : list) {
+                copy.add(copySource(item, visited));
+            }
+            return copy;
+        }
+
+        return source;
     }
 
     private List<@Nullable Object> mergeLists(List<?> targetList, List<?> sourceList) {
@@ -420,12 +449,15 @@ public class StructuralMerger {
         for (Object item : targetList) {
             if (item instanceof DefaultPlaceholder defaultPlaceholder) {
                 if (!sourceHasValues) {
-                    merged.add(defaultPlaceholder.value());
+                    // add back the defaultPlaceholder so subsequent merges can still see it if the source list is empty
+                    merged.add(defaultPlaceholder);
                 }
             } else if (item instanceof RemovePlaceholder removePlaceholder) {
                 Object toRemoveItem = removePlaceholder.value();
                 if (toRemoveItem != null) {
                     toRemove.add(toRemoveItem);
+                    // add back the removePlaceholder so to prevent subsequent merges from re-adding the removed item
+                    merged.add(removePlaceholder);
                 }
             } else {
                 merged.add(item);

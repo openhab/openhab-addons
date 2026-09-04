@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.util.List;
@@ -175,5 +176,23 @@ class YamlComposerUniversalStructuralTagTest extends AbstractYamlComposerTest {
 
         assertThat("The !default tag should unwrap into a clean string", getNestedValue(data, "test", "label"),
                 is("default_label"));
+    }
+
+    @Test
+    @DisplayName("!freeze and !default: Preserves explicit null and tilde values")
+    void preservesNullAndTildeWithStructuralTags() throws IOException {
+        String yaml = """
+                freeze_null: !freeze null
+                default_tilde: !default ~
+                freeze_tilde: !freeze ~
+                default_null: !default null
+                """;
+
+        Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+        assertThat(data.get("freeze_null"), is(nullValue()));
+        assertThat(data.get("default_tilde"), is(nullValue()));
+        assertThat(data.get("freeze_tilde"), is(nullValue()));
+        assertThat(data.get("default_null"), is(nullValue()));
     }
 }

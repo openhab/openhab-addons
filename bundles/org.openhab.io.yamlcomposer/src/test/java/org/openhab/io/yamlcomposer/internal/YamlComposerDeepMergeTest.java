@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.util.List;
@@ -258,6 +259,28 @@ class YamlComposerDeepMergeTest extends AbstractYamlComposerTest {
             @SuppressWarnings("unchecked")
             Map<String, Object> network = (Map<String, Object>) Objects.requireNonNull(settings.get("network"));
             assertThat(network.keySet(), contains("ip", "subnet", "gateway"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Cyclic Alias Graph Handling")
+    class CyclicAliasHandling {
+
+        @Test
+        @DisplayName("Handles cyclic merge source graphs cleanly without StackOverflowError")
+        void handlesCyclicMergeSourceWithoutStackOverflow() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    defaults: &cycle
+                      self: *cycle
+                      setting: enabled
+
+                    target:
+                      setting: disabled
+                      !deep <<: *cycle
+                    """);
+
+            assertThat(getNestedValue(result, "target", "setting"), equalTo("disabled"));
+            assertThat(getNestedValue(result, "target", "self"), not(nullValue()));
         }
     }
 
@@ -512,6 +535,45 @@ class YamlComposerDeepMergeTest extends AbstractYamlComposerTest {
         }
 
         @Test
+        @DisplayName("!default in map permits first incoming value and protects it from later sources")
+        void defaultInMapPermitsFirstIncomingValueAcrossMultipleSources() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    target:
+                      metadata:
+                        alexa: !default "Light"
+                      !deep "<< # first":
+                        metadata:
+                          alexa: "Switch"
+                      !deep "<< # second":
+                        metadata:
+                          alexa: "Dimmer"
+                    """);
+
+            assertThat(getNestedValue(result, "target", "metadata", "alexa"), equalTo("Switch"));
+        }
+
+        @Test
+        @DisplayName("!default item in list is omitted when any subsequent !deep merge provides values")
+        void defaultInListOmittedAcrossMultipleDeepMerges() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    target:
+                      tags:
+                        - "Control"
+                        - !default "Power"
+                      !deep "<< # first":
+                        tags: []
+                      !deep "<< # second":
+                        tags:
+                          - "Light"
+                    """);
+
+            @SuppressWarnings("unchecked")
+            List<String> tags = (List<String>) getNestedValue(result, "target", "tags");
+            assertThat(tags, contains("Control", "Light"));
+            assertThat(tags, not(hasItem("Power")));
+        }
+
+        @Test
         @DisplayName("!remove (Neither Wins): Suppresses key and omits it entirely from output upon merge match")
         void removeSuppressesKeyFromFinalOutput() throws IOException {
             Map<Object, @Nullable Object> result = loadYaml("""
@@ -532,6 +594,77 @@ class YamlComposerDeepMergeTest extends AbstractYamlComposerTest {
             Map<String, Object> metadata = (Map<String, Object>) Objects
                     .requireNonNull(getNestedValue(result, "target", "metadata"));
             assertThat(metadata.containsKey("autoupdate"), equalTo(false));
+        }
+
+        @Test
+        @DisplayName("!remove in map survives multiple sequential !deep merges")
+        void removeInMapSurvivesMultipleDeepMerges() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    target:
+                      metadata:
+                        alexa: "Light"
+                        autoupdate: !remove true
+                      !deep "<< # first":
+                        metadata:
+                          autoupdate: false
+                      !deep "<< # second":
+                        metadata:
+                          autoupdate: true
+                          category: "Lighting"
+                    """);
+
+            assertThat(getNestedValue(result, "target", "metadata", "alexa"), equalTo("Light"));
+            assertThat(getNestedValue(result, "target", "metadata", "category"), equalTo("Lighting"));
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> metadata = (Map<String, Object>) Objects
+                    .requireNonNull(getNestedValue(result, "target", "metadata"));
+            assertThat(metadata, not(hasKey("autoupdate")));
+        }
+
+        @Test
+        @DisplayName("!remove in map survives across a sequence of folded !deep sources")
+        void removeInMapSurvivesFoldedSequenceOfSources() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    target:
+                      metadata:
+                        alexa: "Light"
+                        autoupdate: !remove true
+                      !deep <<:
+                        - metadata: { autoupdate: false }
+                        - metadata: { autoupdate: true, category: "Lighting" }
+                    """);
+
+            assertThat(getNestedValue(result, "target", "metadata", "alexa"), equalTo("Light"));
+            assertThat(getNestedValue(result, "target", "metadata", "category"), equalTo("Lighting"));
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> metadata = (Map<String, Object>) Objects
+                    .requireNonNull(getNestedValue(result, "target", "metadata"));
+            assertThat(metadata, not(hasKey("autoupdate")));
+        }
+
+        @Test
+        @DisplayName("!remove item in list survives multiple sequential !deep merges")
+        void removeInListSurvivesMultipleDeepMerges() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    target:
+                      tags:
+                        - "Control"
+                        - !remove "Light"
+                      !deep "<< # first":
+                        tags:
+                          - "Light"
+                      !deep "<< # second":
+                        tags:
+                          - "Light"
+                          - "Sensor"
+                    """);
+
+            @SuppressWarnings("unchecked")
+            List<String> tags = (List<String>) getNestedValue(result, "target", "tags");
+            assertThat(tags, contains("Control", "Sensor"));
+            assertThat(tags, not(hasItem("Light")));
         }
 
         @Test

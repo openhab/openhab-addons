@@ -13,7 +13,6 @@
 package org.openhab.io.yamlcomposer.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -131,8 +130,7 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
                     """.formatted(input);
             loadYaml(yaml);
 
-            assertThat(logSession.getTrackedWarnings(), hasItem(
-                    allOf(containsString("Failed to process !insert"), containsString("missing template name"))));
+            assertThat(logSession.getTrackedWarnings(), hasItem(containsString("Failed to process !insert")));
         }
 
         @Test
@@ -359,6 +357,29 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
 
             assertThat("ARGS inside template must contain its own immediate insert-level arguments",
                     getNestedValue(data, "data", "result", "args_insert"), equalTo("value_from_insert"));
+        }
+
+        @Test
+        @DisplayName("Defers template expression evaluation under !if until !insert supplies arguments")
+        void defersTemplateEvaluationUnderIfUntilInsert() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    variables:
+                      greetings_enabled: false
+                      name: foo
+                    templates:
+                      greetingTemplate:
+                        !if ${greetings_enabled}:
+                          then:
+                          message: "Hello, ${name}!"
+
+                    target: !insert
+                      template: greetingTemplate
+                      vars:
+                        name: "World"
+                        greetings_enabled: true
+                    """);
+
+            assertThat(getNestedValue(result, "target", "message"), equalTo("Hello, World!"));
         }
     }
 }

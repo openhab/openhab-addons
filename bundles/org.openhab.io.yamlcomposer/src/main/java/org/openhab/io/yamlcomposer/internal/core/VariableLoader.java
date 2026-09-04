@@ -99,7 +99,8 @@ public class VariableLoader {
             structuralMerger.composeMapPreserveValues(variablesMap, mergedMap, recursiveTransformer, context);
 
             mergedMap.forEach((key, value) -> {
-                String keyStr = String.valueOf(key);
+                Object transformedKey = recursiveTransformer.transform(key, context);
+                String keyStr = String.valueOf(transformedKey);
 
                 if (isSpecialVariable(keyStr)) {
                     logger.warn("{} Cannot redefine special variable '{}'.", recursiveTransformer.getAbsolutePath(),

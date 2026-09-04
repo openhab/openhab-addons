@@ -68,7 +68,7 @@ public class PackageProcessor {
         }
 
         // Expand root structural directives (!for, !if) while deferring !include and !insert
-        EvaluationContext pkgContext = new EvaluationContext(scope, ProcessingPhase.DIRECTIVES);
+        EvaluationContext pkgContext = new EvaluationContext(scope, ProcessingPhase.DIRECTIVES_WITH_SUBSTITUTIONS);
         Object expandedPackages = recursiveTransformer.transform(packagesObj, pkgContext);
 
         if (expandedPackages instanceof Map<?, ?> packagesMap) {

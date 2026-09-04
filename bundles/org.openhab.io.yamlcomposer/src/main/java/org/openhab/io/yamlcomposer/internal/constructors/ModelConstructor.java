@@ -279,6 +279,10 @@ public class ModelConstructor extends StandardConstructor {
     @SuppressWarnings("null") // The stacks and SnakeYAML methods shouldn't return null
     protected @Nullable Object constructScalarOrSubstitution(ScalarNode scalarNode) {
         Object implicitValue = constructImplicitScalar(scalarNode);
+        if (Tag.NULL.equals(implicitValue)) {
+            return null;
+        }
+
         if (implicitValue != null) {
             return implicitValue;
         }
@@ -313,6 +317,10 @@ public class ModelConstructor extends StandardConstructor {
         String value = scalarNode.getValue();
         ScalarResolver scalarResolver = settings.getSchema().getScalarResolver();
         Tag implicitTag = scalarResolver.resolve(value, true);
+
+        if (Tag.NULL.equals(implicitTag)) {
+            return Tag.NULL;
+        }
 
         if (Tag.INT.equals(implicitTag) || Tag.FLOAT.equals(implicitTag) || Tag.BOOL.equals(implicitTag)) {
             ScalarNode typedNode = new ScalarNode(implicitTag, true, value, scalarNode.getScalarStyle(),

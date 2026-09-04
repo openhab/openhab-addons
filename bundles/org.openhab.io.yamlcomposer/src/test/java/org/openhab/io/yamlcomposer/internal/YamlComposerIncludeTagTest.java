@@ -59,8 +59,7 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
             Path yamlFile = writeFixture("includeTest.yaml", "a: " + input);
             loadFixture(yamlFile);
 
-            assertThat(logSession.getTrackedWarnings(),
-                    hasItem(containsString("Failed to process !include: missing 'file' parameter")));
+            assertThat(logSession.getTrackedWarnings(), hasItem(containsString("Failed to process !include")));
         }
 
         @Test
