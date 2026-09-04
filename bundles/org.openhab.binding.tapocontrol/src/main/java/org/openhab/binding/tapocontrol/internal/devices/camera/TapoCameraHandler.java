@@ -121,6 +121,7 @@ public class TapoCameraHandler extends BaseThingHandler {
             api = createApi(config);
         } catch (IllegalStateException e) {
             LOGGER.debug("{}: cannot create camera api", thing.getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
         int pollingInterval = config.pollingInterval();
@@ -268,9 +269,9 @@ public class TapoCameraHandler extends BaseThingHandler {
             return;
         }
         TapoDeviceInfo info = TapoDeviceInfo.fromJson(json);
-        putProperty("model", info.model());
-        putProperty("macAddress", info.mac());
-        putProperty("firmwareVersion", info.swVersion());
+        putProperty(Thing.PROPERTY_MODEL_ID, info.model());
+        putProperty(Thing.PROPERTY_MAC_ADDRESS, info.mac());
+        putProperty(Thing.PROPERTY_FIRMWARE_VERSION, info.swVersion());
         deviceInfoRead = true;
     }
 

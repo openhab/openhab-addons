@@ -371,4 +371,16 @@
 		<state readOnly="false"/>
 	</channel-type>
 
+	<!-- camera status led -->
+	<channel-type id="cameraLedStatusChannel">
+		<item-type>Switch</item-type>
+		<label>Status LED</label>
+		<description>Enables or disables the status LED of the camera</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
 </thing:thing-descriptions>

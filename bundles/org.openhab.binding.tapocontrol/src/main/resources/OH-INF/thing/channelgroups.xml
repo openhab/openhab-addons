@@ -204,7 +204,7 @@
 		<label>Device Settings</label>
 		<description>Basic device settings of the camera</description>
 		<channels>
-			<channel id="ledStatus" typeId="led"/>
+			<channel id="ledStatus" typeId="cameraLedStatusChannel"/>
 		</channels>
 	</channel-group-type>
 

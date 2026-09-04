@@ -172,6 +172,8 @@ class TapoCameraHandlerTest {
                 "msg_alarm#chn1_msg_alarm_info", "{\"enabled\":\"off\",\"alarm_mode\":[\"sound\",\"light\"]}", //
                 "system#last_alarm_info", "{\"last_alarm_type\":\"motion\",\"last_alarm_time\":1689317707}", //
                 "motion_detection#motion_det", "{\"enabled\":\"on\",\"digital_sensitivity\":60}", //
+                "device_info#basic_info",
+                "{\"device_model\":\"C200\",\"mac\":\"00:11:22:33:44:55\",\"sw_version\":\"1.3.0\"}", //
                 "led#config", "{\"enabled\":\"on\"}", //
                 "preset#preset", "{}"));
         handler.simulateInitialize();
@@ -186,9 +188,23 @@ class TapoCameraHandlerTest {
         assertNotNull(updatedStates.get("alarm#lastAlarmTime"));
         assertEquals(OnOffType.ON, updatedStates.get("motionDetection#enabled"));
         assertEquals(OnOffType.ON, updatedStates.get("system#ledStatus"));
+        assertEquals("C200", thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
+        assertEquals("00:11:22:33:44:55", thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS));
+        assertEquals("1.3.0", thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION));
         assertEquals(ThingStatus.ONLINE, lastStatus.getStatus());
         assertTrue(handler.getDetectedFeatures()
                 .containsAll(java.util.EnumSet.of(TapoCameraFeature.ALARM, TapoCameraFeature.PRIVACY)));
+    }
+
+    @Test
+    void missingHttpClientSetsOfflineConfigurationError() {
+        TapoCameraHandler rawHandler = new TapoCameraHandler(thing, null);
+        rawHandler.setCallback(callback);
+        rawHandler.initialize();
+
+        assertEquals(ThingStatus.OFFLINE, lastStatus.getStatus());
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, lastStatus.getStatusDetail());
+        assertEquals("no httpClient configured", lastStatus.getDescription());
     }
 
     @Test

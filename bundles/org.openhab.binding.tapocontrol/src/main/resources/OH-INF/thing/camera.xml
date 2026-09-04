@@ -6,7 +6,7 @@
 
 	<!-- CAMERA THING-TYPE (standalone IP camera, no bridge required) -->
 	<thing-type id="camera">
-		<label>IP Camera</label>
+		<label>Tapo Camera</label>
 		<description>Tapo IP Camera (local API). Features depend on the model and are detected automatically.</description>
 		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 
