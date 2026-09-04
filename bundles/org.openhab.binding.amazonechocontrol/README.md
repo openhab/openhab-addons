@@ -114,6 +114,8 @@ After configuration of the account thing with the login data, the echo devices r
 If the device type is not known by the binding, the device will not be discovered.
 But you can define any device listed in your Alexa app with the best matching existing device (e.g. echo).
 You will find the required serial number in settings of the device in the Alexa app.
+Sonos speakers appear twice in the account, once as family `THIRD_PARTY_AVS_SONOS_BOOTLEG` for voice and text and once as family `THIRD_PARTY_AVS_MEDIA_DISPLAY` for playback state and player control, the media entry only if the speaker has no built-in Alexa.
+Both serial numbers are listed on the account page of the binding at `http://<openhab>:8080/amazonechocontrol`, create one `echo` thing per entry you need.
 
 ### Discover Smart Home Devices
 
