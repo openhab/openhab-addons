@@ -2283,7 +2283,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     /**
      * Enable or disable a wireless radio interface.
      */
-    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
+    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) throws IOException {
         // Default no-op; overridden by chipset subclasses
     }
 
@@ -2299,7 +2299,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             SshRunner runner = s.createRunner();
             setRadioEnabled(runner, iface, enabled);
             return true;
-        } catch (RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             logger.debug("Failed to {} radio {}: {}", enabled ? "enable" : "disable", iface, e.getMessage());
             return false;
         }
