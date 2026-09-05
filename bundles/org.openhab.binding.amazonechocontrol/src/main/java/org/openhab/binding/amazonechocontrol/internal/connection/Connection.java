@@ -1249,7 +1249,7 @@ public class Connection {
         ExecutionNodeObject executionNodeObject = getExecutionNodeObject(nodeToExecute);
         List<String> types = executionNodeObject.types;
         long delay = types.contains("Alexa.DeviceControls.Volume") ? 2000 : 0;
-        delay += types.contains("Announcement") ? 3000 : 2000;
+        delay += types.contains("AlexaAnnouncement") ? 3000 : 2000;
 
         try {
             JsonObject sequenceJson = new JsonObject();
