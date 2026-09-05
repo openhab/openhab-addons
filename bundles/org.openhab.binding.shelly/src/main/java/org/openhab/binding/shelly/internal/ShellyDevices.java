@@ -159,6 +159,10 @@ public class ShellyDevices {
     public static final String SHELLYDT_MINI_PMG3 = "S3PM-001PCEU16";
     public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16"; // PM was renamed to EM in Gen4
 
+    // Shelly Gen3 Bulb Series
+    public static final String SHELLYDT_DUOBULBG3 = "S3BL-D010009AEU"; // Shelly Duo Bulb E27 Gen3
+    public static final String SHELLYDT_COLORBULBG3 = "S3BL-C010007AEU"; // Shelly Multicolor Bulb E27 Gen3
+
     // Shelly BLU Series
     public static final String SHELLYDT_BLUCLASS_BUTTON = "SBBT";
     public static final String SHELLYDT_BLUCLASS_HT = "SBHT";
@@ -296,6 +300,11 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
 
+    // Shelly Gen3 Bulb Series
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDUOBULB = new ThingTypeUID(BINDING_ID, "shellyplusduobulb");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSCOLORBULB = new ThingTypeUID(BINDING_ID,
+            "shellypluscolorbulb");
+
     // Shelly Blu series
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON1 = new ThingTypeUID(BINDING_ID, "shellyblubutton");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUWALLSWITCH4 = new ThingTypeUID(BINDING_ID,
@@ -319,11 +328,13 @@ public class ShellyDevices {
             THING_TYPE_SHELLYPLUSDIMMER, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMER10V, // Plus
             THING_TYPE_SHELLYPRODM2PM); // Pro
 
-    // Duo devices
+    // Duo devices (tunable white / RGBCCT bulbs: Gen1 Duo, Gen1 Color Bulb, Gen1 Vintage, Gen3 Duo Bulb, Gen3
+    // Multicolor Bulb)
     public static final Set<ThingTypeUID> GROUP_DUO_THING_TYPES = Set.of( //
-            THING_TYPE_SHELLYDUO, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYVINTAGE);
+            THING_TYPE_SHELLYDUO, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYVINTAGE, THING_TYPE_SHELLYPLUSDUOBULB,
+            THING_TYPE_SHELLYPLUSCOLORBULB);
 
-    // RGBW2 devices
+    // RGBW2 devices (LED strip controllers with separate R/G/B/W channels)
     public static final Set<ThingTypeUID> GROUP_RGBW2_THING_TYPES = Set.of( //
             THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM,
             THING_TYPE_SHELLYPRORGBWWPM);
@@ -514,6 +525,10 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3EM3CT63, THING_TYPE_SHELLYPRO3EM63), //
             Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
 
+            // Gen3 Bulb Series
+            Map.entry(SHELLYDT_DUOBULBG3, THING_TYPE_SHELLYPLUSDUOBULB), //
+            Map.entry(SHELLYDT_COLORBULBG3, THING_TYPE_SHELLYPLUSCOLORBULB), //
+
             // BLU Series
             Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON1),
             Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON1),
@@ -703,6 +718,12 @@ public class ShellyDevices {
             Map.entry("shellypro3em63", THING_TYPE_SHELLYPRO3EM63), //
             Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
             Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400),
+
+            // Shelly Gen3 Bulb Series - firmware mDNS name and thing-type-id alias both map to the same UID
+            Map.entry("shellyduobulbg3", THING_TYPE_SHELLYPLUSDUOBULB), //
+            Map.entry("shellyplusduobulb", THING_TYPE_SHELLYPLUSDUOBULB), //
+            Map.entry("shellycolorblbg3", THING_TYPE_SHELLYPLUSCOLORBULB), //
+            Map.entry("shellypluscolorbulb", THING_TYPE_SHELLYPLUSCOLORBULB), //
 
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON1), //

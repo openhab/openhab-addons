@@ -153,8 +153,39 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRO3EM63, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO3EM400, true, false), //
 
+                // Shelly Gen3 Bulb series
+                Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, true, false), //
+
                 Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), // password protected device
                 Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false)); // unknown device
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGen3BulbFlags")
+    void gen3BulbProfileFlags(ThingTypeUID thingTypeUID) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        assertThat(profile.isDuo, is(true));
+        assertThat(profile.isRGBCCT, is(THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID)));
+        assertThat(profile.isLight, is(true));
+        assertThat(profile.isGen2, is(true));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGen3BulbFlags() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB), //
+                Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB));
+    }
+
+    @Test
+    void vintageIsDuoButNotCctCapable() {
+        ShellyDeviceProfile vintage = new ShellyDeviceProfile(THING_TYPE_SHELLYVINTAGE);
+        assertThat(vintage.isDuo, is(true));
+        assertThat(vintage.isVintage, is(true));
+
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYDUO).isVintage, is(false));
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYDUORGBW).isVintage, is(false));
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB).isVintage, is(false));
     }
 
     @ParameterizedTest
