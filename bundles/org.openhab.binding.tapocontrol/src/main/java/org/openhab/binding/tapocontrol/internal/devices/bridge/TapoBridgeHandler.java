@@ -15,6 +15,7 @@ package org.openhab.binding.tapocontrol.internal.devices.bridge;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +52,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     private TapoBridgeConfiguration config = new TapoBridgeConfiguration();
     private final HttpClient httpClient;
     private volatile boolean disposed;
+    private volatile Object lifecycle = new Object();
     private @Nullable ScheduledFuture<?> startupJob;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @NonNullByDefault({}) TapoCloudConnector cloudConnector;
@@ -79,6 +81,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * set credentials and login cloud
      */
     public void initialize() {
+        lifecycle = new Object();
         disposed = false;
         config = getConfigAs(TapoBridgeConfiguration.class);
         credentials = new TapoCredentials(config.username, config.password);
@@ -104,6 +107,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         disposed = true;
+        lifecycle = new Object();
         stopScheduler(this.startupJob);
         stopScheduler(this.pollingJob);
         TapoDiscoveryService discovery = discoveryService;
@@ -140,7 +144,11 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * delayed OneTime StartupJob
      */
     private void delayedStartUp() {
+        Object startupLifecycle = lifecycle;
         loginCloud();
+        if (disposed || !Objects.equals(startupLifecycle, lifecycle)) {
+            return;
+        }
         startCloudScheduler();
         TapoDiscoveryService discovery = discoveryService;
         if (discovery != null) {

@@ -145,7 +145,9 @@ public class TapoCameraHandler extends BaseThingHandler {
         boolean retriedAuth = false;
         while (Objects.equals(cameraApi, api)) {
             try {
-                ensureLoggedIn(cameraApi);
+                if (!ensureLoggedIn(cameraApi)) {
+                    return;
+                }
                 readDeviceInfo(cameraApi);
                 readAlarm(cameraApi);
                 readPrivacy(cameraApi);
@@ -159,6 +161,9 @@ public class TapoCameraHandler extends BaseThingHandler {
                 synchronizeChannels();
                 break;
             } catch (StopCycleException e) {
+                if (!Objects.equals(cameraApi, api)) {
+                    return;
+                }
                 TapoCameraApiException cause = e.cause();
                 if (cause.getErrorCode() == ERROR_AUTH_FAILURE && !retriedAuth) {
                     // single bounded re-login within the same cycle
@@ -170,22 +175,25 @@ public class TapoCameraHandler extends BaseThingHandler {
                 offlineFromCause(cause);
                 break;
             } catch (TapoCameraApiException e) {
-                offlineFromCause(e);
+                if (Objects.equals(cameraApi, api)) {
+                    offlineFromCause(e);
+                }
                 break;
             }
         }
     }
 
-    private void ensureLoggedIn(TapoCameraApi cameraApi) throws TapoCameraApiException {
+    private boolean ensureLoggedIn(TapoCameraApi cameraApi) throws TapoCameraApiException {
         if (!cameraApi.isLoggedIn()) {
             cameraApi.login();
             if (!Objects.equals(cameraApi, api)) {
-                return;
+                return false;
             }
             // features may come back after reconnect
             detectedFeatures = EnumSet.allOf(TapoCameraFeature.class);
             deviceInfoRead = false; // properties must be refreshed for the new session
         }
+        return true;
     }
 
     /** Nested control-flow marker wrapping the API exception that aborted the poll cycle. */

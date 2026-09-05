@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +65,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
     private volatile boolean disposed;
+    private volatile Object lifecycle = new Object();
     protected @NonNullByDefault({}) TapoDeviceConnector connector;
     protected @NonNullByDefault({}) TapoBridgeHandler bridge;
 
@@ -120,6 +122,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         disposed = true;
+        lifecycle = new Object();
         try {
             stopScheduler(this.startupJob);
             stopScheduler(this.pollingJob);
@@ -134,6 +137,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * ACTIVATE DEVICE
      */
     protected void activateDevice() {
+        lifecycle = new Object();
         disposed = false;
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
@@ -184,7 +188,11 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * delayed OneTime StartupJob
      */
     private void delayedStartUp() {
+        Object startupLifecycle = lifecycle;
         connect();
+        if (disposed || !Objects.equals(startupLifecycle, lifecycle)) {
+            return;
+        }
         startPollingScheduler();
     }
 
