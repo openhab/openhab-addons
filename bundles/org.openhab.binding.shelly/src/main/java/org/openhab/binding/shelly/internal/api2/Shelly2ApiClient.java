@@ -86,6 +86,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
@@ -430,6 +431,20 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
+        // lora100 is present only while the add-on is installed; re-evaluated on every config refresh.
+        // rx_enable is optional and defaults to enabled
+        if (dc.lora100 != null) {
+            profile.settings.loraDetected = true;
+            profile.settings.loraRxEnabled = !Boolean.FALSE.equals(dc.lora100.rxEnabled);
+            profile.settings.loraComponentIds = new Integer[1];
+            Integer loraId = dc.lora100.id;
+            profile.settings.loraComponentIds[0] = loraId != null ? loraId : 100;
+        } else {
+            profile.settings.loraDetected = false;
+            profile.settings.loraRxEnabled = false;
+            profile.settings.loraComponentIds = null;
+        }
+
         return dc;
     }
 
@@ -614,6 +629,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateLightModeStatus(4, status, result.light4, channelUpdate);
         updated |= updateLightModeStatus(0, status, result.cct0, channelUpdate);
         updated |= updateLightModeStatus(1, status, result.cct1, channelUpdate);
+        updated |= updateLoraStatus(result.lora100);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -1359,6 +1375,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         // Always true: signals the watchdog even if the channel value itself didn't change.
         return true;
+    }
+
+    private boolean updateLoraStatus(@Nullable Shelly2DeviceStatusLora value) throws ShellyApiException {
+        return value != null && ShellyComponents.updateLoraStatus(getThing(), value);
     }
 
     protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {

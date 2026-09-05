@@ -747,6 +747,10 @@ public class Shelly1ApiJsonDTO {
         // Gen2
         public Boolean ethernet;
         public Boolean bluetooth;
+
+        public boolean loraDetected;
+        public boolean loraRxEnabled;
+        public Integer[] loraComponentIds; // so far only 1 add-on is supported
     }
 
     public static class ShellySettingsAttributes {

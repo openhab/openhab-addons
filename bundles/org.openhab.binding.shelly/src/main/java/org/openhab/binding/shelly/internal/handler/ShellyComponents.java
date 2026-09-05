@@ -16,8 +16,12 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import javax.measure.MetricPrefix;
 import javax.measure.Unit;
@@ -49,14 +53,18 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -68,6 +76,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ShellyComponents {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyComponents.class);
 
     /**
      * Update device status
@@ -82,13 +91,18 @@ public class ShellyComponents {
             thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createDeviceChannels(thingHandler.getThing(),
                     thingHandler.getProfile(), status));
         }
+        if (profile.isGen2) {
+            // LoRa channels follow the add-on state (installed / rx_enable), so they are reconciled on every
+            // cycle and bypass the one-time channelsCreated gate of updateChannelDefinitions()
+            thingHandler.updateThingChannels(Map.of(),
+                    ShellyChannelDefinitions.createLoraChannels(thingHandler.getThing(), profile));
+            reconcileLoraChannels(thingHandler, profile);
+        }
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
-
         if (!profile.gateway.isEmpty()) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
         }
-
         if (getLong(status.uptime) > 10) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                     toQuantityType((double) getLong(status.uptime), DIGITS_NONE, Units.SECOND));
@@ -980,6 +994,86 @@ public class ShellyComponents {
     public static boolean hasAddon(ShellySettingsStatus status) {
         return status.extTemperature != null || status.extHumidity != null || status.extVoltage != null
                 || status.extDigitalInput != null || status.extAnalogInput != null;
+    }
+
+    private static void reconcileLoraChannels(ShellyThingInterface thingHandler, ShellyDeviceProfile profile) {
+        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteLoraChannelIds(profile);
+        if (!obsolete.isEmpty()) {
+            thingHandler.removeChannels(obsolete);
+        }
+        if (!profile.settings.loraDetected) {
+            profile.addOnFw = "";
+            thingHandler.removeProperty(PROPERTY_ADDON_FIRMWARE);
+        }
+    }
+
+    public static void handleLoraCommand(ShellyThingInterface thingHandler, String channelId, Command command)
+            throws ShellyApiException {
+        String thingName = thingHandler.getThingName();
+        switch (channelId) {
+            case CHANNEL_LORA_TXDATA:
+                String data = getString(command);
+                if (!data.isEmpty()) {
+                    String rawData = Base64.getEncoder().encodeToString(data.getBytes(StandardCharsets.UTF_8));
+                    thingHandler.getApi().loraSendData(0, rawData);
+                    thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATARAW, getStringType(rawData));
+                }
+                break;
+            case CHANNEL_LORA_TXDATARAW:
+                String txRawData = getString(command);
+                if (!txRawData.isEmpty()) {
+                    try {
+                        String txPadded = fixBase64Padding(txRawData);
+                        byte[] txBytes = Base64.getDecoder().decode(txPadded);
+                        thingHandler.getApi().loraSendData(0, txPadded);
+                        String txData = decodeUtf8Strict(txBytes);
+                        if (txData != null) {
+                            thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXDATA, getStringType(txData));
+                        } else {
+                            LOGGER.debug("{}: LoRa TX payload is not valid UTF-8, dataTx channel not updated",
+                                    thingName);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        LOGGER.warn("{}: LoRa data not sent, payload is not valid Base64: {}", thingName,
+                                e.getMessage());
+                    }
+                }
+                break;
+        }
+    }
+
+    public static boolean updateLoraStatus(ShellyThingInterface thingHandler, Shelly2DeviceStatusLora status) {
+        boolean updated = false;
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (profile.settings.loraDetected) {
+            // NotifyStatus is a delta: fields the device didn't change are omitted (null) and must be left alone
+            // rather than overwritten with UNDEF/0
+            if (status.rxBytes != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXBYTES,
+                        toQuantityType(status.rxBytes, Units.BYTE));
+            }
+            if (status.txBytes != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXBYTES,
+                        toQuantityType(status.txBytes, Units.BYTE));
+            }
+            if (status.txErrors != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_TXERRORS,
+                        getDecimal(status.txErrors));
+            }
+            if (status.airtime != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_AIRTIME,
+                        toQuantityType(status.airtime, MetricPrefix.MILLI(Units.SECOND)));
+            }
+
+            // The add-on reports its firmware version asynchronously, usually not before the first status cycle
+            String addOnFw = getString(status.fw);
+            if (!addOnFw.isEmpty() && !addOnFw.equals(profile.addOnFw)) {
+                profile.addOnFw = addOnFw;
+                thingHandler.updateProperties(PROPERTY_ADDON_FIRMWARE, addOnFw);
+            }
+        }
+
+        return updated;
     }
 
     public static boolean updateTempChannel(@Nullable ShellyShortTemp sensor, ShellyThingInterface thingHandler,

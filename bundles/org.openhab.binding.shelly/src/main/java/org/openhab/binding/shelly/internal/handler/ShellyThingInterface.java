@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -87,6 +88,8 @@ public interface ShellyThingInterface {
 
     boolean updateThingChannels(Map<String, Channel> channelUpdates, Map<String, Channel> newChannels);
 
+    boolean removeChannels(Set<String> channelIds);
+
     void postEvent(String event, boolean force);
 
     void triggerChannel(String group, String channelID, String event);
@@ -110,6 +113,8 @@ public interface ShellyThingInterface {
     String getProperty(String key);
 
     void updateProperties(String key, String value);
+
+    void removeProperty(String key);
 
     boolean updateWakeupReason(@Nullable List<Object> valueArray);
 

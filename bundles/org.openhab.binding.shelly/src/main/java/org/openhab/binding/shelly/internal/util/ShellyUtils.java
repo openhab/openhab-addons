@@ -16,6 +16,10 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -266,6 +270,13 @@ public class ShellyUtils {
         throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
     }
 
+    public static String getString(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string) {
+            return string.toString();
+        }
+        throw new IllegalArgumentException("Invalid StringType for conversion: " + command);
+    }
+
     public static OnOffType getOnOff(@Nullable Boolean value) {
         return OnOffType.from(value != null && value);
     }
@@ -380,5 +391,39 @@ public class ShellyUtils {
             hexString.append(hex);
         }
         return hexString.toString();
+    }
+
+    /**
+     * Adds missing '=' padding to a Base64 string that may have been stripped by Shelly firmware.
+     * Java's Base64.getDecoder() is strict and requires canonical padding.
+     *
+     * @param b64 raw Base64 string, possibly unpadded
+     * @return Base64 string with correct padding appended
+     */
+    public static String fixBase64Padding(String b64) {
+        int rem = b64.length() % 4;
+        if (rem == 2) {
+            return b64 + "==";
+        } else if (rem == 3) {
+            return b64 + "=";
+        }
+        return b64;
+    }
+
+    /**
+     * Decodes a byte array as UTF-8, rejecting malformed or unmappable sequences instead of silently
+     * replacing them (as {@code new String(bytes, UTF_8)} does).
+     *
+     * @param bytes the bytes to decode
+     * @return the decoded string, or null when {@code bytes} is not valid UTF-8
+     */
+    public static @Nullable String decodeUtf8Strict(byte[] bytes) {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        try {
+            return decoder.decode(ByteBuffer.wrap(bytes)).toString();
+        } catch (CharacterCodingException e) {
+            return null;
+        }
     }
 }
