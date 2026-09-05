@@ -155,7 +155,7 @@
 
 	<thing-type id="shellytrv">
 		<label>Shelly TRV</label>
-		<description>Shelly TRV (Radiator value, battery powered)</description>
+		<description>Shelly TRV (Radiator valve, battery powered)</description>
 		<category>RadiatorControl</category>
 		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 		<channel-groups>
