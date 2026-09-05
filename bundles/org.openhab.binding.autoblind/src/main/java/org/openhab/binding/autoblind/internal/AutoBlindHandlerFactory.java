@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.autoblind.internal.discovery.AutoBlindDiscoveryService;
 import org.openhab.binding.autoblind.internal.handler.AutoBlindHubHandler;
 import org.openhab.binding.autoblind.internal.handler.AutoBlindShadeHandler;
@@ -40,19 +39,19 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * Creates thing handlers for AutoBlind hub and shade things.
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.autoblind")
 public class AutoBlindHandlerFactory extends BaseThingHandlerFactory {
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new ConcurrentHashMap<>();
 
     @Activate
     public AutoBlindHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
         super.activate(componentContext);
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -64,7 +63,8 @@ public class AutoBlindHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (AutoBlindBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {
-            AutoBlindHubHandler handler = new AutoBlindHubHandler((Bridge) thing, httpClient);
+            AutoBlindHubHandler handler = new AutoBlindHubHandler((Bridge) thing,
+                    httpClientFactory.getCommonHttpClient());
             ServiceRegistration<?> registration = bundleContext.registerService(DiscoveryService.class.getName(),
                     new AutoBlindDiscoveryService(handler), new Hashtable<>());
             discoveryServiceRegistrations.put(thing.getUID(), registration);

@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response from the /NM/v1/registration endpoint.
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 public class RegistrationResponse {
 

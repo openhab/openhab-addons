@@ -15,7 +15,6 @@ package org.openhab.binding.autoblind.internal.discovery;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.autoblind.internal.AutoBlindBindingConstants;
 import org.openhab.binding.autoblind.internal.api.dto.AllPeripheralResponse;
 import org.openhab.binding.autoblind.internal.api.dto.PeripheralInfo;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Discovers shades connected to an AutoBlind hub by querying the GetAllPeripheral endpoint.
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 @NonNullByDefault
 public class AutoBlindDiscoveryService extends AbstractDiscoveryService {
@@ -45,7 +44,6 @@ public class AutoBlindDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        @Nullable
         AllPeripheralResponse response = hubHandler.getAllPeripherals();
         if (response == null) {
             logger.debug("No response from hub during shade discovery");

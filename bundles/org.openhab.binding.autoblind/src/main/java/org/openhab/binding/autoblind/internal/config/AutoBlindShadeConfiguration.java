@@ -10,17 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.autoblind.internal.api.dto;
+package org.openhab.binding.autoblind.internal.config;
 
-import java.util.List;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Parsed event from the /NM/v1/notification long-poll endpoint.
+ * Configuration for an individual AutoBlind shade.
  *
  * @author Stephen Berg - Initial contribution
  */
-public class NotificationEvent {
-
-    public long timestamp;
-    public List<Integer> peripheralList = List.of();
+@NonNullByDefault
+public class AutoBlindShadeConfiguration {
+    public @Nullable Integer peripheralUid;
+    public boolean invertPosition = true;
 }

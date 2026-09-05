@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for {@link AutoBlindBindingConstants}.
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 @NonNullByDefault
 class AutoBlindBindingConstantsTest {

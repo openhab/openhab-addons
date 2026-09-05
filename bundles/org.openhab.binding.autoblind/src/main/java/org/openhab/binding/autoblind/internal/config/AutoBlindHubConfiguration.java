@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.autoblind.internal.api.dto;
+package org.openhab.binding.autoblind.internal.config;
 
-import java.util.List;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Parsed event from the /NM/v1/notification long-poll endpoint.
+ * Configuration for the AutoBlind Hub bridge.
  *
  * @author Stephen Berg - Initial contribution
  */
-public class NotificationEvent {
-
-    public long timestamp;
-    public List<Integer> peripheralList = List.of();
+@NonNullByDefault
+public class AutoBlindHubConfiguration {
+    public String host = "";
+    public int pollingInterval = 1800;
 }

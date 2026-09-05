@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Peripheral metadata from the GetAllPeripheral response (nested in room/group hierarchy).
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 public class PeripheralInfo {
 
