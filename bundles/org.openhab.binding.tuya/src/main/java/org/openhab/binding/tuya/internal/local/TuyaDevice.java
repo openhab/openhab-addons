@@ -71,6 +71,7 @@ import io.netty.util.concurrent.Future;
  * The {@link TuyaDevice} handles the device connection
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add sub-device (cid) addressing
  */
 @NonNullByDefault
 public class TuyaDevice implements ChannelFutureListener {
@@ -200,7 +201,10 @@ public class TuyaDevice implements ChannelFutureListener {
                 // the connection does not recover so we do need to reconnect. And finally, since we
                 // always send DP_QUERY and CONTROL in pairs (because some older devices require CONTROL
                 // rather than DP_QUERY) we do not need to set a timeout for DP_QUERY.
+                // A message addressed to a sub-device is only relayed by the gateway. The sub-device may answer
+                // seconds later or not at all, which says nothing about the gateway connection being alive.
                 if (msg != null && msg instanceof MessageWrapper<?> m //
+                        && m.cid == null //
                         && m.commandType != SESS_KEY_NEG_FINISH //
                         && m.commandType != DP_REFRESH //
                         && m.commandType != DP_QUERY && m.commandType != DP_QUERY_NEW //
@@ -320,13 +324,42 @@ public class TuyaDevice implements ChannelFutureListener {
     }
 
     public void set(Map<Integer, @Nullable Object> command) {
+        set(null, command);
+    }
+
+    /**
+     * Sends data points to a device.
+     *
+     * @param cid the node id of the sub-device to address, or {@code null} to address this device
+     * @param command the data points to set
+     */
+    public void set(@Nullable String cid, Map<Integer, @Nullable Object> command) {
         CommandType commandType = (protocolVersion == V3_4 || protocolVersion == V3_5) ? CONTROL_NEW : CONTROL;
         ChannelFuture channelFuture = this.channelFuture;
         if (channelFuture != null) {
-            channelFuture.channel().writeAndFlush(new MessageWrapper<>(commandType, Map.of("dps", command)));
+            channelFuture.channel().writeAndFlush(new MessageWrapper<>(commandType, Map.of("dps", command), cid));
         } else {
             logger.warn("{}: Setting {} failed. Device is not connected.", deviceId, command);
         }
+    }
+
+    /**
+     * Queries the status of a sub-device connected through this gateway.
+     *
+     * A sub-device query carries nothing but the node id: the data points to report are chosen by the gateway, and
+     * unlike {@link #requestStatus()} there is no need for the legacy CONTROL companion message because sub-devices
+     * are served by the gateway firmware, which always implements DP_QUERY.
+     *
+     * @param cid the node id of the sub-device to query
+     */
+    public void requestStatus(String cid) {
+        ChannelFuture channelFuture = this.channelFuture;
+        if (channelFuture == null) {
+            logger.warn("{}/{}: Querying status failed. Device is not connected.", deviceId, cid);
+            return;
+        }
+
+        channelFuture.channel().writeAndFlush(new MessageWrapper<>(DP_QUERY, Map.of(), cid));
     }
 
     public void requestStatus() {
