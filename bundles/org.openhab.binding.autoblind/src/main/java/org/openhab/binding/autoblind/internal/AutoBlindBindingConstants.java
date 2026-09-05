@@ -20,7 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * Binding constants for the AutoBlind binding.
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 @NonNullByDefault
 public class AutoBlindBindingConstants {
@@ -35,14 +35,17 @@ public class AutoBlindBindingConstants {
 
     // Channel IDs
     public static final String CHANNEL_POSITION = "position";
-    public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
-    public static final String CHANNEL_LOW_BATTERY = "lowBattery";
-    public static final String CHANNEL_FORCE_REFRESH = "forceRefresh";
+    public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
+    public static final String CHANNEL_LOW_BATTERY = "low-battery";
 
     // Config parameter names
-    public static final String CONFIG_HOST = "host";
-    public static final String CONFIG_POLLING_INTERVAL = "pollingInterval";
     public static final String CONFIG_PERIPHERAL_UID = "peripheralUid";
+
+    // Thing properties
+    public static final String PROPERTY_FIRMWARE_VERSION = "firmwareVersion";
+    public static final String PROPERTY_MODEL_ID = "modelId";
+    public static final String PROPERTY_THING_NAME = "thingName";
+    public static final String PROPERTY_WIFI_SSID = "wifiSsid";
 
     // API
     public static final int API_PORT = 10123;

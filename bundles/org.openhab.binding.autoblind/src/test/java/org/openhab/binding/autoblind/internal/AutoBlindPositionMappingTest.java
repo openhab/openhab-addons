@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.CsvSource;
  * openHAB: 0 = open, 100 = closed.
  * Conversion: ohPosition = 100 - apiPosition.
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 @NonNullByDefault
 class AutoBlindPositionMappingTest {

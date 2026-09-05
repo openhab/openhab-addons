@@ -14,25 +14,30 @@ package org.openhab.binding.autoblind.internal.handler;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.autoblind.internal.AutoBlindBindingConstants;
+import org.openhab.binding.autoblind.internal.action.AutoBlindHubActions;
 import org.openhab.binding.autoblind.internal.api.AutoBlindApiClient;
 import org.openhab.binding.autoblind.internal.api.dto.AllPeripheralResponse;
 import org.openhab.binding.autoblind.internal.api.dto.PeripheralStatus;
 import org.openhab.binding.autoblind.internal.api.dto.RegistrationResponse;
 import org.openhab.binding.autoblind.internal.api.dto.StatusResponse;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.binding.autoblind.internal.config.AutoBlindHubConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Bridge handler for the AutoBlind Hub. Manages API communication and polling.
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 @NonNullByDefault
 public class AutoBlindHubHandler extends BaseBridgeHandler {
@@ -63,15 +68,13 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        Object hostObj = getConfig().get(AutoBlindBindingConstants.CONFIG_HOST);
-        if (hostObj == null || hostObj.toString().isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host not configured");
+        AutoBlindHubConfiguration config = getConfigAs(AutoBlindHubConfiguration.class);
+        if (config.host.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-host");
             return;
         }
-        String host = hostObj.toString();
-
-        Object intervalObj = getConfig().get(AutoBlindBindingConstants.CONFIG_POLLING_INTERVAL);
-        int pollingInterval = intervalObj instanceof Number n ? n.intValue() : 1800;
+        String host = config.host;
+        int pollingInterval = config.pollingInterval;
 
         apiClient = new AutoBlindApiClient(httpClient, host);
 
@@ -84,22 +87,25 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
                 RegistrationResponse reg = client.register();
                 if (reg.error != 0) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Hub returned error " + reg.error);
+                            "@text/comm-error-hub-error [\"" + reg.error + "\"]");
                     return;
                 }
 
                 Map<String, String> properties = editProperties();
-                properties.put("firmwareVersion", reg.firmwareVersion);
-                properties.put("model", reg.model);
-                properties.put("thingName", reg.thingName);
-                properties.put("wifiSsid", reg.wifiSsid);
+                properties.put(AutoBlindBindingConstants.PROPERTY_FIRMWARE_VERSION, reg.firmwareVersion);
+                properties.put(AutoBlindBindingConstants.PROPERTY_MODEL_ID, reg.model);
+                properties.put(AutoBlindBindingConstants.PROPERTY_THING_NAME, reg.thingName);
+                properties.put(AutoBlindBindingConstants.PROPERTY_WIFI_SSID, reg.wifiSsid);
                 updateProperties(properties);
 
                 updateStatus(ThingStatus.ONLINE);
                 logger.debug("Hub online: {} (firmware {})", reg.model, reg.firmwareVersion);
 
                 pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 5, pollingInterval, TimeUnit.SECONDS);
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (TimeoutException | ExecutionException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
@@ -123,15 +129,20 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (AutoBlindBindingConstants.CHANNEL_FORCE_REFRESH.equals(channelUID.getId())
-                && OnOffType.ON.equals(command)) {
-            logger.debug("Force refresh requested — clearing motion/suppression and polling");
-            clearAllMotion();
-            clearAllSuppression();
-            stopMotionPoll();
-            scheduler.execute(this::poll);
-            updateState(AutoBlindBindingConstants.CHANNEL_FORCE_REFRESH, OnOffType.OFF);
-        }
+        // No channels on the hub bridge accept commands; force-refresh is exposed as a Thing Action instead.
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(AutoBlindHubActions.class);
+    }
+
+    public void forceRefresh() {
+        logger.debug("Force refresh requested — clearing motion/suppression and polling");
+        clearAllMotion();
+        clearAllSuppression();
+        stopMotionPoll();
+        scheduler.execute(this::poll);
     }
 
     private void poll() {
@@ -156,7 +167,11 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Poll failed: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("Poll failed: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -260,8 +275,14 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
         shadeHandlers.remove(peripheralUid);
     }
 
-    public @Nullable AutoBlindApiClient getApiClient() {
-        return apiClient;
+    public boolean controlShade(int peripheralUid, int position)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        AutoBlindApiClient client = apiClient;
+        if (client == null) {
+            return false;
+        }
+        client.controlShade(peripheralUid, position);
+        return true;
     }
 
     public @Nullable AllPeripheralResponse getAllPeripherals() {
@@ -270,7 +291,10 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
             if (client != null) {
                 return client.getAllPeripherals();
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Failed to get peripherals: {}", e.getMessage());
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("Failed to get peripherals: {}", e.getMessage());
         }
         return null;

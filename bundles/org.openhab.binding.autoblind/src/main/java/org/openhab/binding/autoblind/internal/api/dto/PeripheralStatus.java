@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Status data for a single shade peripheral as returned by the hub API.
  *
- * @author Stephen Berg (@BiloxiGeek) - Initial contribution
+ * @author Stephen Berg - Initial contribution
  */
 public class PeripheralStatus {
 
