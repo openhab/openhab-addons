@@ -137,55 +137,58 @@ The next `ON` command uses these values instead of the default (or configuration
 
 ### Color Thing (`color`)
 
-There is one mandatory configuration value for a dimmer thing.
-It is the `dmxid`, a list of DMX channels that are associated with this thing.
+A color thing maps RGB fixtures.
+There is one mandatory configuration value: `dmxid`, a list of DMX channels associated with this thing.
 There are several possible formats: `channel1,channel2,channel3,...` or `channel/width` or a combination of both.
-The number of channels has to be a multiple of three.
+The number of channels has to be a multiple of three (red, green, blue, then the next RGB group, and so on).
+Commands on the `color` channel are applied to each RGB group.
 
 The `fadetime` option allows a smooth transition from the current to the new value.
 The time unit is ms and the interval is for a fade from 0-100%.
 If the current value is 25% and the new value is 75% the time needed for this change is half of `fadetime`.
-`fadetime`is used for absolute values or ON/OFF commands send to the `brightness` channel.
-Related is the `dimtime` option: it defines the time in ms from 0-100% if incremental dimming (`INCREASE`/`DECREASE`) is used.
+`fadetime` is used for color values or ON/OFF commands sent to the `color` channel.
+Related is the `dimtime` option: it defines the time in ms from 0-100% if incremental dimming (`INCREASE`/`DECREASE`) is used on the `color` channel.
 For convenient use `dimtime` usually is set to a larger value than `fadetime`.
 Typical values are 500-1000 ms for `fadetime` and 2000-5000 ms for `dimtime`.
 
-Advanced options are the `turnonvalue`and the `turnoffvalue`.
-They default to 255 (equals 100%) and 0 (equals 0%) respectively.
+Advanced options are the `turnonvalue` and the `turnoffvalue`.
+They default to 255,255,255 (equals 100% white) and 0,0,0 (equals 0%) respectively.
 This value can be set individually for all DMX channels, the format is `value1,value2, ...` with values from 0 to 255.
-If less values than DMX channels are defined, the values will be re-used from the beginning (i.e. if two values are defined, value1 will be used for channel1, channel3, ... and value2 will be used for channel2, channel4, ...).
-For color things the number of values has to be a multiple of three.
+The number of values has to be a multiple of three.
+If less values than DMX channels are defined, the values will be re-used from the beginning (i.e. if three values are defined, they are used for every RGB group).
 These values will be used if the thing receives an ON or OFF command.
 
 The `dynamicturnonvalue` can be set to `true` or `false` (default).
-If enabled, thing overwrites the previous turn-on value with the current channel values.
+If enabled, the thing overwrites the previous turn-on value with the current channel values.
 The next `ON` command uses these values instead of the default (or configuration supplied) values.
 
 ### Tunable White Thing (`tunablewhite`)
 
-There is one mandatory configuration value for a dimmer thing.
-It is the `dmxid`, a list of DMX channels that are associated with this thing.
+A tunable white thing controls fixtures with separate cool-white and warm-white DMX channels.
+There is one mandatory configuration value: `dmxid`, a list of DMX channels associated with this thing.
 There are several possible formats: `channel1,channel2,channel3,...` or `channel/width` or a combination of both.
-The number of channels has to be even. In the order "cool white, warm white".
-Additionally a channel for cool and warm white brightness as well as color temperature (`0` being the coolest, `100` being the warmest) will be provided.
+The number of channels has to be even, in the order cool white, warm white (then the next CW/WW pair, and so on).
+
+The thing provides a `brightness` channel for overall intensity, `brightness_cw` and `brightness_ww` for the two whites, and `color_temperature` (`0` being the coolest, `100` being the warmest).
+Changing color temperature keeps the current brightness and redistributes it between the cool-white and warm-white channels.
 
 The `fadetime` option allows a smooth transition from the current to the new value.
 The time unit is ms and the interval is for a fade from 0-100%.
 If the current value is 25% and the new value is 75% the time needed for this change is half of `fadetime`.
-`fadetime`is used for absolute values or ON/OFF commands send to the `brightness` channel.
+`fadetime` is used for absolute values or ON/OFF commands sent to the `brightness` channel.
 Related is the `dimtime` option: it defines the time in ms from 0-100% if incremental dimming (`INCREASE`/`DECREASE`) is used.
 For convenient use `dimtime` usually is set to a larger value than `fadetime`.
 Typical values are 500-1000 ms for `fadetime` and 2000-5000 ms for `dimtime`.
 
-Advanced options are the `turnonvalue`and the `turnoffvalue`.
-They default to 255 (equals 100%) and 0 (equals 0%) respectively.
+Advanced options are the `turnonvalue` and the `turnoffvalue`.
+They default to 255,255 (equals 100%) and 0,0 (equals 0%) respectively.
 This value can be set individually for all DMX channels, the format is `value1,value2, ...` with values from 0 to 255.
-If less values than DMX channels are defined, the values will be re-used from the beginning (i.e. if two values are defined, value1 will be used for channel1, channel3, ... and value2 will be used for channel2, channel4, ...).
-For tunable white things the number of values has to be a multiple of two.
+The number of values has to be a multiple of two.
+If less values than DMX channels are defined, the values will be re-used from the beginning (i.e. if two values are defined, they are used for every CW/WW pair).
 These values will be used if the thing receives an ON or OFF command.
 
 The `dynamicturnonvalue` can be set to `true` or `false` (default).
-If enabled, thing overwrites the previous turn-on value with the current channel values.
+If enabled, the thing overwrites the previous turn-on value with the current channel values.
 The next `ON` command uses these values instead of the default (or configuration supplied) values.
 
 ## Channels
