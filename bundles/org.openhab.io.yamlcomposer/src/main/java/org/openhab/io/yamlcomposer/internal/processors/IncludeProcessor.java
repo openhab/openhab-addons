@@ -16,10 +16,11 @@ import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +28,7 @@ import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.ComposerConfig;
 import org.openhab.io.yamlcomposer.internal.YamlComposer;
 import org.openhab.io.yamlcomposer.internal.YamlComposer.CacheEntry;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.IncludePlaceholder;
 import org.snakeyaml.engine.v2.exceptions.MarkedYamlEngineException;
@@ -43,7 +45,7 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
 
     private final BufferedLogger logger;
     private final Path basePath;
-    private final Set<Path> includeStack;
+    private final List<Path> includeStack;
     private final Consumer<Path> includeCallback;
     private final Consumer<String> envVarCallback;
     private final ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache;
@@ -58,7 +60,7 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
      * @param envVarCallback the callback to invoke for environment variable resolution
      * @param logger the logger to use for logging messages
      */
-    public IncludeProcessor(Path basePath, Set<Path> includeStack, Consumer<Path> includeCallback,
+    public IncludeProcessor(Path basePath, List<Path> includeStack, Consumer<Path> includeCallback,
             ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache, Consumer<String> envVarCallback,
             BufferedLogger logger) {
         this.logger = logger;
@@ -84,7 +86,8 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
      * @return the expanded content
      */
     @Override
-    public @Nullable Object process(IncludePlaceholder placeholder, RecursiveTransformer recursiveTransformer) {
+    public @Nullable Object process(IncludePlaceholder placeholder, RecursiveTransformer recursiveTransformer,
+            EvaluationContext context) {
 
         FragmentUtils.Parameters params = FragmentUtils.parseParameters(placeholder, "file");
         if (params == null) {
@@ -104,8 +107,20 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
         Path includePathRelative = includePath.startsWith(configRoot) ? configRoot.relativize(includePath)
                 : includePath;
 
+        if (includeStack.contains(includePath) && !includePath.equals(includeStack.getLast())) {
+            String includeStackChain = includeStack.stream().map(Path::toString).collect(Collectors.joining(" -> "));
+            logger.warn("{} Failed to process !include '{}': Circular inclusion detected: {} -> {}",
+                    placeholder.sourceLocation(), fileNameObj, includeStackChain, includePath);
+            return null;
+        }
+        if (includeStack.size() >= ComposerConfig.MAX_RECURSION_DEPTH) {
+            logger.warn("{} Failed to process !include '{}': Maximum recursion depth ({}) exceeded",
+                    placeholder.sourceLocation(), fileNameObj, ComposerConfig.MAX_RECURSION_DEPTH);
+            return null;
+        }
+
         // Handle parameters and variables
-        Map<String, @Nullable Object> includeVariables = new HashMap<>(recursiveTransformer.getVariables());
+        Map<String, @Nullable Object> includeVariables = new HashMap<>(context.scope().flatten());
         includeVariables.putAll(params.varsMap()); // params override current variables
         includeVariables.put("ARGS", params.varsMap());
 

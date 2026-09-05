@@ -40,7 +40,7 @@ public final class ComposerConfig {
     public static final String PACKAGES_KEY = "packages";
 
     // Preprocessing limits
-    public static final int MAX_INCLUDE_DEPTH = 100;
+    public static final int MAX_RECURSION_DEPTH = 100;
 
     private ComposerConfig() {
         // Static utility class

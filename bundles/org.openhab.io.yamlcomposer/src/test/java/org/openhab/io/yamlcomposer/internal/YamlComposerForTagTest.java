@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
@@ -536,6 +537,29 @@ class YamlComposerForTagTest extends AbstractYamlComposerTest {
     }
 
     @Nested
+    @DisplayName("Key Ordering Semantics")
+    class KeyOrdering {
+
+        @Test
+        @DisplayName("Preserves key ordering in parent map across multiple iterations when unrolling !for directive")
+        void forTagPreservesKeyOrderingWhenUnrolling() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    parent:
+                      a_first: "local"
+                      !for item in ['b_nested', 'c_nested']:
+                        "${item}": "from_loop"
+                      d_last: "local"
+                    """);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> parent = (Map<String, Object>) Objects.requireNonNull(result.get("parent"));
+
+            assertThat(parent.keySet(), contains("a_first", "b_nested", "c_nested", "d_last"));
+            assertThat(parent.keySet(), not(contains("a_first", "d_last", "b_nested", "c_nested")));
+        }
+    }
+
+    @Nested
     @DisplayName("Integration and Advanced Composition Tests")
     class Integration {
 
@@ -607,6 +631,40 @@ class YamlComposerForTagTest extends AbstractYamlComposerTest {
 
             assertThat(getNestedValue(data, "result", "loop_1"), is(nullValue()));
             assertThat(getNestedValue(data, "result", "loop_2"), is("included"));
+        }
+
+        @Test
+        @DisplayName("Recursively inserts a template for nested map entries")
+        void recursivelyInsertsTemplateForNestedMapEntries() throws IOException {
+            String yaml = """
+                    templates:
+                      recursive_template:
+                        !for name, children in node:
+                          ${name}:
+                            foo: bar
+                            !if parent:
+                              parent: ${parent}
+                            !if children && !children.isEmpty(): !insert
+                              template: recursive_template
+                              vars:
+                                node: ${children}
+                                parent: ${name}
+                    items: !insert
+                      template: recursive_template
+                      vars:
+                        node:
+                          nested:
+                            parent:
+                              child:
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat(getNestedValue(data, "items", "nested", "foo"), is("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "foo"), is("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "parent"), is("nested"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "child", "foo"), is("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "child", "parent"), is("parent"));
         }
 
         @Test

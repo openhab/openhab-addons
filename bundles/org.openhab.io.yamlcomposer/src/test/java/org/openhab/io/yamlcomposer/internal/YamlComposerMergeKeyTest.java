@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -155,6 +156,30 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
             // The local 'tags' key blocks the entire merged 'tags' map.
             assertThat(getNestedValue(data, "target", "tags", "level"), equalTo("debug"));
             assertThat(getNestedValue(data, "target", "tags", "persistent"), is(nullValue()));
+        }
+    }
+
+    @Nested
+    @DisplayName("Key Ordering Semantics")
+    class KeyOrdering {
+
+        @Test
+        @DisplayName("Preserves key ordering inside nested maps during merge key processing")
+        void mergeKeyPreservesKeyOrderingInsideNestedMaps() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    parent:
+                      a_first: "local"
+                      <<:
+                        b_nested: "from_template"
+                        c_nested: "from_template"
+                      d_last: "local"
+                    """);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> parent = (Map<String, Object>) Objects.requireNonNull(result.get("parent"));
+
+            assertThat(parent.keySet(), contains("a_first", "b_nested", "c_nested", "d_last"));
+            assertThat(parent.keySet(), not(contains("a_first", "d_last", "b_nested", "c_nested")));
         }
     }
 
@@ -599,6 +624,27 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
             Map<Object, @Nullable Object> data = loadFixture(main);
 
             assertThat(getNestedValue(data, "merged_template", "value"), equalTo("from_base"));
+        }
+
+        @Test
+        @DisplayName("Deep merge works at templates map level")
+        void deepMergeAtTemplatesMapLevel() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    templates:
+                      base:
+                        nested:
+                          from_base: true
+                      !deep <<:
+                        base:
+                          nested:
+                            from_deep: true
+                    result: !insert base
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "result", "nested", "from_base"), equalTo(true));
+            assertThat(getNestedValue(data, "result", "nested", "from_deep"), equalTo(true));
         }
     }
 

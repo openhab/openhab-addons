@@ -13,10 +13,8 @@
 package org.openhab.io.yamlcomposer.internal.core;
 
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.ComposerConfig;
 import org.openhab.io.yamlcomposer.internal.placeholders.IncludePlaceholder;
-import org.openhab.io.yamlcomposer.internal.placeholders.MergeKeyPlaceholder;
 
 /**
  * The {@link VariableLoader} is responsible for extracting variable definitions from the YAML model and storing
@@ -38,17 +35,14 @@ public class VariableLoader {
     public static final Set<String> SPECIAL_VARIABLES = Set.of("OPENHAB_CONF", "OPENHAB_USERDATA", "__FILE__",
             "__FILE_NAME__", "__FILE_EXT__", "__DIRECTORY__", "__DIR__", "ENV", "VARS", "ARGS");
 
-    private final Map<String, @Nullable Object> variables;
-    private final Path absolutePath;
     private final RecursiveTransformer recursiveTransformer;
     private final BufferedLogger logger;
+    private final Scope scope;
 
-    public VariableLoader(Map<String, @Nullable Object> variables, Path absolutePath,
-            RecursiveTransformer recursiveTransformer, BufferedLogger logger) {
-        this.variables = variables;
-        this.absolutePath = absolutePath;
+    public VariableLoader(Scope scope, RecursiveTransformer recursiveTransformer, BufferedLogger logger) {
         this.recursiveTransformer = recursiveTransformer;
         this.logger = logger;
+        this.scope = scope;
     }
 
     public static boolean isSpecialVariable(String name) {
@@ -63,6 +57,7 @@ public class VariableLoader {
      * Special variables will override any user-defined variables with the same name
      */
     public void setSpecialVariables() {
+        Path absolutePath = recursiveTransformer.getAbsolutePath();
         Path fileNamePath = absolutePath.getFileName();
         String fullFileName = fileNamePath != null ? fileNamePath.toString() : "";
         int dotIndex = fullFileName.lastIndexOf(".");
@@ -75,13 +70,13 @@ public class VariableLoader {
         var parentPath = absolutePath.getParent();
         String directory = parentPath != null ? parentPath.toString() : "";
 
-        variables.put("OPENHAB_CONF", ComposerConfig.configRoot().toString());
-        variables.put("OPENHAB_USERDATA", ComposerConfig.userDataRoot().toString());
-        variables.put("__FILE__", absolutePath.toString());
-        variables.put("__FILE_NAME__", fileName);
-        variables.put("__FILE_EXT__", fileExtension);
-        variables.put("__DIRECTORY__", directory);
-        variables.put("__DIR__", directory);
+        scope.put("OPENHAB_CONF", ComposerConfig.configRoot().toString());
+        scope.put("OPENHAB_USERDATA", ComposerConfig.userDataRoot().toString());
+        scope.put("__FILE__", absolutePath.toString());
+        scope.put("__FILE_NAME__", fileName);
+        scope.put("__FILE_EXT__", fileExtension);
+        scope.put("__DIRECTORY__", directory);
+        scope.put("__DIR__", directory);
     }
 
     /**
@@ -96,65 +91,36 @@ public class VariableLoader {
      */
     public void extractVariables(@Nullable Object variablesSection, SourceLocator locator) {
         if (variablesSection instanceof Map<?, ?> variablesMap) {
-            Map<Object, @Nullable Object> mergeKeyEntries = new LinkedHashMap<>();
-            Map<Object, @Nullable Object> explicitEntries = new LinkedHashMap<>();
 
-            variablesMap.forEach((rawKey, rawValue) -> {
-                Object key = Objects.requireNonNull(rawKey);
-                @Nullable
-                Object value = rawValue;
-                if (key instanceof MergeKeyPlaceholder) {
-                    mergeKeyEntries.put(key, value);
-                } else {
-                    explicitEntries.put(key, value);
-                }
-            });
+            EvaluationContext context = new EvaluationContext(scope, ProcessingPhase.STANDARD);
+            StructuralMerger structuralMerger = recursiveTransformer.getStructuralMerger();
 
-            Set<String> keysFromMergeDefaults = new HashSet<>();
+            Map<Object, @Nullable Object> mergedMap = new LinkedHashMap<>(variablesMap.size());
+            structuralMerger.composeMapPreserveValues(variablesMap, mergedMap, recursiveTransformer, context);
 
-            // Process merge keys first so defaults are available in scope
-            if (!mergeKeyEntries.isEmpty()) {
-                Map<Object, @Nullable Object> processedMergeKeys = (Map<Object, @Nullable Object>) recursiveTransformer
-                        .transform(mergeKeyEntries);
-                Map<Object, @Nullable Object> mergedDefaults = new LinkedHashMap<>(processedMergeKeys);
-                recursiveTransformer.resolveMergeKeys(mergedDefaults, ProcessingPhase.STANDARD);
-
-                mergedDefaults.forEach((k, v) -> {
-                    String kStr = String.valueOf(k);
-                    if (!isSpecialVariable(kStr) && !variables.containsKey(kStr)) {
-                        Object resolvedValue = recursiveTransformer.transform(v);
-                        variables.put(kStr, resolvedValue);
-                        keysFromMergeDefaults.add(kStr);
-                    }
-                });
-            }
-
-            // Process explicit entries sequentially
-            explicitEntries.forEach((key, value) -> {
-                Object keyObj = recursiveTransformer.transform(key);
-                if (keyObj == null) {
-                    return;
-                }
-
-                String keyStr = String.valueOf(keyObj);
+            mergedMap.forEach((key, value) -> {
+                Object transformedKey = recursiveTransformer.transform(key, context);
+                String keyStr = String.valueOf(transformedKey);
 
                 if (isSpecialVariable(keyStr)) {
-                    logger.warn("{} Cannot redefine special variable '{}'.", absolutePath, keyStr);
+                    logger.warn("{} Cannot redefine special variable '{}'.", recursiveTransformer.getAbsolutePath(),
+                            keyStr);
                     return;
                 }
 
-                // Explicit entries overwrite merge key defaults from this map, but do not clobber inherited
-                // parent/global scope
-                if (!variables.containsKey(keyStr) || keysFromMergeDefaults.contains(keyStr)) {
-                    Object resolvedValue = recursiveTransformer.transform(value);
-                    variables.put(keyStr, resolvedValue);
+                // Scope precedence: existing/parent entries take priority
+                if (!scope.containsKey(keyStr)) {
+                    Object resolvedValue = recursiveTransformer.transform(value, context);
+                    scope.put(keyStr, resolvedValue);
                 }
             });
         } else if (variablesSection instanceof IncludePlaceholder includePlaceholder) {
-            Object includedData = recursiveTransformer.transform(includePlaceholder, ProcessingPhase.INCLUDES);
+            EvaluationContext includeContext = new EvaluationContext(scope, ProcessingPhase.INCLUDES);
+            Object includedData = recursiveTransformer.transform(includePlaceholder, includeContext);
             extractVariables(includedData, locator);
         } else if (variablesSection != null) {
             var position = locator.findPosition(ComposerConfig.VARIABLES_KEY);
+            Path absolutePath = recursiveTransformer.getAbsolutePath();
             Path relativePath = ComposerConfig.configRoot().relativize(absolutePath);
             logger.warn("{}:{} 'variables' is not a map", relativePath, position);
         }

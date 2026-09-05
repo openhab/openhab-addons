@@ -15,33 +15,34 @@ package org.openhab.io.yamlcomposer.internal;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.PackageProcessor;
 import org.openhab.io.yamlcomposer.internal.core.ProcessingPhase;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
+import org.openhab.io.yamlcomposer.internal.core.Scope;
 import org.openhab.io.yamlcomposer.internal.core.SourceLocator;
 import org.openhab.io.yamlcomposer.internal.core.TemplateLoader;
 import org.openhab.io.yamlcomposer.internal.core.VariableLoader;
 import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
+import org.openhab.io.yamlcomposer.internal.processors.DefaultProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.ElseIfProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.ElseProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.ForProcessor;
+import org.openhab.io.yamlcomposer.internal.processors.FreezeProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.IfProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.IncludeProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.InsertProcessor;
-import org.openhab.io.yamlcomposer.internal.processors.RemoveProcessor;
-import org.openhab.io.yamlcomposer.internal.processors.ReplaceProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.SubstitutionProcessor;
 import org.openhab.io.yamlcomposer.internal.processors.VarProcessor;
 import org.slf4j.Logger;
@@ -80,10 +81,10 @@ public class YamlComposer {
     private final Path absolutePath;
     private final Path relativePath;
 
-    private final Map<String, @Nullable Object> variables;
+    private final Scope scope;
     private final Map<Object, @Nullable Object> templates;
 
-    private final Set<Path> includeStack;
+    private final List<Path> includeStack;
     private final ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache;
 
     private final RecursiveTransformer recursiveTransformer;
@@ -97,34 +98,24 @@ public class YamlComposer {
      * @param includeCallback callback invoked for each included file
      * @param logSession the log session for warning consolidation
      * @param includeCache the cache for included files
-     * @throws YamlEngineException if a circular include is detected or if the maximum include depth is exceeded
+     * @throws YamlEngineException if the YAML model cannot be processed
      */
-    public YamlComposer(Path path, Map<String, @Nullable Object> variables, Set<Path> includeStack,
+    public YamlComposer(Path path, Map<String, @Nullable Object> variables, List<Path> includeStack,
             Consumer<Path> includeCallback, Consumer<String> envVarCallback, LogSession logSession,
             ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache) {
         this.absolutePath = Objects.requireNonNull(path.toAbsolutePath().normalize());
         this.relativePath = ComposerConfig.configRoot().relativize(absolutePath);
         this.logger = new BufferedLogger(RAW_LOGGER, logSession);
-        this.variables = new HashMap<>(variables);
+        this.scope = new Scope();
+        this.scope.putAll(variables);
         this.includeCache = includeCache;
         this.templates = new HashMap<>();
 
-        // Validate circular inclusion and depth before processing
-        Set<Path> newIncludeStack = new LinkedHashSet<>(includeStack);
-        if (!newIncludeStack.add(absolutePath)) {
-            @SuppressWarnings("null")
-            String includeStackChain = newIncludeStack.stream().map(Path::toString).collect(Collectors.joining(" -> "));
-            throw new YamlEngineException(
-                    "Circular inclusion detected: %s -> %s".formatted(includeStackChain, absolutePath));
-        }
-
-        if (newIncludeStack.size() > ComposerConfig.MAX_INCLUDE_DEPTH) {
-            throw new YamlEngineException("Maximum include depth (" + ComposerConfig.MAX_INCLUDE_DEPTH + ") exceeded");
-        }
-
+        List<Path> newIncludeStack = new ArrayList<>(includeStack);
+        newIncludeStack.add(absolutePath);
         this.includeStack = newIncludeStack;
 
-        this.recursiveTransformer = new RecursiveTransformer(this.variables, envVarCallback, absolutePath, logger);
+        this.recursiveTransformer = new RecursiveTransformer(envVarCallback, absolutePath, logger);
 
         this.recursiveTransformer.register(new SubstitutionProcessor(envVarCallback, logger));
         this.recursiveTransformer.register(new ForProcessor());
@@ -132,11 +123,11 @@ public class YamlComposer {
         this.recursiveTransformer.register(new ElseIfProcessor(envVarCallback, logger));
         this.recursiveTransformer.register(new ElseProcessor());
         this.recursiveTransformer.register(new VarProcessor(logger));
+        this.recursiveTransformer.register(new DefaultProcessor());
         this.recursiveTransformer.register(new IncludeProcessor(absolutePath.getParent(), newIncludeStack,
                 includeCallback, includeCache, envVarCallback, logger));
         this.recursiveTransformer.register(new InsertProcessor(templates, logger));
-        this.recursiveTransformer.register(new RemoveProcessor());
-        this.recursiveTransformer.register(new ReplaceProcessor());
+        this.recursiveTransformer.register(new FreezeProcessor());
     }
 
     /**
@@ -184,7 +175,7 @@ public class YamlComposer {
         Path absolutePath = path.toAbsolutePath().normalize();
         Path relativePath = ComposerConfig.configRoot().relativize(absolutePath);
         try {
-            YamlComposer composer = new YamlComposer(absolutePath, Map.of(), Set.of(), includeCallback, envVarCallback,
+            YamlComposer composer = new YamlComposer(absolutePath, Map.of(), List.of(), includeCallback, envVarCallback,
                     logSession, includeCache);
             Object result = composer.load();
 
@@ -222,20 +213,24 @@ public class YamlComposer {
      * @throws YamlEngineException if there is an error during YAML parsing or processing
      */
     public @Nullable Object load() throws IOException, YamlEngineException {
-        logger.debug("Loading file({}): {} with given vars {}", includeStack.size(), absolutePath, variables);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Loading file({}): {} with given vars {}", includeStack.size(), absolutePath, scope.flatten());
+        }
+
+        EvaluationContext standardContext = new EvaluationContext(scope, ProcessingPhase.STANDARD);
 
         // Phase 1: Parse YAML and initialize helper objects
         byte[] yamlBytes = readYamlBytes();
         SourceLocator locator = new SourceLocator(yamlBytes);
 
         // Phase 2: set up initial variables
-        VariableLoader variableLoader = new VariableLoader(variables, absolutePath, recursiveTransformer, logger);
+        VariableLoader variableLoader = new VariableLoader(scope, recursiveTransformer, logger);
         variableLoader.setSpecialVariables();
 
         // Phase 3: load and parse YAML
         Object yamlObj = ComposerUtils.loadYaml(yamlBytes, relativePath);
         if (!(yamlObj instanceof Map<?, ?>)) {
-            yamlObj = recursiveTransformer.transform(yamlObj, ProcessingPhase.STANDARD);
+            yamlObj = recursiveTransformer.transform(yamlObj, standardContext);
 
             if (!(yamlObj instanceof Map<?, ?>)) {
                 return yamlObj;
@@ -252,7 +247,7 @@ public class YamlComposer {
         // until the template is instantiated with !insert, so that the variable context
         // includes any variables passed in the !insert directive.
         Object templatesSection = removeByScalarKey(yamlMap, ComposerConfig.TEMPLATES_KEY);
-        new TemplateLoader(logger, relativePath, templates, recursiveTransformer, locator)
+        new TemplateLoader(logger, relativePath, templates, recursiveTransformer, locator, scope)
                 .extractTemplates(templatesSection);
 
         // Phase 5: extract/remove packages from the main data because we want to
@@ -262,14 +257,15 @@ public class YamlComposer {
 
         // Phase 6: Resolve merge keys and process substitutions, conditionals, includes and inserts
         // in a single pass so that merge keys can merge data produced by includes/inserts.
-        yamlMap = recursiveTransformer.transform(yamlMap, ProcessingPhase.STANDARD);
+        yamlMap = (Map<?, ?>) Objects.requireNonNull(recursiveTransformer.transform(yamlMap, standardContext));
 
         // Phase 7: process and merge packages
-        new PackageProcessor(logger, absolutePath, relativePath, locator, recursiveTransformer).mergePackages(yamlMap,
-                packagesObj);
+        new PackageProcessor(scope, recursiveTransformer, absolutePath, relativePath, logger, locator)
+                .mergePackages(yamlMap, packagesObj);
 
-        // Phase 8: process override placeholders (!replace, !remove)
-        yamlMap = recursiveTransformer.transform(yamlMap, ProcessingPhase.PACKAGE_OVERRIDES);
+        // Phase 8: process structural placeholders (!default, !replace/!freeze, !remove)
+        yamlMap = (Map<?, ?>) Objects.requireNonNull(recursiveTransformer.transform(yamlMap,
+                standardContext.withProcessingPhase(ProcessingPhase.FINALIZATION)));
 
         // Phase 9: final cleanup and optional compiled output
         ComposerUtils.removeHiddenKeys(yamlMap);

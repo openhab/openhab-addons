@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.StringInterpolator;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
 
@@ -53,8 +54,9 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
      * @return The processed value with substitutions applied
      */
     @Override
-    public @Nullable Object process(SubstitutionPlaceholder placeholder, RecursiveTransformer recursiveTransformer) {
-        return process(placeholder, recursiveTransformer.getVariables());
+    public @Nullable Object process(SubstitutionPlaceholder placeholder, RecursiveTransformer recursiveTransformer,
+            EvaluationContext context) {
+        return process(placeholder, context.scope().flatten());
     }
 
     /**

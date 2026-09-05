@@ -312,6 +312,44 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
             assertThat("Variables must support self-referential resolution", getNestedValue(data, "test", "result"),
                     is("root-to-middle-to-leaf"));
         }
+
+        @Test
+        @DisplayName("Deep merge works at variables map level")
+        void deepMergeAtVariablesMapLevel() throws IOException {
+            Map<Object, @Nullable Object> data = loadYaml("""
+                    variables:
+                      settings:
+                        nested:
+                          from_base: true
+                      !deep <<:
+                        settings:
+                          nested:
+                            from_deep: true
+
+                    result_base: "${settings.nested.from_base}"
+                    result_deep: "${settings.nested.from_deep}"
+                    """);
+
+            assertThat(data.get("result_base"), is(true));
+            assertThat(data.get("result_deep"), is(true));
+        }
+
+        @Test
+        @DisplayName("Preserves sequential variable references inside directive-generated maps")
+        void preservesSequentialVariableReferencesInsideDirectives() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    variables:
+                      baseDir: "/var/log"
+                      appDir: "${baseDir}/openhab"
+                      !if true:
+                        logFile: "${appDir}/events.log"
+
+                    target:
+                      activeLog: "${logFile}"
+                    """);
+
+            assertThat(getNestedValue(result, "target", "activeLog"), equalTo("/var/log/openhab/events.log"));
+        }
     }
 
     @Nested
