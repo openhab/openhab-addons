@@ -168,12 +168,16 @@ public class EchoHandler extends BaseThingHandler {
 
         this.device = device;
         this.capabilities = device.capabilities;
-        if (!device.online) {
+        if (!device.online && !amazonAlwaysReportsOffline(device)) {
             updateStatus(ThingStatus.OFFLINE);
             return false;
         }
         updateStatus(ThingStatus.ONLINE);
         return true;
+    }
+
+    private static boolean amazonAlwaysReportsOffline(DeviceTO device) {
+        return DEVICE_FAMILY_THIRD_PARTY_AVS_MEDIA_DISPLAY.equals(device.deviceFamily);
     }
 
     @Override
