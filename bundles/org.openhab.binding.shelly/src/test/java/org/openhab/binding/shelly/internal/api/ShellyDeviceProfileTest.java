@@ -702,7 +702,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 0, "1"), //
                 Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 1, "2"), //
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 0, "1"), //
-                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 1, "1"), // channel 2's own input, not global idx
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 1, "1"), //
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 0, "1"), //
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 1, "2"), //
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 2, "1"), //

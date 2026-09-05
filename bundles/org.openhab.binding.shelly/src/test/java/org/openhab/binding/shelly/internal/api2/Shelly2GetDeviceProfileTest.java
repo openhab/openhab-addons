@@ -488,7 +488,6 @@ public class Shelly2GetDeviceProfileTest {
         profile.status.emeters.get(1).totalReturned = 300.0;
         profile.status.emeters.get(2).totalReturned = 200.0;
 
-        // Second call simulates getProfile(refreshSettings=true) in the same refreshStatus() cycle
         client.getDeviceProfile(THING_TYPE_SHELLYPRO3EM, deviceInfo());
 
         assertThat("phase A totalReturned preserved", profile.status.emeters.get(0).totalReturned, is(500.0));
@@ -510,7 +509,6 @@ public class Shelly2GetDeviceProfileTest {
         // Simulate a NotifyStatus event reporting the relay is ON
         profile.status.relays.get(0).ison = true;
 
-        // Second call simulates getProfile(refreshSettings=true) in the same refreshStatus() cycle
         client.getDeviceProfile(THING_TYPE_SHELLYPLUS1PM, deviceInfo());
 
         assertThat("relay ison preserved across profile refresh", profile.status.relays.get(0).ison, is(true));
@@ -518,19 +516,14 @@ public class Shelly2GetDeviceProfileTest {
 
     @Test
     void initProfilePreservesDimmerStatusWhenCountUnchanged() throws ShellyApiException {
-        // Regression test for the same race condition as initProfilePreservesRelayIsonWhenCountUnchanged(),
-        // but for dimmers: unconditionally rebuilding profile.status.dimmers would wipe brightness/ison
-        // just fetched by api.getStatus() in the same refreshStatus() cycle.
         Gson gson = new Gson();
         StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER, deviceInfo());
         assertThat(Objects.requireNonNull(profile.status.dimmers).size(), is(1));
 
-        // Simulate api.getStatus() populating brightness/ison
         profile.status.dimmers.get(0).brightness = 42;
         profile.status.dimmers.get(0).ison = true;
 
-        // Second call simulates getProfile(refreshSettings=true) in the same refreshStatus() cycle
         client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER, deviceInfo());
 
         assertThat("dimmer brightness preserved across profile refresh", profile.status.dimmers.get(0).brightness,

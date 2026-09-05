@@ -60,10 +60,6 @@ public class ShellyChannelDefinitionsInputTest {
 
     @Test
     void gen2DimmerButtonModeInputCreatesEventChannelsBeforeFirstButtonPress() {
-        // #19226 (ijasan): on a Plus/Pro Dimmer G3, relay#lastEvent1/eventCount1 were missing after
-        // the initial channel creation because the input's event/eventCount are still null in the
-        // very first status snapshot (the button hasn't been pressed yet) - createInputChannels()
-        // must create these channels once the input is in button mode, not only once a value exists.
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER);
         profile.numInputs = 1;
 
@@ -79,7 +75,6 @@ public class ShellyChannelDefinitionsInputTest {
         ShellySettingsStatus status = new ShellySettingsStatus();
         ShellyInputState inputState = new ShellyInputState();
         inputState.input = 0;
-        // event/eventCount deliberately left null: no button press reported yet
         status.inputs = new ArrayList<>();
         status.inputs.add(inputState);
 
