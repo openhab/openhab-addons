@@ -58,6 +58,7 @@ import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
 import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1RepositoryImpl;
 import org.openhab.persistence.influxdb.internal.influx2.InfluxDB2RepositoryImpl;
+import org.openhab.persistence.influxdb.internal.influx3.InfluxDB3RepositoryImpl;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -74,18 +75,20 @@ import org.slf4j.LoggerFactory;
  * series database. The states ({@link State}) of an {@link Item} are persisted
  * by default in a time series with names equal to the name of the item.
  *
- * This addon supports 1.X and 2.X versions, as two versions are incompatible
- * and use different drivers the specific code for each version is accessed by
- * {@link InfluxDBRepository} and {@link FilterCriteriaQueryCreator} interfaces
- * and specific implementation reside in
- * {@link org.openhab.persistence.influxdb.internal.influx1} and
- * {@link org.openhab.persistence.influxdb.internal.influx2} packages
+ * This addon supports 1.X, 2.X and 3.X versions, as these versions are
+ * incompatible and use different drivers the specific code for each version is
+ * accessed by {@link InfluxDBRepository} and {@link FilterCriteriaQueryCreator}
+ * interfaces and specific implementation reside in
+ * {@link org.openhab.persistence.influxdb.internal.influx1},
+ * {@link org.openhab.persistence.influxdb.internal.influx2} and
+ * {@link org.openhab.persistence.influxdb.internal.influx3} packages
  *
  * @author Theo Weiss - Initial contribution, rewrite of
  *         org.openhab.persistence.influxdb
  * @author Joan Pujol Espinar - Addon rewrite refactoring code and adding
  *         support for InfluxDB 2.0. Some tag code is based from not integrated
  *         branch from Dominik Vorreiter
+ * @author Cedric Boon - Added support for InfluxDB 3.0
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -140,6 +143,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
         return switch (configuration.getVersion()) {
             case V1 -> new InfluxDB1RepositoryImpl(configuration, influxDBMetadataService);
             case V2 -> new InfluxDB2RepositoryImpl(configuration, influxDBMetadataService);
+            case V3 -> new InfluxDB3RepositoryImpl(configuration, influxDBMetadataService);
             default -> throw new IllegalArgumentException("Failed to instantiate repository.");
         };
     }
