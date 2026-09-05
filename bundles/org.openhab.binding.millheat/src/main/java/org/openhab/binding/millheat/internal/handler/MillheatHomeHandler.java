@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 public class MillheatHomeHandler extends MillheatBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(MillheatHomeHandler.class);
     private @NonNullByDefault({}) MillheatHomeConfiguration config;
-    /** Validated in initialize(), so the rest of the handler can rely on it being present. */
     private String homeId = "";
 
     public MillheatHomeHandler(final Thing thing) {

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.millheat.internal.MillheatCommunicationException;
 import org.openhab.binding.millheat.internal.client.MillheatCloudApiClient;
 import org.openhab.binding.millheat.internal.client.RequestLogger;
@@ -102,7 +103,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         return Set.of(MillheatDiscoveryService.class);
     }
 
-    /** Called by the discovery service so the bridge can trigger the first scan itself. */
     public void setDiscoveryService(final @Nullable MillheatDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
     }
@@ -123,7 +123,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         scheduler.execute(this::connect);
     }
 
-    /** Authenticates with the configured credentials. */
     public void signIn() throws MillheatCommunicationException {
         // Normally populated by initialize(); resolved here as well so the handler can sign in
         // without having gone through the full thing lifecycle.
@@ -140,7 +139,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             signIn();
         } catch (final MillheatCommunicationException e) {
             // Bad credentials are a configuration problem; anything else is worth retrying.
-            if (e.getHttpStatus() == 401 || e.getHttpStatus() == 400) {
+            if (e.getHttpStatus() == HttpStatus.UNAUTHORIZED_401 || e.getHttpStatus() == HttpStatus.BAD_REQUEST_400) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Could not sign in to the Mill cloud API: " + e.getMessage());
             } else {
@@ -200,10 +199,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         statusFuture = null;
     }
 
-    /**
-     * Rebuilds the model. One request per house returns every device with its settings and
-     * telemetry embedded; a further request per room supplies the room's setpoints and active mode.
-     */
     public MillheatModel refreshModel() throws MillheatCommunicationException {
         final MillheatModel newModel = new MillheatModel(System.currentTimeMillis());
         final HousesResponse houses = client.getHouses();
@@ -295,7 +290,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    /** Changes one of a room's three program setpoints. */
     public void updateRoomTemperature(final String roomId, final Command command, final ModeType mode) {
         if (!(command instanceof QuantityType<?> quantityCommand)) {
             logger.debug("Cannot set temperature for room {}, expected a QuantityType but got {}", roomId, command);
@@ -320,10 +314,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * Applies setpoint, power and fan changes to a heater that is not following a room program.
-     * All three are written through the device's settings shadow.
-     */
+    /** Setpoint, on/off and fan are all written through the device's settings shadow. */
     public void updateIndependentHeaterProperties(final @Nullable String macAddress, final @Nullable String heaterId,
             final @Nullable Command temperatureCommand, final @Nullable Command masterOnOffCommand,
             final @Nullable Command fanCommand) {
@@ -364,7 +355,6 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    /** Writes one of the vacation mode properties of a house. */
     public void updateVacationProperty(final Home home, final String property, final Command command) {
         try {
             switch (property) {
@@ -409,8 +399,8 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Vacation settings can only be written while vacation mode is running; before that they are
-     * held locally until the mode is switched on.
+     * The API only accepts vacation settings while vacation mode is running, so before that they
+     * are held locally until the mode is switched on.
      */
     private void patchVacationIfActive(final Home home) throws MillheatCommunicationException {
         if (home.isVacationModeActive()) {

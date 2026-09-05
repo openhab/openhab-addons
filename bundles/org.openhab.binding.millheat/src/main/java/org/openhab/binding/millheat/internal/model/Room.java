@@ -62,7 +62,6 @@ public class Room {
                 : declared;
     }
 
-    /** Minimal room used for heaters whose room was not returned by the API. */
     public Room(final String id, final String name, final Home home) {
         this.home = home;
         this.id = id;
@@ -86,7 +85,6 @@ public class Room {
         return heaters;
     }
 
-    /** The setpoint the room's current mode selects, or null when the mode has none. */
     public @Nullable Double getTargetTemperature() {
         return switch (mode) {
             case COMFORT, NORMAL -> comfortTemp;

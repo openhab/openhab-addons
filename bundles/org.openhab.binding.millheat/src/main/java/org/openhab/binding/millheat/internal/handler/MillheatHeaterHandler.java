@@ -74,9 +74,8 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
             return;
         }
         final Heater heater = optionalHeater.get();
-        // The cloud reports whether it has heard from the device recently. The last known
-        // measurements are still published, since they remain the best available reading, but the
-        // thing status marks them as potentially stale.
+        // Readings are still published while offline, since they remain the best available, but
+        // the thing status marks them as potentially stale.
         updateStatus(heater.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE,
                 heater.isOnline() ? ThingStatusDetail.NONE : ThingStatusDetail.COMMUNICATION_ERROR);
 
@@ -116,8 +115,6 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
             }
             case MillheatBindingConstants.CHANNEL_CURRENT_POWER -> {
                 if (refresh) {
-                    // The cloud API measures this, so the nominal power configuration parameter
-                    // that the old service required is no longer consulted.
                     final Double power = heater.getCurrentPower();
                     updateState(channelUID, power == null ? UnDefType.UNDEF : new QuantityType<>(power, Units.WATT));
                 }
@@ -179,7 +176,6 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
         }
     }
 
-    /** Heaters outside a room are controlled directly, so they gain a switch and a setpoint. */
     private void addOptionalChannels(final Heater heater) {
         if (!heater.canChangeTemp() || !heater.isIndependent()) {
             return;

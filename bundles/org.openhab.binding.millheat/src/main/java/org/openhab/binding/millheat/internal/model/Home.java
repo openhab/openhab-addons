@@ -131,10 +131,8 @@ public class Home {
     }
 
     /**
-     * Whether vacation mode falls back to each room's own away temperature rather than the single
-     * vacation temperature set for the house. The old service called this "advanced vacation mode"
-     * and the channel keeps that name, so the sense is preserved: on means per-room away
-     * temperatures, off means the house-wide vacation temperature.
+     * On means each room's own away temperature is used, off means the single vacation temperature
+     * set for the house. Surfaced as the {@code vacationModeAdvanced} channel.
      */
     public boolean isAdvancedVacationMode() {
         return VacationModeRequest.TYPE_AWAY_TEMPERATURE.equals(vacationModeType);

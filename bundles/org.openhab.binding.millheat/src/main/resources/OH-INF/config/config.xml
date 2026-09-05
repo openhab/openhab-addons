@@ -38,12 +38,6 @@
 			<description>Device UUID as issued by the Mill cloud API. Use auto discovery to find this value; numeric IDs from
 				older configurations are not valid</description>
 		</parameter>
-		<parameter name="power" type="integer">
-			<label>Heating Power</label>
-			<description>No longer used. The Mill cloud API reports measured power directly, so the Energy Usage channel no
-				longer needs a nominal value</description>
-			<advanced>true</advanced>
-		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:millheat:room">

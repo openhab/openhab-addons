@@ -23,28 +23,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class MillheatHeaterConfiguration {
-    /**
-     * Wi-Fi mac address. Unchanged by the move to the cloud API, so it is the most stable way to
-     * identify a heater. Either this or {@link #heaterId} must be given.
-     */
     public @Nullable String macAddress;
-    /**
-     * Device UUID as issued by the cloud API. Numeric identifiers from the old service are not
-     * valid here. Either this or {@link #macAddress} must be given.
-     */
     public @Nullable String heaterId;
-    /**
-     * Nominal heater panel power. Retained only for configurations written before the cloud API
-     * started reporting measured power, which it now does.
-     *
-     * @deprecated the {@code currentEnergy} channel no longer needs it.
-     */
-    @Deprecated
-    public @Nullable Integer power;
 
     @Override
     public String toString() {
-        return "MillheatHeaterConfiguration [macAddress=" + macAddress + ", heaterId=" + heaterId + ", power=" + power
-                + "]";
+        return "MillheatHeaterConfiguration [macAddress=" + macAddress + ", heaterId=" + heaterId + "]";
     }
 }

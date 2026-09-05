@@ -29,7 +29,10 @@ import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.millheat.internal.MillheatCommunicationException;
 import org.openhab.binding.millheat.internal.dto.DeviceDTO;
 import org.openhab.binding.millheat.internal.dto.DeviceSettingsPatchRequest;
@@ -70,11 +73,11 @@ public class MillheatCloudApiClient {
     /** Overridable so tests can point the client at a local stub server. */
     public static String endpoint = "https://api.millnorwaycloud.com";
 
+    private static final String BEARER_PREFIX = "Bearer ";
     private static final long REQUEST_TIMEOUT_SECONDS = 30;
-    /** Renew the access token this long before it actually expires. */
     private static final long TOKEN_RENEWAL_MARGIN_SECONDS = 60;
-    /** Assumed lifetime when the token carries no readable expiry. */
     private static final long DEFAULT_TOKEN_LIFETIME_SECONDS = 600;
+    private static final long RATE_LIMIT_BACKOFF_SECONDS = 300;
 
     private final Logger logger = LoggerFactory.getLogger(MillheatCloudApiClient.class);
     private final HttpClient httpClient;
@@ -92,10 +95,6 @@ public class MillheatCloudApiClient {
         this.requestLogger = requestLogger;
     }
 
-    /**
-     * Exchanges username and password for an access and refresh token. Any previously held tokens
-     * are discarded.
-     */
     public void signIn(final String username, final String password) throws MillheatCommunicationException {
         accessToken = null;
         refreshToken = null;
@@ -110,16 +109,16 @@ public class MillheatCloudApiClient {
     }
 
     /**
-     * Renews the access token using the refresh token. Unlike every other authenticated call, this
-     * endpoint expects the refresh token, not the access token, in the Authorization header.
+     * Unlike every other authenticated call, this endpoint expects the refresh token rather than
+     * the access token in the Authorization header.
      */
     public void refreshAccessToken() throws MillheatCommunicationException {
         final String token = refreshToken;
         if (token == null) {
             throw new MillheatCommunicationException("Cannot refresh without a refresh token");
         }
-        final Request request = newRequest(HttpMethod.POST, "/customer/auth/refresh").header("Authorization",
-                "Bearer " + token);
+        final Request request = newRequest(HttpMethod.POST, "/customer/auth/refresh").header(HttpHeader.AUTHORIZATION,
+                BEARER_PREFIX + token);
         final SignInResponse response = execute(request, SignInResponse.class);
         if (response == null) {
             throw new MillheatCommunicationException("Token refresh returned an empty response");
@@ -127,22 +126,16 @@ public class MillheatCloudApiClient {
         storeTokens(response);
     }
 
-    /** True once a sign-in has produced tokens. */
     public boolean isAuthenticated() {
         return accessToken != null;
     }
 
-    /** Discards all tokens, forcing a fresh sign-in on the next request. */
     public void clearTokens() {
         accessToken = null;
         refreshToken = null;
         accessTokenExpiry = Instant.MIN;
     }
 
-    /**
-     * The instant before which no further request should be attempted because the service reported
-     * that the account's hourly request budget is exhausted.
-     */
     public Instant rateLimitedUntil() {
         return rateLimitedUntil;
     }
@@ -152,10 +145,7 @@ public class MillheatCloudApiClient {
         return response == null ? new HousesResponse(List.of(), List.of()) : response;
     }
 
-    /**
-     * Returns every device in the house, grouped by room, with settings and telemetry embedded.
-     * This is the binding's main poll: one request covers all device state in a house.
-     */
+    /** The binding's main poll: one request covers every device, setting and reading in a house. */
     public List<RoomDevicesDTO> getHouseDevices(final String houseId) throws MillheatCommunicationException {
         final List<RoomDevicesDTO> rooms = send(HttpMethod.GET, "/houses/" + encode(houseId) + "/devices", null, true,
                 new TypeToken<List<RoomDevicesDTO>>() {
@@ -163,7 +153,6 @@ public class MillheatCloudApiClient {
         return rooms == null ? List.of() : rooms;
     }
 
-    /** Returns the devices in the house that belong to no room. */
     public List<DeviceDTO> getIndependentDevices(final String houseId) throws MillheatCommunicationException {
         final IndependentDevicesResponse response = get("/houses/" + encode(houseId) + "/devices/independent",
                 IndependentDevicesResponse.class);
@@ -174,31 +163,26 @@ public class MillheatCloudApiClient {
         return items == null ? List.of() : items;
     }
 
-    /** Returns a room's setpoints, active mode and aggregate measurements. */
     public @Nullable RoomInfoDTO getRoomInfo(final String roomId) throws MillheatCommunicationException {
         return get("/rooms/" + encode(roomId) + "/devices", RoomInfoDTO.class);
     }
 
-    /** Applies settings to a device by replacing the desired half of its shadow. */
     public void patchDeviceSettings(final String deviceId, final DeviceSettingsPatchRequest request)
             throws MillheatCommunicationException {
         send(HttpMethod.PATCH, "/devices/" + encode(deviceId) + "/settings", request, true, Void.class);
     }
 
-    /** Changes one or more of a room's three program setpoints. */
     public void setRoomTemperatures(final String roomId, final RoomTemperatureRequest request)
             throws MillheatCommunicationException {
         send(HttpMethod.POST, "/rooms/" + encode(roomId) + "/temperature", request, true, Void.class);
     }
 
-    /** Enables or updates vacation mode for a house. */
     public void setVacationMode(final String houseId, final VacationModeRequest request, final boolean alreadyActive)
             throws MillheatCommunicationException {
         send(alreadyActive ? HttpMethod.PATCH : HttpMethod.POST, "/houses/" + encode(houseId) + "/mode/vacation",
                 request, true, Void.class);
     }
 
-    /** Disables vacation mode for a house. */
     public void clearVacationMode(final String houseId) throws MillheatCommunicationException {
         send(HttpMethod.DELETE, "/houses/" + encode(houseId) + "/mode/vacation", null, true, Void.class);
     }
@@ -230,17 +214,19 @@ public class MillheatCloudApiClient {
             final boolean authenticated) {
         final Request request = newRequest(method, path);
         if (authenticated) {
-            request.header("Authorization", "Bearer " + accessToken);
+            request.header(HttpHeader.AUTHORIZATION, BEARER_PREFIX + accessToken);
         }
         if (body != null) {
-            request.content(new StringContentProvider(gson.toJson(body), StandardCharsets.UTF_8), "application/json");
+            request.content(new StringContentProvider(gson.toJson(body), StandardCharsets.UTF_8),
+                    MimeTypes.Type.APPLICATION_JSON.asString());
         }
         return request;
     }
 
     private Request newRequest(final HttpMethod method, final String path) {
         final Request request = httpClient.newRequest(endpoint + path).method(method)
-                .header("Content-Type", "application/json").header("Accept", "application/json")
+                .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
+                .header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString())
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         requestLogger.listenTo(request);
         return request;
@@ -255,9 +241,9 @@ public class MillheatCloudApiClient {
             Thread.currentThread().interrupt();
             throw new MillheatCommunicationException("Interrupted while calling the Mill cloud API", e);
         } catch (final ExecutionException e) {
-            // Jetty's authentication handling rejects a 401 that carries no WWW-Authenticate
-            // header as a protocol violation, and Mill sends exactly that. Recover the status so
-            // the caller can refresh the token instead of seeing an opaque transport failure.
+            // Jetty rejects a 401 carrying no WWW-Authenticate header as a protocol violation, and
+            // Mill sends exactly that. Recover the status so the caller can refresh the token
+            // instead of seeing an opaque transport failure.
             if (e.getCause() instanceof HttpResponseException httpResponseException) {
                 final int failedStatus = httpResponseException.getResponse().getStatus();
                 throw new MillheatCommunicationException(failedStatus, "Mill cloud API responded with " + failedStatus);
@@ -269,13 +255,13 @@ public class MillheatCloudApiClient {
 
         final int status = response.getStatus();
         final String payload = response.getContentAsString();
-        if (status == 429) {
+        if (status == HttpStatus.TOO_MANY_REQUESTS_429) {
             // No Retry-After is sent, so back off for the remainder of the current budget window.
-            rateLimitedUntil = Instant.now().plusSeconds(300);
+            rateLimitedUntil = Instant.now().plusSeconds(RATE_LIMIT_BACKOFF_SECONDS);
             throw new MillheatCommunicationException(status,
                     "Mill cloud API request budget exhausted, backing off until " + rateLimitedUntil);
         }
-        if (status < 200 || status >= 300) {
+        if (!HttpStatus.isSuccess(status)) {
             throw new MillheatCommunicationException(status,
                     "Mill cloud API responded with " + status + ": " + payload);
         }
@@ -314,9 +300,8 @@ public class MillheatCloudApiClient {
     }
 
     /**
-     * Reads the {@code exp} claim from a JWT without verifying its signature, which the client has
-     * no key for and does not need: the server is the authority on validity, and a wrong guess here
-     * only costs one extra refresh.
+     * The signature is deliberately not verified: the client has no key, the server is the
+     * authority on validity, and a wrong guess here only costs one extra refresh.
      */
     private Instant expiryOf(final String token) {
         final Instant fallback = Instant.now().plusSeconds(DEFAULT_TOKEN_LIFETIME_SECONDS);

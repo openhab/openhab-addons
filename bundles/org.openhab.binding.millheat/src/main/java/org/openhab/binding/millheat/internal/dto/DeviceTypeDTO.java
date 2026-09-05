@@ -24,15 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public record DeviceTypeDTO(@Nullable TypeRefDTO parentType, @Nullable TypeRefDTO childType) {
 
-    /**
-     * Identifier and display name of a device type.
-     */
     public record TypeRefDTO(@Nullable String id, @Nullable String name) {
     }
 
-    /**
-     * Returns the device family name, or an empty string when the API omitted it.
-     */
     public String parentTypeName() {
         final TypeRefDTO parent = parentType;
         if (parent == null) {

@@ -16,8 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * A mode a room or house can be in. The cloud API reports these as lower case strings; the old
- * service used small integers, so the numeric mapping is gone.
+ * A mode a room or house can be in, as reported by the cloud API's lower case mode strings.
  *
  * @author Arne Seime - Initial contribution
  * @author Petter L. H. Eide - Map to the cloud API's string values
@@ -32,7 +31,6 @@ public enum ModeType {
     NORMAL("normal"),
     ALWAYS_HEATING("always_heating"),
     OFF("off"),
-    /** Reported by neither the API nor the binding; used when a mode string is absent or unknown. */
     UNKNOWN("unknown");
 
     private final String apiValue;
@@ -41,15 +39,11 @@ public enum ModeType {
         this.apiValue = apiValue;
     }
 
-    /** The string this mode is called in the cloud API. */
     public String getApiValue() {
         return apiValue;
     }
 
-    /**
-     * Resolves an API mode string. Unrecognised and missing values map to {@link #UNKNOWN} rather
-     * than failing, so a new mode added by Mill does not break the binding.
-     */
+    /** Unrecognised values map to {@link #UNKNOWN}, so a mode Mill adds later cannot break this. */
     public static ModeType fromApiValue(final @Nullable String value) {
         if (value != null) {
             for (final ModeType mode : values()) {

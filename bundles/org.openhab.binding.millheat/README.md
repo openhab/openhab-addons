@@ -9,6 +9,10 @@ See <https://www.millheat.com/mill-wifi/>
 > identifiers issued by the old service have no equivalent. Configurations written for earlier
 > versions of this binding cannot be migrated automatically and will report a configuration error.
 > Delete the old things and run discovery again.
+>
+> The heater `power` parameter has also been removed: the cloud service reports measured power, so
+> the `currentEnergy` channel no longer needs a nominal value. Any leftover `power` setting is
+> ignored.
 
 To control generation 3 Mill devices over the local network instead of through the cloud, see the
 separate local-API binding.
@@ -54,8 +58,6 @@ See the full example below for how to configure using Thing files.
   This can be found in the app by viewing devices, or you can find it during discovery. Used for heaters connected to a room.
 - `heaterId` = device UUID as issued by the Mill cloud API.
   Use auto discovery to find this value. Used to identify independent heaters or heaters connected to a room.
-- `power` = no longer used. The cloud API reports measured power directly, so this parameter is
-  ignored and is retained only so that older configurations still validate.
 
 Either `macAddress` or `heaterId` must be specified.
 

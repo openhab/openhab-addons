@@ -63,8 +63,7 @@ public final class RequestLogger {
                 }
             });
             final StringBuilder contentBuffer = new StringBuilder();
-            // Content arrives in chunks, and a chunk is a fragment rather than a JSON document,
-            // so accumulate the raw bytes and reformat once the body is complete.
+            // A chunk is a fragment rather than a JSON document, so accumulate and reformat once.
             request.onRequestContent((theRequest, content) -> contentBuffer
                     .append(getCharset(theRequest.getHeaders()).decode(content).toString()));
             request.onRequestSuccess(theRequest -> {

@@ -37,11 +37,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Discovers the homes, rooms and heaters on a Mill account, including houses that another account
  * has shared with it.
- * <p>
- * Scanning depends on the account bridge having signed in and built its model, so the periodic job
- * deliberately does not fire immediately at registration: the bridge triggers the first scan itself
- * once its model is populated. Firing straight away instead would race the sign-in and scan an empty
- * model, leaving the inbox empty until the next hourly run.
  *
  * @author Arne Seime - Initial contribution
  * @author Petter L. H. Eide - Cloud API identifiers, shared houses, and bridge-triggered first scan
@@ -75,7 +70,8 @@ public class MillheatDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     @Override
     protected void startBackgroundDiscovery() {
-        // No immediate first run; the bridge calls scanNow() as soon as it has a model.
+        // No immediate first run: that would race the sign-in and scan an empty model. The
+        // bridge calls scanNow() instead, as soon as it has one.
         discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, REFRESH_INTERVAL_MINUTES,
                 REFRESH_INTERVAL_MINUTES, TimeUnit.MINUTES);
     }
@@ -128,10 +124,6 @@ public class MillheatDiscoveryService extends AbstractThingHandlerDiscoveryServi
         }
     }
 
-    /**
-     * The MAC address survived the move to the cloud API while the numeric device ID did not, so it
-     * is preferred as the representation property where the device reports one.
-     */
     private DiscoveryResult heaterResult(final ThingUID accountUID, final Heater heater) {
         final ThingUID heaterUID = new ThingUID(MillheatBindingConstants.THING_TYPE_HEATER, accountUID, heater.getId());
         final DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(heaterUID).withBridge(accountUID)

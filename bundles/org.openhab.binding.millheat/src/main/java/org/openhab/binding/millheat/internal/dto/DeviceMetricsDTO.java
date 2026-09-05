@@ -38,22 +38,17 @@ public record DeviceMetricsDTO(@Nullable String deviceId, @Nullable String house
         @Nullable Integer powerStatus, @Nullable Integer remoteControlTimerMinutesLeft,
         @Nullable Boolean remoteControlEnabled) {
 
-    /** The heater is actively producing heat. */
     public boolean heating() {
         final Integer flag = heaterFlag;
         return flag != null && flag > 0;
     }
 
-    /** The heater is switched on, whether or not it is currently heating. */
     public boolean powered() {
         final Integer status = powerStatus;
         return status != null && status > 0;
     }
 
-    /**
-     * Open window detection is reported as 0 disabled, 2 enabled and triggered, 3 enabled but not
-     * triggered. Only 2 means a window is actually open.
-     */
+    /** 0 is disabled, 2 is enabled and triggered, 3 is enabled but not triggered. */
     public boolean windowOpen() {
         final Integer status = openWindowsStatus;
         return status != null && status == 2;

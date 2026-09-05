@@ -60,9 +60,8 @@ public class MillheatModel {
     }
 
     /**
-     * The cloud API reports MAC addresses colon separated while the old service reported them bare,
-     * and users have configurations in both shapes. Comparing on the hex digits alone keeps the one
-     * identifier that survived the API change usable.
+     * The API reports MAC addresses colon separated and users have configurations in both shapes,
+     * so comparison is on the hex digits alone.
      */
     private static String normalizeMac(final @Nullable String macAddress) {
         return macAddress == null ? "" : macAddress.replaceAll("[^0-9A-Fa-f]", "").toUpperCase(Locale.ROOT);

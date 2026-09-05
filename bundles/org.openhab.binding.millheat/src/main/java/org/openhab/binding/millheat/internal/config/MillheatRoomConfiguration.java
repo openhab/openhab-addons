@@ -23,10 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class MillheatRoomConfiguration {
-    /**
-     * Room UUID as issued by the cloud API. Numeric identifiers from the old service are not valid
-     * here; re-run discovery to obtain the new value.
-     */
     public @Nullable String roomId;
 
     @Override

@@ -13,6 +13,7 @@
 package org.openhab.binding.millheat.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpStatus;
 
 /**
  * Wraps failures encountered while talking to the Mill cloud API.
@@ -52,13 +53,11 @@ public class MillheatCommunicationException extends Exception {
         return httpStatus;
     }
 
-    /** The access token was rejected and should be refreshed. */
     public boolean isUnauthorized() {
-        return httpStatus == 401;
+        return httpStatus == HttpStatus.UNAUTHORIZED_401;
     }
 
-    /** The account exceeded its request budget of 2500 requests per hour. */
     public boolean isRateLimited() {
-        return httpStatus == 429;
+        return httpStatus == HttpStatus.TOO_MANY_REQUESTS_429;
     }
 }

@@ -21,10 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MillheatAccountConfiguration {
-    /**
-     * Username/email address used in app. Required, so the framework rejects the thing before the
-     * handler runs if it is missing.
-     */
     public String username = "";
     public String password = "";
     public int refreshInterval = 120;

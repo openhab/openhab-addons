@@ -23,11 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class MillheatHomeConfiguration {
-
-    /**
-     * House UUID as issued by the cloud API. Numeric identifiers from the old service are not valid
-     * here; re-run discovery to obtain the new value.
-     */
     public @Nullable String homeId;
 
     @Override

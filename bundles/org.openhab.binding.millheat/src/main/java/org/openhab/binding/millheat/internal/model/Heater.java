@@ -26,7 +26,6 @@ import org.openhab.binding.millheat.internal.dto.HeaterShadowDTO;
  */
 @NonNullByDefault
 public class Heater {
-    /** Device family name the cloud API uses for heaters. */
     public static final String FAMILY_HEATERS = "Heaters";
 
     private final String id;
@@ -104,7 +103,7 @@ public class Heater {
         return macAddress;
     }
 
-    /** Device family, for example {@code Heaters}. Needed when writing settings back. */
+    /** The API requires a family when settings are written back, so an omitted one falls back. */
     public String getFamily() {
         return family.isEmpty() ? FAMILY_HEATERS : family;
     }
@@ -117,7 +116,6 @@ public class Heater {
         return room;
     }
 
-    /** True when the heater belongs to no room and is therefore controlled directly. */
     public boolean isIndependent() {
         return room == null;
     }
@@ -126,7 +124,6 @@ public class Heater {
         return currentTemp;
     }
 
-    /** Measured power draw in watts. The old service could not report this. */
     public @Nullable Double getCurrentPower() {
         return currentPower;
     }

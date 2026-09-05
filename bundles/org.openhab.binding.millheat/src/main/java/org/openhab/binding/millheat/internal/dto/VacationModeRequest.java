@@ -24,8 +24,6 @@ public record VacationModeRequest(@Nullable Long startDate, @Nullable Long endDa
         @Nullable Double vacationTemperature, @Nullable String vacationModeType,
         @Nullable Boolean isVacationModeActive) {
 
-    /** Vacation mode falls back to each room's away temperature. */
     public static final String TYPE_AWAY_TEMPERATURE = "use_away_temperature";
-    /** Vacation mode uses the dedicated vacation temperature. */
     public static final String TYPE_VACATION_TEMPERATURE = "use_vacation_temperature";
 }

@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public record Mode(ModeType mode, @Nullable Instant start, @Nullable Instant end) {
 
-    /** A mode with no bounded period. */
     public static Mode of(final ModeType mode) {
         return new Mode(mode, null, null);
     }

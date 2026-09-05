@@ -26,13 +26,12 @@ public record DeviceDTO(String deviceId, @Nullable String macAddress, @Nullable 
         @Nullable Boolean isEnabled, @Nullable DeviceSettingsDTO deviceSettings, @Nullable DeviceMetricsDTO lastMetrics,
         @Nullable Double energyUsageForCurrentDay) {
 
-    /** Device family name, for example {@code Heaters}. Empty when the API omitted it. */
     public String family() {
         final DeviceTypeDTO type = deviceType;
         return type == null ? "" : type.parentTypeName();
     }
 
-    /** State the device last reported, or {@code null} when it has never reported. */
+    /** {@code null} when the device has never reported. */
     public @Nullable HeaterShadowDTO reported() {
         final DeviceSettingsDTO settings = deviceSettings;
         return settings == null ? null : settings.reported();

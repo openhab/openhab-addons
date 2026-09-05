@@ -45,7 +45,6 @@ public record HeaterShadowDTO(@SerializedName("operation_mode") @Nullable String
     /** Value of {@code operation_mode} that follows the room's weekly program. */
     public static final String MODE_WEEKLY_PROGRAM = "weekly_program";
 
-    /** The fan is running. Only meaningful for heater models that have one. */
     public boolean fanActive() {
         return "on".equals(fanState);
     }

@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 public class MillheatRoomHandler extends MillheatBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(MillheatRoomHandler.class);
     private @NonNullByDefault({}) MillheatRoomConfiguration config;
-    /** Validated in initialize(), so the rest of the handler can rely on it being present. */
     private String roomId = "";
 
     public MillheatRoomHandler(final Thing thing) {
@@ -64,7 +63,6 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
         getAccountHandler().ifPresent(handler -> handler.updateRoomTemperature(roomId, command, modeType));
     }
 
-    /** Temperatures are absent whenever the room has never reported one. */
     private static State temperatureState(final @Nullable Double celsius) {
         return celsius == null ? UnDefType.UNDEF : new QuantityType<>(celsius, SIUnits.CELSIUS);
     }
