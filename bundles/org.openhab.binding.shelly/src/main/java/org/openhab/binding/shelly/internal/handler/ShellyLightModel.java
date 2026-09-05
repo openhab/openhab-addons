@@ -28,6 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -266,10 +267,10 @@ public class ShellyLightModel extends LightModel {
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
         isRGBW2White = THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID);
         isRGBW2Color = THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID);
-        isG3ColorTempBulb = THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID); // TODO mapping in #20909 may be wrong
-        isG3FullColorBulb = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID); // TODO mapping in #20909 may be wrong
+        isG3ColorTempBulb = THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID);
+        isG3FullColorBulb = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
 
-        // initialize some flags from the device configured operating profile (Generation 2/3)
+        // initialize some flags from the thing type and device operating profile
         String configProfile = profile.device.profile;
         isProfileLIGHT = SHELLY2_PROFILE_LIGHT.equals(configProfile);
         isProfileRGB = SHELLY2_PROFILE_RGB.equals(configProfile);
@@ -278,8 +279,9 @@ public class ShellyLightModel extends LightModel {
         isProfileRGBX2LIGHT = SHELLY2_PROFILE_RGBX2LIGHT.equals(configProfile);
         isProfileCCTX2 = SHELLY2_PROFILE_CCTX2.equals(configProfile);
 
-        boolean noPrimary = isProfileLIGHT || isProfileCCTX2 || isRGBW2White;
-        apiLightIndex = noPrimary ? channelGroupSuffix - 1 : channelGroupSuffix;
+        apiLightIndex = ShellyChannelDefinitions.deviceHasMainLight(handler.getThing(), profile) //
+                ? channelGroupSuffix
+                : channelGroupSuffix - 1;
 
         rgbxLength = super.getRGBx().length;
         cacheRGBX = new int[rgbxLength];

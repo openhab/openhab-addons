@@ -573,7 +573,7 @@ public class ShellyChannelDefinitions {
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
 
-            // dynamically add white-group or per-light channels
+            // dynamically add any missing white-group or per-light channels
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
             addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
@@ -583,8 +583,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
             addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
-            // TODO maybe remove this ??
-            // dynamically add color channels (in case any were missing in thing-type xml)
+            // dynamically add any missing color control group channels
             if (profile.hasColorTag(idx)) {
                 addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER);
                 addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL);
@@ -596,8 +595,8 @@ public class ShellyChannelDefinitions {
                 addChannel(thing, add, status.effect != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT);
             }
 
-            // dynamically add main control channels
-            if (supportsMainGroup(thing, profile)) {
+            // dynamically add main control group channels
+            if (!deviceHasMainLight(thing, profile)) {
                 if (profile.hasColorTag(0)) {
                     addChannel(thing, add, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER);
                 } else {
@@ -611,7 +610,10 @@ public class ShellyChannelDefinitions {
         return add;
     }
 
-    private static boolean supportsMainGroup(Thing thing, ShellyDeviceProfile profile) {
+    /**
+     * Detect if the device has a main RGB(W) or White light entity.
+     */
+    public static boolean deviceHasMainLight(Thing thing, ShellyDeviceProfile profile) {
         return !THING_TYPE_SHELLYRGBW2_WHITE.equals(thing.getThingTypeUID())
                 && !SHELLY2_PROFILE_LIGHT.equals(profile.device.profile)
                 && !SHELLY2_PROFILE_CCTX2.equals(profile.device.profile);

@@ -502,7 +502,6 @@ class ShellyLightModelTest {
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_RGBX2LIGHT, false, false, false, true),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 0, SHELLY2_PROFILE_LIGHT, false, false, false, true),
             Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, 1, SHELLY2_PROFILE_LIGHT, false, false, false, true),
-            // TODO check if Generation 3 bulbs in fact provide a profile
             Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, 0, null, true, false, true, true),
             Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, 0, null, true, true, true, true)
         // @formatter:on

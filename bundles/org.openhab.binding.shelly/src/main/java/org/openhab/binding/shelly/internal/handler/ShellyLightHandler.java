@@ -13,9 +13,7 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYRGBW2_WHITE;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -137,7 +135,10 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 ShellyStatusLightChannel light = status.lights.get(apiLightIndex);
                 ShellyLightModel model = getLightModelByApiLightIndex(apiLightIndex);
                 if (model == null) {
-                    model = ShellyLightModel.create(this, getChannelGroupSuffix(apiLightIndex), profile, DIM_STEPSIZE);
+                    int channelGroupSuffix = ShellyChannelDefinitions.deviceHasMainLight(thing, profile) //
+                            ? apiLightIndex
+                            : apiLightIndex + 1;
+                    model = ShellyLightModel.create(this, channelGroupSuffix, profile, DIM_STEPSIZE);
                     model.acquire();
                     lightModels.put(model.getChannelGroupSuffix(), model);
                 }
@@ -367,7 +368,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             model.setColorTemp(getInteger(light.temp));
         }
 
-        // MODE: setters may have updated the light model's mode
+        // MODE: setters auto- update the light model's mode
         // i.e. do nothing
 
         // ON-OFF: setters may have updated the light model's state so do this last
@@ -543,8 +544,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
      * @return the light model, or null
      */
     public @Nullable ShellyLightModel getLightModelByChannelGroupSuffix(int channelGroupSuffix) {
-        ShellyLightModel model = lightModels.get(channelGroupSuffix);
-        return model;
+        return lightModels.get(channelGroupSuffix);
     }
 
     /**
@@ -570,15 +570,5 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             return lightModels.get(extractChannelGroupSuffix(channelUID));
         }
         return null;
-    }
-
-    /*
-     * Helper method to determine the channel group suffix for a given API light index.
-     */
-    private int getChannelGroupSuffix(int apiLightIndex) {
-        boolean noPrimary = THING_TYPE_SHELLYRGBW2_WHITE.equals(getThing().getThingTypeUID())
-                || SHELLY2_PROFILE_LIGHT.equals(profile.device.profile)
-                || SHELLY2_PROFILE_CCTX2.equals(profile.device.profile);
-        return noPrimary ? apiLightIndex + 1 : apiLightIndex;
     }
 }
