@@ -12,29 +12,28 @@
  */
 package org.openhab.binding.millheat.internal.dto;
 
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link DeviceDTO} class represents a heater device
+ * A device as returned by {@code GET /houses/&#123;houseId&#125;/devices} and
+ * {@code GET /houses/&#123;houseId&#125;/devices/independent}. Both endpoints embed the full
+ * settings shadow and last telemetry, so one request per house covers all device state.
  *
- * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Initial contribution
  */
-public class DeviceDTO {
-    public boolean heaterFlag;
-    public int subDomainId;
-    public int controlType;
-    public double currentTemp;
-    public boolean canChangeTemp;
-    public long deviceId;
-    public String deviceName;
-    @SerializedName("mac")
-    public String macAddress;
-    public int deviceStatus;
-    public int holidayTemp;
-    public boolean fanStatus;
-    @SerializedName("open")
-    public boolean openWindow;
-    public boolean powerStatus;
-    @SerializedName("isHoliday")
-    public boolean holiday;
+public record DeviceDTO(String deviceId, @Nullable String macAddress, @Nullable DeviceTypeDTO deviceType,
+        @Nullable Boolean isConnected, @Nullable String customName, @Nullable String houseId, @Nullable String roomId,
+        @Nullable Boolean isEnabled, @Nullable DeviceSettingsDTO deviceSettings, @Nullable DeviceMetricsDTO lastMetrics,
+        @Nullable Double energyUsageForCurrentDay) {
+
+    public String family() {
+        final DeviceTypeDTO type = deviceType;
+        return type == null ? "" : type.parentTypeName();
+    }
+
+    /** {@code null} when the device has never reported. */
+    public @Nullable HeaterShadowDTO reported() {
+        final DeviceSettingsDTO settings = deviceSettings;
+        return settings == null ? null : settings.reported();
+    }
 }

@@ -13,21 +13,9 @@
 package org.openhab.binding.millheat.internal.dto;
 
 /**
- * This DTO class wraps the login request
- * 
- * @author Arne Seime - Initial contribution
+ * Credentials sent to {@code POST /customer/auth/sign-in}.
+ *
+ * @author Petter L. H. Eide - Initial contribution
  */
-public class LoginRequest implements AbstractRequest {
-    public final String account;
-    public final String password;
-
-    public LoginRequest(final String username, final String password) {
-        this.account = username;
-        this.password = password;
-    }
-
-    @Override
-    public String getRequestUrl() {
-        return "login";
-    }
+public record SignInRequest(String login, String password) {
 }

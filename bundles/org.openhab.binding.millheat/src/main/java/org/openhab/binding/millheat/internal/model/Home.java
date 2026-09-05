@@ -12,61 +12,57 @@
  */
 package org.openhab.binding.millheat.internal.model;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openhab.binding.millheat.internal.dto.HomeDTO;
-import org.openhab.core.library.types.OnOffType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.millheat.internal.dto.HouseDTO;
+import org.openhab.binding.millheat.internal.dto.VacationModeRequest;
 
 /**
- * The {@link Home} represents a home
+ * A house, called a home in the binding for continuity with the openHAB thing type. The cloud API
+ * returns the complete vacation state as part of the house listing, so no extra request is needed
+ * to populate the vacation channels.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Rebuild on the cloud API's house model
  */
+@NonNullByDefault
 public class Home {
-    private final long id;
+    private final String id;
     private final String name;
-    private final int type;
-    private final String zoneOffset;
-    private int holidayTemp;
-    private Mode mode;
-    private final String program = null;
+    private final @Nullable String timezone;
     private final List<Room> rooms = new ArrayList<>();
     private final List<Heater> independentHeaters = new ArrayList<>();
-    private LocalDateTime vacationModeStart;
-    private LocalDateTime vacationModeEnd;
-    private boolean advancedVacationMode;
 
-    public Home(final HomeDTO dto) {
-        id = dto.homeId;
-        name = dto.name;
-        type = dto.homeType;
-        zoneOffset = dto.timeZone;
-        holidayTemp = dto.holidayTemp;
-        advancedVacationMode = dto.holidayTempType == 0;
-        if (dto.holidayStartTime != 0) {
-            vacationModeStart = convertFromEpoch(dto.holidayStartTime);
-        }
-        if (dto.holidayEndTime != 0) {
-            vacationModeEnd = convertFromEpoch(dto.holidayEndTime);
-        }
+    private Mode mode;
+    private boolean vacationModeActive;
+    private @Nullable Instant vacationModeStart;
+    private @Nullable Instant vacationModeEnd;
+    private @Nullable Double vacationTemperature;
+    private @Nullable String vacationModeType;
 
-        if (dto.holiday) {
-            mode = new Mode(ModeType.VACATION, vacationModeStart, vacationModeEnd);
-        } else if (dto.alwaysHome) {
-            mode = new Mode(ModeType.ALWAYSHOME, null, null);
-        } else {
-            final LocalDateTime modeStart = LocalDateTime.ofEpochSecond(dto.modeStartTime, 0,
-                    ZoneOffset.of(zoneOffset));
-            final LocalDateTime modeEnd = modeStart.withHour(dto.modeHour).withMinute(dto.modeMinute);
-            mode = new Mode(ModeType.valueOf(dto.currentMode), modeStart, modeEnd);
-        }
+    public Home(final HouseDTO dto) {
+        id = dto.id();
+        final String houseName = dto.name();
+        name = houseName == null ? dto.id() : houseName;
+        timezone = dto.timezone();
+
+        vacationModeActive = Boolean.TRUE.equals(dto.isVacationModeActive());
+        vacationModeStart = toInstant(dto.vacationStartDate());
+        vacationModeEnd = toInstant(dto.vacationEndDate());
+        vacationTemperature = dto.vacationTemperature();
+        vacationModeType = dto.vacationModeType();
+
+        mode = vacationModeActive ? new Mode(ModeType.VACATION, vacationModeStart, vacationModeEnd)
+                : new Mode(ModeType.fromApiValue(dto.mode()), null, toInstant(dto.overrideEndDate()));
     }
 
-    private LocalDateTime convertFromEpoch(long epoch) {
-        return LocalDateTime.ofEpochSecond(epoch, 0, ZoneOffset.of(zoneOffset));
+    /** The API uses 0 rather than null for an unset vacation date. */
+    private static @Nullable Instant toInstant(final @Nullable Long epochSeconds) {
+        return epochSeconds == null || epochSeconds == 0L ? null : Instant.ofEpochSecond(epochSeconds);
     }
 
     public void addRoom(final Room room) {
@@ -77,14 +73,7 @@ public class Home {
         independentHeaters.add(heater);
     }
 
-    @Override
-    public String toString() {
-        return "Home [id=" + id + ", name=" + name + ", type=" + type + ", zoneOffset=" + zoneOffset + ", holidayTemp="
-                + holidayTemp + ", mode=" + mode + ", rooms=" + rooms + ", independentHeaters=" + independentHeaters
-                + ", program=" + program + "]";
-    }
-
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -92,24 +81,8 @@ public class Home {
         return name;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public String getTimezone() {
-        return zoneOffset;
-    }
-
-    public int getHolidayTemp() {
-        return holidayTemp;
-    }
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    public String getProgram() {
-        return program;
+    public @Nullable String getTimezone() {
+        return timezone;
     }
 
     public List<Room> getRooms() {
@@ -120,44 +93,93 @@ public class Home {
         return independentHeaters;
     }
 
-    public LocalDateTime getVacationModeStart() {
+    public Mode getMode() {
+        return mode;
+    }
+
+    public boolean isVacationModeActive() {
+        return vacationModeActive;
+    }
+
+    public void setVacationModeActive(final boolean active) {
+        vacationModeActive = active;
+        mode = active ? new Mode(ModeType.VACATION, vacationModeStart, vacationModeEnd) : Mode.of(ModeType.UNKNOWN);
+    }
+
+    public @Nullable Instant getVacationModeStart() {
         return vacationModeStart;
     }
 
-    public LocalDateTime getVacationModeEnd() {
+    public void setVacationModeStart(final @Nullable Instant start) {
+        vacationModeStart = start;
+    }
+
+    public @Nullable Instant getVacationModeEnd() {
         return vacationModeEnd;
     }
 
-    public void setVacationModeStart(long epoch) {
-        vacationModeStart = convertFromEpoch(epoch);
-        updateVacationMode();
+    public void setVacationModeEnd(final @Nullable Instant end) {
+        vacationModeEnd = end;
     }
 
-    public void setVacationModeEnd(long epoch) {
-        vacationModeEnd = convertFromEpoch(epoch);
-        updateVacationMode();
+    public @Nullable Double getVacationTemperature() {
+        return vacationTemperature;
     }
 
-    public void setHolidayTemp(int holidayTemp) {
-        this.holidayTemp = holidayTemp;
-        updateVacationMode();
+    public void setVacationTemperature(final @Nullable Double temperature) {
+        vacationTemperature = temperature;
     }
 
-    private void updateVacationMode() {
-        if (mode.getMode() == ModeType.VACATION) {
-            mode = new Mode(ModeType.VACATION, vacationModeStart, vacationModeEnd);
+    /**
+     * On means each room's own away temperature is used, off means the single vacation temperature
+     * set for the house. Surfaced as the {@code vacationModeAdvanced} channel.
+     */
+    public boolean isAdvancedVacationMode() {
+        return VacationModeRequest.TYPE_AWAY_TEMPERATURE.equals(vacationModeType);
+    }
+
+    public void setAdvancedVacationMode(final boolean advanced) {
+        vacationModeType = advanced ? VacationModeRequest.TYPE_AWAY_TEMPERATURE
+                : VacationModeRequest.TYPE_VACATION_TEMPERATURE;
+    }
+
+    public @Nullable String getVacationModeType() {
+        return vacationModeType;
+    }
+
+    /**
+     * Copies vacation settings staged on a previous snapshot onto this one.
+     * <p>
+     * The cloud API has no way to store vacation dates without also switching vacation mode on:
+     * POST enables it and PATCH requires it to be active already. The documented sequence is to set
+     * the start and end times and only then flip the mode, so those times have to survive locally
+     * until they are committed. Without this they would be lost to the next poll, which rebuilds
+     * every home from a response that reports no dates while vacation is inactive, and enabling
+     * would then fail for want of a start and end time.
+     */
+    public void carryStagedVacationSettings(final Home previous) {
+        if (vacationModeActive) {
+            // The service is authoritative once vacation is running.
+            return;
+        }
+        if (vacationModeStart == null) {
+            vacationModeStart = previous.vacationModeStart;
+        }
+        if (vacationModeEnd == null) {
+            vacationModeEnd = previous.vacationModeEnd;
+        }
+        if (previous.vacationModeType != null) {
+            vacationModeType = previous.vacationModeType;
+        }
+        if (previous.vacationTemperature != null) {
+            vacationTemperature = previous.vacationTemperature;
         }
     }
 
-    public void setVacationModeAdvanced(OnOffType command) {
-        advancedVacationMode = (OnOffType.ON == command);
-    }
-
-    public boolean isAdvancedVacationMode() {
-        return advancedVacationMode;
-    }
-
-    public void setAdvancedVacationMode(boolean advancedVacationMode) {
-        this.advancedVacationMode = advancedVacationMode;
+    @Override
+    public String toString() {
+        return "Home [id=" + id + ", name=" + name + ", timezone=" + timezone + ", mode=" + mode + ", vacationActive="
+                + vacationModeActive + ", rooms=" + rooms.size() + ", independentHeaters=" + independentHeaters.size()
+                + "]";
     }
 }
