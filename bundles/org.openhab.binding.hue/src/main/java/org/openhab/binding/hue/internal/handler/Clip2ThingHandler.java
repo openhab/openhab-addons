@@ -46,6 +46,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.Gamut2;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
+import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
 import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
@@ -166,6 +167,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
     // smart chime devices use write-only volume and duration channels, so these are their default values
     private static final PercentType DEFAULT_SOUND_VOLUME = new PercentType(50);
     private static final QuantityType<?> DEFAULT_ALARM_DURATION = QuantityType.valueOf(3, Units.SECOND);
+
+    private static final int INCREASE_DECREASE_PERCENT = 10;
+    private static final int MIN_MIREK_DELTA = 10;
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -447,10 +451,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
-                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand,
-                            cache.getColorTemperaturePercentState());
-                } else if (command instanceof OnOffType) {
+                if (command instanceof IncreaseDecreaseType incDecCommand) {
+                    MirekSchema schema = cache != null ? cache.getMirekSchema() : null;
+                    schema = schema != null ? schema : MirekSchema.DEFAULT_SCHEMA;
+                    double mirekRange = schema.getMirekMaximum() - schema.getMirekMinimum();
+                    int mirekDelta = (int) Math.max(mirekRange * INCREASE_DECREASE_PERCENT / 100.0, MIN_MIREK_DELTA);
+                    putResource = new Resource(lightResourceType).setMirekDelta(incDecCommand, mirekDelta);
+                    break;
+                }
+                if (command instanceof OnOffType) {
                     command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
                 }
                 putResource = Setters.setColorTemperaturePercent(new Resource(lightResourceType), command, cache);
@@ -470,13 +479,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
-                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
-                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, cache.getBrightnessState());
-                }
-                if (command instanceof PercentType brightnessCommand) {
+                if (command instanceof IncreaseDecreaseType incDecCommand) {
+                    command = handleIncreaseDecreaseBrightnessCommand(incDecCommand, putResource, cache);
+                    // fall through
+                } else if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
-                    double brightnessAbsolute = brightnessCommand.doubleValue();
-                    command = Setters.getHardOnOff(putResource, brightnessAbsolute, true, cache); // avoid "soft off"
+                    double brightness = Math.max(0.0, Math.min(100.0, brightnessCommand.doubleValue()));
+                    command = OnOffType.from(brightness > 0.0); // avoid "soft off"
                 }
                 // NB fall through for handling of switch related commands !!
 
@@ -719,16 +728,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private ResourceType getExtendedResourceType(ResourceType baseType) {
         return extendedResourceTypes.get(baseType) instanceof ResourceType extendedType ? extendedType : baseType;
-    }
-
-    private Command translateIncreaseDecreaseCommand(IncreaseDecreaseType command, State currentValue) {
-        if (currentValue instanceof PercentType currentPercent) {
-            int delta = command == IncreaseDecreaseType.INCREASE ? 10 : -10;
-            double newPercent = Math.min(100.0, Math.max(0.0, currentPercent.doubleValue() + delta));
-            return new PercentType(new BigDecimal(newPercent, Resource.PERCENT_MATH_CONTEXT));
-        }
-
-        return command;
     }
 
     private void refreshAllChannels() {
@@ -1890,5 +1889,59 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
             updateLightCacheRequiredFieldsDone = true;
         }
+    }
+
+    /**
+     * Helper for {@link IncreaseDecreaseType} command processing.
+     * Adjusts brightness based on the given Increase/Decrease command and returns an adjunct {@link OnOffType}
+     * to be appended to the payload. It converts the relative command into an absolute brightness value since
+     * live testing has shown that it leads to more predictable / reliable outcomes.
+     *
+     * @param command the {@link IncreaseDecreaseType} command.
+     * @param putResource the resource to be sent to the bridge.
+     * @param cache the cached resource with the current state, may be null.
+     * @return an adjunct {@link OnOffType.ON} .
+     */
+    private OnOffType handleIncreaseDecreaseBrightnessCommand(IncreaseDecreaseType command, Resource putResource,
+            @Nullable Resource cache) {
+        boolean inc = IncreaseDecreaseType.INCREASE == command;
+        if (cache != null) {
+            Resource actual = getResource(cache.getType(), cache.getId());
+            if (actual != null) {
+                double brightnessActual = (actual.getDimming() instanceof Dimming dim
+                        && dim.getBrightness() instanceof Double bri) ? bri : -1;
+                if (brightnessActual >= 0.0) {
+                    if (inc || (actual.getOnState() instanceof OnState on && Boolean.TRUE.equals(on.getOn()))) {
+                        double brightnessTarget = inc //
+                                ? Math.min(100.0, brightnessActual + INCREASE_DECREASE_PERCENT)
+                                : Math.max(0.0, brightnessActual - INCREASE_DECREASE_PERCENT);
+                        putResource.setBrightness(new PercentType(BigDecimal.valueOf(brightnessTarget)));
+                        return OnOffType.from(brightnessTarget > 0.0);
+                    }
+                }
+            }
+        }
+        putResource.setBrightness(inc ? PercentType.HUNDRED : PercentType.ZERO);
+        return OnOffType.from(inc);
+    }
+
+    /**
+     * Fetch the current resource from the bridge for the given type and id. Returns null if the resource
+     * cannot be fetched.
+     *
+     * @param type the resource type.
+     * @param id the resource id.
+     * @return the respective resource or null if it cannot be fetched.
+     */
+    private @Nullable Resource getResource(ResourceType type, String id) {
+        try {
+            Resources resources = getBridgeHandler().getResources(new ResourceReference().setType(type).setId(id));
+            return resources.getResources().get(0);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            logger.debug("Failed to fetch resource type:{}, id:{}", type, id, e);
+        }
+        return null;
     }
 }
