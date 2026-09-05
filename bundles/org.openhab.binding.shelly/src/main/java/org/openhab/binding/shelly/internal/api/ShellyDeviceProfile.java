@@ -425,19 +425,45 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_STATUS;
         } else if (isRoller) {
             return numRelays <= 2 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
-        } else {
-            // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
-            return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
+        } else if (isDimmer) {
+            List<ShellySettingsDimmer> dimmers = settings.dimmers;
+            if (dimmers != null) {
+                int numDimmer = dimmers.size();
+                if (numDimmer <= 1) {
+                    return CHANNEL_GROUP_RELAY_CONTROL;
+                }
+                int numChannels = numInputs / numDimmer; // Device has more than 1 dimmer
+                if (numChannels == 0) {
+                    return CHANNEL_GROUP_RELAY_CONTROL;
+                }
+                // Inputs might not divide evenly across dimmer channels (e.g. one channel configured
+                // with 2 buttons, another with 1); clamp so the extra inputs route to the last channel
+                // instead of computing an out-of-range group.
+                return CHANNEL_GROUP_RELAY_CONTROL + Math.min(numDimmer, 1 + (i / numChannels));
+            }
         }
+        // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
+        return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
     }
 
     public String getInputSuffix(int i) {
         int idx = i + 1; // channel names are 1-based
         if (isRGBW2 || isIX || isMultiButton) {
             return ""; // RGBW2 has only 1 channel
-        } else if (isRoller || isDimmer) {
+        } else if (isRoller) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
-            // Dimmer has up to 2 inputs to control light
+            return String.valueOf(idx);
+        } else if (isDimmer) {
+            List<ShellySettingsDimmer> dimmers = settings.dimmers;
+            if (dimmers != null) {
+                int numDimmer = dimmers.size();
+                if (numDimmer <= 1) {
+                    return String.valueOf(idx);
+                }
+                int numChannels = numInputs / numDimmer; // inputs per dimmer channel, same as getInputGroup()
+                return String.valueOf(numChannels == 0 ? idx : (i % numChannels) + 1);
+            }
+            // Dimmer has up to 2 inputs to control light (Gen1 fallback, no dimmers list)
             return String.valueOf(idx);
         } else if (hasRelays) {
             return numRelays == 1 && numInputs >= 2 ? String.valueOf(idx) : "";
@@ -445,25 +471,39 @@ public class ShellyDeviceProfile {
         return "";
     }
 
-    public boolean inButtonMode(int idx) {
+    /**
+     * Resolves the button type (SHELLY_BTNT_xxx) of the given input index for all device categories carrying an
+     * input mode (IX/BLU inputs, dimmers, relays, RGBW2/CCT lights).
+     *
+     * @param idx input index (0-based)
+     * @return the resolved button type or an empty string if unknown
+     */
+    public String getButtonType(int idx) {
         if (idx < 0) {
-            logger.debug("{}: Invalid index {} for inButtonMode()", thingName, idx);
-            return false;
+            logger.debug("{}: Invalid index {} for getButtonType()", thingName, idx);
+            return "";
         }
         String btnType = "";
         List<ShellySettingsInput> inputs = settings.inputs;
         List<ShellySettingsDimmer> dimmers = settings.dimmers;
         List<ShellySettingsRelay> relays = settings.relays;
         List<ShellySettingsRgbwLight> lights = settings.lights;
-        if (isButton || isMultiButton) {
-            return true;
-        } else if ((isIX || isBlu) && inputs != null && idx < inputs.size()) {
+        if ((isIX || isBlu) && inputs != null && idx < inputs.size()) {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {
-            if (dimmers != null) {
+            if (dimmers != null && idx < dimmers.size()) {
+                // Gen2+: one input per dimmer channel, btnType derived from the Light component's in_mode
+                btnType = getString(dimmers.get(idx).btnType);
+            }
+            if (btnType.isEmpty() && isGen2 && inputs != null && idx < inputs.size()) {
+                // in_mode not reported: fall back to button-vs-switch derived from the Input component type
+                btnType = getString(inputs.get(idx).btnType);
+            }
+            if (btnType.isEmpty() && dimmers != null && !dimmers.isEmpty()) {
+                // Gen1 Dimmer: single dimmer channel with 2 physical button inputs
                 ShellySettingsDimmer dimmer = dimmers.get(0);
-                btnType = getString(dimmer.btnType);
+                btnType = idx == 0 ? getString(dimmer.btnType1) : getString(dimmer.btnType2);
             }
         } else if (relays != null) {
             if (numRelays == 1) {
@@ -483,16 +523,29 @@ public class ShellyDeviceProfile {
             ShellySettingsRgbwLight light = lights.get(idx);
             btnType = getString(light.btnType);
         }
+        return btnType;
+    }
 
+    public boolean inButtonMode(int idx) {
+        if (idx < 0) {
+            logger.debug("{}: Invalid index {} for inButtonMode()", thingName, idx);
+            return false;
+        }
+        if (isButton || isMultiButton) {
+            return true;
+        }
+        String btnType = getButtonType(idx);
         if (btnType.equalsIgnoreCase(SHELLY_BTNT_ACTIVATE)) {
             // Switch.in_mode=activate alone doesn't imply a button input (Shelly also uses it for stateful
             // switch/PIR inputs); only the paired Input component (settings.inputs) reveals the real input type
+            List<ShellySettingsInput> inputs = settings.inputs;
             return inputs != null && idx < inputs.size()
                     && SHELLY_BTNT_MOMENTARY.equalsIgnoreCase(getString(inputs.get(idx).btnType));
         }
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
-                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED) || btnType.equalsIgnoreCase(SHELLY_BTNT_CYCLE)
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_DIM) || btnType.equalsIgnoreCase(SHELLY_BTNT_DUAL_DIM);
     }
 
     public int getRollerFav(int id) {

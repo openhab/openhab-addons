@@ -31,7 +31,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
@@ -206,6 +205,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT, "relayOutput", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_BTN_TYPE, "btnType", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_BUTTON_TRIGGER, "system:button", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
@@ -216,6 +216,10 @@ public class ShellyChannelDefinitions {
                 // Dimmer
                 .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_BRIGHTNESS, "dimmerBrightness",
                         ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_DEVICES, "daliDeviceCount",
+                        ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_SCAN_ACTIVE, "daliScanActive",
+                        ITEMT_SWITCH))
 
                 // Roller
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_CONTROL, "rollerShutter", ITEMT_ROLLER))
@@ -225,12 +229,14 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STOPR, "rollerStop", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_SAFETY, "rollerSafety", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_BTN_TYPE, "btnType", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_EVENT_TRIGGER, "system:button", "system:button"))
 
                 // Bulb/Duo/Vintage
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_BTN_TYPE, "btnType", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_BUTTON_TRIGGER, "system:button", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
@@ -339,6 +345,7 @@ public class ShellyChannelDefinitions {
 
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_BTN_TYPE, "btnType", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_BUTTON_TRIGGER, "system:button", ITEMT_STRING))
@@ -407,6 +414,8 @@ public class ShellyChannelDefinitions {
 
         if (channel.startsWith(CHANNEL_INPUT)) {
             channel = CHANNEL_INPUT;
+        } else if (channel.startsWith(CHANNEL_BTN_TYPE)) {
+            channel = CHANNEL_BTN_TYPE;
         } else if (channel.startsWith(CHANNEL_BUTTON_TRIGGER)) {
             channel = CHANNEL_BUTTON_TRIGGER;
         } else if (channel.startsWith(CHANNEL_STATUS_EVENTTYPE)) {
@@ -586,13 +595,20 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.isDimmer, group, CHANNEL_BRIGHTNESS);
 
         List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
-        if (dimmers != null) {
+        if (dimmers != null && idx < dimmers.size()) {
             ShellySettingsDimmer ds = dimmers.get(idx);
             addChannel(thing, add, ds.name != null, group, CHANNEL_OUTPUT_NAME);
             addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-            ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
-            addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            List<ShellyShortLightStatus> statusDimmers = dstatus.dimmers;
+            if (statusDimmers != null) {
+                ShellyShortLightStatus dss = statusDimmers.size() > idx ? statusDimmers.get(idx) : null;
+                addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            }
+        }
+        if (idx == 0) {
+            addChannel(thing, add, dstatus.daliScanActive != null, group, CHANNEL_DALI_DEVICES);
+            addChannel(thing, add, dstatus.daliScanActive != null, group, CHANNEL_DALI_SCAN_ACTIVE);
         }
         return add;
     }
@@ -629,12 +645,16 @@ public class ShellyChannelDefinitions {
                 String suffix = profile.getInputSuffix(i); // multi ? String.valueOf(i + 1) : "";
                 addChannel(thing, add, !profile.isBlu && !profile.isButton && !profile.isMultiButton, group,
                         CHANNEL_INPUT + suffix);
+                addChannel(thing, add, !profile.isBlu && !profile.isButton && !profile.isMultiButton
+                        && !profile.getButtonType(i).isEmpty(), group, CHANNEL_BTN_TYPE + suffix);
                 addChannel(thing, add, true, group,
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
-                    ShellyInputState input = status.inputs.get(i);
-                    addChannel(thing, add, input.event != null, group, CHANNEL_STATUS_EVENTTYPE + suffix);
-                    addChannel(thing, add, input.eventCount != null, group, CHANNEL_STATUS_EVENTCOUNT + suffix);
+                    // Create unconditionally: event/eventCount are null until the button is pressed for the
+                    // first time, so gating on the value (rather than button-mode itself) silently drops these
+                    // channels for inputs that haven't fired yet
+                    addChannel(thing, add, true, group, CHANNEL_STATUS_EVENTTYPE + suffix);
+                    addChannel(thing, add, true, group, CHANNEL_STATUS_EVENTCOUNT + suffix);
                 }
             }
         } else if (status.input != null) {
@@ -974,7 +994,8 @@ public class ShellyChannelDefinitions {
         if (!channelDef.label.isEmpty()) {
             char grseq = lastChar(group);
             // Only genuinely indexed names get a digit suffix — same allowlist as getDefinition() uses.
-            boolean chIndexed = channelName.startsWith(CHANNEL_INPUT) || channelName.startsWith(CHANNEL_BUTTON_TRIGGER)
+            boolean chIndexed = channelName.startsWith(CHANNEL_INPUT) || channelName.startsWith(CHANNEL_BTN_TYPE)
+                    || channelName.startsWith(CHANNEL_BUTTON_TRIGGER)
                     || channelName.startsWith(CHANNEL_STATUS_EVENTTYPE)
                     || channelName.startsWith(CHANNEL_STATUS_EVENTCOUNT);
             char chseq = chIndexed ? lastChar(channelName) : ' ';

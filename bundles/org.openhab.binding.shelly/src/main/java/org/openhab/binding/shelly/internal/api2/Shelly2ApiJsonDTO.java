@@ -60,6 +60,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS = "Switch.ResetCounters";
     public static final String SHELLYRPC_METHOD_PM1_RESETCOUNTERS = "PM1.ResetCounters";
     public static final String SHELLYRPC_METHOD_COVER_RESETCOUNTERS = "Cover.ResetCounters";
+    public static final String SHELLYRPC_METHOD_LIGHT_RESETCOUNTERS = "Light.ResetCounters";
     public static final String SHELLYRPC_METHOD_CB_SET = "CB.Set";
     public static final String SHELLYRPC_METHOD_COVER_SETPOS = "Cover.GoToPosition";
     public static final String SHELLY2_COVER_CMD_OPEN = "Open";
@@ -126,6 +127,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_BTNT_FOLLOW = "follow";
     public static final String SHELLY2_BTNT_DETACHED = "detached";
     public static final String SHELLY2_BTNT_ACTIVATE = "activate";
+    public static final String SHELLY2_BTNT_CYCLE = "cycle"; // Switch component in_mode: button cycles the output
+    public static final String SHELLY2_BTNT_DIM = "dim"; // Light component in_mode: single button toggles+dims
+    public static final String SHELLY2_BTNT_DUAL_DIM = "dual_dim"; // Light component in_mode: two buttons toggle+dim
 
     // Input types
     public static final String SHELLY2_INPUTT_SWITCH = "switch";
@@ -852,6 +856,20 @@ public class Shelly2ApiJsonDTO {
                 public @Nullable String[] errors;
             }
 
+            public static class Shelly2DaliScanStatus {
+                @SerializedName("cg_count")
+                public @Nullable Integer cgCount;
+                @SerializedName("started_at")
+                public @Nullable Double startedAt;
+                public @Nullable ArrayList<String> errors;
+            }
+
+            public static class Shelly2DaliStatus {
+                @SerializedName("cg_count")
+                public @Nullable Integer cgCount;
+                public @Nullable Shelly2DaliScanStatus scan;
+            }
+
             public static class Shelly2RGBWStatus {
                 public @Nullable Integer id;
                 public @Nullable String source;
@@ -995,6 +1013,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("lora:100")
             public Shelly2DeviceStatusLora lora100;
+
+            @SerializedName("dali")
+            public @Nullable Shelly2DaliStatus dali;
         }
 
         public class Shelly2DeviceStatusSys {
