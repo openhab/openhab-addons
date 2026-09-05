@@ -144,6 +144,7 @@ public class Shelly1ApiJsonDTO {
 
     public static final String SHELLY_INP_MODE_OPENCLOSE = "openclose";
     public static final String SHELLY_INP_MODE_ONEBUTTON = "onebutton";
+    public static final String SHELLY_INP_MODE_DETACHED = "detached"; // Gen2+ Cover in_mode only, no Gen1 equivalent
 
     public static final String SHELLY_OBSTMODE_DISABLED = "disabled";
     public static final String SHELLY_SAFETYM_WHILEOPENING = "while_opening";
