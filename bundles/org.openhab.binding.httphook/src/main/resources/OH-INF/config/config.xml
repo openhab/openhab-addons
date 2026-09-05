@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="binding:httphook">
+		<parameter name="enforceAuthentication" type="boolean" required="false">
+			<label>Enforce Authentication</label>
+			<description>Require authorization for all endpoints, even if endpoint-specific authorization is not configured.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="defaultBasic" type="text" required="false">
+			<label>Default Basic Authorization</label>
+			<description>Default Basic authorization in format username:password, used when endpoint authorization is not
+				configured.</description>
+		</parameter>
+		<parameter name="defaultBearer" type="text" required="false">
+			<label>Default Bearer Authorization</label>
+			<description>Default Bearer token used when endpoint authorization is not configured.</description>
+		</parameter>
+	</config-description>
+	<config-description uri="channel-type:httphook:response">
+		<parameter name="method" type="text" required="true">
+			<label>HTTP Method</label>
+			<description>HTTP method this response channel accepts.</description>
+			<default>GET</default>
+			<limitToOptions>true</limitToOptions>
+			<options>
+				<option value="GET">GET</option>
+				<option value="POST">POST</option>
+				<option value="PUT">PUT</option>
+				<option value="DELETE">DELETE</option>
+			</options>
+		</parameter>
+		<parameter name="transformationPattern" type="text" required="true" multiple="true">
+			<label>Transformation Pattern</label>
+			<description>Transformation pattern that generates the response body. Multiple transformations can be chained by
+				listing each transformation on a separate line, or by separating them with the intersection character
+				∩.</description>
+		</parameter>
+		<parameter name="contentType" type="text">
+			<label>Content Type</label>
+			<description>MIME content type returned by this response channel.</description>
+			<default>application/json</default>
+			<options>
+				<option value="application/json">application/json</option>
+				<option value="text/plain">text/plain</option>
+				<option value="text/csv">text/csv</option>
+				<option value="text/html">text/html</option>
+				<option value="application/xml">application/xml</option>
+				<option value="text/xml">text/xml</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
