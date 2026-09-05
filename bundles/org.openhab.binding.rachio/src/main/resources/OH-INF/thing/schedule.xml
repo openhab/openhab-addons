@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rachio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="schedule">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud"/>
+		</supported-bridge-type-refs>
+
+		<label>Rachio Schedule Rule</label>
+		<description>A fixed Rachio sprinkler schedule rule.</description>
+
+		<channels>
+			<channel id="name" typeId="schedule-name"/>
+			<channel id="enabled" typeId="schedule-enabled"/>
+			<channel id="type" typeId="schedule-type"/>
+			<channel id="start-time" typeId="schedule-start-time"/>
+			<channel id="last-run" typeId="schedule-last-run"/>
+			<channel id="next-run" typeId="schedule-next-run"/>
+			<channel id="zones" typeId="schedule-zones"/>
+			<channel id="seasonal-adjustment" typeId="schedule-seasonal-adjustment"/>
+			<channel id="start" typeId="schedule-start"/>
+			<channel id="skip" typeId="schedule-skip"/>
+			<channel id="skip-forward-zone-run" typeId="schedule-skip-forward-zone-run"/>
+			<channel id="last-update" typeId="last-update"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>scheduleRuleId</representation-property>
+
+		<config-description>
+			<parameter name="scheduleRuleId" type="text" required="false">
+				<label>Schedule Rule ID</label>
+				<description>Rachio API schedule rule UUID. Required for manually created schedule Things.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="schedule-name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Schedule rule name.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schedule-enabled">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>ON if the schedule rule is enabled.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schedule-type">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>Schedule rule type.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schedule-start-time">
+		<item-type>DateTime</item-type>
+		<label>Start Time</label>
+		<description>Schedule rule start time from Rachio startDate, with startTime used as a fallback when present.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schedule-last-run">
+		<item-type>DateTime</item-type>
+		<label>Last Run</label>
+		<description>Last run time when provided by Rachio. Remains UNDEF when the API does not provide a usable value.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schedule-next-run">
+		<item-type>DateTime</item-type>
+		<label>Next Run</label>
+		<description>Next run time when provided by Rachio. Remains UNDEF when the API does not provide a usable value.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schedule-zones">
+		<item-type>String</item-type>
+		<label>Zones</label>
+		<description>Comma-separated Rachio zone IDs associated with this schedule.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schedule-seasonal-adjustment">
+		<item-type unitHint="one">Number:Dimensionless</item-type>
+		<label>Seasonal Adjustment</label>
+		<description>Seasonal adjustment value for the schedule rule. Sending a number updates the adjustment.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="schedule-start">
+		<item-type>Switch</item-type>
+		<label>Start Schedule</label>
+		<description>Send ON to start this schedule rule.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Water</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="schedule-skip">
+		<item-type>Switch</item-type>
+		<label>Skip Schedule</label>
+		<description>Send ON to skip this schedule rule.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="schedule-skip-forward-zone-run">
+		<item-type>Switch</item-type>
+		<label>Skip Forward Zone Run</label>
+		<description>Send ON to skip the currently running zone in this schedule context.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+</thing:thing-descriptions>
