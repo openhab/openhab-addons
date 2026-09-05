@@ -69,8 +69,7 @@ See section [Discovery](#discovery) for details.
 | shellyem3         | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
 | shellyrgbw2-color | Shelly RGBW2 Controller in Color Mode                  | SHRGBW2   |
 | shellyrgbw2-white | Shelly RGBW2 Controller in White Mode                  | SHRGBW2   |
-| shellybulb-color  | Shelly Bulb in Color Mode                              | SHBLB-1   |
-| shellybulb-white  | Shelly Bulb in White Mode                              | SHBLB-1   |
+| shellybulb        | Shelly Bulb (Color and White Mode)                     | SHBLB-1   |
 | shellybulbduo     | Shelly Duo White                                       | SHBDUO-1  |
 | shellybulbduo     | Shelly Duo White G10                                   | SHBDUO-1  |
 | shellycolorbulb   | Shelly Duo Color G10                                   | SHCB-1    |

@@ -54,6 +54,8 @@ public class ShellyColorUtils {
     }
 
     public ShellyColorUtils(ShellyColorUtils col) {
+        power = col.power;
+        mode = col.mode;
         minTemp = col.minTemp;
         maxTemp = col.maxTemp;
         setRed(col.red);
@@ -63,6 +65,7 @@ public class ShellyColorUtils {
         setGain(col.gain);
         setBrightness(col.brightness);
         setTemp(col.temp);
+        setEffect(col.effect);
     }
 
     public void setMode(String mode) {

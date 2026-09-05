@@ -154,6 +154,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         break;
                     }
 
+                    if (profile.isBulb) {
+                        // setting the white-mode brightness implies white mode, switch if currently in color mode
+                        col.setMode(SHELLY_MODE_WHITE);
+                    }
                     if (command instanceof PercentType percentCommand) {
                         Float percent = percentCommand.floatValue();
                         value = percent.intValue(); // 0..100% = 0..100
@@ -235,6 +239,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     logger.debug("{}: Color mode changed from {} to {}, set new mode", thingName, oldCol.mode,
                             col.mode);
                     api.setLightMode(col.mode);
+                    // make sure the UI promptly reflects the new mode rather than waiting for the next poll
+                    requestUpdates(1, false);
                 }
 
                 // send changed colors to the device
@@ -268,6 +274,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             col.setGreen(getColorFromHSB(hsb.getGreen()));
             col.setBrightness(getColorFromHSB(hsb.getBrightness(), BRIGHTNESS_FACTOR));
             // white, gain and temp are not part of the HSB color scheme
+            if (profile.isBulb) {
+                // picking a color implies color mode, switch if the bulb is currently in white mode
+                col.setMode(SHELLY_MODE_COLOR);
+            }
             updated = true;
         } else if (command instanceof PercentType percentCommand) {
             if (!profile.hasColorTag(lightId) || profile.isBulb) {
