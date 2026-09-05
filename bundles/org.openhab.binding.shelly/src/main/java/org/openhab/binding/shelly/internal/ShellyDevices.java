@@ -37,6 +37,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_1PM = "SHSW-PM";
     public static final String SHELLYDT_1L = "SHSW-L";
     public static final String SHELLYDT_PLUG = "SHPLG-1";
+    public static final String SHELLYDT_PLUG2 = "SHPLG2-1"; // Gen1 Plug variant
     public static final String SHELLYDT_PLUGS = "SHPLG-S";
     public static final String SHELLYDT_PLUGU1 = "SHPLG-U1";
     public static final String SHELLYDT_PLUGU1_2 = "SHPLG-US";
@@ -47,7 +48,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_3EM = "SHEM-3";
     public static final String SHELLYDT_HT = "SHHT-1";
     public static final String SHELLYDT_SMOKE = "SHSM-01";
-    public static final String SHELLYDT_FLOOD = "SH-FLOOD ";
+    public static final String SHELLYDT_FLOOD = "SHWT-1";
     public static final String SHELLYDT_DOORWINDOW = "SHDW-1";
     public static final String SHELLYDT_DOORWINDOW2 = "SHDW-2";
     public static final String SHELLYDT_UNI = "SHUNI-1";
@@ -55,7 +56,6 @@ public class ShellyDevices {
     public static final String SHELLYDT_MOTION2 = "SHMOS-02";
     public static final String SHELLYDT_SENSE = "SHSEN-1";
     public static final String SHELLYDT_GAS = "SHGS-1";
-    public static final String SHELLYDT_EYE = "SHEYE-1";
     public static final String SHELLYDT_DIMMER = "SHDM-1";
     public static final String SHELLYDT_DIMMER2 = "SHDM-2";
     public static final String SHELLYDT_IX3 = "SHIX3-1";
@@ -231,7 +231,6 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYTRV = new ThingTypeUID(BINDING_ID, "shellytrv");
     public static final ThingTypeUID THING_TYPE_SHELLYBUTTON1 = new ThingTypeUID(BINDING_ID, "shellybutton1");
     public static final ThingTypeUID THING_TYPE_SHELLYBUTTON2 = new ThingTypeUID(BINDING_ID, "shellybutton2");
-    public static final ThingTypeUID THING_TYPE_SHELLYEYE = new ThingTypeUID(BINDING_ID, "shellyseye");
     public static final ThingTypeUID THING_TYPE_SHELLYMOTION = new ThingTypeUID(BINDING_ID, "shellymotion");
     public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_COLOR = new ThingTypeUID(BINDING_ID, "shellyrgbw2-color");
     public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_WHITE = new ThingTypeUID(BINDING_ID, "shellyrgbw2-white");
@@ -405,6 +404,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_1L, THING_TYPE_SHELLY1L), //
             Map.entry(SHELLYDT_1, THING_TYPE_SHELLY1), //
             Map.entry(SHELLYDT_PLUG, THING_TYPE_SHELLYPLUG), //
+            Map.entry(SHELLYDT_PLUG2, THING_TYPE_SHELLYPLUG), //
             Map.entry(SHELLYDT_PLUGS, THING_TYPE_SHELLYPLUGS), //
             Map.entry(SHELLYDT_PLUGU1, THING_TYPE_SHELLYPLUGU1), //
             Map.entry(SHELLYDT_PLUGU1_2, THING_TYPE_SHELLYPLUGU1), //
@@ -419,14 +419,14 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_3EM, THING_TYPE_SHELLY3EM), //
             Map.entry(SHELLYDT_EM, THING_TYPE_SHELLYEM), //
             Map.entry(SHELLYDT_HT, THING_TYPE_SHELLYHT), //
-            Map.entry(SHELLYDT_MOTION, THING_TYPE_SHELLYMOTION),
+            Map.entry(SHELLYDT_MOTION, THING_TYPE_SHELLYMOTION), //
+            Map.entry(SHELLYDT_MOTION2, THING_TYPE_SHELLYMOTION), //
             Map.entry(SHELLYDT_DOORWINDOW, THING_TYPE_SHELLYDOORWIN), //
             Map.entry(SHELLYDT_DOORWINDOW2, THING_TYPE_SHELLYDOORWIN2), //
             Map.entry(SHELLYDT_SMOKE, THING_TYPE_SHELLYSMOKE), //
             Map.entry(SHELLYDT_FLOOD, THING_TYPE_SHELLYFLOOD), //
             Map.entry(SHELLYDT_UNI, THING_TYPE_SHELLYUNI), //
             Map.entry(SHELLYDT_GAS, THING_TYPE_SHELLYGAS), //
-            Map.entry(SHELLYDT_EYE, THING_TYPE_SHELLYEYE), //
             Map.entry(SHELLYDT_SENSE, THING_TYPE_SHELLYSENSE), //
             Map.entry(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1),
             Map.entry(SHELLYDT_BUTTON2, THING_TYPE_SHELLYBUTTON2), //
@@ -617,14 +617,12 @@ public class ShellyDevices {
             Map.entry("shellydw", THING_TYPE_SHELLYDOORWIN), //
             Map.entry("shellydw2", THING_TYPE_SHELLYDOORWIN2), //
             Map.entry("shellysense", THING_TYPE_SHELLYSENSE), //
-            Map.entry("shellyseye", THING_TYPE_SHELLYEYE), //
             Map.entry("shellybutton1", THING_TYPE_SHELLYBUTTON1), //
             Map.entry("shellybutton2", THING_TYPE_SHELLYBUTTON2), //
             Map.entry("shellyuni", THING_TYPE_SHELLYUNI), //
             Map.entry("shellymotion", THING_TYPE_SHELLYMOTION),
             Map.entry("shellymotionsensor", THING_TYPE_SHELLYMOTION),
-            Map.entry("shellymotion2", THING_TYPE_SHELLYMOTION), //
-            Map.entry("shellyeye", THING_TYPE_SHELLYEYE),
+            Map.entry("shellymotion2", THING_TYPE_SHELLYMOTION),
 
             // Shelly Plus Series
             Map.entry("shellyplus1", THING_TYPE_SHELLYPLUS1), //
