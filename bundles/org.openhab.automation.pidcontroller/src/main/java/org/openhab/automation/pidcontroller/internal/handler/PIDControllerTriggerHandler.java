@@ -15,6 +15,7 @@ package org.openhab.automation.pidcontroller.internal.handler;
 import static org.openhab.automation.pidcontroller.internal.PIDControllerConstants.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -39,6 +40,8 @@ import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.items.events.ItemStateChangedEvent;
 import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -72,6 +75,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private @Nullable String dInspector;
     private @Nullable String eInspector;
     private ItemRegistry itemRegistry;
+    private @Nullable String integralHoldItemName;
+    private final Set<String> warnedItemProblems = new HashSet<>();
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
             BundleContext bundleContext) {
@@ -109,6 +114,9 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double kdTimeConstant = getDoubleFromConfig(config, CONFIG_KD_TIMECONSTANT);
         double iMinValue = getDoubleFromConfig(config, CONFIG_I_MIN);
         double iMaxValue = getDoubleFromConfig(config, CONFIG_I_MAX);
+        double integralDecayTime = getDoubleFromConfig(config, CONFIG_I_DECAY_TIME);
+        integralHoldItemName = (String) config.get(CONFIG_I_HOLD_ITEM);
+        boolean directionalIntegralHold = getBooleanFromConfig(config, CONFIG_I_HOLD_DIRECTIONAL);
         pInspector = (String) config.get(P_INSPECTOR);
         iInspector = (String) config.get(I_INSPECTOR);
         dInspector = (String) config.get(D_INSPECTOR);
@@ -122,7 +130,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double previousError = getItemNameValueAsNumberOrZero(itemRegistry, eInspector);
 
         controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant, iMinValue, iMaxValue,
-                previousIntegralPart, previousDerivativePart, previousError);
+                integralDecayTime, directionalIntegralHold, previousIntegralPart, previousDerivativePart,
+                previousError);
 
         eventFilter = event -> {
             String topic = event.getTopic();
@@ -151,6 +160,58 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         return obj;
     }
 
+    /**
+     * Whether this is the first time the given problem has been seen, and records it.
+     *
+     * <p>
+     * Every one of these checks runs on each calculation, so logging unconditionally turns a
+     * single misconfigured Item name into one warning per {@code loopTime}: at the documented
+     * 1s loop that is 86400 a day, and {@link #updateItem} multiplies it by the four inspector
+     * Items. The key is the failure kind plus the Item name, so each Item reports
+     * independently and two different problems with the same Item do not mask one another.
+     * Clearing the key on success lets an Item recreated at runtime recover silently while a
+     * later failure is still reported.
+     *
+     * <p>
+     * The caller logs its own constant format string rather than passing one in, which
+     * Checkstyle requires so that the placeholders can be verified.
+     */
+    private boolean firstReportOf(String key) {
+        return warnedItemProblems.add(key);
+    }
+
+    private void clearWarning(String key) {
+        warnedItemProblems.remove(key);
+    }
+
+    /**
+     * Whether the caller is currently reporting that the actuator cannot act on the process, in which case the I-part
+     * must not keep accumulating. Anything that is not a definite "on" leaves the controller integrating, so a missing
+     * or uninitialised item cannot silently freeze the loop.
+     */
+    private boolean isIntegralHeld() {
+        String itemName = integralHoldItemName;
+        if (itemName == null || itemName.isBlank()) {
+            return false;
+        }
+        try {
+            State state = itemRegistry.getItem(itemName).getState();
+            clearWarning("hold:" + itemName);
+            if (state instanceof OnOffType onOff) {
+                return onOff == OnOffType.ON;
+            }
+            if (state instanceof OpenClosedType openClosed) {
+                return openClosed == OpenClosedType.CLOSED;
+            }
+            return false;
+        } catch (ItemNotFoundException e) {
+            if (firstReportOf("hold:" + itemName)) {
+                logger.warn("Integral hold Item '{}' not found, continuing to integrate", itemName);
+            }
+            return false;
+        }
+    }
+
     private double getDoubleFromConfig(Configuration config, String key) {
         Object rawValue = config.get(key);
 
@@ -161,27 +222,46 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         return ((BigDecimal) rawValue).doubleValue();
     }
 
+    private boolean getBooleanFromConfig(Configuration config, String key) {
+        Object rawValue = config.get(key);
+
+        if (rawValue instanceof Boolean booleanValue) {
+            return booleanValue;
+        }
+        if (rawValue instanceof String stringValue) {
+            return Boolean.parseBoolean(stringValue);
+        }
+
+        return false;
+    }
+
     private void calculate() {
         double input;
         double setpoint;
 
         try {
             input = getItemValueAsNumber(inputItem);
+            clearWarning("value:" + inputItem.getName());
         } catch (PIDException e) {
-            logger.warn("Input item: {}: {}", inputItem.getName(), e.getMessage());
+            if (firstReportOf("value:" + inputItem.getName())) {
+                logger.warn("Input item: {}: {}", inputItem.getName(), e.getMessage());
+            }
             return;
         }
 
         try {
             setpoint = getItemValueAsNumber(setpointItem);
+            clearWarning("value:" + setpointItem.getName());
         } catch (PIDException e) {
-            logger.warn("Setpoint item: {}: {}", setpointItem.getName(), e.getMessage());
+            if (firstReportOf("value:" + setpointItem.getName())) {
+                logger.warn("Setpoint item: {}: {}", setpointItem.getName(), e.getMessage());
+            }
             return;
         }
 
         long now = System.currentTimeMillis();
 
-        PIDOutputDTO output = controller.calculate(input, setpoint, now - previousTimeMs, loopTimeMs);
+        PIDOutputDTO output = controller.calculate(input, setpoint, now - previousTimeMs, loopTimeMs, isIntegralHeld());
         previousTimeMs = now;
 
         updateItem(pInspector, output.getProportionalPart());
@@ -196,10 +276,13 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         if (itemName != null) {
             try {
                 itemRegistry.getItem(itemName);
+                clearWarning("missing:" + itemName);
                 eventPublisher.post(ItemEventFactory.createStateEvent(itemName,
                         Double.isFinite(value) ? new DecimalType(value) : UnDefType.UNDEF));
             } catch (ItemNotFoundException e) {
-                logger.warn("Item doesn't exist: {}", itemName);
+                if (firstReportOf("missing:" + itemName)) {
+                    logger.warn("Item doesn't exist: {}", itemName);
+                }
             }
         }
     }
