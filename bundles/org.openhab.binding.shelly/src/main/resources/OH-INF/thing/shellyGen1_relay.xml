@@ -343,7 +343,7 @@
 
 	<channel-group-type id="nmeter">
 		<label>Neutral Current</label>
-		<description>Based measurements based on the N clamp (has to be calibrated)</description>
+		<description>Measurements based on the N clamp (has to be calibrated)</description>
 	</channel-group-type>
 
 	<channel-group-type id="externalSensors">
