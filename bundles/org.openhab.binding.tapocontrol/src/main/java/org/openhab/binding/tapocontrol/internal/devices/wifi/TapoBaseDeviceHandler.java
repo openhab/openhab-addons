@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +64,8 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     protected TapoEnergyData energyData = new TapoEnergyData();
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
+    private static final Object DISPOSED = new Object();
+    private volatile Object lifecycle = DISPOSED;
     protected @NonNullByDefault({}) TapoDeviceConnector connector;
     protected @NonNullByDefault({}) TapoBridgeHandler bridge;
 
@@ -118,12 +121,15 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
-        try {
-            stopScheduler(this.startupJob);
-            stopScheduler(this.pollingJob);
-            connector.logout();
-        } catch (Exception e) {
-            // handle exception
+        synchronized (lifecycle) {
+            lifecycle = DISPOSED;
+            try {
+                stopScheduler(this.startupJob);
+                stopScheduler(this.pollingJob);
+                connector.logout();
+            } catch (Exception e) {
+                // handle exception
+            }
         }
         super.dispose();
     }
@@ -132,11 +138,13 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * ACTIVATE DEVICE
      */
     protected void activateDevice() {
+        lifecycle = new Object();
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
 
         // background initialization (delay it a little bit):
-        this.startupJob = scheduler.schedule(this::delayedStartUp, 2000, TimeUnit.MILLISECONDS);
+        Object startupLifecycle = lifecycle;
+        this.startupJob = scheduler.schedule(() -> delayedStartUp(startupLifecycle), 2000, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -177,12 +185,14 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     /***********************************
      * SCHEDULER
      ************************************/
-    /**
-     * delayed OneTime StartupJob
-     */
-    private void delayedStartUp() {
+    private void delayedStartUp(Object startupLifecycle) {
         connect();
-        startPollingScheduler();
+        synchronized (startupLifecycle) {
+            if (!Objects.equals(startupLifecycle, lifecycle)) {
+                return;
+            }
+            startPollingScheduler();
+        }
     }
 
     /**
@@ -428,11 +438,13 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
             loginSuccess = connector.login();
             if (loginSuccess) {
                 queryDeviceData(true);
-            } else {
+            } else if (!Objects.equals(DISPOSED, lifecycle)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.UNKNOWN);
+            if (!Objects.equals(DISPOSED, lifecycle)) {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
         }
         return loginSuccess;
     }
@@ -465,6 +477,9 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * handle device state by connector error
      */
     public void handleConnectionState() {
+        if (Objects.equals(DISPOSED, lifecycle)) {
+            return; // no status updates on an already disposed handler
+        }
         ThingStatus deviceState = getThing().getStatus();
         TapoErrorCode errorCode = deviceError.getError();
 

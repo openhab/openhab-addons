@@ -78,8 +78,8 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void deactivate() {
-        super.deactivate();
         stopScheduler(discoveryJob);
+        super.deactivate();
     }
 
     @Override
@@ -123,7 +123,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         TimeUnit timeUnit = TimeUnit.MINUTES;
         if ((config.cloudDiscovery || config.udpDiscovery) && pollingInterval > 0) {
             logger.debug("{} starting discoveryScheduler with interval {} {}", this.uid, pollingInterval, timeUnit);
-
             this.discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, pollingInterval, timeUnit);
         } else {
             logger.debug("({}) discoveryScheduler disabled with config '0'", uid);

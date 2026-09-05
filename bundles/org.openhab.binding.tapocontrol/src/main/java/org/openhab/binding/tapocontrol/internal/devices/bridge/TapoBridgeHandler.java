@@ -15,6 +15,7 @@ package org.openhab.binding.tapocontrol.internal.devices.bridge;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -50,10 +51,12 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     private final TapoErrorHandler bridgeError = new TapoErrorHandler();
     private TapoBridgeConfiguration config = new TapoBridgeConfiguration();
     private final HttpClient httpClient;
+    private static final Object DISPOSED = new Object();
+    private volatile Object lifecycle = DISPOSED;
     private @Nullable ScheduledFuture<?> startupJob;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @NonNullByDefault({}) TapoCloudConnector cloudConnector;
-    private @NonNullByDefault({}) TapoDiscoveryService discoveryService;
+    private @Nullable TapoDiscoveryService discoveryService;
     private TapoCredentials credentials;
 
     private String uid;
@@ -78,6 +81,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * set credentials and login cloud
      */
     public void initialize() {
+        lifecycle = new Object();
         config = getConfigAs(TapoBridgeConfiguration.class);
         credentials = new TapoCredentials(config.username, config.password);
         activateBridge();
@@ -91,7 +95,8 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         // background initialization (delay it a little bit):
-        this.startupJob = scheduler.schedule(this::delayedStartUp, 1000, TimeUnit.MILLISECONDS);
+        Object startupLifecycle = lifecycle;
+        this.startupJob = scheduler.schedule(() -> delayedStartUp(startupLifecycle), 1000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -101,8 +106,15 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        stopScheduler(this.startupJob);
-        stopScheduler(this.pollingJob);
+        synchronized (lifecycle) {
+            lifecycle = DISPOSED;
+            stopScheduler(this.startupJob);
+            stopScheduler(this.pollingJob);
+            TapoDiscoveryService discovery = discoveryService;
+            if (discovery != null) {
+                discovery.stopBackgroundDiscovery();
+            }
+        }
         super.dispose();
     }
 
@@ -129,13 +141,18 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      *
      ************************************/
 
-    /**
-     * delayed OneTime StartupJob
-     */
-    private void delayedStartUp() {
+    private void delayedStartUp(Object startupLifecycle) {
         loginCloud();
-        startCloudScheduler();
-        discoveryService.startBackgroundDiscovery();
+        synchronized (startupLifecycle) {
+            if (!Objects.equals(startupLifecycle, lifecycle)) {
+                return;
+            }
+            startCloudScheduler();
+            TapoDiscoveryService discovery = discoveryService;
+            if (discovery != null) {
+                discovery.startBackgroundDiscovery();
+            }
+        }
     }
 
     /**
@@ -204,6 +221,9 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      * @return
      */
     public boolean loginCloud() {
+        if (Objects.equals(DISPOSED, lifecycle)) {
+            return false;
+        }
         bridgeError.reset(); // reset ErrorHandler
         if (credentials.areSet()) {
             try {
@@ -221,7 +241,10 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     /**
      * Handle Connection state
      */
-    private void handleConnectionState() {
+    private synchronized void handleConnectionState() {
+        if (Objects.equals(DISPOSED, lifecycle)) {
+            return; // no status updates on an already disposed handler
+        }
         if (cloudConnector.isLoggedIn() && !bridgeError.hasError()) {
             updateStatus(ThingStatus.ONLINE);
         } else if (bridgeError.hasError()) {
@@ -258,7 +281,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
         return cloudConnector;
     }
 
-    public TapoDiscoveryService getDiscoveryService() {
+    public @Nullable TapoDiscoveryService getDiscoveryService() {
         return discoveryService;
     }
 

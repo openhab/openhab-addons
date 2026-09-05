@@ -163,4 +163,49 @@
 		</channels>
 	</channel-group-type>
 
+	<!-- CAMERA GROUP TYPES -->
+	<channel-group-type id="cameraAlarm">
+		<label>Alarm Control</label>
+		<description>Siren control and alarm information of the camera</description>
+		<channels>
+			<channel id="manualAlarm" typeId="manualAlarmChannel"/>
+			<channel id="alarmMode" typeId="cameraAlarmModeChannel"/>
+			<channel id="lastAlarmType" typeId="lastAlarmTypeChannel"/>
+			<channel id="lastAlarmTime" typeId="lastAlarmTimeChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cameraPrivacy">
+		<label>Privacy</label>
+		<description>Privacy shutter control of the camera</description>
+		<channels>
+			<channel id="privacyMode" typeId="privacyModeChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cameraMotion">
+		<label>Motion Detection</label>
+		<description>Motion detection settings of the camera</description>
+		<channels>
+			<channel id="enabled" typeId="motionEnabledChannel"/>
+			<channel id="sensitivity" typeId="motionSensitivityChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cameraPresets">
+		<label>Presets</label>
+		<description>Preset positions of the camera</description>
+		<channels>
+			<channel id="gotoPreset" typeId="gotoPresetChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cameraSystem">
+		<label>Device Settings</label>
+		<description>Basic device settings of the camera</description>
+		<channels>
+			<channel id="ledStatus" typeId="cameraLedStatusChannel"/>
+		</channels>
+	</channel-group-type>
+
 </thing:thing-descriptions>

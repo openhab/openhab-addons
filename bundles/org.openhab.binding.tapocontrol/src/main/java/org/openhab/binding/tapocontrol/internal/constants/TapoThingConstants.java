@@ -55,6 +55,7 @@ public class TapoThingConstants {
     public static final String DEVICE_S210 = "S210";
     public static final String DEVICE_S220 = "S220";
     public static final String DEVICE_UNIVERSAL = "Test_Device";
+    public static final String DEVICE_CAMERA = "camera";
 
     /*** LIST OF SUPPORTED DEVICE DESCRIPTIONS ***/
     public static final String DEVICE_DESCRIPTION_BRIDGE = "TapoControl Cloud-Login";
@@ -88,6 +89,7 @@ public class TapoThingConstants {
     public static final ThingTypeUID L920_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L920);
     public static final ThingTypeUID L930_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L930);
     public static final ThingTypeUID UNIVERSAL_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_UNIVERSAL);
+    public static final ThingTypeUID CAMERA_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_CAMERA);
 
     /*** LIST OF SUPPORTED HUB CHILD THING UIDS ***/
     public static final ThingTypeUID T110_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_T110);
@@ -114,13 +116,14 @@ public class TapoThingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_SMART_SWITCHES = Set.of(S210_THING_TYPE, S220_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_SWITCH_UIDS = Set.of(HS200_THING_TYPE, HS220_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_DIMMER_SWITCH_UIDS = Set.of(HS220_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_CAMERA_UIDS = Set.of(CAMERA_THING_TYPE);
 
     /*** SET OF ALL SUPPORTED THINGS ***/
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
                     SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
                     SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WEATHER_SENSORS,
-                    SUPPORTED_SMART_SWITCHES, SUPPORTED_LIGHT_SWITCH_UIDS)
+                    SUPPORTED_SMART_SWITCHES, SUPPORTED_LIGHT_SWITCH_UIDS, SUPPORTED_CAMERA_UIDS)
             .flatMap(Set::stream).collect(Collectors.toSet()));
 
     /*** THINGS WITH ENERGY DATA ***/
@@ -131,7 +134,7 @@ public class TapoThingConstants {
             .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
                     SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
                     SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WEATHER_SENSORS,
-                    SUPPORTED_SMART_SWITCHES, SUPPORTED_LIGHT_SWITCH_UIDS)
+                    SUPPORTED_SMART_SWITCHES, SUPPORTED_LIGHT_SWITCH_UIDS, SUPPORTED_CAMERA_UIDS)
             .flatMap(Set::stream).collect(Collectors.toSet()));
 
     public static final String CHILD_REPRESENTATION_PROPERTY = "serialNumber";
@@ -178,6 +181,22 @@ public class TapoThingConstants {
     public static final String CHANNEL_FX_BRIGHTNESS = "fxBrightness";
     public static final String CHANNEL_FX_COLORS = "fxColors";
     public static final String CHANNEL_FX_NAME = "fxName";
+    // camera channel groups
+    public static final String CHANNEL_GROUP_CAMERA_ALARM = "alarm";
+    public static final String CHANNEL_GROUP_CAMERA_PRIVACY = "privacy";
+    public static final String CHANNEL_GROUP_CAMERA_MOTION = "motionDetection";
+    public static final String CHANNEL_GROUP_CAMERA_PRESETS = "presets";
+    public static final String CHANNEL_GROUP_CAMERA_SYSTEM = "system";
+    // camera channels
+    public static final String CHANNEL_MANUAL_ALARM = "manualAlarm";
+    public static final String CHANNEL_ALARM_MODE = "alarmMode";
+    public static final String CHANNEL_LAST_ALARM_TYPE = "lastAlarmType";
+    public static final String CHANNEL_LAST_ALARM_TIME = "lastAlarmTime";
+    public static final String CHANNEL_PRIVACY_MODE = "privacyMode";
+    public static final String CHANNEL_MOTION_ENABLED = "enabled";
+    public static final String CHANNEL_MOTION_SENSITIVITY = "sensitivity";
+    public static final String CHANNEL_GOTO_PRESET = "gotoPreset";
+    public static final String CHANNEL_LED_STATUS = "ledStatus";
 
     /*** LIST OF PROPERTY NAMES ***/
     public static final String PROPERTY_FAMILY = "deviceFamily";
