@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELL
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -95,6 +96,8 @@ import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2Co
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverObstructionDetection;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverSafetySwitch;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
@@ -445,6 +448,18 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.loraComponentIds = null;
         }
 
+        Shelly2DevConfigPresence presence = dc.presence;
+        if (profile.isPresence && presence != null) {
+            String mainZone = presence.mainZone;
+            if (mainZone != null) {
+                profile.presenceMainZoneKey = mainZone;
+            }
+            Boolean enable = presence.enable;
+            if (enable != null) {
+                sensorData.sensorEnable = enable;
+            }
+        }
+
         return dc;
     }
 
@@ -637,6 +652,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateHumidityStatus(sensorData, result.humidity0);
         updateTemperatureStatus(sensorData, result.temperature0);
         updateIlluminanceStatus(sensorData, result.illuminance0);
+        // presence/objectCount are not part of the aggregate status; they're polled separately via
+        // PresenceZone.GetStatus (see Shelly2ApiRpc#getStatus) and pushed live via NotifyEvent.
         updateSmokeStatus(sensorData, result.smoke0);
         Shelly2DeviceStatusFlood flood0 = result.flood0;
         if (flood0 != null) {
@@ -1508,9 +1525,41 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (sdata.lux == null) {
             sdata.lux = new ShellySensorLux();
         }
-        sdata.lux.isValid = value.lux != null;
-        sdata.lux.value = getDouble(value.lux);
+        // The illuminance component doesn't report an is_valid flag; some devices (e.g. Presence Gen4) only ever
+        // provide the illumination category and never a numeric lux value, so isValid must not be derived from
+        // lux being present, and a missing lux must stay null rather than being coerced to a bogus 0.0 reading.
+        sdata.lux.isValid = true;
+        sdata.lux.value = value.lux;
         sdata.lux.illumination = getString(value.illumination);
+    }
+
+    protected void updatePresenceStatus(ShellyStatusSensor sdata, @Nullable Shelly2StatusPresence zone) {
+        if (zone == null) {
+            return;
+        }
+        if (zone.value != null) {
+            sdata.presence = zone.value;
+        }
+        if (zone.numObjects != null) {
+            sdata.objectCount = zone.numObjects;
+        }
+    }
+
+    protected static int getPresenceMainZoneId(String mainZoneKey) {
+        Integer zoneId = zoneIdFromKey(mainZoneKey);
+        return zoneId != null ? zoneId : SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
+    }
+
+    private static @Nullable Integer zoneIdFromKey(String zoneKey) {
+        int colon = zoneKey.indexOf(':');
+        if (colon >= 0) {
+            try {
+                return Integer.parseInt(zoneKey.substring(colon + 1));
+            } catch (NumberFormatException e) {
+                // malformed key, treated as unknown zone
+            }
+        }
+        return null;
     }
 
     protected void updateSmokeStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusSmoke value) {

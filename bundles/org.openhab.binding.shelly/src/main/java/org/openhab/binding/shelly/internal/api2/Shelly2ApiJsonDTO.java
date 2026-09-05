@@ -24,6 +24,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBase
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -591,6 +592,8 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("lora:100")
             public Shelly2DeviceConfigLora lora100;
+
+            public @Nullable Shelly2DevConfigPresence presence;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -1176,6 +1179,9 @@ public class Shelly2ApiJsonDTO {
             public Integer white;
             public Integer[] rgb;
 
+            // Presence.SetSensor / generic enable
+            public Boolean enable;
+
             // Shelly.SetAuth
             public String user;
             public String realm;
@@ -1360,6 +1366,9 @@ public class Shelly2ApiJsonDTO {
         public @Nullable Integer reason;
         @SerializedName("cfg_rev")
         public @Nullable Integer cfgRev;
+        public @Nullable Boolean value;
+        @SerializedName("num_objects")
+        public @Nullable Integer numObjects;
 
         /** The BLU payload, or null when {@code data} is absent or not an object. */
         public @Nullable Shelly2NotifyBluEventData getBluData(Gson gson) throws ShellyApiException {

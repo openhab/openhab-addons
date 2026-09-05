@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
@@ -86,6 +87,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptLi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse.ShellyScriptListEntry;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
@@ -710,10 +712,27 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     // postEvent's de-dup would otherwise swallow all but the first of a fast burst
                     getThing().postEvent(ALARM_TYPE_LORA_RECEIVED, true);
                     break;
+                case SHELLY2_EVENT_PRESENCE:
+                    if (profile.isPresence && isMainZoneEvent(profile, e) && e.value != null) {
+                        sensorData.presence = e.value;
+                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE, getOnOff(e.value));
+                    }
+                    break;
+                case SHELLY2_EVENT_COUNTER:
+                    if (profile.isPresence && isMainZoneEvent(profile, e) && e.numObjects != null) {
+                        sensorData.objectCount = e.numObjects;
+                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT, getDecimal(e.numObjects));
+                    }
+                    break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
             }
         }
+    }
+
+    /** Zones other than the configured main zone must not overwrite the channels of the main zone. */
+    private static boolean isMainZoneEvent(ShellyDeviceProfile profile, Shelly2NotifyEvent e) {
+        return profile.presenceMainZoneKey.equals(e.component);
     }
 
     @Override
@@ -829,6 +848,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         fillDeviceStatus(status, ds, false);
+        if (profile.isPresence) {
+            updatePresenceZoneStatus(profile);
+        }
         if (getBool(profile.settings.rangeExtender)) {
             try {
                 // Get List of AP clients
@@ -1072,6 +1094,31 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void muteSmokeAlarm(int index) throws ShellyApiException {
         apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SMOKE_MUTE).withId(index));
+    }
+
+    @Override
+    public void setPresenceSensor(boolean enable) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.enable = enable;
+        apiRequest(SHELLYRPC_METHOD_PRESENCE_SETSENSOR, params, String.class);
+        sensorData.sensorEnable = enable; // status has no such field, keep the cached config in sync
+    }
+
+    /**
+     * presence/objectCount aren't part of the aggregate Shelly.GetStatus response — the main zone's current state
+     * has to be polled explicitly. Live updates in between full polls still come from NotifyEvent.
+     */
+    private void updatePresenceZoneStatus(ShellyDeviceProfile profile) {
+        int mainZoneId = getPresenceMainZoneId(profile.presenceMainZoneKey);
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.id = mainZoneId;
+        try {
+            Shelly2StatusPresence zone = apiRequest(SHELLYRPC_METHOD_PRESENCEZONE_GETSTATUS, params,
+                    Shelly2StatusPresence.class);
+            updatePresenceStatus(sensorData, zone);
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Unable to read presence zone {} status", thingName, mainZoneId, e);
+        }
     }
 
     @Override

@@ -920,6 +920,50 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateSensorsPublishesPresenceReadings() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.presence = Boolean.TRUE;
+        sdata.objectCount = 3;
+        sdata.sensorEnable = Boolean.TRUE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSPRESENCE, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRESENCE), eq(OnOffType.ON));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_OBJECT_COUNT),
+                eq(new DecimalType(3)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_CTRL_SENSOR_ENABLE), eq(OnOffType.ON));
+    }
+
+    @Test
+    void updateSensorsPublishesClearedPresenceReadings() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.presence = Boolean.FALSE;
+        sdata.objectCount = 0;
+        sdata.sensorEnable = Boolean.FALSE;
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSPRESENCE, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRESENCE), eq(OnOffType.OFF));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_OBJECT_COUNT),
+                eq(new DecimalType(0)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_CTRL_SENSOR_ENABLE), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void updateSensorsSkipsPresenceChannelsWhenNothingReportedYet() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSPRESENCE, sdata);
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRESENCE), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_OBJECT_COUNT), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_CTRL_SENSOR_ENABLE), any());
+    }
+
+    @Test
     void updateLightModeHybridProfileSkipsColorSlotAndUpdatesSecondaryComponent() throws Exception {
         ShellyDeviceProfile profile = proRgbwwPmHybridProfile();
         ShellyThingInterface handler = mockHandler(profile);

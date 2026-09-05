@@ -578,6 +578,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         updateChannel(getString(channelUID.getGroupId()), CHANNEL_SENSOR_MUTE, OnOffType.OFF);
                     }
                     break;
+                case CHANNEL_CTRL_SENSOR_ENABLE:
+                    if (profile.isPresence) {
+                        logger.debug("{}: Set presence sensor enable to {}", thingName, command);
+                        api.setPresenceSensor(command == OnOffType.ON);
+                    }
+                    break;
                 case CHANNEL_EMETER_RESETTOTAL:
                     if (command == OnOffType.ON) {
                         int idx = 0;

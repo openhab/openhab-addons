@@ -337,6 +337,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STEPS, "sensorSteps", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DISTANCE, "sensorDistance", ITEMT_DISTANCE))
 
+                // Presence sensor (mmWave)
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESENCE, "sensorPresence", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT, "sensorObjectCount", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE, "presenceSensorEnable",
+                        ITEMT_SWITCH))
+
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
@@ -769,6 +775,11 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
+        // Presence Gen4: the zone readings only appear once a zone matches the configured main zone,
+        // so gate them on the device type rather than on the value to keep the channel set complete.
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE);
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT);
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE);
         // Flood Gen4 has no mute channel; a mute/unmute is reported via the device#alarm trigger instead
         addChannel(thing, newChannels, sdata.mute != null && profile.isSmoke, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_MUTE);
