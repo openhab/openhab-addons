@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ENERGY;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -64,7 +63,6 @@ public class EvccBaseThingHandlerTest {
     @BeforeEach
     public void setUp() {
         handler = spy(new BaseThingHandlerTestClass(thing, channelTypeRegistry));
-        when(handler.getThing()).thenReturn(thing);
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
@@ -78,9 +76,8 @@ public class EvccBaseThingHandlerTest {
     class UpdateStatesFromApiResponseTests {
         @Test
         public void updateFromEvccStateNotInitializedDoesNothing() {
-            handler.isInitialized = false;
             JsonObject state = new JsonObject();
-            handler.updateStatesFromApiResponse(state);
+            handler.createChannelsAndSetStatesFromApiResponse(state);
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertFalse(handler.createChannelCalled);
             assertFalse(handler.updateThingCalled);
@@ -90,9 +87,8 @@ public class EvccBaseThingHandlerTest {
 
         @Test
         public void updateFromEvccStateEmptyStateDoesNothing() {
-            handler.isInitialized = true;
             JsonObject state = new JsonObject();
-            handler.updateStatesFromApiResponse(state);
+            handler.createChannelsAndSetStatesFromApiResponse(state);
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertFalse(handler.createChannelCalled);
             assertFalse(handler.updateThingCalled);
@@ -104,7 +100,6 @@ public class EvccBaseThingHandlerTest {
         @SuppressWarnings("null")
         @Test
         public void updateFromEvccStateWithPrimitiveValueCreatesChannelAndSetsItemValue() {
-            handler.isInitialized = true;
             JsonObject state = new JsonObject();
             state.add("capacity", new JsonPrimitive(5.5));
             // Channel does not exist
@@ -113,66 +108,52 @@ public class EvccBaseThingHandlerTest {
             when(mockChannelType.getItemType()).thenReturn(NUMBER_ENERGY);
             when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
 
-            handler.updateStatesFromApiResponse(state);
+            handler.createChannelsAndSetStatesFromApiResponse(state);
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertTrue(handler.createChannelCalled);
             assertTrue(handler.updateThingCalled);
-            assertTrue(handler.updateStatusCalled);
-            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+            assertFalse(handler.updateStatusCalled); // Status update is not called anymore
         }
 
         @Test
         public void updateFromEvccStateWithExistingChannelDoesNotCreateChannel() {
             JsonObject state = new JsonObject();
-            handler.type = "battery";
             state.add("capacity", new JsonPrimitive(5.5));
             @SuppressWarnings("null")
             Channel mockChannel = mock(Channel.class);
-            ChannelUID channelUID = new ChannelUID("test:thing:uid:battery-capacity");
-            when(mockChannel.getUID()).thenReturn(channelUID);
-            when(thing.getChannel(channelUID)).thenReturn(mockChannel);
-            when(thing.getChannels()).thenReturn(List.of(mockChannel));
-            when(thing.getChannel(anyString())).thenReturn(mockChannel);
+            when(thing.getChannel(any(ChannelUID.class))).thenReturn(mockChannel);
 
-            when(handler.getStateFromCachedState(state)).thenReturn(state);
-            handler.isInitialized = true;
-            handler.updateThingCalled = false; // Assure that it is false before calling
-            handler.updateStatesFromApiResponse(state);
+            handler.createChannelsAndSetStatesFromApiResponse(state);
 
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertFalse(handler.createChannelCalled);
-            assertFalse(handler.updateThingCalled); // Should not update thing if channel exists
-            assertTrue(handler.updateStatusCalled);
-            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+            assertFalse(handler.updateThingCalled);
+            assertFalse(handler.updateStatusCalled); // Status update is not called anymore
         }
 
         @Test
         public void updateFromEvccStateSkipsNonPrimitiveValues() {
-            handler.isInitialized = true;
             JsonObject state = new JsonObject();
             JsonObject nonPrimitive = new JsonObject();
             nonPrimitive.addProperty("foo", "bar");
             state.add("complexKey", nonPrimitive);
 
-            handler.updateStatesFromApiResponse(state);
+            handler.createChannelsAndSetStatesFromApiResponse(state);
 
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertFalse(handler.createChannelCalled);
             assertFalse(handler.updateThingCalled);
-            assertTrue(handler.updateStatusCalled); // Status is updated even if nothing else happens
-            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+            assertFalse(handler.updateStatusCalled); // Status update is not called anymore
         }
 
         @Test
         void updateStatesFromApiResponseWithNullValueDoesNothing() {
-            handler.isInitialized = true;
             JsonObject state = new JsonObject();
             state.add("capacity", null); // Null value
-            handler.updateStatesFromApiResponse(state);
+            handler.createChannelsAndSetStatesFromApiResponse(state);
             assertFalse(handler.createChannelCalled);
             assertFalse(handler.updateThingCalled);
-            assertTrue(handler.updateStatusCalled);
-            assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
+            assertFalse(handler.updateStatusCalled); // Status update is not called anymore
         }
     }
 
@@ -192,7 +173,7 @@ public class EvccBaseThingHandlerTest {
             when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
 
             doReturn(cachedState).when(handler).getStateFromCachedState(any());
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
+            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
 
             handler.handleCommand(channelUID, command);
         }
@@ -211,7 +192,7 @@ public class EvccBaseThingHandlerTest {
             when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
 
             doReturn(cachedState).when(handler).getStateFromCachedState(any());
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
+            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
 
             handler.handleCommand(channelUID, command);
         }

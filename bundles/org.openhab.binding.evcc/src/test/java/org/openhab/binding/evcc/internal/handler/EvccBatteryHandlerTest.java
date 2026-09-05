@@ -86,11 +86,10 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         Configuration configuration = mock(Configuration.class);
         when(configuration.get("index")).thenReturn("0");
-        when(configuration.get("id")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
 
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         batteryState = exampleResponse.getAsJsonObject("battery").getAsJsonArray("devices").get(0).getAsJsonObject();
@@ -98,10 +97,11 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
 
     @SuppressWarnings("null")
     @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.isInitialized = false;
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
-        verify(handler).updateStatesFromApiResponse(batteryState);
+    public void testInitializeThingFromLatestStateWithoutInitialize() {
+        // When initializeThingFromLatestState is called without first calling initialize(),
+        // the status should remain UNKNOWN because initialize() is responsible for setting
+        // the status based on the bridge handler and cached state availability.
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
@@ -109,14 +109,6 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
         handler.initialize();
-        assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        handler.isInitialized = true;
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 

@@ -15,7 +15,7 @@ package org.openhab.binding.evcc.internal.discovery.mapper;
 import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 
 import com.google.gson.JsonObject;
@@ -34,5 +34,5 @@ public interface EvccDiscoveryMapper {
      * @param bridgeHandler the bridge handler
      * @return Collection of discovery results
      */
-    Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler);
+    Collection<DiscoveryResult> discover(JsonObject state, EvccWsBridgeHandler bridgeHandler);
 }

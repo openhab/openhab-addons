@@ -14,7 +14,6 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,12 +89,12 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
         @BeforeEach
         public void setUp() {
             when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
-            when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery", "subType", "solar"));
+            when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
             when(thing.getChannels()).thenReturn(new ArrayList<>());
             Configuration configuration = mock(Configuration.class);
-            when(configuration.get(PROPERTY_INDEX)).thenReturn("0");
-            when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
-            when(configuration.get(PROPERTY_SUBTYPE)).thenReturn("solar");
+            when(configuration.get("index")).thenReturn("0");
+            when(configuration.get("vehicleId")).thenReturn("vehicle_1");
+            when(configuration.get("subType")).thenReturn("");
             when(thing.getConfiguration()).thenReturn(configuration);
             handler = spy(createHandler());
         }
@@ -109,7 +108,7 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
 
         @Test
         public void initializeWithBridgeHandlerWithoutCachedState() {
-            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState()).thenReturn(new JsonObject());
             LocaleProvider lp = mock(LocaleProvider.class);

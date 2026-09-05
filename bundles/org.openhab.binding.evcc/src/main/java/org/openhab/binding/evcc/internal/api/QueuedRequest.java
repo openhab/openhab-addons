@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evcc.internal.handler;
+package org.openhab.binding.evcc.internal.api;
 
 import java.util.function.Consumer;
 

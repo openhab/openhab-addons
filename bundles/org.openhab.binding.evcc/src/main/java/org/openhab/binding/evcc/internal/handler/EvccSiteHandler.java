@@ -14,6 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -73,33 +75,41 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_GRID, "site");
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "";
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        // Set the smart cost type
+        if (state.has(JSON_KEY_SMART_COST_TYPE) && !state.get(JSON_KEY_SMART_COST_TYPE).isJsonNull()) {
+            smartCostType = state.get(JSON_KEY_SMART_COST_TYPE).getAsString();
+        }
+
         if (state.has(JSON_KEY_GRID_CONFIGURED)) {
             modifyJSON(state);
         }
-        updateStatesFromApiResponse(state);
+        createChannelsAndSetStatesFromApiResponse(state);
     }
 
     @Override
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            endpoint = handler.getBaseURL();
-            JsonObject state = handler.getCachedEvccState().deepCopy();
-            if (state.isEmpty()) {
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
+            if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
-
-            // Set the smart cost type
-            if (state.has(JSON_KEY_SMART_COST_TYPE) && !state.get(JSON_KEY_SMART_COST_TYPE).isJsonNull()) {
-                smartCostType = state.get(JSON_KEY_SMART_COST_TYPE).getAsString();
-            }
-
-            if (state.has(JSON_KEY_GRID_CONFIGURED)) {
-                modifyJSON(state);
-            }
-            commonInitialize(state);
+            endpoint = handler.getBaseURL();
+            handler.register(this);
+            initializeThingFromLatestState(stateOpt);
+            updateStatus(ThingStatus.ONLINE);
         });
     }
 

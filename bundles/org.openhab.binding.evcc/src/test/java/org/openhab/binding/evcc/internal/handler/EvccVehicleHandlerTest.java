@@ -96,7 +96,7 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
     }
@@ -109,6 +109,16 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     }
 
     @Test
+    public void testInitializeWithoutBridgeHandler() {
+        handler.bridgeHandler = null;
+
+        handler.initialize();
+
+        assertSame(ThingStatus.OFFLINE, lastThingStatus);
+        assertSame(ThingStatusDetail.BRIDGE_UNINITIALIZED, lastThingStatusDetail);
+    }
+
+    @Test
     public void testMigrationFromIdToVehicleId() {
         Configuration config = new Configuration();
         config.put(PROPERTY_ID, "vehicle_1");
@@ -117,9 +127,11 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
         when(thing.getProperties()).thenReturn(Map.of("type", "vehicle"));
 
         handler = spy(createHandler());
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
 
-        when(handler.bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+        when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
 
         handler.initialize();
 

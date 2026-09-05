@@ -23,6 +23,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -58,6 +60,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanHandler> {
 
+    private boolean updateStateCalled = false;
+    private int updateStateCounter = 0;
     private String capturedUrl = "";
     private JsonElement capturedPayload = JsonNull.INSTANCE;
     private String capturedMethod = "";
@@ -88,10 +92,21 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
             }
 
             @Override
+            public void updateState(ChannelUID uid, State state) {
+                updateStateCalled = true;
+                updateStateCounter++;
+            }
+
+            @Override
             protected void performApiRequest(String url, String method, JsonElement payload) {
                 capturedUrl = url;
                 capturedPayload = payload;
                 capturedMethod = method;
+            }
+
+            @Override
+            protected boolean isLinked(ChannelUID channelUID) {
+                return true;
             }
         };
     }
@@ -108,7 +123,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         LocaleProvider lp = mock(LocaleProvider.class);
         TranslationProvider tp = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
@@ -124,16 +139,37 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
     }
 
     private void changeConfiguration() {
+        changeConfiguration(1);
+    }
+
+    private void changeConfiguration(int index) {
         when(thing.getUID()).thenReturn(new ThingUID("evcc:plan:uid"));
-        when(thing.getProperties())
-                .thenReturn(Map.of(PROPERTY_INDEX, "1", PROPERTY_VEHICLE_ID, "vehicle_1", PROPERTY_TYPE, "plan"));
-        when(thing.getChannels()).thenReturn(new ArrayList<>());
+        when(thing.getProperties()).thenReturn(
+                Map.of(PROPERTY_INDEX, String.valueOf(index), PROPERTY_VEHICLE_ID, "vehicle_1", PROPERTY_TYPE, "plan"));
+
+        // Add mock channels for plan handler
+        ThingUID thingUID = thing.getUID();
+        List<Channel> channels = new ArrayList<>();
+        Channel socChannel = mock(Channel.class);
+        when(socChannel.getUID()).thenReturn(new ChannelUID(thingUID, CHANNEL_PLAN_SOC));
+        channels.add(socChannel);
+        Channel precChannel = mock(Channel.class);
+        when(precChannel.getUID()).thenReturn(new ChannelUID(thingUID, CHANNEL_PLAN_PRECONDITION));
+        channels.add(precChannel);
+        Channel activeChannel = mock(Channel.class);
+        when(activeChannel.getUID()).thenReturn(new ChannelUID(thingUID, "plan-active"));
+        channels.add(activeChannel);
+        Channel timeChannel = mock(Channel.class);
+        when(timeChannel.getUID()).thenReturn(new ChannelUID(thingUID, "plan-time"));
+        channels.add(timeChannel);
+        when(thing.getChannels()).thenReturn(channels);
+
         Configuration configuration = mock(Configuration.class);
-        when(configuration.get(PROPERTY_INDEX)).thenReturn("1");
+        when(configuration.get(PROPERTY_INDEX)).thenReturn(String.valueOf(index));
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         LocaleProvider lp = mock(LocaleProvider.class);
         TranslationProvider tp = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
@@ -150,11 +186,17 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
 
     @Test
     void updatingOneTimePlanShouldNormalizeTimeAndBuildUrl() {
+        changeConfiguration(0);
         handler.initialize();
+        updateStateCalled = false;
+        updateStateCounter = 0;
 
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
-        // Set new SoC & time via handleCommand
+        assertTrue(updateStateCalled);
+        assertEquals(4, updateStateCounter);
+
+        // Set new SoC & time via handleCommand (pending commands collection)
         ChannelUID socCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_SOC);
         ChannelUID timeCh = new ChannelUID(thing.getUID(), "plan-time");
         ChannelUID precCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_PRECONDITION);
@@ -190,7 +232,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         changeConfiguration();
 
         handler.initialize();
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
         ChannelUID socCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_SOC);
         State socState = new StringType("85 %");
@@ -209,7 +251,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         changeConfiguration();
 
         handler.initialize();
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
         ChannelUID wdCh = new ChannelUID(thing.getUID(), "plan-weekdays");
         State wdState = new StringType("Monday;Wednesday;Sunday"); // Sunday maps to 0
@@ -234,7 +276,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         changeConfiguration();
 
         handler.initialize();
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
         ChannelUID timeCh = new ChannelUID(thing.getUID(), "plan-time");
         State timeState = new StringType("2025-12-20T09:00:00.000+0100");
@@ -256,7 +298,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         changeConfiguration();
 
         handler.initialize();
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
         ChannelUID preCCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_PRECONDITION);
         State precState = new StringType("1800 s");
