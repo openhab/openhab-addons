@@ -943,12 +943,9 @@ public class ShellyChannelDefinitions {
     private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
         if (supported) {
-            // These methods only run once, on first-ever channel creation for a Thing. A deprecated
-            // channelName here is only ever reached via a call site that still names the old id; for a
-            // brand-new Thing there's no pre-existing item link to preserve, so create the current
-            // replacement directly and skip the deprecated one entirely (same reasoning as the
-            // CHANNEL_METER_LASTMIN1 fix below). Things that already carry the deprecated channel from
-            // before the replacement existed get it added alongside via ShellyChannelMigration instead.
+            // First-ever channel creation for a Thing: skip a deprecated name and create its replacement
+            // directly. Things that already have the deprecated channel get the replacement added
+            // alongside via ShellyChannelMigration instead.
             String replacement = getReplacementChannelName(channelName);
             String effectiveName = replacement != null ? replacement : channelName;
             String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + effectiveName;
