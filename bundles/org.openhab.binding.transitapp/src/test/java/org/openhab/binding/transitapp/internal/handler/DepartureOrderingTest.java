@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.transitapp.internal.handler;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.transitapp.internal.net.dto.StopDeparturesResult.ScheduleItem;
+
+import com.google.gson.Gson;
+
+/**
+ * The {@link DepartureOrderingTest} is responsible for testing departure sorting.
+ *
+ * @author Michael - Initial contribution
+ */
+@NonNullByDefault
+public class DepartureOrderingTest {
+
+    @Test
+    public void testDepartureOrdering() {
+        Gson gson = new Gson();
+
+        // Simulate API responses via Gson to avoid needing setters
+        ScheduleItem item1 = gson.fromJson("{ \"departure_time\": 1700000000 }", ScheduleItem.class);
+        assertNotNull(item1, "Parsed ScheduleItem 1 should not be null");
+
+        ScheduleItem item2 = gson.fromJson("{ \"departure_time\": 1600000000 }", ScheduleItem.class);
+        assertNotNull(item2, "Parsed ScheduleItem 2 should not be null");
+
+        List<ScheduleItem> departures = new ArrayList<>();
+        departures.add(item1);
+        departures.add(item2);
+
+        // Test sorting logic via the new getters
+        departures.sort(Comparator.comparing(a -> {
+            @Nullable
+            Instant t = a.getDepartureTime();
+            return t != null ? t.getEpochSecond() : 0L;
+        }));
+
+        assertNotNull(departures);
+        assertEquals(2, departures.size());
+
+        // Expectation: item2 (earlier) is now at the first position
+        @Nullable
+        Instant firstDeparture = departures.get(0).getDepartureTime();
+        @Nullable
+        Instant secondDeparture = departures.get(1).getDepartureTime();
+
+        assertNotNull(firstDeparture);
+        assertNotNull(secondDeparture);
+        assertEquals(1600000000L, firstDeparture.getEpochSecond());
+        assertEquals(1700000000L, secondDeparture.getEpochSecond());
+    }
+}
