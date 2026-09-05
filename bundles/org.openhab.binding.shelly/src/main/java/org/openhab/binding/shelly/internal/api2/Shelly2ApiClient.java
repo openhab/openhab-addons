@@ -174,7 +174,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     protected static final Map<String, String> MAP_INPUT_MODE = Map.of(//
             SHELLY2_RMODE_SINGLE, SHELLY_INP_MODE_ONEBUTTON, //
             SHELLY2_RMODE_DUAL, SHELLY_INP_MODE_OPENCLOSE, //
-            SHELLY2_RMODE_DETACHED, SHELLY_INP_MODE_ONEBUTTON);
+            SHELLY2_RMODE_DETACHED, SHELLY_INP_MODE_DETACHED);
 
     protected static final Map<String, String> MAP_ROLLER_STATE = Map.of(//
             SHELLY2_RSTATE_OPEN, SHELLY_RSTATE_OPEN, //
