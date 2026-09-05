@@ -80,7 +80,7 @@ public class TuyaOpenAPITest extends JavaTest {
                 "page_no", "1", //
                 "page_size", "50");
 
-        Token token = new Token(accessToken, "", "", 0);
+        Token token = new Token(accessToken, "", "", 0, "");
 
         ProjectConfiguration configuration = new ProjectConfiguration();
         configuration.accessId = clientId;
