@@ -15,7 +15,7 @@ package org.openhab.voice.mactts.internal;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.Voice;
 
 /**
  * Implementation of the Voice interface for macOS

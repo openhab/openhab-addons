@@ -14,7 +14,7 @@ package org.openhab.voice.marytts.internal;
 
 import java.util.Locale;
 
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.Voice;
 
 /**
  * Implementation of the Voice interface for MaryTTS
