@@ -544,8 +544,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         mapEventListeners.put(deviceID, deviceHandler);
     }
 
-    public void unregisterDeviceStateListener(String deviceID) {
-        mapEventListeners.remove(deviceID);
+    public void unregisterDeviceStateListener(String deviceID, FreeAtHomeDeviceHandler listener) {
+        mapEventListeners.remove(deviceID, listener);
     }
 
     /**
