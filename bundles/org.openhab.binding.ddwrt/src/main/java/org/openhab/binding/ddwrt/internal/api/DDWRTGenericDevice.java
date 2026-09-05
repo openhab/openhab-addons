@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -194,11 +195,11 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
+    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) throws IOException {
         if (enabled) {
-            runner.execStdout("ip link set " + iface + " up");
+            runner.exec("ip link set " + iface + " up");
         } else {
-            runner.execStdout("ip link set " + iface + " down");
+            runner.exec("ip link set " + iface + " down");
         }
     }
 

@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Data object representing a wireless radio interface on a DD-WRT device.
@@ -36,7 +37,7 @@ public class DDWRTRadio {
     private String ssid = "";
     private int channel = 0;
     private String mode = "";
-    private boolean enabled = false;
+    private @Nullable Boolean enabled;
     private int clientCount = 0;
     private List<String> assoclist = new ArrayList<>();
 
@@ -72,7 +73,7 @@ public class DDWRTRadio {
         return mode;
     }
 
-    public boolean isEnabled() {
+    public @Nullable Boolean isEnabled() {
         return enabled;
     }
 

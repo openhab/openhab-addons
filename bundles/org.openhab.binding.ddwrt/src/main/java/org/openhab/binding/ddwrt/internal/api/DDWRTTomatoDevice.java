@@ -12,11 +12,16 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
@@ -29,6 +34,12 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class DDWRTTomatoDevice extends DDWRTBaseDevice {
+
+    private static final List<String> DEFAULT_RADIO_IFACES = List.of("eth1", "eth2", "eth3", "wl0", "wl1", "wl2");
+    private static final String GET_CONFIGURED_IFACES_COMMAND = "nvram get wl_ifnames; nvram get wl0_ifname; "
+            + "nvram get wl1_ifname; nvram get wl2_ifname";
+    private static final Pattern IFACE_PATTERN = Objects.requireNonNull(Pattern.compile("[\\w.-]+"));
+    private static final Pattern QUOTED_SSID_PATTERN = Objects.requireNonNull(Pattern.compile("\\\"([^\\\"]*)\\\""));
 
     public DDWRTTomatoDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         super(cfg, logger);
@@ -72,19 +83,31 @@ public class DDWRTTomatoDevice extends DDWRTBaseDevice {
     @Override
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
         List<DDWRTRadio> radios = new ArrayList<>();
-        // Tomato typically uses wl0, wl1 interfaces
-        for (String iface : new String[] { "wl0", "wl1", "wl2" }) {
-            String ssid = safeTrim(runner.execStdout("wl -i " + iface + " ssid"));
+        Set<String> candidates = new LinkedHashSet<>(DEFAULT_RADIO_IFACES);
+        String configuredIfaces = safeTrim(runner.execStdout(GET_CONFIGURED_IFACES_COMMAND));
+        for (String iface : configuredIfaces.split("\\s+")) {
+            if (IFACE_PATTERN.matcher(iface).matches()) {
+                candidates.add(iface);
+            }
+        }
+
+        for (String iface : candidates) {
+            String ssid = parseSsid(runner.execStdout("wl -i " + iface + " ssid"));
             if (!ssid.isEmpty()) {
                 DDWRTRadio radio = new DDWRTRadio(Objects.requireNonNull(mac), iface);
                 radio.setSsid(ssid);
 
-                String chStr = safeTrim(runner.execStdout("wl -i " + iface + " channel"));
+                String chStr = safeTrim(
+                        runner.execStdout("wl -i " + iface + " status | awk '/Control channel:/ {print $3; exit}'"));
+                if (chStr.isEmpty()) {
+                    chStr = safeTrim(
+                            runner.execStdout("wl -i " + iface + " channel | grep 'current' | awk '{print $NF}'"));
+                }
                 if (!chStr.isEmpty()) {
                     try {
                         radio.setChannel(Integer.parseInt(chStr));
                     } catch (NumberFormatException e) {
-                        // ignore
+                        logger.debug("Failed to parse channel '{}' for {}", chStr, iface);
                     }
                 }
 
@@ -93,12 +116,23 @@ public class DDWRTTomatoDevice extends DDWRTBaseDevice {
                     radio.setMode(mode);
                 }
 
-                radio.setEnabled(true);
+                String radioStatus = safeTrim(runner.execStdout("wl -i " + iface + " radio"));
+                try {
+                    radio.setEnabled(Long.decode(radioStatus) == 0);
+                } catch (NumberFormatException e) {
+                    logger.debug("Failed to parse radio status '{}' for {}", radioStatus, iface);
+                }
                 radios.add(radio);
                 logger.debug("Found Tomato radio: {}", radio);
             }
         }
         return radios;
+    }
+
+    private String parseSsid(String output) {
+        String trimmed = safeTrim(output);
+        Matcher matcher = QUOTED_SSID_PATTERN.matcher(trimmed);
+        return matcher.find() ? Objects.requireNonNull(matcher.group(1)) : trimmed;
     }
 
     @Override
@@ -113,11 +147,11 @@ public class DDWRTTomatoDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
+    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) throws IOException {
         if (enabled) {
-            runner.execStdout("wl -i " + iface + " radio on");
+            runner.exec("wl -i " + iface + " radio on");
         } else {
-            runner.execStdout("wl -i " + iface + " radio off");
+            runner.exec("wl -i " + iface + " radio off");
         }
     }
 
