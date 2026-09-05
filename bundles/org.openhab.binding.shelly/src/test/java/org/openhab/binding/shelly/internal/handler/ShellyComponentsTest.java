@@ -58,6 +58,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
+import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -668,6 +669,34 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateSensorsWs90PushesDerivedChannels() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.windDirectionStr = "SE";
+        sdata.apparentTemp = 17.9;
+        sdata.seaLevelPressure = 1013.25;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR_STR, new StringType("SE"));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_APPARENT_TEMP),
+                argThat(s -> closeTo(s, 17.9)));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_SEALEVEL_PRESSURE),
+                argThat(s -> closeTo(s, 1013.25)));
+    }
+
+    @Test
+    void updateSensorsWs90WithoutDerivedValuesSkipsDerivedChannels() throws Exception {
+        ShellyThingInterface handler = ws90HandlerWith(new ShellyStatusSensor());
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR_STR), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_APPARENT_TEMP), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_SEALEVEL_PRESSURE), any());
+    }
+
+    @Test
     void updateSensorsWs90WindSpeedPublishesQuantityType() throws Exception {
         ShellyStatusSensor sdata = new ShellyStatusSensor();
         sdata.windSpeed = 3.5;
@@ -718,7 +747,6 @@ public class ShellyComponentsTest {
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDSP), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTSP), any());
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_RAINST), any());
     }
 
@@ -754,32 +782,6 @@ public class ShellyComponentsTest {
                 argThat(s -> closeTo(s, 12.5)));
         verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_PRECIPITATION),
                 argThat(s -> closeTo(s, 2.1)));
-    }
-
-    @Test
-    void updateSensorsWs90GustDirectionIndependentFromWindDirection() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.windDirection = 270.0;
-        sdata.gustDirection = 290.0;
-        ShellyThingInterface handler = ws90HandlerWith(sdata);
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_WINDDIR),
-                argThat(s -> closeTo(s, 270.0)));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR),
-                argThat(s -> closeTo(s, 290.0)));
-    }
-
-    @Test
-    void updateSensorsWs90NullGustDirectionSkipsChannel() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.windDirection = 270.0;
-        ShellyThingInterface handler = ws90HandlerWith(sdata);
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_GUSTDIR), any());
     }
 
     @Test
@@ -819,8 +821,9 @@ public class ShellyComponentsTest {
         Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile, sdata);
 
         for (String channelId : new String[] { CHANNEL_SENSOR_TEMP, CHANNEL_SENSOR_HUM, CHANNEL_SENSOR_RAINST,
-                CHANNEL_SENSOR_WINDSP, CHANNEL_SENSOR_WINDDIR, CHANNEL_SENSOR_GUSTSP, CHANNEL_SENSOR_GUSTDIR,
-                CHANNEL_SENSOR_UV, CHANNEL_SENSOR_PRESSURE, CHANNEL_SENSOR_DEWPOINT, CHANNEL_SENSOR_PRECIPITATION }) {
+                CHANNEL_SENSOR_WINDSP, CHANNEL_SENSOR_WINDDIR, CHANNEL_SENSOR_GUSTSP, CHANNEL_SENSOR_UV,
+                CHANNEL_SENSOR_PRESSURE, CHANNEL_SENSOR_DEWPOINT, CHANNEL_SENSOR_PRECIPITATION,
+                CHANNEL_SENSOR_WINDDIR_STR, CHANNEL_SENSOR_APPARENT_TEMP, CHANNEL_SENSOR_SEALEVEL_PRESSURE }) {
             assertThat(channelId + " channel created",
                     channels.containsKey(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelId),
                     is(true));
@@ -856,6 +859,11 @@ public class ShellyComponentsTest {
     }
 
     private static ShellyThingInterface ws90HandlerWith(ShellyStatusSensor sdata) throws ShellyApiException {
+        return ws90HandlerWith(sdata, new ShellyThingConfiguration());
+    }
+
+    private static ShellyThingInterface ws90HandlerWith(ShellyStatusSensor sdata, ShellyThingConfiguration config)
+            throws ShellyApiException {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
         profile.isSensor = true;
         profile.hasBattery = true;
@@ -867,6 +875,7 @@ public class ShellyComponentsTest {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         when(handler.getProfile()).thenReturn(profile);
         when(handler.getApi()).thenReturn(api);
+        when(handler.getThingConfig()).thenReturn(config);
         when(handler.areChannelsCreated()).thenReturn(true);
         when(handler.updateChannel(anyString(), anyString(), any())).thenReturn(true);
         return handler;

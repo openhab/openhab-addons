@@ -53,6 +53,9 @@ public class ShellyThingConfiguration {
     private Boolean enableBluGateway = false;
     private Boolean enableRangeExtender = true;
 
+    // BLU Weather WS90
+    private int altitude = 0; // station altitude in meters, for sea-level pressure calculation
+
     public String getDeviceIp() {
         return deviceIp;
     }
@@ -121,12 +124,17 @@ public class ShellyThingConfiguration {
         return enableRangeExtender;
     }
 
+    public int getAltitude() {
+        return altitude;
+    }
+
     @Override
     public String toString() {
         return "Device address=" + deviceAddress + ", HTTP user/password=" + userId + "/"
                 + (password.isEmpty() ? "<none>" : "***") + ", update interval=" + updateInterval + "\n"
                 + "Events: Button: " + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush
                 + ", Roller: " + eventsRoller + "Sensor: " + eventsSensorReport + ", CoIoT: " + eventsCoIoT + "\n"
-                + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender;
+                + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender + "\n" + "Altitude="
+                + altitude;
     }
 }

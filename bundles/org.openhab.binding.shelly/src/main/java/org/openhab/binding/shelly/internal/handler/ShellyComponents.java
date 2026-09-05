@@ -752,10 +752,6 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP,
                         toQuantityType(getDouble(sdata.gustSpeed), DIGITS_WIND, Units.METRE_PER_SECOND));
             }
-            if (sdata.gustDirection != null) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTDIR,
-                        toQuantityType(getDouble(sdata.gustDirection), DIGITS_NONE, Units.DEGREE_ANGLE));
-            }
             if (sdata.pressure != null) {
                 Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE,
@@ -774,7 +770,19 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV,
                         getDecimal(sdata.uvIndex, DIGITS_UV));
             }
-
+            if (sdata.windDirectionStr != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_WINDDIR_STR,
+                        getStringType(sdata.windDirectionStr));
+            }
+            if (sdata.apparentTemp != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_APPARENT_TEMP,
+                        toQuantityType(getDouble(sdata.apparentTemp), DIGITS_TEMP, SIUnits.CELSIUS));
+            }
+            if (sdata.seaLevelPressure != null) {
+                Unit<Pressure> hpa = MetricPrefix.HECTO(SIUnits.PASCAL).asType(Pressure.class);
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SEALEVEL_PRESSURE,
+                        toQuantityType(getDouble(sdata.seaLevelPressure), DIGITS_PRESSURE, hpa));
+            }
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
             if ((profile.settings.externalPower != null) || (sdata.charger != null)) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
