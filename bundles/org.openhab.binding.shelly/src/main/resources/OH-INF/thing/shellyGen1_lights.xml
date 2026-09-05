@@ -264,7 +264,9 @@
 	<channel-type id="whiteTemp">
 		<item-type>Dimmer</item-type>
 		<label>Light Temperature</label>
-		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo/Pro RGBWW PM: 2700K-6500K)</description>
+		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo/Pro RGBWW PM: 2700K-6500K). Link a Number item,
+			not the
+			default Dimmer, or the slider will send an out-of-range command.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
