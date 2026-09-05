@@ -13,7 +13,6 @@
 package org.openhab.binding.homeconnectdirect.internal.handler;
 
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
-import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ACTIVE_PROGRAM;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,21 +24,15 @@ import org.openhab.binding.homeconnectdirect.internal.handler.model.Value;
 import org.openhab.binding.homeconnectdirect.internal.i18n.HomeConnectDirectTranslationProvider;
 import org.openhab.binding.homeconnectdirect.internal.provider.HomeConnectDirectDynamicCommandDescriptionProvider;
 import org.openhab.binding.homeconnectdirect.internal.provider.HomeConnectDirectDynamicStateDescriptionProvider;
-import org.openhab.binding.homeconnectdirect.internal.service.description.model.DeviceDescriptionType;
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.change.DeviceDescriptionChange;
 import org.openhab.binding.homeconnectdirect.internal.service.profile.ApplianceProfileService;
-import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Action;
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource;
-import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.data.ProgramData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HomeConnectDirectCoffeeMakerHandler} is responsible for handling commands, which are
@@ -50,16 +43,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HomeConnectDirectCoffeeMakerHandler extends BaseHomeConnectDirectHandler {
 
-    private final Logger logger;
-
     public HomeConnectDirectCoffeeMakerHandler(Thing thing, ApplianceProfileService applianceProfileService,
             HomeConnectDirectDynamicCommandDescriptionProvider commandDescriptionProvider,
             HomeConnectDirectDynamicStateDescriptionProvider stateDescriptionProvider, String deviceId,
             HomeConnectDirectConfiguration configuration, HomeConnectDirectTranslationProvider translationProvider) {
         super(thing, applianceProfileService, commandDescriptionProvider, stateDescriptionProvider, deviceId,
                 configuration, translationProvider);
-
-        this.logger = LoggerFactory.getLogger(HomeConnectDirectCoffeeMakerHandler.class);
     }
 
     @Override
@@ -68,29 +57,8 @@ public class HomeConnectDirectCoffeeMakerHandler extends BaseHomeConnectDirectHa
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-
-        if (CHANNEL_COFFEE_MAKER_PROGRAM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
-            if (COMMAND_START.equalsIgnoreCase(command.toFullString())) {
-                var selectedProgram = getKeyValueStore().get(SELECTED_PROGRAM_KEY);
-                if (selectedProgram != null) {
-                    getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                        if (deviceDescriptionService.getActiveProgram(true) != null) {
-                            mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
-                                    List.of(new ProgramData(programUid, null)), null, 1));
-                        } else {
-                            logger.warn(
-                                    "The '{}' control is either unavailable or in read-only mode. Cannot start program.",
-                                    ACTIVE_PROGRAM_KEY);
-                        }
-                    });
-
-                }
-            } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
-                sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
-            }
-        }
+    protected boolean isStopProgramCommandSupported() {
+        return true;
     }
 
     @Override
@@ -98,10 +66,7 @@ public class HomeConnectDirectCoffeeMakerHandler extends BaseHomeConnectDirectHa
         super.onApplianceDescriptionChangeEvent(deviceDescriptionChanges);
 
         deviceDescriptionChanges.forEach(deviceDescriptionChange -> {
-            if (DeviceDescriptionType.COMMAND.equals(deviceDescriptionChange.type())
-                    || DeviceDescriptionType.COMMAND_LIST.equals(deviceDescriptionChange.type())) {
-                updateProgramCommandDescription();
-            } else if (deviceDescriptionChange.key().equals(COFFEE_MAKER_PROCESS_PHASE_KEY)) {
+            if (deviceDescriptionChange.key().equals(COFFEE_MAKER_PROCESS_PHASE_KEY)) {
                 updateStatusDescriptionIfLinked(CHANNEL_COFFEE_MAKER_PROCESS_PHASE, COFFEE_MAKER_PROCESS_PHASE_KEY);
             }
         });
@@ -151,15 +116,14 @@ public class HomeConnectDirectCoffeeMakerHandler extends BaseHomeConnectDirectHa
     private void initializeAllStates() {
         Set.of(CHANNEL_COFFEE_MAKER_PROCESS_PHASE, CHANNEL_COFFEE_MAKER_WATER_TANK_EMPTY,
                 CHANNEL_COFFEE_MAKER_WATER_TANK_NEARLY_EMPTY, CHANNEL_COFFEE_MAKER_DRIP_TRAY_FULL,
-                CHANNEL_COFFEE_MAKER_EMPTY_MILK_TANK, CHANNEL_COFFEE_MAKER_BEAN_CONTAINER_EMPTY,
-                CHANNEL_COFFEE_MAKER_PROGRAM_COMMAND).forEach(this::initializeState);
+                CHANNEL_COFFEE_MAKER_EMPTY_MILK_TANK, CHANNEL_COFFEE_MAKER_BEAN_CONTAINER_EMPTY)
+                .forEach(this::initializeState);
     }
 
     private void initializeState(String channelId) {
         switch (channelId) {
             case CHANNEL_COFFEE_MAKER_PROCESS_PHASE ->
                 updateStatusDescriptionIfLinked(channelId, COFFEE_MAKER_PROCESS_PHASE_KEY);
-            case CHANNEL_COFFEE_MAKER_PROGRAM_COMMAND -> updateProgramCommandDescription();
             case CHANNEL_COFFEE_MAKER_WATER_TANK_EMPTY, CHANNEL_COFFEE_MAKER_WATER_TANK_NEARLY_EMPTY,
                     CHANNEL_COFFEE_MAKER_DRIP_TRAY_FULL, CHANNEL_COFFEE_MAKER_EMPTY_MILK_TANK,
                     CHANNEL_COFFEE_MAKER_BEAN_CONTAINER_EMPTY ->
@@ -167,8 +131,9 @@ public class HomeConnectDirectCoffeeMakerHandler extends BaseHomeConnectDirectHa
         }
     }
 
-    private void updateProgramCommandDescription() {
-        getLinkedChannel(CHANNEL_COFFEE_MAKER_PROGRAM_COMMAND).ifPresent(channel -> {
+    @Override
+    protected void updateProgramCommandDescription() {
+        getLinkedChannel(CHANNEL_PROGRAM_COMMAND).ifPresent(channel -> {
             var commandOptions = new ArrayList<CommandOption>();
 
             getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
