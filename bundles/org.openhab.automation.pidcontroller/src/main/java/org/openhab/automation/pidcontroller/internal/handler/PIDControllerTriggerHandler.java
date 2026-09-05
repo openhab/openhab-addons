@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -71,6 +72,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private @Nullable String iInspector;
     private @Nullable String dInspector;
     private @Nullable String eInspector;
+    private @Nullable ScheduledFuture<?> calculationJob;
     private ItemRegistry itemRegistry;
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
@@ -139,9 +141,16 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     }
 
     @Override
-    public void setCallback(ModuleHandlerCallback callback) {
+    public synchronized void setCallback(ModuleHandlerCallback callback) {
         super.setCallback(callback);
-        getCallback().getScheduler().scheduleWithFixedDelay(this::calculate, 0, loopTimeMs, TimeUnit.MILLISECONDS);
+
+        // cancel(false), not cancel(true): the running calculation holds this monitor, so
+        // interrupting it would only raise an interrupt this code never observes, while the
+        // synchronized calculate() already guarantees the in-flight invocation completes
+        // before a replacement can start or the callback can be cleared.
+        cancelCalculationJob();
+        calculationJob = getCallback().getScheduler().scheduleWithFixedDelay(this::calculate, 0, loopTimeMs,
+                TimeUnit.MILLISECONDS);
     }
 
     private <T> T requireNonNull(T obj, String message) {
@@ -161,7 +170,29 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         return ((BigDecimal) rawValue).doubleValue();
     }
 
-    private void calculate() {
+    /**
+     * Runs one control cycle.
+     *
+     * <p>
+     * Synchronized on the same monitor as {@link #setCallback} and {@link #dispose}, which is
+     * what makes retirement safe. Reading the inherited {@code callback} field without it gives
+     * no visibility guarantee, and a calculation that passed the check would still hold its
+     * reference through the inspector updates and the {@code triggered()} call, so a handler
+     * retired mid-cycle could publish a stale output. {@code PIDController} is not thread safe
+     * either, so two overlapping invocations would corrupt the accumulators.
+     *
+     * <p>
+     * Holding the monitor for the whole cycle means a retirement waits for the in-flight
+     * calculation rather than racing it, and the callback cannot be cleared between the check
+     * and the publication.
+     */
+    private synchronized void calculate() {
+        ModuleHandlerCallback currentCallback = callback;
+        if (!(currentCallback instanceof TriggerHandlerCallback triggerCallback)) {
+            logger.debug("Tried to calculate, but callback isn't available!");
+            return;
+        }
+
         double input;
         double setpoint;
 
@@ -189,7 +220,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         updateItem(dInspector, output.getDerivativePart());
         updateItem(eInspector, output.getError());
 
-        getCallback().triggered(module, Map.of(COMMAND, new DecimalType(output.getOutput())));
+        triggerCallback.triggered(module, Map.of(COMMAND, new DecimalType(output.getOutput())));
     }
 
     private void updateItem(@Nullable String itemName, double value) {
@@ -280,9 +311,18 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
+        cancelCalculationJob();
         eventSubscriberRegistration.unregister();
 
         super.dispose();
+    }
+
+    private void cancelCalculationJob() {
+        ScheduledFuture<?> job = calculationJob;
+        if (job != null) {
+            job.cancel(false);
+            calculationJob = null;
+        }
     }
 }
