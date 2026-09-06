@@ -571,6 +571,10 @@ then
 end
 ```
 
+When a `textToSpeechVolume` or an announcement `volume` is set, the binding raises the volume for the speech and afterwards sets it back to the volume it last knew for the device.
+Volume changes made outside Alexa, for example in the Sonos app or on the speaker itself, often do not reach the binding, so the value it returns to can be outdated.
+Send the current volume to the `volume` channel before speaking to give the binding the value to return to.
+
 ### Show an announcement on the echo show or echo spot
 
 1) Create a rule with a trigger of your choice

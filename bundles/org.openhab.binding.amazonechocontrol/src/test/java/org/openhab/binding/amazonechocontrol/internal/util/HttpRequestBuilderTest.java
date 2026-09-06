@@ -25,11 +25,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.abortedMessage;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.buildFailureReason;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.isThrottled;
 
 import java.net.CookieManager;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -100,6 +102,20 @@ public class HttpRequestBuilderTest {
         assertThat(buildFailureReason("", null), is("no reason given"));
         assertThat(buildFailureReason(null, THROTTLING_ERROR_TYPE),
                 is("no reason given (x-amzn-ErrorType: " + THROTTLING_ERROR_TYPE + ")"));
+    }
+
+    @Test
+    public void testAnAbortedRequestNamesTheUriAndTheTransportFailure() {
+        URI commsUri = URI.create("https://alexa-comms-mobile-service.www.amazon.de/accounts");
+        String message = abortedMessage(commsUri, new UnknownHostException(commsUri.getHost()));
+
+        assertThat(message, is("Request to " + commsUri + " aborted: java.net.UnknownHostException: "
+                + "alexa-comms-mobile-service.www.amazon.de"));
+    }
+
+    @Test
+    public void testAnAbortedRequestWithoutAFailureStillNamesTheUri() {
+        assertThat(abortedMessage(REQUEST_URI, null), is("Request to " + REQUEST_URI + " aborted"));
     }
 
     @Test
