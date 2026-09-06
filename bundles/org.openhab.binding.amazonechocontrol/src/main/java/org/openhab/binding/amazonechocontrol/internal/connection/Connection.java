@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -289,18 +290,20 @@ public class Connection {
         }
     }
 
-    private String normalizeRetailDomain(@Nullable String domain) {
-        if (domain != null && !domain.isBlank()) {
-            try {
-                URI uri = new URI(domain.trim());
-                String host = uri.getHost();
-                if (host != null && !host.isBlank()) {
-                    return host.toLowerCase();
-                }
-            } catch (URISyntaxException ignored) {
-            }
+    static String normalizeRetailDomain(@Nullable String domainOrUrl) {
+        if (domainOrUrl == null || domainOrUrl.isBlank()) {
+            return AmazonEchoControlBindingConstants.DEFAULT_RETAIL_DOMAIN;
         }
-        return AmazonEchoControlBindingConstants.DEFAULT_RETAIL_DOMAIN;
+        String host = domainOrUrl.trim();
+        try {
+            String uriHost = new URI(host).getHost();
+            if (uriHost != null && !uriHost.isBlank()) {
+                host = uriHost;
+            }
+        } catch (URISyntaxException ignored) {
+        }
+        host = host.toLowerCase(Locale.ROOT);
+        return host.startsWith("www.") ? host.substring(4) : host;
     }
 
     public boolean registerConnectionAsApp(String accessToken) {
