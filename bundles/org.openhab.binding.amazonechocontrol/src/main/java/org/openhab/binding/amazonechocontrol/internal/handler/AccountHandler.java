@@ -60,12 +60,10 @@ import org.openhab.binding.amazonechocontrol.internal.dto.push.NotifyNowPlayingU
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushCommandTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushDeviceTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushDopplerIdTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.push.PushListItemChangeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.request.SendConversationDTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.AccountTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.BluetoothStateTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHistoryRecordTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.ListItemTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.MusicProviderTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.SmartHomeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.WakeWordTO;
@@ -827,10 +825,6 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 echoHandlers.values().forEach(EchoHandler::updateMediaSessions);
                 break;
             case "PUSH_LIST_ITEM_CHANGE":
-                PushListItemChangeTO itemChange = Objects
-                        .requireNonNull(gson.fromJson(payload, PushListItemChangeTO.class));
-                List<ListItemTO> lists = connection.getNamedListItems(itemChange.listId);
-                // TODO: create channels
                 break;
             default:
                 logger.warn("Detected unknown command from activity stream: {}", pushCommand);
