@@ -44,6 +44,9 @@ serialNumber=103000xxxxxx
 
 # Host name or IP address of the Nobø hub
 hostName=10.0.0.10
+
+# Interval between keepalives sent to the hub, in seconds, minimum 5. Optional, defaults to 14.
+keepaliveInterval=14
 ```
 
 ## Channels
