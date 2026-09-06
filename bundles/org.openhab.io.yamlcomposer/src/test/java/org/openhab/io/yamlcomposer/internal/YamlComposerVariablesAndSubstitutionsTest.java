@@ -295,6 +295,29 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
         }
 
         @Test
+        @DisplayName("Warns and ignores deep merge operations (!deep) in variables")
+        void warnsAndIgnoresDeepMergeInVariables() throws IOException {
+            String yaml = """
+                    variables:
+                      base:
+                        nested:
+                          key: "main"
+                      !deep <<:
+                        base:
+                          nested:
+                            key2: "from_deep"
+
+                    target: key2_${base.nested.key2}
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat(getNestedValue(data, "target"), equalTo("key2_"));
+            assertThat(logSession.getTrackedWarnings(),
+                    hasItem(containsString("Deep merge operations (!deep) are not supported in this context")));
+        }
+
+        @Test
         @DisplayName("Supports substitution within variables block (Recursive resolution)")
         void supportsSubstitutionWithinVariablesBlock() throws IOException {
             String yaml = """
@@ -311,27 +334,6 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
 
             assertThat("Variables must support self-referential resolution", getNestedValue(data, "test", "result"),
                     is("root-to-middle-to-leaf"));
-        }
-
-        @Test
-        @DisplayName("Deep merge works at variables map level")
-        void deepMergeAtVariablesMapLevel() throws IOException {
-            Map<Object, @Nullable Object> data = loadYaml("""
-                    variables:
-                      settings:
-                        nested:
-                          from_base: true
-                      !deep <<:
-                        settings:
-                          nested:
-                            from_deep: true
-
-                    result_base: "${settings.nested.from_base}"
-                    result_deep: "${settings.nested.from_deep}"
-                    """);
-
-            assertThat(data.get("result_base"), is(true));
-            assertThat(data.get("result_deep"), is(true));
         }
 
         @Test

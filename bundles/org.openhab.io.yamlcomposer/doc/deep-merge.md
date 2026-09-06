@@ -270,6 +270,14 @@ items:
       alexa: Light
 ```
 
+## Limitations
+
+- Deep Merge is not supported at the top level of a `templates:` section.
+  Performing a deep merge requires fully resolving and transforming nested structures ahead of time, which directly conflicts with the deferred‑evaluation model that templates rely on.
+- Deep Merge is not supported at the top level of a `variables:` section.
+  Variables are resolved progressively, and deep‑merging would require prematurely resolving nested maps and altering evaluation order.
+  Disallowing deep merges here keeps variable resolution predictable and easier to reason about.
+
 ## Best Practices
 
 - Use `<<:` for Flat Overrides: Use standard shallow merge keys when replacing whole top-level map properties without recursive key union.

@@ -399,6 +399,25 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
             assertThat(getNestedValue(data, "simple"), equalTo(Map.of()));
             assertThat(logSession.getTrackedWarnings(), not(hasItem(containsString("Expected a mapping"))));
         }
+
+        @Test
+        @DisplayName("Merge keys in !include vars are visible to included file")
+        void mergeKeysInIncludeVars() throws IOException {
+            writeFixture("include.inc.yaml", "foo: ${foo}");
+
+            Path main = writeFixture("main.yaml", """
+                    packages:
+                      foo_package: !include
+                        file: include.inc.yaml
+                        vars:
+                          <<:
+                            foo: bar
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "foo"), equalTo("bar"));
+        }
     }
 
     @Nested
@@ -625,46 +644,6 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
 
             assertThat(getNestedValue(data, "merged_template", "value"), equalTo("from_base"));
         }
-
-        @Test
-        @DisplayName("Deep merge works at templates map level")
-        void deepMergeAtTemplatesMapLevel() throws IOException {
-            Path main = writeFixture("main.yaml", """
-                    templates:
-                      base:
-                        nested:
-                          from_base: true
-                      !deep <<:
-                        base:
-                          nested:
-                            from_deep: true
-                    result: !insert base
-                    """);
-
-            Map<Object, @Nullable Object> data = loadFixture(main);
-
-            assertThat(getNestedValue(data, "result", "nested", "from_base"), equalTo(true));
-            assertThat(getNestedValue(data, "result", "nested", "from_deep"), equalTo(true));
-        }
-    }
-
-    @Test
-    @DisplayName("Merge keys in !include vars are visible to included file")
-    void mergeKeysInIncludeVars() throws IOException {
-        writeFixture("include.inc.yaml", "foo: ${foo}");
-
-        Path main = writeFixture("main.yaml", """
-                packages:
-                  foo_package: !include
-                    file: include.inc.yaml
-                    vars:
-                      <<:
-                        foo: bar
-                """);
-
-        Map<Object, @Nullable Object> data = loadFixture(main);
-
-        assertThat(getNestedValue(data, "foo"), equalTo("bar"));
     }
 
     @Nested

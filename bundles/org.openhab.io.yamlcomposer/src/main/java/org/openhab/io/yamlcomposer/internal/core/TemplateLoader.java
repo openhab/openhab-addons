@@ -57,8 +57,7 @@ public class TemplateLoader {
             EvaluationContext context = new EvaluationContext(scope, ProcessingPhase.STANDARD);
             Map<Object, @Nullable Object> resolvedTemplates = new LinkedHashMap<>(templatesMap.size());
 
-            // Use deferred value composition so templates are evaluated dynamically with their call-site arguments.
-            structuralMerger.composeMapPreserveValues(templatesMap, resolvedTemplates, recursiveTransformer, context);
+            structuralMerger.composeMapPreservingValues(templatesMap, resolvedTemplates, recursiveTransformer, context);
             templates.putAll(resolvedTemplates);
         } else if (templatesSection != null) {
             var position = locator.findPosition(ComposerConfig.TEMPLATES_KEY);

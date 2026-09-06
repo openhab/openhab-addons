@@ -96,7 +96,7 @@ public class VariableLoader {
             StructuralMerger structuralMerger = recursiveTransformer.getStructuralMerger();
 
             Map<Object, @Nullable Object> mergedMap = new LinkedHashMap<>(variablesMap.size());
-            structuralMerger.composeMapPreserveValues(variablesMap, mergedMap, recursiveTransformer, context);
+            structuralMerger.composeMapPreservingValues(variablesMap, mergedMap, recursiveTransformer, context);
 
             mergedMap.forEach((key, value) -> {
                 Object transformedKey = recursiveTransformer.transform(key, context);

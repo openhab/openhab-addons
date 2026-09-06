@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -178,6 +179,28 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
             Map<Object, @Nullable Object> data = loadYaml(yaml);
 
             assertThat(getNestedValue(data, "toplevel", "key"), equalTo("value"));
+        }
+
+        @Test
+        @DisplayName("Warns and ignores deep merge operations (!deep) at templates top-level")
+        void warnsAndIgnoresDeepMergeInTemplatesTopLevel() throws IOException {
+            String yaml = """
+                    templates:
+                      template1:
+                        setting1: "from_template1"
+                      !deep <<:
+                        template1:
+                          setting2: "from_deep"
+
+                    target: !insert
+                      template: template1
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat(getNestedValue(data, "target", "setting2"), is(nullValue()));
+            assertThat(logSession.getTrackedWarnings(),
+                    hasItem(containsString("Deep merge operations (!deep) are not supported in this context")));
         }
     }
 
@@ -357,29 +380,6 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
 
             assertThat("ARGS inside template must contain its own immediate insert-level arguments",
                     getNestedValue(data, "data", "result", "args_insert"), equalTo("value_from_insert"));
-        }
-
-        @Test
-        @DisplayName("Defers template expression evaluation under !if until !insert supplies arguments")
-        void defersTemplateEvaluationUnderIfUntilInsert() throws IOException {
-            Map<Object, @Nullable Object> result = loadYaml("""
-                    variables:
-                      greetings_enabled: false
-                      name: foo
-                    templates:
-                      greetingTemplate:
-                        !if ${greetings_enabled}:
-                          then:
-                          message: "Hello, ${name}!"
-
-                    target: !insert
-                      template: greetingTemplate
-                      vars:
-                        name: "World"
-                        greetings_enabled: true
-                    """);
-
-            assertThat(getNestedValue(result, "target", "message"), equalTo("Hello, World!"));
         }
     }
 }

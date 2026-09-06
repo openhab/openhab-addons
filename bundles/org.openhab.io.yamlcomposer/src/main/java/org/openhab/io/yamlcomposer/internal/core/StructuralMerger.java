@@ -66,7 +66,9 @@ public class StructuralMerger {
      * <ul>
      * <li>Evaluates map keys and structural directives (such as {@code !if} and {@code !for}).</li>
      * <li>Preserves entry values untransformed so value evaluation can be handled in a later phase.</li>
-     * <li>Resolves shallow and deep merge directives with target-priority semantics.</li>
+     * <li>Because the nested maps are untransformed, deep merge operations cannot be performed and will be
+     * ignored.</li>
+     * <li>Resolves shallow merge directives with target-priority semantics.</li>
      * </ul>
      *
      * @param rawMap the input map to compose
@@ -74,9 +76,21 @@ public class StructuralMerger {
      * @param transformer the recursive transformer to use for evaluating keys and directives
      * @param context the current evaluation context
      */
-    public void composeMapPreserveValues(Map<?, ?> rawMap, Map<Object, @Nullable Object> result,
+    public void composeMapPreservingValues(Map<?, ?> rawMap, Map<Object, @Nullable Object> result,
             RecursiveTransformer transformer, EvaluationContext context) {
-        composeMap(rawMap, result, ValueMode.PRESERVE, transformer, context);
+        Map<Object, @Nullable Object> filteredMap = new LinkedHashMap<>(rawMap.size());
+        for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+            Object key = entry.getKey();
+            if (key instanceof MergeKeyPlaceholder mergeKey && mergeKey.isDeep()) {
+                logger.warn(
+                        "{} Deep merge operations (!deep) are not supported in this context. The deep merge will be ignored.",
+                        mergeKey.sourceLocation());
+            } else if (key != null) {
+                filteredMap.put(key, entry.getValue());
+            }
+        }
+        composeMap(filteredMap, result, ValueMode.PRESERVE, transformer, context);
+        transformTopLevelKeys(result, transformer, context);
     }
 
     /**
@@ -105,6 +119,8 @@ public class StructuralMerger {
         DirectiveProcessor directiveProcessor = transformer.getDirectiveProcessor();
         EvaluationContext scopeContext = context.withScope(context.scope().createChild());
         EvaluationContext mergeContext = scopeContext.withProcessingPhase(ProcessingPhase.MERGE);
+        EvaluationContext directiveContext = scopeContext;
+
         DirectiveProcessor.IfChainState ifChainState = new DirectiveProcessor.IfChainState();
 
         @SuppressWarnings("unchecked")
@@ -113,9 +129,9 @@ public class StructuralMerger {
         List<MergeEntry> mergeEntries = new ArrayList<>();
         List<DeclarationEntry> declarationEntries = new ArrayList<>();
 
-        EvaluationContext directiveContext = valueMode == ValueMode.PRESERVE
-                ? scopeContext.withProcessingPhase(ProcessingPhase.DIRECTIVES)
-                : scopeContext;
+        if (valueMode == ValueMode.PRESERVE) {
+            directiveContext = scopeContext.withProcessingPhase(ProcessingPhase.DIRECTIVES);
+        }
 
         // Phase 1: Evaluate keys, directives, and entry values into local scope
         for (Map.Entry<Object, @Nullable Object> rawEntry : map.entrySet()) {
@@ -502,5 +518,74 @@ public class StructuralMerger {
 
     private boolean sameType(@Nullable Object first, @Nullable Object second) {
         return first == null || second == null || first.getClass().equals(second.getClass());
+    }
+
+    private void transformTopLevelKeys(Map<Object, @Nullable Object> map, RecursiveTransformer transformer,
+            EvaluationContext context) {
+        if (map.isEmpty()) {
+            return;
+        }
+
+        Map<Object, @Nullable Object> transformedMap = new LinkedHashMap<>(map.size());
+
+        for (Map.Entry<Object, @Nullable Object> entry : map.entrySet()) {
+            Object rawKey = entry.getKey();
+            Object value = entry.getValue();
+
+            Object transformedKey = transformer.transform(rawKey, context);
+
+            if (transformedKey == null) {
+                continue;
+            }
+
+            if (transformedKey instanceof Map<?, ?> keyMap) {
+                for (Map.Entry<?, ?> subEntry : keyMap.entrySet()) {
+                    Object subKey = subEntry.getKey();
+                    if (subKey != null) {
+                        transformedMap.put(subKey, subEntry.getValue());
+                    }
+                }
+            } else {
+                transformedMap.put(transformedKey, value);
+            }
+        }
+
+        map.clear();
+        map.putAll(transformedMap);
+    }
+
+    public static String prettifyMap(@Nullable Object obj) {
+        if (obj == null)
+            return "null";
+        String raw = obj.toString();
+
+        StringBuilder pretty = new StringBuilder();
+        int indentLevel = 0;
+        boolean insideBrackets = false;
+
+        for (int i = 0; i < raw.length(); i++) {
+            char c = raw.charAt(i);
+
+            // Track if we are inside a ClassName[...] block to avoid breaking on its commas
+            if (c == '[')
+                insideBrackets = true;
+            if (c == ']')
+                insideBrackets = false;
+
+            if (c == '{') {
+                indentLevel++;
+                pretty.append("{\n").append("  ".repeat(indentLevel));
+            } else if (c == '}') {
+                indentLevel--;
+                pretty.append("\n").append("  ".repeat(indentLevel)).append("}");
+            } else if (c == ',' && !insideBrackets) {
+                pretty.append(",\n").append("  ".repeat(indentLevel));
+            } else if (c == ' ' && i > 0 && raw.charAt(i - 1) == ',') {
+                // Skip the native trailing space after commas since we made a newline
+            } else {
+                pretty.append(c);
+            }
+        }
+        return pretty.toString();
     }
 }
