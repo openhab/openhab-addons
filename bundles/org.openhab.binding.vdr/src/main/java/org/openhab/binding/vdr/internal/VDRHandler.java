@@ -309,7 +309,7 @@ public class VDRHandler extends BaseThingHandler {
     /**
      * Update Audio state options on Audio Channel
      */
-    public void updateAudioTrackOptions(SVDRPAudio audio) {
+    private void updateAudioTrackOptions(SVDRPAudio audio) {
         if (isLinked(VDRBindingConstants.CHANNEL_UID_AUDIO)) {
             List<StateOption> options = new ArrayList<>();
             for (SVDRPAudioTrack track : audio.getAudioTracks()) {

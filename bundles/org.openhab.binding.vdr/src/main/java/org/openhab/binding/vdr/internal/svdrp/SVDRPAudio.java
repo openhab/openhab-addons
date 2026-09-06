@@ -28,8 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SVDRPAudio {
 
-    private static final Pattern PATTERN_AUDIO = Pattern
-            .compile("([0-9]{1,2}) ([a-z]{3}) ([*]{0,1})([A-Za-zÀ-ž\\\\u0370-\\\\u03FF\\\\u0400-\\\\u04FF ().]*)");
+    private static final Pattern PATTERN_AUDIO = Pattern.compile("([0-9]{1,2}) (\\S+) ([*]?)(.*)");
 
     private List<SVDRPAudioTrack> tracks = new ArrayList<SVDRPAudioTrack>();
 
@@ -74,12 +73,12 @@ public class SVDRPAudio {
      *
      * @return
      */
-    public int getActiveTrackNumber() {
+    public int getActiveTrackNumber() throws SVDRPParseResponseException {
         for (SVDRPAudioTrack t : tracks) {
             if (t.isActive()) {
                 return t.getId();
             }
         }
-        return 0;
+        throw new SVDRPParseResponseException("No active audio track found");
     }
 }

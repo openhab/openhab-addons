@@ -30,7 +30,7 @@ Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"    [ host="192.168.0.51", port=641
 
 ## Channels
 
-`power`, `channel`, and `volume` can be used for basic control of your VDR. `diskUsage` can be used within a rule to notify you when disk space for recordings runs short. It is also possible to display custom messages on the VDR OSD via `message`. You can build your own remote control widget in openHAB by using the `keyCode` channel. Audio Track is selecteable by changing the `audio` channel.
+`power`, `channel`, and `volume` can be used for basic control of your VDR. `diskUsage` can be used within a rule to notify you when disk space for recordings runs short. It is also possible to display custom messages on the VDR OSD via `message`. You can build your own remote control widget in openHAB by using the `keyCode` channel. With VDR 2.7.1 or later, the audio track can be selected using the `audio` channel.
 
 You can also show information about the current channel's program on your VDR by displaying the EPG event channels in your favorite openHAB user interface.
 
@@ -97,7 +97,7 @@ Frame label="VDR" {
     Switch item=VDR_LivingRoom_Power
     Selection item=VDR_LivingRoom_Channel mappings=[1="DasErste HD", 2="ZDF HD"] visibility=[VDR_LivingRoom_Power==ON]
     Text item=VDR_LivingRoom_ChannelName visibility=[VDR_LivingRoom_Power==ON]
-    Selection item=VDR_LivingRoom_Audio visibility=[VDR_LivingRoom_Power==ON]
+    Selection item=VDR_LivingRoom_AudioTrack visibility=[VDR_LivingRoom_Power==ON]
     Slider item=VDR_LivingRoom_Volume visibility=[VDR_LivingRoom_Power==ON]
     Text item=VDR_LivingRoom_DiskUsage
     Switch item=VDR_LivingRoom_Recording

@@ -30,11 +30,15 @@ import org.openhab.binding.vdr.internal.svdrp.SVDRPParseResponseException;
 public class SVDRPAudioTest {
 
     private final String audioResponseOk = "1 deu stereo\r\n" + "2 mis mit Audiodeskription\r\n"
-            + "3 qks Klare Sprache\r\n" + "33 deu *Dolby Digital 5.1\r\n" + "";
+            + "3 qks Klare Sprache\r\n" + "33 deu *Dolby Digital 5.1\r\n";
     private final String audioResponseOkMultiLang = "1 deu *stereo\r\n" + "2 fra französisch\r\n"
-            + "3 mul mit Audiodeskription\r\n" + "4 mis Klare Sprache (wenn kein Origin\r\n" + "";
+            + "3 mul mit Audiodeskription\r\n" + "4 mis Klare Sprache (wenn kein Origin\r\n";
     private final String audioResponseParseError = "deu1stereo\r\n" + "mis2mitAudiodeskription\r\n"
-            + "qks3KlareSprache\r\n" + "deu33*Dolby Digital 5.1\r\n" + "";
+            + "qks3KlareSprache\r\n" + "deu33*Dolby Digital 5.1\r\n";
+    private final String audioResponseNoActiveTrack = "1 deu stereo\r\n" + "2 mis mit Audiodeskription\r\n"
+            + "3 qks Klare Sprache\r\n" + "33 deu Dolby Digital 5.1\r\n";
+    private final String audioResponseLanguageNotSet = "1 --- *stereo\r\n";
+    private final String audioResponseLanguageDualLang = "1 deu+eng *stereo\r\n";
 
     @Test
     public void testParseAudioData() throws SVDRPException {
@@ -48,12 +52,23 @@ public class SVDRPAudioTest {
         assertEquals("fra", audio.getAudioTracks().get(1).getLanguage());
         assertEquals("französisch", audio.getAudioTracks().get(1).getDescription());
         assertEquals(1, audio.getActiveTrackNumber());
+
+        audio = SVDRPAudio.parse(audioResponseLanguageNotSet);
+        assertEquals("---", audio.getAudioTracks().get(0).getLanguage());
+
+        audio = SVDRPAudio.parse(audioResponseLanguageDualLang);
+        assertEquals("deu+eng", audio.getAudioTracks().get(0).getLanguage());
     }
 
     @Test
     public void testParseExceptionAudioData() {
         assertThrows(SVDRPParseResponseException.class, () -> {
             SVDRPAudio.parse(audioResponseParseError);
+        });
+
+        assertThrows(SVDRPParseResponseException.class, () -> {
+            SVDRPAudio audio = SVDRPAudio.parse(audioResponseNoActiveTrack);
+            audio.getActiveTrackNumber();
         });
     }
 }
