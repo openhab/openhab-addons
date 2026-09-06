@@ -52,6 +52,14 @@ The Norman ShadeAuto hub API uses 0 = closed and 100 = open.
 By default (`invertPosition = true`) the binding converts this so that openHAB convention is followed: 0% = open and 100% = closed.
 If your hub already reports position using the same convention as openHAB, set `invertPosition = false` on the shade to disable the conversion.
 
+## Known Limitations
+
+The hub's local status API only reflects the last time a shade communicated with the hub over its RF link, not the shade's true current state.
+Reported position and battery level can lag reality for an extended period, sometimes weeks, if a shade has had no reason to check in.
+Sending commands to a shade still works reliably; only the _reported_ state can be stale, not the shade's actual response to a command.
+The `forceRefresh` action re-polls this same status API, so it does not correct staleness — it is only useful for clearing suppressed optimistic updates or motion tracking.
+Real-time-accurate state is only available through the manufacturer's mobile app and cloud service, which this binding does not use.
+
 ## Thing Actions
 
 The `hub` bridge exposes the following action:
