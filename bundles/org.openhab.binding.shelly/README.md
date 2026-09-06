@@ -620,24 +620,19 @@ Old channel IDs stay active as deprecated, advanced channels and keep receiving 
 `meterN#powerFactor` additionally changed type from `Number:Dimensionless` to plain `Number` (range −1.0 to +1.0).
 This is an in-place type change on the same channel ID, not a rename, so there is no dual-write; items statically linked as `Number:Dimensionless` need relinking.
 
-### Extra Primary Channels for Lights according to openHAB Light Control Convention
+### Extra Channels Features for Lights according to openHAB Light Control Convention
 
 The Shelly lighting ecosystem exposes different mixes of channels for different light models according to their different capabilities.
-As a general rule the Shelly channels are "orthogonal" where each channel is distinctly responsible for one specific light attribute e.g. on-off, brightness, color, etc. where three distinct commands are required to turn on a light with a specific color and brightness.
-By contrast the openHAB Light Control Convention exposes integrated channels which are responsible for multiple light attributes; where one command can cover all such attributes
+In previous binding versions the channels were "orthogonal" where each channel was distinctly responsible for one specific light attribute e.g. on-off, brightness, color, etc.
+So three distinct commands were required to turn on a light with a specific color and brightness.
+By contrast the openHAB Light Control Convention expects integrated channels which are responsible for multiple light attributes; and one command covers all such attributes.
+So the current binding version extends the channels have gained extended so that they also can follow the openHAB Light Control Convention, as described in the following chapters.
 
-Therefore in addition to the Shelly specific channels, this binding exposes some extra Primary Channels that follow this openHAB Light Control Convention.
-And furthermore some Shelly specific channels have had extended features added so that they also can follow the openHAB Light Control Convention, as follows:
+### Extra Features for HSB (was ColorPicker) Channels (*)
 
-- White- only lights support an extra `main#dimming` channel.
-- Color lights support an extra `main#hsb` channel.
-- Lights with Color Temperature channels support two extra `main#color-temp` and `main#color-temp-abs` channels.
-
-### Extra Main HSB Channel (*)
-
-Some lights have a `main#hsb` channel.
-This is the single main control entry point for lights that support rgb(w) outputs, or rgb(w) and the color temperature combined.
-This `main#hsb` channel is not just a color picker; it can be linked to many Item types as follows, marked with (*) in the tables below:
+Full color lights have a `color#hsb` channel.
+This is now the single main control entry point for lights that support rgb(w) outputs, or rgb(w) and color temperature combined.
+This `color#hsb` channel is no longer just a color picker; it can be linked to many Item types as follows, marked with (*) in the tables below:
 
 - It can be linked to `Color` Items in which case the H(ue) and S(aturation) parts control the color rgb or rgbw as appropriate, the B(rightness) part controls the brightness, and depending if the B part is zero or not, also the on-off state.
   The HS parts are always dynamically updated to reflect the real actual state of the light, so if it is in `color` mode the HS parts show the color being produced by the rgb(w) LEDs, and if it is in `white` mode they show the effective "color" of the cool or warm output.
@@ -650,11 +645,11 @@ This `main#hsb` channel is not just a color picker; it can be linked to many Ite
 
 - It can also be linked to `Switch` Items in which case the switch controls the On-Off state.
 
-### Extra Main Brightness Channel (*)
+### Extra Features for Brightness Channels (*)
 
-Some lights have a `main#brightness` channel.
+White- only lights have a `white#brightness` channel.
 This is the single main control entry point for lights that support white- only output.
-The `main#brightness` is not just an intensity control; it can be linked to several Item types as follows, marked with (*) in the tables below:
+The `white#brightness` is not just an intensity control; it can be linked to several Item types as follows, marked with (*) in the tables below:
 
 - It can be linked to `Dimmer` Items in which case the slider controls the brightness, and depending if it is zero or not, also the On-Off state.
 
@@ -662,25 +657,25 @@ The `main#brightness` is not just an intensity control; it can be linked to seve
 
 - It can also be linked to `Switch` Items in which case the switch controls the On-Off state.
 
-### Extra Main Color Temperature Channels (*)
+### Extra Features for Color Temperature Channels (*)
 
-Some lights have `main#temperature` and `main#temperature-abs` channels, as follows:
+Some lights have `white#temperature` and `white#temperature-abs` channels, as follows:
 
-1. The `main#temperature` channel represents the color temperature in percent from "cool" to "warm".
+1. The `white#temperature` channel represents the color temperature in percent from "cool" to "warm".
    - This can be linked to `Dimmer` Items in which case the slider controls the color temperature in percent.
    - This can also be linked to `RollerShutter` Items in which case the up/down buttons increase or decrease the color temperature percent.
 
-1. The `main#temperature-abs` channel represents the color temperature in Kelvin.
+1. The `white#temperature-abs` channel represents the color temperature in Kelvin.
    This can be linked to `Number:Temperature` Items in which case it displays and controls the color temperature in Kelvin.
 
 ### Extra Features on Secondary Channels
 
-Some hybrid light devices have a main `rgb` light plus one or more secondary `cct` or `light` lights.
-In the case of the secondary lights instead of adding extra `main#` channels above, the secondary lights directly support the extra features of such channels as follows.
+Some hybrid light devices have a main `rgb` ir `rgbw` light plus one or more secondary `cct` or `light` lights.
+Such secondary lights have extra features as follows:
 
-- The `lightN:brightness` channels behave as the `main:brightness` channel above.
-- The `lightN:temperature` channels behave as the `main:temperature` channel above.
-- The `lightN:temperature-abs` channels behave as the `main:temperature-abs` channel above.
+- The `lightN:brightness` channels behave as the `white:brightness` channel above.
+- The `lightN:temperature` channels behave as the `white:temperature` channel above.
+- The `lightN:temperature-abs` channels behave as the `white:temperature-abs` channel above.
 
 ### Shelly 1 (thing-type: shelly1)
 
@@ -692,8 +687,8 @@ In the case of the secondary lights instead of adding extra `main#` channels abo
 |         | button       | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                     |
 |         | lastEvent    | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
 |         | eventCount   | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|         | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | autoOn       | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff      | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |         | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)          |
 |         | temperature2 | Number   | yes       | Temperature value of external sensor #2 (if connected to temp/hum addon)          |
@@ -716,8 +711,8 @@ In the case of the secondary lights instead of adding extra `main#` channels abo
 |         | button2      | Trigger  | yes       | Event trigger, see section Button Events                                          |
 |         | lastEvent2   | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
 |         | eventCount2  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
-|         | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | autoOn       | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff      | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |         | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter   | currentPower | Number   | yes       | Current power consumption in Watts                                                |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
@@ -770,8 +765,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 |        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
 |        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
 |        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number       | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number       | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 | meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
 |        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
@@ -809,8 +804,8 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
 |        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
 |        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number       | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number       | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 | meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
 |        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
@@ -857,15 +852,15 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 | relay1 | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
 |        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|        | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 |        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | relay2 | output            | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                                             |
 |        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|        | autoOn            | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number   | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                                       |
 |        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | meter  | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
@@ -975,8 +970,8 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |       | button2           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 |       | lastEvent2        | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                                           |
 |       | eventCount2       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
-|       | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|       | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 | meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
 |       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
@@ -1028,31 +1023,24 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ### Shelly Bulb (thing-type: shellybulb)
 
-| Group   | Channel         | Type               | read-only | Description                                                                          |
-| ------- | --------------- | ------------------ | --------- | ------------------------------------------------------------------------------------ |
-| main    | hsb             | Multiple (*)       | r/w       | Main full color control according to openHAB Light Control Convention                |
-|         | temperature     | Multiple (*)       | r/w       | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature-abs | Number:Temperature | r/w       | Absolute color temperature (K) control according to openHAB Light Control Convention |
-| control | power           | Switch             | r/w       | Switch light ON/OFF                                                                  |
-|         | mode            | Switch             | r/w       | Color mode: color or white                                                           |
-|         | autoOn          | Number             | r/w       | Sets a  timer to turn the device ON after every OFF; in sec                          |
-|         | autoOff         | Number             | r/w       | Sets a  timer to turn the device OFF after every ON: in sec                          |
-|         | timerActive     | Switch             | yes       | ON: An auto-on/off timer is active                                                   |
-| color   |                 |                    |           | Color settings: only valid in COLOR mode                                             |
-|         | hsb             | HSB                | r/w       | Represents the color picker (HSBType), control r/g/b, but not white                  |
-|         | full            | String             | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode                         |
-|         |                 |                    | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"               |
-|         | red             | Dimmer             | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)                     |
-|         | green           | Dimmer             | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
-|         | blue            | Dimmer             | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
-|         | white           | Dimmer             | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)                 |
-|         | gain            | Dimmer             | r/w       | Gain setting: 0..100%     or 0..100                                                  |
-|         | effect          | Number             | r/w       | Puts the light into effect mode: 0..6                                                |
-|         |                 |                    |           | 0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Breath                              |
-|         |                 |                    |           | 4=Flash, 5=On/Off Gradual, 6=Red/Green Change                                        |
-| white   |                 |                    |           | Color settings: only valid in WHITE mode                                             |
-|         | temperature     | Dimmer             | r/w       | Color temperature: 0..100%                                                           |
-|         | brightness      | Dimmer             | r/w       | Brightness: 0..100%                                                                  |
+| Group   | Channel         | Type               | read-only | Advanced | Description                                                                          |
+| ------- | --------------- | ------------------ | --------- | ---------| ------------------------------------------------------------------------------------ |
+| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                  |
+|         | mode            | Switch             | r/w       | yes      | Color mode: color or white                                                           |
+|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF; in sec                           |
+|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON: in sec                           |
+|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                |
+|         | full            | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"               |
+|         | red             | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                     |
+|         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
+|         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
+|         | white           | Dimmer             | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                 |
+|         | gain            | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                  |
+|         | effect          | Number             | r/w       |          | Puts the light into effect mode: 0..6 0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Breath 4=Flash, 5=On/Off Gradual, 6=Red/Green Change |
+| white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100%                                                                  |
+|         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 
 `Note:`
 The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
@@ -1063,75 +1051,67 @@ Or control each color separately with channels `red`, `blue`, `green` (those are
 
 This information applies to the Shelly Duo-1 as well as the Duo White for the G10 socket.
 
-| Group   | Channel           | Type               | read-only | Description                                                                                        |
-| ------- | ----------------- | ------------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| main    | brightness        | Multiple (*)       | r/w       | Main dimming control according to openHAB Light Control Convention                                 |
-|         | temperature       | Multiple (*)       | r/w       | Main color temperature percent control according to openHAB Light Control Convention               |
-|         | temperature-abs   | Number:Temperature | r/w       | Absolute color temperature (K) control according to openHAB Light Control Convention               |
-| control | autoOn            | Number             | r/w       | Sets a  timer to turn the device ON after every OFF; in sec                                        |
-|         | autoOff           | Number             | r/w       | Sets a  timer to turn the device OFF after every ON: in sec                                        |
-|         | timerActive       | Switch             | yes       | ON: An auto-on/off timer is active                                                                 |
-| white   |                   |                    |           | Color settings: only valid in WHITE mode                                                           |
-|         | temperature       | Number             | r/w       | Color temperature: 0..100%                                                                         |
-|         | brightness        | Dimmer             | r/w       | Brightness: 0..100%                                                                                |
-| meter   | currentPower      | Number             | yes       | Current power consumption in Watts                                                                 |
-|         | energyHistMin1    | Number             | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
-|         | energyHistMin2    | Number             | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
-|         | energyHistMin3    | Number             | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
-|         | energyAvgLast3Min | Number             | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
-|         | totalEnergy       | Number             | yes       | Total energy consumption in kWh                                                                    |
-|         | lastUpdate        | DateTime           | yes       | Timestamp of the last measurement                                                                  |
+| Group   | Channel           | Type               | read-only | Advanced | Description                                                                                        |
+| ------- | ----------------- | ------------------ | --------- | -------- | -------------------------------------------------------------------------------------------------- |
+| control | power             | Switch             | r/w       | yes      | Switch light ON/OFF                                                                                |
+|         | autoOn            | Number             | r/w       |          | Sets a  timer to turn the device ON after every OFF; in sec                                        |
+|         | autoOff           | Number             | r/w       |          | Sets a  timer to turn the device OFF after every ON: in sec                                        |
+|         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| white   | brightness        | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                                 |
+|         | temperature       | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention               |
+|         | temperature-abs   | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention               |
+| meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                                 |
+|         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number             | yes       |          | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number             | yes       |          | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number             | yes       |          | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                                    |
+|         | lastUpdate        | DateTime           | yes       |          | Timestamp of the last measurement                                                                  |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Vintage (thing-type: shellyvintage)
 
-| Group   | Channel           | Type         | read-only | Description                                                                                        |
-| ------- | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| main    | brightness        | Multiple (*) | r/w       | Main dimming control according to openHAB Light Control Convention                                 |
-| control | autoOn            | Number       | r/w       | Sets a  timer to turn the device ON after every OFF; in sec                                        |
-|         | autoOff           | Number       | r/w       | Sets a  timer to turn the device OFF after every ON: in sec                                        |
-|         | timerActive       | Switch       | yes       | ON: An auto-on/off timer is active                                                                 |
-| white   |                   |              |           | Color settings: only valid in WHITE mode                                                           |
-|         | brightness        | Dimmer       | r/w       | Brightness: 0..100%                                                                                |
-| meter   | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|         | energyHistMin1    | Number       | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
-|         | energyHistMin2    | Number       | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
-|         | energyHistMin3    | Number       | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
-|         | energyAvgLast3Min | Number       | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
-|         | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|         | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
+| Group   | Channel           | Type         | read-only | Advanced | Description                                                                                        |
+| ------- | ----------------- | ------------ | --------- | -------- | -------------------------------------------------------------------------------------------------- |
+| control | power             | Switch       | r/w       | yes      | Switch light ON/OFF                                                                                |
+|         | autoOn            | Number       | r/w       |          | Sets a  timer to turn the device ON after every OFF; in sec                                        |
+|         | autoOff           | Number       | r/w       |          | Sets a  timer to turn the device OFF after every ON: in sec                                        |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| white   | brightness        | Multiple (*) | r/w       |          | Main dimming control according to openHAB Light Control Convention                                 |
+| meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                                                 |
+|         | energyHistMin1    | Number       | yes       |          | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number       | yes       |          | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number       | yes       |          | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number       | yes       |          | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                                                    |
+|         | lastUpdate        | DateTime     | yes       |          | Timestamp of the last measurement                                                                  |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Duo Color (thing-type: shellyduocolor-color)
 
-| Group   | Channel         | Type               | read-only | Description                                                                              |
-| ------- | --------------- | ------------------ | --------- | ---------------------------------------------------------------------------------------- |
-| main    | hsb             | Multiple (*)       | r/w       | Main full color control according to openHAB Light Control Convention                    |
-|         | temperature     | Multiple (*)       | r/w       | Main color temperature percent control according to openHAB Light Control Convention     |
-|         | temperature-abs | Number:Temperature | r/w       | Absolute color temperature (K) control according to openHAB Light Control Convention     |
-| control | power           | Switch             | r/w       | Switch light ON/OFF                                                                      |
-|         | button          | Trigger            | yes       | Event trigger, see section Button Events                                                 |
-|         | autoOn          | Number             | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|         | autoOff         | Number             | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                  |
-|         | timerActive     | Switch             | yes       | ON: An auto-on/off timer is active                                                       |
-| color   |                 |                    |           | Color settings: only valid in COLOR mode                                                 |
-|         | hsb             | HSB                | r/w       | Represents the color picker (HSBType), control r/g/b, but not white                      |
-|         | full            | String             | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode                             |
-|         |                 |                    | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                   |
-|         | red             | Dimmer             | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)                         |
-|         | green           | Dimmer             | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)                     |
-|         | blue            | Dimmer             | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)                       |
-|         | white           | Dimmer             | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)                     |
-|         | gain            | Dimmer             | r/w       | Gain setting: 0..100%     or 0..100                                                      |
-|         | effect          | Number             | r/w       | Puts the light into effect mode: 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash |
-| white   |                 |                    |           | Color settings: only valid in WHITE mode                                                 |
-|         | temperature     | Dimmer             | r/w       | Color temperature: 0..100%                                                               |
-|         | brightness      | Dimmer             | r/w       | Brightness: 0..100%                                                                      |
-| meter   | currentPower    | Number             | yes       | Current power consumption in Watts                                                       |
+| Group   | Channel         | Type               | read-only | Advanced | Description                                                                              |
+| ------- | --------------- | ------------------ | --------- | -------- | ---------------------------------------------------------------------------------------- |
+| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                      |
+|         | button          | Trigger            | yes       |          | Event trigger, see section Button Events                                                 |
+|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                       |
+| color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                    |
+|         | full            | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                   |
+|         | red             | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                         |
+|         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                     |
+|         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                       |
+|         | white           | Dimmer             | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                     |
+|         | gain            | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                      |
+|         | effect          | Number             | r/w       |          | Puts the light into effect mode: 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash |
+| white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                       |
+|         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention     |
+|         | temperature-abs | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention     |
+| meter   | currentPower    | Number             | yes       |          | Current power consumption in Watts                                                       |
 
 Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
@@ -1139,26 +1119,23 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 ### Shelly Duo RGBW Color Bulb (thing-type: shellycolorbulb)
 
-| Group   | Channel      | Type         | read-only | Description                                                             |
-| ------- | ------------ | ------------ | --------- | ----------------------------------------------------------------------- |
-| main    | hsb          | Multiple (*) | r/w       | Main full color control according to openHAB Light Control Convention   |
-| control | power        | Switch       | r/w       | Switch light ON/OFF                                                     |
-|         | button       | Trigger      | yes       | Event trigger, see section Button Events                                |
-|         | autoOn       | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff      | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|         | timerActive  | Switch       | yes       | ON: An auto-on/off timer is active                                      |
-| color   |              |              |           | Color settings: only valid in COLOR mode                                |
-|         | hsb          | HSB          | r/w       | Represents the color picker (HSBType); control r/g/b, bright, not white |
-|         | full         | String       | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
-|         |              |              | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
-|         | red          | Dimmer       | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)        |
-|         | green        | Dimmer       | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)    |
-|         | blue         | Dimmer       | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
-|         | white        | Dimmer       | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)    |
-|         | gain         | Dimmer       | r/w       | Gain setting: 0..100%     or 0..100                                     |
-|         | effect       | Number       | r/w       | Puts the light into effect mode: 0..3                                   |
-|         |              |              |           | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                 |
-| meter   | currentPower | Number       | yes       | Current power consumption in Watts                                      |
+| Group   | Channel      | Type         | read-only | Advanced | Description                                                             |
+| ------- | ------------ | ------------ | --------- | -------- | ----------------------------------------------------------------------- |
+| control | power        | Switch       | r/w       | yes      | Switch light ON/OFF                                                     |
+|         | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                |
+|         | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds  |
+|         | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                      |
+| color   | hsb          | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention   |
+|         | full         | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
+|         | red          | Dimmer       | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)        |
+|         | green        | Dimmer       | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)    |
+|         | blue         | Dimmer       | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
+|         | white        | Dimmer       | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)    |
+|         | gain         | Dimmer       | r/w       | yes      | Gain setting: 0..100% or 0..100                                         |
+|         | effect       | Number       | r/w       |          | Puts the light into effect mode: 0..3                                   |
+|         |              |              |           |          | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                 |
+| meter   | currentPower | Number       | yes       |          | Current power consumption in Watts                                      |
 
 Channels in group `color` or `white` apply depending on the selected mode - they are not active at the same time.
 
@@ -1168,60 +1145,57 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 ### Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
-| Group   | Channel           | Type         | read-only | Description                                                                                        |
-| ------- | ----------------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| main    | hsb               | Multiple (*) | r/w       | Main full color control according to openHAB Light Control Convention                              |
-| control | power             | Switch       | r/w       | Switch light ON/OFF                                                                                |
-|         | autoOn            | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                            |
-|         | autoOff           | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                            |
-|         | timerActive       | Switch       | yes       | ON: An auto-on/off timer is active                                                                 |
-| color   | hsb               | HSB          | r/w       | Represents the color picker (HSBType); control r/g/b, bright, not white                            |
-|         | full              | String       | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode                                       |
-|         |                   |              | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                             |
-|         | red               | Dimmer       | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)                                   |
-|         | green             | Dimmer       | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)                               |
-|         | blue              | Dimmer       | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)                                 |
-|         | white             | Dimmer       | r/w       | White brightness: 0..100% or 0..255 (control only the white channel)                               |
-|         | gain              | Dimmer       | r/w       | Gain setting: 0..100%     or 0..100                                                                |
-|         | effect            | Number       | r/w       | Puts the light into effect mode: 0..3                                                              |
-|         |                   |              |           | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                                            |
-| meter   | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
-|         | energyHistMin1    | Number       | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
-|         | energyHistMin2    | Number       | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
-|         | energyHistMin3    | Number       | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
-|         | energyAvgLast3Min | Number       | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
-|         | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
-|         | lastUpdate        | DateTime     | yes       | Timestamp of the last measurement                                                                  |
+| Group   | Channel           | Type         | read-only | Advanced | Description                                                                                        |
+| ------- | ----------------- | ------------ | --------- | -------- | -------------------------------------------------------------------------------------------------- |
+| control | power             | Switch       | r/w       | yes      | Switch light ON/OFF                                                                                |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| color   | hsb               | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention                              |
+|         | full              | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                             |
+|         | red               | Dimmer       | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                                   |
+|         | green             | Dimmer       | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                               |
+|         | blue              | Dimmer       | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                                 |
+|         | white             | Dimmer       | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                               |
+|         | gain              | Dimmer       | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                                |
+|         | effect            | Number       | r/w       |          | Puts the light into effect mode: 0..3 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash      |
+| meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                                                 |
+|         | energyHistMin1    | Number       | yes       |          | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number       | yes       |          | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number       | yes       |          | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number       | yes       |          | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                                                    |
+|         | lastUpdate        | DateTime     | yes       |          | Timestamp of the last measurement                                                                  |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
 
-| Group    | Channel      | Type         | read-only | Description                                                                                                  |
-| -------- | ------------ | ------------ | --------- | ------------------------------------------------------------------------------------------------------------ |
-| control  | input        | Switch       | yes       | State of Input                                                                                               |
-| channel1 | brightness   | Multiple (*) | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF according to openHAB Light Control Convention |
-|          | button       | Trigger      | yes       | Event trigger, see section Button Events                                                                     |
-|          | autoOn       | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                                      |
-|          | autoOff      | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                                      |
-|          | timerActive  | Switch       | yes       | ON: An auto-on/off timer is active                                                                           |
-| channel2 | brightness   | Multiple (*) | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF according to openHAB Light Control Convention |
-|          | button       | Trigger      | yes       | Event trigger, see section Button Events                                                                     |
-|          | autoOn       | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                                      |
-|          | autoOff      | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                                      |
-|          | timerActive  | Switch       | yes       | ON: An auto-on/off timer is active                                                                           |
-| channel3 | brightness   | Multiple (*) | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF according to openHAB Light Control Convention |
-|          | button       | Trigger      | yes       | Event trigger, see section Button Events                                                                     |
-|          | autoOn       | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                                      |
-|          | autoOff      | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                                      |
-|          | timerActive  | Switch       | yes       | ON: An auto-on/off timer is active                                                                           |
-| channel4 | brightness   | Multiple (*) | r/w       | Channel 1: Brightness: 0..100, control power state with ON/OFF according to openHAB Light Control Convention |
-|          | button       | Trigger      | yes       | Event trigger, see section Button Events                                                                     |
-|          | autoOn       | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                                      |
-|          | autoOff      | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                                      |
-|          | timerActive  | Switch       | yes       | ON: An auto-on/off timer is active                                                                           |
-| meter    | currentPower | Number       | yes       | Current power consumption in Watts (all channels)                                                            |
+| Group    | Channel      | Type         | read-only | Advanced | Description                                                                 |
+| -------- | ------------ | ------------ | --------- | -------- | --------------------------------------------------------------------------- |
+| control  | input        | Switch       | yes       |          | State of Input                                                              |
+| light1   | brightness   | Multiple (*) | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention |
+|          | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                    |
+|          | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
+|          | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
+|          | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
+| light2   | brightness   | Multiple (*) | r/w       |          | Light 2: Main dimming control according to openHAB Light Control Convention |
+|          | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                    |
+|          | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
+|          | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
+|          | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
+| light3   | brightness   | Multiple (*) | r/w       |          | Light 3: Main dimming control according to openHAB Light Control Convention |
+|          | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                    |
+|          | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
+|          | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
+|          | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
+| light4   | brightness   | Multiple (*) | r/w       |          | Light 4: Main dimming control according to openHAB Light Control Convention |
+|          | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                    |
+|          | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
+|          | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
+|          | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
+| meter    | currentPower | Number       | yes       |          | Current power consumption in Watts (all channels)                           |
 
 `Note`:
 channel1..channel4 are deprecated, use light1..light4 instead (same channels, without the button trigger).
@@ -1243,37 +1217,35 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 ### Shelly Duo Bulb E27 Gen3 (thing-type: shellyplusduobulb)
 
-| Group   | Channel         | Type               | read-only | Description                                                                          |
-| ------- | --------------- | ------------------ | --------- | ------------------------------------------------------------------------------------ |
-| main    | temperature     | Multiple (*)       | r/w       | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature-abs | Number:Temperature | r/w       | Absolute color temperature (K) control according to openHAB Light Control Convention |
-| control | autoOn          | Number             | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds               |
-|         | autoOff         | Number             | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds               |
-|         | timerActive     | Switch             | yes       | ON: An auto-on/off timer is active                                                   |
-| white   | temperature     | Number:Temperature | r/w       | Color temperature in Kelvin: 2700..6500                                              |
-|         | brightness      | Dimmer             | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)                          |
+| Group   | Channel         | Type               | read-only | Advanced | Description                                                                          |
+| ------- | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
+| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                  |
+|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
+|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                   |
+|         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature-abs | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention |
 
 The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo - it has no RGB color output.
 There is no separate power channel: sending brightness 0 turns the bulb off, sending brightness > 0 turns it on.
 
 ### Shelly Multicolor Bulb E27 Gen3 (thing-type: shellypluscolorbulb)
 
-| Group   | Channel         | Type               | read-only | Description                                                                          |
-| ------- | --------------- | ------------------ | --------- | ------------------------------------------------------------------------------------ |
-| main    | hsb             | Multiple (*)       | r/w       | Main full color control according to openHAB Light Control Convention                |
-|         | temperature     | Multiple (*)       | r/w       | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature-abs | Number:Temperature | r/w       | Absolute color temperature (K) control according to openHAB Light Control Convention |
-| control | autoOn          | Number             | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds               |
-|         | autoOff         | Number             | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds               |
-|         | timerActive     | Switch             | yes       | ON: An auto-on/off timer is active                                                   |
-| color   | hsb             | HSB                | r/w       | Represents the color picker (HSBType), control r/g/b                                 |
-|         | full            | String             | r/w       | Set Red / Green / Blue and switch mode                                               |
-|         |                 |                    |           | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"                 |
-|         | red             | Dimmer             | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)                     |
-|         | green           | Dimmer             | r/w       | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
-|         | blue            | Dimmer             | r/w       | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
-| white   | temperature     | Number:Temperature | r/w       | Color temperature in Kelvin: 2700..6500                                              |
-|         | brightness      | Dimmer             | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)                          |
+| Group   | Channel         | Type               | read-only | Advanced | Description                                                                          |
+| ------- | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
+| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                  |
+|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
+|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                |
+|         | full            | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"                 |
+|         | red             | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                     |
+|         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
+|         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
+| white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100% or 0..100; also controls power (ON/OFF)                          |
+|         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature-abs | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention |
 
 The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
 Sending a color (`color#hsb`, `color#red`/`green`/`blue` or `color#full` with any color other than "white") switches to color mode; sending `color#full="white"` or `white#temperature` switches back to white mode.
@@ -1444,8 +1416,8 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 | relay | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |       | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
@@ -1471,8 +1443,8 @@ If the Shelly Add-On is installed:
 | relay | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
 |       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |       | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|       | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|       | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 |       | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
@@ -1509,8 +1481,8 @@ If the Shelly Add-On is installed:
 | relay1 | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
 |        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|        | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 |        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | meter1 | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
@@ -1524,8 +1496,8 @@ If the Shelly Add-On is installed:
 | relay2 | output            | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                                             |
 |        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|        | autoOn            | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number   | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                                       |
 |        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | meter2 | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
@@ -1547,15 +1519,15 @@ totalEnergy might reset on restart depending on device type and firmware version
 | relay1 | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 | relay2 | output      | Switch  | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
@@ -1598,8 +1570,8 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 | relay | output            | Switch   | r/w       | Controls the relay's output channel (on/off)                                                       |
 |       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |       | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|       | autoOn            | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                            |
-|       | autoOff           | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                            |
+|       | autoOn            | Number   | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|       | autoOff           | Number   | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds                             |
 |       | timerActive       | Switch   | yes       | ON: An auto-on/off timer is active                                                                 |
 |       | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
@@ -1637,8 +1609,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 |        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
 |        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
 |        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number       | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number       | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 | meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
 |        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
@@ -1672,8 +1644,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 |        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
 |        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
 |        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number       | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number       | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 | meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
 |        | totalEnergy       | Number       | yes       | Total energy consumption in kWh                                                                    |
@@ -1724,8 +1696,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 |       | button2           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 |       | lastEvent2        | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                                           |
 |       | eventCount2       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
-|       | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|       | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 | meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
 |       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
@@ -1808,8 +1780,8 @@ The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
 | ----- | ----------- | ------ | --------- | --------------------------------------------------------------------------------- |
 | relay | brightness  | Dimmer | r/w       | Currently selected brightness.                                                    |
 |       | outputName  | String | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|       | autoOn      | Number | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff     | Number | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | autoOn      | Number | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|       | autoOff     | Number | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |       | timerActive | Switch | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 
 ### Shelly Plus RGBW PM (thing-type: shellyplusrgbwpm)
@@ -1819,37 +1791,35 @@ Changing the profile requires deleting and re-discovering the Thing.
 
 In `rgbw` or `rgb` profile (color mode):
 
-| Group   | Channel        | Type         | read-only | Description                                                             |
-| ------- | -------------- | ------------ | --------- | ----------------------------------------------------------------------- |
-| main    | brightness     | Multiple (*) | r/w       | Main dimming control according to openHAB Light Control Convention      |
-| control | power          | Switch       | r/w       | Switch light ON/OFF                                                     |
-|         | autoOn         | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff        | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|         | timerActive    | Switch       | yes       | ON: An auto-on/off timer is active                                      |
-| color   | hsb            | HSB          | r/w       | Represents the color picker (HSBType); control r/g/b, not white         |
-|         | full           | String       | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
-|         |                |              | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
-|         | red            | Dimmer       | r/w       | Red brightness: 0..100% (control only the red channel)                  |
-|         | green          | Dimmer       | r/w       | Green brightness: 0..100% (control only the green channel)              |
-|         | blue           | Dimmer       | r/w       | Blue brightness: 0..100% (control only the blue channel)                |
-|         | white          | Dimmer       | r/w       | White brightness: 0..100% (control only the white channel)              |
-| meter   | currentPower   | Number       | yes       | Current power consumption in Watts                                      |
-|         | energyHistMin1 | Number       | yes       | Total energy consumed during the previous complete minute (Wh)          |
-|         | totalEnergy    | Number       | yes       | Total energy consumption in kWh                                         |
-|         | lastUpdate     | DateTime     | yes       | Timestamp of the last measurement                                       |
+| Group   | Channel        | Type         | read-only | Advanced | Description                                                             |
+| ------- | -------------- | ------------ | --------- | -------- | ----------------------------------------------------------------------- |
+| control | power          | Switch       | r/w       | yes      | Switch light ON/OFF                                                     |
+|         | autoOn         | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff        | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds  |
+|         | timerActive    | Switch       | yes       |          | ON: An auto-on/off timer is active                                      |
+| color   | hsb            | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention   |
+|         | full           | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
+|         | red            | Dimmer       | r/w       | yes      | Red brightness: 0..100% (control only the red channel)                  |
+|         | green          | Dimmer       | r/w       | yes      | Green brightness: 0..100% (control only the green channel)              |
+|         | blue           | Dimmer       | r/w       | yes      | Blue brightness: 0..100% (control only the blue channel)                |
+|         | white          | Dimmer       | r/w       | yes      | White brightness: 0..100% (control only the white channel)              |
+| meter   | currentPower   | Number       | yes       |          | Current power consumption in Watts                                      |
+|         | energyHistMin1 | Number       | yes       |          | Total energy consumed during the previous complete minute (Wh)          |
+|         | totalEnergy    | Number       | yes       |          | Total energy consumption in kWh                                         |
+|         | lastUpdate     | DateTime     | yes       |          | Timestamp of the last measurement                                       |
 
 In `light` profile (white mode), each of the 4 LED output channels is exposed as its own group:
 
-| Group  | Channel     | Type         | read-only | Description                                                                                        |
-| ------ | ----------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| light1 | brightness  | Multiple (*) | r/w       | Brightness: 0..100%, control power state with ON/OFF according to openHAB Light Control Convention |
-|        | autoOn      | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                            |
-|        | autoOff     | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                            |
-|        | timerActive | Switch       | yes       | ON: An auto-on/off timer is active                                                                 |
-| light2 |             |              |           | Same for LED light 2                                                                               |
-| light3 |             |              |           | Same for LED light 3                                                                               |
-| light4 |             |              |           | Same for LED light 4                                                                               |
-| meter  |             |              |           | Same as color mode, see above                                                                      |
+| Group  | Channel     | Type         | read-only | Advanced | Description                                                                  |
+| ------ | ----------- | ------------ | --------- | -------- | ---------------------------------------------------------------------------- |
+| light1 | brightness  | Multiple (*) | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention  |
+|        | autoOn      | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds       |
+|        | autoOff     | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds       |
+|        | timerActive | Switch       | yes       |          | ON: An auto-on/off timer is active                                           |
+| light2 |             |              |           |          | Same for LED light 2                                                         |
+| light3 |             |              |           |          | Same for LED light 3                                                         |
+| light4 |             |              |           |          | Same for LED light 4                                                         |
+| meter  |             |              |           |          | Same as color mode, see above                                                |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
@@ -1861,24 +1831,21 @@ Changing the profile requires deleting and re-discovering the Thing.
 
 In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color component (color mode):
 
-| Group   | Channel       | Type         | read-only | Description                                                             |
-| ------- | ------------- | ------------ | --------- | ----------------------------------------------------------------------- |
-| main    | hsb           | Multiple (*) | r/w       | Main full color control according to openHAB Light Control Convention   |
-| control | power         | Switch       | r/w       | Switch light ON/OFF                                                     |
-|         | autoOn        | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff       | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
-|         | timerActive   | Switch       | yes       | ON: An auto-on/off timer is active                                      |
-| color   | hsb           | HSB          | r/w       | Represents the color picker (HSBType)                                   |
-|         | full          | String       | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
-|         |               |              | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"    |
-|         |               |              | r/w       | "white" sets RGB to 255,255,255 (no separate white output)              |
-|         | red           | Dimmer       | r/w       | Red brightness: 0..100% (control only the red channel)                  |
-|         | green         | Dimmer       | r/w       | Green brightness: 0..100% (control only the green channel)              |
-|         | blue          | Dimmer       | r/w       | Blue brightness: 0..100% (control only the blue channel)                |
-| meter1  | currentPower  | Number       | yes       | Current power consumption in Watts                                      |
-|         | energyAvg1Min | Number       | yes       | Energy consumed in the previous minute (Wh)                             |
-|         | totalEnergy   | Number       | yes       | Total energy consumption in kWh                                         |
-|         | lastUpdate    | DateTime     | yes       | Timestamp of the last measurement                                       |
+| Group   | Channel       | Type         | read-only | Advanced | Description                                                             |
+| ------- | ------------- | ------------ | --------- | -------- | ----------------------------------------------------------------------- |
+| control | power         | Switch       | r/w       | yes      | Switch light ON/OFF                                                     |
+|         | autoOn        | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff       | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds  |
+|         | timerActive   | Switch       | yes       |          | ON: An auto-on/off timer is active                                      |
+| color   | hsb           | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention   |
+|         | full          | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"    |
+|         | red           | Dimmer       | r/w       | yes      | Red brightness: 0..100% (control only the red channel)                  |
+|         | green         | Dimmer       | r/w       | yes      | Green brightness: 0..100% (control only the green channel)              |
+|         | blue          | Dimmer       | r/w       | yes      | Blue brightness: 0..100% (control only the blue channel)                |
+| meter1  | currentPower  | Number       | yes       |          | Current power consumption in Watts                                      |
+|         | energyAvg1Min | Number       | yes       |          | Energy consumed in the previous minute (Wh)                             |
+|         | totalEnergy   | Number       | yes       |          | Total energy consumption in kWh                                         |
+|         | lastUpdate    | DateTime     | yes       |          | Timestamp of the last measurement                                       |
 
 `Note`:
 `rgbcct` and `rgbx2light` combine the RGB component above with additional CCT (`rgbcct`) or Light
@@ -1888,35 +1855,35 @@ Since every profile has more than one meter, the device also gets the aggregated
 
 In `light` profile (white mode), each of the 5 LED output channels is exposed as its own group:
 
-| Group  | Channel     | Type         | read-only | Description                                                                                        |
-| ------ | ----------- | ------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| light1 | brightness  | Multiple (*) | r/w       | Brightness: 0..100%, control power state with ON/OFF according to openHAB Light Control Convention |
-|        | autoOn      | Number       | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                            |
-|        | autoOff     | Number       | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                            |
-|        | timerActive | Switch       | yes       | ON: An auto-on/off timer is active                                                                 |
-| light2 |             |              |           | Same for LED light 2                                                                               |
-| light3 |             |              |           | Same for LED light 3                                                                               |
-| light4 |             |              |           | Same for LED light 4                                                                               |
-| light5 |             |              |           | Same for LED light 5                                                                               |
-| meter1 |             |              |           | Meter for LED light 1, see meter group in color mode above                                         |
-| meter2 |             |              |           | Meter for LED light 2 (if configured)                                                              |
-| meter3 |             |              |           | Meter for LED light 3 (if configured)                                                              |
-| meter4 |             |              |           | Meter for LED light 4 (if configured)                                                              |
-| meter5 |             |              |           | Meter for LED light 5 (if configured)                                                              |
+| Group  | Channel     | Type         | read-only | Advanced | Description                                                                 |
+| ------ | ----------- | ------------ | --------- | -------- | --------------------------------------------------------------------------- |
+| light1 | brightness  | Multiple (*) | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention |
+|        | autoOn      | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
+|        | autoOff     | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
+|        | timerActive | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
+| light2 |             |              |           |          | Same for LED light 2                                                        |
+| light3 |             |              |           |          | Same for LED light 3                                                        |
+| light4 |             |              |           |          | Same for LED light 4                                                        |
+| light5 |             |              |           |          | Same for LED light 5                                                        |
+| meter1 |             |              |           |          | Meter for LED light 1, see meter group in color mode above                  |
+| meter2 |             |              |           |          | Meter for LED light 2 (if configured)                                       |
+| meter3 |             |              |           |          | Meter for LED light 3 (if configured)                                       |
+| meter4 |             |              |           |          | Meter for LED light 4 (if configured)                                       |
+| meter5 |             |              |           |          | Meter for LED light 5 (if configured)                                       |
 
 In `cctx2` profile (dual color-temperature mode), the device exposes two independent CCT components (`CCT:0` and `CCT:1`), each controlling its own warm/cold white pair; they are each exposed as their own channel group, with its own independent meter:
 
-| Group  | Channel         | Type               | read-only | Description                                                                                        |
-| ------ | --------------- | ------------------ | --------- | -------------------------------------------------------------------------------------------------- |
-| light1 | brightness      | Multiple (*)       | r/w       | Brightness: 0..100%, control power state with ON/OFF according to openHAB Light Control Convention |
-|        | temperature     | Multiple (*)       | r/w       | Color temperature percent control according to openHAB Light Control Convention                    |
-|        | temperature-abs | Number:Temperature | r/w       | Absolute color temperature (K) control according to openHAB Light Control Convention               |
-|        | autoOn          | Number             | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds                            |
-|        | autoOff         | Number             | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds                            |
-|        | timerActive     | Switch             | yes       | ON: An auto-on/off timer is active                                                                 |
-| light2 |                 |                    |           | Same for CCT light 2                                                                               |
-| meter1 |                 |                    |           | Meter for CCT light 1, see meter group above                                                       |
-| meter2 |                 |                    |           | Meter for CCT light 2, see meter group above                                                       |
+| Group  | Channel         | Type               | read-only | Advanced | Description                                                                          |
+| ------ | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
+| light1 | brightness      | Multiple (*)       | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention          |
+|        | temperature     | Multiple (*)       | r/w       |          | Color temperature percent control according to openHAB Light Control Convention      |
+|        | temperature-abs | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|        | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+|        | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
+|        | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| light2 |                 |                    |           |          | Same for CCT light 2                                                                 |
+| meter1 |                 |                    |           |          | Meter for CCT light 1, see meter group above                                         |
+| meter2 |                 |                    |           |          | Meter for CCT light 2, see meter group above                                         |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
@@ -1930,8 +1897,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 | relay | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |       | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |       | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
@@ -1942,8 +1909,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 | relay | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
 |       | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |       | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|       | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|       | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 |       | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
@@ -1986,8 +1953,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 |        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
 |        | lastEvent         | String       | yes       | Last event type (S/SS/SSS/L)                                                                       |
 |        | eventCount        | Number       | yes       | Counter gets incremented every time the device issues a button event.                              |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number       | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number       | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 | meter1 | currentPower      | Number       | yes       | Current power consumption in Watts                                                                 |
 |        | totalEnergy       | Number       | yes       | Total energy consumption in kWh since the device powered up (resets on restart)                    |
@@ -2026,8 +1993,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 |       | button2     | Trigger | yes       | Event trigger, see section Button Events                                          |
 |       | lastEvent2  | String  | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
 |       | eventCount2 | Number  | yes       | Counter gets incremented every time the device issues a button event.             |
-|       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|       | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 
 ### Shelly BLU Gateway, BLU Gateway 3 (thing-type: shellyblugw)
@@ -2048,8 +2015,8 @@ There are no additional channels besides the device group.
 |       | button2           | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 |       | lastEvent2        | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                                           |
 |       | eventCount2       | Number   | yes       | Counter gets incremented every time the device issues a button event.                              |
-|       | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|       | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|       | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|       | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |       | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 | meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
 |       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
@@ -2078,15 +2045,15 @@ totalEnergy might reset on restart depending on device type and firmware version
 | relay1 | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 | relay2 | output      | Switch  | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
@@ -2097,15 +2064,15 @@ totalEnergy might reset on restart depending on device type and firmware version
 | relay1 | output            | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
 |        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|        | autoOn            | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 |        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | relay2 | output            | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                                             |
 |        | outputName        | String   | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |        | input             | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|        | autoOn            | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number   | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number   | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                                       |
 |        | button            | Trigger  | yes       | Event trigger, see section Button Events                                                           |
 | meter  | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
@@ -2150,22 +2117,22 @@ totalEnergy might reset on restart depending on device type and firmware version
 | relay1 | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 | relay2 | output      | Switch  | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #2: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #2: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 | relay3 | output      | Switch  | r/w       | Relay #3: Controls the relay's output channel (on/off)                            |
 |        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #3: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #3: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | autoOn      | Number  | r/w       | Relay #3: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|        | autoOff     | Number  | r/w       | Relay #3: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |        | timerActive | Switch  | yes       | Relay #3: ON: An auto-on/off timer is active                                      |
 |        | button      | Trigger | yes       | Relay #3:  Event trigger, see section Button Events                               |
 
@@ -2228,8 +2195,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 | relay  | output            | Switch       | r/w       | Relay #1: Controls the relay's output channel (on/off)                                             |
 |        | outputName        | String       | yes       | Logical name of this relay output as configured in the Shelly App                                  |
 |        | input             | Switch       | yes       | ON: Input/Button is powered, see General Notes on Channels                                         |
-|        | autoOn            | Number       | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds                  |
-|        | autoOff           | Number       | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds                  |
+|        | autoOn            | Number       | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|        | autoOff           | Number       | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds                   |
 |        | timerActive       | Switch       | yes       | Relay #1: ON: An auto-on/off timer is active                                                       |
 |        | button            | Trigger      | yes       | Event trigger, see section Button Events                                                           |
 
@@ -2426,8 +2393,8 @@ The `rainStatus` channel latches ON for a while after it has actually stopped ra
 | relay   | output      | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
 |         | outputName  | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
 |         | input       | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|         | autoOn      | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff     | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | autoOn      | Number   | r/w       | Relay #1: Sets a timer to turn the device ON after every OFF command; in seconds  |
+|         | autoOff     | Number   | r/w       | Relay #1: Sets a timer to turn the device OFF after every ON command; in seconds  |
 |         | timerActive | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |         | button      | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | sensors | temperature | Number   | yes       | Temperature reported by the integrated sensor                                     |

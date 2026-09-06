@@ -10,7 +10,6 @@
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="main" typeId="main-control"/>
 			<channel-group id="control" typeId="bulbControl"/>
 			<channel-group id="color" typeId="colorSettingsBulb"/>
 			<channel-group id="white" typeId="whiteSettings"/>
@@ -27,7 +26,6 @@
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="main" typeId="main-control"/>
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -44,7 +42,6 @@
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="main" typeId="main-control"/>
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="color" typeId="colorSettingsBulb"/>
 			<channel-group id="white" typeId="whiteSettings"/>
@@ -62,7 +59,6 @@
 		<category>Lightbulb</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="main" typeId="main-control"/>
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -79,7 +75,6 @@
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="main" typeId="main-control"/>
 			<channel-group id="control" typeId="rgbw2ColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBW2"/>
 			<channel-group id="white" typeId="whiteSettings"/>
@@ -199,12 +194,7 @@
 		<description>Control LED channel and adjust settings</description>
 	</channel-group-type>
 
-	<channel-group-type id="main-control">
-		<label>Main openHAB Controls</label>
-		<description>Main controls that comply with openHAB light control convention</description>
-	</channel-group-type>
-
-	<channel-type id="colorMode">
+	<channel-type id="colorMode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Mode (ON=color, OFF=white)</label>
 		<description>ON: Device is in color mode, OFF: Device is in White Mode</description>
@@ -214,7 +204,7 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="colorFull">
+	<channel-type id="colorFull" advanced="true">
 		<item-type>String</item-type>
 		<label>Full Color</label>
 		<description>Setting this channel sets the selected color to 255, all others to 0</description>
@@ -254,7 +244,7 @@
 		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="colorWhite">
+	<channel-type id="colorWhite" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>White</label>
 		<description>White (0-100%), applies only in Color Mode</description>
@@ -265,22 +255,11 @@
 		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="colorGain">
+	<channel-type id="colorGain" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Gain</label>
 		<description>Gain for all channels (0-100%), applies only in Color Mode</description>
 		<state min="0" max="100" step="1" readOnly="false"/>
-	</channel-type>
-
-	<channel-type id="whiteTemp">
-		<item-type>Dimmer</item-type>
-		<label>Light Temperature</label>
-		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo/Pro RGBWW PM: 2700K-6500K)</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
-		<state min="3000" max="6500" step="10" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="whiteBrightness">
@@ -325,5 +304,28 @@
 				<option value="3">Flash</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="advPower" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Turn the device ON or OFF</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="advBrightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Brightness (0-100%, 0=OFF)</description>
+		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

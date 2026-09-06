@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -41,8 +42,10 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +61,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLightModelHandler {
+
     private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
 
     // map of ShellyLightModels keyed on their channel group number suffix (or 0 for primary light)
@@ -154,6 +158,37 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     private void createLightChannels(ShellyStatusLightChannel status, int idx) {
         if (!areChannelsCreated()) {
             updateChannelDefinitions(ShellyChannelDefinitions.createLightChannels(getThing(), profile, status, idx));
+            hideLegacyLightChannels();
+        }
+    }
+
+    /**
+     * Hides legacy channels that are not primarily used in the openHAB light convention. This is done to
+     * avoid break existing item channel links, but at the same time avoiding confusing new users.
+     */
+    private void hideLegacyLightChannels() {
+        boolean isModified = false;
+        List<Channel> existing = getThing().getChannels();
+        List<Channel> modified = new ArrayList<>(existing.size());
+
+        boolean hasColorChannel = existing.stream()
+                .anyMatch(channel -> CHANNEL_ID_COLOR.equals(channel.getUID().getId()));
+
+        for (Channel channel : existing) {
+            String channelId = channel.getUID().getId();
+            Channel channelOut = channel;
+            if (CHANNEL_ID_POWER.equals(channelId) && !CHANNEL_TYPE_ADV_POWER.equals(channel.getChannelTypeUID())) {
+                channelOut = ChannelBuilder.create(channel).withType(CHANNEL_TYPE_ADV_POWER).build();
+                isModified = true;
+            } else if (CHANNEL_ID_BRIGHTNESS.equals(channelId) && !hasColorChannel
+                    && !CHANNEL_TYPE_ADV_BRIGHTNESS.equals(channel.getChannelTypeUID())) {
+                channelOut = ChannelBuilder.create(channel).withType(CHANNEL_TYPE_ADV_BRIGHTNESS).build();
+                isModified = true;
+            }
+            modified.add(channelOut);
+        }
+        if (isModified) {
+            updateThing(editThing().withChannels(modified).build());
         }
     }
 
