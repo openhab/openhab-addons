@@ -94,6 +94,17 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
     }
 
     /**
+     * Thrown by the {@code http*} helpers when the calling thread is interrupted while waiting for a response, e.g.
+     * because the handler is being disposed/reinitialized. This is deliberately unchecked and left uncaught by
+     * {@link #refresh()}/command handling, so the in-progress refresh or command is abandoned outright instead of
+     * being reported through {@link #markHttpFailure(int)}/{@link #markCommandFailure(int)} as a communication
+     * failure.
+     */
+    protected static final class HandlerInterruptedException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+    }
+
+    /**
      * Result of an {@link #httpGet(String, String)} call. A negative {@code status} means the request could not be
      * completed at all (timeout or connection failure); a non-negative {@code status} is the HTTP response code
      * actually received from the printer, with {@code body} populated only when it was a 2xx response.
@@ -131,7 +142,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("GET {} interrupted", url);
-            return new HttpGetResult(-1, null);
+            throw new HandlerInterruptedException();
         }
     }
 
@@ -154,7 +165,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("POST {} interrupted", url);
-            return -1;
+            throw new HandlerInterruptedException();
         }
     }
 
@@ -174,7 +185,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("DELETE {} interrupted", url);
-            return -1;
+            throw new HandlerInterruptedException();
         }
     }
 
@@ -197,7 +208,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("PUT {} interrupted", url);
-            return -1;
+            throw new HandlerInterruptedException();
         }
     }
 
@@ -222,7 +233,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("GET bytes {} interrupted", url);
-            return null;
+            throw new HandlerInterruptedException();
         }
     }
 

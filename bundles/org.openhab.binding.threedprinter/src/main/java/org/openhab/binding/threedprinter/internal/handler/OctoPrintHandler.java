@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,7 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -274,10 +276,12 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
 
     /**
      * Adds a temperature/setpoint channel pair for each {@code toolN} (N &gt; 0) key present in this poll's
-     * temperature map that doesn't already have one, then updates their state. Unlike Klipper, no separate
-     * discovery request is needed: OctoPrint's printer profile already determines how many tools exist, and every
-     * {@code /api/printer} response reports all of them. Tool numbering follows the same convention as Klipper:
-     * {@code tool0} is tool 1 (the existing primary nozzle channels), {@code tool1} is tool 2, and so on.
+     * temperature map that doesn't already have one, removes any previously added dynamic channel for a tool that
+     * is no longer reported (e.g. after a reconfiguration points the Thing at a printer with fewer toolheads), then
+     * updates state for the tools currently present. Unlike Klipper, no separate discovery request is needed:
+     * OctoPrint's printer profile already determines how many tools exist, and every {@code /api/printer} response
+     * reports all of them. Tool numbering follows the same convention as Klipper: {@code tool0} is tool 1 (the
+     * existing primary nozzle channels), {@code tool1} is tool 2, and so on.
      */
     private void updateExtraToolChannels(Map<String, OctoPrintTempReading> temps) {
         List<String> extraToolKeys = new ArrayList<>();
@@ -286,12 +290,12 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 extraToolKeys.add(key);
             }
         }
-        if (extraToolKeys.isEmpty()) {
-            return;
-        }
         extraToolKeys.sort(Comparator.comparingInt(this::toolIndex));
 
+        Set<Integer> toolNumbers = extraToolKeys.stream().map(key -> toolIndex(key) + 1).collect(Collectors.toSet());
+
         ThingBuilder builder = null;
+        Map<String, Integer> toolIndexByChannel = new LinkedHashMap<>();
         for (String toolKey : extraToolKeys) {
             int toolNumber = toolIndex(toolKey) + 1;
             String tempChannelId = nozzleTemperatureChannelId(toolNumber);
@@ -310,8 +314,18 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                                 .withType(new ChannelTypeUID(BINDING_ID, "nozzle-temperature-setpoint"))
                                 .withLabel("Nozzle " + toolNumber + " Setpoint").build());
             }
-            extraSetpointToolIndexByChannel.put(setpointChannelId, toolIndex(toolKey));
+            toolIndexByChannel.put(setpointChannelId, toolIndex(toolKey));
         }
+
+        for (Channel channel : thing.getChannels()) {
+            Integer toolNumber = dynamicNozzleToolNumber(channel.getUID().getId());
+            if (toolNumber != null && !toolNumbers.contains(toolNumber)) {
+                builder = builder != null ? builder : editThing();
+                builder.withoutChannel(channel.getUID());
+            }
+        }
+
+        extraSetpointToolIndexByChannel = toolIndexByChannel;
         if (builder != null) {
             updateThing(builder.build());
         }
@@ -337,6 +351,27 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
 
     private String nozzleSetpointChannelId(int toolNumber) {
         return CHANNEL_NOZZLE_TEMPERATURE_SETPOINT + "-" + toolNumber;
+    }
+
+    /**
+     * Returns the tool number of a dynamically added nozzle channel ID (2 for the first extra tool, 3 for the
+     * next, ...), or null if the channel ID is not one of these, including the primary nozzle channels which carry
+     * no numeric suffix.
+     */
+    private @Nullable Integer dynamicNozzleToolNumber(String channelId) {
+        String prefix;
+        if (channelId.startsWith(CHANNEL_NOZZLE_TEMPERATURE_SETPOINT + "-")) {
+            prefix = CHANNEL_NOZZLE_TEMPERATURE_SETPOINT;
+        } else if (channelId.startsWith(CHANNEL_NOZZLE_TEMPERATURE + "-")) {
+            prefix = CHANNEL_NOZZLE_TEMPERATURE;
+        } else {
+            return null;
+        }
+        try {
+            return Integer.valueOf(channelId.substring(prefix.length() + 1));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private void clearPreview() {

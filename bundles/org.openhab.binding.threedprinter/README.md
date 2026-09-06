@@ -20,11 +20,11 @@ Other Buddy-firmware Prusa printers (MK3.5, MINI+, XL) and other Klipper/Moonrak
 
 ## Supported Things
 
-| Thing ID      | Description                                          |
-|---------------|------------------------------------------------------|
-| `prusa-link`  | Prusa printer via the PrusaLink v1 REST API          |
-| `klipper`     | Klipper printer via the Moonraker REST API           |
-| `octoprint`   | Printer managed by an OctoPrint server               |
+| Thing ID     | Description                                 |
+|--------------|---------------------------------------------|
+| `prusa-link` | Prusa printer via the PrusaLink v1 REST API |
+| `klipper`    | Klipper printer via the Moonraker REST API  |
+| `octoprint`  | Printer managed by an OctoPrint server      |
 
 ## Discovery
 
@@ -34,50 +34,50 @@ Auto-discovery is not supported. Things must be added manually.
 
 ### PrusaLink (`prusa-link`)
 
-| Parameter         | Description                                                                     | Default | Required |
-|-------------------|---------------------------------------------------------------------------------|---------|----------|
-| `hostname`        | Hostname or IP address of the printer.                                          | –       | Yes      |
-| `port`            | HTTP port of the PrusaLink API.                                                 | `80`    | No       |
-| `apiKey`          | API key shown in the printer's settings menu under **Network → API Key**.       | –       | Yes      |
-| `refreshInterval` | How often to poll the printer, in seconds.                                      | `30`    | No       |
+| Parameter         | Description                                                               | Default | Required |
+|-------------------|---------------------------------------------------------------------------|---------|----------|
+| `hostname`        | Hostname or IP address of the printer.                                    | –       | Yes      |
+| `port`            | HTTP port of the PrusaLink API.                                           | `80`    | No       |
+| `apiKey`          | API key shown in the printer's settings menu under **Network → API Key**. | –       | Yes      |
+| `refreshInterval` | How often to poll the printer, in seconds.                                | `30`    | No       |
 
 ### Klipper (`klipper`)
 
-| Parameter         | Description                                                                     | Default | Required |
-|-------------------|---------------------------------------------------------------------------------|---------|----------|
-| `hostname`        | Hostname or IP address of the Moonraker server.                                 | –       | Yes      |
-| `port`            | HTTP port of the Moonraker API.                                                 | `7125`  | No       |
-| `apiKey`          | Moonraker API key. Optional when accessing from a trusted local network.        | –       | No       |
-| `refreshInterval` | How often to poll the printer, in seconds.                                      | `30`    | No       |
+| Parameter         | Description                                                              | Default | Required |
+|-------------------|--------------------------------------------------------------------------|---------|----------|
+| `hostname`        | Hostname or IP address of the Moonraker server.                          | –       | Yes      |
+| `port`            | HTTP port of the Moonraker API.                                          | `7125`  | No       |
+| `apiKey`          | Moonraker API key. Optional when accessing from a trusted local network. | –       | No       |
+| `refreshInterval` | How often to poll the printer, in seconds.                               | `30`    | No       |
 
 ### OctoPrint (`octoprint`)
 
-| Parameter         | Description                                                                     | Default | Required |
-|-------------------|---------------------------------------------------------------------------------|---------|----------|
-| `hostname`        | Hostname or IP address of the OctoPrint server.                                 | –       | Yes      |
-| `port`            | HTTP port of the OctoPrint API.                                                 | `5000`  | No       |
-| `apiKey`          | OctoPrint API key from **Settings → API → Global API Key**.                     | –       | Yes      |
-| `refreshInterval` | How often to poll the printer, in seconds.                                      | `30`    | No       |
+| Parameter         | Description                                                 | Default | Required |
+|-------------------|-------------------------------------------------------------|---------|----------|
+| `hostname`        | Hostname or IP address of the OctoPrint server.             | –       | Yes      |
+| `port`            | HTTP port of the OctoPrint API.                             | `5000`  | No       |
+| `apiKey`          | OctoPrint API key from **Settings → API → Global API Key**. | –       | Yes      |
+| `refreshInterval` | How often to poll the printer, in seconds.                  | `30`    | No       |
 
 ## Channels
 
 All three thing types expose the same set of channel IDs, but `nozzle-temperature-setpoint`, `bed-temperature-setpoint`, `print-speed`, and `fan-speed` are read-only on `prusa-link` things: PrusaLink on Buddy firmware does not expose an API to change these, so commands sent to them are ignored. On `klipper` and `octoprint` things, these four channels accept commands.
 
-| Channel ID                    | Item Type            | R/W | Description                                                                                          |
-|-------------------------------|----------------------|-----|------------------------------------------------------------------------------------------------------|
-| `printer-state`               | String               | R   | Current printer state: `IDLE`, `PRINTING`, `PAUSED`, `FINISHED`, `ERROR`, or `BUSY`.                |
-| `job-name`                    | String               | R   | Name of the file currently loaded or being printed.                                                  |
-| `job-progress`                | Number:Dimensionless  | R   | Print completion percentage (0–100).                                                                 |
-| `time-elapsed`                | Number:Time           | R   | Seconds elapsed since the print started.                                                             |
-| `time-remaining`              | Number:Time           | R   | Estimated seconds remaining.                                                                         |
-| `nozzle-temperature`          | Number:Temperature   | R   | Current nozzle (hotend) temperature.                                                                 |
-| `nozzle-temperature-setpoint` | Number:Temperature   | RW* | Nozzle temperature target. Send a temperature to change it. Read-only on `prusa-link`.               |
-| `bed-temperature`             | Number:Temperature   | R   | Current heated bed temperature.                                                                      |
-| `bed-temperature-setpoint`    | Number:Temperature   | RW* | Bed temperature target. Send a temperature to change it. Read-only on `prusa-link`.                  |
-| `print-speed`                 | Number:Dimensionless  | RW* | Print speed as a percentage of the configured profile speed (1–200). Read-only on `prusa-link`.      |
-| `fan-speed`                   | Number:Dimensionless  | RW* | Part-cooling fan speed percentage (0–100) on `klipper`/`octoprint`. On `prusa-link` this channel is `Number:Frequency` (RPM) and read-only, since Buddy firmware reports raw fan RPM and the maximum RPM varies by printer model. |
-| `pause-resume`                | Switch               | RW  | `ON` when the print is paused. Send `ON` to pause, `OFF` to resume.                                 |
-| `cancel`                      | Switch               | W   | Send `ON` to cancel the current print. Resets to `OFF` automatically.                               |
+| Channel ID                    | Item Type            | R/W | Description                                                                                                                                                                                                                               |
+|-------------------------------|----------------------|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `printer-state`               | String               | R   | Current printer state: `IDLE`, `PRINTING`, `PAUSED`, `FINISHED`, `ERROR`, or `BUSY`.                                                                                                                                                      |
+| `job-name`                    | String               | R   | Name of the file currently loaded or being printed.                                                                                                                                                                                       |
+| `job-progress`                | Number:Dimensionless | R   | Print completion percentage (0–100).                                                                                                                                                                                                      |
+| `time-elapsed`                | Number:Time          | R   | Seconds elapsed since the print started.                                                                                                                                                                                                  |
+| `time-remaining`              | Number:Time          | R   | Estimated seconds remaining.                                                                                                                                                                                                              |
+| `nozzle-temperature`          | Number:Temperature   | R   | Current nozzle (hotend) temperature.                                                                                                                                                                                                      |
+| `nozzle-temperature-setpoint` | Number:Temperature   | RW* | Nozzle temperature target. Send a temperature to change it. Read-only on `prusa-link`.                                                                                                                                                    |
+| `bed-temperature`             | Number:Temperature   | R   | Current heated bed temperature.                                                                                                                                                                                                           |
+| `bed-temperature-setpoint`    | Number:Temperature   | RW* | Bed temperature target. Send a temperature to change it. Read-only on `prusa-link`.                                                                                                                                                       |
+| `print-speed`                 | Number:Dimensionless | RW* | Print speed as a percentage of the configured profile speed (1–200). Read-only on `prusa-link`.                                                                                                                                           |
+| `fan-speed`                   | Number:Dimensionless | RW* | Part-cooling fan speed percentage (0–100) on `klipper`/`octoprint`. On `prusa-link` this channel is `Number:Frequency` (RPM) and read-only, since Buddy firmware reports raw fan RPM and the maximum RPM varies by printer model.         |
+| `pause-resume`                | Switch               | RW  | `ON` when the print is paused. Send `ON` to pause, `OFF` to resume.                                                                                                                                                                       |
+| `cancel`                      | Switch               | W   | Send `ON` to cancel the current print. Resets to `OFF` automatically.                                                                                                                                                                     |
 | `job-preview`                 | Image                | R   | Thumbnail image of the object being printed. Only populated when the sliced file contains embedded thumbnails. For OctoPrint, requires the [PrusaSlicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) plugin. |
 
 ### Multi-toolhead printers
@@ -120,20 +120,20 @@ Thing threedprinter:octoprint:ender "Ender 3 (OctoPrint)" [
 `threedprinter.items`
 
 ```java
-String   Voron_State          "Printer state [%s]"             { channel="threedprinter:klipper:voron:printer-state" }
-String   Voron_JobName        "Current job [%s]"               { channel="threedprinter:klipper:voron:job-name" }
-Number:Dimensionless Voron_Progress       "Progress [%.1f %%]"    { channel="threedprinter:klipper:voron:job-progress" }
-Number:Time Voron_TimeElapsed    "Time elapsed [%d %unit%]"      { channel="threedprinter:klipper:voron:time-elapsed" }
-Number:Time Voron_TimeRemaining  "Time remaining [%d %unit%]"    { channel="threedprinter:klipper:voron:time-remaining" }
-Number:Temperature Voron_NozzleTemp    "Nozzle temp [%.1f %unit%]"  { channel="threedprinter:klipper:voron:nozzle-temperature" }
-Number:Temperature Voron_NozzleTarget  "Nozzle target [%.1f %unit%]" { channel="threedprinter:klipper:voron:nozzle-temperature-setpoint" }
-Number:Temperature Voron_BedTemp       "Bed temp [%.1f %unit%]"     { channel="threedprinter:klipper:voron:bed-temperature" }
-Number:Temperature Voron_BedTarget     "Bed target [%.1f %unit%]"   { channel="threedprinter:klipper:voron:bed-temperature-setpoint" }
-Number:Dimensionless Voron_PrintSpeed     "Print speed [%d %%]"  { channel="threedprinter:klipper:voron:print-speed" }
-Number:Dimensionless Voron_FanSpeed       "Fan speed [%d %%]"    { channel="threedprinter:klipper:voron:fan-speed" }
-Switch   Voron_PauseResume    "Paused"                         { channel="threedprinter:klipper:voron:pause-resume" }
-Switch   Voron_Cancel         "Cancel print"                   { channel="threedprinter:klipper:voron:cancel" }
-Image    Voron_Preview        "Print preview"                  { channel="threedprinter:klipper:voron:job-preview" }
+String               Voron_State         "Printer state [%s]"          { channel="threedprinter:klipper:voron:printer-state" }
+String               Voron_JobName       "Current job [%s]"            { channel="threedprinter:klipper:voron:job-name" }
+Number:Dimensionless Voron_Progress      "Progress [%.1f %%]"          { channel="threedprinter:klipper:voron:job-progress" }
+Number:Time          Voron_TimeElapsed   "Time elapsed [%d %unit%]"    { channel="threedprinter:klipper:voron:time-elapsed" }
+Number:Time          Voron_TimeRemaining "Time remaining [%d %unit%]"  { channel="threedprinter:klipper:voron:time-remaining" }
+Number:Temperature   Voron_NozzleTemp    "Nozzle temp [%.1f %unit%]"   { channel="threedprinter:klipper:voron:nozzle-temperature" }
+Number:Temperature   Voron_NozzleTarget  "Nozzle target [%.1f %unit%]" { channel="threedprinter:klipper:voron:nozzle-temperature-setpoint" }
+Number:Temperature   Voron_BedTemp       "Bed temp [%.1f %unit%]"      { channel="threedprinter:klipper:voron:bed-temperature" }
+Number:Temperature   Voron_BedTarget     "Bed target [%.1f %unit%]"    { channel="threedprinter:klipper:voron:bed-temperature-setpoint" }
+Number:Dimensionless Voron_PrintSpeed    "Print speed [%d %%]"         { channel="threedprinter:klipper:voron:print-speed" }
+Number:Dimensionless Voron_FanSpeed      "Fan speed [%d %%]"           { channel="threedprinter:klipper:voron:fan-speed" }
+Switch               Voron_PauseResume   "Paused"                      { channel="threedprinter:klipper:voron:pause-resume" }
+Switch               Voron_Cancel        "Cancel print"                { channel="threedprinter:klipper:voron:cancel" }
+Image                Voron_Preview       "Print preview"               { channel="threedprinter:klipper:voron:job-preview" }
 ```
 
 ### Sitemap
@@ -143,20 +143,20 @@ Image    Voron_Preview        "Print preview"                  { channel="threed
 ```perl
 sitemap threedprinter label="3D Printers" {
     Frame label="Voron 2.4" {
-        Text  item=Voron_State
-        Text  item=Voron_JobName
-        Text  item=Voron_Progress
-        Text  item=Voron_TimeElapsed
-        Text  item=Voron_TimeRemaining
-        Text  item=Voron_NozzleTemp
+        Text     item=Voron_State
+        Text     item=Voron_JobName
+        Text     item=Voron_Progress
+        Text     item=Voron_TimeElapsed
+        Text     item=Voron_TimeRemaining
+        Text     item=Voron_NozzleTemp
         Setpoint item=Voron_NozzleTarget minValue=0 maxValue=300 step=5
-        Text  item=Voron_BedTemp
-        Setpoint item=Voron_BedTarget minValue=0 maxValue=120 step=5
-        Slider item=Voron_PrintSpeed minValue=1 maxValue=200 step=10
-        Slider item=Voron_FanSpeed minValue=0 maxValue=100 step=5
-        Switch item=Voron_PauseResume label="Pause/Resume"
-        Switch item=Voron_Cancel label="Cancel Print"
-        Image  item=Voron_Preview
+        Text     item=Voron_BedTemp
+        Setpoint item=Voron_BedTarget   minValue=0 maxValue=120 step=5
+        Slider   item=Voron_PrintSpeed  minValue=1 maxValue=200 step=10
+        Slider   item=Voron_FanSpeed    minValue=0 maxValue=100 step=5
+        Switch   item=Voron_PauseResume label="Pause/Resume"
+        Switch   item=Voron_Cancel      label="Cancel Print"
+        Image    item=Voron_Preview
     }
 }
 ```

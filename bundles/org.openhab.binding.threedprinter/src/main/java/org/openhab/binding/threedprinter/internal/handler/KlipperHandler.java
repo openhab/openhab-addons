@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -55,6 +56,7 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -309,18 +311,23 @@ public class KlipperHandler extends AbstractPrinterHandler {
         queryUrlSuffix = suffix.toString();
         if (!found.isEmpty()) {
             logger.debug("Discovered {} additional extruder(s): {}", found.size(), found);
-            addExtraExtruderChannels(found);
         }
+        reconcileExtraExtruderChannels(found);
         extrudersDiscovered = true;
         return true;
     }
 
     /**
      * Adds a temperature/setpoint channel pair for each discovered extra extruder, reusing the same channel types
-     * as the primary nozzle channels. Tool numbering follows Klipper's own convention: {@code extruder} is tool 1,
+     * as the primary nozzle channels, and removes any previously added dynamic channel whose extruder is no longer
+     * reported (e.g. after a reconfiguration points the Thing at a printer with fewer toolheads). These dynamic
+     * channels persist on the Thing across a handler reinitialization, so they cannot simply be recreated from an
+     * empty in-memory map. Tool numbering follows Klipper's own convention: {@code extruder} is tool 1,
      * {@code extruder1} is tool 2, {@code extruder2} is tool 3, and so on.
      */
-    private void addExtraExtruderChannels(List<String> extruderIds) {
+    private void reconcileExtraExtruderChannels(List<String> extruderIds) {
+        Set<Integer> toolNumbers = extruderIds.stream().map(this::extruderToolNumber).collect(Collectors.toSet());
+
         ThingBuilder builder = null;
         Map<String, String> heaterByChannel = new LinkedHashMap<>();
         for (String extruderId : extruderIds) {
@@ -344,9 +351,39 @@ public class KlipperHandler extends AbstractPrinterHandler {
             }
             heaterByChannel.put(setpointChannelId, extruderId);
         }
+
+        for (Channel channel : thing.getChannels()) {
+            Integer toolNumber = dynamicNozzleToolNumber(channel.getUID().getId());
+            if (toolNumber != null && !toolNumbers.contains(toolNumber)) {
+                builder = builder != null ? builder : editThing();
+                builder.withoutChannel(channel.getUID());
+            }
+        }
+
         extraSetpointHeaterByChannel = heaterByChannel;
         if (builder != null) {
             updateThing(builder.build());
+        }
+    }
+
+    /**
+     * Returns the tool number of a dynamically added nozzle channel ID (2 for the first extra extruder, 3 for the
+     * next, ...), or null if the channel ID is not one of these, including the primary nozzle channels which carry
+     * no numeric suffix.
+     */
+    private @Nullable Integer dynamicNozzleToolNumber(String channelId) {
+        String prefix;
+        if (channelId.startsWith(CHANNEL_NOZZLE_TEMPERATURE_SETPOINT + "-")) {
+            prefix = CHANNEL_NOZZLE_TEMPERATURE_SETPOINT;
+        } else if (channelId.startsWith(CHANNEL_NOZZLE_TEMPERATURE + "-")) {
+            prefix = CHANNEL_NOZZLE_TEMPERATURE;
+        } else {
+            return null;
+        }
+        try {
+            return Integer.valueOf(channelId.substring(prefix.length() + 1));
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
