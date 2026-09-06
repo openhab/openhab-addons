@@ -222,6 +222,7 @@
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.livisismarthome/ @Novanic
 /bundles/org.openhab.binding.logreader/ @paulianttila
+/bundles/org.openhab.binding.loqed/ @octa22
 /bundles/org.openhab.binding.loxone/ @ppieczul
 /bundles/org.openhab.binding.lutron/ @actong @bobadair
 /bundles/org.openhab.binding.luxom/ @jesperskriasoft
