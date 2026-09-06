@@ -104,6 +104,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_CONTROL = CHANNEL_GROUP_CONTROL;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
+    private static final String CHGR_COLOR = CHANNEL_GROUP_COLOR_CONTROL;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
@@ -262,26 +263,14 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
 
                 // Color control group channels
-                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER, "system:color",
-                        ITEMT_COLOR))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL, "colorFull", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, "colorRed", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, "colorGreen", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, "colorBlue", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, "colorWhite", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT, "lightEffect",
-                        ITEMT_STRING))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN, "whiteGain", ITEMT_DIMMER))
-
-                // Primary light channels
-                .add(new ShellyChannel(m, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER, "system:color",
-                        ITEMT_COLOR))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_BRIGHTNESS, "system:brightness",
-                        ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP, "system:color-temperature",
-                        ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP_ABS,
-                        "system:color-temperature-abs", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_PICKER, "system:color", ITEMT_COLOR))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_FULL, "colorFull", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_RED, "colorRed", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_GREEN, "colorGreen", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_BLUE, "colorBlue", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_WHITE, "colorWhite", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_EFFECT, "lightEffect", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_GAIN, "whiteGain", ITEMT_DIMMER))
 
                 // Power Meter
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEMT_POWER))
@@ -585,25 +574,14 @@ public class ShellyChannelDefinitions {
 
             // dynamically add any missing color control group channels
             if (profile.hasColorTag(idx)) {
-                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER);
-                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL);
-                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED);
-                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN);
-                addChannel(thing, add, true, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE);
-                addChannel(thing, add, status.white != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE);
-                addChannel(thing, add, status.gain != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN);
-                addChannel(thing, add, status.effect != null, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_EFFECT);
-            }
-
-            // dynamically add main control group channels
-            if (!deviceHasMainLight(thing, profile)) {
-                if (profile.hasColorTag(0)) {
-                    addChannel(thing, add, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_PICKER);
-                } else {
-                    addChannel(thing, add, true, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_BRIGHTNESS);
-                }
-                addChannel(thing, add, status.temp != null, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP);
-                addChannel(thing, add, status.temp != null, CHANNEL_GROUP_MAIN_CONTROL, CHANNEL_COLOR_TEMP_ABS);
+                addChannel(thing, add, true, CHGR_COLOR, CHANNEL_COLOR_PICKER);
+                addChannel(thing, add, true, CHGR_COLOR, CHANNEL_COLOR_FULL);
+                addChannel(thing, add, true, CHGR_COLOR, CHANNEL_COLOR_RED);
+                addChannel(thing, add, true, CHGR_COLOR, CHANNEL_COLOR_GREEN);
+                addChannel(thing, add, true, CHGR_COLOR, CHANNEL_COLOR_BLUE);
+                addChannel(thing, add, status.white != null, CHGR_COLOR, CHANNEL_COLOR_WHITE);
+                addChannel(thing, add, status.gain != null, CHGR_COLOR, CHANNEL_COLOR_GAIN);
+                addChannel(thing, add, status.effect != null, CHGR_COLOR, CHANNEL_COLOR_EFFECT);
             }
         }
 

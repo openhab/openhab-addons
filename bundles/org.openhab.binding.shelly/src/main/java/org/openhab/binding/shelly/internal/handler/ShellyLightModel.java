@@ -673,7 +673,7 @@ public class ShellyLightModel extends LightModel {
         } else if (rgbw.length == 3 && rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR) {
             return new StringType(SHELLY_COLOR_WHITE);
         }
-        return UnDefType.UNDEF;
+        return new StringType(SHELLY_COLOR_UNDEFINED);
     }
 
     @Override

@@ -52,7 +52,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * Tests for {@link ShellyLightHandler} and {@link ShellyLightModel} classes.
@@ -103,7 +102,7 @@ class ShellyLightHandlerLightModelTest {
                 PercentType.HUNDRED);
 
         Map<String, State> updates = handler.getChannelUpdates();
-        assertEquals(7, updates.size());
+        assertEquals(6, updates.size());
         assertEquals(PercentType.HUNDRED, updates.get("color#red"));
         assertEquals(PercentType.ZERO, updates.get("color#green"));
         assertEquals(PercentType.ZERO, updates.get("color#blue"));
@@ -114,7 +113,6 @@ class ShellyLightHandlerLightModelTest {
         assertEquals(0, ((HSBType) obj).getHue().intValue());
         assertEquals(100, ((HSBType) obj).getSaturation().intValue());
         assertEquals(0, ((HSBType) obj).getBrightness().intValue());
-        assertNotNull(updates.get("main#hsb"));
 
         try {
             handler.acquireLock();
@@ -1021,7 +1019,7 @@ class ShellyLightHandlerLightModelTest {
                     "color#red", new PercentType(1),
                     "color#green", PercentType.ZERO,
                     "color#blue", PercentType.ZERO,
-                    "color#full", UnDefType.UNDEF
+                    "color#full", new StringType("undefined")
                 )
             ),
 
@@ -1034,7 +1032,7 @@ class ShellyLightHandlerLightModelTest {
                     "color#green", PercentType.ZERO,
                     "color#blue", PercentType.ZERO,
                     "color#white", new PercentType(33),
-                    "color#full", UnDefType.UNDEF
+                    "color#full", new StringType("undefined")
                 )
             ),
 
@@ -1085,7 +1083,7 @@ class ShellyLightHandlerLightModelTest {
                     "color#red", PercentType.ZERO,
                     "color#green", new PercentType(40),
                     "color#blue", PercentType.ZERO,
-                    "color#full", UnDefType.UNDEF
+                    "color#full", new StringType("undefined")
                 )
             ),
 

@@ -234,9 +234,6 @@ public class ShellyBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_ADV_BRIGHTNESS = new ChannelTypeUID(BINDING_ID, "advBrightness");
     public static final ChannelTypeUID CHANNEL_TYPE_ADV_POWER = new ChannelTypeUID(BINDING_ID, "advPower");
 
-    // main channel group
-    public static final String CHANNEL_GROUP_MAIN_CONTROL = "main";
-
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
     public static final String CHANNEL_DEVST_NAME = "deviceName";
