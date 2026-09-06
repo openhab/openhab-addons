@@ -25,7 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum TapoProtocolEnum {
     PASSTHROUGH(""),
     SECUREPASSTROUGH("AES"),
-    KLAP("KLAP");
+    KLAP("KLAP"),
+    KASA("KASA");
 
     public final String value;
 

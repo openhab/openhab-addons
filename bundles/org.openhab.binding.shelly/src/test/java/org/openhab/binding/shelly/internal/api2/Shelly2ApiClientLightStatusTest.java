@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.toQuantityType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
@@ -226,7 +228,8 @@ public class Shelly2ApiClientLightStatusTest {
         boolean updated = client.fillDeviceStatus(profile.status, result, true);
 
         assertThat(updated, is(true));
-        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
+        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_BRIGHTNESS + "$Value",
+                toQuantityType(55.0, DIGITS_NONE, Units.PERCENT));
         verify(thing, never()).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_LIGHT_POWER, OnOffType.ON);
     }
 
@@ -243,7 +246,8 @@ public class Shelly2ApiClientLightStatusTest {
         boolean updated = client.fillDeviceStatus(profile.status, result, true);
 
         assertThat(updated, is(true));
-        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
+        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS + "$Value",
+                toQuantityType(55.0, DIGITS_NONE, Units.PERCENT));
     }
 
     @Test

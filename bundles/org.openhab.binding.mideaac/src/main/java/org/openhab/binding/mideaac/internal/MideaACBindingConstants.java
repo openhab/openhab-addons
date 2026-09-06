@@ -105,10 +105,12 @@ public class MideaACBindingConstants {
     public static final String CONFIG_PROMPT_TONE = "promptTone";
     public static final String CONFIG_VERSION = "version";
     public static final String CONFIG_ENERGY_DECODE = "energyDecode";
+    public static final String CONFIG_TOKEN_KEY_METHOD = "tokenKeyMethod";
 
     // Properties from LAN Discovery
     public static final String PROPERTY_SN = "sn";
     public static final String PROPERTY_SSID = "ssid";
+    public static final String PROPERTY_TOKEN_KEY_METHOD = "tokenKeyMethod";
 
     // Capabilities properties discoverable
     public static final String PROPERTY_ANION = "anion";

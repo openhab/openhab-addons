@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
+import org.openhab.binding.tapocontrol.internal.devices.camera.TapoCameraHandler;
 import org.openhab.binding.tapocontrol.internal.devices.rf.smartcontact.TapoSmartContactHandler;
 import org.openhab.binding.tapocontrol.internal.devices.rf.smartswitch.TapoSmartSwitchHandler;
 import org.openhab.binding.tapocontrol.internal.devices.rf.weathersensor.TapoWeatherSensorHandler;
@@ -56,6 +57,7 @@ import com.google.gson.GsonBuilder;
  * sent to one of the channels.
  *
  * @author Christian Wild - Initial contribution
+ * @author Kai Kreuzer - Added support for Tapo cameras
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tapocontrol")
 @NonNullByDefault
@@ -63,35 +65,86 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation()
             .create();
     private final Logger logger = LoggerFactory.getLogger(TapoControlHandlerFactory.class);
-    private final Set<TapoBridgeHandler> accountHandlers = new HashSet<>();
-    private final HttpClient httpClient;
+    final Set<ThingHandler> handlersWithHttpClient = new HashSet<>();
+    private final HttpClientFactory httpClientFactory;
+    private @Nullable HttpClient httpClient;
+    private @Nullable HttpClient cameraHttpClient;
     private final TapoStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
     public TapoControlHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference TapoStateDescriptionProvider tapoStateDescriptionProvider) {
+        this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = tapoStateDescriptionProvider;
-        // create new httpClient
-        httpClient = httpClientFactory.createHttpClient(BINDING_ID, new SslContextFactory.Client());
-        httpClient.setFollowRedirects(false);
-        httpClient.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
-        httpClient.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.error("cannot start httpClient");
+    }
+
+    private synchronized HttpClient getHttpClient() {
+        HttpClient client = httpClient;
+        if (client == null) {
+            client = createHttpClient(BINDING_ID, new SslContextFactory.Client());
+            httpClient = client;
         }
+        return client;
+    }
+
+    private synchronized HttpClient getCameraHttpClient() {
+        HttpClient client = cameraHttpClient;
+        if (client == null) {
+            // Cameras serve self-signed TLS certificates; certificate verification is intentionally disabled
+            // for this client only — a scoped requirement of these devices.
+            client = createHttpClient(BINDING_ID + "-camera", new SslContextFactory.Client(true));
+            cameraHttpClient = client;
+        }
+        return client;
+    }
+
+    private HttpClient createHttpClient(String consumerName, SslContextFactory.Client sslContextFactory) {
+        HttpClient client = httpClientFactory.createHttpClient(consumerName, sslContextFactory);
+        client.setFollowRedirects(false);
+        client.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
+        client.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);
+        try {
+            client.start();
+        } catch (Exception e) {
+            logger.error("cannot start {}", consumerName, e);
+        }
+        return client;
     }
 
     @Deactivate
     @Override
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.debug("unable to stop httpClient");
+        synchronized (handlersWithHttpClient) {
+            for (ThingHandler handler : handlersWithHttpClient) {
+                handler.dispose();
+            }
+            handlersWithHttpClient.clear();
         }
+        HttpClient client = httpClient;
+        if (client != null) {
+            try {
+                client.stop();
+            } catch (Exception e) {
+                logger.debug("unable to stop httpClient");
+            }
+        }
+        client = cameraHttpClient;
+        if (client != null) {
+            try {
+                client.stop();
+            } catch (Exception e) {
+                logger.debug("unable to stop cameraHttpClient");
+            }
+        }
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        synchronized (handlersWithHttpClient) {
+            handlersWithHttpClient.remove(thingHandler);
+        }
+        super.removeHandler(thingHandler);
     }
 
     /**
@@ -113,8 +166,10 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_BRIDGE_UIDS.contains(thingTypeUID)) {
-            TapoBridgeHandler bridgeHandler = new TapoBridgeHandler((Bridge) thing, httpClient);
-            accountHandlers.add(bridgeHandler);
+            TapoBridgeHandler bridgeHandler = new TapoBridgeHandler((Bridge) thing, getHttpClient());
+            synchronized (handlersWithHttpClient) {
+                handlersWithHttpClient.add(bridgeHandler);
+            }
             return bridgeHandler;
         } else if (SUPPORTED_HUB_UIDS.contains(thingTypeUID)) {
             return new TapoHubHandler(thing);
@@ -136,6 +191,12 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             return new TapoSmartSwitchHandler(thing);
         } else if (SUPPORTED_LIGHT_SWITCH_UIDS.contains(thingTypeUID)) {
             return new TapoLightSwitchHandler(thing);
+        } else if (SUPPORTED_CAMERA_UIDS.contains(thingTypeUID)) {
+            TapoCameraHandler cameraHandler = new TapoCameraHandler(thing, getCameraHttpClient());
+            synchronized (handlersWithHttpClient) {
+                handlersWithHttpClient.add(cameraHandler);
+            }
+            return cameraHandler;
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
             return new TapoUniversalDeviceHandler(thing);
         }

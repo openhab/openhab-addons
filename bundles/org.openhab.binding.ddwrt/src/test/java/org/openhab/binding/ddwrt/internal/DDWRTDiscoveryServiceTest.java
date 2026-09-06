@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.is;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.ddwrt.internal.api.DDWRTClient;
 import org.openhab.binding.ddwrt.internal.api.DDWRTRadio;
 import org.openhab.core.thing.ThingUID;
 
@@ -38,5 +39,32 @@ class DDWRTDiscoveryServiceTest {
 
         assertThat(thingUid.getId(), is("24-f5-a2-c6-16-59-wlan0-1"));
         assertThat(radio.getInterfaceId(), is("24:f5:a2:c6:16:59:wlan0.1"));
+    }
+
+    @Test
+    void routerHostnameTakesPrecedenceOverExternalName() {
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
+        client.setHostname("router-name");
+        ClientNameResolver resolver = new ClientNameResolver();
+        resolver.addIdentity("External Name", java.util.Map.of("mac", client.getMac()));
+
+        assertThat(DDWRTDiscoveryService.selectClientName(client, resolver), is("router-name"));
+    }
+
+    @Test
+    void exactMacNameTakesPrecedenceOverOuiName() {
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
+        client.setOuiHostname("Vendor-ddeeff");
+        ClientNameResolver resolver = new ClientNameResolver();
+        resolver.addIdentity("Kitchen Lamp", java.util.Map.of("macAddress", client.getMac()));
+
+        assertThat(DDWRTDiscoveryService.selectClientName(client, resolver), is("Kitchen Lamp"));
+    }
+
+    @Test
+    void unnamedClientGetsStableMacFallback() {
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
+
+        assertThat(DDWRTDiscoveryService.selectClientName(client, new ClientNameResolver()), is("client-aabbccddeeff"));
     }
 }

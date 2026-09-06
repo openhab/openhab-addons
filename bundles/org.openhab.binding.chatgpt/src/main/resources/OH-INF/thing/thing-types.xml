@@ -89,6 +89,22 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="reasoningEffort" type="text" groupName="hli">
+				<label>Reasoning Effort</label>
+				<description>Controls effort on reasoning for reasoning models. Higher values result in more reasoning tokens and
+					higher latency before returning a response.</description>
+				<default>none</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="none">None</option>
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+					<option value="xhigh">Extra High</option>
+					<option value="max">Max</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
 			<!-- Connection Settings -->
 			<parameter name="requestTimeout" type="integer" min="1" unit="s" groupName="connection">
 				<label>Request Timeout</label>
@@ -133,6 +149,21 @@
 				<description>The system message helps set the behavior of the assistant.</description>
 				<default>You are a helpful assistant.</default>
 				<advanced>false</advanced>
+			</parameter>
+			<parameter name="reasoningEffort" type="text">
+				<label>Reasoning Effort</label>
+				<description>Controls effort on reasoning for reasoning models. Higher values result in more reasoning tokens and
+					higher latency before returning a response.</description>
+				<advanced>true</advanced>
+				<options>
+					<option value="none">None</option>
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+					<option value="xhigh">Extra High</option>
+					<option value="max">Max</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="requestTimeout" type="integer" min="1">
 				<label>Request Timeout</label>

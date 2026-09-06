@@ -144,6 +144,7 @@ public class Shelly1ApiJsonDTO {
 
     public static final String SHELLY_INP_MODE_OPENCLOSE = "openclose";
     public static final String SHELLY_INP_MODE_ONEBUTTON = "onebutton";
+    public static final String SHELLY_INP_MODE_DETACHED = "detached"; // Gen2+ Cover in_mode only, no Gen1 equivalent
 
     public static final String SHELLY_OBSTMODE_DISABLED = "disabled";
     public static final String SHELLY_SAFETYM_WHILEOPENING = "while_opening";
@@ -747,6 +748,10 @@ public class Shelly1ApiJsonDTO {
         // Gen2
         public Boolean ethernet;
         public Boolean bluetooth;
+
+        public boolean loraDetected;
+        public boolean loraRxEnabled;
+        public Integer[] loraComponentIds; // so far only 1 add-on is supported
     }
 
     public static class ShellySettingsAttributes {
@@ -1234,11 +1239,13 @@ public class Shelly1ApiJsonDTO {
         public @Nullable Double windSpeed;
         public @Nullable Double windDirection;
         public @Nullable Double gustSpeed;
-        public @Nullable Double gustDirection;
         public @Nullable Double uvIndex;
         public @Nullable Double pressure;
         public @Nullable Double dewPoint;
         public @Nullable Double precipitation;
+        public @Nullable String windDirectionStr;
+        public @Nullable Double apparentTemp;
+        public @Nullable Double seaLevelPressure;
     }
 
     public static class ShellySettingsSmoke {

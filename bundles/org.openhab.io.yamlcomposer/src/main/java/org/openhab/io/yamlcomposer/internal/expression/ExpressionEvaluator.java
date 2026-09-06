@@ -72,7 +72,7 @@ public class ExpressionEvaluator {
         context.registerFilter(new EnumerateFilter());
 
         context.registerFunction(
-                new ELFunctionDefinition("", "enumerate", EnumerateFilter.class, "staticEnumerate", Object.class));
+                new ELFunctionDefinition("", "enumerate", EnumerateFilter.class, "staticEnumerate", Object[].class));
     }
 
     /**

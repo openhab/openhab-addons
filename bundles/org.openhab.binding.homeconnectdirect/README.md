@@ -82,7 +82,7 @@ These channels provide immediate access to common functions. Available channels 
 | `selected-program`             | String               | R/W    | The program currently selected on the device.                                                                                                           | Dishwasher, Washer, Washer/Dryer, Dryer, Coffee Maker, Oven, Warming Drawer                                |
 | `remaining-program-time`       | Number:Time          | R      | Estimated time remaining.                                                                                                                               | Dishwasher, Washer, Washer/Dryer, Dryer, Oven, Warming Drawer                                              |
 | `program-progress`             | Number:Dimensionless | R      | Progress in percent (0-100%).                                                                                                                           | Dishwasher, Cook Processor, Washer, Washer/Dryer, Dryer, Coffee Maker, Oven, Warming Drawer                |
-| `program-command`              | String               | W      | Send commands like `start`, `pause`, or `resume`.                                                                                                       | Dishwasher, Cook Processor, Washer, Washer/Dryer, Dryer                                                    |
+| `program-command`              | String               | W      | Controls the program execution. The available commands (`start`, `pause`, `resume`, `stop`) depend on the appliance and its current state.              | Dishwasher, Cook Processor, Washer, Washer/Dryer, Dryer, Coffee Maker, Oven, Warming Drawer                |
 | `command`                      | String               | W      | Send specific operation commands to the appliance.                                                                                                      | All                                                                                                        |
 | `raw-message`                  | String               | W      | Advanced: Send raw JSON payloads.<br>Example (Start coffee program): `{"action": "POST", "resource": "/ro/activeProgram", "data": [{"program": 8217}]}` | All                                                                                                        |
 
@@ -142,7 +142,6 @@ These channels provide immediate access to common functions. Available channels 
 
 | Channel ID                   | Item Type          | Access | Description                                                                                           |
 |------------------------------|--------------------|--------|-------------------------------------------------------------------------------------------------------|
-| `oven-program-command`       | String             | W      | Controls program execution (`start`, `pause`, `resume`, `stop`).                                      |
 | `duration`                   | Number:Time        | R/W    | The duration of the program (Oven).                                                                   |
 | `setpoint-temperature`       | Number:Temperature | R/W    | Target temperature.                                                                                   |
 | `temperature-{n}`            | Number:Temperature | R      | The current cavity temperature (dynamically added, where {n} is the cavity number).                   |
@@ -165,7 +164,6 @@ These channels provide immediate access to common functions. Available channels 
 | `empty-milk-tank`             | Switch    | R      | Indicates when the milk tank is empty.         |
 | `bean-container-empty`        | Switch    | R      | Indicates when the bean container is empty.    |
 | `process-phase`               | String    | R      | The current process phase of the coffee maker. |
-| `coffeemaker-program-command` | String    | W      | Controls program execution (`start`, `stop`).  |
 
 #### Hood Channels
 

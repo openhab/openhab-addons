@@ -9,26 +9,27 @@ deCONZ offers a documented real-time channel that this binding makes use of to b
 There is one bridge (`deconz`) that manages the connection to the deCONZ software instance.
 These sensors are supported:
 
-| Device type                       | Resource Type                     | Thing type             |
-| --------------------------------- | --------------------------------- | ---------------------- |
-| Presence Sensor                   | ZHAPresence, CLIPPresence         | `presencesensor`       |
-| Power Sensor                      | ZHAPower, CLIPPower               | `powersensor`          |
-| Consumption Sensor                | ZHAConsumption                    | `consumptionsensor`    |
-| Switch                            | ZHASwitch                         | `switch`               |
-| Light Sensor                      | ZHALightLevel                     | `lightsensor`          |
-| Temperature Sensor                | ZHATemperature                    | `temperaturesensor`    |
-| Humidity Sensor                   | ZHAHumidity                       | `humiditysensor`       |
-| Pressure Sensor                   | ZHAPressure                       | `pressuresensor`       |
-| Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`      |
-| Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor`   |
-| Alarm Sensor                      | ZHAAlarm                          | `alarmsensor`          |
-| Fire Sensor                       | ZHAFire                           | `firesensor`           |
-| Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`      |
-| deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`       |
-| Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxidesensor` |
-| Airquality Sensor                 | ZHAAirquality                     | `airqualitysensor`     |
-| Moisture Sensor                   | ZHAMoisture                       | `moisturesensor`       |
-| Color Controller                  | ZBT-Remote-ALL-RGBW               | `colorcontrol`         |
+| Device type                       | Resource Type                     | Thing type                |
+| --------------------------------- | --------------------------------- | ------------------------- |
+| Presence Sensor                   | ZHAPresence, CLIPPresence         | `presencesensor`          |
+| Power Sensor                      | ZHAPower, CLIPPower               | `powersensor`             |
+| Consumption Sensor                | ZHAConsumption                    | `consumptionsensor`       |
+| Switch                            | ZHASwitch                         | `switch`                  |
+| Light Sensor                      | ZHALightLevel                     | `lightsensor`             |
+| Temperature Sensor                | ZHATemperature                    | `temperaturesensor`       |
+| Humidity Sensor                   | ZHAHumidity                       | `humiditysensor`          |
+| Pressure Sensor                   | ZHAPressure                       | `pressuresensor`          |
+| Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`         |
+| Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor`      |
+| Alarm Sensor                      | ZHAAlarm                          | `alarmsensor`             |
+| Fire Sensor                       | ZHAFire                           | `firesensor`              |
+| Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`         |
+| deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`          |
+| Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxidesensor`    |
+| Airquality Sensor                 | ZHAAirquality                     | `airqualitysensor`        |
+| Particulate Matter Sensor         | ZHAParticulateMatter              | `particulatemattersensor` |
+| Moisture Sensor                   | ZHAMoisture                       | `moisturesensor`          |
+| Color Controller                  | ZBT-Remote-ALL-RGBW               | `colorcontrol`            |
 
 Additionally, lights, window coverings (blinds), door locks and thermostats are supported:
 
@@ -124,47 +125,48 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 
 The sensor devices support some of the following channels:
 
-| Channel Type ID       | Item Type                | Access Mode | Description                                                                               | Thing types                                       |
-| --------------------- | ------------------------ | ----------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| airquality            | String                   | R           | Airquality as string                                                                      | airqualitysensor                                  |
-| airqualityppb         | Number:Dimensionless     | R           | Airquality (in parts-per-billion)                                                         | airqualitysensor                                  |
-| alarm                 | Switch                   | R           | Status of an alarm: `ON` = alarm was triggered; `OFF` = no alarm                          | alarmsensor                                       |
-| battery_level         | Number                   | R           | Battery level (in %)                                                                      | any battery-powered sensor                        |
-| battery_low           | Switch                   | R           | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                        |
-| button                | Number                   | R           | Last pressed button id on a switch                                                        | switch, colorcontrol                              |
-| carbonmonoxide        | Switch                   | R           | `ON` = carbon monoxide detected                                                           | carbonmonoxide                                    |
-| color                 | Color                    | R           | Color set by remote                                                                       | colorcontrol                                      |
-| consumption           | Number:Energy            | R           | Energy in Watt*Hour                                                                       | consumptionsensor                                 |
-| current               | Number:ElectricCurrent   | R           | Current in mA                                                                             | some powersensors                                 |
-| dark                  | Switch                   | R           | Light level is below the darkness threshold                                               | lightsensor, sometimes for presencesensor         |
-| daylight              | Switch                   | R           | Light level is above the daylight threshold                                               | lightsensor                                       |
-| enabled               | Switch                   | R/W         | This channel activates or deactivates the sensor                                          | presencesensor                                    |
-| externalwindowopen    | Contact                  | R/W         | Forward a status to a thermostat (some devices)                                           | thermostat                                        |
-| fire                  | Switch                   | R           | Status of a fire: `ON` = fire was detected; `OFF` = no fire detected                      | firesensor                                        |
-| gesture               | Number                   | R           | A gesture that was performed with the switch                                              | switch                                            |
-| humidity              | Number:Dimensionless     | R           | Humidity in %                                                                             | humiditysensor                                    |
-| last_updated          | DateTime                 | R           | Timestamp when the sensor was last updated                                                | all, except daylightsensor                        |
-| last_seen             | DateTime                 | R           | Timestamp when the sensor was last seen                                                   | all, except daylightsensor                        |
-| light                 | String                   | R           | Light level: `Daylight`; `Sunset`; `Dark`                                                 | daylightsensor                                    |
-| lightlux              | Number:Illuminance       | R           | Light illuminance in Lux                                                                  | lightsensor                                       |
-| light_level           | Number                   | R           | Light level                                                                               | lightsensor                                       |
-| locked                | Switch                   | R/W         | Reports/sets the child lock on some thermostats                                           | thermostat                                        |
-| moisture              | Number:Dimensionless     | R           | Moisture                                                                                  | moisturesensor                                    |
-| on                    | Switch                   | R           | Some thermostats report their output state as switch                                      | thermostat                                        |
-| open                  | Contact                  | R           | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                                   |
-| orientation_x, y, z   | Number                   | R           | Orientation of vibration sensor                                                           | vibrationsensor                                   |
-| power                 | Number:Power             | R           | Power usage in Watts                                                                      | powersensor, sometimes for consumptionsensor      |
-| presence              | Switch                   | R           | Status of presence: `ON` = presence; `OFF` = no-presence                                  | presencesensor                                    |
-| pressure              | Number:Pressure          | R           | Pressure in hPa                                                                           | pressuresensor                                    |
-| tampered              | Switch                   | R           | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered             | any IAS sensor                                    |
-| temperature           | Number:Temperature       | R           | Temperature in ˚C                                                                         | temperaturesensor, some Xiaomi sensors,thermostat |
-| tiltangle             | Number:Angle             | R           | Tilt angle of vibration sensor                                                            | vibrationsensor                                   |
-| value                 | Number                   | R           | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                                    |
-| vibration             | Switch                   | R           | Vibration detected                                                                        | vibrationsensor                                   |
-| vibrationstrength     | Number                   | R           | Strength of detected vibration (value is device-dependent)                                | vibrationsensor                                   |
-| voltage               | Number:ElectricPotential | R           | Voltage in V                                                                              | some powersensors                                 |
-| waterleakage          | Switch                   | R           | Status of water leakage: `ON` = water leakage detected; `OFF` = no water leakage detected | waterleakagesensor                                |
-| windowopen            | Contact                  | R           | `windowopen` status is reported by some thermostats                                       | thermostat                                        |
+| Channel Type ID     | Item Type                | Access Mode | Description                                                                               | Thing types                                       |
+| ------------------- | ------------------------ | ----------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| airquality          | String                   | R           | Airquality as string                                                                      | airqualitysensor                                  |
+| airqualityppb       | Number:Dimensionless     | R           | Airquality (in parts-per-billion)                                                         | airqualitysensor                                  |
+| alarm               | Switch                   | R           | Status of an alarm: `ON` = alarm was triggered; `OFF` = no alarm                          | alarmsensor                                       |
+| battery_level       | Number                   | R           | Battery level (in %)                                                                      | any battery-powered sensor                        |
+| battery_low         | Switch                   | R           | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                        |
+| button              | Number                   | R           | Last pressed button id on a switch                                                        | switch, colorcontrol                              |
+| carbonmonoxide      | Switch                   | R           | `ON` = carbon monoxide detected                                                           | carbonmonoxide                                    |
+| color               | Color                    | R           | Color set by remote                                                                       | colorcontrol                                      |
+| consumption         | Number:Energy            | R           | Energy in Watt*Hour                                                                       | consumptionsensor                                 |
+| current             | Number:ElectricCurrent   | R           | Current in mA                                                                             | some powersensors                                 |
+| dark                | Switch                   | R           | Light level is below the darkness threshold                                               | lightsensor, sometimes for presencesensor         |
+| daylight            | Switch                   | R           | Light level is above the daylight threshold                                               | lightsensor                                       |
+| enabled             | Switch                   | R/W         | This channel activates or deactivates the sensor                                          | presencesensor                                    |
+| externalwindowopen  | Contact                  | R/W         | Forward a status to a thermostat (some devices)                                           | thermostat                                        |
+| fire                | Switch                   | R           | Status of a fire: `ON` = fire was detected; `OFF` = no fire detected                      | firesensor                                        |
+| gesture             | Number                   | R           | A gesture that was performed with the switch                                              | switch                                            |
+| humidity            | Number:Dimensionless     | R           | Humidity in %                                                                             | humiditysensor                                    |
+| last_updated        | DateTime                 | R           | Timestamp when the sensor was last updated                                                | all, except daylightsensor                        |
+| last_seen           | DateTime                 | R           | Timestamp when the sensor was last seen                                                   | all, except daylightsensor                        |
+| light               | String                   | R           | Light level: `Daylight`; `Sunset`; `Dark`                                                 | daylightsensor                                    |
+| lightlux            | Number:Illuminance       | R           | Light illuminance in Lux                                                                  | lightsensor                                       |
+| light_level         | Number                   | R           | Light level                                                                               | lightsensor                                       |
+| locked              | Switch                   | R/W         | Reports/sets the child lock on some thermostats                                           | thermostat                                        |
+| moisture            | Number:Dimensionless     | R           | Moisture                                                                                  | moisturesensor                                    |
+| on                  | Switch                   | R           | Some thermostats report their output state as switch                                      | thermostat                                        |
+| open                | Contact                  | R           | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                                   |
+| orientation_x, y, z | Number                   | R           | Orientation of vibration sensor                                                           | vibrationsensor                                   |
+| pm25                | Number:Density           | R           | Particulate matter (PM2.5) concentration in µg/m³                                         | particulatemattersensor                           |
+| power               | Number:Power             | R           | Power usage in Watts                                                                      | powersensor, sometimes for consumptionsensor      |
+| presence            | Switch                   | R           | Status of presence: `ON` = presence; `OFF` = no-presence                                  | presencesensor                                    |
+| pressure            | Number:Pressure          | R           | Pressure in hPa                                                                           | pressuresensor                                    |
+| tampered            | Switch                   | R           | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered             | any IAS sensor                                    |
+| temperature         | Number:Temperature       | R           | Temperature in ˚C                                                                         | temperaturesensor, some Xiaomi sensors,thermostat |
+| tiltangle           | Number:Angle             | R           | Tilt angle of vibration sensor                                                            | vibrationsensor                                   |
+| value               | Number                   | R           | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                                    |
+| vibration           | Switch                   | R           | Vibration detected                                                                        | vibrationsensor                                   |
+| vibrationstrength   | Number                   | R           | Strength of detected vibration (value is device-dependent)                                | vibrationsensor                                   |
+| voltage             | Number:ElectricPotential | R           | Voltage in V                                                                              | some powersensors                                 |
+| waterleakage        | Switch                   | R           | Status of water leakage: `ON` = water leakage detected; `OFF` = no water leakage detected | waterleakagesensor                                |
+| windowopen          | Contact                  | R           | `windowopen` status is reported by some thermostats                                       | thermostat                                        |
 
 **NOTE:** Beside other non-mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
 The specification of your sensor depends on the deCONZ capabilities.
@@ -252,6 +254,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     temperaturesensor   livingroom-temperature  "Livingroom Temperature"    [ id="2" ]
     humiditysensor      livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
     airqualitysensor    livingroom-voc          "Livingroom Voc"            [ id="9" ]
+    particulatemattersensor livingroom-pm25    "Livingroom PM2.5"          [ id="22" ]
     pressuresensor      livingroom-pressure     "Livingroom Pressure"       [ id="4" ]
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
@@ -275,6 +278,7 @@ Number:Temperature      Livingroom_Temperature                   "Temperature Li
 Number:Dimensionless    Livingroom_Humidity                      "Humidity Livingroom [%.1f %%]"      <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
 String                  Livingroom_voc_label                     "Air quality Livingroom [%s]"                        { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airquality" }
 Number:Dimensionless    Livingroom_voc                           "Air quality [%d ppb]"                               { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
+Number:Density          Livingroom_PM25                          "PM2.5 [%d %unit%]"                                  { channel="deconz:particulatemattersensor:homeserver:livingroom-pm25:pm25" }
 Number:Pressure         Livingroom_Pressure                      "Pressure Livingroom [%.1f hPa]"     <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
 Contact                 Livingroom_Window                        "Window Livingroom [%s]"             <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
 Switch                  Basement_Water_Leakage                   "Basement Water Leakage [%s]"                        { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }

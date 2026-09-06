@@ -1,3 +1,10 @@
+---
+children:
+  - ["doc/ShellyManager", "Shelly Manager"]
+  - ["doc/AdvancedUsers", "Advanced Users"]
+  - ["doc/UseCaseSmartRoller", "Smartify Roller Shutters with openHAB and Shelly"]
+---
+
 # Shelly Binding
 
 This Binding integrates [Shelly devices](https://shelly.cloud) developed by Allterco.
@@ -62,8 +69,7 @@ See section [Discovery](#discovery) for details.
 | shellyem3         | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
 | shellyrgbw2-color | Shelly RGBW2 Controller in Color Mode                  | SHRGBW2   |
 | shellyrgbw2-white | Shelly RGBW2 Controller in White Mode                  | SHRGBW2   |
-| shellybulb-color  | Shelly Bulb in Color Mode                              | SHBLB-1   |
-| shellybulb-white  | Shelly Bulb in White Mode                              | SHBLB-1   |
+| shellybulb        | Shelly Bulb (Color and White Mode)                     | SHBLB-1   |
 | shellybulbduo     | Shelly Duo White                                       | SHBDUO-1  |
 | shellybulbduo     | Shelly Duo White G10                                   | SHBDUO-1  |
 | shellycolorbulb   | Shelly Duo Color G10                                   | SHCB-1    |
@@ -112,8 +118,8 @@ See section [Discovery](#discovery) for details.
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
 | shellyplusflood      | Shelly Flood Gen4 water leak sensor                      | S4SN-0071A                                                                |
-| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
-| shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
+| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US, S4DM-0A102US                                                 |
+| shellyplusdimmer     | Shelly Plus Wall Dimmer EU / Dimmer Gen 3                | SNDM-0011EU, S3DM-0A101WWL                                                |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
 | shellyprorgbwwpm     | Shelly Pro RGBWW PM                                      | SPDC-0D5PE16EU                                                            |
@@ -457,6 +463,7 @@ You could also create a rule to catch those status changes or device alarms (see
 | favoriteUP         | 0-4: Favorite id for UP (see Roller Favorites)                | no        | 0 = no favorite id                                 |
 | favoriteDOWN       | 0-4: Favorite id for DOWN (see Roller Favorites)              | no        | 0 = no favorite id                                 |
 | enableBluGateway   | true: Activate BLU gateway support (install script)           | no        | false                                              |
+| altitude           | Station altitude (m) for sea-level pressure (WS90 only)       | no        | 0 = use openHAB system location altitude           |
 
 ### General Notes
 
@@ -582,6 +589,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | VALVE_ERROR  | Device reported a problem with the valve.                                         |
 | VIBRATION    | Device reported vibration.                                                        |
 | LOW_BATTERY  | Device reported low battery.                                                      |
+| LORA_RECEIVED | A datagram has been received via LoRa protocol                                   |
 
 ### Sensors
 
@@ -624,6 +632,31 @@ Old channel IDs stay active as deprecated, advanced channels and keep receiving 
 
 `meterN#powerFactor` additionally changed type from `Number:Dimensionless` to plain `Number` (range −1.0 to +1.0).
 This is an in-place type change on the same channel ID, not a rename, so there is no dual-write; items statically linked as `Number:Dimensionless` need relinking.
+
+### LoRa Add-On (Channel Group: lora)
+
+Two LoRa add-on variants are supported:
+
+- **Shelly LoRa Add-On** (standard form factor): attaches to Gen3 and Gen4 devices — 1, 1PM, 2PM, Shutter, EM, and Dimmer 0/1-10V PM Gen3/Gen4. Requires firmware 1.6 or later. Gen2 Plus devices and the Shelly Wall Dimmer Gen3 do not support this add-on.
+- **Shelly Pro LoRa Add-On** (DIN-rail): attaches to Pro series devices supported by this binding — Pro 1, Pro 1PM, Pro 2, Pro 2PM, Pro 3EM, Pro EM-50, Pro Dimmer 2PM, and Pro RGBWW PM. Requires firmware 2.0 or later.
+
+The binding detects the LoRa Add-On automatically and keeps the `lora` channel group in sync with the device configuration: the channels are created when the add-on is installed, the RX channels follow the add-on's RX-enable setting, and all channels are removed when the add-on is removed.
+No thing configuration is required.
+Both raw LoRa datagrams (`LoRa.SendBytes`) and SheLR datagrams (`LoRa.Send`, AES-CCM encrypted) received by the add-on are reported on the RX channels; sending uses raw LoRa datagrams.
+The add-on firmware version is shown in the Thing property `addonFirmware`; the device reports it asynchronously, so the property appears shortly after the Thing goes online.
+
+| Group   | Channel      | Type              | read-only | Description                                                                       |
+| ------- | ------------ | ----------------- | --------- | --------------------------------------------------------------------------------- |
+| lora    | dataRx       | String            | yes       | Received LoRa datagram decoded as UTF-8 text. Use the LORA_RECEIVED trigger event.|
+|         | dataRxRaw    | String            | yes       | Received LoRa datagram, BASE64-encoded raw payload.                               |
+|         | bytesRx      | Number:DataAmount | yes       | Number of bytes received from LoRa network so far.                                |
+|         | dataTx       | String            | r/w       | Send a UTF-8 text string; the binding encodes it as BASE64 before transmitting.   |
+|         | dataTxRaw    | String            | r/w       | Send a BASE64-encoded datagram directly to the LoRa network.                      |
+|         | bytesTx      | Number:DataAmount | yes       | Number of bytes sent to the LoRa network so far.                                  |
+|         | errorsTx     | Number            | yes       | Number of failed transmissions to the LoRa network.                               |
+|         | rssi         | Number:Power      | yes       | RSSI (received signal strength in dBm) of the last received packet.               |
+|         | snr          | Number:Dimensionless | yes    | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
+|         | airtime      | Number:Time       | yes       | Transmission air time of the LoRa Add-On during the last 60 minutes.              |
 
 ### Shelly 1 (thing-type: shelly1)
 
@@ -2287,27 +2320,47 @@ See notes on discovery of Shelly BLU devices above.
 
 See notes on discovery of Shelly BLU devices above.
 
-| Group   | Channel       | Type                 | read-only | Description                                                                         |
-| ------- | ------------- | -------------------- | --------- | ----------------------------------------------------------------------------------- |
-| sensors | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
-|         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
-|         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
-|         | lux           | Number:Illuminance   | yes       | Brightness in Lux (created once the device reports a value)                         |
-|         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
-|         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
-|         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
-|         | gustDirection | Number:Angle         | yes       | Wind gust direction in degrees (0-360)                                              |
-|         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
-|         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
-|         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
-|         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
-|         | lastUpdate    | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
-| battery | batteryLevel  | Number               | yes       | Battery Level in %                                                                  |
-|         | lowBattery    | Switch               | yes       | Low battery alert (< 20%)                                                           |
-| device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
-|         | firmware      | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
+| Group   | Channel          | Type                 | read-only | Description                                                                         |
+| ------- | ---------------- | -------------------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | temperature      | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
+|         | humidity         | Number:Dimensionless | yes       | Relative humidity in %                                                              |
+|         | uvIndex          | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
+|         | lux              | Number:Illuminance   | yes       | Brightness in Lux (created once the device reports a value)                         |
+|         | windSpeed        | Number:Speed         | yes       | Wind speed in m/s                                                                   |
+|         | windDirection    | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
+|         | windDirectionStr | String               | yes       | Wind direction as 16-point compass rose label (N, NNE, NE, ...)                     |
+|         | gustSpeed        | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
+|         | pressure         | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
+|         | seaLevelPressure | Number:Pressure      | yes       | Atmospheric pressure reduced to sea level using the `altitude` configuration        |
+|         | dewPoint         | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
+|         | apparentTemp     | Number:Temperature   | yes       | Perceived ("feels like") temperature from temperature, humidity and wind (Steadman) |
+|         | rainStatus       | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
+|         | precipitation    | Number:Length        | yes       | Accumulated rainfall in mm (monotonic total since sensor reset)                     |
+|         | lastUpdate       | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
+| battery | batteryLevel     | Number               | yes       | Battery Level in %                                                                  |
+|         | lowBattery       | Switch               | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice    | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+|         | firmware         | String               | yes       | Firmware version (may be empty — not all firmware versions report it)               |
 
 The `rainStatus` channel latches ON for a while after it has actually stopped raining, a hardware behavior of the WS90's piezo rain sensor rather than a binding issue.
+
+The WS90 reports additional metrics (hourly/24h rainfall totals, all-time high/low records) that are not exposed as channels.
+These are cumulative statistics tracked by the sensor itself rather than live measurements, and are better handled with openHAB's own persistence/rules (e.g. via `rrd4j` or `influxdb` on `precipitation`/`temperature`) than duplicated as binding channels.
+
+A debounced "is it raining" switch (holding ON for a while after `rainStatus` turns OFF) can be built with a small rule instead of a binding feature:
+
+```java
+rule "WS90 Rain Switch with hold-off"
+when
+    Item ShellyWS90_RainStatus changed
+then
+    if (ShellyWS90_RainStatus.state == ON) {
+        RainSwitch.postUpdate(ON)
+    } else {
+        createTimer(now.plusMinutes(10), [ | RainSwitch.postUpdate(OFF) ])
+    }
+end
+```
 
 ## Shelly Wall Displays
 

@@ -266,11 +266,11 @@ label: ${room_label | default('Kitchen')}
 
 ### Custom Filters
 
-| Filter      | Description                                                                         |
-|:------------|:------------------------------------------------------------------------------------|
-| `label`     | Converts identifiers (camelCase, snake_case) into human-friendly titles.            |
-| `dig`       | Safely navigates deep maps; returns `null` instead of an error if a key is missing. |
-| `enumerate` | Maps collections, arrays, or maps into an indexed list of `[index, item]` pairs.    |
+| Filter      | Description                                                                                                                           |
+|:------------|:--------------------------------------------------------------------------------------------------------------------------------------|
+| `label`     | Converts identifiers (camelCase, snake_case) into human-friendly titles.                                                              |
+| `dig`       | Safely navigates deep maps; returns `null` instead of an error if a key is missing.                                                   |
+| `enumerate` | Maps collections, arrays, or maps into an indexed list of `[index, item]` pairs. Accepts an optional starting index (default is `0`). |
 
 **`dig` Example:**
 
@@ -283,6 +283,7 @@ host: ${ VARS | dig('config', 'servers', 1, 'host') | default('localhost') }
 **`enumerate` Example:**
 
 The `enumerate` filter and function map any collection, array, or map into a list of index-item pairs, making them fully compatible with `!for` loops and tuple unpacking.
+You can supply an optional starting index parameter (default is `0`).
 
 ```yaml
 variables:
@@ -296,14 +297,14 @@ devices:
   !for "index, item in items | enumerate":
     "dev_${index}": "${item}"
 
-# Using the function syntax with a !for loop
-items_mapped:
-  !for "index, item in enumerate(items)":
-    "item_${index}": "${item}"
+# Filter syntax with a custom starting index
+devices_one_indexed:
+  !for "index, item in items | enumerate(1)":
+    "dev_${index}": "${item}"
 
-# Enumerating maps yields index and Map.Entry pairs (.key and .value)
+# Enumerating maps yields index and map entry pairs (.key and .value)
 map_results:
-  !for "idx, entry in enumerate(mapping)":
+  !for "idx, entry in mapping | enumerate":
     "item_${idx}_${entry.key}": "${entry.value}"
 ```
 
@@ -356,7 +357,9 @@ Use whichever form is clearer for your template.
 
 **Syntax:**
 
-**`enumerate(target)`**: Maps collections, arrays, or maps into a list of indexed `[index, item]` pairs. When used with maps, it yields entry objects supporting `.key` and `.value` accessors.
+**`enumerate(target[, start])`**: Maps collections, arrays, or maps into a list of indexed `[index, item]` pairs.
+The optional `start` argument sets the initial index (defaults to `0`).
+When used with maps, it yields entry objects supporting `.key` and `.value` accessors.
 
 **Example:**
 
@@ -367,19 +370,17 @@ variables:
     alpha: "one"
     beta: "two"
 
-# Using the enumerate filter
-enumerated_list: ${items | enumerate}
+# Using the enumerate function (default starting index 0)
+enumerated_list: ${enumerate(items)}
 # Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
 
-# Using the enumerate function
-enumerated_list_func: ${enumerate(items)}
-# Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
+# Using the enumerate function with a custom starting index (1)
+enumerated_list_from_1: ${enumerate(items, 1)}
+# Result: [[1, "alpha"], [2, "beta"], [3, "gamma"]]
 
-# Enumerating maps yields indexed Map.Entry objects.
-# Each entry wraps the original key-value pair and provides explicit
-# property accessors: .key (for the map key) and .value (for the map value).
+# Enumerating maps yields indexed map entry objects (default starting index 0)
 enumerated_map: ${enumerate(mapping)}
-# Result Structure: [[0, alpha=one], [1, beta=two]]
+# Result Structure: [[0, {key=alpha, value=one}], [1, {key=beta, value=two}]]
 #
 # Accessing properties from a specific index (e.g., the first item):
 #   - Key access:   ${enumerated_map[0][1].key}   -> "alpha"

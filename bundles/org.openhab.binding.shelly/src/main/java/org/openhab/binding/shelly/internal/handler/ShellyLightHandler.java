@@ -36,6 +36,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -63,8 +64,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, final ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
+            final LocationProvider locationProvider) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
+                locationProvider);
         channelColors = new TreeMap<>();
     }
 
@@ -144,13 +147,16 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         col.power = getOnOff(light.ison);
                         col.setBrightness(light.brightness);
                         String brightnessGroup = buildWhiteGroupName(profile, lightId);
-                        updateChannel(brightnessGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
                         updateChannel(brightnessGroup, CHANNEL_BRIGHTNESS + "$Value", toQuantityType(
                                 (double) (col.power == OnOffType.ON ? col.brightness : 0), DIGITS_NONE, Units.PERCENT));
                         update = false;
                         break;
                     }
 
+                    if (profile.isBulb) {
+                        // setting the white-mode brightness implies white mode, switch if currently in color mode
+                        col.setMode(SHELLY_MODE_WHITE);
+                    }
                     if (command instanceof PercentType percentCommand) {
                         Float percent = percentCommand.floatValue();
                         value = percent.intValue(); // 0..100% = 0..100
@@ -232,6 +238,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     logger.debug("{}: Color mode changed from {} to {}, set new mode", thingName, oldCol.mode,
                             col.mode);
                     api.setLightMode(col.mode);
+                    // make sure the UI promptly reflects the new mode rather than waiting for the next poll
+                    requestUpdates(1, false);
                 }
 
                 // send changed colors to the device
@@ -265,6 +273,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             col.setGreen(getColorFromHSB(hsb.getGreen()));
             col.setBrightness(getColorFromHSB(hsb.getBrightness(), BRIGHTNESS_FACTOR));
             // white, gain and temp are not part of the HSB color scheme
+            if (profile.isBulb) {
+                // picking a color implies color mode, switch if the bulb is currently in white mode
+                col.setMode(SHELLY_MODE_COLOR);
+            }
             updated = true;
         } else if (command instanceof PercentType percentCommand) {
             if (!profile.hasColorTag(lightId) || profile.isBulb) {
@@ -410,7 +422,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             if (updatesWhiteChannels(profile, lightId)) {
                 String whiteGroup = buildWhiteGroupName(profile, lightId);
                 col.setBrightness(getInteger(light.brightness));
-                updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Switch", col.power);
                 updated |= updateChannel(whiteGroup, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType(col.power == OnOffType.ON ? col.percentBrightness.doubleValue() : 0, DIGITS_NONE,
                                 Units.PERCENT));

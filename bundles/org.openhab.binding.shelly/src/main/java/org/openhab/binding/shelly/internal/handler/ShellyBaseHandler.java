@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +64,7 @@ import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -148,10 +150,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @param thingTable
      * @param coapServer coap server instance
      * @param httpClient from httpService
+     * @param locationProvider openHAB's system location service, used by BLU weather stations to derive
+     *            the station altitude when not manually configured
      */
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
+            final LocationProvider locationProvider) {
         super(thing);
 
         this.thingTable = thingTable;
@@ -177,7 +182,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Create API instance
         if (blu) {
-            this.api = new ShellyBluApi(thingName, thingTable, this, apiConfig, webSocketClient, scheduler);
+            this.api = new ShellyBluApi(thingName, thingTable, this, apiConfig, webSocketClient, scheduler,
+                    locationProvider);
         } else if (gen2) {
             this.api = new Shelly2ApiRpc(thingName, thingTable, this, apiConfig, webSocketClient, scheduler);
         } else {
@@ -583,6 +589,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         // force: republish OFF even if the cache already holds OFF from a previous reset
                         updateChannel(mkChannelId(group, CHANNEL_EMETER_RESETTOTAL), OnOffType.OFF, true);
                     }
+                    break;
+                case CHANNEL_LORA_TXDATA:
+                case CHANNEL_LORA_TXDATARAW:
+                    ShellyComponents.handleLoraCommand(this, channelUID.getIdWithoutGroup(), command);
                     break;
                 default:
                     update = handleDeviceCommand(channelUID, command);
@@ -1557,6 +1567,31 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
+    public boolean removeChannels(Set<String> channelIds) {
+        if (channelIds.isEmpty()) {
+            return false;
+        }
+        try {
+            List<Channel> obsolete = getThing().getChannels().stream()
+                    .filter(channel -> channelIds.contains(channel.getUID().getId())).toList();
+            if (obsolete.isEmpty()) {
+                return false;
+            }
+            ThingBuilder thingBuilder = editThing();
+            for (Channel channel : obsolete) {
+                logger.debug("{}: Removing channel {}", thingName, channel.getUID().getId());
+                thingBuilder.withoutChannel(channel.getUID());
+            }
+            updateThing(thingBuilder.build());
+            logger.debug("{}: Channel definitions updated", thingName);
+            return true;
+        } catch (IllegalArgumentException e) {
+            logger.debug("{}: Unable to remove channel definitions", thingName, e);
+        }
+        return false;
+    }
+
+    @Override
     public boolean areChannelsCreated() {
         return channelsCreated;
     }
@@ -1603,6 +1638,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         thingProperties.put(key, value);
         updateProperties(thingProperties);
         logger.trace("{}: Properties updated", thingName);
+    }
+
+    @Override
+    public void removeProperty(String key) {
+        Map<String, String> thingProperties = editProperties();
+        if (thingProperties.remove(key) != null) {
+            updateProperties(thingProperties);
+            logger.trace("{}: Property {} removed", thingName, key);
+        }
     }
 
     public void flushProperties(Map<String, String> propertyUpdates) {

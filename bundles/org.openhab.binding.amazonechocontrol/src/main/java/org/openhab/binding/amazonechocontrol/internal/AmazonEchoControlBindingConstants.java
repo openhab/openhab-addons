@@ -115,6 +115,8 @@ public class AmazonEchoControlBindingConstants {
     public static final String DI_OS_VERSION = "16.6";
     public static final String DI_SDK_VERSION = "6.12.4";
     public static final String DEFAULT_RETAIL_DOMAIN = "amazon.com";
+    // every login dialog starts here, before the account's own retail host is known
+    public static final String SIGN_IN_HOST = "www.amazon.com";
 
     public static final Map<String, String> DEVICE_TYPES = ResourceUtil
             .readProperties(AmazonEchoControlBindingConstants.class, "device_type.properties");

@@ -90,6 +90,8 @@ public class ChatGPTHandler extends BaseThingHandler {
                 double temp = config != null ? config.temperature : DEFAULT_TEMPERATURE;
                 double topP = config != null ? config.topP : DEFAULT_TOP_P;
                 int maxTokens = config != null ? config.maxTokens : DEFAULT_MAX_TOKENS;
+                String reasoningEffort = (config != null && !config.reasoningEffort.isBlank()) ? config.reasoningEffort
+                        : DEFAULT_REASONING_EFFORT;
                 String systemMessage = DEFAULT_SYSTEM_MESSAGE;
 
                 ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
@@ -115,6 +117,11 @@ public class ChatGPTHandler extends BaseThingHandler {
                     maxTokens = channelMaxTokens;
                 }
 
+                String channelReasoningEffort = channelConfig.reasoningEffort;
+                if (channelReasoningEffort != null && !channelReasoningEffort.isBlank()) {
+                    reasoningEffort = channelReasoningEffort;
+                }
+
                 String channelSystemMessage = channelConfig.systemMessage;
                 if (channelSystemMessage != null && !channelSystemMessage.isBlank()) {
                     systemMessage = channelSystemMessage;
@@ -122,7 +129,7 @@ public class ChatGPTHandler extends BaseThingHandler {
 
                 try {
                     ChatResponse response = client.sendPrompt(model, lastPrompt, systemMessage, temp, topP, maxTokens,
-                            timeout);
+                            reasoningEffort, timeout);
                     processChatResponse(channelUID, response);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (ChatGPTApiException e) {

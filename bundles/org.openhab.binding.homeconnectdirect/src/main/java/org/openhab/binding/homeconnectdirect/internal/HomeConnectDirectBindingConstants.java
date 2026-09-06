@@ -294,10 +294,8 @@ public class HomeConnectDirectBindingConstants {
     public static final String CHANNEL_COFFEE_MAKER_EMPTY_MILK_TANK = "empty-milk-tank";
     public static final String CHANNEL_COFFEE_MAKER_BEAN_CONTAINER_EMPTY = "bean-container-empty";
     public static final String CHANNEL_COFFEE_MAKER_PROCESS_PHASE = "process-phase";
-    public static final String CHANNEL_COFFEE_MAKER_PROGRAM_COMMAND = "coffeemaker-program-command";
     public static final String CHANNEL_OVEN_DURATION = "duration";
     public static final String CHANNEL_OVEN_SET_POINT_TEMPERATURE = "setpoint-temperature";
-    public static final String CHANNEL_OVEN_PROGRAM_COMMAND = "oven-program-command";
     public static final String CHANNEL_COOKING_LIGHT = "cooking-light";
     public static final String CHANNEL_COOKING_LIGHT_BRIGHTNESS = "cooking-light-brightness";
     public static final String CHANNEL_BUTTON_TONES = "button-tones";

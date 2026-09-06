@@ -219,16 +219,16 @@ public class Shelly1CoIoTProtocol {
 
     /**
      *
-     * Handles the combined updated of the brightness channel:
-     * brightness$Switch is the OnOffType (power state)
-     * brightness&amp;Value is the brightness value
+     * Handles the combined update of the brightness channel: the power state and brightness sensor values are
+     * combined into a single Percent update (0% when off) rather than publishing the power state separately, so a
+     * Dimmer-linked item never sees an intermediate OnOffType state.
      *
      * @param profile Device profile, required to select the channel group and name
-     * @param updates List of updates. updatePower will add brightness$Switch and brightness&amp;Value if changed
+     * @param updates List of updates. updatePower will add brightness$Value if changed
      * @param id Sensor id from the update
      * @param sen Sensor description from the update
      * @param s New sensor value
-     * @param allUpdates List of updates. This is required, because we need to update both values at the same time
+     * @param allUpdates List of updates. This is required, because we need power and brightness from the same batch
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
             CoIotSensor s, List<CoIotSensor> allUpdates) {
@@ -264,9 +264,6 @@ public class Shelly1CoIoTProtocol {
                 } else if ("output".equalsIgnoreCase(d.desc) || "state".equalsIgnoreCase(d.desc)) {
                     power = update.value;
                 }
-            }
-            if (power != -1) {
-                updateChannel(updates, group, channel + "$Switch", OnOffType.from(power == 1));
             }
             if (brightness != -1) {
                 updateChannel(updates, group, channel + "$Value",

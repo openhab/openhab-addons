@@ -50,6 +50,7 @@ import org.openhab.binding.amazonechocontrol.internal.dto.PlayerStateProgressTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.PlayerStateProviderTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.PlayerStateVolumeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushAudioPlayerStateTO;
+import org.openhab.binding.amazonechocontrol.internal.dto.push.PushDndStateChangeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushEqualizerStateChangeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushVolumeChangeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.request.PlayerSeekMediaTO;
@@ -617,7 +618,11 @@ public class EchoHandler extends BaseThingHandler {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
         } catch (ConnectionException e) {
-            logger.warn("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage(), e);
+            } else {
+                logger.warn("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage());
+            }
         } catch (RuntimeException e) {
             logger.warn("RuntimeException in handle command for channel '{}': {}", channelUID, e.getMessage(), e);
         }
@@ -677,7 +682,11 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         } catch (ConnectionException e) {
-            logger.warn("Failed to update notification state: {}", e.getMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to update notification state: {}", e.getMessage(), e);
+            } else {
+                logger.warn("Failed to update notification state: {}", e.getMessage());
+            }
         }
         if (stopCurrentNotification) {
             stopCurrentNotification();
@@ -1069,6 +1078,11 @@ public class EchoHandler extends BaseThingHandler {
                     lastKnownVolume = volumeChange.volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                 }
+                break;
+            case "PUSH_DND_STATE_CHANGE":
+                PushDndStateChangeTO dndStateChange = Objects
+                        .requireNonNull(gson.fromJson(payload, PushDndStateChangeTO.class));
+                updateState(CHANNEL_DO_NOT_DISTURB, OnOffType.from(dndStateChange.enabled));
                 break;
             case "PUSH_EQUALIZER_STATE_CHANGE":
                 PushEqualizerStateChangeTO equalizerStateChange = Objects

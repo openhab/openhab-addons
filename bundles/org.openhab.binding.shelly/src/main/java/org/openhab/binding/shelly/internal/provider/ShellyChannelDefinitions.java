@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,7 +86,9 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_SPEED = "Number:Speed";
     public static final String ITEMT_VOLUME = "Number:Volume";
     public static final String ITEMT_TIME = "Number:Time"; // Seconds
+    public static final String ITEMT_DATA = "Number:DataAmount"; // Bytes
     public static final String ITEMT_PERCENT = "Number:Dimensionless"; // 0–100% (battery, humidity)
+    public static final String ITEMT_DIMENSIONLESS = "Number:Dimensionless"; // ratios (dB)
     public static final String ITEMT_PRESSURE = "Number:Pressure";
 
     // shortcuts to avoid line breaks (make code more readable)
@@ -101,6 +104,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_CONTROL = CHANNEL_GROUP_CONTROL;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
+    private static final String CHGR_LORA = CHANNEL_GROUP_LORA;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
@@ -307,12 +311,16 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDSP, "sensorWindSpeed", ITEMT_SPEED))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDDIR, "sensorWindDirection", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_GUSTSP, "sensorGustSpeed", ITEMT_SPEED))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_GUSTDIR, "sensorGustDirection", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_UV, "sensorUvIndex", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESSURE, "sensorPressure", ITEMT_PRESSURE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DEWPOINT, "sensorDewPoint", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRECIPITATION, "sensorPrecipitation",
                         ITEMT_DISTANCE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDDIR_STR, "sensorWindDirectionStr",
+                        ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_APPARENT_TEMP, "sensorApparentTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SEALEVEL_PRESSURE, "sensorSeaLevelPressure",
+                        ITEMT_PRESSURE))
 
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEMT_STRING))
@@ -366,7 +374,19 @@ public class ShellyChannelDefinitions {
 
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_ALARM_MODE, "floodAlarmMode", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF, "floodReportHoldoff",
-                        ITEMT_TIME));
+                        ITEMT_TIME))
+
+                // LoRa Add-On
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXDATA, "loraRxData", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXDATARAW, "loraRxDataRaw", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXBYTES, "loraRxBytes", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATA, "loraTxData", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATARAW, "loraTxDataRaw", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXBYTES, "loraTxBytes", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXERRORS, "loraTxErrors", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_SNR, "loraSNR", ITEMT_DIMENSIONLESS))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_AIRTIME, "loraAirtime", ITEMT_TIME))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RSSI, "loraSignal", ITEMT_POWER));
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -400,7 +420,7 @@ public class ShellyChannelDefinitions {
     }
 
     /**
-     * Auto-create relay channels depending on relay type/mode
+     * Auto-create device channels
      *
      * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
@@ -456,6 +476,51 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
         }
         return add;
+    }
+
+    /**
+     * Auto-create channels for the LoRa Add-On
+     *
+     * @return {@code ArrayList<Channel>} of channels to be added to the thing
+     */
+    public static Map<String, Channel> createLoraChannels(final Thing thing, final ShellyDeviceProfile profile) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        if (!profile.settings.loraDetected) {
+            return add;
+        }
+
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXDATA);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXDATARAW);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXBYTES);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATA);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATARAW);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXBYTES);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXERRORS);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RSSI);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_SNR);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_AIRTIME);
+
+        return add;
+    }
+
+    private static final Set<String> LORA_RX_ONLY_CHANNELS = Set.of(CHGR_LORA + "#" + CHANNEL_LORA_RXDATA,
+            CHGR_LORA + "#" + CHANNEL_LORA_RXDATARAW, CHGR_LORA + "#" + CHANNEL_LORA_RXBYTES,
+            CHGR_LORA + "#" + CHANNEL_LORA_RSSI, CHGR_LORA + "#" + CHANNEL_LORA_SNR);
+    private static final Set<String> LORA_ALL_CHANNELS = Set.of(CHGR_LORA + "#" + CHANNEL_LORA_RXDATA,
+            CHGR_LORA + "#" + CHANNEL_LORA_RXDATARAW, CHGR_LORA + "#" + CHANNEL_LORA_RXBYTES,
+            CHGR_LORA + "#" + CHANNEL_LORA_RSSI, CHGR_LORA + "#" + CHANNEL_LORA_SNR,
+            CHGR_LORA + "#" + CHANNEL_LORA_TXDATA, CHGR_LORA + "#" + CHANNEL_LORA_TXDATARAW,
+            CHGR_LORA + "#" + CHANNEL_LORA_TXBYTES, CHGR_LORA + "#" + CHANNEL_LORA_TXERRORS,
+            CHGR_LORA + "#" + CHANNEL_LORA_AIRTIME);
+
+    /**
+     * @return LoRa channel ids ("group#channel") stale for the current profile and to be removed
+     */
+    public static Set<String> getObsoleteLoraChannelIds(final ShellyDeviceProfile profile) {
+        if (!profile.settings.loraDetected) {
+            return LORA_ALL_CHANNELS;
+        }
+        return profile.settings.loraRxEnabled ? Set.of() : LORA_RX_ONLY_CHANNELS;
     }
 
     /**
@@ -781,13 +846,17 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, ws90 || sdata.windDirection != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_WINDDIR);
         addChannel(thing, newChannels, ws90 || sdata.gustSpeed != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP);
-        addChannel(thing, newChannels, ws90 || sdata.gustDirection != null, CHANNEL_GROUP_SENSOR,
-                CHANNEL_SENSOR_GUSTDIR);
         addChannel(thing, newChannels, ws90 || sdata.uvIndex != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV);
         addChannel(thing, newChannels, ws90 || sdata.pressure != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE);
         addChannel(thing, newChannels, ws90 || sdata.dewPoint != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT);
         addChannel(thing, newChannels, ws90 || sdata.precipitation != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_PRECIPITATION);
+        addChannel(thing, newChannels, ws90 || sdata.windDirectionStr != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_WINDDIR_STR);
+        addChannel(thing, newChannels, ws90 || sdata.apparentTemp != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_APPARENT_TEMP);
+        addChannel(thing, newChannels, ws90 || sdata.seaLevelPressure != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_SEALEVEL_PRESSURE);
 
         // Flood Gen4
         if (profile.isFlood && profile.isGen2) {
