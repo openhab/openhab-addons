@@ -16,6 +16,7 @@ import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.digitalmediaserver.cast.CastDevice;
 import org.digitalmediaserver.cast.Session;
@@ -134,7 +135,7 @@ public class ChromecastCommander {
                 if (mediaStatus != null && mediaStatus.getPlayerState() == PlayerState.IDLE
                         && mediaStatus.getIdleReason() != null
                         && mediaStatus.getIdleReason() != IdleReason.INTERRUPTED) {
-                    closeApp(MEDIA_PLAYER);
+                    closeOwnedMediaPlayer(application);
                 }
             }
         } catch (IOException ex) {
@@ -145,17 +146,15 @@ public class ChromecastCommander {
 
     public void handleCloseApp(final Command command) {
         if (command == OnOffType.ON) {
-            Application app;
             try {
-                app = chromeCast.getRunningApplication();
+                Application app = chromeCast.getRunningApplication();
+                if (app != null) {
+                    chromeCast.stopApplication(app, false);
+                    logger.debug("Application stopped: {}", app.getAppId());
+                }
             } catch (final IOException e) {
                 logger.info("{} command failed: {}", command, e.getMessage());
                 statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
-                return;
-            }
-
-            if (app != null) {
-                closeApp(app.getAppId());
             }
         }
     }
@@ -274,21 +273,15 @@ public class ChromecastCommander {
         }
     }
 
-    public void closeApp(@Nullable String appId) {
-        if (appId == null) {
-            return;
-        }
-
+    private void closeOwnedMediaPlayer(Application application) {
         try {
-            if (chromeCast.isApplicationAvailable(appId)) {
-                Application app = chromeCast.getRunningApplication();
-                if (app.getAppId().equals(MEDIA_PLAYER) && app.getSessionId().equals(statusUpdater.getAppSessionId())) {
-                    chromeCast.stopApplication(app, false);
-                    logger.debug("Media player app stopped");
-                }
+            if (MEDIA_PLAYER.equals(application.getAppId())
+                    && Objects.equals(application.getSessionId(), statusUpdater.getAppSessionId())) {
+                chromeCast.stopApplication(application, false);
+                logger.debug("Media player app stopped");
             }
         } catch (final IOException e) {
-            logger.debug("Failed stopping app: {} with message: {}", appId, e.getMessage());
+            logger.debug("Failed stopping media player app: {}", e.getMessage());
         }
     }
 
@@ -300,8 +293,7 @@ public class ChromecastCommander {
                 // resume current track.
                 Session session = chromeCast.startSession(SOURCE, chromeCast.getRunningApplication());
                 MediaStatus ms = session.getMediaStatus();
-                if (ms != null && PlayerState.PAUSED == ms.getPlayerState()
-                        && url.equals(ms.getMedia().getUrl())) {
+                if (ms != null && PlayerState.PAUSED == ms.getPlayerState() && url.equals(ms.getMedia().getUrl())) {
                     logger.debug("Current stream paused, resuming");
                     session.play(ms.getMediaSessionId(), false);
                 } else {

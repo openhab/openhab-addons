@@ -24,7 +24,6 @@ import org.openhab.binding.chromecast.internal.ChromecastAudioSink;
 import org.openhab.binding.chromecast.internal.handler.ChromecastHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
-import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
@@ -53,18 +52,16 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
     private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
-    private final MDNSClient mdnsClient;
 
     /** url (scheme+server+port) to use for playing notification sounds. */
     private @Nullable String callbackUrl;
 
     @Activate
     public ChromecastHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
-            final @Reference NetworkAddressService networkAddressService, @Reference MDNSClient mdnsClient) {
+            final @Reference NetworkAddressService networkAddressService) {
         logger.debug("Creating new instance of ChromecastHandlerFactory");
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
-        this.mdnsClient = mdnsClient;
     }
 
     @Override
@@ -81,7 +78,7 @@ public class ChromecastHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ChromecastHandler handler = new ChromecastHandler(thing, mdnsClient);
+        ChromecastHandler handler = new ChromecastHandler(thing);
         ChromecastAudioSink audioSink = new ChromecastAudioSink(handler, audioHTTPServer, createCallbackUrl());
 
         @SuppressWarnings("unchecked")

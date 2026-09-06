@@ -16,12 +16,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-
-import javax.jmdns.ServiceInfo;
 
 import org.digitalmediaserver.cast.CastDevice;
 import org.digitalmediaserver.cast.event.CastEvent;
@@ -35,7 +34,6 @@ import org.openhab.binding.chromecast.internal.ChromecastStatusUpdater;
 import org.openhab.binding.chromecast.internal.action.ChromecastActions;
 import org.openhab.binding.chromecast.internal.config.ChromecastConfig;
 import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
@@ -45,8 +43,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -71,21 +67,23 @@ public class ChromecastHandler extends BaseThingHandler {
     private final ScheduledExecutorService executor = ThreadPoolManager
             .getScheduledPool(CHROMECAST_HANDLER_THREADPOOL_NAME);
 
-    private final MDNSClient mdnsClient;
+    private final Object lifecycleLock = new Object();
+
+    private long initializationGeneration;
+    private @Nullable Future<?> initializationFuture;
 
     /**
      * The actual implementation. A new one is created each time #initialize is called.
      */
-    private @Nullable Coordinator coordinator;
+    private volatile @Nullable Coordinator coordinator;
 
     /**
      * Constructor.
      *
      * @param thing the thing the coordinator should be created for
      */
-    public ChromecastHandler(final Thing thing, MDNSClient mdnsClient) {
+    public ChromecastHandler(final Thing thing) {
         super(thing);
-        this.mdnsClient = mdnsClient;
     }
 
     @Override
@@ -93,67 +91,103 @@ public class ChromecastHandler extends BaseThingHandler {
         ChromecastConfig config = getConfigAs(ChromecastConfig.class);
 
         final String hostName = config.host;
+        final long generation;
+        final Future<?> previousInitialization;
+        final Coordinator previousCoordinator;
+        synchronized (lifecycleLock) {
+            generation = ++initializationGeneration;
+            previousInitialization = initializationFuture;
+            initializationFuture = null;
+            previousCoordinator = coordinator;
+            coordinator = null;
+        }
+
+        if (previousInitialization != null) {
+            previousInitialization.cancel(true);
+        }
+
+        CompletableFuture<Void> cleanupFuture = previousCoordinator == null ? CompletableFuture.completedFuture(null)
+                : CompletableFuture.runAsync(previousCoordinator::destroy, executor);
         if (hostName.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. Host name is not valid or missing.");
             return;
         }
 
-        InetAddress inetAddress = null;
-        try {
-            inetAddress = java.net.InetAddress.getByName(hostName);
-        } catch (UnknownHostException e) {
-            logger.debug("Could not resolve InetAddress from host name: {} with mesage: {}", hostName, e.getMessage());
-        }
+        updateStatus(ThingStatus.UNKNOWN);
 
-        if (inetAddress == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot connect to Chromecast. InetAddress could not be resolved from host name");
+        Future<?> future = cleanupFuture.thenRunAsync(
+                () -> initializeCoordinator(hostName, config.port, config.refreshRate, generation), executor);
+        synchronized (lifecycleLock) {
+            if (generation == initializationGeneration) {
+                initializationFuture = future;
+            } else {
+                future.cancel(true);
+            }
+        }
+    }
+
+    private void initializeCoordinator(String hostName, int port, long refreshRate, long generation) {
+        if (!isCurrentInitialization(generation)) {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-
-        Coordinator localCoordinator = coordinator;
-        if (localCoordinator != null && (!localCoordinator.chromeCast.getAddress().equals(inetAddress)
-                || (localCoordinator.chromeCast.getPort() != config.port))) {
-            localCoordinator.destroy();
-            localCoordinator = coordinator = null;
+        final InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(hostName);
+        } catch (UnknownHostException e) {
+            logger.debug("Could not resolve InetAddress from host name: {} with message: {}", hostName, e.getMessage());
+            if (isCurrentInitialization(generation)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Cannot connect to Chromecast. InetAddress could not be resolved from host name");
+            }
+            return;
         }
 
-        if (localCoordinator == null) {
-            ServiceInfo serviceInfo = null;
-            InetAddress[] ias;
-            ServiceInfo[] serviceInfos = mdnsClient.list(CastDevice.SERVICE_TYPE, Duration.ofMillis(300L));
-            for (ServiceInfo sInfo : serviceInfos) {
-                ias = sInfo.getInetAddresses();
-                for (InetAddress ia : ias) {
-                    if (inetAddress.equals(ia)) {
-                        serviceInfo = sInfo;
-                        break;
-                    }
-                }
-            }
-            CastDevice chromecast = serviceInfo != null ? new CastDevice(serviceInfo, true) :  new CastDevice(config.host, inetAddress, null, null, null, null, null, null, 1,
-                    null, true);
-            localCoordinator = new Coordinator(this, thing, chromecast, config.refreshRate);
-            coordinator = localCoordinator;
+        if (!isCurrentInitialization(generation)) {
+            return;
+        }
 
-            executor.submit(() -> {
-                Coordinator c = coordinator;
-                if (c != null) {
-                    c.initialize();
-                }
-            });
+        CastDevice chromecast = new CastDevice(hostName, inetAddress, port, null, null, null, null, null, null, 1, null,
+                true);
+        Coordinator newCoordinator = new Coordinator(this, thing, chromecast, refreshRate);
+
+        final boolean stale;
+        synchronized (lifecycleLock) {
+            stale = generation != initializationGeneration;
+            if (!stale) {
+                coordinator = newCoordinator;
+            }
+        }
+        if (stale) {
+            newCoordinator.destroy();
+            return;
+        }
+        newCoordinator.initialize();
+    }
+
+    private boolean isCurrentInitialization(long generation) {
+        synchronized (lifecycleLock) {
+            return generation == initializationGeneration;
         }
     }
 
     @Override
     public void dispose() {
-        Coordinator localCoordinator = coordinator;
+        final Future<?> localInitialization;
+        final Coordinator localCoordinator;
+        synchronized (lifecycleLock) {
+            initializationGeneration++;
+            localInitialization = initializationFuture;
+            initializationFuture = null;
+            localCoordinator = coordinator;
+            coordinator = null;
+        }
+        if (localInitialization != null) {
+            localInitialization.cancel(true);
+        }
         if (localCoordinator != null) {
             localCoordinator.destroy();
-            coordinator = null;
         }
     }
 
@@ -277,7 +311,9 @@ public class ChromecastHandler extends BaseThingHandler {
         }
 
         void initialize() {
-            if (connectionState == ConnectionState.CONNECTED) {
+            if (destroyed) {
+                return;
+            } else if (connectionState == ConnectionState.CONNECTED) {
                 logger.debug("Already connected");
                 return;
             } else if (connectionState == ConnectionState.CONNECTING) {
@@ -296,6 +332,11 @@ public class ChromecastHandler extends BaseThingHandler {
                     CastEventType.MULTIZONE_STATUS, CastEventType.RECEIVER_STATUS, CastEventType.UNKNOWN };
 
             chromeCast.addEventListener(eventReceiver, subscribedEvents);
+
+            if (destroyed) {
+                chromeCast.removeEventListener(eventReceiver);
+                return;
+            }
 
             connect();
         }
@@ -326,8 +367,9 @@ public class ChromecastHandler extends BaseThingHandler {
                 chromeCast.connect();
 
                 if (destroyed) {
-                    // destroy() ran while this connect was in flight. The connection is already being
-                    // torn down, so updating status here would report a disposed handler as online.
+                    // destroy() may have disconnected before the in-flight connect established this
+                    // connection, so close it again rather than leaking a late connection.
+                    chromeCast.disconnect();
                     return;
                 }
 
