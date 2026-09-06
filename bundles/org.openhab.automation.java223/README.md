@@ -223,6 +223,8 @@ This way they will automatically obtain easy access to all openHAB inputs, to so
 
 ### helper-lib.jar and rules
 
+**IMPORTANT**: To use the helper libraries, the directory `automation\lib\java` must be writeable for the openHAB user.
+
 The Java223 bundle also copies in your `automation\lib\java` a pre-compiled jar with a set of library files inside.
 This jar is also no more, no less, a standard library .jar file, and is an example of how powerful the openHAB JSR223 feature is.
 It contains all you need to define Rules with the help of simple-to-use annotations.

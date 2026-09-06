@@ -148,7 +148,7 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
             this.parentClassLoader = parentClassLoader;
             this.libDirectory = libDirectory;
             // temporary/default use of the parent:
-            this.upToDateClassLoader = parentClassLoader;
+            this.upToDateClassLoader = new JarClassLoader(parentClassLoader);
             try {
                 this.md5Digest = MessageDigest.getInstance("MD5");
             } catch (NoSuchAlgorithmException e) {

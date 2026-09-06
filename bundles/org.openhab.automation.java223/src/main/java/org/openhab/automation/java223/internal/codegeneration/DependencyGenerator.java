@@ -77,9 +77,9 @@ public class DependencyGenerator {
     // target library directory
     private final Path libDir;
     // additional bundle to export
-    private String additionalBundlesConfig;
+    private String additionalBundlesConfig = "";
     // individual additional classes to export
-    private String additionalClassesConfig;
+    private String additionalClassesConfig = "";
     private final BundleContext bundleContext;
     // resulting classes to export
     private final Set<String> additionalClassesToExport = new HashSet<>();
@@ -87,15 +87,10 @@ public class DependencyGenerator {
     /**
      *
      * @param libDir The target library directory
-     * @param additionalBundlesConfig Additional bundle to inspect. We will extract classes from it.
-     * @param additionalClassesConfig Additional individual classes to add to the exported JAR.
      * @param bundleContext OSGI Bundle context
      */
-    public DependencyGenerator(Path libDir, String additionalBundlesConfig, String additionalClassesConfig,
-            BundleContext bundleContext) {
+    public DependencyGenerator(Path libDir, BundleContext bundleContext) {
         this.libDir = libDir;
-        this.additionalBundlesConfig = additionalBundlesConfig;
-        this.additionalClassesConfig = additionalClassesConfig;
         this.bundleContext = bundleContext;
     }
 

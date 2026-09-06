@@ -24,7 +24,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
- * Tracks java module dependencies
+ * Tracks java module dependencies.
  * Registering to the watch service is delayed because the bundle needs the Java223ScriptEngineFactory to go first.
  *
  * @author Gwendal Roulleau - Initial contribution

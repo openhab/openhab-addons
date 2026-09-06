@@ -58,8 +58,12 @@ public class ScriptWrappingStrategy implements ScriptInterceptorStrategy {
             import org.openhab.core.thing.ThingManager;
             import org.slf4j.Logger;
             import org.slf4j.LoggerFactory;
+
+            """;
+    private static final String BOILERPLATE_CODE_IMPORT_HELPER = """
             import helper.rules.RuleAnnotationParser;
             import helper.rules.RuleParserException;
+
             """;
 
     private static final String BOILERPLATE_CODE_BEGIN_CLASS = """
@@ -150,6 +154,9 @@ public class ScriptWrappingStrategy implements ScriptInterceptorStrategy {
         modifiedScript.append(String.join("\n", importLines));
         modifiedScript.append("\n\n");
         modifiedScript.append(BOILERPLATE_CODE_IMPORT);
+        if (enableHelper) {
+            modifiedScript.append(BOILERPLATE_CODE_IMPORT_HELPER);
+        }
         modifiedScript.append("\n\n");
         modifiedScript.append(injectedCodeGenerator.getDefaultPresetImportList());
         modifiedScript.append(BOILERPLATE_CODE_BEGIN_CLASS);
