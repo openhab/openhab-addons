@@ -16,6 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.CHANNEL_APP_ID;
 import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.MEDIA_PLAYER;
 
 import org.digitalmediaserver.cast.CastDevice;
@@ -28,6 +29,8 @@ import org.digitalmediaserver.cast.message.enumeration.PlayerState;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
 
 /**
  * Tests for {@link ChromecastCommander}.
@@ -41,6 +44,25 @@ class ChromecastCommanderTest {
     private final ChromecastScheduler scheduler = mock(ChromecastScheduler.class);
     private final ChromecastStatusUpdater statusUpdater = mock(ChromecastStatusUpdater.class);
     private final ChromecastCommander commander = new ChromecastCommander(chromeCast, scheduler, statusUpdater);
+
+    @Test
+    void appIdCommandLaunchesApplication() throws Exception {
+        String appId = "APP_ID";
+        ChannelUID channelUID = mock(ChannelUID.class);
+        ReceiverStatus receiverStatus = mock(ReceiverStatus.class);
+        Application application = mock(Application.class);
+        when(channelUID.getId()).thenReturn(CHANNEL_APP_ID);
+        when(chromeCast.isApplicationAvailable(appId)).thenReturn(true);
+        when(chromeCast.isApplicationRunning(appId)).thenReturn(false);
+        when(chromeCast.launchApplication(appId, true)).thenReturn(receiverStatus);
+        when(receiverStatus.getRunningApplication()).thenReturn(application);
+        when(application.getSessionId()).thenReturn("session-id");
+
+        commander.handleCommand(channelUID, new StringType(appId));
+
+        verify(chromeCast).launchApplication(appId, true);
+        verify(statusUpdater).setAppSessionId("session-id");
+    }
 
     @Test
     void stopCommandStopsAnyRunningApplication() throws Exception {
