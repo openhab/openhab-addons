@@ -320,6 +320,11 @@ public class HttpRequestBuilder {
                 || (amznErrorType != null && amznErrorType.startsWith(THROTTLING_EXCEPTION));
     }
 
+    static String abortedMessage(URI requestUri, @Nullable Throwable failure) {
+        String message = "Request to " + requestUri + " aborted";
+        return failure == null ? message : message + ": " + failure;
+    }
+
     static String buildFailureReason(@Nullable String reason, @Nullable String amznErrorType) {
         String statusReason = reason == null || reason.isBlank() ? NO_REASON_GIVEN : reason;
         return amznErrorType == null || amznErrorType.isBlank() ? statusReason
@@ -413,7 +418,9 @@ public class HttpRequestBuilder {
                 // a throttled request is not retried: every retry is itself a counted request
                 if (failMode == EXCEPTION || retryCounter == 0 || (throttled && failMode != NORMAL)) {
                     if (responseStatus == 0) {
-                        httpResponse.completeExceptionally(new ConnectionException("Request aborted."));
+                        Throwable failure = result.getFailure();
+                        httpResponse.completeExceptionally(
+                                new ConnectionException(abortedMessage(requestUri, failure), failure));
                         return;
                     }
                     httpResponse.completeExceptionally(new ConnectionException(requestUri + " failed with code "
