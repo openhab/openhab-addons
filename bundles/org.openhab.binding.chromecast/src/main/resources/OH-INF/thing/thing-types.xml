@@ -191,8 +191,9 @@
 	<channel-type id="appId">
 		<item-type>String</item-type>
 		<label>App Id</label>
-		<description>Id of the currently running application</description>
+		<description>ID of the currently running application; send an application ID to launch it</description>
 		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="statustext" advanced="true">
