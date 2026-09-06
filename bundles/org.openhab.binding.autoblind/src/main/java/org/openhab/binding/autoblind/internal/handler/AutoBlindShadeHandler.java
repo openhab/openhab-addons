@@ -70,13 +70,10 @@ public class AutoBlindShadeHandler extends BaseThingHandler {
         peripheralUid = uid;
         invertPosition = config.invertPosition;
 
-        Bridge bridge = getBridge();
-        if (!(bridge != null && bridge.getHandler() instanceof AutoBlindHubHandler hubHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            return;
+        AutoBlindHubHandler hubHandler = getHubHandler();
+        if (hubHandler != null) {
+            hubHandler.registerShadeHandler(peripheralUid, this);
         }
-
-        hubHandler.registerShadeHandler(peripheralUid, this);
         updateStatus(ThingStatus.ONLINE);
     }
 

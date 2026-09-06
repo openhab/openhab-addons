@@ -34,6 +34,7 @@ import org.openhab.binding.autoblind.internal.api.dto.StatusResponse;
 import org.openhab.binding.autoblind.internal.config.AutoBlindHubConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -92,8 +93,8 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
                 }
 
                 Map<String, String> properties = editProperties();
-                properties.put(AutoBlindBindingConstants.PROPERTY_FIRMWARE_VERSION, reg.firmwareVersion);
-                properties.put(AutoBlindBindingConstants.PROPERTY_MODEL_ID, reg.model);
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, reg.firmwareVersion);
+                properties.put(Thing.PROPERTY_MODEL_ID, reg.model);
                 properties.put(AutoBlindBindingConstants.PROPERTY_THING_NAME, reg.thingName);
                 properties.put(AutoBlindBindingConstants.PROPERTY_WIFI_SSID, reg.wifiSsid);
                 updateProperties(properties);

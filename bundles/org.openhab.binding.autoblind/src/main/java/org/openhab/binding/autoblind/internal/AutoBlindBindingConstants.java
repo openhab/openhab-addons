@@ -42,8 +42,6 @@ public class AutoBlindBindingConstants {
     public static final String CONFIG_PERIPHERAL_UID = "peripheralUid";
 
     // Thing properties
-    public static final String PROPERTY_FIRMWARE_VERSION = "firmwareVersion";
-    public static final String PROPERTY_MODEL_ID = "modelId";
     public static final String PROPERTY_THING_NAME = "thingName";
     public static final String PROPERTY_WIFI_SSID = "wifiSsid";
 

@@ -13,6 +13,8 @@ No cloud connection is required.
 
 ## Discovery
 
+The binding announces itself as an addon suggestion when a ShadeAuto hub is found on the network via mDNS.
+This only suggests installing the binding; it does not create the hub Thing automatically, since the hub must still be added with its configuration.
 After adding the hub bridge manually, the binding will automatically discover all shades registered on the hub.
 Discovery queries the hub's room and group hierarchy and creates an inbox entry for each shade, labeled with its name and location.
 
@@ -47,9 +49,8 @@ Shade configuration is normally set automatically via discovery.
 ### Position Mapping
 
 The Norman ShadeAuto hub API uses 0 = closed and 100 = open.
-By default (`invertPosition = true`) the binding converts this so that openHAB convention is
-followed: 0% = open and 100% = closed. If your hub already reports position using the same
-convention as openHAB, set `invertPosition = false` on the shade to disable the conversion.
+By default (`invertPosition = true`) the binding converts this so that openHAB convention is followed: 0% = open and 100% = closed.
+If your hub already reports position using the same convention as openHAB, set `invertPosition = false` on the shade to disable the conversion.
 
 ## Thing Actions
 

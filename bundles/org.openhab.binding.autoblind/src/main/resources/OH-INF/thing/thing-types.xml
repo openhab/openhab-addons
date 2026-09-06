@@ -12,7 +12,6 @@
 
 		<properties>
 			<property name="vendor">Norman (Nien Made)</property>
-			<property name="modelId">ShadeAuto Hub</property>
 		</properties>
 
 		<representation-property>host</representation-property>
