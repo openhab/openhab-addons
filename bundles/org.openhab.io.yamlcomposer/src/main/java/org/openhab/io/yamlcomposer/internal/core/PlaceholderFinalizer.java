@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.placeholders.DefaultPlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.FreezePlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.RemovePlaceholder;
 
 /**
@@ -75,43 +77,26 @@ public final class PlaceholderFinalizer {
 
     private static Map<Object, @Nullable Object> purgeMap(Map<Object, @Nullable Object> map, Set<Object> visited) {
         boolean needsModification = false;
-        List<Object> keysToRemove = new ArrayList<>();
-        Map<Object, @Nullable Object> updatedEntries = new LinkedHashMap<>();
+        Map<Object, @Nullable Object> cleanedMap = new LinkedHashMap<>();
 
         for (Map.Entry<Object, @Nullable Object> entry : map.entrySet()) {
             Object key = entry.getKey();
             Object value = entry.getValue();
 
             if (value instanceof RemovePlaceholder) {
-                keysToRemove.add(key);
                 needsModification = true;
             } else if (value instanceof Map<?, ?> || value instanceof List<?>) {
                 Object cleanedValue = purgeRemovals(value, visited);
                 if (!Objects.equals(cleanedValue, value)) {
-                    updatedEntries.put(key, cleanedValue);
                     needsModification = true;
                 }
+                cleanedMap.put(key, cleanedValue);
+            } else {
+                cleanedMap.put(key, value);
             }
         }
 
-        if (!needsModification) {
-            return map;
-        }
-
-        try {
-            for (Object key : keysToRemove) {
-                map.remove(key);
-            }
-            map.putAll(updatedEntries);
-            return map;
-        } catch (UnsupportedOperationException e) {
-            Map<Object, @Nullable Object> mutableCopy = new LinkedHashMap<>(map);
-            for (Object key : keysToRemove) {
-                mutableCopy.remove(key);
-            }
-            mutableCopy.putAll(updatedEntries);
-            return mutableCopy;
-        }
+        return needsModification ? cleanedMap : map;
     }
 
     private static List<@Nullable Object> purgeList(List<@Nullable Object> list, Set<Object> visited) {
@@ -132,16 +117,6 @@ public final class PlaceholderFinalizer {
             }
         }
 
-        if (!needsModification) {
-            return list;
-        }
-
-        try {
-            list.clear();
-            list.addAll(cleanedList);
-            return list;
-        } catch (UnsupportedOperationException e) {
-            return cleanedList;
-        }
+        return needsModification ? cleanedList : list;
     }
 }
