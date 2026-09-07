@@ -14,6 +14,7 @@ package org.openhab.binding.tuya.internal;
 
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_PROJECT;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_DEVICE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_SMARTLIFE;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tuya.internal.handler.ProjectHandler;
 import org.openhab.binding.tuya.internal.handler.TuyaDeviceHandler;
+import org.openhab.binding.tuya.internal.handler.TuyaSmartLifeHandler;
 import org.openhab.binding.tuya.internal.local.UdpDiscoveryListener;
 import org.openhab.binding.tuya.internal.util.SchemaDp;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -55,10 +57,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 @SuppressWarnings("unused")
 public class TuyaHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PROJECT,
-            THING_TYPE_TUYA_DEVICE);
+            THING_TYPE_TUYA_SMARTLIFE, THING_TYPE_TUYA_DEVICE);
     private static final Type STORAGE_TYPE = TypeToken.getParameterized(List.class, SchemaDp.class).getType();
 
     public static final TuyaSchemaDB SCHEMAS = new TuyaSchemaDB();
+    public static final TuyaTokenDB TOKENS = new TuyaTokenDB();
 
     private final TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
     private final TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
@@ -79,6 +82,7 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
         this.udpDiscoveryListener = new UdpDiscoveryListener(eventLoopGroup);
 
         TuyaSchemaDB.setStorage(storageService, "org.openhab.binding.tuya.Schema");
+        TuyaTokenDB.setStorage(storageService, "org.openhab.binding.tuya.Token");
     }
 
     @Deactivate
@@ -98,6 +102,8 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_PROJECT.equals(thingTypeUID)) {
             return new ProjectHandler(thing, httpClient, gson);
+        } else if (THING_TYPE_TUYA_SMARTLIFE.equals(thingTypeUID)) {
+            return new TuyaSmartLifeHandler(thing, httpClient, gson);
         } else if (THING_TYPE_TUYA_DEVICE.equals(thingTypeUID)) {
             return new TuyaDeviceHandler(thing, gson, dynamicCommandDescriptionProvider,
                     dynamicStateDescriptionProvider, eventLoopGroup, udpDiscoveryListener);

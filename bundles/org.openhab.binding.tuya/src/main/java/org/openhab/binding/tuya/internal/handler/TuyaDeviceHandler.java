@@ -306,7 +306,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             // try additional channelDps, only OnOffType
             List<String> channelIds = dp2ToChannelId.get(dp);
             if (channelIds == null) {
-                logger.debug("Could not find channel for dp '{}' in thing '{}'", dp, thing.getUID());
+                logger.warn("{}: product ID {} no channel for DP {} value '{}'", thing.getUID(),
+                        configuration.productId, dp, value);
             } else {
                 if (Boolean.class.isAssignableFrom(value.getClass())) {
                     OnOffType state = OnOffType.from((boolean) value);

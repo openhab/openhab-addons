@@ -23,9 +23,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface ApiStatusCallback {
 
     /**
-     * report the status of the connection if it changes
+     * Report the status of the connection if it changes.
      *
      * @param status true -> established, false -> disconnected/failed
      */
     void tuyaOpenApiStatus(boolean status);
+
+    /**
+     * Report a change to the data centre in use.
+     *
+     * @param dataCenter the new data centre
+     */
+    void setDataCenter(String dataCenter);
 }

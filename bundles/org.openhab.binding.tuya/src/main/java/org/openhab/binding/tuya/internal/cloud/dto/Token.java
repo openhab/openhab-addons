@@ -24,30 +24,32 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 @SuppressWarnings("unused")
 public class Token {
-    @SerializedName("access_token")
+    @SerializedName(value = "access_token", alternate = { "accessToken" })
     public final String accessToken;
-    @SerializedName("refresh_token")
+    @SerializedName(value = "refresh_token", alternate = { "refreshToken" })
     public final String refreshToken;
     public final String uid;
-    @SerializedName("expire_time")
+    @SerializedName(value = "expire_time", alternate = { "expireTime" })
     public final long expire;
+    public final String endpoint;
 
-    public transient long expireTimestamp = 0;
+    public long expireTimestamp = 0;
 
     public Token() {
-        this("", "", "", 0);
+        this("", "", "", 0, "");
     }
 
-    public Token(String accessToken, String refreshToken, String uid, long expire) {
+    public Token(String accessToken, String refreshToken, String uid, long expire, String endpoint) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.uid = uid;
         this.expire = expire;
+        this.endpoint = endpoint;
     }
 
     @Override
     public String toString() {
         return "Token{accessToken='" + accessToken + "', refreshToken='" + refreshToken + "', uid='" + uid
-                + "', expire=" + expire + "', expireTimestamp=" + expireTimestamp + "}";
+                + "', expire=" + expire + "', expireTimestamp=" + expireTimestamp + "', endpoint='" + endpoint + "'}";
     }
 }

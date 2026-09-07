@@ -26,11 +26,13 @@ public class ProjectConfiguration {
     public String accessId = "";
     public String accessSecret = "";
     public Integer countryCode = 0;
-    public String schema = "";
+
+    public String schema = "smartLife";
     public String dataCenter = "";
 
     public boolean isValid() {
-        return !username.isEmpty() && !password.isEmpty() && !accessId.isEmpty() && !accessSecret.isEmpty()
-                && countryCode != 0 && !schema.isEmpty() && !dataCenter.isEmpty();
+        return !dataCenter.isEmpty() //
+                && (!username.isEmpty() && !password.isEmpty() && !accessId.isEmpty() && !accessSecret.isEmpty()
+                        && countryCode != 0);
     }
 }
