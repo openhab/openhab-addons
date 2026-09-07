@@ -45,16 +45,16 @@
 			<channel-group id="color" typeId="colorSettings"/>
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="light1" typeId="rgbwChannel">
-				<label>LED 1</label>
+				<label>LED Channel 1</label>
 			</channel-group>
 			<channel-group id="light2" typeId="rgbwChannel">
-				<label>LED 2</label>
+				<label>LED Channel 2</label>
 			</channel-group>
 			<channel-group id="light3" typeId="rgbwChannel">
-				<label>LED 3</label>
+				<label>LED Channel 3</label>
 			</channel-group>
 			<channel-group id="light4" typeId="rgbwChannel">
-				<label>LED 4</label>
+				<label>LED Channel 4</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
@@ -74,19 +74,19 @@
 			<channel-group id="color" typeId="colorSettings"/>
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="light1" typeId="rgbwChannel">
-				<label>LED 1</label>
+				<label>LED Channel 1</label>
 			</channel-group>
 			<channel-group id="light2" typeId="rgbwChannel">
-				<label>LED 2</label>
+				<label>LED Channel 2</label>
 			</channel-group>
 			<channel-group id="light3" typeId="rgbwChannel">
-				<label>LED 3</label>
+				<label>LED Channel 3</label>
 			</channel-group>
 			<channel-group id="light4" typeId="rgbwChannel">
-				<label>LED 4</label>
+				<label>LED Channel 4</label>
 			</channel-group>
 			<channel-group id="light5" typeId="rgbwChannel">
-				<label>LED 5</label>
+				<label>LED Channel 5</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="meter1" typeId="meter"/>
