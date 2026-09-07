@@ -153,7 +153,7 @@
 		<label>Colors</label>
 		<description>Light colors</description>
 		<channels>
-			<channel id="hsb" typeId="system.color"/>
+			<channel id="hsb" typeId="colorMain"/>
 			<channel id="full" typeId="colorFull"/>
 			<channel id="red" typeId="colorRed"/>
 			<channel id="green" typeId="colorGreen"/>
@@ -168,7 +168,7 @@
 		<label>Colors</label>
 		<description>Light colors</description>
 		<channels>
-			<channel id="hsb" typeId="system.color"/>
+			<channel id="hsb" typeId="colorMain"/>
 			<channel id="full" typeId="colorFull"/>
 			<channel id="red" typeId="colorRed"/>
 			<channel id="green" typeId="colorGreen"/>
@@ -265,7 +265,7 @@
 	<channel-type id="whiteBrightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
-		<description>Brightness (0-100%, 0=OFF)</description>
+		<description>Accepts Dimmer Item (0..100%) or Switch Item (ON/OFF)</description>
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
@@ -306,26 +306,27 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="advPower" advanced="true">
+	<!-- 'power' channel can be migrated to advanced; in which case it takes over all attributes of the original -->
+	<channel-type id="powerAdvanced" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Power</label>
-		<description>Turn the device ON or OFF</description>
-		<category>Switch</category>
+	</channel-type>
+
+	<!-- 'whiteBrightness' channel can be moved to advanced; in which case it takes over all attributes of the original -->
+	<channel-type id="brightnessAdvanced" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+	</channel-type>
+
+	<channel-type id="colorMain">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Accepts Color Item (HSB), Dimmer Item (0..100%) or Switch Item (ON/OFF)</description>
+		<category>ColorLight</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<tag>Control</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
-	<channel-type id="advBrightness" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Brightness (0-100%, 0=OFF)</description>
-		<category>Light</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
-		</tags>
-		<state min="0" max="100" step="1" readOnly="false"/>
-	</channel-type>
 </thing:thing-descriptions>

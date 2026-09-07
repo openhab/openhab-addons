@@ -211,7 +211,9 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_LIGHT_DEFSTATE = "defaultState";
     public static final String CHANNEL_GROUP_LIGHT_CHANNEL = "channel";
     public static final String CHANNEL_GROUP_LIGHT_INDEX = "light";
-    public static final String CHANNEL_ID_POWER = CHANNEL_GROUP_LIGHT_CONTROL + "#" + CHANNEL_LIGHT_POWER;
+
+    public static final String CHAN_ID_POWER = CHANNEL_GROUP_LIGHT_CONTROL + "#" + CHANNEL_LIGHT_POWER;
+    public static final ChannelTypeUID TYPE_UID_ADV_POWER = new ChannelTypeUID(BINDING_ID, "powerAdvanced");
 
     // Bulb/RGBW2 in color mode
     public static final String CHANNEL_GROUP_COLOR_CONTROL = "color";
@@ -223,16 +225,16 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_COLOR_WHITE = "white";
     public static final String CHANNEL_COLOR_GAIN = "gain";
     public static final String CHANNEL_COLOR_EFFECT = "effect";
-    public static final String CHANNEL_ID_COLOR = CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER;
+
+    public static final String CHAN_ID_COLOR = CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER;
 
     // Bulb/RGBW2/Dup in White Mode
     public static final String CHANNEL_GROUP_WHITE_CONTROL = "white";
     public static final String CHANNEL_COLOR_TEMP = "temperature";
     public static final String CHANNEL_COLOR_TEMP_ABS = "temperature-abs";
-    public static final String CHANNEL_ID_BRIGHTNESS = CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS;
 
-    public static final ChannelTypeUID CHANNEL_TYPE_ADV_BRIGHTNESS = new ChannelTypeUID(BINDING_ID, "advBrightness");
-    public static final ChannelTypeUID CHANNEL_TYPE_ADV_POWER = new ChannelTypeUID(BINDING_ID, "advPower");
+    public static final String CHAN_ID_BRIGHTNESS = CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS;
+    public static final ChannelTypeUID TYPE_UID_ADV_BRIGHTNESS = new ChannelTypeUID(BINDING_ID, "brightnessAdvanced");
 
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";

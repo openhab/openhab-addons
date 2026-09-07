@@ -117,6 +117,8 @@ See section [Discovery](#discovery) for details.
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
 | shellyprorgbwwpm     | Shelly Pro RGBWW PM                                      | SPDC-0D5PE16EU                                                            |
+| shellyplusduobulb    | Shelly Duo Bulb E27 Gen3                                 | S3BL-D010009AEU                                                           |
+| shellypluscolorbulb  | Shelly Multicolor Bulb E27 Gen3                          | S3BL-C010007AEU                                                           |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
@@ -1059,7 +1061,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                                 |
 | white   | brightness        | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                                 |
 |         | temperature       | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention               |
-|         | temperature-abs   | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention               |
+|         | temperature-abs   | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention               |
 | meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                                 |
 |         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
 |         | energyHistMin2    | Number             | yes       |          | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
@@ -1110,7 +1112,7 @@ totalEnergy might reset on restart depending on device type and firmware version
 |         | effect          | Number             | r/w       |          | Puts the light into effect mode: 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash |
 | white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                       |
 |         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention     |
-|         | temperature-abs | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention     |
+|         | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention     |
 | meter   | currentPower    | Number             | yes       |          | Current power consumption in Watts                                                       |
 
 Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
@@ -1225,10 +1227,9 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
 | white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                   |
 |         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature-abs | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|         | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 
 The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo - it has no RGB color output.
-There is no separate power channel: sending brightness 0 turns the bulb off, sending brightness > 0 turns it on.
 
 ### Shelly Multicolor Bulb E27 Gen3 (thing-type: shellypluscolorbulb)
 
@@ -1245,11 +1246,10 @@ There is no separate power channel: sending brightness 0 turns the bulb off, sen
 |         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
 | white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100% or 0..100; also controls power (ON/OFF)                          |
 |         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature-abs | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|         | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 
 The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
 Sending a color (`color#hsb`, `color#red`/`green`/`blue` or `color#full` with any color other than "white") switches to color mode; sending `color#full="white"` or `white#temperature` switches back to white mode.
-While in color mode `white#temperature` reports UNDEF, because the LEDs don't show a color temperature.
 
 ### Shelly H&T (thing-type: shellyht)
 
@@ -1877,7 +1877,7 @@ In `cctx2` profile (dual color-temperature mode), the device exposes two indepen
 | ------ | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
 | light1 | brightness      | Multiple (*)       | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention          |
 |        | temperature     | Multiple (*)       | r/w       |          | Color temperature percent control according to openHAB Light Control Convention      |
-|        | temperature-abs | Number:Temperature | r/w       |          | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|        | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 |        | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
 |        | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
 |        | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |

@@ -46,6 +46,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,32 +164,32 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     }
 
     /**
-     * Hides legacy channels that are not primarily used in the openHAB light convention. This is done to
-     * avoid break existing item channel links, but at the same time avoiding confusing new users.
+     * Hides legacy channels that are not primarily used in the openHAB light convention. The channels are 'hidden'
+     * by cloning them to an advanced channel-type. This is done to avoid breaking existing item channel links, but
+     * at the same time avoiding confusing new users about no longer important channels.
      */
     private void hideLegacyLightChannels() {
-        boolean isModified = false;
-        List<Channel> existing = getThing().getChannels();
-        List<Channel> modified = new ArrayList<>(existing.size());
+        boolean dirty = false;
+        List<Channel> oldChannels = getThing().getChannels();
+        List<Channel> newChannels = new ArrayList<>(oldChannels.size());
 
-        boolean hasColorChannel = existing.stream()
-                .anyMatch(channel -> CHANNEL_ID_COLOR.equals(channel.getUID().getId()));
+        boolean isColor = oldChannels.stream().anyMatch(channel -> CHAN_ID_COLOR.equals(channel.getUID().getId()));
 
-        for (Channel channel : existing) {
-            String channelId = channel.getUID().getId();
-            Channel channelOut = channel;
-            if (CHANNEL_ID_POWER.equals(channelId) && !CHANNEL_TYPE_ADV_POWER.equals(channel.getChannelTypeUID())) {
-                channelOut = ChannelBuilder.create(channel).withType(CHANNEL_TYPE_ADV_POWER).build();
-                isModified = true;
-            } else if (CHANNEL_ID_BRIGHTNESS.equals(channelId) && !hasColorChannel
-                    && !CHANNEL_TYPE_ADV_BRIGHTNESS.equals(channel.getChannelTypeUID())) {
-                channelOut = ChannelBuilder.create(channel).withType(CHANNEL_TYPE_ADV_BRIGHTNESS).build();
-                isModified = true;
+        for (Channel oldChannel : oldChannels) {
+            String id = oldChannel.getUID().getId();
+            ChannelTypeUID type = oldChannel.getChannelTypeUID();
+            if (CHAN_ID_POWER.equals(id) && !TYPE_UID_ADV_POWER.equals(type)) {
+                newChannels.add(ChannelBuilder.create(oldChannel).withType(TYPE_UID_ADV_POWER).build());
+                dirty = true;
+            } else if (CHAN_ID_BRIGHTNESS.equals(id) && !isColor && !TYPE_UID_ADV_BRIGHTNESS.equals(type)) {
+                newChannels.add(ChannelBuilder.create(oldChannel).withType(TYPE_UID_ADV_BRIGHTNESS).build());
+                dirty = true;
+            } else {
+                newChannels.add(oldChannel);
             }
-            modified.add(channelOut);
         }
-        if (isModified) {
-            updateThing(editThing().withChannels(modified).build());
+        if (dirty) {
+            updateThing(editThing().withChannels(newChannels).build());
         }
     }
 

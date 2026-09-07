@@ -105,6 +105,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_CONTROL = CHANNEL_GROUP_CONTROL;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
     private static final String CHGR_COLOR = CHANNEL_GROUP_COLOR_CONTROL;
+    private static final String CHGR_WHITE = CHANNEL_GROUP_WHITE_CONTROL;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
@@ -234,12 +235,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_BUTTON_TRIGGER, "system:button", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS, "whiteBrightness",
-                        ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP, "system:color-temperature",
-                        ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_ABS,
-                        "system:color-temperature-abs", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_WHITE, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_WHITE, CHANNEL_COLOR_TEMP, "system:color-temperature", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_WHITE, CHANNEL_COLOR_TEMP_ABS, "system:color-temperature-abs",
+                        ITEMT_TEMP))
 
                 // RGBW2-color
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_LIGHT_POWER, "system:power", ITEMT_SWITCH))
@@ -263,7 +262,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
 
                 // Color control group channels
-                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_PICKER, "system:color", ITEMT_COLOR))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_PICKER, "colorMain", ITEMT_COLOR))
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_FULL, "colorFull", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_RED, "colorRed", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_GREEN, "colorGreen", ITEMT_DIMMER))
@@ -563,7 +562,7 @@ public class ShellyChannelDefinitions {
             ShellySettingsRgbwLight light = lights.get(idx);
 
             // dynamically add any missing white-group or per-light channels
-            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
+            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHGR_WHITE;
             addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
