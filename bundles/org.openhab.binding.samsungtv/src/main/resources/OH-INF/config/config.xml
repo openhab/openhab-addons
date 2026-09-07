@@ -62,6 +62,13 @@
 			<default>KEY_MULTI_VIEW</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="legacyCipherSuites" type="boolean">
+			<label>Allow Legacy Cipher Suites</label>
+			<description>Accepts any certificate and allows the cipher suites Jetty excludes, for older TVs. Turn it off to check
+				the TV certificate and drop the warnings.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="smartThingsApiKey" type="text" groupName="Cloud Connection">
 			<label>Smartthings PAT</label>
 			<description>Go to https://account.smartthings.com/tokens and obtain a Personal Access Token, enter it here.</description>
