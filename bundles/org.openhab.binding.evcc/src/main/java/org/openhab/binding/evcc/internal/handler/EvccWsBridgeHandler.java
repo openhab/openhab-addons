@@ -262,4 +262,8 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     public JsonObject getCachedEvccState() {
         return lastState.deepCopy();
     }
+
+    public boolean isInitialStateReceived() {
+        return initialStateReceived;
+    }
 }
