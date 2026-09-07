@@ -90,7 +90,6 @@ public class StructuralMerger {
             }
         }
         composeMap(filteredMap, result, ValueMode.PRESERVE, transformer, context);
-        transformTopLevelKeys(result, transformer, context);
     }
 
     /**
@@ -118,8 +117,8 @@ public class StructuralMerger {
 
         DirectiveProcessor directiveProcessor = transformer.getDirectiveProcessor();
         EvaluationContext scopeContext = context.withScope(context.scope().createChild());
-        EvaluationContext mergeContext = scopeContext.withProcessingPhase(ProcessingPhase.MERGE);
         EvaluationContext directiveContext = scopeContext;
+        EvaluationContext mergeContext;
 
         DirectiveProcessor.IfChainState ifChainState = new DirectiveProcessor.IfChainState();
 
@@ -131,6 +130,9 @@ public class StructuralMerger {
 
         if (valueMode == ValueMode.PRESERVE) {
             directiveContext = scopeContext.withProcessingPhase(ProcessingPhase.DIRECTIVES);
+            mergeContext = scopeContext.withProcessingPhase(ProcessingPhase.INCLUDES);
+        } else {
+            mergeContext = scopeContext.withProcessingPhase(ProcessingPhase.MERGE);
         }
 
         // Phase 1: Evaluate keys, directives, and entry values into local scope
@@ -146,7 +148,12 @@ public class StructuralMerger {
                     if (mergeKey.isDeep() && !isValidDeepMergeKey(mergeKey)) {
                         warnInvalidDeepMergeKey(mergeKey);
                     } else {
-                        Object value = transformer.transform(rawEntry.getValue(), mergeContext);
+                        Object value = rawEntry.getValue();
+                        if (valueMode == ValueMode.PRESERVE && value instanceof Map<?, ?> mapValue) {
+                            value = transformTopLevelKeys(mapValue, transformer, scopeContext);
+                        } else {
+                            value = transformer.transform(value, mergeContext);
+                        }
                         mergeEntries.add(new MergeEntry(mergeKey, value));
                         declarationEntries.add(new DeclarationEntry(mergeKey, value));
                     }
@@ -161,11 +168,7 @@ public class StructuralMerger {
 
                     Object entryValue = rawEntry.getValue();
                     if (valueMode == ValueMode.TRANSFORM) {
-                        Object transformedValue = transformer.transform(entryValue, scopeContext);
-                        if (transformedValue == null && entryValue != null) {
-                            continue;
-                        }
-                        entryValue = transformedValue;
+                        entryValue = transformer.transform(entryValue, scopeContext);
                     }
 
                     resolved.put(transformedKey, entryValue);
@@ -520,17 +523,19 @@ public class StructuralMerger {
         return first == null || second == null || first.getClass().equals(second.getClass());
     }
 
-    private void transformTopLevelKeys(Map<Object, @Nullable Object> map, RecursiveTransformer transformer,
+    private Map<Object, @Nullable Object> transformTopLevelKeys(Map<?, ?> rawMap, RecursiveTransformer transformer,
             EvaluationContext context) {
-        if (map.isEmpty()) {
-            return;
+        if (rawMap.isEmpty()) {
+            return Map.of();
         }
 
+        @SuppressWarnings("unchecked")
+        Map<Object, @Nullable Object> map = (Map<Object, @Nullable Object>) rawMap;
         Map<Object, @Nullable Object> transformedMap = new LinkedHashMap<>(map.size());
 
         for (Map.Entry<Object, @Nullable Object> entry : map.entrySet()) {
             Object rawKey = entry.getKey();
-            Object value = entry.getValue();
+            Object rawValue = entry.getValue();
 
             Object transformedKey = transformer.transform(rawKey, context);
 
@@ -546,12 +551,11 @@ public class StructuralMerger {
                     }
                 }
             } else {
-                transformedMap.put(transformedKey, value);
+                transformedMap.put(transformedKey, rawValue);
             }
         }
 
-        map.clear();
-        map.putAll(transformedMap);
+        return transformedMap;
     }
 
     public static String prettifyMap(@Nullable Object obj) {

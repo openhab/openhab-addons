@@ -179,9 +179,30 @@ class YamlComposerUniversalStructuralTagTest extends AbstractYamlComposerTest {
     }
 
     @Test
+    @DisplayName("Collision control tags are harmless without a merge")
+    void collisionControlTagsWithoutMerge() throws IOException {
+        Map<Object, @Nullable Object> data = loadYaml("""
+                settings:
+                  fallback: !default
+                    value: default
+                  frozen: !freeze
+                    value: frozen
+                  replaced: !replace
+                    value: replaced
+                  removed: !remove foo
+                """);
+
+        assertThat(getNestedValue(data, "settings", "fallback", "value"), is("default"));
+        assertThat(getNestedValue(data, "settings", "frozen", "value"), is("frozen"));
+        assertThat(getNestedValue(data, "settings", "replaced", "value"), is("replaced"));
+        assertThat((Map<?, ?>) getNestedValue(data, "settings"), not(hasKey("removed")));
+    }
+
+    @Test
     @DisplayName("!freeze and !default: Preserves explicit null and tilde values")
     void preservesNullAndTildeWithStructuralTags() throws IOException {
         String yaml = """
+                plain_null: null
                 freeze_null: !freeze null
                 default_tilde: !default ~
                 freeze_tilde: !freeze ~
@@ -190,6 +211,13 @@ class YamlComposerUniversalStructuralTagTest extends AbstractYamlComposerTest {
 
         Map<Object, @Nullable Object> data = loadYaml(yaml);
 
+        assertThat(data, hasKey("plain_null"));
+        assertThat(data, hasKey("freeze_null"));
+        assertThat(data, hasKey("default_tilde"));
+        assertThat(data, hasKey("freeze_tilde"));
+        assertThat(data, hasKey("default_null"));
+
+        assertThat(data.get("plain_null"), is(nullValue()));
         assertThat(data.get("freeze_null"), is(nullValue()));
         assertThat(data.get("default_tilde"), is(nullValue()));
         assertThat(data.get("freeze_tilde"), is(nullValue()));

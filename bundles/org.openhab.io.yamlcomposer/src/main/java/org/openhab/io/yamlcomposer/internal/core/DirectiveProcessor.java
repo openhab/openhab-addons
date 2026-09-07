@@ -239,7 +239,7 @@ public class DirectiveProcessor {
         Object resolvedVal = transformer.transform(oldVal, context);
         // A !var value is detached from the document and stored in the context scope.
         // We need to run the finalization phase on it here so lookups see resolved values rather than placeholders.
-        Object finalVal = transformer.transform(resolvedVal, context.withProcessingPhase(ProcessingPhase.FINALIZATION));
+        Object finalVal = PlaceholderFinalizer.finalize(resolvedVal, transformer, context);
         context.scope().put(varName, finalVal);
     }
 

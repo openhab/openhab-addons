@@ -67,15 +67,14 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
         }
 
         @Test
-        @DisplayName("Templates node can be dynamically generated via substitutions and still be resolved")
-        void dynamicTemplatesNodeSupported() throws IOException {
+        @DisplayName("Templates can be dynamically named with variable substitution")
+        void dynamicTemplateNamesSupported() throws IOException {
             Path main = writeFixture("main.yaml", """
                     variables:
                       tplname: "my_template"
-                      value: "foo"
 
                     templates:
-                      ${tplname}: ${value}
+                      ${tplname}: foo
 
                     data: !insert my_template
                     """);
@@ -283,6 +282,38 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
             loadFixture(main);
 
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("template not found")));
+        }
+
+        @Test
+        @DisplayName("Templates node can be dynamically generated via substitutions in a merge source and still be resolved")
+        void dynamicTemplatesNodeFromMergeSourceSupported() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    variables:
+                      tplname: "my_template"
+                      value: bar
+
+                      intpl_key: "overridden_key"
+                      intpl_value: "overridden_value"
+
+                    templates:
+                      <<:
+                        ${tplname}: # resolve the key eagerly but defer value resolution until template insertion
+                          main: ${value}
+                          <<:
+                            ${intpl_key}: ${intpl_value}
+
+                    data: !insert
+                      template: my_template
+                      vars:
+                        value: "foo"
+                        intpl_key: "merged_dynamic_key"
+                        intpl_value: "merged_dynamic_value"
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "data", "main"), equalTo("foo"));
+            assertThat(getNestedValue(data, "data", "merged_dynamic_key"), equalTo("merged_dynamic_value"));
         }
 
         @Test

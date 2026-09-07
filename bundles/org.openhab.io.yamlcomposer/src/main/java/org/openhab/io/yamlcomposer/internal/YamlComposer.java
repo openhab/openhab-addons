@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.PackageProcessor;
+import org.openhab.io.yamlcomposer.internal.core.PlaceholderFinalizer;
 import org.openhab.io.yamlcomposer.internal.core.ProcessingPhase;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.core.Scope;
@@ -264,8 +265,8 @@ public class YamlComposer {
                 .mergePackages(yamlMap, packagesObj);
 
         // Phase 8: process structural placeholders (!default, !replace/!freeze, !remove)
-        yamlMap = (Map<?, ?>) Objects.requireNonNull(recursiveTransformer.transform(yamlMap,
-                standardContext.withProcessingPhase(ProcessingPhase.FINALIZATION)));
+        yamlMap = (Map<?, ?>) Objects
+                .requireNonNull(PlaceholderFinalizer.finalize(yamlMap, recursiveTransformer, standardContext));
 
         // Phase 9: final cleanup and optional compiled output
         ComposerUtils.removeHiddenKeys(yamlMap);

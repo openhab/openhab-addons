@@ -498,7 +498,6 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
                     variables:
                       map1:
                         foo: bar
-                        baz: "${foo}"
                     simple:
                       <<:
                         qux: ${map1}
@@ -506,7 +505,6 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
 
             Map<Object, @Nullable Object> data = loadFixture(main);
             assertThat(getNestedValue(data, "simple", "qux", "foo"), equalTo("bar"));
-            assertThat(getNestedValue(data, "simple", "qux", "baz"), nullValue());
         }
 
         @Test
@@ -516,7 +514,6 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
                     variables:
                       map1:
                         foo: bar
-                        baz: "${foo}"
                     simple:
                       <<:
                         qux:

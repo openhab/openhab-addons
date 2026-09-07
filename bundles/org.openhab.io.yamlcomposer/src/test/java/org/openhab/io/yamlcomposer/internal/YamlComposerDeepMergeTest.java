@@ -666,26 +666,6 @@ class YamlComposerDeepMergeTest extends AbstractYamlComposerTest {
             assertThat(tags, contains("Control", "Sensor"));
             assertThat(tags, not(hasItem("Light")));
         }
-
-        @Test
-        @DisplayName("Collision control tags are harmless without a merge")
-        void collisionControlTagsWithoutMerge() throws IOException {
-            Map<Object, @Nullable Object> data = loadYaml("""
-                    settings:
-                      fallback: !default
-                        value: default
-                      frozen: !freeze
-                        value: frozen
-                      replaced: !replace
-                        value: replaced
-                      removed: !remove
-                    """);
-
-            assertThat(getNestedValue(data, "settings", "fallback", "value"), equalTo("default"));
-            assertThat(getNestedValue(data, "settings", "frozen", "value"), equalTo("frozen"));
-            assertThat(getNestedValue(data, "settings", "replaced", "value"), equalTo("replaced"));
-            assertThat((Map<?, ?>) getNestedValue(data, "settings"), not(hasKey("removed")));
-        }
     }
 
     @Nested
