@@ -20,6 +20,7 @@ import static org.openhab.core.library.unit.Units.PERCENT;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -119,17 +120,19 @@ public class HomeConnectDirectHoodHandler extends BaseHomeConnectDirectHandler {
     protected void onApplianceDescriptionChangeEvent(List<DeviceDescriptionChange> deviceDescriptionChanges) {
         super.onApplianceDescriptionChangeEvent(deviceDescriptionChanges);
 
-        deviceDescriptionChanges.forEach(deviceDescriptionChange -> {
-            var key = deviceDescriptionChange.key();
-            switch (key) {
-                case HOOD_VENTING_LEVEL_KEY -> updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_VENTING_LEVEL, key);
-                case HOOD_INTENSIVE_LEVEL_KEY -> updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_INTENSIVE_LEVEL, key);
-                case ROOT_OPTION_LIST_KEY -> {
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_VENTING_LEVEL, key);
-                    updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_INTENSIVE_LEVEL, key);
-                }
-            }
-        });
+        var changedKeys = deviceDescriptionChanges.stream().map(DeviceDescriptionChange::key)
+                .collect(Collectors.toSet());
+        // A change of the option list container implies that the options below it may have changed as well, without
+        // being reported individually. Both keys can be part of the same message, so the options are refreshed at most
+        // once per channel.
+        var optionListChanged = changedKeys.contains(ROOT_OPTION_LIST_KEY);
+
+        if (optionListChanged || changedKeys.contains(HOOD_VENTING_LEVEL_KEY)) {
+            updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_VENTING_LEVEL, HOOD_VENTING_LEVEL_KEY);
+        }
+        if (optionListChanged || changedKeys.contains(HOOD_INTENSIVE_LEVEL_KEY)) {
+            updateEnumOptionDescriptionIfLinked(CHANNEL_HOOD_INTENSIVE_LEVEL, HOOD_INTENSIVE_LEVEL_KEY);
+        }
     }
 
     @Override

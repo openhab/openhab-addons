@@ -250,7 +250,11 @@ export class ControllerNode {
                 return;
             }
 
-            node.triggerReconnect();
+            if (node.node.state.network.isDisabled) {
+                node.connect();
+            } else {
+                node.triggerReconnect();
+            }
 
             return new Promise((resolve, reject) => {
                 let timeoutId: NodeJS.Timeout | undefined;

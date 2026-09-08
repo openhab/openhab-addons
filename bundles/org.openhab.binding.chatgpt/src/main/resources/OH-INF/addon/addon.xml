@@ -6,7 +6,7 @@
 	<type>binding</type>
 	<name>ChatGPT Binding</name>
 	<description>Integrates with OpenAI API-compatible AI services for AI-powered chat and smart home control.</description>
-	<keywords>ChatGPT,OpenAI,OpenRouter,Mistral,Ollama,human language interpreter</keywords>
+	<keywords>Anthropic,ChatGPT,Claude,DeepSeek,Mistral,Ollama,OpenAI,OpenRouter,SpaceXAI,human language interpreter</keywords>
 	<connection>cloud</connection>
 
 </addon:addon>

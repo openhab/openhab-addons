@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,20 +53,23 @@ public class RecursiveTransformer {
     private final BufferedLogger logger;
     private final DirectiveProcessor directiveProcessor;
     private final Path absolutePath;
+    private final Consumer<String> envVarCallback;
 
-    public RecursiveTransformer(Map<String, @Nullable Object> variables, Path absolutePath, BufferedLogger logger) {
+    public RecursiveTransformer(Map<String, @Nullable Object> variables, Consumer<String> envVarCallback,
+            Path absolutePath, BufferedLogger logger) {
         this.variables = variables;
         this.logger = logger;
         this.absolutePath = absolutePath;
-        this.directiveProcessor = new DirectiveProcessor(logger);
+        this.envVarCallback = envVarCallback;
+        this.directiveProcessor = new DirectiveProcessor(logger, envVarCallback);
     }
 
-    private RecursiveTransformer(Map<String, @Nullable Object> variables, Path absolutePath, BufferedLogger logger,
-            DirectiveProcessor directiveProcessor) {
+    private RecursiveTransformer(RecursiveTransformer source, Map<String, @Nullable Object> variables) {
         this.variables = variables;
-        this.absolutePath = absolutePath;
-        this.logger = logger;
-        this.directiveProcessor = directiveProcessor;
+        this.envVarCallback = source.envVarCallback;
+        this.absolutePath = source.absolutePath;
+        this.logger = source.logger;
+        this.directiveProcessor = source.directiveProcessor;
     }
 
     public Map<String, @Nullable Object> getVariables() {
@@ -90,8 +94,7 @@ public class RecursiveTransformer {
     public RecursiveTransformer withOverrideVariables(Map<String, @Nullable Object> overrideVariables) {
         Map<String, @Nullable Object> combinedVariables = new HashMap<>(variables);
         combinedVariables.putAll(overrideVariables);
-        RecursiveTransformer copy = new RecursiveTransformer(combinedVariables, this.absolutePath, this.logger,
-                this.directiveProcessor);
+        RecursiveTransformer copy = new RecursiveTransformer(this, combinedVariables);
         copy.handlers.putAll(this.handlers);
         return copy;
     }
@@ -267,9 +270,7 @@ public class RecursiveTransformer {
 
         // Fork variables map to ensure local !var directives inside nested blocks
         // do not leak to parent/sibling scopes
-        RecursiveTransformer scopeTransformer = new RecursiveTransformer(new LinkedHashMap<>(variables), absolutePath,
-                logger, directiveProcessor);
-        scopeTransformer.handlers.putAll(this.handlers);
+        RecursiveTransformer scopeTransformer = withOverrideVariables(Map.of());
 
         List<Map.Entry<Object, @Nullable Object>> mergeEntries = new ArrayList<>();
 

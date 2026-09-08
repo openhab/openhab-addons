@@ -10,15 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.chatgpt.internal.hli;
+package org.openhab.binding.tapocontrol.internal.helpers.utils;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 
 /**
- * @author Artur Fedjukevits - Initial contribution
+ * Tests for {@link TapoUtils}.
+ *
+ * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class ChatGPTHLIConstants {
+class TapoUtilsTest {
 
-    public static final String SERVICE_ID = "chatgpthli";
+    @Test
+    void preservesFiveCharacterKasaModel() {
+        assertThat(TapoUtils.getDeviceModel("HS220(US)"), is("HS220"));
+    }
 }

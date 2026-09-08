@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
+
+import java.io.File;
 import java.lang.reflect.Type;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -29,27 +33,24 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ShellyBluJsonDTO {
 
-    // BLU events
+    public static final String USERDATA_SCRIPT_FOLDER = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID;
     public static final String SHELLY2_BLU_GWSCRIPT = "oh-blu-scanner.js";
+    // Plus devices support up to 3 scripts, Pro devices up to 10; limit how many script ids we probe for a free slot
+    public static final int MAX_SCRIPT_ID = 15;
+    public static final int SCRIPT_CHUNK_SIZE = 512; // chunk size for upload
+
+    // BLU events
     public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
     public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
     public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
     public static final String SHELLY2_EVENT_BLUALARM = SHELLY2_EVENT_BLUPREFIX + "alarm";
 
-    // BTHome samples
-    // BLU Button 1
+    // BTHome samples (script forwards the raw BTHome payload; the binding decodes it via BTHomeDecoder)
     // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
-    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
+    // "data":{"addr":"bc:02:6e:c3:a6:c7","name":"SBBT-002C","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
     // {"component":"script:2", "id":2, "event":"oh-blu.data",
-    // "data":{"encryption":false,"BTHome_version":2,"pid":205,"Battery":100,"Button":1,"addr":"b4:35:22:fd:b3:81","rssi":-68},
+    // "data":{"addr":"b4:35:22:fd:b3:81","rssi":-68,"pid":205,"ver":2,"raw":"0001cd0100640b0500"},
     // "ts":1682877399.22}
-    //
-    // BLU Door Window
-    // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
-    // "data":{"addr":"bc:02:6e:c3:a6:c7","rssi":-62,"tx_power":-128}, "ts":1682877414.21}
-    // {"component":"script:2", "id":2, "event":"oh-blu.data",
-    // "data":{"encryption":false,"BTHome_version":2,"pid":38,"Battery":100,"Illuminance":0,"Window":1,"Rotation":0,"addr":"bc:02:6e:c3:a6:c7","rssi":-62},
-    // "ts":1682877414.25}
 
     // Handles BTHome fields that a single-button device sends as a scalar but a multi-button device sends as an array.
     // Without this adapter, a plain Gson instance would throw JsonSyntaxException on scalar payloads for T[] fields.
@@ -79,14 +80,14 @@ public class ShellyBluJsonDTO {
             public @Nullable Integer steps;
         }
 
-        public @Nullable String packet;
         public @Nullable String addr;
         public @Nullable String name;
-        public @Nullable Boolean encryption;
+        // Raw BTHome payload forwarded by the script; "ver" guards against a stale/custom script format
+        public @Nullable String raw;
+        @SerializedName("ver")
+        public @Nullable Integer dataVersion;
         @SerializedName("code") // oh-blu.alarm: BTH_ENCRYPTED, BTH_UNKNOWN_TYPE
         public @Nullable String alarmCode;
-        @SerializedName("BTHome_version")
-        public @Nullable Integer bthVersion;
         public @Nullable Integer pid;
         @SerializedName("Battery")
         public @Nullable Integer battery;

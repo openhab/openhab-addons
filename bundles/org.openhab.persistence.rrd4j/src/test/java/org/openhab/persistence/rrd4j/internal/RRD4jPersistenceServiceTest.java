@@ -20,9 +20,15 @@ import static org.mockito.Mockito.when;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -228,6 +234,40 @@ class RRD4jPersistenceServiceTest {
     }
 
     @Test
+    void firstSampleIsImmediatelyQueryableFromArchive() throws Exception {
+        long sampleTimestamp = 58;
+        service.deactivate();
+        service = new RRD4jPersistenceService(itemRegistry, Map.of(),
+                Clock.fixed(Instant.ofEpochSecond(sampleTimestamp), ZoneOffset.UTC));
+        configureNumberItem("_INITIAL");
+        deleteDatabaseFile(numberItem.getName());
+
+        service.store(numberItem);
+        service.deactivate();
+
+        FilterCriteria criteria = new FilterCriteria();
+        criteria.setItemName(numberItem.getName());
+        criteria.setBeginDate(ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.systemDefault()));
+        criteria.setEndDate(ZonedDateTime.ofInstant(Instant.ofEpochSecond(100), ZoneId.systemDefault()));
+        criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
+
+        Iterable<HistoricItem> results = service.query(criteria);
+        assertTrue(results.iterator().hasNext());
+        assertEquals(new DecimalType(42.5), results.iterator().next().getState());
+    }
+
+    @Test
+    void deactivationTerminatesScheduler() throws InterruptedException {
+        service.deactivate();
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        service = new RRD4jPersistenceService(itemRegistry, Map.of(), Clock.systemUTC(), scheduler);
+
+        service.deactivate();
+
+        assertTrue(scheduler.awaitTermination(5, TimeUnit.SECONDS));
+    }
+
+    @Test
     void serviceIdIsCorrect() throws Exception {
         RRD4jPersistenceService simpleService = new RRD4jPersistenceService(itemRegistry, Map.of());
         try {
@@ -251,6 +291,7 @@ class RRD4jPersistenceServiceTest {
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveWithInvalidDBConfig(boolean reloadAfterStore) throws Exception {
+        service.deactivate();
         service = new RRD4jPersistenceService(itemRegistry, Map.of("something.invalid", "invalid/path/to/db"));
 
         configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");

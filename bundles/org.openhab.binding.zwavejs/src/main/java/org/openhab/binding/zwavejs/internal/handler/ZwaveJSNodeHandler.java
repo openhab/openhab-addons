@@ -208,9 +208,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
             ChannelUID targetChannel = null;
             if (rollerShutterCapability.isMovingUp()) {
-                targetChannel = rollerShutterCapability.upChannel;
+                targetChannel = rollerShutterConfig.isUpDownInverted ? rollerShutterCapability.downChannel
+                        : rollerShutterCapability.upChannel;
             } else if (rollerShutterCapability.isMovingDown()) {
-                targetChannel = rollerShutterCapability.downChannel;
+                targetChannel = rollerShutterConfig.isUpDownInverted ? rollerShutterCapability.upChannel
+                        : rollerShutterCapability.downChannel;
             }
             if (targetChannel == null) {
                 logger.debug("Node {}. Cannot stop movement, no direction known", config.id);
@@ -226,14 +228,15 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Handle UpDownType: UP or DOWN, respect inversion
         if (command instanceof UpDownType upDownCommand) {
-            boolean isUpCommand = (UpDownType.UP.equals(upDownCommand) && !rollerShutterConfig.isUpDownInverted)
+            boolean usesUpChannel = (UpDownType.UP.equals(upDownCommand) && !rollerShutterConfig.isUpDownInverted)
                     || (UpDownType.DOWN.equals(upDownCommand) && rollerShutterConfig.isUpDownInverted);
-            ChannelUID targetChannel = isUpCommand ? rollerShutterCapability.upChannel
+            ChannelUID targetChannel = usesUpChannel ? rollerShutterCapability.upChannel
                     : rollerShutterCapability.downChannel;
             ZwaveJSChannelConfiguration targetChannelConfig = getChannelConfiguration(targetChannel);
             NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, targetChannelConfig);
             zwaveCommand.value = true;
-            rollerShutterCapability.setDirection(isUpCommand, !isUpCommand);
+            boolean isMovingUp = UpDownType.UP.equals(upDownCommand);
+            rollerShutterCapability.setDirection(isMovingUp, !isMovingUp);
             bridgeHandler.sendCommand(zwaveCommand);
             return;
         }

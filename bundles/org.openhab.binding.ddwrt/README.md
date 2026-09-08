@@ -34,6 +34,10 @@ After adding and configuring the `network` bridge, the binding automatically dis
 - **Clients** — from radio association lists, DHCP lease tables, and ARP/neighbor caches on each device
 - **Firewall rules** — from DD-WRT nvram `filter_rule` entries (DD-WRT gateway devices only)
 
+For clients without a hostname supplied by the router, discovery reuses a friendly name published by another openHAB
+Thing or inbox result when it has the same MAC address. Router-supplied hostnames take precedence. If neither source has
+a name, discovery uses the existing OUI-based name or a stable `client-<MAC>` fallback so the client is not omitted.
+
 Discovery results appear in the openHAB inbox after each device refresh cycle.
 
 ## Quick Start
@@ -47,7 +51,7 @@ Discovery results appear in the openHAB inbox after each device refresh cycle.
 Bridge ddwrt:network:home "Home Network" [ hostnames="router,office-ap,garage-ap" ]
 ```
 
-1. **Wait for discovery** — devices, radios, clients, and firewall rules appear in the inbox
+1. **Wait for discovery** — devices, radios, clients, and DD-WRT firewall rules appear in the inbox
 
 The `hostnames` parameter is a comma-separated list of hostnames or IP addresses.
 Each hostname is connected via SSH and auto-detected during the first refresh cycle.
@@ -178,6 +182,67 @@ Each firmware has its own way to enable SSH and install public keys:
 - **Standard OpenSSH** — For generic Linux devices, use `ssh-copy-id` or append the public key to `$HOME/.ssh/authorized_keys`.
   See [OpenSSH manual](https://www.openssh.com/manual.html).
 
+### Linux Host SSH Setup
+
+Use a dedicated, key-only account instead of root or a shared password when monitoring a general-purpose Linux host.
+The following example creates an `ohmon` account with a locked password:
+
+```bash
+sudo useradd --create-home --shell /bin/bash ohmon
+sudo usermod --append --groups adm ohmon
+sudo passwd --lock ohmon
+```
+
+On Debian-family systems, the `adm` group commonly grants access to system logs and the journal.
+Other distributions may use a different group, such as `systemd-journal`; grant only the access required by the commands the binding uses.
+
+Install the public key used by the openHAB service:
+
+```bash
+sudo install -d -m 700 -o ohmon -g ohmon /home/ohmon/.ssh
+sudo install -m 600 -o ohmon -g ohmon /path/to/openhab-key.pub /home/ohmon/.ssh/authorized_keys
+```
+
+`authorized_keys` contains the text from the public `.pub` key, not the `.pub` file as an attachment.
+The corresponding private key stays on the openHAB host in `$OPENHAB_USERDATA/ddwrt/keys/` or the openHAB service user's `$HOME/.ssh/` directory.
+Do not copy the private key to the monitored host.
+
+Specify a username for each entry in the network bridge's `hostnames` list when the devices use different accounts:
+
+```text
+root@192.168.1.1, ohmon@192.168.1.20, ohmon@192.168.1.21
+```
+
+DD-WRT and OpenWrt appliances commonly continue to use `root`, while general-purpose Linux hosts should use the dedicated account.
+Saving the bridge configuration after changing a per-host username also retries any suspended authentication attempts.
+
+The read-only monitoring features do not require general sudo access.
+If the reboot channel is enabled, the device handler invokes `sudo reboot` for a non-root session.
+Permit only the exact reboot executable by creating `/etc/sudoers.d/ohmon-ddwrt`, for example:
+
+```sudoers
+ohmon ALL=(root) NOPASSWD: /usr/sbin/reboot
+```
+
+Check the executable path on the monitored host with `command -v reboot`; it must match the sudoers rule exactly.
+Set the required permissions and validate the file before relying on it:
+
+```bash
+sudo chmod 440 /etc/sudoers.d/ohmon-ddwrt
+sudo visudo -cf /etc/sudoers.d/ohmon-ddwrt
+```
+
+Verify the account and permissions without rebooting the host:
+
+```bash
+ssh -o BatchMode=yes ohmon@HOST id
+ssh ohmon@HOST journalctl -n 1 --no-pager
+ssh ohmon@HOST sudo -n -l /usr/sbin/reboot
+```
+
+Do not grant `ohmon` unrestricted sudo, and keep password authentication disabled.
+Radio enable and disable operations on generic Linux may require additional privileges; do not grant them broadly by default.
+
 ## Thing Configuration
 
 ### `network` Bridge Configuration
@@ -249,8 +314,8 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 | uptime                  | DateTime           | RO         | System boot time (updates only on reboot)                        |
 | cpu-load                | Number             | RO         | 1-minute load average                                            |
 | cpu-temp                | Number:Temperature | RO         | CPU temperature                                                  |
-| if-in                   | Number:DataAmount  | RO         | Total bytes received on LAN bridge (br0)                         |
-| if-out                  | Number:DataAmount  | RO         | Total bytes sent on LAN bridge (br0)                             |
+| if-in                   | Number:DataAmount  | RO         | Total bytes received on the LAN or primary network interface     |
+| if-out                  | Number:DataAmount  | RO         | Total bytes sent on the LAN or primary network interface         |
 | reboot                  | Switch             | RW         | Turn ON to reboot the device; automatically resets to OFF        |
 | device-wireless-clients | Number             | RO         | Wireless clients associated with radios on this device           |
 | syslog-connected        | Switch             | RO         | Whether the syslog follower has an active SSH channel            |

@@ -93,7 +93,7 @@ public class CallMonitor {
     public class CallMonitorThread extends Thread {
 
         // Socket to connect
-        private @Nullable Socket socket;
+        private volatile @Nullable Socket socket;
 
         // Thread control flag
         private boolean interrupted = false;
@@ -115,8 +115,9 @@ public class CallMonitor {
                 try {
                     logger.debug("Call Monitor thread [{}] attempting connection to FRITZ!Box on {}:{}.",
                             Thread.currentThread().threadId(), ip, MONITOR_PORT);
-                    socket = new Socket(ip, MONITOR_PORT);
-                    reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    Socket newSocket = new Socket(ip, MONITOR_PORT);
+                    socket = newSocket;
+                    reader = new BufferedReader(new InputStreamReader(newSocket.getInputStream()));
                     // reset the retry interval
                     reconnectTime = 60000L;
                 } catch (IOException e) {
@@ -171,9 +172,10 @@ public class CallMonitor {
         @Override
         public void interrupt() {
             interrupted = true;
-            if (socket != null) {
+            Socket currentSocket = socket;
+            if (currentSocket != null) {
                 try {
-                    socket.close();
+                    currentSocket.close();
                     logger.debug("Socket to FRITZ!Box closed.");
                 } catch (IOException e) {
                     logger.warn("Failed to close connection to FRITZ!Box.", e);

@@ -42,6 +42,87 @@
 				<type>system:mute</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="power">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Turn the power for the player on or off</description>
+			</update-channel>
+			<update-channel id="volume">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>Control the volume for the player</description>
+			</update-channel>
+			<update-channel id="mute">
+				<type>system:mute</type>
+				<label>Mute</label>
+				<description>Mute or unmute the volume on the player</description>
+			</update-channel>
+			<update-channel id="play_mode">
+				<type>oppo:play-mode</type>
+			</update-channel>
+			<update-channel id="time_mode">
+				<type>oppo:time-mode</type>
+			</update-channel>
+			<update-channel id="time_display">
+				<type>oppo:time-display</type>
+			</update-channel>
+			<update-channel id="current_title">
+				<type>oppo:current-title</type>
+			</update-channel>
+			<update-channel id="total_title">
+				<type>oppo:total-title</type>
+			</update-channel>
+			<update-channel id="current_chapter">
+				<type>oppo:current-chapter</type>
+			</update-channel>
+			<update-channel id="total_chapter">
+				<type>oppo:total-chapter</type>
+			</update-channel>
+			<update-channel id="repeat_mode">
+				<type>oppo:repeat-mode</type>
+			</update-channel>
+			<update-channel id="zoom_mode">
+				<type>oppo:zoom-mode</type>
+			</update-channel>
+			<update-channel id="disc_type">
+				<type>oppo:disc-type</type>
+			</update-channel>
+			<update-channel id="audio_type">
+				<type>oppo:audio-type</type>
+			</update-channel>
+			<update-channel id="subtitle_type">
+				<type>oppo:subtitle-type</type>
+			</update-channel>
+			<update-channel id="aspect_ratio">
+				<type>oppo:aspect-ratio</type>
+			</update-channel>
+			<update-channel id="source_resolution">
+				<type>oppo:source-resolution</type>
+			</update-channel>
+			<update-channel id="output_resolution">
+				<type>oppo:output-resolution</type>
+			</update-channel>
+			<update-channel id="3d_indicator">
+				<type>oppo:3d-indicator</type>
+			</update-channel>
+			<update-channel id="osd_position">
+				<type>oppo:osd-position</type>
+			</update-channel>
+			<update-channel id="sub_shift">
+				<type>oppo:sub-shift</type>
+			</update-channel>
+			<update-channel id="hdmi_mode">
+				<type>oppo:hdmi-mode</type>
+			</update-channel>
+			<update-channel id="hdr_mode">
+				<type>oppo:hdr-mode</type>
+			</update-channel>
+			<update-channel id="remote_button">
+				<type>oppo:remote-button</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

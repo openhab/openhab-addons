@@ -135,6 +135,55 @@ public class GenericThingHandlerTests {
     }
 
     @Test
+    public void initializeWithStateOnlyChannel() {
+        Channel channel = cb("stateOnly", "String", new Configuration(Map.of("stateTopic", "test/state")),
+                TEXT_CHANNEL);
+        when(thingMock.getChannels()).thenReturn(List.of(channel));
+
+        thingHandler.initialize();
+
+        assertThat(thingHandler.channelStateByChannelUID.containsKey(channel.getUID()), is(true));
+        verify(connectionMock).subscribe(eq("test/state"), any());
+    }
+
+    @Test
+    public void initializeWithCommandOnlyChannel() {
+        Channel channel = cb("commandOnly", "String", new Configuration(Map.of("commandTopic", "test/command")),
+                TEXT_CHANNEL);
+        when(thingMock.getChannels()).thenReturn(List.of(channel));
+
+        thingHandler.initialize();
+
+        assertThat(thingHandler.channelStateByChannelUID.containsKey(channel.getUID()), is(true));
+        verify(connectionMock, never()).subscribe(any(), any());
+    }
+
+    @Test
+    public void initializeRejectsChannelWithUnknownPropertiesInsteadOfTopics() {
+        Channel channel = cb("invalid", "String",
+                new Configuration(Map.of("status", "test/state", "trans", "JSONPATH:$.value")), TEXT_CHANNEL);
+
+        assertConfigurationError(channel);
+    }
+
+    @Test
+    public void initializeRejectsTypedTriggerWithoutStateTopic() {
+        Channel channel = cb("invalidTypedTrigger", "String",
+                new Configuration(Map.of("commandTopic", "test/command", "trigger", true)), TEXT_CHANNEL);
+
+        assertConfigurationError(channel);
+    }
+
+    @Test
+    public void initializeRejectsTriggerWithoutStateTopic() {
+        ChannelUID channelUID = new ChannelUID(TEST_GENERIC_THING, "invalidTrigger");
+        Channel channel = ChannelBuilder.create(channelUID).withType(TRIGGER_CHANNEL).withKind(ChannelKind.TRIGGER)
+                .withConfiguration(new Configuration(Map.of("commandTopic", "test/command"))).build();
+
+        assertConfigurationError(channel);
+    }
+
+    @Test
     public void initializeMarksReadOnlyTypedTriggerAsTriggerChannel() {
         Configuration configuration = new Configuration(Map.of("stateTopic", "test/state", "trigger", true));
         Channel triggerChannel = cb("onoff", "Switch", configuration, ON_OFF_CHANNEL);
@@ -309,5 +358,18 @@ public class GenericThingHandlerTests {
                 .bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null));
         thingHandler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
         verify(connectionMock, times(2)).subscribe(eq("test/LWT"), any());
+    }
+
+    private void assertConfigurationError(Channel channel) {
+        when(thingMock.getChannels()).thenReturn(List.of(channel));
+
+        thingHandler.initialize();
+
+        assertThat(thingHandler.channelStateByChannelUID.containsKey(channel.getUID()), is(false));
+        verify(thingHandler, never()).start(any());
+        verify(callbackMock).statusUpdated(eq(thingMock),
+                argThat(arg -> ThingStatus.OFFLINE.equals(arg.getStatus())
+                        && ThingStatusDetail.CONFIGURATION_ERROR.equals(arg.getStatusDetail())
+                        && ("Invalid channel configuration: " + channel.getUID()).equals(arg.getDescription())));
     }
 }

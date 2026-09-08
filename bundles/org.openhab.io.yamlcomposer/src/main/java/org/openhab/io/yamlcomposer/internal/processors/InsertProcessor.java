@@ -12,6 +12,7 @@
  */
 package org.openhab.io.yamlcomposer.internal.processors;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -76,7 +77,8 @@ public class InsertProcessor implements PlaceholderProcessor<InsertPlaceholder> 
 
         // The substitution placeholders in the template are resolved using the templateVariables context
         // unlike any other processing which uses the main variables map
-        Map<String, @Nullable Object> templateVariables = params.varsMap();
+        Map<String, @Nullable Object> templateVariables = new HashMap<>(params.varsMap());
+        templateVariables.put("ARGS", params.varsMap());
         RecursiveTransformer localTransformer = recursiveTransformer.withOverrideVariables(templateVariables);
         // Keep package override placeholders (!remove/!replace) intact so they are only
         // applied in the dedicated PACKAGE_OVERRIDES phase.

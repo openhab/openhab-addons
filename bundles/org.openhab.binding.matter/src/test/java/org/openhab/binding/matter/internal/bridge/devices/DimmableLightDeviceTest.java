@@ -13,7 +13,6 @@
 package org.openhab.binding.matter.internal.bridge.devices;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,8 +40,10 @@ import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Test class for DimmableLightDevice
@@ -134,6 +135,22 @@ class DimmableLightDeviceTest {
     }
 
     @Test
+    void testALevelAlwaysMeansOn() {
+        // the bridge turns a light off with an onOff event, so no level may read back as off
+        dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(1));
+        dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(2));
+        dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(4));
+        verify(dimmerItem, Mockito.times(3)).send(new PercentType(1), MATTER_SOURCE);
+    }
+
+    @Test
+    void testHandleMatterEventLevelWhileOff() {
+        // MoveToLevelWithOnOff on an off light: matter.js couples onOff itself, so only the level reaches us
+        dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(128));
+        verify(dimmerItem).send(new PercentType(50), MATTER_SOURCE);
+    }
+
+    @Test
     void testHandleMatterEventLevelGroup() {
         groupDevice.handleMatterEvent("onOff", "onOff", true);
         groupDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(254));
@@ -144,16 +161,107 @@ class DimmableLightDeviceTest {
     }
 
     @Test
+    void testLevelIsAlwaysReportedBeforeOnOff() {
+        // A client waits for the level before it completes a level command, so it is always sent and always first
+        dimmerDevice.updateState(dimmerItem, new PercentType(50));
+        Mockito.clearInvocations(client);
+
+        dimmerDevice.updateState(dimmerItem, new PercentType(50));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("levelControl", "currentLevel", 128),
+                new AttributeState("onOff", "onOff", true))));
+    }
+
+    @Test
+    void testEveryUpdateIsReportedOnceEvenWhenTheStateDidNotChange() {
+        // a client waiting on the level it asked for gets no answer if the item was already at that state
+        List<AttributeState> expected = List.of(new AttributeState("levelControl", "currentLevel", 128),
+                new AttributeState("onOff", "onOff", true));
+
+        dimmerDevice.stateUpdated(dimmerItem, new PercentType(50));
+        verify(client, Mockito.times(1)).setEndpointStates(any(), eq(expected));
+
+        // a change also arrives as an update, so it must not be reported twice
+        dimmerDevice.stateChanged(dimmerItem, PercentType.ZERO, new PercentType(50));
+        verify(client, Mockito.times(1)).setEndpointStates(any(), eq(expected));
+    }
+
+    @Test
+    void testUpdateStateWithHSB() {
+        dimmerDevice.updateState(dimmerItem, new HSBType("120,100,50"));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("levelControl", "currentLevel", 128),
+                new AttributeState("onOff", "onOff", true))));
+    }
+
+    @Test
+    void testUndefStateIsIgnored() {
+        dimmerDevice.updateState(dimmerItem, UnDefType.UNDEF);
+        dimmerDevice.updateState(dimmerItem, UnDefType.NULL);
+        verify(client, Mockito.never()).setEndpointStates(any(), any());
+    }
+
+    @Test
     void testUpdateStateWithPercent() {
         dimmerDevice.updateState(dimmerItem, new PercentType(100));
         List<AttributeState> expectedStates = new ArrayList<>();
-        expectedStates.add(new AttributeState("onOff", "onOff", true));
         expectedStates.add(new AttributeState("levelControl", "currentLevel", 254));
+        expectedStates.add(new AttributeState("onOff", "onOff", true));
         verify(client).setEndpointStates(any(), eq(expectedStates));
 
         dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
         expectedStates.clear();
+        expectedStates.add(new AttributeState("levelControl", "currentLevel", 1));
         expectedStates.add(new AttributeState("onOff", "onOff", false));
+        verify(client).setEndpointStates(any(), eq(expectedStates));
+    }
+
+    @Test
+    void testRampBetweenNonZeroLevels() {
+        dimmerDevice.updateState(dimmerItem, new PercentType(100));
+        Mockito.clearInvocations(client);
+
+        dimmerDevice.updateState(dimmerItem, new PercentType(56));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("levelControl", "currentLevel", 143),
+                new AttributeState("onOff", "onOff", true))));
+    }
+
+    @Test
+    void testRampDownToOffReportsOnOffOnceWithMinimumLevel() {
+        // Only the last step crosses zero
+        dimmerDevice.updateState(dimmerItem, new PercentType(100));
+        dimmerDevice.updateState(dimmerItem, new PercentType(56));
+        dimmerDevice.updateState(dimmerItem, new PercentType(11));
+        Mockito.clearInvocations(client);
+
+        dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("levelControl", "currentLevel", 1),
+                new AttributeState("onOff", "onOff", false))));
+    }
+
+    @Test
+    void testRampUpFromOff() {
+        dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
+        Mockito.clearInvocations(client);
+
+        dimmerDevice.updateState(dimmerItem, new PercentType(11));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("levelControl", "currentLevel", 29),
+                new AttributeState("onOff", "onOff", true))));
+
+        Mockito.clearInvocations(client);
+        dimmerDevice.updateState(dimmerItem, new PercentType(100));
+        verify(client).setEndpointStates(any(), eq(List.of(new AttributeState("levelControl", "currentLevel", 254),
+                new AttributeState("onOff", "onOff", true))));
+    }
+
+    @Test
+    void testOnAfterOffReportsFullBrightness() {
+        // Going off must not clobber the remembered level, so a later ON returns to the previous brightness.
+        dimmerDevice.updateState(dimmerItem, new PercentType(50));
+        dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
+        Mockito.clearInvocations(client);
+        dimmerDevice.updateState(dimmerItem, OnOffType.ON);
+
+        List<AttributeState> expectedStates = List.of(new AttributeState("levelControl", "currentLevel", 254),
+                new AttributeState("onOff", "onOff", true));
         verify(client).setEndpointStates(any(), eq(expectedStates));
     }
 
@@ -183,7 +291,7 @@ class DimmableLightDeviceTest {
         assertNotNull(levelMap);
         assertNotNull(onOffMap);
 
-        assertNotEquals(0, levelMap.get("currentLevel"));
+        assertEquals(1, levelMap.get("currentLevel"));
         assertEquals(false, onOffMap.get("onOff"));
     }
 }

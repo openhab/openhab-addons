@@ -13,6 +13,7 @@
 package org.openhab.io.yamlcomposer.internal.processors;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,9 +32,11 @@ import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder
 @NonNullByDefault
 public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionPlaceholder> {
 
+    private final Consumer<String> envVarCallback;
     private final BufferedLogger logger;
 
-    public SubstitutionProcessor(BufferedLogger logger) {
+    public SubstitutionProcessor(Consumer<String> envVarCallback, BufferedLogger logger) {
+        this.envVarCallback = envVarCallback;
         this.logger = logger;
     }
 
@@ -67,8 +70,8 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
      */
     public @Nullable Object process(SubstitutionPlaceholder placeholder, Map<String, @Nullable Object> context) {
         Pattern pattern = resolvePattern(placeholder, context);
-        return StringInterpolator.interpolate(placeholder.value(), pattern, context, logger.getLogSession(),
-                placeholder.sourceLocation());
+        return StringInterpolator.interpolate(placeholder.value(), pattern, context, envVarCallback,
+                logger.getLogSession(), placeholder.sourceLocation());
     }
 
     private Pattern resolvePattern(SubstitutionPlaceholder placeholder, Map<String, @Nullable Object> context) {

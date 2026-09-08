@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="oppo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- OPPO BDP-105 Blu-ray player Thing -->
+	<thing-type id="bdp-105">
+		<label>OPPO BDP-105 Blu-ray Player</label>
+		<description>
+			Controls an OPPO BDP-105/105D Blu-ray player
+		</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
+
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Turn the power for the player on or off</description>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<label>Volume</label>
+				<description>Control the volume for the player</description>
+			</channel>
+			<channel id="mute" typeId="system.mute">
+				<label>Mute</label>
+				<description>Mute or unmute the volume on the player</description>
+			</channel>
+			<channel id="source" typeId="source"/>
+			<channel id="play-mode" typeId="play-mode"/>
+			<channel id="control" typeId="control"/>
+			<channel id="time-mode" typeId="time-mode"/>
+			<channel id="time-display" typeId="time-display"/>
+			<channel id="current-title" typeId="current-title"/>
+			<channel id="total-title" typeId="total-title"/>
+			<channel id="current-chapter" typeId="current-chapter"/>
+			<channel id="total-chapter" typeId="total-chapter"/>
+			<channel id="title-elapsed" typeId="title-elapsed"/>
+			<channel id="title-length" typeId="title-length"/>
+			<channel id="title-end-time" typeId="title-end-time"/>
+			<channel id="title-progress" typeId="title-progress"/>
+			<channel id="repeat-mode" typeId="repeat-mode"/>
+			<channel id="zoom-mode" typeId="zoom-mode"/>
+			<channel id="disc-type" typeId="disc-type"/>
+			<channel id="audio-type" typeId="audio-type"/>
+			<channel id="subtitle-type" typeId="subtitle-type"/>
+			<channel id="source-resolution" typeId="source-resolution"/>
+			<channel id="output-resolution" typeId="output-resolution"/>
+			<channel id="3d-indicator" typeId="3d-indicator"/>
+			<channel id="sub-shift" typeId="sub-shift"/>
+			<channel id="osd-position" typeId="osd-position"/>
+			<channel id="hdmi-mode" typeId="hdmi-mode"/>
+			<channel id="remote-button" typeId="remote-button-103"/>
+		</channels>
+
+		<representation-property>host</representation-property>
+
+		<config-description-ref uri="thing-type:oppo:oppoconfig"/>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -15,14 +15,19 @@ package org.openhab.binding.shelly.internal.api2;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -72,7 +77,11 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CCT_STATUS = "CCT.GetStatus";
     public static final String SHELLYRPC_METHOD_CCT_SET = "CCT.Set";
     public static final String SHELLYRPC_METHOD_CCT_SETCONFIG = "CCT.SetConfig";
+    public static final String SHELLYRPC_METHOD_RGBCCT_STATUS = "RGBCCT.GetStatus";
+    public static final String SHELLYRPC_METHOD_RGBCCT_SET = "RGBCCT.Set";
+    public static final String SHELLYRPC_METHOD_RGBCCT_SETCONFIG = "RGBCCT.SetConfig";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
+    public static final String SHELLYRPC_METHOD_LORA_SENDDATA = "LoRa.SendBytes";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFILISTAPCLIENTS = "WiFi.ListAPClients";
@@ -114,11 +123,17 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1
     public static final String SHELLY2_PROFILE_RGBX2LIGHT = "rgbx2light"; // Pro RGBWW PM: RGB:0 + Light:0/1
 
+    // RGBCCT component runtime submode (RGBCCT.Set/GetStatus/NotifyStatus "mode" field) - distinct from the
+    // SHELLY2_PROFILE_* device profile selection above, even though the RGB value happens to coincide
+    public static final String SHELLY_RGBCCT_MODE_RGB = "rgb";
+    public static final String SHELLY_RGBCCT_MODE_CCT = "cct";
+
     // Button types/modes
     public static final String SHELLY2_BTNT_MOMENTARY = "momentary";
     public static final String SHELLY2_BTNT_FLIP = "flip";
     public static final String SHELLY2_BTNT_FOLLOW = "follow";
     public static final String SHELLY2_BTNT_DETACHED = "detached";
+    public static final String SHELLY2_BTNT_ACTIVATE = "activate";
 
     // Input types
     public static final String SHELLY2_INPUTT_SWITCH = "switch";
@@ -169,6 +184,12 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_FLOOD_ALARM = "flood.alarm";
     public static final String SHELLY2_EVENT_FLOOD_ALARM_OFF = "flood.alarm_off";
     public static final String SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED = "flood.cable_unplugged";
+
+    public static final String SHELLY2_EVENT_BLE_SCAN_RESULT = "ble.scan_result";
+
+    // LoRa
+    public static final String SHELLY2_EVENT_LORADATA = "lora";
+    public static final String SHELLY2_EVENT_LORA_USERRX = "user_rx"; // SheLR datagram (LoRa.Send)
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -460,6 +481,20 @@ public class Shelly2ApiJsonDTO {
             public String powerLed;
         }
 
+        public class Shelly2DeviceConfigLora {
+            public @Nullable Integer id;
+            @SerializedName("band_plan")
+            public @Nullable String bandPlan;
+            public @Nullable Long freq;
+            public @Nullable Integer bw;
+            public @Nullable Integer dr;
+            public @Nullable Integer cr;
+            public @Nullable Integer plen;
+            public @Nullable Integer txp;
+            @SerializedName("rx_enable")
+            public @Nullable Boolean rxEnabled;
+        }
+
         public static class Shelly2GetConfigResult {
 
             public class Shelly2DevConfigCloud {
@@ -555,12 +590,17 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Shelly2GetConfigLight cct0;
             @SerializedName("cct:1")
             public @Nullable Shelly2GetConfigLight cct1;
+            @SerializedName("rgbcct:0")
+            public @Nullable Shelly2GetConfigLight rgbcct0;
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
 
             @SerializedName("flood:0")
             public @Nullable Shelly2ConfigFlood flood0;
+
+            @SerializedName("lora:100")
+            public Shelly2DeviceConfigLora lora100;
         }
 
         public class Shelly2DeviceConfigSta {
@@ -610,6 +650,15 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceStatus {
+        public static class Shelly2DeviceStatusSysAvlUpdate {
+            public static class Shelly2DeviceStatusSysUpdate {
+                public @Nullable String version;
+            }
+
+            public @Nullable Shelly2DeviceStatusSysUpdate stable;
+            public @Nullable Shelly2DeviceStatusSysUpdate beta;
+        }
+
         public class Shelly2InputCounts {
             public Integer total;
             @SerializedName("by_minute")
@@ -653,6 +702,24 @@ public class Shelly2ApiJsonDTO {
         }
 
         public static class Shelly2DeviceStatusResult {
+            // Devices with combined RGB + CCT support - component "rgbcct:0"
+            // mode="cct": ct field valid; mode="rgb": rgb array valid
+            public static class Shelly2RGBCCTStatus {
+                public @Nullable Integer id;
+                public @Nullable String source;
+                public @Nullable String mode; // "cct" or "rgb"
+                public @Nullable Boolean output;
+                public @Nullable Double brightness;
+                public @Nullable Integer[] rgb; // [R, G, B] 0-255, valid when mode="rgb"
+                public @Nullable Integer ct; // color temperature K, valid when mode="cct"
+                public @Nullable Shelly2Energy aenergy;
+                public @Nullable Double apower;
+                @SerializedName("timer_started_at")
+                public @Nullable Double timerStartedAt;
+                @SerializedName("timer_duration")
+                public @Nullable Double timerDuration;
+            }
+
             public class Shelly2DeviceStatusBle {
 
             }
@@ -913,6 +980,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("cct:1")
             public @Nullable Shelly2DeviceStatusLight cct1;
 
+            @SerializedName("rgbcct:0")
+            public @Nullable Shelly2RGBCCTStatus rgbcct0;
+
             @SerializedName("temperature:0")
             public @Nullable Shelly2DeviceStatusTempId temperature0;
             @SerializedName("temperature:100")
@@ -953,18 +1023,12 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+
+            @SerializedName("lora:100")
+            public Shelly2DeviceStatusLora lora100;
         }
 
         public class Shelly2DeviceStatusSys {
-            public class Shelly2DeviceStatusSysAvlUpdate {
-                public class Shelly2DeviceStatusSysUpdate {
-                    public @Nullable String version;
-                }
-
-                public @Nullable Shelly2DeviceStatusSysUpdate stable;
-                public @Nullable Shelly2DeviceStatusSysUpdate beta;
-            }
-
             public class Shelly2DeviceStatusWakeup {
                 public String boot;
                 public String cause;
@@ -1137,11 +1201,12 @@ public class Shelly2ApiJsonDTO {
 
             // Dimmer / Light
             public Integer brightness;
-            public Integer ct; // color temperature in Kelvin (CCT.Set)
+            public Integer ct; // color temperature in Kelvin (Light.Set / CCT.Set / RGBCCT.Set)
             @SerializedName("toggle_after")
             public Integer toggleAfter;
             public Integer white;
             public Integer[] rgb;
+            public String mode; // for RGBCCT mode switching: "rgb" or "cct"
 
             // Shelly.SetAuth
             public String user;
@@ -1157,6 +1222,9 @@ public class Shelly2ApiJsonDTO {
 
             // Script
             public String name;
+
+            // LoRa.SendBytes
+            public String data;
 
             public Shelly2RpcRequestParams withConfig() {
                 config = new Shelly2ConfigParms();
@@ -1186,6 +1254,11 @@ public class Shelly2ApiJsonDTO {
 
         public Shelly2RpcRequest withName(String name) {
             params.name = name;
+            return this;
+        }
+
+        public Shelly2RpcRequest withData(String data) {
+            params.data = data;
             return this;
         }
     }
@@ -1247,6 +1320,24 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
+    public static class Shelly2DeviceStatusLora {
+        public @Nullable Integer id;
+        @SerializedName("bytes_recd")
+        public @Nullable Long rxBytes;
+        @SerializedName("bytes_sent")
+        public @Nullable Long txBytes;
+        @SerializedName("send_fails")
+        public @Nullable Long txErrors;
+        @SerializedName("air_time_hr_ms")
+        public @Nullable Long airtime;
+        @SerializedName("fw_version")
+        public @Nullable String fw;
+        @SerializedName("available_updates")
+        public @Nullable Shelly2DeviceStatusSysAvlUpdate availableUpdates;
+        public @Nullable ArrayList<String> errors;
+        public @Nullable ArrayList<String> flags;
+    }
+
     public static class Shelly2RpcNotifyStatus {
         public static class Shelly2NotifyStatus extends Shelly2DeviceStatusResult {
             public Double ts;
@@ -1294,12 +1385,33 @@ public class Shelly2ApiJsonDTO {
         public @Nullable Double ts;
         public @Nullable String component;
         public @Nullable String event;
+        // a third-party script may send an array here
         @SerializedName("data")
-        public @Nullable Shelly2NotifyBluEventData blu;
+        public @Nullable JsonElement data;
         public @Nullable String msg;
         public @Nullable Integer reason;
         @SerializedName("cfg_rev")
         public @Nullable Integer cfgRev;
+
+        /** The BLU payload, or null when {@code data} is absent or not an object. */
+        public @Nullable Shelly2NotifyBluEventData getBluData(Gson gson) throws ShellyApiException {
+            JsonElement data = this.data;
+            if (data == null || !data.isJsonObject()) {
+                return null;
+            }
+            return ShellyUtils.fromJson(gson, data.toString(), Shelly2NotifyBluEventData.class);
+        }
+
+        // LoRa: the "lora" event nests its payload under "info" rather than the generic "data" member
+        public @Nullable Shelly2NotifyEventLoraInfo info;
+    }
+
+    public static class Shelly2NotifyEventLoraInfo {
+        public @Nullable String data;
+        public @Nullable String sender; // user_rx only
+        public @Nullable Double rssi;
+        public @Nullable Double snr;
+        public @Nullable Long tsu;
     }
 
     public class Shelly2NotifyEventData {

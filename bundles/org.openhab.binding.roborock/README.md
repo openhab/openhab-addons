@@ -85,6 +85,7 @@ When `communication=direct` is selected and a capability is cloud-only (for exam
 | Number               | status#state                      | Vacuum Status                              |
 | Switch               | status#map-status                 | Map Box Status                             |
 | Switch               | status#led-status                 | Led Box Status                             |
+| String               | status#current-room               | Current room name, resolved from the live map segment at the robot's position; while the robot is docked, the room of the charging dock |
 | String               | info#carpet-mode                  | Carpet Mode details                        |
 | String               | info#room-mapping                 | Room Mapping details                       |
 | String               | info#multi-maps-list              | Maps Listing details                       |

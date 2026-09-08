@@ -50,6 +50,7 @@ import org.openhab.binding.amazonechocontrol.internal.dto.PlayerStateProgressTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.PlayerStateProviderTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.PlayerStateVolumeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushAudioPlayerStateTO;
+import org.openhab.binding.amazonechocontrol.internal.dto.push.PushDndStateChangeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushEqualizerStateChangeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushVolumeChangeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.request.PlayerSeekMediaTO;
@@ -98,9 +99,13 @@ import com.google.gson.JsonSyntaxException;
  * The {@link EchoHandler} is responsible for the handling of the echo device
  *
  * @author Michael Geramb - Initial contribution
+ * @author Martin Littkovsky - Report linked notification channels, so the account only polls for a consumer
  */
 @NonNullByDefault
 public class EchoHandler extends BaseThingHandler {
+    private static final Set<String> NOTIFICATION_CHANNELS = Set.of(CHANNEL_NEXT_ALARM, CHANNEL_NEXT_MUSIC_ALARM,
+            CHANNEL_NEXT_REMINDER, CHANNEL_NEXT_TIMER);
+
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private final Gson gson;
     private final AmazonEchoControlStateDescriptionProvider dynamicStateDescriptionProvider;
@@ -113,7 +118,8 @@ public class EchoHandler extends BaseThingHandler {
     private final Object progressLock = new Object();
     private @Nullable String wakeWord;
     private @Nullable String lastKnownBluetoothMAC;
-    private long lastCustomerHistoryRecordTimestamp = System.currentTimeMillis();
+    private long handlerStartTimestamp = System.currentTimeMillis();
+    private long lastCustomerHistoryRecordTimestamp = 0;
     private String musicProviderId = "TUNEIN";
     private boolean isPlaying = false;
     private boolean isPaused = false;
@@ -151,7 +157,8 @@ public class EchoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not found.");
         }
 
-        lastCustomerHistoryRecordTimestamp = System.currentTimeMillis();
+        handlerStartTimestamp = System.currentTimeMillis();
+        lastCustomerHistoryRecordTimestamp = 0;
     }
 
     public boolean setDeviceAndUpdateThingStatus(DeviceTO device, @Nullable String wakeWord) {
@@ -203,6 +210,29 @@ public class EchoHandler extends BaseThingHandler {
 
     public String getSerialNumber() {
         return Objects.requireNonNullElse((String) getConfig().get(DEVICE_PROPERTY_SERIAL_NUMBER), "");
+    }
+
+    boolean hasLinkedNotificationChannel() {
+        if (getCallback() == null) {
+            return false;
+        }
+        return NOTIFICATION_CHANNELS.stream().anyMatch(this::isLinked);
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        if (NOTIFICATION_CHANNELS.contains(channelUID.getId())) {
+            getAccountHandler().ifPresent(AccountHandler::notificationChannelLinked);
+        }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        if (NOTIFICATION_CHANNELS.contains(channelUID.getId())) {
+            getAccountHandler().ifPresent(AccountHandler::notificationChannelUnlinked);
+        }
     }
 
     @Override
@@ -588,7 +618,11 @@ public class EchoHandler extends BaseThingHandler {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
         } catch (ConnectionException e) {
-            logger.warn("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage(), e);
+            } else {
+                logger.warn("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage());
+            }
         } catch (RuntimeException e) {
             logger.warn("RuntimeException in handle command for channel '{}': {}", channelUID, e.getMessage(), e);
         }
@@ -648,7 +682,11 @@ public class EchoHandler extends BaseThingHandler {
                 }
             }
         } catch (ConnectionException e) {
-            logger.warn("Failed to update notification state: {}", e.getMessage(), e);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to update notification state: {}", e.getMessage(), e);
+            } else {
+                logger.warn("Failed to update notification state: {}", e.getMessage());
+            }
         }
         if (stopCurrentNotification) {
             stopCurrentNotification();
@@ -938,9 +976,24 @@ public class EchoHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * An explicit refresh also delivers records from before the handler started; a record at or behind one
+     * already delivered is dropped on both paths, so the channel never goes backward.
+     */
+    public synchronized void handleRequestedActivity(CustomerHistoryRecordTO customerHistoryRecord) {
+        handleActivity(customerHistoryRecord, true);
+    }
+
     public synchronized void handlePushActivity(CustomerHistoryRecordTO customerHistoryRecord) {
+        handleActivity(customerHistoryRecord, false);
+    }
+
+    private void handleActivity(CustomerHistoryRecordTO customerHistoryRecord, boolean deliverRecordsFromBeforeStart) {
         long recordTimestamp = customerHistoryRecord.timestamp;
         if (recordTimestamp <= lastCustomerHistoryRecordTimestamp) {
+            return;
+        }
+        if (!deliverRecordsFromBeforeStart && recordTimestamp <= handlerStartTimestamp) {
             return;
         }
         lastCustomerHistoryRecordTimestamp = recordTimestamp;
@@ -949,7 +1002,7 @@ public class EchoHandler extends BaseThingHandler {
             String recordItemType = voiceHistoryRecordItem.recordItemType;
             if ("CUSTOMER_TRANSCRIPT".equals(recordItemType) || "ASR_REPLACEMENT_TEXT".equals(recordItemType)) {
                 String customerTranscript = voiceHistoryRecordItem.transcriptText;
-                if (!customerTranscript.isEmpty()) {
+                if (customerTranscript != null && !customerTranscript.isEmpty()) {
                     // REMOVE WAKE WORD
                     String wakeWordPrefix = this.wakeWord;
                     if (wakeWordPrefix != null
@@ -1025,6 +1078,11 @@ public class EchoHandler extends BaseThingHandler {
                     lastKnownVolume = volumeChange.volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                 }
+                break;
+            case "PUSH_DND_STATE_CHANGE":
+                PushDndStateChangeTO dndStateChange = Objects
+                        .requireNonNull(gson.fromJson(payload, PushDndStateChangeTO.class));
+                updateState(CHANNEL_DO_NOT_DISTURB, OnOffType.from(dndStateChange.enabled));
                 break;
             case "PUSH_EQUALIZER_STATE_CHANGE":
                 PushEqualizerStateChangeTO equalizerStateChange = Objects

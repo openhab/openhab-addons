@@ -336,7 +336,7 @@ public class JdbcConfiguration {
                         warn += "\tMySQL:     version >= 9.7.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
-                        warn += "\tPostgreSQL:version >= 42.7.11 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        warn += "\tPostgreSQL:version >= 42.7.12 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
                         warn += "\tSQLite:    version >= 3.53.1.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";

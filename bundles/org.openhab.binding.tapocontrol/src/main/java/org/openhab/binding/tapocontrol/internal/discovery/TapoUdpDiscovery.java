@@ -337,9 +337,14 @@ public class TapoUdpDiscovery {
         try {
             SocketAddress sender = chan.receive(buf);
             if (buf.position() > 0) {
+                int length = buf.position();
                 buf.flip();
-                String receiveString = StandardCharsets.UTF_8.decode(buf).toString();
-                handleDiscoveryResult(receiveString);
+                byte[] response = new byte[length];
+                buf.get(response);
+                String senderIp = sender instanceof InetSocketAddress inetSender
+                        ? inetSender.getAddress().getHostAddress()
+                        : "";
+                handleDiscoveryResult(response, length, senderIp);
                 success = true;
             }
             logger.trace("({}) readSelectionKey, reply from {}", uid, sender);
@@ -400,14 +405,11 @@ public class TapoUdpDiscovery {
      * @return
      */
     private byte[] getBroadcastMessage(int port) throws TapoErrorHandler {
-        String message;
         byte[] messageBytes = {};
         try {
             switch (port) {
                 case 9999:
-                    // message = "'system': {'get_sysinfo': None}"; // unencrypted message
-                    message = "d0f281f88bff9af7d5ef94b6d1b4c09fec95e68fe187e8caf08bf68ba785e688cba7c8bdd9fbc1ba98ff9aeeb1d8b6d0bf9da7dca1dcf0d2a1ccaddfabc7aec8ad83ea85f1dfbcd3bed3bcd2fc9ff39ce98daf95eeccabcebae58ce284ebc9f388f588a486f598f98bff93fa9cf9d7b4d5b896ff8fec8de085f796b8dbb7d8adc9ebd1aa88ef8afea1c8a6c0af8db7ccb1ccb1";
-                    messageBytes = hexStringToByteArray(message);
+                    messageBytes = KasaXorDiscovery.discoveryRequest();
                     break;
                 case 20002:
                     messageBytes = buildRsaPacket();
@@ -478,7 +480,17 @@ public class TapoUdpDiscovery {
      * @param receivePacket
      */
     private void handleDiscoveryResult(DatagramPacket receivePacket) {
-        handleDiscoveryResult(new String(receivePacket.getData(), StandardCharsets.UTF_8));
+        handleDiscoveryResult(receivePacket.getData(), receivePacket.getLength(),
+                receivePacket.getAddress().getHostAddress());
+    }
+
+    private void handleDiscoveryResult(byte[] response, int length, String senderIp) {
+        String responseMessage = new String(response, 0, length, StandardCharsets.UTF_8);
+        if (handleDiscoveryResult(responseMessage)) {
+            return;
+        }
+        KasaXorDiscovery.decode(response, length, senderIp)
+                .ifPresent(result -> bridge.getDiscoveryService().addScanResult(result));
     }
 
     /**
@@ -486,7 +498,7 @@ public class TapoUdpDiscovery {
      *
      * @param receivePacket buffer as string
      */
-    private void handleDiscoveryResult(String responseMessage) {
+    private boolean handleDiscoveryResult(String responseMessage) {
         logger.trace("({}) received responseMessage: '{}'", uid, responseMessage);
         while (true) {
             try {
@@ -501,8 +513,8 @@ public class TapoUdpDiscovery {
             } catch (JsonParseException | IndexOutOfBoundsException e) {
                 break;
             }
-            return;
+            return true;
         }
-        logger.debug("({}) unexpected response - JSON object not found", uid);
+        return false;
     }
 }

@@ -31,6 +31,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
+import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -568,6 +569,42 @@ public class ZwaveJSNodeHandlerTest {
 
         assertEquals(39, sendCommand.nodeId);
         assertEquals(38, sendCommand.valueId.commandClass);
+        assertEquals("On", sendCommand.valueId.property);
+        assertEquals(false, sendCommand.value);
+    }
+
+    @Test
+    public void testRollershutterCommandStopAfterPositionIncrease() {
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(39);
+        RollerShutterCapability capability = nodeHandler.getRollerShutterCapabilities().values().stream().findFirst()
+                .orElseThrow();
+        capability.setPosition(80, false);
+
+        nodeHandler.handleCommand(new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual"),
+                StopMoveType.STOP);
+
+        verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeSetValueCommand.class));
+        NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+
+        assertEquals("On", sendCommand.valueId.property);
+        assertEquals(false, sendCommand.value);
+    }
+
+    @Test
+    public void testRollershutterCommandStopAfterInvertedPositionIncrease() {
+        ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(39);
+        RollerShutterCapability capability = nodeHandler.getRollerShutterCapabilities().values().stream().findFirst()
+                .orElseThrow();
+        nodeHandler.setRollerShutterInversion(capability, true);
+        ChannelUID channelUID = new ChannelUID("zwavejs:test-bridge:test-thing:rollershutter-virtual");
+
+        nodeHandler.handleCommand(channelUID, UpDownType.DOWN);
+        capability.setPosition(80, true);
+        nodeHandler.handleCommand(channelUID, StopMoveType.STOP);
+
+        verify(nodeHandler.getBridgeHandler(), times(2)).sendCommand(any(NodeSetValueCommand.class));
+        NodeSetValueCommand sendCommand = captureCommand(nodeHandler, NodeSetValueCommand.class);
+
         assertEquals("On", sendCommand.valueId.property);
         assertEquals(false, sendCommand.value);
     }

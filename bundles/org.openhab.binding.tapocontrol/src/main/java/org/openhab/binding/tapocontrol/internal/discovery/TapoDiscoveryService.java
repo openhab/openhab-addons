@@ -78,8 +78,8 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Override
     public void deactivate() {
-        super.deactivate();
         stopScheduler(discoveryJob);
+        super.deactivate();
     }
 
     @Override
@@ -123,7 +123,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         TimeUnit timeUnit = TimeUnit.MINUTES;
         if ((config.cloudDiscovery || config.udpDiscovery) && pollingInterval > 0) {
             logger.debug("{} starting discoveryScheduler with interval {} {}", this.uid, pollingInterval, timeUnit);
-
             this.discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, pollingInterval, timeUnit);
         } else {
             logger.debug("({}) discoveryScheduler disabled with config '0'", uid);
@@ -263,6 +262,9 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.deviceHwVer());
         properties.put(Thing.PROPERTY_MODEL_ID, deviceModel);
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.deviceId());
+        if (!device.alias().isBlank()) {
+            properties.put(PROPERTY_ALIAS, device.alias());
+        }
         if (device.ip().length() >= 7) {
             properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, device.ip());
             properties.put(TapoDeviceConfiguration.CONFIG_HTTP_PORT, device.encryptionSchema().httpPort());

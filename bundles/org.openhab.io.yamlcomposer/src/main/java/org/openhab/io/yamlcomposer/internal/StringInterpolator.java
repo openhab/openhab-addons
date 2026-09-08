@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,12 +114,13 @@ public class StringInterpolator {
      * @param value the raw string value that may contain placeholder patterns to substitute
      * @param pattern the substitution pattern to use
      * @param variables the variable map
+     * @param envVarCallback callback for environment variable access
      * @param logSession the logging session
      * @param sourceLocation description of the source location for logging
      * @return the evaluated value
      */
     public static @Nullable Object interpolate(String value, Pattern pattern, Map<String, @Nullable Object> variables,
-            LogSession logSession, String sourceLocation) {
+            Consumer<String> envVarCallback, LogSession logSession, String sourceLocation) {
         Matcher matcher = pattern.matcher(value);
         if (!matcher.find()) {
             return value;
@@ -129,13 +131,13 @@ public class StringInterpolator {
         // when the value is a plain placeholder.
         if (matcher.matches()) {
             String content = Objects.requireNonNull(matcher.group("content"));
-            return evaluateExpression(content, variables, logSession, sourceLocation);
+            return evaluateExpression(content, variables, envVarCallback, logSession, sourceLocation);
         }
 
         // Evaluate the expressions inside the ${...} patterns and replace them in the string.
         String interpolated = matcher.replaceAll(match -> {
             String content = Objects.requireNonNull(match.group("content"));
-            Object result = evaluateExpression(content, variables, logSession, sourceLocation);
+            Object result = evaluateExpression(content, variables, envVarCallback, logSession, sourceLocation);
             String rendered = result != null ? result.toString() : "";
             return Matcher.quoteReplacement(rendered);
         });
@@ -156,8 +158,9 @@ public class StringInterpolator {
      * @return the evaluated result
      */
     public static @Nullable Object evaluateExpression(String expression, Map<String, @Nullable Object> variables,
-            LogSession logSession, String sourceLocation) {
-        Object rendered = ExpressionEvaluator.renderObject(expression, variables, logSession, sourceLocation);
+            Consumer<String> envVarCallback, LogSession logSession, String sourceLocation) {
+        Object rendered = ExpressionEvaluator.renderObject(expression, variables, envVarCallback, logSession,
+                sourceLocation);
         return rendered;
     }
 }

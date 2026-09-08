@@ -26,7 +26,7 @@ import org.openhab.binding.chatgpt.internal.api.ChatGPTApiException;
 import org.openhab.binding.chatgpt.internal.api.dto.ChatMessage;
 import org.openhab.binding.chatgpt.internal.api.dto.ChatResponse;
 import org.openhab.binding.chatgpt.internal.hli.ChatGPTHLIService;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -51,14 +51,19 @@ public class ChatGPTHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
     private final HttpClient httpClient;
+    private final TranslationProvider translationProvider;
     private @Nullable ChatGPTConfiguration config;
     private @Nullable ChatGPTApiClient apiClient;
-    private String lastPrompt = "";
     private List<String> models = List.of();
 
-    public ChatGPTHandler(Thing thing, HttpClientFactory httpClientFactory) {
+    public ChatGPTHandler(Thing thing, HttpClient httpClient, TranslationProvider translationProvider) {
         super(thing);
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClient = httpClient;
+        this.translationProvider = translationProvider;
+    }
+
+    public TranslationProvider getTranslationProvider() {
+        return translationProvider;
     }
 
     public @Nullable ChatGPTApiClient getApiClient() {
@@ -68,7 +73,7 @@ public class ChatGPTHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof StringType stringCommand) {
-            lastPrompt = stringCommand.toFullString();
+            String lastPrompt = stringCommand.toFullString();
 
             Channel channel = getThing().getChannel(channelUID);
             if (channel == null) {
@@ -85,6 +90,8 @@ public class ChatGPTHandler extends BaseThingHandler {
                 double temp = config != null ? config.temperature : DEFAULT_TEMPERATURE;
                 double topP = config != null ? config.topP : DEFAULT_TOP_P;
                 int maxTokens = config != null ? config.maxTokens : DEFAULT_MAX_TOKENS;
+                String reasoningEffort = (config != null && !config.reasoningEffort.isBlank()) ? config.reasoningEffort
+                        : DEFAULT_REASONING_EFFORT;
                 String systemMessage = DEFAULT_SYSTEM_MESSAGE;
 
                 ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
@@ -110,6 +117,11 @@ public class ChatGPTHandler extends BaseThingHandler {
                     maxTokens = channelMaxTokens;
                 }
 
+                String channelReasoningEffort = channelConfig.reasoningEffort;
+                if (channelReasoningEffort != null && !channelReasoningEffort.isBlank()) {
+                    reasoningEffort = channelReasoningEffort;
+                }
+
                 String channelSystemMessage = channelConfig.systemMessage;
                 if (channelSystemMessage != null && !channelSystemMessage.isBlank()) {
                     systemMessage = channelSystemMessage;
@@ -117,7 +129,7 @@ public class ChatGPTHandler extends BaseThingHandler {
 
                 try {
                     ChatResponse response = client.sendPrompt(model, lastPrompt, systemMessage, temp, topP, maxTokens,
-                            timeout);
+                            reasoningEffort, timeout);
                     processChatResponse(channelUID, response);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (ChatGPTApiException e) {

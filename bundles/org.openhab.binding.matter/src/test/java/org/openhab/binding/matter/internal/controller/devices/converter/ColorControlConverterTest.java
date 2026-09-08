@@ -25,8 +25,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ColorControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ColorControlCluster.ColorModeEnum;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
@@ -39,6 +41,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateDescription;
 
 /**
@@ -239,6 +242,37 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
         mockColorCluster.colorTempPhysicalMinMireds = ColorControlConverter.MIN_MIREDS;
         converter = new ColorControlConverter(mockColorCluster, mockHandler, 1, "TestLabel");
         assertEquals(ColorControlConverter.MIN_DEFAULT_MIREDS, converter.colorTempPhysicalMinMireds);
+    }
+
+    @Test
+    void testLitBulbAtItsDimmestIsNotReportedAsOff() {
+        AttributeChangedMessage msg = new AttributeChangedMessage();
+        msg.path = new Path();
+        msg.path.attributeName = "currentLevel";
+        msg.value = 1;
+        converter.onEvent(msg);
+
+        verify(mockHandler, times(1)).updateState(eq(1), eq("colorcontrol-color"), eq(new HSBType("0,0,1")));
+    }
+
+    @Test
+    void testFullyDesaturatedCommandReachesWhite() {
+        converter.handleCommand(new ChannelUID("matter:node:test:12345:1#colorcontrol-color"),
+                new HSBType("180,0,100"));
+        assertEquals(0, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("saturation"));
+    }
+
+    @Test
+    void testColorCommandBrightnessUsesTheLightingRange() {
+        converter.handleCommand(new ChannelUID("matter:node:test:12345:1#colorcontrol-color"),
+                new HSBType("180,100,1"));
+        assertEquals(4, capturedCommand(LevelControlCluster.CLUSTER_NAME).args.get("level"));
+    }
+
+    private ClusterCommand capturedCommand(String clusterName) {
+        ArgumentCaptor<ClusterCommand> captor = ArgumentCaptor.forClass(ClusterCommand.class);
+        verify(mockHandler, atLeastOnce()).sendClusterCommand(eq(1), eq(clusterName), captor.capture());
+        return captor.getValue();
     }
 
     @Test

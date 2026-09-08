@@ -40,9 +40,13 @@
 				<default>https://api.openai.com/v1</default>
 				<advanced>true</advanced>
 				<options>
+					<option value="https://api.anthropic.com/v1">Anthropic</option>
+					<option value="https://api.deepseek.com">DeepSeek</option>
+					<option value="https://api.llmbase.ai/v1">LLMBase</option>
+					<option value="https://api.mistral.ai/v1">Mistral</option>
 					<option value="https://api.openai.com/v1">OpenAI</option>
 					<option value="https://openrouter.ai/api/v1">OpenRouter</option>
-					<option value="https://api.mistral.ai/v1">Mistral AI</option>
+					<option value="https://api.x.ai">SpaceXAI</option>
 				</options>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
@@ -84,6 +88,22 @@
 					loops and excess resource usage.</description>
 				<default>10</default>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reasoningEffort" type="text" groupName="hli">
+				<label>Reasoning Effort</label>
+				<description>Controls effort on reasoning for reasoning models. Higher values result in more reasoning tokens and
+					higher latency before returning a response.</description>
+				<default>none</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="none">None</option>
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+					<option value="xhigh">Extra High</option>
+					<option value="max">Max</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<!-- Connection Settings -->
 			<parameter name="requestTimeout" type="integer" min="1" unit="s" groupName="connection">
@@ -129,6 +149,21 @@
 				<description>The system message helps set the behavior of the assistant.</description>
 				<default>You are a helpful assistant.</default>
 				<advanced>false</advanced>
+			</parameter>
+			<parameter name="reasoningEffort" type="text">
+				<label>Reasoning Effort</label>
+				<description>Controls effort on reasoning for reasoning models. Higher values result in more reasoning tokens and
+					higher latency before returning a response.</description>
+				<advanced>true</advanced>
+				<options>
+					<option value="none">None</option>
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+					<option value="xhigh">Extra High</option>
+					<option value="max">Max</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="requestTimeout" type="integer" min="1">
 				<label>Request Timeout</label>

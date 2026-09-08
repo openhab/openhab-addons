@@ -16,18 +16,21 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
+import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -66,10 +69,12 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp.Shelly2DeviceConfigApRE;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventLoraInfo;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -87,6 +92,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
@@ -109,11 +115,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private @Nullable Shelly2AuthChallenge authInfo;
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
-
-    // Plus devices support up to 3 scripts, Pro devices up to 10
-    // We need to find a free script id when uploading our script
-    // We want to limit script ids being checked, so define a max id
-    private static final int MAX_SCRIPT_ID = 15;
 
     // Pro/Plus RGBW(W) PM: RPC method family per settings.lights[i].apiComponent tag - replaces per-call-site
     // profile-string checks (SHELLY2_PROFILE_CCTX2.equals(...)) with a single lookup, correct for hybrid profiles.
@@ -200,10 +201,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (profile.hasBattery) {
             checkSetWsCallback();
         }
+
         if (firstInit && alwaysOn) {
             getStatus(); // make sure profile.status is initialized (e.g. relay/meter status)
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
+
         profile.initialized = true;
 
         try {
@@ -212,28 +215,44 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                         enableBluGateway ? "enabled" : "disabled");
                 if (enableBluGateway) {
-                    boolean bluetooth = getBool(dc.ble.enable);
-                    boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
-                    if (!bluetooth) {
-                        logger.warn("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
-                    }
-                    if (observer) {
-                        logger.warn("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
-                                thingName);
-                    }
-                    boolean restart = false;
-                    if (!bluetooth || observer) {
-                        logger.info("{}: Setup openHAB BLU Gateway", thingName);
-                        restart = setBluetooth(true);
-                    }
+                    if (profile.fwVersion.isEmpty()) {
+                        // fw version not resolved yet (e.g. transient during device boot); skip for now rather
+                        // than risk taking the legacy BLE.SetConfig branch on an actual FW 2.0+ device
+                        logger.debug("{}: Firmware version unknown, skipping BLU Gateway setup for now", thingName);
+                    } else {
+                        boolean restart = false;
+                        ShellyVersionComparator versionComparator = new ShellyVersionComparator();
+                        if (versionComparator.compare(profile.fwVersion, SHELLY2_API_FW_BLEAUTOSCAN) >= 0) {
+                            // FW 2.0 removed the BLE enable/observer config; scanning auto-activates when the
+                            // script starts, so calling setBluetooth() here would only get rejected by the device
+                            installScript(SHELLY2_BLU_GWSCRIPT, true);
+                        } else {
+                            boolean bluetooth = getBool(dc.ble.enable);
+                            boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
+                            if (!bluetooth) {
+                                logger.debug("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
+                            }
+                            if (observer) {
+                                logger.debug("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
+                                        thingName);
+                            }
+                            if (!bluetooth || observer) {
+                                logger.info("{}: Setup openHAB BLU Gateway", thingName);
+                                restart = setBluetooth(true);
+                                bluetooth = true; // setBluetooth() didn't throw, so BLE.SetConfig succeeded
+                            }
 
-                    installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
+                            installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
+                        }
 
-                    if (restart) {
-                        logger.info("{}: Restart device to activate BLU Gateway", thingName);
-                        deviceReboot();
-                        getThing().reinitializeThing();
+                        if (restart) {
+                            logger.info("{}: Restart device to activate BLU Gateway", thingName);
+                            deviceReboot();
+                            getThing().reinitializeThing();
+                        }
                     }
+                } else {
+                    installScript(SHELLY2_BLU_GWSCRIPT, false);
                 }
             }
         } catch (ShellyApiException e) {
@@ -294,18 +313,31 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 return;
             }
 
-            // get script code from bundle resources
-            String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
-            ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
-            if (cl != null) {
-                try (InputStream inputStream = cl.getResourceAsStream(file)) {
-                    if (inputStream != null) {
-                        code = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
-                                .collect(Collectors.joining("\n"));
+            // a user-supplied file overrides the version bundled in the JAR, e.g. to enable DEBUG/TRACE
+            File userFile = new File(USERDATA_SCRIPT_FOLDER, script);
+            if (userFile.isFile()) {
+                try {
+                    code = Files.readString(userFile.toPath(), StandardCharsets.UTF_8);
+                    logger.info("{}: Using custom script {} from {}", thingName, script, userFile);
+                } catch (IOException e) {
+                    logger.warn("{}: Unable to read custom script {}, falling back to bundled version", thingName,
+                            userFile, e);
+                }
+            }
+
+            if (code.isEmpty()) {
+                String file = BUNDLE_RESOURCE_SCRIPTS + "/" + script;
+                ClassLoader cl = Shelly2ApiRpc.class.getClassLoader();
+                if (cl != null) {
+                    try (InputStream inputStream = cl.getResourceAsStream(file)) {
+                        if (inputStream != null) {
+                            code = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                                    .lines().collect(Collectors.joining("\n"));
+                        }
+                    } catch (IOException | UncheckedIOException e) {
+                        logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
+                                thingName, script, file, e);
                     }
-                } catch (IOException | UncheckedIOException e) {
-                    logger.debug("{}: Installation of script {} failed: Unable to read {} from bundle resources!",
-                            thingName, script, file, e);
                 }
             }
 
@@ -384,7 +416,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 parms.append = false;
                 int length = code.length(), processed = 0, chunk = 1;
                 do {
-                    int nextlen = Math.min(1024, length - processed);
+                    int nextlen = Math.min(SCRIPT_CHUNK_SIZE, length - processed);
                     parms.code = code.substring(processed, processed + nextlen);
                     logger.debug("{}: Uploading chunk {} of script (total {} chars, {} processed)", thingName, chunk,
                             length, processed);
@@ -601,7 +633,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.debug("{}: Configuration update detected, re-initialize", thingName);
                     getThing().requestUpdates(1, true); // refresh config
                     break;
-
                 case SHELLY2_EVENT_OTASTART:
                     logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
                     getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
@@ -643,6 +674,42 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_FLOOD_CABLE_UNPLUGGED:
                     logger.debug("{}: Flood sensor cable unplugged", thingName);
                     getThing().postEvent(ALARM_TYPE_SENSOR_ERROR, true);
+                    break;
+                case SHELLY2_EVENT_BLE_SCAN_RESULT:
+                    logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, event);
+                    break;
+                case SHELLY2_EVENT_LORADATA:
+                case SHELLY2_EVENT_LORA_USERRX:
+                    Shelly2NotifyEventLoraInfo loraInfo = e.info;
+                    String loraRaw = loraInfo != null ? loraInfo.data : null;
+                    logger.debug("{}: LoRa data received ({}), payload = {}, sender = {}", thingName, event, loraRaw,
+                            loraInfo != null ? loraInfo.sender : null);
+                    if (loraRaw != null) {
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATARAW, getStringType(loraRaw));
+                        try {
+                            byte[] rxBytes = Base64.getDecoder().decode(fixBase64Padding(loraRaw));
+                            String rxData = decodeUtf8Strict(rxBytes);
+                            if (rxData != null) {
+                                updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RXDATA, getStringType(rxData));
+                            } else {
+                                logger.debug("{}: LoRa RX payload is not valid UTF-8, dataRx channel not updated",
+                                        thingName);
+                            }
+                        } catch (IllegalArgumentException ex) {
+                            logger.debug("{}: LoRa RX payload is not valid Base64: {}", thingName, ex.getMessage());
+                        }
+                    }
+                    if (loraInfo != null && loraInfo.rssi != null) {
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_RSSI,
+                                toQuantityType(loraInfo.rssi, Units.DECIBEL_MILLIWATTS));
+                    }
+                    if (loraInfo != null && loraInfo.snr != null) {
+                        updateChannel(CHANNEL_GROUP_LORA, CHANNEL_LORA_SNR,
+                                toQuantityType(loraInfo.snr, Units.DECIBEL));
+                    }
+                    // force the trigger: the alarm value stays LORA_RECEIVED across consecutive packets, so
+                    // postEvent's de-dup would otherwise swallow all but the first of a fast burst
+                    getThing().postEvent(ALARM_TYPE_LORA_RECEIVED, true);
                     break;
                 default:
                     logger.debug("{}: Event {} was not handled", thingName, e.event);
@@ -851,6 +918,38 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
+        if (profile.isDuo) {
+            ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+            @Nullable
+            Boolean ison;
+            if (profile.isRGBCCT) {
+                Shelly2RGBCCTStatus ls = apiRequest(
+                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGBCCT_STATUS).withId(0),
+                        Shelly2RGBCCTStatus.class);
+                ison = ls.output;
+                boolean inColor = SHELLY_RGBCCT_MODE_RGB.equals(ls.mode);
+                profile.inColor = inColor;
+                profile.device.mode = inColor ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
+                applyBrightness(lightChannel, ls.brightness);
+                if (inColor) {
+                    applyRgbArray(lightChannel, ls.rgb);
+                } else {
+                    lightChannel.temp = ls.ct != null ? getInteger(ls.ct) : null;
+                }
+                lightChannel.hasTimer = ls.timerStartedAt != null;
+                lightChannel.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
+            } else {
+                Shelly2DeviceStatusLight ls = apiRequest(
+                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_CCT_STATUS).withId(0),
+                        Shelly2DeviceStatusLight.class);
+                ison = ls.output;
+                applyBrightness(lightChannel, ls.brightness);
+                lightChannel.temp = ls.ct != null ? getInteger(ls.ct) : null;
+                lightChannel.hasTimer = ls.timerStartedAt != null;
+                lightChannel.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
+            }
+            return buildSingleLightStatus(lightChannel, ison);
+        }
         if (!profile.isRGBW2) {
             throw new ShellyApiException("API call not implemented");
         }
@@ -901,8 +1000,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        String method = lightRpcMethods(profile, index).getStatus();
         ShellyShortLightStatus status = new ShellyShortLightStatus();
+        if (profile.isDuo) {
+            ShellyStatusLight full = getLightStatus();
+            status.ison = full.ison;
+            if (!full.lights.isEmpty()) {
+                ShellyStatusLightChannel light = full.lights.get(0);
+                status.brightness = light.brightness;
+                status.hasTimer = light.hasTimer;
+                status.timerDuration = light.timerDuration;
+            }
+            return status;
+        }
+        String method = lightRpcMethods(profile, index).getStatus();
         Shelly2DeviceStatusLight ls = apiRequest(
                 new Shelly2RpcRequest().withMethod(method).withId(profile.getLightComponentId(index)),
                 Shelly2DeviceStatusLight.class);
@@ -930,7 +1040,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             // Gen2 firmware rejects/clamps brightness=0; on=false is used to turn the light off instead
             params.on = false;
         }
-        apiRequest(lightRpcMethods(profile, id).set(), params, String.class);
+        apiRequest(lightSetMethod(profile, id), params, String.class);
     }
 
     @Override
@@ -939,8 +1049,41 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = profile.getLightComponentId(id);
         params.on = turnMode.equals(SHELLY_API_ON);
-        apiRequest(lightRpcMethods(profile, id).set(), params, String.class);
+        apiRequest(lightSetMethod(profile, id), params, String.class);
         return getLightStatus(id);
+    }
+
+    /**
+     * RPC method for the light's Set call: Duo Bulb G3 (cct:0 or rgbcct:0) routes to its dedicated component,
+     * everything else (incl. hybrid Pro/Plus RGBW(W) PM profiles) uses the per-index component lookup.
+     */
+    private String lightSetMethod(ShellyDeviceProfile profile, int index) {
+        if (profile.isDuo) {
+            return profile.isRGBCCT ? SHELLYRPC_METHOD_RGBCCT_SET : SHELLYRPC_METHOD_CCT_SET;
+        }
+        return lightRpcMethods(profile, index).set();
+    }
+
+    private record AutoTimerTarget(String method, int componentId) {
+    }
+
+    /**
+     * RPC method + component id for the light's SetConfig call (auto-on/auto-off timers): Duo Bulb G3 routes to its
+     * dedicated component, everything else (incl. hybrid Pro/Plus RGBW(W) PM profiles) falls through to the
+     * per-index component lookup, with a Switch fallback for non-light devices.
+     */
+    private AutoTimerTarget autoTimerTarget(ShellyDeviceProfile profile, int index) {
+        if (profile.isDuo) {
+            return new AutoTimerTarget(
+                    profile.isRGBCCT ? SHELLYRPC_METHOD_RGBCCT_SETCONFIG : SHELLYRPC_METHOD_CCT_SETCONFIG, 0);
+        }
+        if (profile.isRGBW2) {
+            return new AutoTimerTarget(lightRpcMethods(profile, index).setConfig(), profile.getLightComponentId(index));
+        }
+        if (profile.isLight || profile.isDimmer) {
+            return new AutoTimerTarget(SHELLYRPC_METHOD_LIGHT_SETCONFIG, index);
+        }
+        return new AutoTimerTarget(SHELLYRPC_METHOD_SWITCH_SETCONFIG, index);
     }
 
     @Override
@@ -951,16 +1094,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        String method;
-        if (profile.isRGBW2) {
-            method = lightRpcMethods(profile, index).setConfig();
-        } else if (profile.isLight || profile.isDimmer) {
-            method = SHELLYRPC_METHOD_LIGHT_SETCONFIG;
-        } else {
-            method = SHELLYRPC_METHOD_SWITCH_SETCONFIG;
-        }
-        int componentId = profile.isRGBW2 ? profile.getLightComponentId(index) : index;
-        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(componentId);
+        AutoTimerTarget target = autoTimerTarget(profile, index);
+        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(target.method()).withId(target.componentId());
         req.params.withConfig();
         // name is intentionally left unset - this call only changes the auto-timer, and the flat
         // settings.lights index used elsewhere in this method does not match the on-device component id
@@ -1117,15 +1252,49 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         setLightParms(lightIndex, Map.of(parm, value));
     }
 
+    private ShellyStatusLight buildSingleLightStatus(ShellyStatusLightChannel channel, @Nullable Boolean ison) {
+        ShellyStatusLight status = new ShellyStatusLight();
+        status.lights = new ArrayList<>();
+        channel.ison = ison;
+        status.lights.add(channel);
+        status.ison = ison;
+        return status;
+    }
+
+    private void applyRgbArray(ShellyStatusLightChannel channel, @Nullable Integer @Nullable [] rgb) {
+        if (rgb != null && rgb.length >= 3) {
+            channel.red = rgb[0];
+            channel.green = rgb[1];
+            channel.blue = rgb[2];
+        }
+    }
+
+    private void applyBrightness(ShellyStatusLightChannel channel, @Nullable Double brightness) {
+        if (brightness != null) {
+            channel.brightness = brightness.intValue();
+        }
+    }
+
+    private void applyRgbParams(Shelly2RpcRequestParams params, Map<String, String> parameters) {
+        String red = parameters.get(SHELLY_COLOR_RED);
+        String green = parameters.get(SHELLY_COLOR_GREEN);
+        String blue = parameters.get(SHELLY_COLOR_BLUE);
+        if (red != null && green != null && blue != null) {
+            params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
+        }
+    }
+
+    private void applyCctParam(Shelly2RpcRequestParams params, Map<String, String> parameters) {
+        String ct = parameters.get(SHELLY_COLOR_TEMP);
+        if (ct != null) {
+            params.ct = Integer.parseInt(ct);
+        }
+    }
+
     @Override
     public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        if (!profile.isRGBW2) {
-            throw new ShellyApiException("API call not implemented");
-        }
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        params.id = profile.getLightComponentId(lightIndex);
-
         if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
             params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
         }
@@ -1139,41 +1308,87 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             params.on = b > 0;
         }
 
+        if (profile.isDuo) {
+            params.id = profile.getLightComponentId(lightIndex);
+            if (profile.isRGBCCT) {
+                setRgbcctParms(profile, params, parameters);
+            } else {
+                applyCctParam(params, parameters);
+                if (params.on == null && params.brightness == null && params.ct == null) {
+                    return; // CCT.Set requires at least one of on, brightness or ct
+                }
+                apiRequest(SHELLYRPC_METHOD_CCT_SET, params, String.class);
+            }
+            return;
+        }
+        if (!profile.isRGBW2) {
+            throw new ShellyApiException("API call not implemented");
+        }
+        params.id = profile.getLightComponentId(lightIndex);
         ShellyLightApiComponent tag = lightComponentTag(profile, lightIndex);
         if (isRgbwComponent(tag)) {
-            String red = parameters.get(SHELLY_COLOR_RED);
-            String green = parameters.get(SHELLY_COLOR_GREEN);
-            String blue = parameters.get(SHELLY_COLOR_BLUE);
-            if (red != null && green != null && blue != null) {
-                params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
-            }
+            applyRgbParams(params, parameters);
             String white = parameters.get(SHELLY_COLOR_WHITE);
             if (white != null) {
                 params.white = Integer.parseInt(white);
             }
         } else if (isRgbComponent(tag)) {
-            String red = parameters.get(SHELLY_COLOR_RED);
-            String green = parameters.get(SHELLY_COLOR_GREEN);
-            String blue = parameters.get(SHELLY_COLOR_BLUE);
-            if (red != null && green != null && blue != null) {
-                params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
-            }
+            applyRgbParams(params, parameters);
         } else if (isCctComponent(tag)) {
-            String ct = parameters.get(SHELLY_COLOR_TEMP);
-            if (ct != null) {
-                params.ct = Integer.parseInt(ct);
-            }
+            applyCctParam(params, parameters);
         }
         apiRequest(lightRpcMethods(profile, lightIndex).set(), params, String.class);
     }
 
-    /*
-     * The following API calls are not yet relevant, because currently there a no Plus/Pro (Gen2) devices of those
-     * categories (e.g. bulbs)
+    /**
+     * Single RGBCCT.Set request for the Multicolor Bulb G3: an optional mode switch (SHELLY_API_MODE) is combined with
+     * the rgb/ct values of the target mode. RGBCCT.Set requires on or brightness, so a request that only carries
+     * mode/rgb/ct repeats the current power state (the handler adds turn=on itself when autoOn is enabled).
      */
+    private void setRgbcctParms(ShellyDeviceProfile profile, Shelly2RpcRequestParams params,
+            Map<String, String> parameters) throws ShellyApiException {
+        String mode = parameters.get(SHELLY_API_MODE);
+        boolean inColor = mode != null ? SHELLY_MODE_COLOR.equals(mode) : profile.inColor;
+        if (mode != null) {
+            params.mode = inColor ? SHELLY_RGBCCT_MODE_RGB : SHELLY_RGBCCT_MODE_CCT;
+        }
+        if (inColor) {
+            applyRgbParams(params, parameters);
+        } else {
+            applyCctParam(params, parameters);
+        }
+        if (params.on == null && params.brightness == null) {
+            List<ShellySettingsLight> lights = profile.status.lights;
+            Boolean ison = lights != null && !lights.isEmpty() ? lights.get(0).ison : null;
+            params.on = ison != null ? ison : true;
+        }
+        apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
+        if (mode != null) {
+            profile.inColor = inColor;
+            profile.device.mode = mode;
+        }
+    }
+
+    @Override
+    public void loraSendData(int index, String data) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (profile.settings.loraComponentIds == null || index < 0
+                || index >= profile.settings.loraComponentIds.length) {
+            throw new ShellyApiException("Invalid LoRa component id (index=" + index + ")");
+        }
+        Integer componentId = profile.settings.loraComponentIds[index];
+        Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LORA_SENDDATA)
+                .withId(componentId != null ? componentId.intValue() : 100).withData(data);
+        apiRequest(req);
+    }
 
     @Override
     public void setLightMode(String mode) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (profile.isRGBCCT) {
+            setLightParms(0, Map.of(SHELLY_API_MODE, mode));
+            return;
+        }
         throw new ShellyApiException("API call not implemented");
     }
 

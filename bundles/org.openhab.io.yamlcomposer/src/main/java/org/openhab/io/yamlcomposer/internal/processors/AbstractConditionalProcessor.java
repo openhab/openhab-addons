@@ -12,6 +12,8 @@
  */
 package org.openhab.io.yamlcomposer.internal.processors;
 
+import java.util.function.Consumer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
@@ -27,9 +29,11 @@ import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
 @NonNullByDefault
 public abstract class AbstractConditionalProcessor {
     protected final BufferedLogger logger;
+    protected final Consumer<String> envVarCallback;
 
-    protected AbstractConditionalProcessor(BufferedLogger logger) {
+    protected AbstractConditionalProcessor(BufferedLogger logger, Consumer<String> envVarCallback) {
         this.logger = logger;
+        this.envVarCallback = envVarCallback;
     }
 
     /**
@@ -70,7 +74,7 @@ public abstract class AbstractConditionalProcessor {
             }
 
             Object result = StringInterpolator.evaluateExpression(exprStr, recursiveTransformer.getVariables(),
-                    logger.getLogSession(), sourceLocation);
+                    envVarCallback, logger.getLogSession(), sourceLocation);
             return ExpressionEvaluator.isTruthy(result);
         }
 

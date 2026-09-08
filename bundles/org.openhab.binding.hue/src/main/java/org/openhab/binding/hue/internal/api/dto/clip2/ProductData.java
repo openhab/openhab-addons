@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
@@ -26,22 +28,22 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ProductData {
     private @SerializedName("model_id") @NonNullByDefault({}) String modelId;
-    private @SerializedName("manufacturer_name") @NonNullByDefault({}) String manufacturerName;
-    private @SerializedName("product_name") @NonNullByDefault({}) String productName;
-    private @SerializedName("product_archetype") @NonNullByDefault({}) String productArchetype;
-    private @NonNullByDefault({}) Boolean certified;
-    private @SerializedName("software_version") @NonNullByDefault({}) String softwareVersion;
+    private @SerializedName("product_archetype") @Nullable String productArchetype;
+    private @SerializedName("manufacturer_name") @Nullable String manufacturerName;
+    private @SerializedName("product_name") @Nullable String productName;
+    private @Nullable Boolean certified;
+    private @SerializedName("software_version") @Nullable String softwareVersion;
     private @SerializedName("hardware_platform_type") @Nullable String hardwarePlatformType;
 
     public String getModelId() {
-        return modelId;
+        return Objects.requireNonNull(modelId);
     }
 
-    public String getManufacturerName() {
+    public @Nullable String getManufacturerName() {
         return manufacturerName;
     }
 
-    public String getProductName() {
+    public @Nullable String getProductName() {
         return productName;
     }
 
@@ -49,12 +51,21 @@ public class ProductData {
         return Archetype.of(productArchetype);
     }
 
+    public String getProductArchetypeAsString() {
+        return getProductArchetype().toString();
+    }
+
     public Boolean getCertified() {
+        Boolean certified = this.certified;
         return certified != null ? certified : false;
     }
 
-    public String getSoftwareVersion() {
-        return softwareVersion != null ? softwareVersion : "";
+    public String getCertifiedAsString() {
+        return getCertified().toString();
+    }
+
+    public @Nullable String getSoftwareVersion() {
+        return softwareVersion;
     }
 
     public @Nullable String getHardwarePlatformType() {

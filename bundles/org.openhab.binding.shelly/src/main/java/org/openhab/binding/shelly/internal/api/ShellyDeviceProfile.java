@@ -80,6 +80,7 @@ public class ShellyDeviceProfile {
     public String hwBatchId = "";
     public String fwVersion = "";
     public String fwDate = "";
+    public String addOnFw = "";
 
     public boolean hasRelays; // true if it has at least 1 power meter
     public int numRelays = 0; // number of relays/outputs
@@ -95,9 +96,11 @@ public class ShellyDeviceProfile {
     public boolean isLight; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb; // true only if it is a Bulb
     public boolean isDuo; // true only if it is a Duo
+    public boolean isVintage; // true only for Shelly Vintage (isDuo, but fixed warm-white, no CCT)
     public boolean isRGBW2; // true only if it a RGBW2
     public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
                                  // from a Plus RGBW PM running the same rgb/rgbw/light profile)
+    public boolean isRGBCCT; // true for Gen3 Multicolor Bulb with rgbcct:0 component (RGB + CCT mode switching)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
     public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
 
@@ -216,6 +219,8 @@ public class ShellyDeviceProfile {
         isDimmer = GROUP_DIMMER_THING_TYPES.contains(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
+        isVintage = THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID);
+        isRGBCCT = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
         isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
@@ -483,6 +488,12 @@ public class ShellyDeviceProfile {
             btnType = getString(light.btnType);
         }
 
+        if (btnType.equalsIgnoreCase(SHELLY_BTNT_ACTIVATE)) {
+            // Switch.in_mode=activate alone doesn't imply a button input (Shelly also uses it for stateful
+            // switch/PIR inputs); only the paired Input component (settings.inputs) reveals the real input type
+            return inputs != null && idx < inputs.size()
+                    && SHELLY_BTNT_MOMENTARY.equalsIgnoreCase(getString(inputs.get(idx).btnType));
+        }
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);

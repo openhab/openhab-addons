@@ -158,7 +158,7 @@ public class BluetoothChannelUtils {
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }
-                request.setField(fieldName, decimalType.longValue());
+                request.setField(fieldName, decimalType.doubleValue());
                 return;
             }
             case FLOAT_IEE754:

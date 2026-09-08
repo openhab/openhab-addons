@@ -67,6 +67,7 @@ public class ViessmannBindingConstants {
     public static final String REPRESENTATION_ID = "representationId";
 
     public static final Map<String, String> UNIT_MAP = Map.ofEntries(entry("celsius", SIUnits.CELSIUS.getSymbol()), //
+            entry("Celsius", SIUnits.CELSIUS.getSymbol()), //
             entry("kelvin", Units.KELVIN.toString()), //
             entry("wattHour", Units.WATT_HOUR.toString()), //
             entry("kilowattHour", Units.KILOWATT_HOUR.toString()), //
