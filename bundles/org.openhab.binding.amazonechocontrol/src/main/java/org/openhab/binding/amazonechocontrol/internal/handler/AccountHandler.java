@@ -244,7 +244,6 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 }
 
                 SendConversationDTO conversation = new SendConversationDTO();
-                conversation.conversationId = "amzn1.comms.messaging.id.conversationV2~31e6fe8f-8b0c-4e84-a1e4-80030a09009b";
                 conversation.clientMessageId = java.util.UUID.randomUUID().toString();
                 conversation.messageId = lastMessageId++;
                 conversation.sender = currentAccount.commsId;
