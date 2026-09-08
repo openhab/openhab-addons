@@ -16,13 +16,11 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_ACTIVATE;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_EDGE;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -32,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
@@ -610,9 +609,9 @@ public class ShellyDeviceProfileTest {
         ShellySettingsRelay relay = new ShellySettingsRelay();
         relay.btnType = SHELLY_BTNT_ACTIVATE;
         profile.settings.relays = new ArrayList<>();
-        profile.settings.relays.add(relay);
+        Objects.requireNonNull(profile.settings.relays).add(relay);
         profile.settings.inputs = new ArrayList<>();
-        profile.settings.inputs.add(new ShellySettingsInput(inputBtnType));
+        Objects.requireNonNull(profile.settings.inputs).add(new ShellySettingsInput(inputBtnType));
 
         assertThat(profile.inButtonMode(0), is(equalTo(expectedButtonMode)));
     }

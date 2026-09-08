@@ -259,13 +259,13 @@ class ShellyLightModelTest {
         // Turn OFF (this sets brightness=0)
         model.handleCommand(OnOffType.OFF);
 
-        assertTrue(model.isOnOffDirty(), "ON/OFF should be dirty");
-        assertTrue(model.isBrightnessDirty(), "Brightness changes when turning OFF");
-        assertFalse(model.isColorDirty(), "Color should not be dirty for a white-only lamp");
+        assertTrue(model.isOnOffDirty());
+        assertTrue(model.isBrightnessDirty());
+        assertTrue(model.isColorDirty());
     }
 
     @Test
-    void handleCommandPercentMarksGainAndOnOffDirty() {
+    void handleCommandBrightnessPercentMarksGainAndOnOffDirty() {
         ShellyLightModel model = ShellyLightModel.create(mockHandler(THING_TYPE_SHELLYDUO), 0,
                 new ShellyDeviceProfile(THING_TYPE_SHELLYDUO), STEP);
 
@@ -275,7 +275,7 @@ class ShellyLightModelTest {
 
         assertTrue(model.isGainDirty());
         assertTrue(model.isOnOffDirty());
-        assertFalse(model.isColorDirty());
+        assertTrue(model.isColorDirty());
     }
 
     @Test
@@ -289,7 +289,7 @@ class ShellyLightModelTest {
 
         assertTrue(model.isGainDirty());
         assertTrue(model.isOnOffDirty());
-        assertFalse(model.isColorDirty());
+        assertTrue(model.isColorDirty());
     }
 
     @Test

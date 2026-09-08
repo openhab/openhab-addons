@@ -924,14 +924,6 @@ public class ShellyComponentsTest {
         handler.addLightModel(0, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
         handler.addLightModel(1, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
 
-        // ShellySettingsStatus status = new ShellySettingsStatus();
-        // ShellySettingsLight colorLight = new ShellySettingsLight(); // settings.lights[0], the "rgb" color slot
-        // ShellySettingsLight cctLight = new ShellySettingsLight(); // settings.lights[1], the "cct" secondary slot
-        // cctLight.ison = true;
-        // cctLight.brightness = 42;
-        // cctLight.temp = 4000;
-        // status.lights = new ArrayList<>(List.of(colorLight, cctLight));
-
         Shelly2DeviceStatusLight value = new Shelly2DeviceStatusLight();
         value.id = 0;
         value.output = true;
@@ -972,16 +964,8 @@ public class ShellyComponentsTest {
         handler.addLightModel(0, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
         handler.addLightModel(1, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
 
-        // ShellySettingsStatus status = new ShellySettingsStatus();
-        // ShellySettingsLight colorLight = new ShellySettingsLight();
-        // ShellySettingsLight cctLight = new ShellySettingsLight();
-        // cctLight.ison = true;
-        // cctLight.brightness = 42;
-        // cctLight.temp = 4500;
-        // status.lights = new ArrayList<>(List.of(colorLight, cctLight));
-
         Shelly2DeviceStatusLight value = new Shelly2DeviceStatusLight();
-        value.id = 0;
+        value.id = 1;
         value.output = true;
         value.brightness = 42.0;
         value.ct = 4500;
