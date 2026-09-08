@@ -195,6 +195,23 @@ public abstract class BluetoothDevice {
     public abstract boolean disconnect();
 
     /**
+     * Re-establishes the link to a device <em>without</em> changing the caller's intent to stay connected. This
+     * is the recovery path for a connection that is up at the link level but has not produced usable GATT
+     * services (the handler wants to bounce the link and try service discovery again, not give the device up).
+     * <p>
+     * It is distinct from {@link #disconnect()}, which signals "no longer want this device connected". A
+     * transport that tracks connection intent (e.g. to keep an {@code alwaysConnected} device connected) must
+     * NOT treat a {@code reconnect()} as a request to stop connecting. The default implementation falls back to
+     * {@link #disconnect()} so transports that do not track intent keep their existing disconnect-then-reconnect
+     * recovery behaviour unchanged.
+     *
+     * @return true if the reconnect (or fallback disconnect) process is started successfully
+     */
+    public boolean reconnect() {
+        return disconnect();
+    }
+
+    /**
      * Starts a discovery on a device. This will iterate through all services and characteristics to build up a view of
      * the device.
      * <p>
