@@ -208,7 +208,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT, "relayOutput", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_BTN_TYPE, "btnType", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_BUTTON_TRIGGER, "system:button", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
@@ -232,14 +231,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STOPR, "rollerStop", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_SAFETY, "rollerSafety", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_BTN_TYPE, "btnType", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_EVENT_TRIGGER, "system:button", "system:button"))
 
                 // Bulb/Duo/Vintage
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_BTN_TYPE, "btnType", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_BUTTON_TRIGGER, "system:button", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
@@ -348,7 +345,6 @@ public class ShellyChannelDefinitions {
 
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
-                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_BTN_TYPE, "btnType", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_BUTTON_TRIGGER, "system:button", ITEMT_STRING))
@@ -420,8 +416,6 @@ public class ShellyChannelDefinitions {
 
         if (channel.startsWith(CHANNEL_INPUT)) {
             channel = CHANNEL_INPUT;
-        } else if (channel.startsWith(CHANNEL_BTN_TYPE)) {
-            channel = CHANNEL_BTN_TYPE;
         } else if (channel.startsWith(CHANNEL_BUTTON_TRIGGER)) {
             channel = CHANNEL_BUTTON_TRIGGER;
         } else if (channel.startsWith(CHANNEL_STATUS_EVENTTYPE)) {
@@ -659,8 +653,6 @@ public class ShellyChannelDefinitions {
                 String suffix = profile.getInputSuffix(i); // multi ? String.valueOf(i + 1) : "";
                 addChannel(thing, add, !profile.isBlu && !profile.isButton && !profile.isMultiButton, group,
                         CHANNEL_INPUT + suffix);
-                addChannel(thing, add, !profile.isBlu && !profile.isButton && !profile.isMultiButton
-                        && !profile.getButtonType(i).isEmpty(), group, CHANNEL_BTN_TYPE + suffix);
                 addChannel(thing, add, true, group,
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
@@ -1021,8 +1013,7 @@ public class ShellyChannelDefinitions {
         if (!channelDef.label.isEmpty()) {
             char grseq = lastChar(group);
             // Only genuinely indexed names get a digit suffix — same allowlist as getDefinition() uses.
-            boolean chIndexed = channelName.startsWith(CHANNEL_INPUT) || channelName.startsWith(CHANNEL_BTN_TYPE)
-                    || channelName.startsWith(CHANNEL_BUTTON_TRIGGER)
+            boolean chIndexed = channelName.startsWith(CHANNEL_INPUT) || channelName.startsWith(CHANNEL_BUTTON_TRIGGER)
                     || channelName.startsWith(CHANNEL_STATUS_EVENTTYPE)
                     || channelName.startsWith(CHANNEL_STATUS_EVENTCOUNT);
             char chseq = chIndexed ? lastChar(channelName) : ' ';

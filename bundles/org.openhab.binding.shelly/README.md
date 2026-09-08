@@ -573,10 +573,6 @@ If you want to use those events triggering a rule:
 - If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
 - For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event
 
-The advanced channel `btnType` (`btnType1`/`btnType2` for devices with multiple inputs) reports the input mode as configured on the device:
-`momentary`, `momentary_on_release`, `one_button`, `dual_button`, `toggle`, `edge`, `detached`, `activate`, `cycle`, `dim` or `dual_dim`.
-Gen2+ devices report `follow` as `edge` and `flip` as `toggle`.
-
 ### Alarms
 
 The binding provides health monitoring functions for the device.
