@@ -411,8 +411,8 @@ public class ShellyChannelDefinitions {
             group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
 
-        if (channel.startsWith(CHANNEL_INPUT)) {
-            channel = CHANNEL_INPUT;
+        if (!CHGR_SENSOR.equals(group) && channel.startsWith(CHANNEL_INPUT)) {
+            channel = CHANNEL_INPUT; // status#input0..n -> status#input; sensors#input1 (Addon) is a fixed name
         } else if (channel.startsWith(CHANNEL_BUTTON_TRIGGER)) {
             channel = CHANNEL_BUTTON_TRIGGER;
         } else if (channel.startsWith(CHANNEL_STATUS_EVENTTYPE)) {
@@ -558,12 +558,14 @@ public class ShellyChannelDefinitions {
 
     private static void addAddonChannels(final Thing thing, final ShellyDeviceProfile profile, int idx,
             Map<String, Channel> add) {
-        // Shelly 1/1PM and Plus 1/1PM Addon
-        boolean addon = profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
-                && idx == getInteger(profile.settings.extSwitch.input0.relayNum);
-        if (addon) {
-            addChannel(thing, add, addon, CHGR_SENSOR,
-                    CHANNEL_ESENSOR_INPUT + (profile.settings.extSwitch.input0.relayNum + 1));
+        // Shelly 1/1PM Addon as external switch (e.g. reed contact); relay_num -1 means standalone.
+        ShellyStatusSensor.ShellyExtSwitchSettings.ShellyExtSwitchSettingsInput extSwitchInput = profile.settings.extSwitch != null
+                ? profile.settings.extSwitch.input0
+                : null;
+        if (extSwitchInput != null) {
+            int relayNum = getInteger(extSwitchInput.relayNum);
+            boolean addon = idx == relayNum || (idx == 0 && relayNum == -1);
+            addChannel(thing, add, addon, CHGR_SENSOR, CHANNEL_ESENSOR_INPUT1);
         }
         ShellyStatusSensor.ShellyExtTemperature extTemp = profile.status.extTemperature;
         if (extTemp != null) {
