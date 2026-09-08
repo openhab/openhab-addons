@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -86,12 +87,14 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DeutscheBahnTrainHandler.class);
     private final List<ChannelWithConfig> configuredChannels = new ArrayList<>();
+    private final TimetableTimeConverter timeConverter;
 
     /**
      * Creates a new {@link DeutscheBahnTrainHandler}.
      */
-    public DeutscheBahnTrainHandler(Thing thing) {
+    public DeutscheBahnTrainHandler(Thing thing, TimetableTimeConverter timeConverter) {
         super(thing);
+        this.timeConverter = timeConverter;
     }
 
     @Override
@@ -159,7 +162,7 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
         }
         final ChannelWithConfig channelWithConfig = new ChannelWithConfig( //
                 channelUid, //
-                new EventAttributeSelection(eventType, attribute));
+                new EventAttributeSelection(eventType, attribute, timeConverter));
         this.configuredChannels.add(channelWithConfig);
     }
 

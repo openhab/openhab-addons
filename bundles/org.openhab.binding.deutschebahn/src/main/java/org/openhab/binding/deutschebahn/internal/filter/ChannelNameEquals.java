@@ -20,6 +20,7 @@ import org.openhab.binding.deutschebahn.internal.EventAttribute;
 import org.openhab.binding.deutschebahn.internal.EventAttributeSelection;
 import org.openhab.binding.deutschebahn.internal.EventType;
 import org.openhab.binding.deutschebahn.internal.TripLabelAttribute;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 
 /**
  * Token representing an attribute filter.
@@ -77,11 +78,13 @@ public final class ChannelNameEquals extends FilterToken {
     /**
      * Maps this into a {@link TimetableStopByStringEventAttributeFilter}.
      */
-    public TimetableStopByStringEventAttributeFilter mapToPredicate() throws FilterParserException {
-        return new TimetableStopByStringEventAttributeFilter(mapAttributeSelection(), filterValue);
+    public TimetableStopByStringEventAttributeFilter mapToPredicate(TimetableTimeConverter timeConverter)
+            throws FilterParserException {
+        return new TimetableStopByStringEventAttributeFilter(mapAttributeSelection(timeConverter), filterValue);
     }
 
-    private AttributeSelection mapAttributeSelection() throws FilterParserException {
+    private AttributeSelection mapAttributeSelection(TimetableTimeConverter timeConverter)
+            throws FilterParserException {
         switch (this.channelGroup) {
             case "trip":
                 final TripLabelAttribute<?, ?> tripAttribute = TripLabelAttribute.getByChannelName(this.channelName);
@@ -97,7 +100,7 @@ public final class ChannelNameEquals extends FilterToken {
                 if (departureAttribute == null) {
                     throw new FilterParserException("Invalid departure channel: " + channelName);
                 }
-                return new EventAttributeSelection(eventTypeDeparture, departureAttribute);
+                return new EventAttributeSelection(eventTypeDeparture, departureAttribute, timeConverter);
 
             case "arrival":
                 final EventType eventTypeArrival = EventType.ARRIVAL;
@@ -106,7 +109,7 @@ public final class ChannelNameEquals extends FilterToken {
                 if (arrivalAttribute == null) {
                     throw new FilterParserException("Invalid arrival channel: " + channelName);
                 }
-                return new EventAttributeSelection(eventTypeArrival, arrivalAttribute);
+                return new EventAttributeSelection(eventTypeArrival, arrivalAttribute, timeConverter);
             default:
                 throw new FilterParserException("Unknown channel group: " + channelGroup);
         }

@@ -14,6 +14,7 @@ package org.openhab.binding.deutschebahn.internal.filter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.ZoneId;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,6 +23,7 @@ import org.openhab.binding.deutschebahn.internal.EventAttribute;
 import org.openhab.binding.deutschebahn.internal.EventAttributeSelection;
 import org.openhab.binding.deutschebahn.internal.EventType;
 import org.openhab.binding.deutschebahn.internal.TripLabelAttribute;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TripLabel;
@@ -33,6 +35,8 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.TripLabel;
  */
 @NonNullByDefault
 public final class TimetableByStringEventAttributeFilterTest {
+
+    private static final TimetableTimeConverter TIME_CONVERTER = new TimetableTimeConverter(ZoneId.of("Europe/Berlin"));
 
     @Test
     public void testFilterTripLabelAttribute() {
@@ -61,7 +65,7 @@ public final class TimetableByStringEventAttributeFilterTest {
     @Test
     public void testFilterEventAttribute() {
         final EventAttributeSelection eventAttribute = new EventAttributeSelection(EventType.DEPARTURE,
-                EventAttribute.L);
+                EventAttribute.L, TIME_CONVERTER);
         final TimetableStopByStringEventAttributeFilter filter = new TimetableStopByStringEventAttributeFilter(
                 eventAttribute, Pattern.compile("RE.*"));
         final TimetableStop stop = new TimetableStop();
@@ -92,7 +96,7 @@ public final class TimetableByStringEventAttributeFilterTest {
     @Test
     public void testFilterEventAttributeList() {
         final EventAttributeSelection eventAttribute = new EventAttributeSelection(EventType.DEPARTURE,
-                EventAttribute.PPTH);
+                EventAttribute.PPTH, TIME_CONVERTER);
         final TimetableStopByStringEventAttributeFilter filter = new TimetableStopByStringEventAttributeFilter(
                 eventAttribute, Pattern.compile("Hannover.*"));
         final TimetableStop stop = new TimetableStop();

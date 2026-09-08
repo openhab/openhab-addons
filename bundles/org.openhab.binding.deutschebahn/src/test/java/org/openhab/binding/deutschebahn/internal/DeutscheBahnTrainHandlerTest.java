@@ -15,13 +15,15 @@ package org.openhab.binding.deutschebahn.internal;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TripLabel;
@@ -47,6 +49,7 @@ import org.openhab.core.types.UnDefType;
 public class DeutscheBahnTrainHandlerTest {
 
     private static final String SAMPLE_PATH = "Bielefeld Hbf|Herford|Löhne(Westf)|Bad Oeynhausen|Porta Westfalica|Minden(Westf)|Bückeburg|Stadthagen|Haste|Wunstorf|Hannover Hbf|Lehrte";
+    private static final TimetableTimeConverter TIME_CONVERTER = new TimetableTimeConverter(ZoneId.of("Europe/Berlin"));
 
     private static Configuration createConfig(int position) {
         final Configuration config = new Configuration();
@@ -93,7 +96,7 @@ public class DeutscheBahnTrainHandlerTest {
 
     private static DeutscheBahnTrainHandler createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
-        final DeutscheBahnTrainHandler handler = new DeutscheBahnTrainHandler(thing);
+        final DeutscheBahnTrainHandler handler = new DeutscheBahnTrainHandler(thing, TIME_CONVERTER);
         handler.setCallback(callback);
         handler.initialize();
         return handler;
@@ -101,6 +104,11 @@ public class DeutscheBahnTrainHandlerTest {
 
     private static State getDateTime(final Date day) {
         return new DateTimeType(day.toInstant());
+    }
+
+    private static Date createDate(int year, int month, int dayOfMonth, int hour, int minute) {
+        return Date.from(LocalDateTime.of(year, month, dayOfMonth, hour, minute).atZone(TIME_CONVERTER.getTimeZone())
+                .toInstant());
     }
 
     @Test
@@ -136,8 +144,8 @@ public class DeutscheBahnTrainHandlerTest {
 
             handler.updateChannels(stop);
 
-            final Date arrivalTime = new GregorianCalendar(2021, 7, 16, 14, 34).getTime();
-            final Date departureTime = new GregorianCalendar(2021, 7, 16, 14, 35).getTime();
+            final Date arrivalTime = createDate(2021, 8, 16, 14, 34);
+            final Date departureTime = createDate(2021, 8, 16, 14, 35);
 
             verify(callback, timeout(1000)).stateUpdated(new ChannelUID(thing.getUID(), "trip#category"),
                     new StringType("WFB"));
@@ -182,7 +190,7 @@ public class DeutscheBahnTrainHandlerTest {
 
             handler.updateChannels(stop);
 
-            final Date arrivalTime = new GregorianCalendar(2021, 7, 16, 14, 34).getTime();
+            final Date arrivalTime = createDate(2021, 8, 16, 14, 34);
 
             verify(callback, timeout(1000)).stateUpdated(new ChannelUID(thing.getUID(), "trip#category"),
                     UnDefType.UNDEF);
