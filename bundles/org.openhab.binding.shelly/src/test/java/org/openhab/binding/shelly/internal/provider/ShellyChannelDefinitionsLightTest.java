@@ -159,8 +159,14 @@ public class ShellyChannelDefinitionsLightTest {
 
         Channel temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP));
         assertNotNull(temp);
-        assertEquals(CHANNEL_TYPE_WHITE_TEMP_DUO, Objects.requireNonNull(temp.getChannelTypeUID()).getId());
+        assertEquals("color-temperature", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
+        assertEquals(ITEMT_DIMMER, temp.getAcceptedItemType());
+
+        temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_ABS));
+        assertNotNull(temp);
+        assertEquals("color-temperature-abs", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
         assertEquals(ITEMT_TEMP, temp.getAcceptedItemType());
+
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
         assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER)));
     }
@@ -179,7 +185,7 @@ public class ShellyChannelDefinitionsLightTest {
 
         Channel temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP));
         assertNotNull(temp);
-        assertEquals("whiteTemp", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
+        assertEquals("color-temperature", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
         assertEquals(ITEMT_DIMMER, temp.getAcceptedItemType());
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER)));
     }

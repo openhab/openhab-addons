@@ -243,7 +243,7 @@ public class Shelly1CoIoTProtocol {
      * @param sen Sensor description from the update
      * @param s New sensor value
      * @param allUpdates List of updates. This is required, because we need power and brightness from the same batch
-     * TODO fixup
+     * @param lightModelHandler Optional light model handler, required for RGBW2/Bulb to update the model state
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
             CoIotSensor s, List<CoIotSensor> allUpdates, @Nullable ShellyLightModelHandler lightModelHandler) {

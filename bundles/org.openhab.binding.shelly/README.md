@@ -1259,8 +1259,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 | Group   | Channel         | Type               | read-only | Advanced | Description                                                                          |
 | ------- | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
-| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                  |
-|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+| control | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
 |         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
 |         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
 | white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                   |
@@ -1273,8 +1272,7 @@ The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo -
 
 | Group   | Channel         | Type               | read-only | Advanced | Description                                                                          |
 | ------- | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
-| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                  |
-|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+| control | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
 |         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
 |         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
 | color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                |

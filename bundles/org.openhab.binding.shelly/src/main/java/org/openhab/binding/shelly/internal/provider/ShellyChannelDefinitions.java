@@ -131,7 +131,6 @@ public class ShellyChannelDefinitions {
     private static final ChannelMap CHANNEL_DEFINITIONS = new ChannelMap();
     // Channel types selected per device instead of per channel id, complete definitions keyed by channel type id
     private static final Map<String, ShellyChannel> CHANNEL_TYPE_OVERRIDES = new HashMap<>();
-    public static final String CHANNEL_TYPE_WHITE_TEMP_DUO = "whiteTempDuo";
 
     @Activate
     public ShellyChannelDefinitions(@Reference ShellyTranslationProvider translationProvider) {
@@ -410,9 +409,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_SNR, "loraSNR", ITEMT_DIMENSIONLESS))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_AIRTIME, "loraAirtime", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RSSI, "loraSignal", ITEMT_POWER));
-
-        CHANNEL_TYPE_OVERRIDES.put(CHANNEL_TYPE_WHITE_TEMP_DUO, new ShellyChannel(m, CHANNEL_GROUP_WHITE_CONTROL,
-                CHANNEL_COLOR_TEMP, CHANNEL_TYPE_WHITE_TEMP_DUO, ITEMT_TEMP));
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -632,22 +628,20 @@ public class ShellyChannelDefinitions {
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
 
-            // dynamically add any missing white-group or per-light channels
-            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHGR_WHITE;
+            // dynamically add missing control group channels
             addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
-// TODO
-            // Gen3 Duo/Multicolor Bulb (isDuo && isGen2) has no power channel (brightness 0 = off); the Gen1 Duo RGBW
-            // keeps its documented one
-      //      addChannel(thing, add, profile.hasColorTag(idx) && !(profile.isDuo && profile.isGen2), group,
-        //            CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
-            addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
-            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
-            // dynamically add any missing color control group channels
+            // dynamically add missing white group channels
+            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHGR_WHITE;
+            boolean hasCCT = status.temp != null || (profile.isDuo && profile.isGen2) || profile.isBulb;
+            addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
+            addChannel(thing, add, hasCCT, whiteGroup, CHANNEL_COLOR_TEMP);
+            addChannel(thing, add, hasCCT, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
+
+            // dynamically add missing color group channels
             if (profile.hasColorTag(idx)) {
                 addChannel(thing, add, true, CHGR_COLOR, CHANNEL_COLOR_PICKER);
                 addChannel(thing, add, true, CHGR_COLOR, CHANNEL_COLOR_FULL);
@@ -658,15 +652,6 @@ public class ShellyChannelDefinitions {
                 addChannel(thing, add, status.gain != null, CHGR_COLOR, CHANNEL_COLOR_GAIN);
                 addChannel(thing, add, status.effect != null, CHGR_COLOR, CHANNEL_COLOR_EFFECT);
             }
-// TODO
-            // Gen3 Duo/Multicolor Bulb and Gen1 Bulb may omit ct while off, so their CCT channel is created
-            // unconditionally; the Gen3 bulbs get the Number:Temperature channel type (2700-6500K), Gen1 devices keep
-            // their Dimmer-based one
-            boolean isGen3Bulb = profile.isDuo && profile.isGen2;
-            boolean hasCCT = status.temp != null || isGen3Bulb || profile.isBulb;
-            addChannel(thing, add, hasCCT, whiteGroup, CHANNEL_COLOR_TEMP,
-                    isGen3Bulb ? CHANNEL_TYPE_WHITE_TEMP_DUO : null);
-                    // TODO ends
         }
 
         return add;

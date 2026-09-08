@@ -20,8 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.measure.MetricPrefix;
@@ -31,7 +31,6 @@ import javax.measure.quantity.Pressure;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
@@ -888,44 +887,45 @@ public class ShellyComponents {
 
     public static boolean updateRGBW(@Nullable Shelly2RGBWStatus value, ShellyThingInterface thingHandler)
             throws ShellyApiException {
-        if (value == null) {
+        if (value == null || value.id == null) {
             return false;
         }
-        boolean updated = false;
+        if (!thingHandler.areChannelsCreated()) {
+            return false;
+        }
+        if (!(thingHandler instanceof ShellyLightModelHandler lightModelHandler)) {
+            return false;
+        }
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        // RGBW2 (incl. hybrid Pro/Plus RGBWW-PM) always reports its color component at index 0; Duo/Multicolor
-        // Bulb G3 share the same slot 0 but only while actually operating in RGB/color mode
-        if (profile.isRGBW2 || (profile.isDuo && profile.inColor)) {
-            if (!thingHandler.areChannelsCreated()) {
-                return false;
+        int id = Objects.requireNonNull(value.id) + profile.getColorComponentCount();
+        if (!profile.hasColorTag(id)) {
+            return false;
+        }
+
+        boolean updated = false;
+        try {
+            lightModelHandler.acquireLock();
+            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(id);
+            if (model == null) {
+                throw new ShellyApiException("updateRGBW() failed: index:%d model missing".formatted(id));
             }
-            if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
-                try {
-                    lightModelHandler.acquireLock();
-                    ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(0);
-                    if (model == null) {
-                        throw new ShellyApiException("updateLightMode() failed: index:0 model missing");
-                    }
-                    Integer[] rgb = value.rgb;
-                    if (rgb != null && rgb.length >= 3 && rgb[0] != null && rgb[1] != null && rgb[2] != null) {
-                        int[] rgbx = value.white == null ? new int[] { rgb[0], rgb[1], rgb[2] }
-                                : new int[] { rgb[0], rgb[1], rgb[2], value.white };
-                        model.setRGBX(rgbx);
-                        updated = true;
-                    }
-                    if (value.brightness != null) {
-                        model.setBrightness(Objects.requireNonNull(value.brightness));
-                        updated = true;
-                    }
-                    if (value.output != null) {
-                        model.setOnOff(Objects.requireNonNull(value.output));
-                        updated = true;
-                    }
-                } finally {
-                    lightModelHandler.releaseLock();
-                }
+            Integer[] rgb = value.rgb;
+            if (rgb != null && rgb.length >= 3 && rgb[0] != null && rgb[1] != null && rgb[2] != null) {
+                int[] rgbx = value.white == null ? new int[] { rgb[0], rgb[1], rgb[2] }
+                        : new int[] { rgb[0], rgb[1], rgb[2], value.white };
+                model.setRGBX(rgbx);
+                updated = true;
             }
-            // TODO reconcile
+            if (value.brightness != null) {
+                model.setBrightness(Objects.requireNonNull(value.brightness));
+                updated = true;
+            }
+            if (value.output != null) {
+                model.setOnOff(Objects.requireNonNull(value.output));
+                updated = true;
+            }
+        } finally {
+            lightModelHandler.releaseLock();
         }
         return updated;
     }
@@ -935,76 +935,40 @@ public class ShellyComponents {
         if (value == null || value.id == null) {
             return false;
         }
-        boolean updated = false;
+        if (!thingHandler.areChannelsCreated()) {
+            return false;
+        }
+        if (!(thingHandler instanceof ShellyLightModelHandler lightModelHandler)) {
+            return false;
+        }
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        // RGBW2 (incl. hybrid Pro/Plus RGBWW-PM) always has CCT/Light components to cover here; Duo/Multicolor
-        // Bulb G3 share slot 0, which hasColorTag() below skips while they're actually in color mode
-        if (profile.isRGBW2 || profile.isDuo) {
-            if (!thingHandler.areChannelsCreated()) {
-                return false;
+        int id = Objects.requireNonNull(value.id) + profile.getColorComponentCount();
+        if (profile.hasColorTag(id)) {
+            return false;
+        }
+
+        boolean updated = false;
+        try {
+            lightModelHandler.acquireLock();
+            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(id);
+            if (model == null) {
+                throw new ShellyApiException("updateLightMode() failed: index:%d model missing".formatted(id));
             }
-            int id = Objects.requireNonNull(value.id) + profile.getColorComponentCount();
-            if (profile.hasColorTag(id)) {
-                // color component is handled by updateRGBW()
-                return false;
+            if (value.ct != null) {
+                model.setColorTempRange(profile.getMinTemp(id), profile.getMaxTemp(id));
+                model.setColorTemp(Objects.requireNonNull(value.ct));
+                updated = true;
             }
-            if (thingHandler instanceof ShellyLightModelHandler lightModelHandler) {
-                try {
-                    lightModelHandler.acquireLock();
-                    ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(id);
-                    if (model == null) {
-                        throw new ShellyApiException("updateLightMode() failed: index:%d model missing".formatted(id));
-                    }
-                    if (value.ct != null) {
-                        model.setColorTempRange(profile.getMinTemp(id), profile.getMaxTemp(id));
-                        model.setColorTemp(Objects.requireNonNull(value.ct));
-                        updated = true;
-                    }
-                    if (value.brightness != null) {
-                        model.setBrightness(Objects.requireNonNull(value.brightness));
-                        updated = true;
-                    }
-                    if (value.output != null) {
-                        model.setOnOff(Objects.requireNonNull(value.output));
-                        updated = true;
-                    }
-                } finally {
-                    lightModelHandler.releaseLock();
-// TODO reconcile
-            boolean gen3Bulb = profile.isDuo && profile.isGen2;
-            List<ShellySettingsLight> lights = orgStatus.lights;
-            for (int i = 0; i < lights.size(); i++) {
-                String groupName = ShellyApiLightUtil.buildWhiteGroupName(profile, i);
-                if (profile.hasColorTag(i)) {
-                    // color component is handled by updateRGBW(); this loop only covers CCT/Light components
-                    // (a hybrid profile's secondary component(s), or all of them for a plain white-mode RGBW2)
-                    if (gen3Bulb) {
-                        // the shared LEDs are in RGB mode, the last reported color temperature no longer applies
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, UnDefType.UNDEF);
-                    }
-                    continue;
-                }
-                ShellySettingsLight light = lights.get(i);
-                if (gen3Bulb && (light.ison == null || light.brightness == null)) {
-                    continue; // partial NotifyStatus before the first full status, nothing to push yet
-                }
-                OnOffType power = getOnOff(light.ison);
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                        toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
-                                Units.PERCENT));
-                if (light.temp != null) {
-                    if (gen3Bulb) {
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP,
-                                toQuantityType(light.temp, Units.KELVIN));
-                    } else {
-                        ShellyColorUtils col = new ShellyColorUtils();
-                        col.setMinMaxTemp(profile.getMinTemp(i), profile.getMaxTemp(i));
-                        col.setTemp(getInteger(light.temp));
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
-                    }
-// TODO reconcile end
-                }
+            if (value.brightness != null) {
+                model.setBrightness(Objects.requireNonNull(value.brightness));
+                updated = true;
             }
+            if (value.output != null) {
+                model.setOnOff(Objects.requireNonNull(value.output));
+                updated = true;
+            }
+        } finally {
+            lightModelHandler.releaseLock();
         }
         return updated;
     }
