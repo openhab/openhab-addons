@@ -13,11 +13,18 @@
 package org.openhab.binding.chromecast.internal.handler;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.digitalmediaserver.cast.CastDevice;
+import org.digitalmediaserver.cast.event.CastEvent;
+import org.digitalmediaserver.cast.event.CastEvent.CastEventType;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.chromecast.internal.ChromecastCommander;
@@ -26,7 +33,6 @@ import org.openhab.binding.chromecast.internal.ChromecastScheduler;
 import org.openhab.binding.chromecast.internal.ChromecastStatusUpdater;
 import org.openhab.binding.chromecast.internal.action.ChromecastActions;
 import org.openhab.binding.chromecast.internal.config.ChromecastConfig;
-import org.openhab.core.audio.AudioSink;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -37,15 +43,11 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import su.litvak.chromecast.api.v2.ChromeCast;
 
 /**
  * The {@link ChromecastHandler} is responsible for handling commands, which are sent to one of the channels. It
- * furthermore implements {@link AudioSink} support.
+ * furthermore implements {@link org.openhab.core.audio.AudioSink} support.
  *
  * @author Markus Rathgeb, Kai Kreuzer - Initial contribution
  * @author Daniel Walters - Online status fix, handle playuri channel and refactor play media code
@@ -65,10 +67,15 @@ public class ChromecastHandler extends BaseThingHandler {
     private final ScheduledExecutorService executor = ThreadPoolManager
             .getScheduledPool(CHROMECAST_HANDLER_THREADPOOL_NAME);
 
+    private final Object lifecycleLock = new Object();
+
+    private long initializationGeneration;
+    private @Nullable Future<?> initializationFuture;
+
     /**
      * The actual implementation. A new one is created each time #initialize is called.
      */
-    private @Nullable Coordinator coordinator;
+    private volatile @Nullable Coordinator coordinator;
 
     /**
      * Constructor.
@@ -83,42 +90,104 @@ public class ChromecastHandler extends BaseThingHandler {
     public void initialize() {
         ChromecastConfig config = getConfigAs(ChromecastConfig.class);
 
-        final String ipAddress = config.ipAddress;
-        if (ipAddress == null || ipAddress.isBlank()) {
+        final String hostName = config.host;
+        final long generation;
+        final Future<?> previousInitialization;
+        final Coordinator previousCoordinator;
+        synchronized (lifecycleLock) {
+            generation = ++initializationGeneration;
+            previousInitialization = initializationFuture;
+            initializationFuture = null;
+            previousCoordinator = coordinator;
+            coordinator = null;
+        }
+
+        if (previousInitialization != null) {
+            previousInitialization.cancel(true);
+        }
+
+        CompletableFuture<Void> cleanupFuture = previousCoordinator == null ? CompletableFuture.completedFuture(null)
+                : CompletableFuture.runAsync(previousCoordinator::destroy, executor);
+        if (hostName.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot connect to Chromecast. IP address is not valid or missing.");
+                    "Cannot connect to Chromecast. Host name is not valid or missing.");
             return;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        Coordinator localCoordinator = coordinator;
-        if (localCoordinator != null && (!localCoordinator.chromeCast.getAddress().equals(ipAddress)
-                || (localCoordinator.chromeCast.getPort() != config.port))) {
-            localCoordinator.destroy();
-            localCoordinator = coordinator = null;
+        Future<?> future = cleanupFuture.thenRunAsync(
+                () -> initializeCoordinator(hostName, config.port, config.refreshRate, generation), executor);
+        synchronized (lifecycleLock) {
+            if (generation == initializationGeneration) {
+                initializationFuture = future;
+            } else {
+                future.cancel(true);
+            }
+        }
+    }
+
+    private void initializeCoordinator(String hostName, int port, long refreshRate, long generation) {
+        if (!isCurrentInitialization(generation)) {
+            return;
         }
 
-        if (localCoordinator == null) {
-            ChromeCast chromecast = new ChromeCast(ipAddress, config.port);
-            localCoordinator = new Coordinator(this, thing, chromecast, config.refreshRate);
-            coordinator = localCoordinator;
+        final InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(hostName);
+        } catch (UnknownHostException e) {
+            logger.debug("Could not resolve InetAddress from host name: {} with message: {}", hostName, e.getMessage());
+            if (isCurrentInitialization(generation)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Cannot connect to Chromecast. InetAddress could not be resolved from host name");
+            }
+            return;
+        }
 
-            executor.submit(() -> {
-                Coordinator c = coordinator;
-                if (c != null) {
-                    c.initialize();
-                }
-            });
+        if (!isCurrentInitialization(generation)) {
+            return;
+        }
+
+        CastDevice chromecast = new CastDevice(hostName, inetAddress, port, null, null, null, null, null, null, 1, null,
+                true);
+        Coordinator newCoordinator = new Coordinator(this, thing, chromecast, refreshRate);
+
+        final boolean stale;
+        synchronized (lifecycleLock) {
+            stale = generation != initializationGeneration;
+            if (!stale) {
+                coordinator = newCoordinator;
+            }
+        }
+        if (stale) {
+            newCoordinator.destroy();
+            return;
+        }
+        newCoordinator.initialize();
+    }
+
+    private boolean isCurrentInitialization(long generation) {
+        synchronized (lifecycleLock) {
+            return generation == initializationGeneration;
         }
     }
 
     @Override
     public void dispose() {
-        Coordinator localCoordinator = coordinator;
+        final Future<?> localInitialization;
+        final Coordinator localCoordinator;
+        synchronized (lifecycleLock) {
+            initializationGeneration++;
+            localInitialization = initializationFuture;
+            initializationFuture = null;
+            localCoordinator = coordinator;
+            coordinator = null;
+        }
+        if (localInitialization != null) {
+            localInitialization.cancel(true);
+        }
         if (localCoordinator != null) {
             localCoordinator.destroy();
-            coordinator = null;
         }
     }
 
@@ -203,7 +272,7 @@ public class ChromecastHandler extends BaseThingHandler {
 
         private static final long CONNECT_DELAY = 10;
 
-        private final ChromeCast chromeCast;
+        private final CastDevice chromeCast;
         private final ChromecastCommander commander;
         private final ChromecastEventReceiver eventReceiver;
         private final ChromecastStatusUpdater statusUpdater;
@@ -231,11 +300,10 @@ public class ChromecastHandler extends BaseThingHandler {
          */
         private volatile boolean destroyed;
 
-        private Coordinator(ChromecastHandler handler, Thing thing, ChromeCast chromeCast, long refreshRate) {
+        private Coordinator(ChromecastHandler handler, Thing thing, CastDevice chromeCast, long refreshRate) {
             this.chromeCast = chromeCast;
 
-            this.scheduler = new ChromecastScheduler(handler.executor, CONNECT_DELAY, this::connect, refreshRate,
-                    this::refresh);
+            this.scheduler = new ChromecastScheduler(handler.executor, CONNECT_DELAY, this::connect, this::refresh);
             this.statusUpdater = new ChromecastStatusUpdater(thing, handler);
 
             this.commander = new ChromecastCommander(chromeCast, scheduler, statusUpdater);
@@ -243,7 +311,9 @@ public class ChromecastHandler extends BaseThingHandler {
         }
 
         void initialize() {
-            if (connectionState == ConnectionState.CONNECTED) {
+            if (destroyed) {
+                return;
+            } else if (connectionState == ConnectionState.CONNECTED) {
                 logger.debug("Already connected");
                 return;
             } else if (connectionState == ConnectionState.CONNECTING) {
@@ -255,8 +325,18 @@ public class ChromecastHandler extends BaseThingHandler {
             }
             connectionState = ConnectionState.CONNECTING;
 
-            chromeCast.registerListener(eventReceiver);
-            chromeCast.registerConnectionListener(eventReceiver);
+            CastEvent.CastEventType[] subscribedEvents = new CastEventType[] { CastEventType.APPLICATION_AVAILABILITY,
+                    CastEventType.CLOSE, CastEventType.CONNECTED, CastEventType.CUSTOM_MESSAGE,
+                    CastEventType.DEVICE_ADDED, CastEventType.DEVICE_REMOVED, CastEventType.DEVICE_UPDATED,
+                    CastEventType.ERROR_RESPONSE, CastEventType.LAUNCH_ERROR, CastEventType.MEDIA_STATUS,
+                    CastEventType.MULTIZONE_STATUS, CastEventType.RECEIVER_STATUS, CastEventType.UNKNOWN };
+
+            chromeCast.addEventListener(eventReceiver, subscribedEvents);
+
+            if (destroyed) {
+                chromeCast.removeEventListener(eventReceiver);
+                return;
+            }
 
             connect();
         }
@@ -265,8 +345,7 @@ public class ChromecastHandler extends BaseThingHandler {
             destroyed = true;
             connectionState = ConnectionState.DISCONNECTING;
 
-            chromeCast.unregisterConnectionListener(eventReceiver);
-            chromeCast.unregisterListener(eventReceiver);
+            chromeCast.removeEventListener(eventReceiver);
 
             scheduler.destroy();
 
@@ -288,8 +367,9 @@ public class ChromecastHandler extends BaseThingHandler {
                 chromeCast.connect();
 
                 if (destroyed) {
-                    // destroy() ran while this connect was in flight. The connection is already being
-                    // torn down, so updating status here would report a disposed handler as online.
+                    // destroy() may have disconnected before the in-flight connect established this
+                    // connection, so close it again rather than leaking a late connection.
+                    chromeCast.disconnect();
                     return;
                 }
 

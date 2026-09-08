@@ -19,7 +19,7 @@ protobuf-java
 * Project: https://developers.google.com/protocol-buffers
 * Source:  https://github.com/protocolbuffers/protobuf
 
-chromecast-java-api-v2
+DigitalMediaServer Cast API
 * License: Apache 2.0 License
-* Project: https://github.com/sfuhrm/chromecast-java-api-v2
-* Source: https://github.com/sfuhrm/chromecast-java-api-v2
+* Project: https://github.com/DigitalMediaServer/Cast-API
+* Source: https://github.com/DigitalMediaServer/Cast-API

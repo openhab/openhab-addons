@@ -33,17 +33,18 @@ import org.junit.jupiter.api.Test;
 class ChromecastSchedulerTest {
 
     private final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
-    private final ChromecastScheduler scheduler = new ChromecastScheduler(executor, 10, () -> {
-    }, 10, () -> {
-    });
+    private final Runnable connectRunnable = mock(Runnable.class);
+    private final Runnable refreshRunnable = mock(Runnable.class);
+    private final ChromecastScheduler scheduler = new ChromecastScheduler(executor, 10, connectRunnable,
+            refreshRunnable);
 
     @Test
     void schedulesWhileAlive() {
         scheduler.scheduleConnect();
         scheduler.scheduleRefresh();
 
-        verify(executor).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
-        verify(executor).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
+        verify(executor).schedule(connectRunnable, 10, TimeUnit.SECONDS);
+        verify(executor).schedule(refreshRunnable, 1, TimeUnit.SECONDS);
     }
 
     @Test
@@ -53,7 +54,5 @@ class ChromecastSchedulerTest {
         scheduler.scheduleRefresh();
 
         verify(executor, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
-        verify(executor, never()).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(),
-                any(TimeUnit.class));
     }
 }

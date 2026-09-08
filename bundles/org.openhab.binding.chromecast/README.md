@@ -48,7 +48,6 @@ With manual thing configuration the parameter `port` for audio group must be det
 |-------------|---------|----------|----------|---------|------------------------------------------------------|
 | ipAddress   | -       | Yes      | No       | String  | The hostname or IP address of the Chromecast device. |
 | port        | 8009    | No       | Yes      | Integer | The port where the Chromecast is listening           |
-| refreshRate | 10      | No       | Yes      | Integer | The refresh (poll) interval in seconds.              |
 
 ## Channels
 
@@ -60,7 +59,7 @@ With manual thing configuration the parameter `port` for audio group must be det
 | mute            | Switch      | R/W | Mute the audio                                                                                                                                                                        |
 | playuri         | String      | R/W | Can be used to tell the Chromecast to play media from a given url                                                                                                                     |
 | appName         | String      | R   | Name of currently running application                                                                                                                                                 |
-| appId           | String      | R   | ID of currently running application                                                                                                                                                   |
+| appId           | String      | R/W | ID of the currently running application; send an application ID to launch it                                                                                                          |
 | idling          | Switch      | R   | Indication on whether Chromecast is on idle screen                                                                                                                                    |
 | statustext      | String      | R   |                                                                                                                                                                                       |
 | currentTime     | Number:Time | R   | Current time of currently playing media                                                                                                                                               |
