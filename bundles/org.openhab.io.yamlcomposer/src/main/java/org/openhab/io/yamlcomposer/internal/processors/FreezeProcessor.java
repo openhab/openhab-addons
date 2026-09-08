@@ -16,25 +16,30 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
-import org.openhab.io.yamlcomposer.internal.directives.ElseDirective;
-import org.openhab.io.yamlcomposer.internal.placeholders.ElsePlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.FreezePlaceholder;
 
 /**
- * Processor for resolving {@link ElsePlaceholder} in YAML models.
+ * The {@link FreezeProcessor} processes {@link FreezePlaceholder} instances in YAML models.
+ * It simply returns the value contained within the placeholder.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public class ElseProcessor implements PlaceholderProcessor<ElsePlaceholder> {
+public class FreezeProcessor implements PlaceholderProcessor<FreezePlaceholder> {
 
-    @Override
-    public Class<ElsePlaceholder> getPlaceholderType() {
-        return ElsePlaceholder.class;
+    /** Returns the replacement payload shared by !replace and !freeze processing. */
+    public static @Nullable Object replacementValue(@Nullable Object value) {
+        return value;
     }
 
     @Override
-    public @Nullable Object process(ElsePlaceholder elsePlaceholder, RecursiveTransformer recursiveTransformer,
+    public Class<FreezePlaceholder> getPlaceholderType() {
+        return FreezePlaceholder.class;
+    }
+
+    @Override
+    public @Nullable Object process(FreezePlaceholder placeholder, RecursiveTransformer recursiveTransformer,
             EvaluationContext context) {
-        return new ElseDirective(elsePlaceholder.sourceLocation());
+        return replacementValue(placeholder.value());
     }
 }

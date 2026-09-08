@@ -217,7 +217,7 @@ class YamlComposerPackagingTest extends AbstractYamlComposerTest {
 
         @Test
         @SuppressWarnings("unchecked")
-        @DisplayName("Deeply merges maps: overwrites shared scalars, appends lists, and preserves unique keys from both")
+        @DisplayName("Deeply merges maps: preserves main scalars, appends lists, and retains unique keys")
         void defaultDeepMergeLogic() throws IOException {
             writeFixture("pkg.yaml", """
                     things:
@@ -230,6 +230,7 @@ class YamlComposerPackagingTest extends AbstractYamlComposerTest {
                             scalar1: package
                             scalar2: package
                           list1:
+                            - main
                             - package
                     """);
 
@@ -268,8 +269,56 @@ class YamlComposerPackagingTest extends AbstractYamlComposerTest {
             assertThat(getNestedValue(thing, "config", "map1", "scalar3"), equalTo("main_only"));
             assertThat(getNestedValue(thing, "config", "map2", "new_key"), equalTo("main_only"));
 
-            // 4. Verify List behavior (Append)
-            assertThat(getNestedValue(thing, "config", "list1"), equalTo(List.of("package", "main")));
+            // 4. Verify List behavior (main first, package second)
+            assertThat(getNestedValue(thing, "config", "list1"), equalTo(List.of("main", "package")));
+        }
+
+        @Test
+        @DisplayName("Main !default value accepts the package value")
+        void defaultAllowsPackageValueToReplaceMainValue() throws IOException {
+            writeFixture("pkg.yaml", """
+                    things:
+                      thing:
+                        label: from_package
+                    """);
+
+            Path main = writeFixture("main.yaml", """
+                    packages:
+                      p1: !include pkg.yaml
+                    things:
+                      thing:
+                        label: !default from_main_fallback
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "things", "thing", "label"), equalTo("from_package"));
+        }
+
+        @Test
+        @DisplayName("Main !default map accepts package conflicts and retains unrelated keys")
+        void defaultAllowsPackageMapToMergeWithIncomingPriority() throws IOException {
+            writeFixture("pkg.yaml", """
+                    things:
+                      thing:
+                        config:
+                          from_package: true
+                    """);
+
+            Path main = writeFixture("main.yaml", """
+                    packages:
+                      p1: !include pkg.yaml
+                    things:
+                      thing:
+                        config: !default
+                          from_main: true
+                          retained: true
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "things", "thing", "config"),
+                    equalTo(Map.of("from_main", true, "retained", true, "from_package", true)));
         }
 
         @Nested

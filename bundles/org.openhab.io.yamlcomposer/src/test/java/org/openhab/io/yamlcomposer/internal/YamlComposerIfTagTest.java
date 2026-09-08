@@ -13,6 +13,7 @@
 package org.openhab.io.yamlcomposer.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
@@ -509,6 +511,30 @@ class YamlComposerIfTagTest extends AbstractYamlComposerTest {
             assertThat("The active branch should be the one resolved", data.get("test"), is("active"));
             assertThat("The inactive branch should not trigger any warnings", logSession.getTrackedWarnings(),
                     not(hasItem(containsString("Failed to process !include"))));
+        }
+    }
+
+    @Nested
+    @DisplayName("Key Ordering Semantics")
+    class KeyOrdering {
+
+        @Test
+        @DisplayName("Preserves key ordering in parent map when unrolling !if directive")
+        void ifTagPreservesKeyOrderingWhenUnrolling() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    parent:
+                      a_first: "local"
+                      !if true:
+                        b_nested: "from_if"
+                        c_nested: "from_if"
+                      d_last: "local"
+                    """);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> parent = (Map<String, Object>) Objects.requireNonNull(result.get("parent"));
+
+            assertThat(parent.keySet(), contains("a_first", "b_nested", "c_nested", "d_last"));
+            assertThat(parent.keySet(), not(contains("a_first", "d_last", "b_nested", "c_nested")));
         }
     }
 

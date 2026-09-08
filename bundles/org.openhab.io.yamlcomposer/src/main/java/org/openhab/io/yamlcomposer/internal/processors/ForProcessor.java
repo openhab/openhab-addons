@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.directives.ForDirective;
 import org.openhab.io.yamlcomposer.internal.placeholders.ForPlaceholder;
@@ -39,7 +40,8 @@ public class ForProcessor implements PlaceholderProcessor<ForPlaceholder> {
     }
 
     @Override
-    public @Nullable Object process(ForPlaceholder placeholder, RecursiveTransformer transformer) {
+    public @Nullable Object process(ForPlaceholder placeholder, RecursiveTransformer transformer,
+            EvaluationContext context) {
         Object value = placeholder.value();
         if (value == null) {
             return null;
