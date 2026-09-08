@@ -715,7 +715,7 @@ class ShellyLightHandlerLightModelTest {
                     PercentType.HUNDRED,
                     null,
                     true,
-                    Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0")
+                    Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "0", SHELLY_COLOR_BLUE, "0")
                     )
         // @formatter:on
         );
@@ -1131,7 +1131,6 @@ class ShellyLightHandlerLightModelTest {
                     "color#red", PercentType.HUNDRED,
                     "color#green", PercentType.ZERO,
                     "color#blue", PercentType.ZERO,
-                    "color#white", PercentType.ZERO,
                     "color#full", new StringType("red")
                 )
             )

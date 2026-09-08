@@ -226,7 +226,7 @@ public class ShellyLightModel extends LightModel {
         }
 
         if (THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID)) {
-            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_W_NO_BRIGHTNESS, COMBINED, Mode.COLOR, false);
+            return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, false);
         }
 
         throw new IllegalArgumentException("%s: Error creating Light Model for %s"

@@ -921,7 +921,7 @@ public class ShellyComponents {
             }
 
             if (value.brightness != null) {
-                model.setBrightness(Objects.requireNonNull(value.brightness));
+                model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
                 updated = true;
             }
 
@@ -959,7 +959,12 @@ public class ShellyComponents {
                 throw new ShellyApiException("updateRGBCCT() failed: index:%d model missing".formatted(id));
             }
 
-            Mode mode = SHELLY_RGBCCT_MODE_RGB.equals(Objects.requireNonNull(value.mode)) ? Mode.COLOR : Mode.WHITE;
+            Mode mode;
+            if (value.mode != null) {
+                mode = SHELLY_RGBCCT_MODE_RGB.equals(Objects.requireNonNull(value.mode)) ? Mode.COLOR : Mode.WHITE;
+            } else {
+                mode = model.getMode();
+            }
 
             Integer[] rgb = value.rgb;
             if (Mode.COLOR == mode && rgb != null && rgb.length >= 3) {
@@ -974,7 +979,7 @@ public class ShellyComponents {
             }
 
             if (value.brightness != null) {
-                model.setBrightness(Objects.requireNonNull(value.brightness));
+                model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
                 updated = true;
             }
 
@@ -1018,7 +1023,7 @@ public class ShellyComponents {
             }
 
             if (value.brightness != null) {
-                model.setBrightness(Objects.requireNonNull(value.brightness));
+                model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
                 updated = true;
             }
 
