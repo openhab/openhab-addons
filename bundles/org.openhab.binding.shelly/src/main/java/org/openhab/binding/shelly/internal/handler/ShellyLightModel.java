@@ -75,7 +75,7 @@ public class ShellyLightModel extends LightModel {
 
     /**
      * A record that carries the required light capabilities, RGB data type, LED operating mode, and whether the
-     * operating mode is fixed or changeabl.
+     * operating mode is fixed or changeable.
      * 
      * @param lightCapabilities the required light capabilities
      * @param rgbDataType the required RGB data type

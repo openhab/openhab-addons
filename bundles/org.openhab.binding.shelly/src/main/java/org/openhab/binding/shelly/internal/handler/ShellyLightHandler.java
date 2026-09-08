@@ -545,7 +545,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     /**
      * Extracts the channel group number from the channel UID. Returns 0 if the channel is not in a group, or
      * the group id does not have a numeric suffix. Main light channels have no group number suffix which is
-     * equivalent to group suffix 0, while white channels have group suffices 1 .. n
+     * equivalent to group suffix 0, while white channels have group suffixes 1 .. n
      *
      * @param channelUID the channel UID
      * @return the channel group suffix number, or 0
@@ -564,7 +564,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     /**
      * Returns the light model for the given channel group suffix number, or null if no such model exists.
      * Main light channels have no group number suffix which is equivalent to group suffix 0, while white
-     * channels have group suffices 1 .. n
+     * channels have group suffixes 1 .. n
      *
      * @param channelGroupSuffix the channel group suffix number
      * @return the light model, or null
@@ -576,7 +576,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     /**
      * Returns the light model for the given channel, or null if no such model exists. Main light channels
      * have no group number suffix which is equivalent to group suffix 0, while white channels have group
-     * suffices 1 .. n
+     * suffixes 1 .. n
      *
      * @param channel the channel
      * @return the light model, or null
@@ -586,7 +586,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         if (groupId == null) {
             return null;
         }
-        if (CHANNEL_GROUP_CONTROL.equals(groupId)) {
+        if (CHANNEL_GROUP_LIGHT_CONTROL.equals(groupId)) {
             return lightModels.get(0);
         }
         if (CHANNEL_GROUP_COLOR_CONTROL.equals(groupId)) {
