@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
@@ -41,7 +41,7 @@ public class StopDeparturesResultTest {
                 + "              \"wheelchair_accessible\": 1\n" + "            }\n" + "          ]\n" + "        }\n"
                 + "      ]\n" + "    }\n" + "  ]\n" + "}";
 
-        StopDeparturesResult result = gson.fromJson(json, StopDeparturesResult.class);
+        StopDeparturesResult result = Objects.requireNonNull(gson.fromJson(json, StopDeparturesResult.class));
 
         // Assert root object
         assertNotNull(result);
@@ -70,25 +70,17 @@ public class StopDeparturesResultTest {
 
         StopDeparturesResult.ScheduleItem item = scheduleItems.get(0);
 
-        // Assert Instant conversion using local variables to satisfy null analysis
-        @Nullable
-        Instant depTime = item.getDepartureTime();
-        assertNotNull(depTime);
+        // Assert Instant conversion using Objects.requireNonNull to satisfy null analysis
+        Instant depTime = Objects.requireNonNull(item.getDepartureTime());
         assertEquals(1700000100L, depTime.getEpochSecond());
 
-        @Nullable
-        Instant scheduledDepTime = item.getScheduledDepartureTime();
-        assertNotNull(scheduledDepTime);
+        Instant scheduledDepTime = Objects.requireNonNull(item.getScheduledDepartureTime());
         assertEquals(1700000000L, scheduledDepTime.getEpochSecond());
 
-        @Nullable
-        Boolean isRealTime = item.getIsRealTime();
-        assertNotNull(isRealTime);
+        Boolean isRealTime = Objects.requireNonNull(item.getIsRealTime());
         assertTrue(isRealTime);
 
-        @Nullable
-        Integer wheelchair = item.getWheelchairAccessible();
-        assertNotNull(wheelchair);
+        Integer wheelchair = Objects.requireNonNull(item.getWheelchairAccessible());
         assertEquals(1, wheelchair.intValue());
     }
 }
