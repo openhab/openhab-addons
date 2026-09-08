@@ -72,6 +72,16 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      */
     protected @Nullable Integer txPower = null;
 
+    /**
+     * Advertised connectability, derived from the advertising PDU type; null until a transport reports it.
+     */
+    protected @Nullable Boolean connectable = null;
+
+    /**
+     * Reason the last connection dropped (e.g. HCI disconnect status); null until a transport reports one.
+     */
+    protected @Nullable String disconnectReason = null;
+
     protected final transient ZonedDateTime createTime = ZonedDateTime.now();
 
     /**
@@ -184,6 +194,34 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     @Override
     public @Nullable Integer getTxPower() {
         return txPower;
+    }
+
+    /**
+     * Sets the advertised connectability of the device, as derived from the advertising PDU type.
+     *
+     * @param connectable true if the device advertises as connectable, false if it is a non-connectable beacon
+     */
+    public void setConnectable(boolean connectable) {
+        this.connectable = connectable;
+    }
+
+    @Override
+    public @Nullable Boolean getConnectable() {
+        return connectable;
+    }
+
+    /**
+     * Records the reason the last connection dropped, so it can enrich the Thing status.
+     *
+     * @param disconnectReason a human-readable disconnect reason (e.g. the HCI status), or null to clear it
+     */
+    public void setDisconnectReason(@Nullable String disconnectReason) {
+        this.disconnectReason = disconnectReason;
+    }
+
+    @Override
+    public @Nullable String getDisconnectReason() {
+        return disconnectReason;
     }
 
     /**
