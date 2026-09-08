@@ -1,0 +1,112 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.smaenergymeter.internal.handler;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+/**
+ * Known OBIS identifiers provided by the SMA Energy Meter telegram.
+ *
+ * @author Osman Basha - Initial contribution
+ */
+@NonNullByDefault
+public enum ObisId {
+    POSITIVE_ACTIVE_POWER(0x00010400, 10),
+    POSITIVE_ACTIVE_POWER_L1(0x00150400, 10),
+    POSITIVE_ACTIVE_POWER_L2(0x00290400, 10),
+    POSITIVE_ACTIVE_POWER_L3(0x003D0400, 10),
+    POSITIVE_ACTIVE_ENERGY(0x00010800, 3600000),
+    POSITIVE_ACTIVE_ENERGY_L1(0x00150800, 3600000),
+    POSITIVE_ACTIVE_ENERGY_L2(0x00290800, 3600000),
+    POSITIVE_ACTIVE_ENERGY_L3(0x003D0800, 3600000),
+    NEGATIVE_ACTIVE_POWER(0x00020400, 10),
+    NEGATIVE_ACTIVE_POWER_L1(0x00160400, 10),
+    NEGATIVE_ACTIVE_POWER_L2(0x002A0400, 10),
+    NEGATIVE_ACTIVE_POWER_L3(0x003E0400, 10),
+    NEGATIVE_ACTIVE_ENERGY(0x00020800, 3600000),
+    NEGATIVE_ACTIVE_ENERGY_L1(0x00160800, 3600000),
+    NEGATIVE_ACTIVE_ENERGY_L2(0x002A0800, 3600000),
+    NEGATIVE_ACTIVE_ENERGY_L3(0x003E0800, 3600000),
+    POSITIVE_REACTIVE_POWER(0x00030400, 10),
+    POSITIVE_REACTIVE_POWER_L1(0x00170400, 10),
+    POSITIVE_REACTIVE_POWER_L2(0x002B0400, 10),
+    POSITIVE_REACTIVE_POWER_L3(0x003F0400, 10),
+    POSITIVE_REACTIVE_ENERGY(0x00030800, 3600000),
+    POSITIVE_REACTIVE_ENERGY_L1(0x00170800, 3600000),
+    POSITIVE_REACTIVE_ENERGY_L2(0x002B0800, 3600000),
+    POSITIVE_REACTIVE_ENERGY_L3(0x003F0800, 3600000),
+    NEGATIVE_REACTIVE_POWER(0x00040400, 10),
+    NEGATIVE_REACTIVE_POWER_L1(0x00180400, 10),
+    NEGATIVE_REACTIVE_POWER_L2(0x002C0400, 10),
+    NEGATIVE_REACTIVE_POWER_L3(0x00400400, 10),
+    NEGATIVE_REACTIVE_ENERGY(0x00040800, 3600000),
+    NEGATIVE_REACTIVE_ENERGY_L1(0x00180800, 3600000),
+    NEGATIVE_REACTIVE_ENERGY_L2(0x002C0800, 3600000),
+    NEGATIVE_REACTIVE_ENERGY_L3(0x00400800, 3600000),
+    POSITIVE_APPARENT_POWER(0x00090400, 10),
+    POSITIVE_APPARENT_POWER_L1(0x001D0400, 10),
+    POSITIVE_APPARENT_POWER_L2(0x00310400, 10),
+    POSITIVE_APPARENT_POWER_L3(0x00450400, 10),
+    POSITIVE_APPARENT_ENERGY(0x00090800, 3600000),
+    POSITIVE_APPARENT_ENERGY_L1(0x001D0800, 3600000),
+    POSITIVE_APPARENT_ENERGY_L2(0x00310800, 3600000),
+    POSITIVE_APPARENT_ENERGY_L3(0x00450800, 3600000),
+    NEGATIVE_APPARENT_POWER(0x000A0400, 10),
+    NEGATIVE_APPARENT_POWER_L1(0x001E0400, 10),
+    NEGATIVE_APPARENT_POWER_L2(0x00320400, 10),
+    NEGATIVE_APPARENT_POWER_L3(0x00460400, 10),
+    NEGATIVE_APPARENT_ENERGY(0x000A0800, 3600000),
+    NEGATIVE_APPARENT_ENERGY_L1(0x001E0800, 3600000),
+    NEGATIVE_APPARENT_ENERGY_L2(0x00320800, 3600000),
+    NEGATIVE_APPARENT_ENERGY_L3(0x00460800, 3600000),
+    POWER_FACTOR(0x000D0400, 10),
+    POWER_FACTOR_L1(0x00210400, 10),
+    POWER_FACTOR_L2(0x00350400, 10),
+    POWER_FACTOR_L3(0x00490400, 10),
+    CURRENT_L1(0x001F0400, 1000),
+    CURRENT_L2(0x00330400, 1000),
+    CURRENT_L3(0x00470400, 1000),
+    VOLTAGE_L1(0x00200400, 1000),
+    VOLTAGE_L2(0x00340400, 1000),
+    VOLTAGE_L3(0x00480400, 1000),
+    FREQUENCY(0x000E0400, 1000),
+    VERSION(0x90000000, 1),;
+
+    private static final Map<Integer, ObisId> BY_CODE = Stream.of(values())
+            .collect(Collectors.toUnmodifiableMap(ObisId::getCode, obisId -> obisId));
+
+    private final int code;
+    private final int divider;
+
+    ObisId(int code, int divider) {
+        this.code = code;
+        this.divider = divider;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public int getDivider() {
+        return divider;
+    }
+
+    public static @Nullable ObisId fromCode(int code) {
+        return BY_CODE.get(code);
+    }
+}

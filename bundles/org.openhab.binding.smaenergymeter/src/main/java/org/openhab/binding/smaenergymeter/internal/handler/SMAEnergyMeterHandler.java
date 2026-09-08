@@ -15,6 +15,8 @@ package org.openhab.binding.smaenergymeter.internal.handler;
 import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -121,6 +123,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
     @Override
     public void handle(EnergyMeter energyMeter) {
         updateStatus(ThingStatus.ONLINE);
+        updateThingProperties(energyMeter.getSerialNumber());
 
         logger.debug("Update SMAEnergyMeter {} data '{}'", serialNumber, getThing().getUID());
 
@@ -143,5 +146,66 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
         updateState(CHANNEL_POWER_OUT_L3, energyMeter.getPowerOutL3());
         updateState(CHANNEL_ENERGY_IN_L3, energyMeter.getEnergyInL3());
         updateState(CHANNEL_ENERGY_OUT_L3, energyMeter.getEnergyOutL3());
+
+        updateState(CHANNEL_REACTIVE_POWER_IN, energyMeter.getReactivePowerIn());
+        updateState(CHANNEL_REACTIVE_POWER_OUT, energyMeter.getReactivePowerOut());
+        updateState(CHANNEL_REACTIVE_ENERGY_IN, energyMeter.getReactiveEnergyIn());
+        updateState(CHANNEL_REACTIVE_ENERGY_OUT, energyMeter.getReactiveEnergyOut());
+        updateState(CHANNEL_REACTIVE_POWER_IN_L1, energyMeter.getReactivePowerInL1());
+        updateState(CHANNEL_REACTIVE_POWER_OUT_L1, energyMeter.getReactivePowerOutL1());
+        updateState(CHANNEL_REACTIVE_ENERGY_IN_L1, energyMeter.getReactiveEnergyInL1());
+        updateState(CHANNEL_REACTIVE_ENERGY_OUT_L1, energyMeter.getReactiveEnergyOutL1());
+        updateState(CHANNEL_REACTIVE_POWER_IN_L2, energyMeter.getReactivePowerInL2());
+        updateState(CHANNEL_REACTIVE_POWER_OUT_L2, energyMeter.getReactivePowerOutL2());
+        updateState(CHANNEL_REACTIVE_ENERGY_IN_L2, energyMeter.getReactiveEnergyInL2());
+        updateState(CHANNEL_REACTIVE_ENERGY_OUT_L2, energyMeter.getReactiveEnergyOutL2());
+        updateState(CHANNEL_REACTIVE_POWER_IN_L3, energyMeter.getReactivePowerInL3());
+        updateState(CHANNEL_REACTIVE_POWER_OUT_L3, energyMeter.getReactivePowerOutL3());
+        updateState(CHANNEL_REACTIVE_ENERGY_IN_L3, energyMeter.getReactiveEnergyInL3());
+        updateState(CHANNEL_REACTIVE_ENERGY_OUT_L3, energyMeter.getReactiveEnergyOutL3());
+
+        updateState(CHANNEL_APPARENT_POWER_IN, energyMeter.getApparentPowerIn());
+        updateState(CHANNEL_APPARENT_POWER_OUT, energyMeter.getApparentPowerOut());
+        updateState(CHANNEL_APPARENT_ENERGY_IN, energyMeter.getApparentEnergyIn());
+        updateState(CHANNEL_APPARENT_ENERGY_OUT, energyMeter.getApparentEnergyOut());
+        updateState(CHANNEL_APPARENT_POWER_IN_L1, energyMeter.getApparentPowerInL1());
+        updateState(CHANNEL_APPARENT_POWER_OUT_L1, energyMeter.getApparentPowerOutL1());
+        updateState(CHANNEL_APPARENT_ENERGY_IN_L1, energyMeter.getApparentEnergyInL1());
+        updateState(CHANNEL_APPARENT_ENERGY_OUT_L1, energyMeter.getApparentEnergyOutL1());
+        updateState(CHANNEL_APPARENT_POWER_IN_L2, energyMeter.getApparentPowerInL2());
+        updateState(CHANNEL_APPARENT_POWER_OUT_L2, energyMeter.getApparentPowerOutL2());
+        updateState(CHANNEL_APPARENT_ENERGY_IN_L2, energyMeter.getApparentEnergyInL2());
+        updateState(CHANNEL_APPARENT_ENERGY_OUT_L2, energyMeter.getApparentEnergyOutL2());
+        updateState(CHANNEL_APPARENT_POWER_IN_L3, energyMeter.getApparentPowerInL3());
+        updateState(CHANNEL_APPARENT_POWER_OUT_L3, energyMeter.getApparentPowerOutL3());
+        updateState(CHANNEL_APPARENT_ENERGY_IN_L3, energyMeter.getApparentEnergyInL3());
+        updateState(CHANNEL_APPARENT_ENERGY_OUT_L3, energyMeter.getApparentEnergyOutL3());
+
+        updateState(CHANNEL_POWER_FACTOR, energyMeter.getPowerFactor());
+        updateState(CHANNEL_POWER_FACTOR_L1, energyMeter.getPowerFactorL1());
+        updateState(CHANNEL_POWER_FACTOR_L2, energyMeter.getPowerFactorL2());
+        updateState(CHANNEL_POWER_FACTOR_L3, energyMeter.getPowerFactorL3());
+        updateState(CHANNEL_CURRENT_L1, energyMeter.getCurrentL1());
+        updateState(CHANNEL_CURRENT_L2, energyMeter.getCurrentL2());
+        updateState(CHANNEL_CURRENT_L3, energyMeter.getCurrentL3());
+        updateState(CHANNEL_VOLTAGE_L1, energyMeter.getVoltageL1());
+        updateState(CHANNEL_VOLTAGE_L2, energyMeter.getVoltageL2());
+        updateState(CHANNEL_VOLTAGE_L3, energyMeter.getVoltageL3());
+        updateState(CHANNEL_FREQUENCY, energyMeter.getFrequency());
+        updateState(CHANNEL_VERSION, energyMeter.getVersion());
+    }
+
+    private void updateThingProperties(String actualSerialNumber) {
+        Map<String, String> currentProperties = editProperties();
+        String currentSerialNumber = currentProperties.get(Thing.PROPERTY_SERIAL_NUMBER);
+        String currentVendor = currentProperties.get(Thing.PROPERTY_VENDOR);
+        if (actualSerialNumber.equals(currentSerialNumber) && "SMA".equals(currentVendor)) {
+            return;
+        }
+
+        Map<String, String> updatedProperties = new HashMap<>(currentProperties);
+        updatedProperties.put(Thing.PROPERTY_SERIAL_NUMBER, actualSerialNumber);
+        updatedProperties.put(Thing.PROPERTY_VENDOR, "SMA");
+        updateProperties(updatedProperties);
     }
 }

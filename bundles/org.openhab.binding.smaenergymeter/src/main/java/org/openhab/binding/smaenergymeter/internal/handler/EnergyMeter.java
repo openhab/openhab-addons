@@ -13,11 +13,17 @@
 package org.openhab.binding.smaenergymeter.internal.handler;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.EnumMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smaenergymeter.internal.SerialNumber;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
 
 /**
  * The {@link EnergyMeter} class is responsible for communication with the SMA device
@@ -31,50 +37,16 @@ import org.openhab.core.library.types.DecimalType;
 public class EnergyMeter {
 
     private static final byte[] E_METER_PROTOCOL_ID = new byte[] { 0x60, 0x69 };
+    private static final int HEADER_LENGTH = 28;
+    private static final int VERSION_LENGTH = 4;
 
     private String serialNumber = "";
-    private final FieldDTO powerIn;
-    private final FieldDTO energyIn;
-    private final FieldDTO powerOut;
-    private final FieldDTO energyOut;
-    private final FieldDTO powerInL1;
-    private final FieldDTO energyInL1;
-    private final FieldDTO powerOutL1;
-    private final FieldDTO energyOutL1;
-    private final FieldDTO powerInL2;
-    private final FieldDTO energyInL2;
-    private final FieldDTO powerOutL2;
-    private final FieldDTO energyOutL2;
-    private final FieldDTO powerInL3;
-    private final FieldDTO energyInL3;
-    private final FieldDTO powerOutL3;
-    private final FieldDTO energyOutL3;
-
-    public EnergyMeter() {
-        powerIn = new FieldDTO(0x20, 4, 10);
-        energyIn = new FieldDTO(0x28, 8, 3600000);
-        powerOut = new FieldDTO(0x34, 4, 10);
-        energyOut = new FieldDTO(0x3C, 8, 3600000);
-
-        powerInL1 = new FieldDTO(0xA8, 4, 10);
-        energyInL1 = new FieldDTO(0xB0, 8, 3600000); // +8
-        powerOutL1 = new FieldDTO(0xBC, 4, 10); // + C
-        energyOutL1 = new FieldDTO(0xC4, 8, 3600000); // +8
-
-        powerInL2 = new FieldDTO(0x138, 4, 10);
-        energyInL2 = new FieldDTO(0x140, 8, 3600000); // +8
-        powerOutL2 = new FieldDTO(0x14C, 4, 10); // + C
-        energyOutL2 = new FieldDTO(0x154, 8, 3600000); // +8
-
-        powerInL3 = new FieldDTO(0x1C8, 4, 10);
-        energyInL3 = new FieldDTO(0x1D0, 8, 3600000); // +8
-        powerOutL3 = new FieldDTO(0x1DC, 4, 10); // + C
-        energyOutL3 = new FieldDTO(0x1E4, 8, 3600000); // +8
-    }
+    private final EnumMap<ObisId, BigDecimal> values = new EnumMap<>(ObisId.class);
+    private StringType version = StringType.EMPTY;
 
     public void parse(byte[] bytes) throws IOException {
         try {
-            String sma = new String(Arrays.copyOfRange(bytes, 0, 3));
+            String sma = new String(Arrays.copyOfRange(bytes, 0, 3), StandardCharsets.US_ASCII);
             if (!"SMA".equals(sma)) {
                 throw new IOException("Not a SMA telegram." + sma);
             }
@@ -85,27 +57,39 @@ public class EnergyMeter {
             }
 
             ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0x14, 0x18));
-            serialNumber = Integer.toHexString(buffer.getInt());
+            serialNumber = SerialNumber.fromRaw(buffer.getInt());
+            values.clear();
+            version = StringType.EMPTY;
 
-            powerIn.updateValue(bytes);
-            energyIn.updateValue(bytes);
-            powerOut.updateValue(bytes);
-            energyOut.updateValue(bytes);
+            int offset = HEADER_LENGTH;
+            while (offset + Integer.BYTES <= bytes.length) {
+                int obis = readInt32(bytes, offset);
+                offset += Integer.BYTES;
 
-            powerInL1.updateValue(bytes);
-            energyInL1.updateValue(bytes);
-            powerOutL1.updateValue(bytes);
-            energyOutL1.updateValue(bytes);
+                int valueLength = switch (obis & 0x0000FF00) {
+                    case 0x00000400 -> Integer.BYTES;
+                    case 0x00000800 -> Long.BYTES;
+                    default -> 0;
+                };
+                if (obis == ObisId.VERSION.getCode()) {
+                    valueLength = VERSION_LENGTH;
+                }
+                if (valueLength == 0) {
+                    break;
+                }
+                if (offset + valueLength > bytes.length) {
+                    break;
+                }
 
-            powerInL2.updateValue(bytes);
-            energyInL2.updateValue(bytes);
-            powerOutL2.updateValue(bytes);
-            energyOutL2.updateValue(bytes);
-
-            powerInL3.updateValue(bytes);
-            energyInL3.updateValue(bytes);
-            powerOutL3.updateValue(bytes);
-            energyOutL3.updateValue(bytes);
+                ObisId obisId = ObisId.fromCode(obis);
+                if (obisId == ObisId.VERSION) {
+                    version = decodeVersion(bytes, offset);
+                } else if (obisId != null) {
+                    long rawValue = valueLength == Integer.BYTES ? readInt32(bytes, offset) : readUint64(bytes, offset);
+                    values.put(obisId, scaleValue(rawValue, obisId));
+                }
+                offset += valueLength;
+            }
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -116,66 +100,267 @@ public class EnergyMeter {
     }
 
     public DecimalType getPowerIn() {
-        return new DecimalType(powerIn.getValue());
+        return getDecimalType(ObisId.POSITIVE_ACTIVE_POWER);
     }
 
     public DecimalType getPowerOut() {
-        return new DecimalType(powerOut.getValue());
+        return getDecimalType(ObisId.NEGATIVE_ACTIVE_POWER);
     }
 
     public DecimalType getEnergyIn() {
-        return new DecimalType(energyIn.getValue());
+        return getDecimalType(ObisId.POSITIVE_ACTIVE_ENERGY);
     }
 
     public DecimalType getEnergyOut() {
-        return new DecimalType(energyOut.getValue());
+        return getDecimalType(ObisId.NEGATIVE_ACTIVE_ENERGY);
     }
 
     public DecimalType getPowerInL1() {
-        return new DecimalType(powerInL1.getValue());
+        return getDecimalType(ObisId.POSITIVE_ACTIVE_POWER_L1);
     }
 
     public DecimalType getPowerOutL1() {
-        return new DecimalType(powerOutL1.getValue());
+        return getDecimalType(ObisId.NEGATIVE_ACTIVE_POWER_L1);
     }
 
     public DecimalType getEnergyInL1() {
-        return new DecimalType(energyInL1.getValue());
+        return getDecimalType(ObisId.POSITIVE_ACTIVE_ENERGY_L1);
     }
 
     public DecimalType getEnergyOutL1() {
-        return new DecimalType(energyOutL1.getValue());
+        return getDecimalType(ObisId.NEGATIVE_ACTIVE_ENERGY_L1);
     }
 
     public DecimalType getPowerInL2() {
-        return new DecimalType(powerInL2.getValue());
+        return getDecimalType(ObisId.POSITIVE_ACTIVE_POWER_L2);
     }
 
     public DecimalType getPowerOutL2() {
-        return new DecimalType(powerOutL2.getValue());
+        return getDecimalType(ObisId.NEGATIVE_ACTIVE_POWER_L2);
     }
 
     public DecimalType getEnergyInL2() {
-        return new DecimalType(energyInL2.getValue());
+        return getDecimalType(ObisId.POSITIVE_ACTIVE_ENERGY_L2);
     }
 
     public DecimalType getEnergyOutL2() {
-        return new DecimalType(energyOutL2.getValue());
+        return getDecimalType(ObisId.NEGATIVE_ACTIVE_ENERGY_L2);
     }
 
     public DecimalType getPowerInL3() {
-        return new DecimalType(powerInL3.getValue());
+        return getDecimalType(ObisId.POSITIVE_ACTIVE_POWER_L3);
     }
 
     public DecimalType getPowerOutL3() {
-        return new DecimalType(powerOutL3.getValue());
+        return getDecimalType(ObisId.NEGATIVE_ACTIVE_POWER_L3);
     }
 
     public DecimalType getEnergyInL3() {
-        return new DecimalType(energyInL3.getValue());
+        return getDecimalType(ObisId.POSITIVE_ACTIVE_ENERGY_L3);
     }
 
     public DecimalType getEnergyOutL3() {
-        return new DecimalType(energyOutL3.getValue());
+        return getDecimalType(ObisId.NEGATIVE_ACTIVE_ENERGY_L3);
+    }
+
+    public DecimalType getReactivePowerIn() {
+        return getDecimalType(ObisId.POSITIVE_REACTIVE_POWER);
+    }
+
+    public DecimalType getReactivePowerOut() {
+        return getDecimalType(ObisId.NEGATIVE_REACTIVE_POWER);
+    }
+
+    public DecimalType getReactiveEnergyIn() {
+        return getDecimalType(ObisId.POSITIVE_REACTIVE_ENERGY);
+    }
+
+    public DecimalType getReactiveEnergyOut() {
+        return getDecimalType(ObisId.NEGATIVE_REACTIVE_ENERGY);
+    }
+
+    public DecimalType getReactivePowerInL1() {
+        return getDecimalType(ObisId.POSITIVE_REACTIVE_POWER_L1);
+    }
+
+    public DecimalType getReactivePowerOutL1() {
+        return getDecimalType(ObisId.NEGATIVE_REACTIVE_POWER_L1);
+    }
+
+    public DecimalType getReactiveEnergyInL1() {
+        return getDecimalType(ObisId.POSITIVE_REACTIVE_ENERGY_L1);
+    }
+
+    public DecimalType getReactiveEnergyOutL1() {
+        return getDecimalType(ObisId.NEGATIVE_REACTIVE_ENERGY_L1);
+    }
+
+    public DecimalType getReactivePowerInL2() {
+        return getDecimalType(ObisId.POSITIVE_REACTIVE_POWER_L2);
+    }
+
+    public DecimalType getReactivePowerOutL2() {
+        return getDecimalType(ObisId.NEGATIVE_REACTIVE_POWER_L2);
+    }
+
+    public DecimalType getReactiveEnergyInL2() {
+        return getDecimalType(ObisId.POSITIVE_REACTIVE_ENERGY_L2);
+    }
+
+    public DecimalType getReactiveEnergyOutL2() {
+        return getDecimalType(ObisId.NEGATIVE_REACTIVE_ENERGY_L2);
+    }
+
+    public DecimalType getReactivePowerInL3() {
+        return getDecimalType(ObisId.POSITIVE_REACTIVE_POWER_L3);
+    }
+
+    public DecimalType getReactivePowerOutL3() {
+        return getDecimalType(ObisId.NEGATIVE_REACTIVE_POWER_L3);
+    }
+
+    public DecimalType getReactiveEnergyInL3() {
+        return getDecimalType(ObisId.POSITIVE_REACTIVE_ENERGY_L3);
+    }
+
+    public DecimalType getReactiveEnergyOutL3() {
+        return getDecimalType(ObisId.NEGATIVE_REACTIVE_ENERGY_L3);
+    }
+
+    public DecimalType getApparentPowerIn() {
+        return getDecimalType(ObisId.POSITIVE_APPARENT_POWER);
+    }
+
+    public DecimalType getApparentPowerOut() {
+        return getDecimalType(ObisId.NEGATIVE_APPARENT_POWER);
+    }
+
+    public DecimalType getApparentEnergyIn() {
+        return getDecimalType(ObisId.POSITIVE_APPARENT_ENERGY);
+    }
+
+    public DecimalType getApparentEnergyOut() {
+        return getDecimalType(ObisId.NEGATIVE_APPARENT_ENERGY);
+    }
+
+    public DecimalType getApparentPowerInL1() {
+        return getDecimalType(ObisId.POSITIVE_APPARENT_POWER_L1);
+    }
+
+    public DecimalType getApparentPowerOutL1() {
+        return getDecimalType(ObisId.NEGATIVE_APPARENT_POWER_L1);
+    }
+
+    public DecimalType getApparentEnergyInL1() {
+        return getDecimalType(ObisId.POSITIVE_APPARENT_ENERGY_L1);
+    }
+
+    public DecimalType getApparentEnergyOutL1() {
+        return getDecimalType(ObisId.NEGATIVE_APPARENT_ENERGY_L1);
+    }
+
+    public DecimalType getApparentPowerInL2() {
+        return getDecimalType(ObisId.POSITIVE_APPARENT_POWER_L2);
+    }
+
+    public DecimalType getApparentPowerOutL2() {
+        return getDecimalType(ObisId.NEGATIVE_APPARENT_POWER_L2);
+    }
+
+    public DecimalType getApparentEnergyInL2() {
+        return getDecimalType(ObisId.POSITIVE_APPARENT_ENERGY_L2);
+    }
+
+    public DecimalType getApparentEnergyOutL2() {
+        return getDecimalType(ObisId.NEGATIVE_APPARENT_ENERGY_L2);
+    }
+
+    public DecimalType getApparentPowerInL3() {
+        return getDecimalType(ObisId.POSITIVE_APPARENT_POWER_L3);
+    }
+
+    public DecimalType getApparentPowerOutL3() {
+        return getDecimalType(ObisId.NEGATIVE_APPARENT_POWER_L3);
+    }
+
+    public DecimalType getApparentEnergyInL3() {
+        return getDecimalType(ObisId.POSITIVE_APPARENT_ENERGY_L3);
+    }
+
+    public DecimalType getApparentEnergyOutL3() {
+        return getDecimalType(ObisId.NEGATIVE_APPARENT_ENERGY_L3);
+    }
+
+    public DecimalType getPowerFactor() {
+        return getDecimalType(ObisId.POWER_FACTOR);
+    }
+
+    public DecimalType getPowerFactorL1() {
+        return getDecimalType(ObisId.POWER_FACTOR_L1);
+    }
+
+    public DecimalType getPowerFactorL2() {
+        return getDecimalType(ObisId.POWER_FACTOR_L2);
+    }
+
+    public DecimalType getPowerFactorL3() {
+        return getDecimalType(ObisId.POWER_FACTOR_L3);
+    }
+
+    public DecimalType getCurrentL1() {
+        return getDecimalType(ObisId.CURRENT_L1);
+    }
+
+    public DecimalType getCurrentL2() {
+        return getDecimalType(ObisId.CURRENT_L2);
+    }
+
+    public DecimalType getCurrentL3() {
+        return getDecimalType(ObisId.CURRENT_L3);
+    }
+
+    public DecimalType getVoltageL1() {
+        return getDecimalType(ObisId.VOLTAGE_L1);
+    }
+
+    public DecimalType getVoltageL2() {
+        return getDecimalType(ObisId.VOLTAGE_L2);
+    }
+
+    public DecimalType getVoltageL3() {
+        return getDecimalType(ObisId.VOLTAGE_L3);
+    }
+
+    public DecimalType getFrequency() {
+        return getDecimalType(ObisId.FREQUENCY);
+    }
+
+    public StringType getVersion() {
+        return version;
+    }
+
+    private DecimalType getDecimalType(ObisId obisId) {
+        return new DecimalType(values.getOrDefault(obisId, BigDecimal.ZERO));
+    }
+
+    private BigDecimal scaleValue(long rawValue, ObisId obisId) {
+        return BigDecimal.valueOf(rawValue).divide(BigDecimal.valueOf(obisId.getDivider()), 10, RoundingMode.HALF_UP)
+                .stripTrailingZeros();
+    }
+
+    private StringType decodeVersion(byte[] bytes, int offset) {
+        int major = bytes[offset] & 0xFF;
+        int minor = bytes[offset + 1] & 0xFF;
+        int build = bytes[offset + 2] & 0xFF;
+        char revision = (char) (bytes[offset + 3] & 0xFF);
+        return new StringType("%d.%d.%d.%s".formatted(major, minor, build, revision == 0 ? "N" : revision));
+    }
+
+    private int readInt32(byte[] bytes, int offset) {
+        return ByteBuffer.wrap(bytes, offset, Integer.BYTES).getInt();
+    }
+
+    private long readUint64(byte[] bytes, int offset) {
+        return ByteBuffer.wrap(bytes, offset, Long.BYTES).getLong();
     }
 }

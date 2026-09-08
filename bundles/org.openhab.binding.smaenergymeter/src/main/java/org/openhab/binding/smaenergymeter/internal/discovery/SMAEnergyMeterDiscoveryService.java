@@ -16,6 +16,7 @@ import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingC
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -110,7 +111,10 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, identifier);
         ThingUID uid = new ThingUID(THING_TYPE_ENERGY_METER, identifier);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel("SMA Energy Meter #" + identifier)
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
+                .withLabel("SMA Energy Meter #" + identifier + " (0x"
+                        + Integer.toUnsignedString(Integer.parseUnsignedInt(identifier), 16).toUpperCase(Locale.ROOT)
+                        + ")")
                 .build();
         thingDiscovered(result);
 
