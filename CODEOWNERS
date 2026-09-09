@@ -125,6 +125,7 @@
 /bundles/org.openhab.binding.evcc/ @marcelGoerentz
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.exec/ @kgoderis
+/bundles/org.openhab.binding.eyeonwater/ @rkoshak
 /bundles/org.openhab.binding.feed/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.feican/ @Hilbrand
 /bundles/org.openhab.binding.fenecon/ @nixoso

@@ -1,0 +1,431 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.eyeonwater.internal.api;
+
+import java.io.IOException;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+/**
+ * Service to interact with the EyeOnWater REST API.
+ * Uses native Java HttpClient with a CookieManager to persist login sessions.
+ *
+ * @author Richard Koshak - Initial contribution
+ */
+@NonNullByDefault
+@SuppressWarnings("null")
+public class EyeOnWaterClient {
+
+    private final Logger logger = LoggerFactory.getLogger(EyeOnWaterClient.class);
+
+    private final String hostname;
+    private final String username;
+    private final String password;
+    private final HttpClient httpClient;
+
+    private boolean authenticated = false;
+
+    public EyeOnWaterClient(String hostname, String username, String password) {
+        this.hostname = hostname.trim().isEmpty() ? "eyeonwater.com" : hostname.trim();
+        this.username = username;
+        this.password = password;
+
+        CookieManager cookieManager = new CookieManager();
+        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+
+        this.httpClient = HttpClient.newBuilder().cookieHandler(cookieManager)
+                .followRedirects(HttpClient.Redirect.ALWAYS).connectTimeout(Duration.ofSeconds(10)).build();
+    }
+
+    private String buildUrl(String path) {
+        return "https://" + hostname + "/" + path.replaceAll("^/+", "");
+    }
+
+    /**
+     * Authenticate with the EyeOnWater service.
+     */
+    public synchronized void authenticate() throws IOException, InterruptedException {
+        if (authenticated) {
+            return;
+        }
+
+        logger.debug("Attempting to authenticate with EyeOnWater at {}", hostname);
+        String loginUrl = buildUrl("account/signin");
+
+        Map<Object, Object> formData = new HashMap<>();
+        formData.put("username", username);
+        formData.put("password", password);
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(loginUrl)).timeout(Duration.ofSeconds(15))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0").POST(ofFormData(formData)).build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            logger.error("Authentication failed with HTTP code: {}", response.statusCode());
+            throw new IOException("Failed to authenticate: HTTP " + response.statusCode());
+        }
+
+        String body = response.body();
+        if (body.contains("account/signin")
+                && (body.contains("Invalid username") || body.contains("password") && body.contains("form"))) {
+            logger.error("EyeOnWater rejected username/password credentials.");
+            throw new IOException("Authentication rejected: Invalid username or password.");
+        }
+
+        authenticated = true;
+        logger.info("Successfully authenticated with EyeOnWater for user: {}", username);
+    }
+
+    /**
+     * Sends request and automatically re-authenticates if we receive 401 Unauthorized.
+     */
+    private HttpResponse<String> sendRequestWithReauth(HttpRequest request) throws IOException, InterruptedException {
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 401) {
+            logger.info("Session expired (401). Attempting automatic re-authentication...");
+            synchronized (this) {
+                authenticated = false;
+                authenticate();
+            }
+
+            HttpRequest retryRequest = HttpRequest.newBuilder().uri(request.uri())
+                    .timeout(request.timeout().orElse(Duration.ofSeconds(15)))
+                    .header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0")
+                    .method(request.method(), request.bodyPublisher().orElse(HttpRequest.BodyPublishers.noBody()))
+                    .build();
+
+            response = httpClient.send(retryRequest, HttpResponse.BodyHandlers.ofString());
+        }
+
+        if (response.statusCode() != 200) {
+            throw new IOException("API request failed with HTTP " + response.statusCode());
+        }
+
+        return response;
+    }
+
+    private static HttpRequest.BodyPublisher ofFormData(Map<Object, Object> data) {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<Object, Object> entry : data.entrySet()) {
+            if (builder.length() > 0) {
+                builder.append("&");
+            }
+            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
+            builder.append("=");
+            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
+        }
+        return HttpRequest.BodyPublishers.ofString(builder.toString());
+    }
+
+    /**
+     * Discover all physical water meters associated with the EyeOnWater account.
+     */
+    public List<EyeOnWaterMeterData> discoverMeters(boolean preferNewSearch) throws IOException, InterruptedException {
+        authenticate();
+
+        if (preferNewSearch) {
+            logger.debug("Discovering meters using new_search API...");
+            try {
+                return fetchMetersNewSearch();
+            } catch (Exception e) {
+                logger.warn("new_search API discovery failed, falling back to legacy dashboard scrape.", e);
+                return fetchMetersDashboardScrape();
+            }
+        } else {
+            logger.debug("Discovering meters using legacy dashboard scrape...");
+            try {
+                return fetchMetersDashboardScrape();
+            } catch (Exception e) {
+                logger.warn("Legacy dashboard discovery failed, falling back to new_search API.", e);
+                return fetchMetersNewSearch();
+            }
+        }
+    }
+
+    private List<EyeOnWaterMeterData> fetchMetersNewSearch() throws IOException, InterruptedException {
+        String searchUrl = buildUrl("api/2/residential/new_search");
+        String jsonPayload = "{\"query\":{\"match_all\":{}}}";
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(searchUrl)).timeout(Duration.ofSeconds(15))
+                .header("Content-Type", "application/json").header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload)).build();
+
+        HttpResponse<String> response = sendRequestWithReauth(request);
+
+        List<EyeOnWaterMeterData> meters = new ArrayList<>();
+        JsonObject payload = JsonParser.parseString(response.body()).getAsJsonObject();
+        JsonObject elasticResults = payload.getAsJsonObject("elastic_results");
+        if (elasticResults != null) {
+            JsonObject hitsWrapper = elasticResults.getAsJsonObject("hits");
+            if (hitsWrapper != null) {
+                JsonArray hits = hitsWrapper.getAsJsonArray("hits");
+                if (hits != null) {
+                    for (JsonElement hitElement : hits) {
+                        JsonObject hit = hitElement.getAsJsonObject();
+                        JsonObject source = hit.getAsJsonObject("_source");
+                        if (source != null) {
+                            JsonObject meterObj = source.getAsJsonObject("meter");
+                            String meterUuid = null;
+                            String meterId = null;
+                            if (meterObj != null) {
+                                if (meterObj.has("meter_uuid")) {
+                                    meterUuid = meterObj.get("meter_uuid").getAsString();
+                                }
+                                if (meterObj.has("meter_id")) {
+                                    meterId = meterObj.get("meter_id").getAsString();
+                                }
+                            }
+                            if (meterUuid == null && source.has("meter_uuid")) {
+                                meterUuid = source.get("meter_uuid").getAsString();
+                            }
+                            if (meterId == null && source.has("meter_id")) {
+                                meterId = source.get("meter_id").getAsString();
+                            }
+
+                            if (meterUuid != null && meterId != null) {
+                                meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return meters;
+    }
+
+    private List<EyeOnWaterMeterData> fetchMetersDashboardScrape() throws IOException, InterruptedException {
+        String encodedUser = URLEncoder.encode(username, StandardCharsets.UTF_8);
+        String dashboardUrl = buildUrl("dashboard/" + encodedUser);
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(dashboardUrl)).timeout(Duration.ofSeconds(15))
+                .header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0").GET().build();
+
+        HttpResponse<String> response = sendRequestWithReauth(request);
+        return parseMetersFromDashboard(response.body());
+    }
+
+    List<EyeOnWaterMeterData> parseMetersFromDashboard(String htmlBody) {
+        List<EyeOnWaterMeterData> meters = new ArrayList<>();
+        Pattern pattern = Pattern.compile("AQ\\.Views\\.MeterPicker\\.meters\\s*=\\s*(\\[.*?\\])\\s*;", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(htmlBody);
+
+        if (matcher.find()) {
+            String jsonPart = matcher.group(1);
+            JsonArray meterInfos = JsonParser.parseString(jsonPart).getAsJsonArray();
+            for (JsonElement element : meterInfos) {
+                JsonObject meterInfo = element.getAsJsonObject();
+                if (meterInfo.has("meter_uuid") && !meterInfo.get("meter_uuid").isJsonNull()
+                        && meterInfo.has("meter_id") && !meterInfo.get("meter_id").isJsonNull()) {
+                    String uuid = meterInfo.get("meter_uuid").getAsString();
+                    String id = meterInfo.get("meter_id").getAsString();
+                    meters.add(new EyeOnWaterMeterData(uuid, id));
+                }
+            }
+        }
+        return meters;
+    }
+
+    /**
+     * Poll the current data for a specific meter.
+     */
+    public EyeOnWaterMeterData pollMeter(String meterUuid, String meterId) throws IOException, InterruptedException {
+        authenticate();
+
+        String searchUrl = buildUrl("api/2/residential/new_search");
+        String jsonPayload = "{\"query\":{\"terms\":{\"meter.meter_uuid\":[\"" + meterUuid + "\"]}}}";
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(searchUrl)).timeout(Duration.ofSeconds(15))
+                .header("Content-Type", "application/json").header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload)).build();
+
+        HttpResponse<String> response = sendRequestWithReauth(request);
+
+        JsonObject payload = JsonParser.parseString(response.body()).getAsJsonObject();
+        JsonObject elasticResults = payload.getAsJsonObject("elastic_results");
+        if (elasticResults == null) {
+            throw new IOException("Search response did not contain 'elastic_results'");
+        }
+        JsonObject hitsWrapper = elasticResults.getAsJsonObject("hits");
+        if (hitsWrapper == null) {
+            throw new IOException("Search response did not contain hits wrapper");
+        }
+        JsonArray hits = hitsWrapper.getAsJsonArray("hits");
+        if (hits == null || hits.size() == 0) {
+            throw new IOException("Meter UUID " + meterUuid + " not found on account.");
+        }
+
+        JsonObject source = hits.get(0).getAsJsonObject().getAsJsonObject("_source");
+        if (source == null) {
+            throw new IOException("Meter source payload was null");
+        }
+
+        JsonObject register = source.getAsJsonObject("register_0");
+        if (register == null) {
+            throw new IOException("Meter source is missing register_0 data");
+        }
+
+        JsonObject latestRead = register.getAsJsonObject("latest_read");
+        if (latestRead == null) {
+            throw new IOException("Meter register_0 is missing latest_read");
+        }
+
+        if (!latestRead.has("full_read") || latestRead.get("full_read").isJsonNull() || !latestRead.has("units")
+                || latestRead.get("units").isJsonNull() || !latestRead.has("read_time")
+                || latestRead.get("read_time").isJsonNull()) {
+            throw new IOException("Meter register_0 latest_read has incomplete data");
+        }
+
+        double readingValue = latestRead.get("full_read").getAsDouble();
+        String readingUnit = latestRead.get("units").getAsString();
+        String readTimeStr = latestRead.get("read_time").getAsString();
+
+        EyeOnWaterMeterData meterData = new EyeOnWaterMeterData(meterUuid, meterId);
+        meterData.setReadingValue(readingValue);
+        meterData.setReadingUnit(readingUnit);
+        meterData.setReadTime(readTimeStr);
+
+        // Fetch Alert Flags
+        if (register.has("flags") && !register.get("flags").isJsonNull()) {
+            JsonObject flags = register.getAsJsonObject("flags");
+            if (flags.has("Leak") && !flags.get("Leak").isJsonNull()) {
+                meterData.setLeakAlert(flags.get("Leak").getAsBoolean());
+            }
+            if (flags.has("LowBattery") && !flags.get("LowBattery").isJsonNull()) {
+                meterData.setLowBatteryAlert(flags.get("LowBattery").getAsBoolean());
+            }
+            if (flags.has("ReverseFlow") && !flags.get("ReverseFlow").isJsonNull()) {
+                meterData.setReverseFlowAlert(flags.get("ReverseFlow").getAsBoolean());
+            }
+        }
+
+        // Fetch Leak Flow rate
+        if (register.has("leak") && !register.get("leak").isJsonNull()) {
+            JsonObject leak = register.getAsJsonObject("leak");
+            if (leak.has("rate") && !leak.get("rate").isJsonNull()) {
+                meterData.setLeakRate(leak.get("rate").getAsDouble());
+            }
+        }
+
+        return meterData;
+    }
+
+    /**
+     * DTO representing a physical meter's details and active state.
+     */
+    public static class EyeOnWaterMeterData {
+        private final String meterUuid;
+        private final String meterId;
+
+        private double readingValue = 0.0;
+        private String readingUnit = "GAL";
+        private String readTime = "";
+        private double leakRate = -1.0;
+        private boolean leakAlert = false;
+        private boolean lowBatteryAlert = false;
+        private boolean reverseFlowAlert = false;
+
+        public EyeOnWaterMeterData(String meterUuid, String meterId) {
+            this.meterUuid = meterUuid;
+            this.meterId = meterId;
+        }
+
+        public String getMeterUuid() {
+            return meterUuid;
+        }
+
+        public String getMeterId() {
+            return meterId;
+        }
+
+        public double getReadingValue() {
+            return readingValue;
+        }
+
+        public void setReadingValue(double readingValue) {
+            this.readingValue = readingValue;
+        }
+
+        public String getReadingUnit() {
+            return readingUnit;
+        }
+
+        public void setReadingUnit(String readingUnit) {
+            this.readingUnit = readingUnit;
+        }
+
+        public String getReadTime() {
+            return readTime;
+        }
+
+        public void setReadTime(String readTime) {
+            this.readTime = readTime;
+        }
+
+        public double getLeakRate() {
+            return leakRate;
+        }
+
+        public void setLeakRate(double leakRate) {
+            this.leakRate = leakRate;
+        }
+
+        public boolean isLeakAlert() {
+            return leakAlert;
+        }
+
+        public void setLeakAlert(boolean leakAlert) {
+            this.leakAlert = leakAlert;
+        }
+
+        public boolean isLowBatteryAlert() {
+            return lowBatteryAlert;
+        }
+
+        public void setLowBatteryAlert(boolean lowBatteryAlert) {
+            this.lowBatteryAlert = lowBatteryAlert;
+        }
+
+        public boolean isReverseFlowAlert() {
+            return reverseFlowAlert;
+        }
+
+        public void setReverseFlowAlert(boolean reverseFlowAlert) {
+            this.reverseFlowAlert = reverseFlowAlert;
+        }
+    }
+}

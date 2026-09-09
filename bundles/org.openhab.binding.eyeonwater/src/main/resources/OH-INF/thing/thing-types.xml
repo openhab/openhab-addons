@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="eyeonwater"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- EyeOnWater Bridge -->
+	<bridge-type id="bridge">
+		<label>EyeOnWater Account Bridge</label>
+		<description>Manages connection, authentication, and discovery of meters for an EyeOnWater account</description>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<context>email</context>
+				<label>Username</label>
+				<description>The email address or username for your EyeOnWater account</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password for your EyeOnWater account</description>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>The EyeOnWater hostname (e.g. eyeonwater.com, eyeonwater.ca)</description>
+				<default>eyeonwater.com</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="5">
+				<label>Refresh Interval</label>
+				<description>How often the bridge polls the API in minutes</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="preferNewSearch" type="boolean">
+				<label>Prefer New Search API</label>
+				<description>When enabled, uses the modern search API endpoint instead of scraping the legacy dashboard</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- EyeOnWater Water Meter -->
+	<thing-type id="meter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>EyeOnWater Water Meter</label>
+		<description>Represents a physical water meter registered with EyeOnWater</description>
+
+		<channels>
+			<channel id="reading" typeId="reading"/>
+			<channel id="leak-flow-rate" typeId="leak-flow-rate"/>
+			<channel id="leak-alert" typeId="leak-alert"/>
+			<channel id="low-battery" typeId="low-battery"/>
+			<channel id="reverse-flow" typeId="reverse-flow"/>
+			<channel id="last-read-time" typeId="last-read-time"/>
+		</channels>
+
+		<config-description>
+			<parameter name="meterUuid" type="text" required="true">
+				<label>Meter UUID</label>
+				<description>The internal unique identifier (UUID) of the meter</description>
+			</parameter>
+			<parameter name="meterId" type="text" required="true">
+				<label>Meter ID</label>
+				<description>The physical ID / Serial Number of the meter</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="reading">
+		<item-type>Number:Volume</item-type>
+		<label>Water Reading</label>
+		<description>The latest total volume consumption reading reported by the meter</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="leak-flow-rate">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Leak Flow Rate</label>
+		<description>The rate of active water leak, if any, detected by the meter</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="leak-alert">
+		<item-type>Switch</item-type>
+		<label>Leak Alert</label>
+		<description>Indicates whether an active leak alert has been raised by the meter</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="low-battery">
+		<item-type>Switch</item-type>
+		<label>Low Battery Alert</label>
+		<description>Indicates whether the meter battery is low</description>
+		<category>Battery</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="reverse-flow">
+		<item-type>Switch</item-type>
+		<label>Reverse Flow Alert</label>
+		<description>Indicates whether reverse water flow is detected</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-read-time">
+		<item-type>DateTime</item-type>
+		<label>Last Read Time</label>
+		<description>The exact timestamp of the latest water meter reading</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
