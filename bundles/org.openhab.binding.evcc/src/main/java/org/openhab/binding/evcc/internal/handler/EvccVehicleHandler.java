@@ -80,8 +80,11 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
-        createChannelsAndSetStatesFromApiResponse(state);
+        JsonObject vehicleState = getStateFromCachedState(state);
+        if (vehicleState.isEmpty()) {
+            return;
+        }
+        createChannelsAndSetStatesFromApiResponse(vehicleState);
     }
 
     @Override
@@ -130,7 +133,11 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_KEY_VEHICLES) ? state.getAsJsonObject(JSON_KEY_VEHICLES)
-                .getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID)) : new JsonObject();
+        JsonObject vehicles = state.getAsJsonObject(JSON_KEY_VEHICLES);
+        if (vehicles == null) {
+            return new JsonObject();
+        }
+        JsonObject vehicleState = vehicles.getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
+        return vehicleState != null ? vehicleState : new JsonObject();
     }
 }

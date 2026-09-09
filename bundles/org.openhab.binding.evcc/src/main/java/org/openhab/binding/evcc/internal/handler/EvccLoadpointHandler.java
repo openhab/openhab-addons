@@ -127,7 +127,11 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        state = state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
+        JsonArray loadpoints = state.getAsJsonArray(JSON_KEY_LOADPOINTS);
+        if (loadpoints == null || index >= loadpoints.size() || !loadpoints.get(index).isJsonObject()) {
+            return;
+        }
+        state = loadpoints.get(index).getAsJsonObject();
         modifyJSON(state);
         createChannelsAndSetStatesFromApiResponse(state);
     }
@@ -157,7 +161,9 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_KEY_LOADPOINTS) ? state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject()
+        JsonArray loadpoints = state.getAsJsonArray(JSON_KEY_LOADPOINTS);
+        return loadpoints != null && index < loadpoints.size() && loadpoints.get(index).isJsonObject()
+                ? loadpoints.get(index).getAsJsonObject()
                 : new JsonObject();
     }
 }
