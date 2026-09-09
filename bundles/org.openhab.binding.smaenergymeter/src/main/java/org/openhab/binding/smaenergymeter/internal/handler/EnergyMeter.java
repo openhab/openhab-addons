@@ -48,7 +48,7 @@ public class EnergyMeter {
 
     private String serialNumber = "";
     private final EnumMap<ObisId, BigDecimal> values = new EnumMap<>(ObisId.class);
-    private StringType version = StringType.EMPTY;
+    private final EnumMap<ObisId, State> states = new EnumMap<>(ObisId.class);
 
     public void parse(byte[] bytes) throws IOException {
         try {
@@ -65,7 +65,7 @@ public class EnergyMeter {
             ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0x14, 0x18));
             serialNumber = SerialNumber.fromRaw(buffer.getInt());
             values.clear();
-            version = StringType.EMPTY;
+            states.clear();
 
             int offset = HEADER_LENGTH;
             while (offset + Integer.BYTES <= bytes.length) {
@@ -89,10 +89,11 @@ public class EnergyMeter {
 
                 ObisId obisId = ObisId.fromCode(obis);
                 if (obisId == ObisId.VERSION) {
-                    version = decodeVersion(bytes, offset);
+                    states.put(obisId, decodeVersion(bytes, offset));
                 } else if (obisId != null) {
                     long rawValue = valueLength == Integer.BYTES ? readInt32(bytes, offset) : readUint64(bytes, offset);
                     values.put(obisId, scaleValue(rawValue, obisId));
+                    states.put(obisId, getQuantityType(obisId));
                 }
                 offset += valueLength;
             }
@@ -106,11 +107,10 @@ public class EnergyMeter {
     }
 
     public State getState(ObisId obisId) {
-        return getQuantityType(obisId);
-    }
-
-    public StringType getVersion() {
-        return version;
+        if (ObisId.VERSION == obisId) {
+            return states.getOrDefault(obisId, StringType.EMPTY);
+        }
+        return states.getOrDefault(obisId, getQuantityType(obisId));
     }
 
     private BigDecimal scaleValue(long rawValue, ObisId obisId) {

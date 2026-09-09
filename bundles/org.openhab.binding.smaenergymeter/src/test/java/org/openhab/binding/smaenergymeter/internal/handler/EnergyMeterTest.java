@@ -152,7 +152,7 @@ class EnergyMeterTest {
         assertQuantityTypeValue("240.305", Units.VOLT, meter.getState(ObisId.VOLTAGE_L2));
         assertQuantityTypeValue("239.776", Units.VOLT, meter.getState(ObisId.VOLTAGE_L3));
         assertQuantityTypeValue("50.033", Units.HERTZ, meter.getState(ObisId.FREQUENCY));
-        assertEquals(new StringType("1.2.4.R"), meter.getVersion());
+        assertEquals(new StringType("1.2.4.R"), meter.getState(ObisId.VERSION));
     }
 
     @Test
@@ -192,7 +192,7 @@ class EnergyMeterTest {
         assertQuantityTypeZero(Units.VAR, meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L1));
         assertQuantityTypeZero(Units.KILOVAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L1));
         assertQuantityTypeZero(Units.AMPERE, meter.getState(ObisId.CURRENT_L1));
-        assertEquals(StringType.EMPTY, meter.getVersion());
+        assertEquals(StringType.EMPTY, meter.getState(ObisId.VERSION));
     }
 
     @Test
@@ -226,7 +226,7 @@ class EnergyMeterTest {
 
         assertEquals("1900202586", meter.getSerialNumber());
         assertQuantityTypeValue("510.6", Units.WATT, meter.getState(ObisId.POSITIVE_ACTIVE_POWER));
-        assertEquals(new StringType("1.1.0.R"), meter.getVersion());
+        assertEquals(new StringType("1.1.0.R"), meter.getState(ObisId.VERSION));
     }
 
     @Test
@@ -286,7 +286,7 @@ class EnergyMeterTest {
         assertQuantityTypeValue("0.671", Units.AMPERE, meter.getState(ObisId.CURRENT_L1));
         assertQuantityTypeValue("16.396", Units.AMPERE, meter.getState(ObisId.CURRENT_L2));
         assertQuantityTypeValue("1.132", Units.AMPERE, meter.getState(ObisId.CURRENT_L3));
-        assertEquals(new StringType("1.1.0.R"), meter.getVersion());
+        assertEquals(new StringType("1.1.0.R"), meter.getState(ObisId.VERSION));
     }
 
     private static int writeUint32(byte[] bytes, int offset, int value) {

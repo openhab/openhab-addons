@@ -130,8 +130,6 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
         CHANNEL_TO_OBIS.forEach((channelId, obisId) -> {
             updateState(channelId, energyMeter.getState(obisId));
         });
-
-        updateState(CHANNEL_VERSION, energyMeter.getVersion());
     }
 
     private void updateThingProperties(String actualSerialNumber) {

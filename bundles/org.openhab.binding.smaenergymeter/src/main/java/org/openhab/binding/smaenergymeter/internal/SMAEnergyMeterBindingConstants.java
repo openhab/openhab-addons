@@ -167,5 +167,6 @@ public class SMAEnergyMeterBindingConstants {
         CHANNEL_TO_OBIS.put(CHANNEL_VOLTAGE_L2, ObisId.VOLTAGE_L2);
         CHANNEL_TO_OBIS.put(CHANNEL_VOLTAGE_L3, ObisId.VOLTAGE_L3);
         CHANNEL_TO_OBIS.put(CHANNEL_FREQUENCY, ObisId.FREQUENCY);
+        CHANNEL_TO_OBIS.put(CHANNEL_VERSION, ObisId.VERSION);
     }
 }
