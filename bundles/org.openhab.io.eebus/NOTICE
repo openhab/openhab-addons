@@ -1,0 +1,58 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab-addons
+
+== Third Party Dependencies
+
+The following dependencies are embedded into this bundle's own jar (Private-Package) rather than
+resolved as separate OSGi bundles at runtime - see pom.xml and src/main/feature/feature.xml.
+
+=== org.openmuc.jeebus:ship, org.openmuc.jeebus:spine
+Author: Fraunhofer ISE / OpenMUC
+URL: https://www.openmuc.org/eebus/
+License: Eclipse Public License 2.0
+
+=== org.openmuc.jeebus.usecase.powerlimitation:{abstract-controllablesystem,lpc-controllablesystem,lpp-controllablesystem}
+Author: Fraunhofer ISE / OpenMUC
+URL: https://www.openmuc.org/eebus/
+License: Eclipse Public License 2.0
+
+=== org.bouncycastle:bcprov-jdk18on, org.bouncycastle:bcpkix-jdk18on, org.bouncycastle:bcutil-jdk18on
+Author: The Legion of the Bouncy Castle Inc.
+URL: https://www.bouncycastle.org/
+License: MIT License
+
+=== io.netty:netty-*
+Author: The Netty Project
+URL: https://netty.io/
+License: Apache License Version 2.0
+
+=== com.fasterxml.jackson.core:*, com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations
+Author: FasterXML LLC
+URL: https://github.com/FasterXML/jackson-databind
+License: Apache License Version 2.0
+
+=== org.glassfish.jaxb:jaxb-core, org.glassfish.jaxb:txw2, org.eclipse.angus:angus-activation, com.sun.istack:istack-commons-runtime, org.jvnet.jaxb:jaxb-plugins-runtime, jakarta.xml.bind:jakarta.xml.bind-api, jakarta.activation:jakarta.activation-api
+Author: Eclipse Foundation
+URL: https://eclipse-ee4j.github.io/jaxb-ri/
+License: Eclipse Distribution License 1.0 (BSD-3-Clause)
+
+=== com.google.code.gson:gson
+Author: Google Inc.
+URL: https://github.com/google/gson
+License: Apache License Version 2.0
+
+=== org.jmdns:jmdns
+Author: JmDNS contributors
+URL: https://github.com/jmdns/jmdns
+License: Apache License Version 2.0

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="io:eebus">
+		<parameter-group name="network">
+			<label>Network</label>
+		</parameter-group>
+		<parameter-group name="identity">
+			<label>SHIP/SPINE Identity</label>
+		</parameter-group>
+		<parameter-group name="pairing">
+			<label>Pairing</label>
+		</parameter-group>
+
+		<parameter name="bindAddress" type="text" groupName="network">
+			<context>network-address</context>
+			<label>Bind Address</label>
+			<description>Local IP address the SHIP WebSocket server binds to. Use 0.0.0.0 to bind all
+				interfaces.</description>
+			<default>0.0.0.0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535" groupName="network">
+			<label>Port</label>
+			<description>TCP port the SHIP WebSocket server listens on. EEBus does not mandate a fixed port;
+				remote nodes find it
+				via mDNS.</description>
+			<default>4712</default>
+		</parameter>
+		<parameter name="wssPath" type="text" groupName="network">
+			<label>WebSocket Path</label>
+			<description>HTTP path the SHIP WebSocket endpoint is served under.</description>
+			<default>/ship/</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="serviceDomain" type="text" groupName="network">
+			<label>mDNS Domain</label>
+			<description>mDNS domain used for SHIP service advertisement/discovery.</description>
+			<default>local.</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="deviceId" type="text" required="true" groupName="identity">
+			<label>Device ID</label>
+			<description>Unique SPINE device identifier for this node. Change the default to something unique
+				to your installation
+				before pairing with a real EEBus partner.</description>
+			<default>d:_i:openHAB:eebus-01</default>
+		</parameter>
+		<parameter name="friendlyName" type="text" groupName="identity">
+			<label>Friendly Name</label>
+			<description>Human-readable name advertised to pairing partners.</description>
+			<default>openHAB</default>
+		</parameter>
+		<parameter name="deviceType" type="text" groupName="identity">
+			<label>SPINE Device Type</label>
+			<description>SPINE device type reported to pairing partners.</description>
+			<default>GENERIC</default>
+			<advanced>true</advanced>
+			<options>
+				<option value="GENERIC">Generic</option>
+				<option value="ENERGY_MANAGEMENT_SYSTEM">Energy Management System</option>
+				<option value="CHARGING_STATION">Charging Station</option>
+				<option value="HEAT_GENERATION_SYSTEM">Heat Generation System</option>
+				<option value="HEAT_SINK_SYSTEM">Heat Sink System</option>
+				<option value="HEAT_STORAGE_SYSTEM">Heat Storage System</option>
+				<option value="ELECTRICITY_SUPPLY_SYSTEM">Electricity Supply System</option>
+				<option value="INVERTER">Inverter</option>
+				<option value="SUB_METER">Sub Meter</option>
+			</options>
+		</parameter>
+		<parameter name="entityType" type="text" groupName="identity">
+			<label>SPINE Entity Type</label>
+			<description>SPINE entity type hosting the LPC/LPP use cases. Limited to the entity types the
+				jEEBus LPC/LPP
+				implementation actually allows (verified live against a real EEBus partner) -
+				CEM is the correct default for a
+				generic controllable system.</description>
+			<default>CEM</default>
+			<advanced>true</advanced>
+			<options>
+				<option value="CEM">CEM (generic controllable system)</option>
+				<option value="COMPRESSOR">Compressor</option>
+				<option value="EVSE">EVSE</option>
+				<option value="HEAT_PUMP_APPLIANCE">Heat Pump Appliance</option>
+				<option value="INVERTER">Inverter</option>
+				<option value="SMART_ENERGY_APPLIANCE">Smart Energy Appliance</option>
+				<option value="SUB_METER_ELECTRICITY">Sub Meter Electricity</option>
+			</options>
+		</parameter>
+
+		<parameter name="connectPolicy" type="text" groupName="pairing">
+			<label>Connect Policy</label>
+			<description>Which remote SHIP nodes are allowed to connect. TRUSTED only accepts nodes whose SKI
+				is listed below; ALL
+				accepts any node (not recommended); NONE rejects new pairings.</description>
+			<default>TRUSTED</default>
+			<options>
+				<option value="TRUSTED">Trusted SKIs only</option>
+				<option value="ALL">All (insecure)</option>
+				<option value="NONE">None</option>
+			</options>
+		</parameter>
+		<parameter name="trustedSkis" type="text" groupName="pairing">
+			<label>Trusted SKIs</label>
+			<description>Comma-separated list of remote SHIP Subject Key Identifiers (SKIs) to pre-trust, e.g.
+				the SKI printed on
+				your CLS gateway. Only used when Connect Policy is "Trusted SKIs only".</description>
+		</parameter>
+		<parameter name="autoAcceptPairing" type="boolean" groupName="pairing">
+			<label>Auto-Accept Pairing Requests</label>
+			<description>Accept any pairing request without a pre-trusted SKI. Only intended for lab testing
+				against a simulator -
+				never enable this against a production installation.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
