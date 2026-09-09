@@ -100,6 +100,11 @@ public class SMAEnergyMeterBindingConstants {
     public static final String CHANNEL_FREQUENCY = "frequency";
     public static final String CHANNEL_VERSION = "version";
 
+    public static final String CHANNEL_POWER_IN_LEGACY = CHANNEL_POWER_IN;
+    public static final String CHANNEL_POWER_OUT_LEGACY = CHANNEL_POWER_OUT;
+    public static final String CHANNEL_ENERGY_IN_LEGACY = CHANNEL_ENERGY_IN;
+    public static final String CHANNEL_ENERGY_OUT_LEGACY = CHANNEL_ENERGY_OUT;
+
     public static final Map<String, ObisId> CHANNEL_TO_OBIS = new HashMap<>();
 
     static {

@@ -33,14 +33,14 @@ The polling period parameter is used to trigger readout of meter. In case if two
 
 | Channel | Description |
 |---|---|
-| powerIn / powerOut | Purchased and grid feed-in active power |
-| powerInL1 / powerOutL1 | Purchased and grid feed-in active power L1 |
-| powerInL2 / powerOutL2 | Purchased and grid feed-in active power L2 |
-| powerInL3 / powerOutL3 | Purchased and grid feed-in active power L3 |
-| energyIn / energyOut | Purchased and grid feed-in active energy |
-| energyInL1 / energyOutL1 | Purchased and grid feed-in active energy L1 |
-| energyInL2 / energyOutL2 | Purchased and grid feed-in active energy L2 |
-| energyInL3 / energyOutL3 | Purchased and grid feed-in active energy L3 |
+| activePowerIn / activePowerOut | Purchased and grid feed-in active power |
+| activePowerInL1 / activePowerOutL1 | Purchased and grid feed-in active power L1 |
+| activePowerInL2 / activePowerOutL2 | Purchased and grid feed-in active power L2 |
+| activePowerInL3 / activePowerOutL3 | Purchased and grid feed-in active power L3 |
+| activeEnergyIn / activeEnergyOut | Purchased and grid feed-in active energy |
+| activeEnergyInL1 / activeEnergyOutL1 | Purchased and grid feed-in active energy L1 |
+| activeEnergyInL2 / activeEnergyOutL2 | Purchased and grid feed-in active energy L2 |
+| activeEnergyInL3 / activeEnergyOutL3 | Purchased and grid feed-in active energy L3 |
 | reactivePowerIn / reactivePowerOut | Purchased and grid feed-in reactive power |
 | reactivePowerInL1 / reactivePowerOutL1 | Purchased and grid feed-in reactive power L1 |
 | reactivePowerInL2 / reactivePowerOutL2 | Purchased and grid feed-in reactive power L2 |
@@ -62,6 +62,8 @@ The polling period parameter is used to trigger readout of meter. In case if two
 | voltageL1 / voltageL2 / voltageL3 | Voltage per phase |
 | frequency | Grid frequency |
 | version | Device version |
+
+Older channel links using the former `powerIn` / `energyIn` names are migrated automatically through the binding update description.
 
 ## Full example
 
