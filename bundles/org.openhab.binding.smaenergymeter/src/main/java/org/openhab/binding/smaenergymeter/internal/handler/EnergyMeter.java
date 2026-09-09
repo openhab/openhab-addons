@@ -24,7 +24,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smaenergymeter.internal.SerialNumber;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -107,7 +106,7 @@ public class EnergyMeter {
     }
 
     public State getState(ObisId obisId) {
-        return getQuantityTypeOrDecimal(obisId);
+        return getQuantityType(obisId);
     }
 
     public StringType getVersion() {
@@ -135,7 +134,7 @@ public class EnergyMeter {
         return ByteBuffer.wrap(bytes, offset, Long.BYTES).getLong();
     }
 
-    private State getQuantityTypeOrDecimal(ObisId obisId) {
+    private QuantityType<?> getQuantityType(ObisId obisId) {
         BigDecimal value = values.getOrDefault(obisId, BigDecimal.ZERO);
         Unit<?> unit = switch (obisId) {
             case POSITIVE_REACTIVE_POWER, POSITIVE_REACTIVE_POWER_L1, POSITIVE_REACTIVE_POWER_L2,
@@ -166,12 +165,8 @@ public class EnergyMeter {
             case CURRENT_L1, CURRENT_L2, CURRENT_L3 -> (Unit<?>) Units.AMPERE;
             case VOLTAGE_L1, VOLTAGE_L2, VOLTAGE_L3 -> (Unit<?>) Units.VOLT;
             case FREQUENCY -> (Unit<?>) Units.HERTZ;
-            default -> null;
+            default -> throw new IllegalArgumentException("Unsupported OBIS id for quantity state: " + obisId);
         };
-        if (unit != null) {
-            return new QuantityType<>(value, unit);
-        } else {
-            return new DecimalType(value);
-        }
+        return new QuantityType<>(value, unit);
     }
 }
