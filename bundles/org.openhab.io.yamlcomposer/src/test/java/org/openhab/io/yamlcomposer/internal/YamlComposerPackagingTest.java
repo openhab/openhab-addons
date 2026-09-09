@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
@@ -319,6 +320,40 @@ class YamlComposerPackagingTest extends AbstractYamlComposerTest {
 
             assertThat(getNestedValue(data, "things", "thing", "config"),
                     equalTo(Map.of("from_main", true, "retained", true, "from_package", true)));
+        }
+
+        @Test
+        @DisplayName("Preserves empty maps and lists in main document and package output")
+        void preservesEmptyMapsAndLists() throws IOException {
+            writeFixture("pkg.yaml", """
+                    things:
+                      pkg_empty_map: {}
+                      pkg_empty_list: []
+                    """);
+
+            Path main = writeFixture("main.yaml", """
+                    packages:
+                      p1: !include pkg.yaml
+                    things:
+                      main_empty_map: {}
+                      main_empty_list: []
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            @SuppressWarnings("unchecked")
+            Map<Object, @Nullable Object> things = (Map<Object, @Nullable Object>) Objects
+                    .requireNonNull(getNestedValue(data, "things"));
+            assertThat(things, hasKey("pkg_empty_map"));
+            assertThat(things, hasKey("pkg_empty_list"));
+            assertThat(things, hasKey("main_empty_map"));
+            assertThat(things, hasKey("main_empty_list"));
+
+            assertThat(things.get("pkg_empty_map"), equalTo(Map.of()));
+            assertThat(things.get("pkg_empty_list"), equalTo(List.of()));
+
+            assertThat(things.get("main_empty_map"), equalTo(Map.of()));
+            assertThat(things.get("main_empty_list"), equalTo(List.of()));
         }
 
         @Nested
