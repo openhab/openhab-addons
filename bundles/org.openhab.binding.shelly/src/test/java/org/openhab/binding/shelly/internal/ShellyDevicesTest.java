@@ -96,9 +96,20 @@ public class ShellyDevicesTest {
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2), //
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER10V, 1), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, 1), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, 1), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, 1), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDALIDIMMER, 1)); //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, 1)); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForNonPmDimmerThingTypes")
+    void numMetersByThingTypeIsNotOverriddenForNonPmDimmers(ThingTypeUID thingTypeUid) {
+        assertThat("THING_TYPE_CAP_NUM_METERS must not override " + thingTypeUid.getId(),
+                THING_TYPE_CAP_NUM_METERS.get(thingTypeUid), is(nullValue()));
+    }
+
+    private static Stream<Arguments> provideTestCasesForNonPmDimmerThingTypes() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDALIDIMMER)); //
     }
 
     @ParameterizedTest
