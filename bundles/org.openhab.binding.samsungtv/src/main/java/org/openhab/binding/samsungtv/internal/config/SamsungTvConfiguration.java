@@ -99,7 +99,7 @@ public class SamsungTvConfiguration {
     }
 
     public boolean getLegacyCipherSuites() {
-        return Optional.ofNullable(legacyCipherSuites).orElse(true);
+        return !Boolean.FALSE.equals(legacyCipherSuites);
     }
 
     public boolean getSmartThingsSubscription() {

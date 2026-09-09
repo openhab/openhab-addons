@@ -64,8 +64,8 @@
 		</parameter>
 		<parameter name="legacyCipherSuites" type="boolean">
 			<label>Allow Legacy Cipher Suites</label>
-			<description>Accepts any certificate and allows the cipher suites Jetty excludes, for older TVs. Turn it off to check
-				the TV certificate and drop the warnings.</description>
+			<description>Allows the cipher suites Jetty excludes, for older TVs. Turn it off to keep those exclusions and drop
+				the warnings. Off requires a TV certificate with the common name SmartViewSDK.</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
