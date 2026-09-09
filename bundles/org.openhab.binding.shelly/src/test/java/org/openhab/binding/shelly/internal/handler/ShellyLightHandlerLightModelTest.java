@@ -94,7 +94,7 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @Test
-    void testFunctionalityOfTestHarness() {
+    void testFunctionalityOfTestHarnessWithColor() {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
 
         handler.handleDeviceCommand(
@@ -102,7 +102,6 @@ class ShellyLightHandlerLightModelTest {
                 PercentType.HUNDRED);
 
         Map<String, State> updates = handler.getChannelUpdates();
-        assertEquals(6, updates.size());
         assertEquals(PercentType.HUNDRED, updates.get("color#red"));
         assertEquals(PercentType.ZERO, updates.get("color#green"));
         assertEquals(PercentType.ZERO, updates.get("color#blue"));
@@ -113,6 +112,10 @@ class ShellyLightHandlerLightModelTest {
         assertEquals(0, ((HSBType) obj).getHue().intValue());
         assertEquals(100, ((HSBType) obj).getSaturation().intValue());
         assertEquals(0, ((HSBType) obj).getBrightness().intValue());
+        assertNotNull(updates.get("white#temperature"));
+        assertNotNull(updates.get("white#temperature-abs"));
+
+        assertNull(updates.get("control#mode")); // already in color mode, so no update
 
         try {
             handler.acquireLock();
@@ -123,6 +126,45 @@ class ShellyLightHandlerLightModelTest {
         } finally {
             assertFalse(handler.releaseLock()); // not dirty, so releaseLock returns false
         }
+    }
+
+    @Test
+    void testFunctionalityOfTestHarnessWithColorTemp() {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
+
+        handler.handleDeviceCommand(
+                new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYBULB, "test"), "white"),
+                        "temperature"),
+                PercentType.HUNDRED);
+
+        Map<String, State> updates = handler.getChannelUpdates();
+        assertNotNull(updates.get("color#red"));
+        assertNotNull(updates.get("color#green"));
+        assertNotNull(updates.get("color#blue"));
+        assertNotNull(updates.get("color#white"));
+        assertNotNull(updates.get("color#full"));
+        assertNotNull(updates.get("color#hsb"));
+        assertNotNull(updates.get("white#temperature"));
+        assertNotNull(updates.get("white#temperature-abs"));
+        assertNotNull(updates.get("control#mode")); // changed to white mode, so update is sent
+
+        handler.getChannelUpdates().clear();
+
+        handler.handleDeviceCommand(
+                new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYBULB, "test"), "white"),
+                        "temperature"),
+                PercentType.ZERO);
+
+        updates = handler.getChannelUpdates();
+        assertNotNull(updates.get("color#red"));
+        assertNotNull(updates.get("color#green"));
+        assertNotNull(updates.get("color#blue"));
+        assertNotNull(updates.get("color#white"));
+        assertNotNull(updates.get("color#full"));
+        assertNotNull(updates.get("color#hsb"));
+        assertNotNull(updates.get("white#temperature"));
+        assertNotNull(updates.get("white#temperature-abs"));
+        assertNull(updates.get("control#mode")); // already in white mode, so no update
     }
 
     @Test
@@ -394,8 +436,7 @@ class ShellyLightHandlerLightModelTest {
         }
 
         if (expectedMode != null) {
-            handler.profile.device.mode = SHELLY_MODE_WHITE.equals(expectedMode) ? SHELLY_MODE_COLOR
-                    : SHELLY_MODE_WHITE;
+            handler.profile.device.mode = expectedMode;
         }
 
         doNothing().when(api).setLightParms(anyInt(), anyMap());

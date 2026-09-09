@@ -1338,15 +1338,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return false;
         }
 
-        int id = 0; // always the first light component
+        int idx = 0; // always the first light component
 
         List<ShellySettingsLight> lights = status.lights;
-        if (lights == null || id >= lights.size()) {
+        if (lights == null || idx >= lights.size()) {
             return false;
         }
 
-        ShellySettingsLight ds = lights.get(id);
-        value.id = id;
+        ShellySettingsLight ds = lights.get(idx);
+        value.id = idx;
 
         if (value.output != null) {
             ds.ison = value.output;
@@ -1367,14 +1367,14 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.white = value.white;
         }
 
-        lights.set(id, ds);
+        lights.set(idx, ds);
 
         if (profile.isProRgbwwPm) {
             // the color component always sits at settings.lights[0]
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
 
-        logger.debug("updateRGBWStatus() id={}, value={}, channelUpdate={}", id, new Gson().toJson(value),
+        logger.debug("updateRGBWStatus() id={}, value={}, channelUpdate={}", idx, new Gson().toJson(value),
                 channelUpdate);
 
         return channelUpdate ? ShellyComponents.updateRGBW(value, getThing()) : false;
@@ -1386,15 +1386,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return false;
         }
 
-        int id = 0; // always the first light component
+        int idx = 0; // always the first light component
 
         List<ShellySettingsLight> lights = status.lights;
-        if (lights == null || id >= lights.size()) {
+        if (lights == null || idx >= lights.size()) {
             return false;
         }
 
-        ShellySettingsLight ds = lights.get(id);
-        value.id = id;
+        ShellySettingsLight ds = lights.get(idx);
+        value.id = idx;
 
         String mode = value.mode;
         if (mode != null) {
@@ -1422,7 +1422,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.temp = value.ct;
         }
 
-        lights.set(id, ds);
+        lights.set(idx, ds);
 
         if (channelUpdate) {
             return ShellyComponents.updateRGBCCT(value, getThing());
@@ -1439,15 +1439,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         // device reports each component type 0-based; the flat settings.lights list reserves slot 0 for the
         // color component (rgb0/rgbw0) whenever one is present, so shift by that offset here.
-        int id = getInteger(idIn) + profile.getColorComponentCount();
+        int idx = getInteger(idIn) + profile.getColorComponentCount();
 
         List<ShellySettingsLight> lights = status.lights;
-        if (lights == null || id >= lights.size()) {
+        if (lights == null || idx >= lights.size()) {
             return false;
         }
 
-        ShellySettingsLight ds = lights.get(id);
-        value.id = id;
+        ShellySettingsLight ds = lights.get(idx);
+        value.id = idx;
 
         if (value.brightness != null) {
             ds.brightness = Objects.requireNonNull(value.brightness).intValue();
@@ -1461,11 +1461,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.temp = value.ct;
         }
 
-        lights.set(id, ds);
+        lights.set(idx, ds);
 
         if (profile.isProRgbwwPm) {
             // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
-            updateComponentMeter(status, id, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
+            updateComponentMeter(status, idx, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
 
         if (channelUpdate) {

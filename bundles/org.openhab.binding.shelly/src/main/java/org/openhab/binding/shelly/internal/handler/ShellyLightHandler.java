@@ -176,7 +176,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         List<Channel> oldChannels = getThing().getChannels();
         List<Channel> newChannels = new ArrayList<>(oldChannels.size());
 
-        boolean isColor = oldChannels.stream().anyMatch(channel -> CHAN_ID_COLOR.equals(channel.getUID().getId()));
+        boolean hasColor = oldChannels.stream().anyMatch(channel -> CHAN_ID_COLOR.equals(channel.getUID().getId()));
 
         for (Channel oldChannel : oldChannels) {
             String id = oldChannel.getUID().getId();
@@ -184,7 +184,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             if (CHAN_ID_POWER.equals(id) && !TYPE_UID_ADV_POWER.equals(type)) {
                 newChannels.add(ChannelBuilder.create(oldChannel).withType(TYPE_UID_ADV_POWER).build());
                 dirty = true;
-            } else if (CHAN_ID_BRIGHTNESS.equals(id) && !isColor && !TYPE_UID_ADV_BRIGHTNESS.equals(type)) {
+            } else if (CHAN_ID_BRIGHTNESS.equals(id) && hasColor && !TYPE_UID_ADV_BRIGHTNESS.equals(type)) {
                 newChannels.add(ChannelBuilder.create(oldChannel).withType(TYPE_UID_ADV_BRIGHTNESS).build());
                 dirty = true;
             } else {
@@ -329,25 +329,26 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             }
         }
 
-        // GAIN:
-        if (model.supportsGainChannel() && model.isGainDirty() && model.getGainState() instanceof PercentType pct) {
+        // GAIN: align Gen 1/2 behaviour; only include gain if light is on
+        if (model.supportsGainChannel() && model.isGainDirty() && Mode.COLOR == model.getMode()
+                && model.getGainState() instanceof PercentType pct && OnOffType.ON == model.getOnOff(true)) {
             parms.put(SHELLY_COLOR_GAIN, String.valueOf(pct.intValue()));
         }
 
         // EFFECT:
-        if (model.supportsEffectChannel() && model.isEffectDirty()
+        if (model.supportsEffectChannel() && model.isEffectDirty() && Mode.COLOR == model.getMode()
                 && model.getEffectState() instanceof DecimalType dec) {
             parms.put(SHELLY_COLOR_EFFECT, String.valueOf(dec.intValue()));
         }
 
-        // BRIGHTNESS:
+        // BRIGHTNESS: align Gen 1/2 behaviour; only include brightness if light is on
         if (model.supportsBrightnessChannel() && model.isBrightnessDirty()
-                && model.getBrightnessState() instanceof PercentType pct) {
+                && model.getBrightnessState() instanceof PercentType pct && OnOffType.ON == model.getOnOff(true)) {
             parms.put(SHELLY_COLOR_BRIGHTNESS, String.valueOf(pct.intValue()));
         }
 
         // COLOR TEMP:
-        if (model.supportsColorTempChannel() && model.isColorTempDirty()
+        if (model.supportsColorTempChannel() && model.isColorTempDirty() && Mode.WHITE == model.getMode()
                 && model.getColorTemperatureAbsoluteState() instanceof QuantityType<?> qty) {
             parms.put(SHELLY_COLOR_TEMP, String.valueOf(qty.intValue()));
         }

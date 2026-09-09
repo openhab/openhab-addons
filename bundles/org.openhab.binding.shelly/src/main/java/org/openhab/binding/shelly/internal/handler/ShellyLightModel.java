@@ -113,6 +113,9 @@ public class ShellyLightModel extends LightModel {
     private final boolean isProfileCCTX2;
     private final boolean isRGBW2White;
     private final boolean isRGBW2Color;
+    private final boolean isGen2;
+    private final int minKelvin;
+    private final int maxKelvin;
 
     private Mode operatingMode = Mode.WHITE;
     private int effect = 0;
@@ -269,6 +272,7 @@ public class ShellyLightModel extends LightModel {
         isRGBW2Color = THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID);
         isG3ColorTempBulb = THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID);
         isG3FullColorBulb = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
+        isGen2 = profile.isGen2;
 
         // initialize some flags from the thing type and device operating profile
         String configProfile = profile.device.profile;
@@ -287,8 +291,8 @@ public class ShellyLightModel extends LightModel {
         cacheRGBX = new int[rgbxLength];
         super.setRGBx(Arrays.stream(cacheRGBX).mapToDouble(i -> (double) i).toArray());
 
-        int minKelvin = profile.getMinTemp(apiLightIndex);
-        int maxKelvin = profile.getMaxTemp(apiLightIndex);
+        minKelvin = profile.getMinTemp(apiLightIndex);
+        maxKelvin = profile.getMaxTemp(apiLightIndex);
         this.setColorTempRange(minKelvin, maxKelvin);
 
         LOGGER.debug(
@@ -341,7 +345,6 @@ public class ShellyLightModel extends LightModel {
         LOGGER.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setBrightness({})", handler.thingName,
                 apiLightIndex, channelGroupSuffix, brightness);
         super.setBrightness(brightness);
-        setMode(Mode.WHITE);
     }
 
     /**
@@ -352,7 +355,6 @@ public class ShellyLightModel extends LightModel {
             LOGGER.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setBrightness({})", handler.thingName,
                     apiLightIndex, channelGroupSuffix, command);
             super.handleCommand(command);
-            setMode(Mode.WHITE);
         }
     }
 
@@ -441,14 +443,14 @@ public class ShellyLightModel extends LightModel {
      * Get the minimum color temperature in Kelvin.
      */
     public BigDecimal getColorTemperatureMinimumKelvin() {
-        return BigDecimal.valueOf(Math.round(reciprocal(configGetMirekControlWarmest())));
+        return BigDecimal.valueOf(minKelvin);
     }
 
     /**
      * Get the maximum color temperature in Kelvin.
      */
     public BigDecimal getColorTemperatureMaximumKelvin() {
-        return BigDecimal.valueOf(Math.round(reciprocal(configGetMirekControlCoolest())));
+        return BigDecimal.valueOf(maxKelvin);
     }
 
     /**
@@ -462,8 +464,8 @@ public class ShellyLightModel extends LightModel {
     }
 
     public void setColorTempRange(int minKelvin, int maxKelvin) {
-        super.configSetMirekControlCoolest(reciprocal(maxKelvin));
-        super.configSetMirekControlWarmest(reciprocal(minKelvin));
+        super.configSetMirekControlCoolest(reciprocal(maxKelvin) - 0.001); // avoid rounding issues
+        super.configSetMirekControlWarmest(reciprocal(minKelvin) + 0.001); // avoid rounding issues
     }
 
     /**
@@ -585,10 +587,10 @@ public class ShellyLightModel extends LightModel {
      * Set the on/off state.
      */
     @Override
-    public void setOnOff(boolean on) {
+    public void setOnOff(boolean offOn) {
         LOGGER.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setOnOff({})", handler.thingName,
-                apiLightIndex, channelGroupSuffix, on);
-        super.setOnOff(on);
+                apiLightIndex, channelGroupSuffix, offOn);
+        super.setOnOff(offOn);
     }
 
     /**
@@ -726,38 +728,19 @@ public class ShellyLightModel extends LightModel {
      * NOTE: the gain channel valid when devices are in COLOR mode, and the brightness
      * channel is valid when devices are in WHITE mode.
      * 
-     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
      * @return true if such channels are supported, false otherwise.
      */
-    public boolean supportsBrightnessChannel(boolean ignoreLiveOperatingMode) {
-        return (
-        // @formatter:off
-            (isVintage) || 
-            (isDuo) ||
-            (isBulb) ||
-            (isRGBW2White) || 
-            (isG3ColorTempBulb) ||
-            (isG3FullColorBulb) ||
-            (isProfileCCTX2) ||
-            (isProfileLIGHT) ||
-            (isProfileRGBCCT) ||
-            (isProfileRGBX2LIGHT)
-        // @formatter:on
-        ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
-    }
-
     public boolean supportsBrightnessChannel() {
-        return supportsBrightnessChannel(false);
+        return true;
     }
 
     /**
      * Returns true if the light model supports color channels (RGB or RGBW), false otherwise.
      * In case of multiple profile devices, the model id is used to refine the check.
      *
-     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
      * @return true if such channels are supported, false otherwise.
      */
-    public boolean supportsColorChannel(boolean ignoreLiveOperatingMode) {
+    public boolean supportsColorChannel() {
         return (
         // @formatter:off
            (isBulb) ||
@@ -768,20 +751,15 @@ public class ShellyLightModel extends LightModel {
            (isProfileRGBCCT && channelGroupSuffix == 0) || 
            (isProfileRGBX2LIGHT && channelGroupSuffix == 0)
         // @formatter:on
-        ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.COLOR == operatingMode);
-    }
-
-    public boolean supportsColorChannel() {
-        return supportsColorChannel(false);
+        );
     }
 
     /**
      * Returns true if the light model supports color temperature channels, false otherwise.
      * 
-     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
      * @return true if such channels are supported, false otherwise.
      */
-    public boolean supportsColorTempChannel(boolean ignoreLiveOperatingMode) {
+    public boolean supportsColorTempChannel() {
         return (
         // @formatter:off
             (isDuo && !isVintage) || // Vintage bulb is white-only!
@@ -791,25 +769,16 @@ public class ShellyLightModel extends LightModel {
             (isProfileCCTX2) ||
             (isProfileRGBCCT && channelGroupSuffix > 0) 
         // @formatter:on
-        ) && (ignoreLiveOperatingMode || isOperatingModeReadOnly || Mode.WHITE == operatingMode);
-    }
-
-    public boolean supportsColorTempChannel() {
-        return supportsColorTempChannel(false);
+        );
     }
 
     /**
      * Returns true if the light model supports effect channels, false otherwise.
      *
-     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
      * @return true if such channels are supported, false otherwise.
      */
-    public boolean supportsEffectChannel(boolean ignoreLiveOperatingMode) {
-        return supportsColorChannel(ignoreLiveOperatingMode);
-    }
-
     public boolean supportsEffectChannel() {
-        return supportsEffectChannel(false);
+        return supportsColorChannel() && !isGen2;
     }
 
     /**
@@ -818,15 +787,10 @@ public class ShellyLightModel extends LightModel {
      * NOTE: the gain channel valid when devices are in COLOR mode, and the brightness
      * channel is valid when devices are in WHITE mode.
      *
-     * @param ignoreLiveOperatingMode if true the check does not evaluate the actual mode.
      * @return true if such channels are supported, false otherwise.
      */
-    public boolean supportsGainChannel(boolean ignoreLiveOperatingMode) {
-        return supportsColorChannel(ignoreLiveOperatingMode);
-    }
-
     public boolean supportsGainChannel() {
-        return supportsGainChannel(false);
+        return supportsColorChannel() && !isGen2;
     }
 
     /**
@@ -839,11 +803,9 @@ public class ShellyLightModel extends LightModel {
     public boolean supportsOnOffChannel() {
         return
         // @formatter:off
-            (isDuo) || 
+            (isDuo && !isGen2) || 
             (isBulb) ||
             (isRGBW2Color) ||
-            (isG3ColorTempBulb) ||
-            (isG3FullColorBulb) ||
             (isProfileRGB) ||
             (isProfileRGBW) ||
             (isProfileRGBCCT && channelGroupSuffix == 0) || 
@@ -866,7 +828,9 @@ public class ShellyLightModel extends LightModel {
             (isProfileCCTX2) ||
             (isProfileRGBCCT && channelGroupSuffix > 0) || 
             (isProfileLIGHT) ||
-            (isProfileRGBX2LIGHT && channelGroupSuffix > 0)
+            (isProfileRGBX2LIGHT && channelGroupSuffix > 0) ||
+            (isG3ColorTempBulb) ||
+            (isG3FullColorBulb)
         // @formatter:on
         ;
     }

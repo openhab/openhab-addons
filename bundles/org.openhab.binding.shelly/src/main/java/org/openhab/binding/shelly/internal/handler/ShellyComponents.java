@@ -901,15 +901,15 @@ public class ShellyComponents {
         if (value.id == null) {
             return false;
         }
-        int id = Objects.requireNonNull(value.id);
+        int idx = Objects.requireNonNull(value.id);
 
         boolean updated = false;
         try {
             lightModelHandler.acquireLock();
 
-            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(id);
+            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(idx);
             if (model == null) {
-                throw new ShellyApiException("updateRGBW() failed: index:%d model missing".formatted(id));
+                throw new ShellyApiException("updateRGBW() failed: index:%d model missing".formatted(idx));
             }
 
             Integer[] rgb = value.rgb;
@@ -948,15 +948,15 @@ public class ShellyComponents {
         if (value.id == null) {
             return false;
         }
-        int id = Objects.requireNonNull(value.id);
+        int idx = Objects.requireNonNull(value.id);
 
         boolean updated = false;
         try {
             lightModelHandler.acquireLock();
 
-            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(id);
+            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(idx);
             if (model == null) {
-                throw new ShellyApiException("updateRGBCCT() failed: index:%d model missing".formatted(id));
+                throw new ShellyApiException("updateRGBCCT() failed: index:%d model missing".formatted(idx));
             }
 
             Mode mode;
@@ -1006,15 +1006,15 @@ public class ShellyComponents {
         if (value.id == null) {
             return false;
         }
-        int id = Objects.requireNonNull(value.id);
+        int idx = Objects.requireNonNull(value.id);
 
         boolean updated = false;
         try {
             lightModelHandler.acquireLock();
 
-            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(id);
+            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(idx);
             if (model == null) {
-                throw new ShellyApiException("updateLightMode() failed: index:%d model missing".formatted(id));
+                throw new ShellyApiException("updateLightMode() failed: index:%d model missing".formatted(idx));
             }
 
             if (value.ct != null) {

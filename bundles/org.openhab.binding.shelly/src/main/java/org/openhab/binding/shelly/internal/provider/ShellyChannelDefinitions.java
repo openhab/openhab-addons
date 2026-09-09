@@ -622,24 +622,28 @@ public class ShellyChannelDefinitions {
     public static Map<String, Channel> createLightChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellyStatusLightChannel status, int idx) {
         Map<String, Channel> add = new LinkedHashMap<>();
-        String group = profile.getControlGroup(idx);
 
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
 
+            String group = profile.getControlGroup(idx);
+            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHGR_WHITE;
+
+            boolean hasPower = profile.hasColorTag(idx)
+                    || (!profile.isGen2 && (profile.isVintage || profile.isBulb || profile.isDuo));
+            boolean hasCT = status.temp != null || (profile.isDuo && profile.isGen2) || profile.isBulb;
+
             // dynamically add missing control group channels
-            addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
+            addChannel(thing, add, hasPower, group, CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
 
             // dynamically add missing white group channels
-            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHGR_WHITE;
-            boolean hasCCT = status.temp != null || (profile.isDuo && profile.isGen2) || profile.isBulb;
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            addChannel(thing, add, hasCCT, whiteGroup, CHANNEL_COLOR_TEMP);
-            addChannel(thing, add, hasCCT, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
+            addChannel(thing, add, hasCT, whiteGroup, CHANNEL_COLOR_TEMP);
+            addChannel(thing, add, hasCT, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
             // dynamically add missing color group channels
             if (profile.hasColorTag(idx)) {
