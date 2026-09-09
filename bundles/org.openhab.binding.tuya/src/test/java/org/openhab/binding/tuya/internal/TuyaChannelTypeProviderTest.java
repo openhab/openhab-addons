@@ -15,10 +15,12 @@ package org.openhab.binding.tuya.internal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.BINDING_ID;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,6 +70,47 @@ public class TuyaChannelTypeProviderTest {
     @AfterEach
     public void tearDown() {
         TuyaSchemaDB.cache.remove(PRODUCT_ID);
+    }
+
+    @Test
+    public void removeChannelTypesDropsCachedTypesOfProductOnly() {
+        String otherProductId = "otherprod";
+        TuyaSchemaDB.cache.put(otherProductId, new ConcurrentHashMap<>());
+        try {
+            SchemaDp fault = new SchemaDp();
+            fault.type = "raw";
+            fault.readOnly = Boolean.TRUE;
+            putDp("fault", fault);
+            SchemaDp otherFault = new SchemaDp();
+            otherFault.type = "bitmap";
+            otherFault.readOnly = Boolean.TRUE;
+            Map<String, SchemaDp> otherSchema = TuyaSchemaDB.cache.get(otherProductId);
+            assertNotNull(otherSchema);
+            otherSchema.put("fault", otherFault);
+
+            TuyaChannelTypeProvider provider = new TuyaChannelTypeProvider(localizationServiceMock);
+            ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, PRODUCT_ID + "_fault");
+            ChannelTypeUID otherUid = new ChannelTypeUID(BINDING_ID, otherProductId + "_fault");
+            ChannelType before = provider.getChannelType(uid, null);
+            ChannelType otherBefore = provider.getChannelType(otherUid, Locale.GERMAN);
+            assertNotNull(before);
+            assertNotNull(otherBefore);
+            assertEquals("String", before.getItemType());
+
+            // A changed schema is not picked up while the generated channel type is cached ...
+            fault.type = "bitmap";
+            assertSame(before, provider.getChannelType(uid, null));
+
+            // ... but after removing the channel types of the product.
+            provider.removeChannelTypes(PRODUCT_ID);
+
+            ChannelType after = provider.getChannelType(uid, null);
+            assertNotNull(after);
+            assertEquals("Number", after.getItemType());
+            assertSame(otherBefore, provider.getChannelType(otherUid, Locale.GERMAN));
+        } finally {
+            TuyaSchemaDB.cache.remove(otherProductId);
+        }
     }
 
     @Test

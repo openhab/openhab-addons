@@ -20,9 +20,9 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DP2;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_IP;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MAX;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MIN;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PRODUCT_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROTOCOL;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_RANGE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_RELOAD_SCHEMA;
 import static org.openhab.core.library.CoreItemFactory.COLOR;
 import static org.openhab.core.library.CoreItemFactory.DIMMER;
 import static org.openhab.core.library.CoreItemFactory.NUMBER;
@@ -47,9 +47,11 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tuya.internal.SchemaReloadException;
 import org.openhab.binding.tuya.internal.TuyaDynamicCommandDescriptionProvider;
 import org.openhab.binding.tuya.internal.TuyaDynamicStateDescriptionProvider;
 import org.openhab.binding.tuya.internal.TuyaSchemaDB;
+import org.openhab.binding.tuya.internal.TuyaSchemaService;
 import org.openhab.binding.tuya.internal.config.ChannelConfiguration;
 import org.openhab.binding.tuya.internal.config.DeviceConfiguration;
 import org.openhab.binding.tuya.internal.local.DeviceInfoSubscriber;
@@ -108,9 +110,10 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     private final TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
     private final TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final EventLoopGroup eventLoopGroup;
+    private final TuyaSchemaService schemaService;
     private DeviceConfiguration configuration = new DeviceConfiguration();
     private @Nullable TuyaDevice tuyaDevice;
-    private final Map<String, SchemaDp> schemaDps;
+    private Map<String, SchemaDp> schemaDps = Map.of();
     private int pollBurst = 0;
     private boolean oldColorMode = false;
 
@@ -129,10 +132,9 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public TuyaDeviceHandler(Thing thing, Gson gson,
             TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
             TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider, EventLoopGroup eventLoopGroup,
-            UdpDiscoveryListener udpDiscoveryListener) {
+            UdpDiscoveryListener udpDiscoveryListener, TuyaSchemaService schemaService) {
         super(thing);
-        this.schemaDps = Objects.requireNonNullElse(TuyaSchemaDB.getOrConvert(
-                (String) thing.getConfiguration().get(CONFIG_PRODUCT_ID), thing.getUID().getId()), Map.of());
+        this.schemaService = schemaService;
         this.gson = gson;
         this.udpDiscoveryListener = udpDiscoveryListener;
         this.eventLoopGroup = eventLoopGroup;
@@ -574,6 +576,20 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public void initialize() {
         configuration = getConfigAs(DeviceConfiguration.class);
 
+        if (configuration.reloadSchema) {
+            // The trigger is only evaluated in handleConfigurationUpdate. It is persisted as true when the thing
+            // was configured while it had no handler, reset it so a later configuration update does not reload
+            // the schema unexpectedly.
+            Configuration editedConfiguration = editConfiguration();
+            editedConfiguration.put(CONFIG_RELOAD_SCHEMA, Boolean.FALSE);
+            updateConfiguration(editedConfiguration);
+            configuration.reloadSchema = false;
+        }
+
+        // The schema is looked up on every initialization so a reloaded schema is picked up by re-initializing.
+        schemaDps = Objects.requireNonNullElse(
+                TuyaSchemaDB.getOrConvert(configuration.productId, thing.getUID().getId()), Map.of());
+
         boolean hasStatusDps = false;
         for (var e : schemaDps.values()) {
             if (e.readOnly) {
@@ -602,6 +618,40 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         }
 
         udpDiscoveryListener.registerListener(configuration.deviceId, this);
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        Map<String, Object> parameters = new HashMap<>(configurationParameters);
+        Object reloadParameter = parameters.get(CONFIG_RELOAD_SCHEMA);
+        boolean reload = reloadParameter instanceof Boolean b ? b
+                : Boolean.parseBoolean(String.valueOf(reloadParameter));
+
+        if (reload) {
+            // reloadSchema is a trigger and is never persisted as true
+            parameters.put(CONFIG_RELOAD_SCHEMA, Boolean.FALSE);
+
+            Configuration target = editConfiguration();
+            parameters.forEach(target::put);
+            DeviceConfiguration targetConfiguration = target.as(DeviceConfiguration.class);
+            try {
+                List<SchemaDp> schemaDps = schemaService.reloadSchema(targetConfiguration.productId,
+                        targetConfiguration.deviceId);
+                logger.info("{}: stored schema with {} datapoints for product '{}'", thing.getUID(), schemaDps.size(),
+                        targetConfiguration.productId);
+            } catch (SchemaReloadException e) {
+                logger.warn("{}: reloading the schema failed: {}", thing.getUID(), e.getMessage());
+                reload = false;
+            }
+        }
+
+        // The base implementation re-initializes the handler only if a persisted parameter changes.
+        boolean reinitialize = reload && isInitialized() && !isModifyingCurrentConfig(parameters);
+        super.handleConfigurationUpdate(parameters);
+        if (reinitialize) {
+            dispose();
+            initialize();
+        }
     }
 
     @Override

@@ -139,6 +139,18 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         return channelTypes.values();
     }
 
+    /**
+     * Removes the generated channel types of a product for all locales so they are rebuilt from the current schema
+     * when they are requested the next time.
+     *
+     * @param productId the product whose channel types are removed
+     */
+    public void removeChannelTypes(String productId) {
+        String prefix = productId + "_";
+        channelTypes.keySet().removeIf(key -> key.getKey() instanceof ChannelTypeUID channelTypeUID
+                && channelTypeUID.getId().startsWith(prefix));
+    }
+
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
         if (!BINDING_ID.equals(channelTypeUID.getBindingId())) {

@@ -101,6 +101,13 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="reloadSchema" type="boolean">
+				<label>Reload Schema</label>
+				<description>Retrieves the schema of this device from the Tuya cloud again and replaces the stored schema of its
+					product. Requires an ONLINE project Thing. The option resets itself after saving.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
