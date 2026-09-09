@@ -112,13 +112,15 @@ public class TuyaSchemaDB {
     }
 
     /**
-     * Stores the schema of a product, replacing a previously stored schema. Empty schemas are persisted but do not
-     * replace a cached schema.
+     * Stores the schema of a product, replacing a previously stored schema. An empty schema is ignored so a
+     * previously stored schema is neither replaced in the cache nor overwritten in the storage.
      */
     public static void put(String key, List<SchemaDp> listDps) {
-        if (!listDps.isEmpty()) {
-            cache.put(key, toSchema(listDps));
+        if (listDps.isEmpty()) {
+            return;
         }
+
+        cache.put(key, toSchema(listDps));
 
         Storage<String> persistent = storage;
 

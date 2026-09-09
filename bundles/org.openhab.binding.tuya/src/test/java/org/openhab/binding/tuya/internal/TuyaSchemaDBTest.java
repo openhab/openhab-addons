@@ -17,6 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -25,8 +30,13 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.tuya.internal.util.SchemaDp;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,9 +46,13 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Carlo Dischler - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class TuyaSchemaDBTest {
     private static final String PRODUCT_ID = "schemadbtestprod";
+
+    private @Mock @NonNullByDefault({}) StorageService storageServiceMock;
+    private @Mock @NonNullByDefault({}) Storage<String> storageMock;
 
     @AfterEach
     public void tearDown() {
@@ -81,10 +95,15 @@ public class TuyaSchemaDBTest {
 
     @Test
     public void putIgnoresEmptySchema() {
+        when(storageServiceMock.<String> getStorage(anyString())).thenReturn(storageMock);
+        TuyaSchemaDB.setStorage(storageServiceMock, "test");
+
         TuyaSchemaDB.put(PRODUCT_ID, List.of(schemaDp(22, "fault", "bitmap")));
         TuyaSchemaDB.put(PRODUCT_ID, List.of());
 
         assertTrue(TuyaSchemaDB.contains(PRODUCT_ID));
+        // the stored schema must not be overwritten with an empty one either
+        verify(storageMock, times(1)).put(eq(PRODUCT_ID), anyString());
     }
 
     @Test
