@@ -13,8 +13,6 @@
 package org.openhab.io.yamlcomposer.internal.core;
 
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -101,7 +99,6 @@ public class PackageProcessor {
             EvaluationContext pkgContext = new EvaluationContext(packageScope, ProcessingPhase.STANDARD);
             Object resolvedPkg = recursiveTransformer.transform(pkg, pkgContext);
 
-            resolvedPkg = stripEmptyMapsAndLists(resolvedPkg);
             if (!(resolvedPkg instanceof Map<?, ?> packageMap)) {
                 var position = sourceLocator.findPosition(PACKAGES_KEY, packageId);
                 logger.warn("{}:{} package '{}' resolved to {} instead of a Map", relativePath, position, packageId,
@@ -112,32 +109,5 @@ public class PackageProcessor {
             logger.debug("Merging package '{}' {} into main data: {}", packageId, packageMap, mainData);
             recursiveTransformer.getStructuralMerger().deepMerge(packageMap, mainData);
         });
-    }
-
-    private static @Nullable Object stripEmptyMapsAndLists(@Nullable Object data) {
-        if (data == null || data instanceof String s && s.isBlank()) {
-            return null;
-        }
-        if (data instanceof Map<?, ?> map) {
-            var result = new LinkedHashMap<Object, Object>();
-            for (Map.Entry<?, ?> e : map.entrySet()) {
-                Object key = e.getKey();
-                Object value = stripEmptyMapsAndLists(e.getValue());
-                if (value != null) {
-                    result.put(key, value);
-                }
-            }
-            return result.isEmpty() ? null : result;
-        } else if (data instanceof List<?> list) {
-            var result = new java.util.ArrayList<Object>(list.size());
-            for (Object item : list) {
-                Object value = stripEmptyMapsAndLists(item);
-                if (value != null) {
-                    result.add(value);
-                }
-            }
-            return result.isEmpty() ? null : result;
-        }
-        return data;
     }
 }
