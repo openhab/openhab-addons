@@ -700,6 +700,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
         updateMarkerSet = false;
+        if (stopping) {
+            return;
+        }
         super.updateStatus(status, statusDetail, description);
     }
 
