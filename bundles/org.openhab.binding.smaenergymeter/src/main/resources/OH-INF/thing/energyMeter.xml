@@ -262,325 +262,325 @@
 	</channel-type>
 
 	<channel-type id="reactivePowerInType">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Purchased Reactive Power</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f var" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactivePowerOutType">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed-in Reactive Power</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f var" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactiveEnergyInType">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Purchased Reactive Energy</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kvarh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactiveEnergyOutType">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Grid Feed-in Reactive Energy</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kvarh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactivePowerInTypeL1">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Purchased Reactive Power L1</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f var" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactivePowerOutTypeL1">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed-in Reactive Power L1</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f var" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactiveEnergyInTypeL1">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Purchased Reactive Energy L1</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kvarh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactiveEnergyOutTypeL1">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Grid Feed-in Reactive Energy L1</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kvarh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactivePowerInTypeL2">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Purchased Reactive Power L2</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f var" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactivePowerOutTypeL2">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed-in Reactive Power L2</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f var" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactiveEnergyInTypeL2">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Purchased Reactive Energy L2</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kvarh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactiveEnergyOutTypeL2">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Grid Feed-in Reactive Energy L2</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kvarh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactivePowerInTypeL3">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Purchased Reactive Power L3</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f var" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactivePowerOutTypeL3">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed-in Reactive Power L3</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f var" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactiveEnergyInTypeL3">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Purchased Reactive Energy L3</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kvarh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactiveEnergyOutTypeL3">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Grid Feed-in Reactive Energy L3</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kvarh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="apparentPowerInType">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Purchased Apparent Power</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentPowerOutType">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed-in Apparent Power</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentEnergyInType">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Purchased Apparent Energy</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kVAh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentEnergyOutType">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Grid Feed-in Apparent Energy</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kVAh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentPowerInTypeL1">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Purchased Apparent Power L1</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentPowerOutTypeL1">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed-in Apparent Power L1</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentEnergyInTypeL1">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Purchased Apparent Energy L1</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kVAh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentEnergyOutTypeL1">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Grid Feed-in Apparent Energy L1</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kVAh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentPowerInTypeL2">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Purchased Apparent Power L2</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentPowerOutTypeL2">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed-in Apparent Power L2</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentEnergyInTypeL2">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Purchased Apparent Energy L2</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kVAh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentEnergyOutTypeL2">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Grid Feed-in Apparent Energy L2</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kVAh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentPowerInTypeL3">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Purchased Apparent Power L3</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentPowerOutTypeL3">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed-in Apparent Power L3</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentEnergyInTypeL3">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Purchased Apparent Energy L3</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kVAh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparentEnergyOutTypeL3">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Grid Feed-in Apparent Energy L3</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.2f kVAh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="powerFactorType">

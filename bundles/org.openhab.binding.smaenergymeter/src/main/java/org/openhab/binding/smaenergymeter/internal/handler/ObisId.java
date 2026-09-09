@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Known OBIS identifiers provided by the SMA Energy Meter telegram.
  *
- * @author Osman Basha - Initial contribution
+ * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public enum ObisId {
@@ -74,10 +74,10 @@ public enum ObisId {
     NEGATIVE_APPARENT_ENERGY_L1(0x001E0800, 3600000),
     NEGATIVE_APPARENT_ENERGY_L2(0x00320800, 3600000),
     NEGATIVE_APPARENT_ENERGY_L3(0x00460800, 3600000),
-    POWER_FACTOR(0x000D0400, 10),
-    POWER_FACTOR_L1(0x00210400, 10),
-    POWER_FACTOR_L2(0x00350400, 10),
-    POWER_FACTOR_L3(0x00490400, 10),
+    POWER_FACTOR(0x000D0400, 1000),
+    POWER_FACTOR_L1(0x00210400, 1000),
+    POWER_FACTOR_L2(0x00350400, 1000),
+    POWER_FACTOR_L3(0x00490400, 1000),
     CURRENT_L1(0x001F0400, 1000),
     CURRENT_L2(0x00330400, 1000),
     CURRENT_L3(0x00470400, 1000),

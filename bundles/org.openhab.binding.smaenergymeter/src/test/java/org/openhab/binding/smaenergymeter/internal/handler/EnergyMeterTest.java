@@ -21,7 +21,9 @@ import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.smaenergymeter.internal.SerialNumber;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
 
 class EnergyMeterTest {
 
@@ -49,123 +51,102 @@ class EnergyMeterTest {
         meter.parse(telegram);
 
         assertEquals("305419896", meter.getSerialNumber());
-        assertEquals(new DecimalType("123.4"), meter.getPowerIn());
-        assertEquals(new DecimalType("2"), meter.getEnergyIn());
-        assertEquals(new DecimalType("56.7"), meter.getPowerOutL1());
-        assertEquals(DecimalType.ZERO, meter.getPowerOut());
+        assertEquals(new DecimalType("123.4"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER)));
+        assertEquals(new DecimalType("2"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY)));
+        assertEquals(new DecimalType("56.7"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L1)));
+        assertEquals(DecimalType.ZERO, getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER)));
     }
 
     @Test
     void parsesProvidedSampleTelegram() throws IOException {
-        byte[] packet = hexToBytes("""
-                01 00 5e 0c ff fe 2c 4d 54 69 72 fc 08 00 45 00
-                02 7c 5c a0 40 00 01 11 69 13 c0 a8 02 0a ef 0c
-                ff fe cc c3 25 32 02 68 b8 ee 53 4d 41 00 00 04
-                02 a0 00 00 00 01 02 4c 00 10 60 69 01 0e 71 57
-                9d 2b 7f dc 48 ba 00 01 04 00 00 00 00 00 00 15
-                04 00 00 00 0d 02 00 29 04 00 00 00 00 00 00 3d
-                04 00 00 00 00 00 00 01 08 00 00 00 00 06 00 df
-                a9 e8 00 15 08 00 00 00 00 04 9c 1b 5a 08 00 29
-                08 00 00 00 00 01 89 04 34 88 00 3d 08 00 00 00
-                00 01 86 8b f6 c8 00 02 04 00 00 00 02 ab 00 16
-                04 00 00 00 00 00 00 2a 04 00 00 00 07 ad 00 3e
-                04 00 00 00 08 00 00 02 08 00 00 00 00 01 6f 02
-                8b 98 00 16 08 00 00 00 00 00 79 9a 64 78 00 2a
-                08 00 00 00 00 01 6f 69 2b 28 00 3e 08 00 00 00
-                00 01 30 ca d8 d0 00 03 04 00 00 00 00 00 00 17
-                04 00 00 00 00 00 00 2b 04 00 00 00 00 00 00 3f
-                04 00 00 00 00 00 00 03 08 00 00 00 00 00 00 0a
-                6a 40 00 17 08 00 00 00 00 00 00 3a 83 60 00 2b
-                08 00 00 00 00 00 00 f9 19 38 00 3f 08 00 00 00
-                00 00 00 5e f3 08 00 04 04 00 00 00 25 23 00 18
-                04 00 00 00 10 a7 00 2c 04 00 00 00 06 a1 00 40
-                04 00 00 00 0d da 00 04 08 00 00 00 00 07 86 19
-                cd b8 00 18 08 00 00 00 00 02 f2 29 52 08 00 2c
-                08 00 00 00 00 01 fb f4 ea 4f 00 40 08 00 00 00
-                00 02 99 83 b6 c0 00 09 04 00 00 00 00 00 00 1d
-                04 00 00 00 15 22 00 31 04 00 00 00 00 00 00 45
-                04 00 00 00 00 00 00 09 08 00 00 00 00 08 62 9d
-                dd 38 00 1d 08 00 00 00 00 05 96 83 1e e0 00 31
-                08 00 00 00 00 02 4b dd a2 50 00 45 08 00 00 00
-                00 02 a8 8b de 18 00 0a 04 00 00 00 25 3c 00 1e
-                04 00 00 00 00 00 00 32 04 00 00 00 0a 25 00 46
-                04 00 00 00 0f ff 00 0a 08 00 00 00 00 01 c4 66
-                ac 8f 00 1e 08 00 00 00 00 00 92 b0 34 10 00 32
-                08 00 00 00 00 01 ba 7e 34 a0 00 46 08 00 00 00
-                00 01 9f 87 00 50 00 0d 04 00 ff ff ff b8 00 21
-                04 00 00 00 02 68 00 35 04 00 ff ff fd 0b 00 49
-                04 00 ff ff fe 0c 00 1f 04 00 00 00 0b 9c 00 33
-                04 00 00 00 05 27 00 47 04 00 00 00 07 76 00 20
-                04 00 00 03 a4 d1 00 34 04 00 00 03 aa b1 00 48
-                04 00 00 03 a8 a0 00 0e 04 00 00 00 c3 71 90 00
-                00 00 01 02 04 52 00 00 00 00
+        byte[] telegram = hexToBytes("""
+                53 4d 41 00 00 04 02 a0 00 00 00 01 02 4c 00 10 60 69 01 0e 71 57 9d 2b 7f dc 48 ba
+                00 01 04 00 00 00 00 00 00 15 04 00 00 00 0d 02 00 29 04 00 00 00 00 00 00 3d 04 00
+                00 00 00 00 00 01 08 00 00 00 00 06 00 df a9 e8 00 15 08 00 00 00 00 04 9c 1b 5a 08
+                00 29 08 00 00 00 00 01 89 04 34 88 00 3d 08 00 00 00 00 01 86 8b f6 c8 00 02 04 00
+                00 00 02 ab 00 16 04 00 00 00 00 00 00 2a 04 00 00 00 07 ad 00 3e 04 00 00 00 08 00
+                00 02 08 00 00 00 00 01 6f 02 8b 98 00 16 08 00 00 00 00 00 79 9a 64 78 00 2a 08 00
+                00 00 00 01 6f 69 2b 28 00 3e 08 00 00 00 00 01 30 ca d8 d0 00 03 04 00 00 00 00 00
+                00 17 04 00 00 00 00 00 00 2b 04 00 00 00 00 00 00 3f 04 00 00 00 00 00 00 03 08 00
+                00 00 00 00 00 0a 6a 40 00 17 08 00 00 00 00 00 00 3a 83 60 00 2b 08 00 00 00 00 00
+                00 f9 19 38 00 3f 08 00 00 00 00 00 00 5e f3 08 00 04 04 00 00 00 25 23 00 18 04 00
+                00 00 10 a7 00 2c 04 00 00 00 06 a1 00 40 04 00 00 00 0d da 00 04 08 00 00 00 00 07
+                86 19 cd b8 00 18 08 00 00 00 00 02 f2 29 52 08 00 2c 08 00 00 00 00 01 fb f4 ea 4f
+                00 40 08 00 00 00 00 02 99 83 b6 c0 00 09 04 00 00 00 00 00 00 1d 04 00 00 00 15 22
+                00 31 04 00 00 00 00 00 00 45 04 00 00 00 00 00 00 09 08 00 00 00 00 08 62 9d dd 38
+                00 1d 08 00 00 00 00 05 96 83 1e e0 00 31 08 00 00 00 00 02 4b dd a2 50 00 45 08 00
+                00 00 00 02 a8 8b de 18 00 0a 04 00 00 00 25 3c 00 1e 04 00 00 00 00 00 00 32 04 00
+                00 00 0a 25 00 46 04 00 00 00 0f ff 00 0a 08 00 00 00 00 01 c4 66 ac 8f 00 1e 08 00
+                00 00 00 00 92 b0 34 10 00 32 08 00 00 00 00 01 ba 7e 34 a0 00 46 08 00 00 00 00 01
+                9f 87 00 50 00 0d 04 00 ff ff ff b8 00 21 04 00 00 00 02 68 00 35 04 00 ff ff fd 0b
+                00 49 04 00 ff ff fe 0c 00 1f 04 00 00 00 0b 9c 00 33 04 00 00 00 05 27 00 47 04 00
+                00 00 07 76 00 20 04 00 00 03 a4 d1 00 34 04 00 00 03 aa b1 00 48 04 00 00 03 a8 a0
+                00 0e 04 00 00 00 c3 71 90 00 00 00 01 02 04 52 00 00 00 00
                 """);
-        byte[] telegram = new byte[608];
-        System.arraycopy(packet, findSmaPayloadStart(packet), telegram, 0, telegram.length);
 
         EnergyMeter meter = new EnergyMeter();
         meter.parse(telegram);
 
         assertEquals("1901567275", meter.getSerialNumber());
-        assertEquals(new DecimalType("0"), meter.getPowerIn());
-        assertEquals(new DecimalType("68.3"), meter.getPowerOut());
-        assertEquals(new DecimalType("7162.3505"), meter.getEnergyIn());
-        assertEquals(new DecimalType("1710.3903"), meter.getEnergyOut());
-        assertEquals(new DecimalType("333"), meter.getPowerInL1());
-        assertEquals(new DecimalType("0"), meter.getPowerOutL1());
-        assertEquals(new DecimalType("5499.6965"), meter.getEnergyInL1());
-        assertEquals(new DecimalType("566.7115"), meter.getEnergyOutL1());
-        assertEquals(new DecimalType("0"), meter.getPowerInL2());
-        assertEquals(new DecimalType("196.5"), meter.getPowerOutL2());
-        assertEquals(new DecimalType("1831.5893"), meter.getEnergyInL2());
-        assertEquals(new DecimalType("1712.2585"), meter.getEnergyOutL2());
-        assertEquals(new DecimalType("0"), meter.getPowerInL3());
-        assertEquals(new DecimalType("204.8"), meter.getPowerOutL3());
-        assertEquals(new DecimalType("1820.0797"), meter.getEnergyInL3());
-        assertEquals(new DecimalType("1420.4354"), meter.getEnergyOutL3());
-        assertEquals(new DecimalType("0"), meter.getReactivePowerIn());
-        assertEquals(new DecimalType("950.7"), meter.getReactivePowerOut());
-        assertEquals(new DecimalType("0.1896"), meter.getReactiveEnergyIn());
-        assertEquals(new DecimalType("8976.2803"), meter.getReactiveEnergyOut());
-        assertEquals(new DecimalType("0"), meter.getReactivePowerInL1());
-        assertEquals(new DecimalType("426.3"), meter.getReactivePowerOutL1());
-        assertEquals(new DecimalType("1.0652"), meter.getReactiveEnergyInL1());
-        assertEquals(new DecimalType("3514.6469"), meter.getReactiveEnergyOutL1());
-        assertEquals(new DecimalType("0"), meter.getReactivePowerInL2());
-        assertEquals(new DecimalType("169.7"), meter.getReactivePowerOutL2());
-        assertEquals(new DecimalType("4.5347"), meter.getReactiveEnergyInL2());
-        assertEquals(new DecimalType("2367.2497997222"), meter.getReactiveEnergyOutL2());
-        assertEquals(new DecimalType("0"), meter.getReactivePowerInL3());
-        assertEquals(new DecimalType("354.6"), meter.getReactivePowerOutL3());
-        assertEquals(new DecimalType("1.7285"), meter.getReactiveEnergyInL3());
-        assertEquals(new DecimalType("3101.5224"), meter.getReactiveEnergyOutL3());
-        assertEquals(new DecimalType("0"), meter.getApparentPowerIn());
-        assertEquals(new DecimalType("953.2"), meter.getApparentPowerOut());
-        assertEquals(new DecimalType("10003.9587"), meter.getApparentEnergyIn());
-        assertEquals(new DecimalType("2108.3417997222"), meter.getApparentEnergyOut());
-        assertEquals(new DecimalType("541"), meter.getApparentPowerInL1());
-        assertEquals(new DecimalType("0"), meter.getApparentPowerOutL1());
-        assertEquals(new DecimalType("6666.67"), meter.getApparentEnergyInL1());
-        assertEquals(new DecimalType("683.617"), meter.getApparentEnergyOutL1());
-        assertEquals(new DecimalType("0"), meter.getApparentPowerInL2());
-        assertEquals(new DecimalType("259.7"), meter.getApparentPowerOutL2());
-        assertEquals(new DecimalType("2739.653"), meter.getApparentEnergyInL2());
-        assertEquals(new DecimalType("2062.1668"), meter.getApparentEnergyOutL2());
-        assertEquals(new DecimalType("0"), meter.getApparentPowerInL3());
-        assertEquals(new DecimalType("409.5"), meter.getApparentPowerOutL3());
-        assertEquals(new DecimalType("3171.5759"), meter.getApparentEnergyInL3());
-        assertEquals(new DecimalType("1936.4978"), meter.getApparentEnergyOutL3());
-        assertEquals(new DecimalType("-7.2"), meter.getPowerFactor());
-        assertEquals(new DecimalType("61.6"), meter.getPowerFactorL1());
-        assertEquals(new DecimalType("-75.7"), meter.getPowerFactorL2());
-        assertEquals(new DecimalType("-50"), meter.getPowerFactorL3());
-        assertEquals(new DecimalType("2.972"), meter.getCurrentL1());
-        assertEquals(new DecimalType("1.319"), meter.getCurrentL2());
-        assertEquals(new DecimalType("1.91"), meter.getCurrentL3());
-        assertEquals(new DecimalType("238.801"), meter.getVoltageL1());
-        assertEquals(new DecimalType("240.305"), meter.getVoltageL2());
-        assertEquals(new DecimalType("239.776"), meter.getVoltageL3());
-        assertEquals(new DecimalType("50.033"), meter.getFrequency());
+        assertEquals(new DecimalType("0"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER)));
+        assertEquals(new DecimalType("68.3"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER)));
+        assertEquals(new DecimalType("7162.3505"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY)));
+        assertEquals(new DecimalType("1710.3903"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY)));
+        assertEquals(new DecimalType("333"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER_L1)));
+        assertEquals(new DecimalType("0"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L1)));
+        assertEquals(new DecimalType("5499.6965"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY_L1)));
+        assertEquals(new DecimalType("566.7115"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY_L1)));
+        assertEquals(new DecimalType("0"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER_L2)));
+        assertEquals(new DecimalType("196.5"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L2)));
+        assertEquals(new DecimalType("1831.5893"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY_L2)));
+        assertEquals(new DecimalType("1712.2585"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY_L2)));
+        assertEquals(new DecimalType("0"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER_L3)));
+        assertEquals(new DecimalType("204.8"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L3)));
+        assertEquals(new DecimalType("1820.0797"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY_L3)));
+        assertEquals(new DecimalType("1420.4354"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY_L3)));
+        assertQuantityTypeValue("0", meter.getState(ObisId.POSITIVE_REACTIVE_POWER));
+        assertQuantityTypeValue("950.7", meter.getState(ObisId.NEGATIVE_REACTIVE_POWER));
+        assertQuantityTypeValue("0.1896", meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY));
+        assertQuantityTypeValue("8976.2803", meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY));
+        assertQuantityTypeValue("0", meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L1));
+        assertQuantityTypeValue("426.3", meter.getState(ObisId.NEGATIVE_REACTIVE_POWER_L1));
+        assertQuantityTypeValue("1.0652", meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L1));
+        assertQuantityTypeValue("3514.6469", meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L1));
+        assertQuantityTypeValue("0", meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L2));
+        assertQuantityTypeValue("169.7", meter.getState(ObisId.NEGATIVE_REACTIVE_POWER_L2));
+        assertQuantityTypeValue("4.5347", meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L2));
+        assertQuantityTypeValue("2367.2497997222", meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L2));
+        assertQuantityTypeValue("0", meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L3));
+        assertQuantityTypeValue("354.6", meter.getState(ObisId.NEGATIVE_REACTIVE_POWER_L3));
+        assertQuantityTypeValue("1.7285", meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L3));
+        assertQuantityTypeValue("3101.5224", meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L3));
+        assertQuantityTypeValue("0", meter.getState(ObisId.POSITIVE_APPARENT_POWER));
+        assertQuantityTypeValue("953.2", meter.getState(ObisId.NEGATIVE_APPARENT_POWER));
+        assertQuantityTypeValue("10003.9587", meter.getState(ObisId.POSITIVE_APPARENT_ENERGY));
+        assertQuantityTypeValue("2108.3417997222", meter.getState(ObisId.NEGATIVE_APPARENT_ENERGY));
+        assertQuantityTypeValue("541", meter.getState(ObisId.POSITIVE_APPARENT_POWER_L1));
+        assertQuantityTypeValue("0", meter.getState(ObisId.NEGATIVE_APPARENT_POWER_L1));
+        assertQuantityTypeValue("6666.67", meter.getState(ObisId.POSITIVE_APPARENT_ENERGY_L1));
+        assertQuantityTypeValue("683.617", meter.getState(ObisId.NEGATIVE_APPARENT_ENERGY_L1));
+        assertQuantityTypeValue("0", meter.getState(ObisId.POSITIVE_APPARENT_POWER_L2));
+        assertQuantityTypeValue("259.7", meter.getState(ObisId.NEGATIVE_APPARENT_POWER_L2));
+        assertQuantityTypeValue("2739.653", meter.getState(ObisId.POSITIVE_APPARENT_ENERGY_L2));
+        assertQuantityTypeValue("2062.1668", meter.getState(ObisId.NEGATIVE_APPARENT_ENERGY_L2));
+        assertQuantityTypeValue("0", meter.getState(ObisId.POSITIVE_APPARENT_POWER_L3));
+        assertQuantityTypeValue("409.5", meter.getState(ObisId.NEGATIVE_APPARENT_POWER_L3));
+        assertQuantityTypeValue("3171.5759", meter.getState(ObisId.POSITIVE_APPARENT_ENERGY_L3));
+        assertQuantityTypeValue("1936.4978", meter.getState(ObisId.NEGATIVE_APPARENT_ENERGY_L3));
+        assertEquals(new DecimalType("-0.072"), meter.getState(ObisId.POWER_FACTOR));
+        assertEquals(new DecimalType("0.616"), meter.getState(ObisId.POWER_FACTOR_L1));
+        assertEquals(new DecimalType("-0.757"), meter.getState(ObisId.POWER_FACTOR_L2));
+        assertEquals(new DecimalType("-0.5"), meter.getState(ObisId.POWER_FACTOR_L3));
+        assertQuantityTypeValue("2.972", meter.getState(ObisId.CURRENT_L1));
+        assertQuantityTypeValue("1.319", meter.getState(ObisId.CURRENT_L2));
+        assertQuantityTypeValue("1.91", meter.getState(ObisId.CURRENT_L3));
+        assertQuantityTypeValue("238.801", meter.getState(ObisId.VOLTAGE_L1));
+        assertQuantityTypeValue("240.305", meter.getState(ObisId.VOLTAGE_L2));
+        assertQuantityTypeValue("239.776", meter.getState(ObisId.VOLTAGE_L3));
+        assertQuantityTypeValue("50.033", meter.getState(ObisId.FREQUENCY));
         assertEquals(new StringType("1.2.4.R"), meter.getVersion());
     }
 
@@ -176,6 +157,98 @@ class EnergyMeterTest {
         assertEquals("1901567275", SerialNumber.normalize("0x71579d2b"));
         assertTrue(SerialNumber.matches("71579D2B", "1901567275"));
         assertTrue(SerialNumber.matches("0x71579d2b", "1901567275"));
+    }
+
+    @Test
+    void parsesTruncatedTelegramUntilLastCompleteObisRecord() throws IOException {
+        byte[] payload = hexToBytes("""
+                53 4d 41 00 00 04 02 a0 00 00 00 01 02 44 00 10 60 69 01 0e 71 42 cf 5f f5 64 5a ce
+                00 01 04 00 00 00 54 e0 00 01 08 00 00 00 00 0d 20 d5 23 70 00 02 04 00 00 00 00 00
+                00 02 08 00 00 00 00 13 65 8d 6c 60 00 03 04 00 00 00 07 57 00 03 08 00 00 00 00 04
+                21 e8 2a b8 00 04 04 00 00 00 00 00 00 04 08 00 00 00 00 04 0c 47 bb b0 00 09 04 00
+                00 00 55 31 00 09 08 00 00 00 00 0e 37 ca c1 10 00 0a 04 00 00 00 00 00 00 0a 08 00
+                00 00 00 14 60 68 97 b8 00 0d 04 00 00 00 03 e4 00 15 04 00 00 00 06 05 00 15 08 00
+                00 00 00 05 88 b0 a6 48 00 16 04 00 00 00 00 00 00 16 08 00 00 00 00 04 ab fb 45 78
+                00 17 04 00
+                """);
+        byte[] telegram = new byte[payload.length];
+        System.arraycopy(payload, 0, telegram, 0, payload.length);
+        telegram[16] = 0x60;
+        telegram[17] = 0x69;
+
+        EnergyMeter meter = new EnergyMeter();
+        meter.parse(telegram);
+
+        assertEquals("1900203871", meter.getSerialNumber());
+        assertEquals(DecimalType.ZERO, getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER)));
+        assertQuantityTypeZero(meter.getState(ObisId.NEGATIVE_REACTIVE_POWER));
+        assertQuantityTypeZero(meter.getState(ObisId.NEGATIVE_APPARENT_POWER));
+        assertEquals(DecimalType.ZERO, getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L1)));
+        assertQuantityTypeZero(meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L1));
+        assertQuantityTypeZero(meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L1));
+        assertQuantityTypeZero(meter.getState(ObisId.CURRENT_L1));
+        assertEquals(StringType.EMPTY, meter.getVersion());
+    }
+
+    @Test
+    void parsesSampleTelegram() throws IOException {
+        byte[] telegram = hexToBytes("""
+                53 4d 41 00 00 0f 02 a0 00 00 00 01 02 44 00 10 60 69 01 0e 71 42 ca 5a 00 2d 89 74
+                00 01 04 00 00 00 13 f2 00 01 08 00 00 00 00 00 05 19 70 80 00 02 04 00 00 00 00 00
+                00 02 08 00 00 00 00 00 00 c6 75 00 00 03 04 00 00 00 00 00 00 03 08 00 00 00 00 00
+                00 01 25 e8 00 04 04 00 00 00 07 16 00 04 08 00 00 00 00 00 00 67 95 a8 00 09 04 00
+                00 00 15 2a 00 09 08 00 00 00 00 00 00 7e 68 a0 00 0a 04 00 00 00 00 00 00 0a 08 00
+                00 00 00 00 00 1a ab 58 00 0d 04 00 00 00 03 ae 00 15 04 00 00 00 05 72 00 15 08 00
+                00 00 00 00 00 16 96 80 00 16 04 00 00 00 00 00 00 16 08 00 00 00 00 00 00 07 35 00
+                00 17 04 00 00 00 00 00 00 17 08 00 00 00 00 00 00 04 56 f0 00 18 04 00 00 00 01 f7
+                00 18 08 00 00 00 00 00 00 3c db d8 00 1d 04 00 00 00 05 ca 00 1d 08 00 00 00 00 00
+                00 30 36 a8 00 1e 04 00 00 00 00 00 00 1e 08 00 00 00 00 00 00 1e be c8 00 1f 04 00
+                00 00 02 9f 00 20 04 00 03 00 81 3c 00 21 04 00 00 00 03 ad 00 29 04 00 00 00 05 84
+                00 29 08 00 00 00 00 00 00 00 02 df 00 2a 04 00 00 00 00 00 00 2a 08 00 00 00 00 00
+                00 22 57 e0 00 2b 04 00 00 00 00 00 00 2b 08 00 00 00 00 00 00 00 89 d0 00 2c 04 00
+                00 00 03 73 00 2c 08 00 00 00 00 00 00 2d af c8 00 31 04 00 00 00 06 82 00 31 08 00
+                00 00 00 00 00 1e ba 90 00 32 04 00 00 00 00 00 00 32 08 00 00 00 00 00 00 2c 6c 58
+                00 33 04 00 00 00 40 0c 00 34 04 00 00 03 82 33 00 35 04 00 00 00 03 50 00 3d 04 00
+                00 00 08 bf 00 3d 08 00 00 00 00 00 00 4a f5 b0 00 3f 04 00 00 00 00 00 00 3f 08 00
+                00 00 00 00 00 02 f1 c0 00 40 04 00 00 00 01 ab 00 40 08 00 00 00 00 00 00 00 00 00
+                00 45 04 00 00 00 09 23 00 45 08 00 00 00 00 00 00 4b 64 c8 00 46 04 00 00 00 00 00
+                00 46 08 00 00 00 00 00 00 00 00 00 00 47 04 00 00 00 04 6c 00 48 04 00 00 03 7f c7
+                00 49 04 00 00 00 03 d7 90 00 00 00 01 01 00 52 00 00 00 00 00
+                """);
+
+        EnergyMeter meter = new EnergyMeter();
+        meter.parse(telegram);
+
+        assertEquals("1900202586", meter.getSerialNumber());
+        assertEquals(new DecimalType("510.6"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER)));
+        assertEquals(new DecimalType("23.7648"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY)));
+        assertEquals(DecimalType.ZERO, getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER)));
+        assertEquals(new DecimalType("3.6128"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY)));
+        assertEquals(new DecimalType("139.4"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER_L1)));
+        assertEquals(new DecimalType("0.4112"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY_L1)));
+        assertEquals(DecimalType.ZERO, getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L1)));
+        assertEquals(new DecimalType("0.1312"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY_L1)));
+        assertEquals(new DecimalType("141.2"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER_L2)));
+        assertEquals(new DecimalType("0.0002041667"),
+                getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY_L2)));
+        assertEquals(DecimalType.ZERO, getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L2)));
+        assertEquals(new DecimalType("0.6252"), getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY_L2)));
+        assertEquals(new DecimalType("223.9"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_POWER_L3)));
+        assertEquals(new DecimalType("1.3646"), getNumericValue(meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY_L3)));
+        assertEquals(DecimalType.ZERO, getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L3)));
+        assertEquals(DecimalType.ZERO, getNumericValue(meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY_L3)));
+        assertQuantityTypeValue("0", meter.getState(ObisId.POSITIVE_REACTIVE_POWER));
+        assertQuantityTypeValue("181.4", meter.getState(ObisId.NEGATIVE_REACTIVE_POWER));
+        assertQuantityTypeValue("541.8", meter.getState(ObisId.POSITIVE_APPARENT_POWER));
+        assertQuantityTypeValue("0", meter.getState(ObisId.NEGATIVE_APPARENT_POWER));
+        assertEquals(new DecimalType("0.942"), meter.getState(ObisId.POWER_FACTOR));
+        assertEquals(new DecimalType("0.941"), meter.getState(ObisId.POWER_FACTOR_L1));
+        assertEquals(new DecimalType("0.848"), meter.getState(ObisId.POWER_FACTOR_L2));
+        assertEquals(new DecimalType("0.983"), meter.getState(ObisId.POWER_FACTOR_L3));
+        assertQuantityTypeValue("0.671", meter.getState(ObisId.CURRENT_L1));
+        assertQuantityTypeValue("16.396", meter.getState(ObisId.CURRENT_L2));
+        assertQuantityTypeValue("1.132", meter.getState(ObisId.CURRENT_L3));
+        assertEquals(new StringType("1.1.0.R"), meter.getVersion());
     }
 
     private static int writeUint32(byte[] bytes, int offset, int value) {
@@ -197,12 +270,29 @@ class EnergyMeterTest {
         return result;
     }
 
-    private static int findSmaPayloadStart(byte[] packet) {
-        for (int i = 0; i <= packet.length - 3; i++) {
-            if (packet[i] == 'S' && packet[i + 1] == 'M' && packet[i + 2] == 'A') {
-                return i;
-            }
+    private static void assertQuantityTypeValue(String expectedValue, State state) {
+        String actualValue;
+        if (state instanceof QuantityType<?>) {
+            // Extract just the numeric part, removing the unit
+            String str = state.toString();
+            actualValue = str.split("\\s+")[0]; // Split on whitespace to separate value from unit
+        } else {
+            actualValue = state.toString();
         }
-        throw new IllegalArgumentException("SMA payload not found");
+        assertEquals(new DecimalType(expectedValue), new DecimalType(actualValue));
+    }
+
+    private static DecimalType getNumericValue(State state) {
+        if (state instanceof QuantityType<?> qt) {
+            return new DecimalType(qt.toBigDecimal());
+        } else if (state instanceof DecimalType dt) {
+            return dt;
+        } else {
+            return new DecimalType(state.toString());
+        }
+    }
+
+    private static void assertQuantityTypeZero(State state) {
+        assertQuantityTypeValue("0", state);
     }
 }

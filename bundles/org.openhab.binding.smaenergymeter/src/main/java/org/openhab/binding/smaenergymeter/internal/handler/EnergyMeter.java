@@ -20,10 +20,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumMap;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smaenergymeter.internal.SerialNumber;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 
 /**
  * The {@link EnergyMeter} class is responsible for communication with the SMA device
@@ -32,6 +37,8 @@ import org.openhab.core.library.types.StringType;
  * @author Osman Basha - Initial contribution
  * @author Łukasz Dywicki - Extracted multicast group handling to
  *         {@link org.openhab.binding.smaenergymeter.internal.packet.PacketListener}.
+ * @author Marcel Goerentz - Refactor OBIS parsing, add power factor, reactive/apparent power, voltage, current, and
+ *         frequency
  */
 @NonNullByDefault
 public class EnergyMeter {
@@ -99,248 +106,12 @@ public class EnergyMeter {
         return serialNumber;
     }
 
-    public DecimalType getPowerIn() {
-        return getDecimalType(ObisId.POSITIVE_ACTIVE_POWER);
-    }
-
-    public DecimalType getPowerOut() {
-        return getDecimalType(ObisId.NEGATIVE_ACTIVE_POWER);
-    }
-
-    public DecimalType getEnergyIn() {
-        return getDecimalType(ObisId.POSITIVE_ACTIVE_ENERGY);
-    }
-
-    public DecimalType getEnergyOut() {
-        return getDecimalType(ObisId.NEGATIVE_ACTIVE_ENERGY);
-    }
-
-    public DecimalType getPowerInL1() {
-        return getDecimalType(ObisId.POSITIVE_ACTIVE_POWER_L1);
-    }
-
-    public DecimalType getPowerOutL1() {
-        return getDecimalType(ObisId.NEGATIVE_ACTIVE_POWER_L1);
-    }
-
-    public DecimalType getEnergyInL1() {
-        return getDecimalType(ObisId.POSITIVE_ACTIVE_ENERGY_L1);
-    }
-
-    public DecimalType getEnergyOutL1() {
-        return getDecimalType(ObisId.NEGATIVE_ACTIVE_ENERGY_L1);
-    }
-
-    public DecimalType getPowerInL2() {
-        return getDecimalType(ObisId.POSITIVE_ACTIVE_POWER_L2);
-    }
-
-    public DecimalType getPowerOutL2() {
-        return getDecimalType(ObisId.NEGATIVE_ACTIVE_POWER_L2);
-    }
-
-    public DecimalType getEnergyInL2() {
-        return getDecimalType(ObisId.POSITIVE_ACTIVE_ENERGY_L2);
-    }
-
-    public DecimalType getEnergyOutL2() {
-        return getDecimalType(ObisId.NEGATIVE_ACTIVE_ENERGY_L2);
-    }
-
-    public DecimalType getPowerInL3() {
-        return getDecimalType(ObisId.POSITIVE_ACTIVE_POWER_L3);
-    }
-
-    public DecimalType getPowerOutL3() {
-        return getDecimalType(ObisId.NEGATIVE_ACTIVE_POWER_L3);
-    }
-
-    public DecimalType getEnergyInL3() {
-        return getDecimalType(ObisId.POSITIVE_ACTIVE_ENERGY_L3);
-    }
-
-    public DecimalType getEnergyOutL3() {
-        return getDecimalType(ObisId.NEGATIVE_ACTIVE_ENERGY_L3);
-    }
-
-    public DecimalType getReactivePowerIn() {
-        return getDecimalType(ObisId.POSITIVE_REACTIVE_POWER);
-    }
-
-    public DecimalType getReactivePowerOut() {
-        return getDecimalType(ObisId.NEGATIVE_REACTIVE_POWER);
-    }
-
-    public DecimalType getReactiveEnergyIn() {
-        return getDecimalType(ObisId.POSITIVE_REACTIVE_ENERGY);
-    }
-
-    public DecimalType getReactiveEnergyOut() {
-        return getDecimalType(ObisId.NEGATIVE_REACTIVE_ENERGY);
-    }
-
-    public DecimalType getReactivePowerInL1() {
-        return getDecimalType(ObisId.POSITIVE_REACTIVE_POWER_L1);
-    }
-
-    public DecimalType getReactivePowerOutL1() {
-        return getDecimalType(ObisId.NEGATIVE_REACTIVE_POWER_L1);
-    }
-
-    public DecimalType getReactiveEnergyInL1() {
-        return getDecimalType(ObisId.POSITIVE_REACTIVE_ENERGY_L1);
-    }
-
-    public DecimalType getReactiveEnergyOutL1() {
-        return getDecimalType(ObisId.NEGATIVE_REACTIVE_ENERGY_L1);
-    }
-
-    public DecimalType getReactivePowerInL2() {
-        return getDecimalType(ObisId.POSITIVE_REACTIVE_POWER_L2);
-    }
-
-    public DecimalType getReactivePowerOutL2() {
-        return getDecimalType(ObisId.NEGATIVE_REACTIVE_POWER_L2);
-    }
-
-    public DecimalType getReactiveEnergyInL2() {
-        return getDecimalType(ObisId.POSITIVE_REACTIVE_ENERGY_L2);
-    }
-
-    public DecimalType getReactiveEnergyOutL2() {
-        return getDecimalType(ObisId.NEGATIVE_REACTIVE_ENERGY_L2);
-    }
-
-    public DecimalType getReactivePowerInL3() {
-        return getDecimalType(ObisId.POSITIVE_REACTIVE_POWER_L3);
-    }
-
-    public DecimalType getReactivePowerOutL3() {
-        return getDecimalType(ObisId.NEGATIVE_REACTIVE_POWER_L3);
-    }
-
-    public DecimalType getReactiveEnergyInL3() {
-        return getDecimalType(ObisId.POSITIVE_REACTIVE_ENERGY_L3);
-    }
-
-    public DecimalType getReactiveEnergyOutL3() {
-        return getDecimalType(ObisId.NEGATIVE_REACTIVE_ENERGY_L3);
-    }
-
-    public DecimalType getApparentPowerIn() {
-        return getDecimalType(ObisId.POSITIVE_APPARENT_POWER);
-    }
-
-    public DecimalType getApparentPowerOut() {
-        return getDecimalType(ObisId.NEGATIVE_APPARENT_POWER);
-    }
-
-    public DecimalType getApparentEnergyIn() {
-        return getDecimalType(ObisId.POSITIVE_APPARENT_ENERGY);
-    }
-
-    public DecimalType getApparentEnergyOut() {
-        return getDecimalType(ObisId.NEGATIVE_APPARENT_ENERGY);
-    }
-
-    public DecimalType getApparentPowerInL1() {
-        return getDecimalType(ObisId.POSITIVE_APPARENT_POWER_L1);
-    }
-
-    public DecimalType getApparentPowerOutL1() {
-        return getDecimalType(ObisId.NEGATIVE_APPARENT_POWER_L1);
-    }
-
-    public DecimalType getApparentEnergyInL1() {
-        return getDecimalType(ObisId.POSITIVE_APPARENT_ENERGY_L1);
-    }
-
-    public DecimalType getApparentEnergyOutL1() {
-        return getDecimalType(ObisId.NEGATIVE_APPARENT_ENERGY_L1);
-    }
-
-    public DecimalType getApparentPowerInL2() {
-        return getDecimalType(ObisId.POSITIVE_APPARENT_POWER_L2);
-    }
-
-    public DecimalType getApparentPowerOutL2() {
-        return getDecimalType(ObisId.NEGATIVE_APPARENT_POWER_L2);
-    }
-
-    public DecimalType getApparentEnergyInL2() {
-        return getDecimalType(ObisId.POSITIVE_APPARENT_ENERGY_L2);
-    }
-
-    public DecimalType getApparentEnergyOutL2() {
-        return getDecimalType(ObisId.NEGATIVE_APPARENT_ENERGY_L2);
-    }
-
-    public DecimalType getApparentPowerInL3() {
-        return getDecimalType(ObisId.POSITIVE_APPARENT_POWER_L3);
-    }
-
-    public DecimalType getApparentPowerOutL3() {
-        return getDecimalType(ObisId.NEGATIVE_APPARENT_POWER_L3);
-    }
-
-    public DecimalType getApparentEnergyInL3() {
-        return getDecimalType(ObisId.POSITIVE_APPARENT_ENERGY_L3);
-    }
-
-    public DecimalType getApparentEnergyOutL3() {
-        return getDecimalType(ObisId.NEGATIVE_APPARENT_ENERGY_L3);
-    }
-
-    public DecimalType getPowerFactor() {
-        return getDecimalType(ObisId.POWER_FACTOR);
-    }
-
-    public DecimalType getPowerFactorL1() {
-        return getDecimalType(ObisId.POWER_FACTOR_L1);
-    }
-
-    public DecimalType getPowerFactorL2() {
-        return getDecimalType(ObisId.POWER_FACTOR_L2);
-    }
-
-    public DecimalType getPowerFactorL3() {
-        return getDecimalType(ObisId.POWER_FACTOR_L3);
-    }
-
-    public DecimalType getCurrentL1() {
-        return getDecimalType(ObisId.CURRENT_L1);
-    }
-
-    public DecimalType getCurrentL2() {
-        return getDecimalType(ObisId.CURRENT_L2);
-    }
-
-    public DecimalType getCurrentL3() {
-        return getDecimalType(ObisId.CURRENT_L3);
-    }
-
-    public DecimalType getVoltageL1() {
-        return getDecimalType(ObisId.VOLTAGE_L1);
-    }
-
-    public DecimalType getVoltageL2() {
-        return getDecimalType(ObisId.VOLTAGE_L2);
-    }
-
-    public DecimalType getVoltageL3() {
-        return getDecimalType(ObisId.VOLTAGE_L3);
-    }
-
-    public DecimalType getFrequency() {
-        return getDecimalType(ObisId.FREQUENCY);
+    public State getState(ObisId obisId) {
+        return getQuantityTypeOrDecimal(obisId);
     }
 
     public StringType getVersion() {
         return version;
-    }
-
-    private DecimalType getDecimalType(ObisId obisId) {
-        return new DecimalType(values.getOrDefault(obisId, BigDecimal.ZERO));
     }
 
     private BigDecimal scaleValue(long rawValue, ObisId obisId) {
@@ -362,5 +133,36 @@ public class EnergyMeter {
 
     private long readUint64(byte[] bytes, int offset) {
         return ByteBuffer.wrap(bytes, offset, Long.BYTES).getLong();
+    }
+
+    private State getQuantityTypeOrDecimal(ObisId obisId) {
+        BigDecimal value = values.getOrDefault(obisId, BigDecimal.ZERO);
+        Unit<?> unit = switch (obisId) {
+            case POSITIVE_REACTIVE_POWER, POSITIVE_REACTIVE_POWER_L1, POSITIVE_REACTIVE_POWER_L2,
+                    POSITIVE_REACTIVE_POWER_L3, NEGATIVE_REACTIVE_POWER, NEGATIVE_REACTIVE_POWER_L1,
+                    NEGATIVE_REACTIVE_POWER_L2, NEGATIVE_REACTIVE_POWER_L3 ->
+                (Unit<?>) Units.VAR;
+            case POSITIVE_REACTIVE_ENERGY, POSITIVE_REACTIVE_ENERGY_L1, POSITIVE_REACTIVE_ENERGY_L2,
+                    POSITIVE_REACTIVE_ENERGY_L3, NEGATIVE_REACTIVE_ENERGY, NEGATIVE_REACTIVE_ENERGY_L1,
+                    NEGATIVE_REACTIVE_ENERGY_L2, NEGATIVE_REACTIVE_ENERGY_L3 ->
+                (Unit<?>) Units.KILOVAR_HOUR;
+            case POSITIVE_APPARENT_POWER, POSITIVE_APPARENT_POWER_L1, POSITIVE_APPARENT_POWER_L2,
+                    POSITIVE_APPARENT_POWER_L3, NEGATIVE_APPARENT_POWER, NEGATIVE_APPARENT_POWER_L1,
+                    NEGATIVE_APPARENT_POWER_L2, NEGATIVE_APPARENT_POWER_L3 ->
+                (Unit<?>) Units.VOLT_AMPERE;
+            case POSITIVE_APPARENT_ENERGY, POSITIVE_APPARENT_ENERGY_L1, POSITIVE_APPARENT_ENERGY_L2,
+                    POSITIVE_APPARENT_ENERGY_L3, NEGATIVE_APPARENT_ENERGY, NEGATIVE_APPARENT_ENERGY_L1,
+                    NEGATIVE_APPARENT_ENERGY_L2, NEGATIVE_APPARENT_ENERGY_L3 ->
+                (Unit<?>) Units.VOLT_AMPERE_HOUR;
+            case CURRENT_L1, CURRENT_L2, CURRENT_L3 -> (Unit<?>) Units.AMPERE;
+            case VOLTAGE_L1, VOLTAGE_L2, VOLTAGE_L3 -> (Unit<?>) Units.VOLT;
+            case FREQUENCY -> (Unit<?>) Units.HERTZ;
+            default -> null;
+        };
+        if (unit != null) {
+            return new QuantityType<>(value, unit);
+        } else {
+            return new DecimalType(value);
+        }
     }
 }

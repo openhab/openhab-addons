@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Helper methods for working with SMA meter serial numbers.
  *
- * @author Osman Basha - Initial contribution
+ * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
 public final class SerialNumber {
@@ -46,19 +46,24 @@ public final class SerialNumber {
             return "";
         }
 
+        String candidate = removeHexPrefix(trimmed);
+
         try {
-            if (isHexValue(trimmed)) {
-                return Integer.toUnsignedString(Integer.parseUnsignedInt(removeHexPrefix(trimmed), 16));
+            // If value starts with 0x, it's definitely hexadecimal
+            if (trimmed.toLowerCase(Locale.ROOT).startsWith("0x")) {
+                return Integer.toUnsignedString(Integer.parseUnsignedInt(candidate, 16));
             }
-            return Integer.toUnsignedString(Integer.parseUnsignedInt(trimmed, 10));
+
+            // If the value contains hex letters (a-f), it's legacy hexadecimal
+            if (candidate.chars().anyMatch(c -> (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+                return Integer.toUnsignedString(Integer.parseUnsignedInt(candidate, 16));
+            }
+
+            // Otherwise, parse as decimal (new format)
+            return Integer.toUnsignedString(Integer.parseUnsignedInt(candidate, 10));
         } catch (NumberFormatException e) {
             return trimmed;
         }
-    }
-
-    private static boolean isHexValue(String value) {
-        String candidate = removeHexPrefix(value);
-        return candidate.length() == 8 && candidate.chars().allMatch(SerialNumber::isHexDigit);
     }
 
     private static String removeHexPrefix(String value) {
@@ -67,10 +72,5 @@ public final class SerialNumber {
             return value.substring(2);
         }
         return value;
-    }
-
-    private static boolean isHexDigit(int character) {
-        return character >= '0' && character <= '9' || character >= 'a' && character <= 'f'
-                || character >= 'A' && character <= 'F';
     }
 }
