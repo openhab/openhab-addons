@@ -24,6 +24,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -154,12 +157,12 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 if (goeResponse.temperatures == null || goeResponse.temperatures.length < 2) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.temperatures[0], SIUnits.CELSIUS);
+                return toQuantity(goeResponse.temperatures[0], SIUnits.CELSIUS);
             case TEMPERATURE_CIRCUIT_BOARD:
                 if (goeResponse.temperatures == null || goeResponse.temperatures.length < 2) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.temperatures[1], SIUnits.CELSIUS);
+                return toQuantity(goeResponse.temperatures[1], SIUnits.CELSIUS);
             case SESSION_CHARGE_CONSUMPTION:
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
@@ -176,55 +179,25 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 }
                 return new QuantityType<>(goeResponse.totalChargeConsumption / 1000d, Units.KILOWATT_HOUR);
             case VOLTAGE_L1:
-                if (goeResponse.energy == null || goeResponse.energy.length < 1) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[0], Units.VOLT);
+                return toQuantity(element(goeResponse.energy, 0), Units.VOLT);
             case VOLTAGE_L2:
-                if (goeResponse.energy == null || goeResponse.energy.length < 2) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[1], Units.VOLT);
+                return toQuantity(element(goeResponse.energy, 1), Units.VOLT);
             case VOLTAGE_L3:
-                if (goeResponse.energy == null || goeResponse.energy.length < 3) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[2], Units.VOLT);
+                return toQuantity(element(goeResponse.energy, 2), Units.VOLT);
             case CURRENT_L1:
-                if (goeResponse.energy == null || goeResponse.energy.length < 5) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[4], Units.AMPERE);
+                return toQuantity(element(goeResponse.energy, 4), Units.AMPERE);
             case CURRENT_L2:
-                if (goeResponse.energy == null || goeResponse.energy.length < 6) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[5], Units.AMPERE);
+                return toQuantity(element(goeResponse.energy, 5), Units.AMPERE);
             case CURRENT_L3:
-                if (goeResponse.energy == null || goeResponse.energy.length < 7) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[6], Units.AMPERE);
+                return toQuantity(element(goeResponse.energy, 6), Units.AMPERE);
             case POWER_L1:
-                if (goeResponse.energy == null || goeResponse.energy.length < 8) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[7], Units.WATT);
+                return toQuantity(element(goeResponse.energy, 7), Units.WATT);
             case POWER_L2:
-                if (goeResponse.energy == null || goeResponse.energy.length < 9) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[8], Units.WATT);
+                return toQuantity(element(goeResponse.energy, 8), Units.WATT);
             case POWER_L3:
-                if (goeResponse.energy == null || goeResponse.energy.length < 10) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[9], Units.WATT);
+                return toQuantity(element(goeResponse.energy, 9), Units.WATT);
             case POWER_ALL:
-                if (goeResponse.energy == null || goeResponse.energy.length < 12) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponse.energy[11], Units.WATT);
+                return toQuantity(element(goeResponse.energy, 11), Units.WATT);
             case FORCE_STATE:
                 if (goeResponse.forceState == null) {
                     return UnDefType.UNDEF;
@@ -232,6 +205,18 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 return new DecimalType(goeResponse.forceState.toString());
         }
         return UnDefType.UNDEF;
+    }
+
+    private static <T extends Quantity<T>> State toQuantity(@Nullable Number value, Unit<T> unit) {
+        return value == null ? UnDefType.UNDEF : new QuantityType<>(value, unit);
+    }
+
+    /**
+     * The charger reports JSON arrays whose elements may be {@code null} (e.g. {@code "tma": [null, null]} on the go-e
+     * Charger PRO), so the boxed elements have to be checked before use.
+     */
+    private static @Nullable Double element(Double @Nullable [] array, int index) {
+        return array == null || array.length <= index ? null : array[index];
     }
 
     @Override
