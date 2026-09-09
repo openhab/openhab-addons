@@ -166,10 +166,14 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
 
     public void register(EvccThingLifecycleAware handler) {
         if (initialStateReceived) {
-            handler.initializeThingFromLatestState(lastState);
             listeners.put(handler.getType() + "$" + handler.getIdentifier(), handler);
             for (String root : handler.getRootTypes()) {
                 propertyByRoot.put(root, handler.getType());
+            }
+            try {
+                handler.initializeThingFromLatestState(lastState);
+            } catch (Exception e) {
+                logListenerError(handler, e);
             }
         } else {
             scheduler.schedule(() -> register(handler), 5, TimeUnit.SECONDS);
