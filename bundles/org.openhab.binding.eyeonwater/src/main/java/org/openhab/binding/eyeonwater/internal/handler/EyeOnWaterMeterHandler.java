@@ -33,6 +33,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,18 +148,26 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
             // Update Reading Channel
             updateState(CHANNEL_READING, new QuantityType<>(normalized.getValue() + " " + normalized.getUnit()));
 
-            // Update Flow Rate if available
+            // Determine Flow Rate Unit
+            String flowUnit;
+            if ("gal".equals(normalized.getUnit())) {
+                flowUnit = "gal/min";
+            } else if ("ft³".equals(normalized.getUnit())) {
+                flowUnit = "ft³/min";
+            } else {
+                flowUnit = "m³/h";
+            }
+
+            // Update Flow Rate Channel
             double leakRate = data.getLeakRate();
             if (leakRate >= 0) {
-                String flowUnit;
-                if ("gal".equals(normalized.getUnit())) {
-                    flowUnit = "gal/min";
-                } else if ("ft³".equals(normalized.getUnit())) {
-                    flowUnit = "ft³/min";
-                } else {
-                    flowUnit = "m³/h";
-                }
                 updateState(CHANNEL_LEAK_FLOW_RATE, new QuantityType<>(leakRate + " " + flowUnit));
+            } else if (!data.isLeakAlert()) {
+                // If there is no active leak alert, we know the leak rate is 0.0
+                updateState(CHANNEL_LEAK_FLOW_RATE, new QuantityType<>(0.0 + " " + flowUnit));
+            } else {
+                // If there is an active leak alert but no rate is reported, clear to UNDEF
+                updateState(CHANNEL_LEAK_FLOW_RATE, UnDefType.UNDEF);
             }
 
             // Update alerts
