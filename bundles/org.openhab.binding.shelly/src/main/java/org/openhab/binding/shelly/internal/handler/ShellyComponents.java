@@ -906,6 +906,7 @@ public class ShellyComponents {
 
         boolean updated = false;
         try (LightModels lightModels = accessor.acquire()) {
+
             ShellyLightModel model = lightModels.getByApiLightIndex(idx);
             if (model == null) {
                 throw new ShellyApiException("updateRGBW() failed: index:%d model missing".formatted(idx));

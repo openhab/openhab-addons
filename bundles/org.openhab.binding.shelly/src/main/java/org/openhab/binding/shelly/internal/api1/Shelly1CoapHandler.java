@@ -448,7 +448,6 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         LightModelAccessor accessor = thingHandler instanceof LightModelAccessor lma ? lma : null;
         if (accessor != null) {
             try (LightModelAccessor.LightModels lightModels = accessor.acquire()) {
-                accessor.acquire();
 
                 // pass 1: process everything except light power state/output
                 for (CoIotSensor s : sensorUpdates) {

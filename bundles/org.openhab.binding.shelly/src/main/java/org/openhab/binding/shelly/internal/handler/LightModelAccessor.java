@@ -44,7 +44,7 @@ public interface LightModelAccessor {
         ShellyLightModel getByApiLightIndex(int apiLightIndex);
 
         /**
-         * Get the light model for the given challel group suffix.
+         * Get the light model for the given channel group suffix.
          * 
          * @param channelGroupSuffix the suffix of the channel group within openHAB.
          * @return the light model, or null if not found.
