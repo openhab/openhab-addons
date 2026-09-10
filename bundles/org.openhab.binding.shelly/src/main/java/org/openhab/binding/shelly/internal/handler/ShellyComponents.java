@@ -913,9 +913,19 @@ public class ShellyComponents {
             }
 
             Integer[] rgb = value.rgb;
+            int[] rgbx = model.getRGBX();
+            boolean colorUpdated = false;
             if (rgb != null && rgb.length >= 3) {
-                int[] rgbx = value.white == null ? new int[] { rgb[0], rgb[1], rgb[2] }
-                        : new int[] { rgb[0], rgb[1], rgb[2], value.white };
+                rgbx[0] = rgb[0];
+                rgbx[1] = rgb[1];
+                rgbx[2] = rgb[2];
+                colorUpdated = true;
+            }
+            if (value.white != null && rgbx.length >= 4) {
+                rgbx[3] = Objects.requireNonNull(value.white);
+                colorUpdated = true;
+            }
+            if (colorUpdated) {
                 model.setRGBX(rgbx);
                 updated = true;
             }
@@ -962,6 +972,7 @@ public class ShellyComponents {
             Mode mode;
             if (value.mode != null) {
                 mode = SHELLY_RGBCCT_MODE_RGB.equals(Objects.requireNonNull(value.mode)) ? Mode.COLOR : Mode.WHITE;
+                model.setMode(mode);
             } else {
                 mode = model.getMode();
             }

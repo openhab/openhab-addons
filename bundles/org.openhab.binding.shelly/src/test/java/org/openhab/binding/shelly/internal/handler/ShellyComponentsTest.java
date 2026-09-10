@@ -937,7 +937,8 @@ public class ShellyComponentsTest {
 
         assertThat(updated, is(true));
         assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_BRIGHTNESS), is(new PercentType(42)));
-        assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP), is(new PercentType(ctPercent)));
+        assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP_PCT),
+                is(new PercentType(ctPercent)));
     }
 
     /*
@@ -976,7 +977,8 @@ public class ShellyComponentsTest {
         int ctPercent = kelvinToMirekPercent(3000, 6000, 4500);
 
         assertThat(updated, is(true));
-        assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP), is(new PercentType(ctPercent)));
+        assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP_PCT),
+                is(new PercentType(ctPercent)));
     }
 
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {

@@ -34,6 +34,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
@@ -94,7 +95,7 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @Test
-    void testFunctionalityOfTestHarnessWithColor() {
+    void testFunctionalityOfTestHarnessWithColor() throws ShellyApiException {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
 
         handler.handleDeviceCommand(
@@ -113,7 +114,7 @@ class ShellyLightHandlerLightModelTest {
         assertEquals(100, ((HSBType) obj).getSaturation().intValue());
         assertEquals(0, ((HSBType) obj).getBrightness().intValue());
         assertNotNull(updates.get("white#temperature"));
-        assertNotNull(updates.get("white#temperature-abs"));
+        assertNotNull(updates.get("white#temperature-pct"));
 
         assertNull(updates.get("control#mode")); // already in color mode, so no update
 
@@ -129,7 +130,7 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @Test
-    void testFunctionalityOfTestHarnessWithColorTemp() {
+    void testFunctionalityOfTestHarnessWithColorTemp() throws ShellyApiException {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
 
         handler.handleDeviceCommand(
@@ -145,7 +146,7 @@ class ShellyLightHandlerLightModelTest {
         assertNotNull(updates.get("color#full"));
         assertNotNull(updates.get("color#hsb"));
         assertNotNull(updates.get("white#temperature"));
-        assertNotNull(updates.get("white#temperature-abs"));
+        assertNotNull(updates.get("white#temperature-pct"));
         assertNotNull(updates.get("control#mode")); // changed to white mode, so update is sent
 
         handler.getChannelUpdates().clear();
@@ -163,12 +164,12 @@ class ShellyLightHandlerLightModelTest {
         assertNotNull(updates.get("color#full"));
         assertNotNull(updates.get("color#hsb"));
         assertNotNull(updates.get("white#temperature"));
-        assertNotNull(updates.get("white#temperature-abs"));
+        assertNotNull(updates.get("white#temperature-pct"));
         assertNull(updates.get("control#mode")); // already in white mode, so no update
     }
 
     @Test
-    void bulbCreatesExpectedLightModel() {
+    void bulbCreatesExpectedLightModel() throws ShellyApiException {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
 
         handler.handleDeviceCommand(
@@ -187,7 +188,7 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @Test
-    void duoCreatesExpectedLightModel() {
+    void duoCreatesExpectedLightModel() throws ShellyApiException {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYDUO);
 
         handler.handleDeviceCommand(
@@ -206,7 +207,7 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @Test
-    void vintageCreatesExpectedLightModel() {
+    void vintageCreatesExpectedLightModel() throws ShellyApiException {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYVINTAGE);
 
         handler.handleDeviceCommand(
@@ -226,7 +227,7 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @Test
-    void duoRgbwCreatesExpectedLightModel() {
+    void duoRgbwCreatesExpectedLightModel() throws ShellyApiException {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYDUORGBW);
 
         handler.handleDeviceCommand(
@@ -245,7 +246,7 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @Test
-    void rgbw2ColorCreatesExpectedLightModel() {
+    void rgbw2ColorCreatesExpectedLightModel() throws ShellyApiException {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYRGBW2_COLOR);
 
         handler.handleDeviceCommand(
@@ -265,7 +266,7 @@ class ShellyLightHandlerLightModelTest {
     }
 
     @Test
-    void rgbw2WhiteCreatesExpectedLightModel() {
+    void rgbw2WhiteCreatesExpectedLightModel() throws ShellyApiException {
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYRGBW2_WHITE);
 
         handler.handleDeviceCommand(
@@ -335,9 +336,9 @@ class ShellyLightHandlerLightModelTest {
         assertNotNull(handler.getLightModelByApiLightIndex(0));
 
         assertEquals(new PercentType(80), updates.get("white#brightness"));
-        assertEquals(QuantityType.valueOf(4000, Units.KELVIN), updates.get("white#temperature-abs"));
+        assertEquals(QuantityType.valueOf(4000, Units.KELVIN), updates.get("white#temperature"));
 
-        Object ct = updates.get("white#temperature");
+        Object ct = updates.get("white#temperature-pct");
         assertTrue(ct instanceof PercentType);
         assertEquals(54, Math.round(((PercentType) ct).doubleValue()));
     }
@@ -657,7 +658,7 @@ class ShellyLightHandlerLightModelTest {
                     1,
                     SHELLY2_PROFILE_RGBCCT,
                     CHANNEL_GROUP_LIGHT_INDEX,
-                    CHANNEL_COLOR_TEMP,
+                    CHANNEL_COLOR_TEMP_PCT,
                     new PercentType(50),
                     null,
                     true,
@@ -693,7 +694,7 @@ class ShellyLightHandlerLightModelTest {
                     0,
                     SHELLY2_PROFILE_CCTX2,
                     CHANNEL_GROUP_LIGHT_INDEX,
-                    CHANNEL_COLOR_TEMP,
+                    CHANNEL_COLOR_TEMP_PCT,
                     new PercentType(50),
                     null,
                     true, Map.of(SHELLY_COLOR_TEMP, avgColorTemp)
@@ -716,7 +717,7 @@ class ShellyLightHandlerLightModelTest {
                     1,
                     SHELLY2_PROFILE_CCTX2,
                     CHANNEL_GROUP_LIGHT_INDEX,
-                    CHANNEL_COLOR_TEMP,
+                    CHANNEL_COLOR_TEMP_PCT,
                     new PercentType(50),
                     null,
                     true,
@@ -740,7 +741,7 @@ class ShellyLightHandlerLightModelTest {
                     0,
                     null,
                     CHANNEL_GROUP_WHITE_CONTROL,
-                    CHANNEL_COLOR_TEMP,
+                    CHANNEL_COLOR_TEMP_PCT,
                     new PercentType(50),
                     null,
                     true,
@@ -906,7 +907,8 @@ class ShellyLightHandlerLightModelTest {
     @MethodSource("lightHandlerChannelUpdateProvider")
     void parameterizedLightHandlerChannelUpdates(ThingTypeUID thingTypeUID, int channelGroupNo,
             int expectedApiLightIndex, @Nullable String profileOverride, String commandGroup, String commandChannel,
-            Command command, ShellyLightModel.Mode expectedMode, Map<String, State> expectedUpdates) {
+            Command command, ShellyLightModel.Mode expectedMode, Map<String, State> expectedUpdates)
+            throws ShellyApiException {
 
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
         handler.profile.device.profile = profileOverride;
@@ -1109,10 +1111,11 @@ class ShellyLightHandlerLightModelTest {
 
             Arguments.of(
                 THING_TYPE_SHELLYPRORGBWWPM, 1, 1, SHELLY2_PROFILE_RGBCCT,
-                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(50),
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP_PCT, new PercentType(50),
                 ShellyLightModel.Mode.WHITE,
                 Map.of(
-                    "light1#temperature", new PercentType(50)
+                    "light1#temperature-pct", new PercentType(50),
+                    "light1#temperature", QuantityType.valueOf(3815, Units.KELVIN)
                 )
             ),
 
@@ -1139,10 +1142,11 @@ class ShellyLightHandlerLightModelTest {
 
             Arguments.of(
                 THING_TYPE_SHELLYPRORGBWWPM, 2, 1, SHELLY2_PROFILE_CCTX2,
-                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP, new PercentType(60),
+                CHANNEL_GROUP_LIGHT_INDEX, CHANNEL_COLOR_TEMP_PCT, new PercentType(60),
                 ShellyLightModel.Mode.WHITE,
                 Map.of(
-                    "light2#temperature", new PercentType(60)
+                    "light2#temperature-pct", new PercentType(60),
+                    "light2#temperature", QuantityType.valueOf(3524, Units.KELVIN)
                 )
             ),
 
@@ -1157,10 +1161,11 @@ class ShellyLightHandlerLightModelTest {
 
             Arguments.of(
                 THING_TYPE_SHELLYPLUSDUOBULB, 0, 0, null,
-                CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP, new PercentType(50),
+                CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_PCT, new PercentType(50),
                 ShellyLightModel.Mode.WHITE,
                 Map.of(
-                    "white#temperature", new PercentType(50)
+                    "white#temperature-pct", new PercentType(50),
+                    "white#temperature", QuantityType.valueOf(3815, Units.KELVIN)
                 )
             ),
 

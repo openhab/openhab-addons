@@ -95,7 +95,7 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         BigDecimal minKelvin = null;
         BigDecimal maxKelvin = null;
 
-        if (CHANNEL_COLOR_TEMP_ABS.equals(channelUID.getIdWithoutGroup())
+        if (CHANNEL_COLOR_TEMP.equals(channelUID.getIdWithoutGroup())
                 && handler instanceof ShellyLightHandler lightHandler
                 && lightHandler.getLightModelByChannelUID(channelUID) instanceof ShellyLightModel model
                 && model.supportsColorTempChannel()) {

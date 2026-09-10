@@ -93,33 +93,29 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     }
 
     @Override
-    public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws IllegalArgumentException {
+    public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws ShellyApiException {
         logger.trace("{}: handleDeviceCommand() channel {}, command {}", thingName, channelUID, command);
         try {
             acquireLock();
-            try {
-                int channelGroupSuffix = extractChannelGroupSuffix(channelUID);
-                ShellyLightModel model = lightModels.get(channelGroupSuffix);
-                if (model == null) {
-                    model = ShellyLightModel.create(this, channelGroupSuffix, profile, DIM_STEPSIZE);
-                    model.acquire();
-                    lightModels.put(channelGroupSuffix, model);
-                }
-                WhatUpdated whatUpdated = updateLightModelFromChannelCommand(model, channelUID, command);
-                switch (whatUpdated) {
-                    case LIGHT_MODEL:
-                        updateRemoteDeviceFromLightModel(model);
-                    case OTHER:
-                        return true;
-                    default:
-                        return false;
-                }
-            } finally {
-                releaseLock();
+            int channelGroupSuffix = extractChannelGroupSuffix(channelUID);
+            ShellyLightModel model = lightModels.get(channelGroupSuffix);
+            if (model == null) {
+                model = ShellyLightModel.create(this, channelGroupSuffix, profile, DIM_STEPSIZE);
+                model.acquire();
+                lightModels.put(channelGroupSuffix, model);
             }
-        } catch (ShellyApiException e) {
-            logger.debug("{}: Unable to handle command: {}", thingName, e.toString());
-            return false;
+            WhatUpdated whatUpdated = updateLightModelFromChannelCommand(model, channelUID, command);
+            switch (whatUpdated) {
+                case LIGHT_MODEL:
+                    updateRemoteDeviceFromLightModel(model);
+                    return true;
+                case OTHER:
+                    return true;
+                default:
+                    return false;
+            }
+        } finally {
+            releaseLock();
         }
     }
 
@@ -263,11 +259,11 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 model.setBrightness(command);
                 return WhatUpdated.LIGHT_MODEL;
 
-            case CHANNEL_COLOR_TEMP:
+            case CHANNEL_COLOR_TEMP_PCT:
                 model.handleColorTemperatureCommand(command);
                 return WhatUpdated.LIGHT_MODEL;
 
-            case CHANNEL_COLOR_TEMP_ABS:
+            case CHANNEL_COLOR_TEMP:
                 model.handleColorTemperatureCommand(command);
                 return WhatUpdated.LIGHT_MODEL;
 
@@ -336,9 +332,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         }
 
         // EFFECT:
-        if (model.supportsEffectChannel() && model.isEffectDirty() && Mode.COLOR == model.getMode()
-                && model.getEffectState() instanceof DecimalType dec) {
-            parms.put(SHELLY_COLOR_EFFECT, String.valueOf(dec.intValue()));
+        if (model.supportsEffectChannel() && model.isEffectDirty() && Mode.COLOR == model.getMode()) {
+            parms.put(SHELLY_COLOR_EFFECT, String.valueOf(model.getEffectState().intValue()));
         }
 
         // BRIGHTNESS: align Gen 1/2 behaviour; only include brightness if light is on
@@ -435,8 +430,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
 
         // TIMERS:
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
-        if (lights != null && apiLightIndex < lights.size()
-                && lights.get(apiLightIndex) instanceof ShellySettingsRgbwLight ls) {
+        if (lights != null && apiLightIndex < lights.size()) {
+            ShellySettingsRgbwLight ls = lights.get(apiLightIndex);
             String group = channelGroupSuffix == 0 ? CHANNEL_GROUP_LIGHT_CONTROL
                     : CHANNEL_GROUP_LIGHT_INDEX + channelGroupSuffix;
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOON, toQuantityType(getDouble(ls.autoOn), Units.SECOND));
@@ -512,8 +507,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
         // COLOR TEMP:
         if (model.supportsColorTempChannel() && model.isColorTempDirty()) {
             group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupSuffix;
-            updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperaturePercentState());
-            updated |= updateChannel(group, CHANNEL_COLOR_TEMP_ABS, model.getColorTemperatureAbsoluteState());
+            updated |= updateChannel(group, CHANNEL_COLOR_TEMP_PCT, model.getColorTemperaturePercentState());
+            updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperatureAbsoluteState());
         }
 
         return updated;

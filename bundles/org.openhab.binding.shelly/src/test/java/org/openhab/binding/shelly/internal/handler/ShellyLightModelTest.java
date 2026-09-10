@@ -38,6 +38,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.State;
 
 /**
  * Tests for {@link ShellyLightModel} basic functionality.
@@ -531,7 +532,10 @@ class ShellyLightModelTest {
             model.release();
         }
 
-        HSBType color = (HSBType) handler.getChannelUpdates().get("color#hsb");
+        State state = handler.getChannelUpdates().get("color#hsb");
+
+        assertTrue(state instanceof HSBType);
+        HSBType color = (HSBType) state;
 
         assertEquals(0, color.getHue().intValue());
         assertEquals(expectedSaturation, color.getSaturation().intValue(), 1.0);

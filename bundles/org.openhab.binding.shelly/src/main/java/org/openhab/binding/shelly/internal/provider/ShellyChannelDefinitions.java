@@ -242,9 +242,8 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_WHITE, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHGR_WHITE, CHANNEL_COLOR_TEMP, "system:color-temperature", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHGR_WHITE, CHANNEL_COLOR_TEMP_ABS, "system:color-temperature-abs",
-                        ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_WHITE, CHANNEL_COLOR_TEMP_PCT, "system:color-temperature", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_WHITE, CHANNEL_COLOR_TEMP, "system:color-temperature-abs", ITEMT_TEMP))
 
                 // RGBW2-color
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_LIGHT_POWER, "system:power", ITEMT_SWITCH))
@@ -260,8 +259,9 @@ public class ShellyChannelDefinitions {
 
                 // RGBW2-white / RGBW PM-white
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_COLOR_TEMP, "system:color-temperature", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_COLOR_TEMP_ABS, "system:color-temperature-abs",
+                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_COLOR_TEMP_PCT, "system:color-temperature",
+                        ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_COLOR_TEMP, "system:color-temperature-abs",
                         ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT_IDX, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
@@ -642,8 +642,8 @@ public class ShellyChannelDefinitions {
 
             // dynamically add missing white group channels
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
+            addChannel(thing, add, hasCT, whiteGroup, CHANNEL_COLOR_TEMP_PCT);
             addChannel(thing, add, hasCT, whiteGroup, CHANNEL_COLOR_TEMP);
-            addChannel(thing, add, hasCT, whiteGroup, CHANNEL_COLOR_TEMP_ABS);
 
             // dynamically add missing color group channels
             if (profile.hasColorTag(idx)) {

@@ -674,13 +674,13 @@ The `white#brightness` is not just an intensity control; it can be linked to sev
 
 ### Extra Features for Color Temperature Channels (*)
 
-Some lights have `white#temperature` and `white#temperature-abs` channels, as follows:
+Some lights have `white#temperature` and `white#temperature-pct` channels, as follows:
 
-1. The `white#temperature` channel represents the color temperature in percent from "cool" to "warm".
+1. The `white#temperature-pct` channel represents the color temperature in percent from "cool" to "warm".
    - This can be linked to `Dimmer` Items in which case the slider controls the color temperature in percent.
    - This can also be linked to `RollerShutter` Items in which case the up/down buttons increase or decrease the color temperature percent.
 
-1. The `white#temperature-abs` channel represents the color temperature in Kelvin.
+1. The `white#temperature` channel represents the color temperature in Kelvin.
    This can be linked to `Number:Temperature` Items in which case it displays and controls the color temperature in Kelvin.
 
 ### Extra Features on Secondary Channels
@@ -690,7 +690,7 @@ Such secondary lights have extra features as follows:
 
 - The `lightN:brightness` channels behave as the `white:brightness` channel above.
 - The `lightN:temperature` channels behave as the `white:temperature` channel above.
-- The `lightN:temperature-abs` channels behave as the `white:temperature-abs` channel above.
+- The `lightN:temperature-pct` channels behave as the `white:temperature-pct` channel above.
 
 ### LoRa Add-On (Channel Group: lora)
 
@@ -1079,8 +1079,8 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |         | gain            | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                  |
 |         | effect          | Number             | r/w       |          | Puts the light into effect mode: 0..6 0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Breath 4=Flash, 5=On/Off Gradual, 6=Red/Green Change |
 | white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100%                                                                  |
-|         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 
 `Note:`
 The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
@@ -1098,8 +1098,8 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |         | autoOff           | Number             | r/w       |          | Sets a  timer to turn the device OFF after every ON: in sec                                        |
 |         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                                 |
 | white   | brightness        | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                                 |
-|         | temperature       | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention               |
-|         | temperature-abs   | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention               |
+|         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention               |
+|         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention               |
 | meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                                 |
 |         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
 |         | energyHistMin2    | Number             | yes       |          | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
@@ -1149,8 +1149,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 |         | gain            | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                      |
 |         | effect          | Number             | r/w       |          | Puts the light into effect mode: 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash |
 | white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                       |
-|         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention     |
-|         | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention     |
+|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention     |
+|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention     |
 | meter   | currentPower    | Number             | yes       |          | Current power consumption in Watts                                                       |
 
 Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
@@ -1263,8 +1263,8 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
 |         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
 | white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                   |
-|         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 
 The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo - it has no RGB color output.
 
@@ -1281,11 +1281,11 @@ The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo -
 |         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
 |         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
 | white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100% or 0..100; also controls power (ON/OFF)                          |
-|         | temperature     | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 
 The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
-Sending a color (`color#hsb`, `color#red`/`green`/`blue` or `color#full` with any color other than "white") switches to color mode; sending `color#full="white"` or `white#temperature` switches back to white mode.
+Sending a color (`color#hsb`, `color#red`/`green`/`blue` switches to color mode; sending `color#full="white"`, `white#temperature`, or `white#temperature-pct` switches back to white mode.
 
 ### Shelly H&T (thing-type: shellyht)
 
@@ -1912,8 +1912,8 @@ In `cctx2` profile (dual color-temperature mode), the device exposes two indepen
 | Group  | Channel         | Type               | read-only | Advanced | Description                                                                          |
 | ------ | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
 | light1 | brightness      | Multiple (*)       | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention          |
-|        | temperature     | Multiple (*)       | r/w       |          | Color temperature percent control according to openHAB Light Control Convention      |
-|        | temperature-abs | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+|        | temperature-pct | Multiple (*)       | r/w       |          | Color temperature percent control according to openHAB Light Control Convention      |
+|        | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 |        | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
 |        | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
 |        | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |

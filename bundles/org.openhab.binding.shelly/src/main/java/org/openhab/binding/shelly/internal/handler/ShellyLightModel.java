@@ -613,8 +613,8 @@ public class ShellyLightModel extends LightModel {
     public void setRGBX(int[] rgbx) {
         LOGGER.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setRGBX({})", handler.thingName,
                 apiLightIndex, channelGroupSuffix, rgbx);
-        refreshCache(rgbx);
         super.setRGBx(Arrays.stream(rgbx).mapToDouble(i -> (double) i).toArray());
+        refreshCache(rgbx);
         setMode(Mode.COLOR);
     }
 
@@ -673,7 +673,8 @@ public class ShellyLightModel extends LightModel {
             return new StringType(SHELLY_COLOR_BLUE);
         } else if (rgbw.length == 4 && rgbw[0] == 0 && rgbw[1] == 0 && rgbw[2] == 0 && rgbw[3] == SHELLY_MAX_COLOR) {
             return new StringType(SHELLY_COLOR_WHITE);
-        } else if (rgbw.length == 3 && rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR) {
+        } else if (rgbw.length == 3 && rgbw[0] == SHELLY_MAX_COLOR && rgbw[1] == SHELLY_MAX_COLOR
+                && rgbw[2] == SHELLY_MAX_COLOR) {
             return new StringType(SHELLY_COLOR_WHITE);
         }
         return new StringType(SHELLY_COLOR_UNDEFINED);

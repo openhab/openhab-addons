@@ -233,8 +233,8 @@ public class ShellyBindingConstants {
 
     // Bulb/RGBW2/Dup in White Mode
     public static final String CHANNEL_GROUP_WHITE_CONTROL = "white";
+    public static final String CHANNEL_COLOR_TEMP_PCT = "temperature-pct";
     public static final String CHANNEL_COLOR_TEMP = "temperature";
-    public static final String CHANNEL_COLOR_TEMP_ABS = "temperature-abs";
 
     public static final String CHAN_ID_BRIGHTNESS = CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS;
     public static final ChannelTypeUID TYPE_UID_ADV_BRIGHTNESS = new ChannelTypeUID(BINDING_ID, "brightnessAdvanced");
