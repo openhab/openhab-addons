@@ -95,31 +95,39 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
         pollingScheduler.execute(() -> {
             try {
                 activeClient.authenticate();
-                if (activeClient.equals(client)) {
-                    updateStatus(ThingStatus.ONLINE);
-                    startPolling();
+                synchronized (EyeOnWaterBridgeHandler.this) {
+                    if (activeClient.equals(client)) {
+                        updateStatus(ThingStatus.ONLINE);
+                        startPolling();
+                    }
                 }
             } catch (IOException e) {
-                if (activeClient.equals(client)) {
-                    logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
-                            e.getMessage(), e);
-                    String msg = e.getMessage();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            msg != null ? msg : "@text/offline.communication-error");
+                synchronized (EyeOnWaterBridgeHandler.this) {
+                    if (activeClient.equals(client)) {
+                        logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
+                                e.getMessage(), e);
+                        String msg = e.getMessage();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                msg != null ? msg : "@text/offline.communication-error");
+                    }
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                if (activeClient.equals(client)) {
-                    logger.debug("Interrupted during EyeOnWater API initialization", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.initialization-interrupted");
+                synchronized (EyeOnWaterBridgeHandler.this) {
+                    if (activeClient.equals(client)) {
+                        logger.debug("Interrupted during EyeOnWater API initialization", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/offline.initialization-interrupted");
+                    }
                 }
             } catch (Exception e) {
-                if (activeClient.equals(client)) {
-                    logger.error("Unexpected error during EyeOnWater API initialization", e);
-                    String msg = e.getMessage();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            msg != null ? msg : "@text/offline.unexpected-error");
+                synchronized (EyeOnWaterBridgeHandler.this) {
+                    if (activeClient.equals(client)) {
+                        logger.error("Unexpected error during EyeOnWater API initialization", e);
+                        String msg = e.getMessage();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                msg != null ? msg : "@text/offline.unexpected-error");
+                    }
                 }
             }
         });
@@ -134,7 +142,10 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Disposing EyeOnWater Bridge: {}", getThing().getUID());
 
-        stopPolling();
+        synchronized (this) {
+            stopPolling();
+            client = null;
+        }
 
         ServiceRegistration<?> reg = discoveryServiceReg;
         if (reg != null) {
@@ -142,7 +153,6 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             discoveryServiceReg = null;
         }
 
-        client = null;
         super.dispose();
     }
 
