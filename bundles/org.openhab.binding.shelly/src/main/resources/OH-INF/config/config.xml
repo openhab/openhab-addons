@@ -21,19 +21,19 @@
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
 			<label>Button Events</label>
-			<description>Activates the Button Action URLS</description>
+			<description>Activates the Button Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
 			<label>Output Events</label>
-			<description>Activates the Output Action URLS</description>
+			<description>Activates the Output Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
 			<label>Push Events</label>
-			<description>Activates the Push Button Action URLS</description>
+			<description>Activates the Push Button Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -81,7 +81,7 @@
 		</parameter>
 		<parameter name="eventsRoller" type="boolean" required="false">
 			<label>Roller Events</label>
-			<description>Activates the Roller Action URLS</description>
+			<description>Activates the Roller Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -123,19 +123,19 @@
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
 			<label>Button Events</label>
-			<description>Activates the Button Action URLS</description>
+			<description>Activates the Button Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
 			<label>Output Events</label>
-			<description>Activates the Output Action URLS</description>
+			<description>Activates the Output Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
 			<label>Push Events</label>
-			<description>Activates the Push Button Action URLS</description>
+			<description>Activates the Push Button Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -177,7 +177,7 @@
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
 			<label>Output Events</label>
-			<description>Activates the Output Action URLS</description>
+			<description>Activates the Output Action URLs</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
