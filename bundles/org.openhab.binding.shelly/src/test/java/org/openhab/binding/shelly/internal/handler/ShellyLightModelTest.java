@@ -491,7 +491,7 @@ class ShellyLightModelTest {
             Arguments.of(THING_TYPE_SHELLYBULB, 0, null, true, true, true, true, false),
             Arguments.of(THING_TYPE_SHELLYDUO, 0, null, true, false, true, true, false),
             Arguments.of(THING_TYPE_SHELLYVINTAGE, 0, null, true, false, false, true, false), // NOTE: Vintage white-only!
-            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, true, false, true, true, false),
+            Arguments.of(THING_TYPE_SHELLYDUORGBW, 0, null, true, true, true, true, false),
             Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, 0, null, true, true, false, true, false),
             Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 0, null, false, false, false, true, true),
             Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, 1, null, false, false, false, true, true),

@@ -498,7 +498,7 @@ class ShellyLightHandlerLightModelTest {
                     CHANNEL_COLOR_FULL,
                     new StringType("yellow"),
                     null,
-                    false,
+                    true,
                     Map.of(SHELLY_COLOR_RED, "255", SHELLY_COLOR_GREEN, "255", SHELLY_COLOR_BLUE, "0", SHELLY_COLOR_WHITE, "0")
                     ),
 
