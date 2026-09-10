@@ -93,7 +93,6 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                 if (activeClient.equals(client)) {
                     logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
                             e.getMessage(), e);
-                    logger.warn("Failed to connect to EyeOnWater API during initialization: {}", e.getMessage());
                     String msg = e.getMessage();
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             msg != null ? msg : "@text/offline.communication-error");
@@ -173,8 +172,6 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             } catch (IOException e) {
                 logger.debug("Communication error polling EyeOnWater meter {}: {}", meterHandler.getMeterId(),
                         e.getMessage(), e);
-                logger.info("Communication error polling EyeOnWater meter {}: {}", meterHandler.getMeterId(),
-                        e.getMessage());
                 String msg = e.getMessage();
                 meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.communication-error");
             } catch (InterruptedException e) {
@@ -218,8 +215,6 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                         if (registeredMeters.contains(meterHandler)) {
                             logger.debug("Failed to perform initial poll for meter {}: {}", meterHandler.getMeterId(),
                                     e.getMessage(), e);
-                            logger.info("Failed to perform initial poll for meter {}: {}", meterHandler.getMeterId(),
-                                    e.getMessage());
                             String msg = e.getMessage();
                             meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.failed-initial-poll");
                         }
