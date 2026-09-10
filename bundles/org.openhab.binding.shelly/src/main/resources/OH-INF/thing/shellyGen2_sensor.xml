@@ -6,7 +6,7 @@
 
 	<thing-type id="shellyplusflood">
 		<label>Shelly Plus Flood</label>
-		<description>Shelly Flood Gen4 - Water Leak Detector (battery powered)</description>
+		<description>Shelly Flood Gen4 / Flood S Gen4 - Water Leak Detector (battery powered)</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>LeakSensor</semantic-equipment-tag>
 		<channel-groups>

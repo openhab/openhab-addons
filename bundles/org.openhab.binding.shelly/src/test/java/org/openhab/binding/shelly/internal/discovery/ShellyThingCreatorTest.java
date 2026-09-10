@@ -103,6 +103,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellymotionsensor-" + DEVICE_ID, "", THING_TYPE_SHELLYMOTION),
                 Arguments.of("shellyflood-" + DEVICE_ID, "", THING_TYPE_SHELLYFLOOD),
                 Arguments.of("shellyfloodg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSFLOOD),
+                Arguments.of("shellyfloodsg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSFLOOD),
                 Arguments.of("shellyplusflood-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSFLOOD),
                 Arguments.of("shellyht-" + DEVICE_ID, "", THING_TYPE_SHELLYHT),
                 Arguments.of("shellydw-" + DEVICE_ID, "", THING_TYPE_SHELLYDOORWIN),
@@ -228,6 +229,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSHTG3, "", THING_TYPE_SHELLYPLUSHT), //
                 Arguments.of(SHELLYDT_PLUSSMOKE, "", THING_TYPE_SHELLYPLUSSMOKE), //
                 Arguments.of(SHELLYDT_PLUSFLOODG4, "", THING_TYPE_SHELLYPLUSFLOOD), //
+                Arguments.of(SHELLYDT_PLUSFLOODSG4, "", THING_TYPE_SHELLYPLUSFLOOD), //
                 Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYPLUSUNI), //
                 Arguments.of(SHELLYDT_PLUSDIMMEREU, "", THING_TYPE_SHELLYPLUSDIMMER), //
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS), //
