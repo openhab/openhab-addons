@@ -121,10 +121,6 @@ public class CachedJsonState {
      * Truncates long arrays and objects to avoid excessive log output.
      */
     private static String abbreviateJson(JsonElement element) {
-        if (element == null) {
-            return "null";
-        }
-
         if (element.isJsonPrimitive()) {
             return element.getAsString();
         }

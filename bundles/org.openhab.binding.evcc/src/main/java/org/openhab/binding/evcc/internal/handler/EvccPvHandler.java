@@ -53,11 +53,12 @@ public class EvccPvHandler extends EvccBaseThingHandler {
             }
             endpoint = handler.getBaseURL();
             handler.register(this);
+            // Go ONLINE when bridge is connected, even if data hasn't arrived yet
+            // Data will populate via handleUpdate() when available
+            updateStatus(ThingStatus.ONLINE);
             JsonObject state = getStateFromCachedState(stateOpt);
             if (!state.isEmpty()) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                createChannelsAndSetStatesFromApiResponse(state);
             }
         });
     }
