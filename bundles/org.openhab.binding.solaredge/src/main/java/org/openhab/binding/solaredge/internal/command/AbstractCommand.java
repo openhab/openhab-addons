@@ -20,8 +20,11 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +34,8 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
+import org.openhab.binding.solaredge.internal.config.PublicApiAuthentication;
+import org.openhab.binding.solaredge.internal.config.PublicApiVersion;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.CommunicationStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
@@ -72,6 +77,10 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * listener to provide updates to the WebInterface class
      */
     private final StatusUpdateListener listener;
+    private final Supplier<String> publicApiV2CredentialSupplier;
+    private final Runnable publicApiV2CredentialInvalidator;
+    private final Runnable publicApiV2RequestRecorder;
+    private final Consumer<Response> publicApiV2RateLimitListener;
 
     /**
      * the constructor
@@ -81,9 +90,37 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      *
      */
     public AbstractCommand(SolarEdgeConfiguration config, StatusUpdateListener listener) {
+        this(config, listener, config::getTokenOrApiKey, () -> {
+        }, () -> {
+        }, response -> {
+        });
+    }
+
+    protected AbstractCommand(SolarEdgeConfiguration config, StatusUpdateListener listener,
+            Supplier<String> publicApiV2CredentialSupplier) {
+        this(config, listener, publicApiV2CredentialSupplier, () -> {
+        }, () -> {
+        }, response -> {
+        });
+    }
+
+    protected AbstractCommand(SolarEdgeConfiguration config, StatusUpdateListener listener,
+            Supplier<String> publicApiV2CredentialSupplier, Runnable publicApiV2CredentialInvalidator) {
+        this(config, listener, publicApiV2CredentialSupplier, publicApiV2CredentialInvalidator, () -> {
+        }, response -> {
+        });
+    }
+
+    protected AbstractCommand(SolarEdgeConfiguration config, StatusUpdateListener listener,
+            Supplier<String> publicApiV2CredentialSupplier, Runnable publicApiV2CredentialInvalidator,
+            Runnable publicApiV2RequestRecorder, Consumer<Response> publicApiV2RateLimitListener) {
         this.communicationStatus = new CommunicationStatus();
         this.config = config;
         this.listener = listener;
+        this.publicApiV2CredentialSupplier = publicApiV2CredentialSupplier;
+        this.publicApiV2CredentialInvalidator = publicApiV2CredentialInvalidator;
+        this.publicApiV2RequestRecorder = publicApiV2RequestRecorder;
+        this.publicApiV2RateLimitListener = publicApiV2RateLimitListener;
         this.gson = new Gson();
     }
 
@@ -93,9 +130,14 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     @Override
     public final void onSuccess(Response response) {
         super.onSuccess(response);
-        if (response != null) {
-            communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
-            logger.debug("HTTP response {}", response.getStatus());
+        communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
+        logger.debug("HTTP response {}", response.getStatus());
+        if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())) {
+            publicApiV2RateLimitListener.accept(response);
+        }
+        if (response.getStatus() == HttpStatus.UNAUTHORIZED_401
+                && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())) {
+            publicApiV2CredentialInvalidator.run();
         }
     }
 
@@ -109,7 +151,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         }
         if (failure != null) {
             logger.debug("Request failed: {}", failure.toString());
-            communicationStatus.setError((Exception) failure);
+            communicationStatus.setError(failure instanceof Exception exception ? exception : new Exception(failure));
 
             if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
                 communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
@@ -126,7 +168,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     @Override
     public void onContent(Response response, ByteBuffer content) {
         super.onContent(response, content);
-        logger.debug("received content, length: {}", getContentAsString().length());
+        String receivedContent = getContentAsString();
+        logger.debug("received content, length: {}", receivedContent == null ? 0 : receivedContent.length());
     }
 
     @Override
@@ -142,11 +185,24 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             c.setDomain(PRIVATE_API_TOKEN_COOKIE_DOMAIN);
             c.setPath(PRIVATE_API_TOKEN_COOKIE_PATH);
             cookieStore.add(URI.create(getURL()), c);
+        } else if (PublicApiVersion.V2.equals(config.getPublicApiVersion())) {
+            String credential = Objects.requireNonNull(publicApiV2CredentialSupplier.get());
+            if (credential.isBlank()) {
+                logger.debug("Skipping Monitoring API V2 request because no credential is available");
+                return;
+            }
+            if (PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())) {
+                request.header("Authorization", "Bearer " + credential);
+            } else {
+                request.header(PUBLIC_DATA_API_V2_KEY_HEADER, credential);
+            }
         } else {
-            // this is only relevant when using public API
             request.param(PUBLIC_DATA_API_KEY_FIELD, config.getTokenOrApiKey());
         }
 
+        if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())) {
+            publicApiV2RequestRecorder.run();
+        }
         prepareRequest(request).send(this);
     }
 
@@ -155,6 +211,14 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      */
     public CommunicationStatus getCommunicationStatus() {
         return communicationStatus;
+    }
+
+    /** Returns whether a failed request may succeed when retried shortly afterwards. */
+    protected final boolean isRetryable() {
+        return switch (communicationStatus.getHttpCode()) {
+            case REQUEST_TIMEOUT, INTERNAL_SERVER_ERROR, BAD_GATEWAY, SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT -> true;
+            default -> false;
+        };
     }
 
     /**

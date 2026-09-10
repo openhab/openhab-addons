@@ -62,11 +62,11 @@ abstract class AbstractDataResponseTransformer {
      */
     private final @Nullable Unit<Energy> determineEnergyUnit(@Nullable String unit) {
         if (unit != null) {
-            if (unit.equals(UNIT_WH)) {
+            if (unit.equalsIgnoreCase(UNIT_WH)) {
                 return Units.WATT_HOUR;
-            } else if (unit.toLowerCase().equals(UNIT_KWH.toLowerCase())) {
+            } else if (unit.equalsIgnoreCase(UNIT_KWH)) {
                 return MetricPrefix.KILO(Units.WATT_HOUR);
-            } else if (unit.equals(UNIT_MWH)) {
+            } else if (unit.equalsIgnoreCase(UNIT_MWH)) {
                 return MetricPrefix.MEGA(Units.WATT_HOUR);
             }
         }
@@ -82,11 +82,11 @@ abstract class AbstractDataResponseTransformer {
      */
     private final @Nullable Unit<Power> determinePowerUnit(@Nullable String unit) {
         if (unit != null) {
-            if (unit.equals(UNIT_W)) {
+            if (unit.equalsIgnoreCase(UNIT_W)) {
                 return Units.WATT;
-            } else if (unit.toLowerCase().equals(UNIT_KW.toLowerCase())) {
+            } else if (unit.equalsIgnoreCase(UNIT_KW)) {
                 return MetricPrefix.KILO(Units.WATT);
-            } else if (unit.equals(UNIT_MW)) {
+            } else if (unit.equalsIgnoreCase(UNIT_MW)) {
                 return MetricPrefix.MEGA(Units.WATT);
             }
         }

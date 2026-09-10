@@ -83,6 +83,9 @@ public class CommunicationStatus {
         }
 
         Code httpCode = this.httpCode;
+        if (Code.TOO_MANY_REQUESTS.equals(httpCode)) {
+            return "SolarEdge API rate limit reached";
+        }
         if (httpCode != null && httpCode.getMessage() != null && !httpCode.getMessage().isEmpty()) {
             return httpCode.getMessage();
         }
