@@ -29,8 +29,7 @@
 		<parameter name="autoCoIoT" type="boolean">
 			<default>true</default>
 			<label>Auto-CoIoT</label>
-			<description>If enabled, CoIoT will be automatically used when the device runs firmware version 1.6 or newer;
-				false:
+			<description>If enabled, CoIoT will be automatically used when the device runs firmware version 1.6 or newer; false:
 				Use thing configuration to enable/disable CoIoT events.</description>
 		</parameter>
 	</config-description>
