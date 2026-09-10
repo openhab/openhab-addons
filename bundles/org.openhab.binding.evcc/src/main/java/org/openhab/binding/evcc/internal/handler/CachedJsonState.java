@@ -36,7 +36,11 @@ public class CachedJsonState {
 
     public void updateFull(JsonObject newState) {
         synchronized (lock) {
-            state = newState.deepCopy();
+            state = new JsonObject();
+            // Transform dot notation to proper arrays
+            for (String key : newState.keySet()) {
+                updateState(key, newState.get(key));
+            }
             LOGGER.debug("Full state update: {}", abbreviateJson(state));
         }
     }
