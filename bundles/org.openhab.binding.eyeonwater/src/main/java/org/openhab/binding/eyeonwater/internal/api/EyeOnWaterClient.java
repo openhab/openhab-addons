@@ -107,7 +107,6 @@ public class EyeOnWaterClient {
         }
 
         authenticated = true;
-        logger.info("Successfully authenticated with EyeOnWater for user: {}", username);
     }
 
     /**
