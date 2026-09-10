@@ -684,7 +684,7 @@ public class ShellyLightModel extends LightModel {
 
     @Override
     public String toString() {
-        return "mode:%s, power:%s, gain/bri:%s, rgbw:%s, temperature:%s, temperature-abs:%s, effect:%s".formatted(
+        return "mode:%s, power:%s, gain/bri:%s, rgbw:%s, temperature-pct:%s, temperature:%s, effect:%s".formatted(
                 getMode(), getOnOffState(), getBrightnessState(), Arrays.toString(getRGBX()),
                 getColorTemperaturePercentState(), getColorTemperatureAbsoluteState(), getEffectState());
     }
@@ -715,14 +715,18 @@ public class ShellyLightModel extends LightModel {
     /**
      * Release the lock, and check if the model is dirty and if so update the handlers channels from this light model.
      * 
+     * @param forceUpdate if true, the channels will be updated even if the model is not dirty.
      * @return true if the model was dirty and the channels were updated, false otherwise.
      */
-    public boolean release() {
-        boolean updated = handler.updateChannelsFromLightModel(this);
-        LOGGER.debug("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => released ({}modified)", handler.thingName,
-                apiLightIndex, channelGroupSuffix, isDirty() ? "" : "un");
-        lock.unlock();
-        return updated;
+    public boolean release(boolean forceUpdate) {
+        try {
+            boolean updated = handler.updateChannelsFromLightModel(this, forceUpdate);
+            LOGGER.debug("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => released ({}modified)",
+                    handler.thingName, apiLightIndex, channelGroupSuffix, isDirty() ? "" : "un");
+            return updated;
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**

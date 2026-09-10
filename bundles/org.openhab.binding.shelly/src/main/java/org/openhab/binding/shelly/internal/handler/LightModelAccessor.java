@@ -56,12 +56,14 @@ public interface LightModelAccessor {
          * Releases the lock and pushes dirty model state to channels.
          *
          * Equivalent to {@link #close()} but returns whether anything was updated.
+         * 
+         * @param forceUpdate if true, will push all model state to channels even if not dirty
          */
-        boolean release();
+        boolean release(boolean forceUpdate);
 
         @Override
         default void close() {
-            release();
+            release(false);
         }
     }
 }

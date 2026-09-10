@@ -83,7 +83,7 @@ class ShellyLightModelTest {
 
         model.setMode(Mode.COLOR);
         assertTrue(model.isModeDirty());
-        model.release();
+        model.release(false);
 
         model.acquire();
         assertFalse(model.isModeDirty());
@@ -108,7 +108,7 @@ class ShellyLightModelTest {
         model.setColorTemp(4000);
         model.setOnOff(true);
 
-        model.release();
+        model.release(false);
         model.acquire();
 
         assertFalse(model.isModeDirty());
@@ -529,7 +529,7 @@ class ShellyLightModelTest {
             model.setGain(50);
             model.setOnOff(true);
         } finally {
-            model.release();
+            model.release(false);
         }
 
         State state = handler.getChannelUpdates().get("color#hsb");

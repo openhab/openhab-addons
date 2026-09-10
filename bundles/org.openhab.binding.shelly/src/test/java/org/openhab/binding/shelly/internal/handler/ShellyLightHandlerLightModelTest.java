@@ -768,7 +768,7 @@ class ShellyLightHandlerLightModelTest {
             model.setRGBX(new int[] { 12, 34, 56, 78 });
             model.setOnOff(true);
         } finally {
-            model.release();
+            model.release(false);
         }
         handler.lightModels.put(0, model);
 
@@ -838,7 +838,7 @@ class ShellyLightHandlerLightModelTest {
             model.setRGBX(new int[] { 12, 34, 56 });
             model.setOnOff(true);
         } finally {
-            model.release();
+            model.release(false);
         }
         handler.lightModels.put(0, model);
 
