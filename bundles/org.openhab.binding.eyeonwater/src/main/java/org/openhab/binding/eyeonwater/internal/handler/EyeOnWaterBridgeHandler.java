@@ -52,14 +52,11 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
     private final ScheduledExecutorService pollingScheduler = ThreadPoolManager.getScheduledPool("eyeonwater");
     private final Set<EyeOnWaterMeterHandler> registeredMeters = ConcurrentHashMap.newKeySet();
 
-    @Nullable
-    private volatile EyeOnWaterClient client;
+    private volatile @Nullable EyeOnWaterClient client;
 
-    @Nullable
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    @Nullable
-    private ServiceRegistration<?> discoveryServiceReg;
+    private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     public EyeOnWaterBridgeHandler(Bridge bridge, BundleContext bundleContext) {
         super(bridge);

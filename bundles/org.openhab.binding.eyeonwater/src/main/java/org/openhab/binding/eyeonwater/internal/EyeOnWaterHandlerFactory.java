@@ -45,8 +45,7 @@ public class EyeOnWaterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_METER);
 
-    @Nullable
-    private BundleContext bundleContext;
+    private @Nullable BundleContext bundleContext;
 
     @Reference
     private @Nullable TimeZoneProvider timeZoneProvider;
