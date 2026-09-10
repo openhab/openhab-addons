@@ -175,7 +175,7 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
                     zdt = java.time.LocalDateTime.parse(readTime).atZone(timeZoneProvider.getTimeZone());
                 }
                 updateState(CHANNEL_LAST_READ_TIME, new DateTimeType(zdt));
-            } catch (Exception e) {
+            } catch (java.time.format.DateTimeParseException e) {
                 logger.warn("Failed to parse ISO-8601 read time: {}", readTime, e);
             }
         }

@@ -162,7 +162,7 @@ public class EyeOnWaterClient {
             logger.debug("Discovering meters using new_search API...");
             try {
                 return fetchMetersNewSearch();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.warn("new_search API discovery failed, falling back to legacy dashboard scrape.", e);
                 return fetchMetersDashboardScrape();
             }
@@ -170,7 +170,7 @@ public class EyeOnWaterClient {
             logger.debug("Discovering meters using legacy dashboard scrape...");
             try {
                 return fetchMetersDashboardScrape();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.warn("Legacy dashboard discovery failed, falling back to new_search API.", e);
                 return fetchMetersNewSearch();
             }

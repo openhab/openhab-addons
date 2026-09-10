@@ -188,7 +188,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
     /**
      * Retrieve discovered physical meters for scanning.
      */
-    public List<EyeOnWaterMeterData> discoverMeters() throws Exception {
+    public List<EyeOnWaterMeterData> discoverMeters() throws IOException, InterruptedException, IllegalStateException {
         EyeOnWaterClient activeClient = client;
         if (activeClient == null) {
             throw new IllegalStateException("API client is not initialized.");
@@ -210,11 +210,17 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                         if (registeredMeters.contains(meterHandler)) {
                             meterHandler.updateState(data);
                         }
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         if (registeredMeters.contains(meterHandler)) {
                             logger.error("Failed to perform initial poll for meter {}", meterHandler.getMeterId(), e);
                             String msg = e.getMessage();
                             meterHandler.updateStatusOffline(msg != null ? msg : "Failed initial poll");
+                        }
+                    } catch (InterruptedException e) {
+                        if (registeredMeters.contains(meterHandler)) {
+                            logger.debug("Interrupted during initial poll for meter {}", meterHandler.getMeterId(), e);
+                            Thread.currentThread().interrupt();
+                            meterHandler.updateStatusOffline("Poll interrupted");
                         }
                     }
                 });

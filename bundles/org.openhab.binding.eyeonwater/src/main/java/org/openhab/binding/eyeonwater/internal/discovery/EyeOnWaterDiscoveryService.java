@@ -14,6 +14,7 @@ package org.openhab.binding.eyeonwater.internal.discovery;
 
 import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.THING_TYPE_METER;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +65,11 @@ public class EyeOnWaterDiscoveryService extends AbstractDiscoveryService {
 
                 thingDiscovered(result);
             }
-        } catch (Exception e) {
+        } catch (IOException | IllegalStateException e) {
             logger.error("Failed to run EyeOnWater discovery scan", e);
+        } catch (InterruptedException e) {
+            logger.debug("Discovery scan interrupted", e);
+            Thread.currentThread().interrupt();
         }
     }
 }
