@@ -178,15 +178,20 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
         this.samsungTvAppWatchService = new SamsungTvAppWatchService(host, this);
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
-        /* remove extra filters added by jetty on cipher suites */
-        sslContextFactory.setExcludeCipherSuites();
-        client = webSocketFactory.createWebSocketClient("samsungtv", sslContextFactory);
+        client = callback.getLegacyCipherSuites()
+                ? webSocketFactory.createWebSocketClient("samsungtv", legacyCipherSuiteFactory())
+                : webSocketFactory.createWebSocketClient("samsungtv");
         client.addLifeCycleListener(this);
 
         webSocketRemote = new WebSocketRemote(this);
         webSocketArt = new WebSocketArt(this);
         webSocketV2 = new WebSocketV2(this);
+    }
+
+    private static SslContextFactory legacyCipherSuiteFactory() {
+        SslContextFactory sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
+        sslContextFactory.setExcludeCipherSuites();
+        return sslContextFactory;
     }
 
     public boolean isConnected() {
