@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>EyeOnWater Binding</name>
-	<description>This is the binding for EyeOnWater.</description>
+	<description>This is the binding for EyeOnWater water meter service.</description>
 	<connection>cloud</connection>
 
 </addon:addon>
