@@ -61,7 +61,8 @@ public class EyeOnWaterDiscoveryService extends AbstractDiscoveryService {
 
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUid)
                         .withBridge(bridgeHandler.getThing().getUID())
-                        .withLabel("EyeOnWater Meter (" + meter.getMeterId() + ")").withProperties(properties).build();
+                        .withLabel("EyeOnWater Meter (" + meter.getMeterId() + ")").withProperties(properties)
+                        .withRepresentationProperty(CONFIG_METER_UUID).build();
 
                 thingDiscovered(result);
             }
