@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.eyeonwater.internal.discovery;
 
-import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.THING_TYPE_METER;
+import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,8 +56,8 @@ public class EyeOnWaterDiscoveryService extends AbstractDiscoveryService {
                         meter.getMeterId());
 
                 Map<String, Object> properties = new HashMap<>();
-                properties.put("meterUuid", meter.getMeterUuid());
-                properties.put("meterId", meter.getMeterId());
+                properties.put(CONFIG_METER_UUID, meter.getMeterUuid());
+                properties.put(CONFIG_METER_ID, meter.getMeterId());
 
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUid)
                         .withBridge(bridgeHandler.getThing().getUID())

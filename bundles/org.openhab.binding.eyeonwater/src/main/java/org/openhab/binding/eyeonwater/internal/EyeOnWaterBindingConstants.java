@@ -37,4 +37,8 @@ public class EyeOnWaterBindingConstants {
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
     public static final String CHANNEL_REVERSE_FLOW = "reverse-flow";
     public static final String CHANNEL_LAST_READ_TIME = "last-read-time";
+
+    // List of all Configuration Parameter Names
+    public static final String CONFIG_METER_UUID = "meterUuid";
+    public static final String CONFIG_METER_ID = "meterId";
 }
