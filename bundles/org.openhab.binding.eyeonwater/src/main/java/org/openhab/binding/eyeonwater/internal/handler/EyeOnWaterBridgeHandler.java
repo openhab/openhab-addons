@@ -72,7 +72,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
         EyeOnWaterBridgeConfiguration config = getConfigAs(EyeOnWaterBridgeConfiguration.class);
 
-        if (config.username.trim().isEmpty() || config.password.trim().isEmpty()) {
+        if (config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.bridge-config-missing");
             return;
