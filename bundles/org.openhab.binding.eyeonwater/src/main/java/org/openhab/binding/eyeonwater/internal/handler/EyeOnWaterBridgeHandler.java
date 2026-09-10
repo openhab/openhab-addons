@@ -212,7 +212,10 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                         }
                     } catch (IOException e) {
                         if (registeredMeters.contains(meterHandler)) {
-                            logger.error("Failed to perform initial poll for meter {}", meterHandler.getMeterId(), e);
+                            logger.debug("Failed to perform initial poll for meter {}: {}", meterHandler.getMeterId(),
+                                    e.getMessage(), e);
+                            logger.info("Failed to perform initial poll for meter {}: {}", meterHandler.getMeterId(),
+                                    e.getMessage());
                             String msg = e.getMessage();
                             meterHandler.updateStatusOffline(msg != null ? msg : "Failed initial poll");
                         }

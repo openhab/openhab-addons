@@ -95,14 +95,14 @@ public class EyeOnWaterClient {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
-            logger.error("Authentication failed with HTTP code: {}", response.statusCode());
+            logger.warn("Authentication failed with HTTP code: {}", response.statusCode());
             throw new IOException("Failed to authenticate: HTTP " + response.statusCode());
         }
 
         String body = response.body();
         if (body.contains("account/signin")
                 && (body.contains("Invalid username") || body.contains("password") && body.contains("form"))) {
-            logger.error("EyeOnWater rejected username/password credentials.");
+            logger.warn("EyeOnWater rejected username/password credentials.");
             throw new IOException("Authentication rejected: Invalid username or password.");
         }
 
@@ -117,7 +117,7 @@ public class EyeOnWaterClient {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() == 401) {
-            logger.info("Session expired (401). Attempting automatic re-authentication...");
+            logger.debug("Session expired (401). Attempting automatic re-authentication...");
             synchronized (this) {
                 authenticated = false;
                 authenticate();
@@ -163,7 +163,9 @@ public class EyeOnWaterClient {
             try {
                 return fetchMetersNewSearch();
             } catch (IOException e) {
-                logger.warn("new_search API discovery failed, falling back to legacy dashboard scrape.", e);
+                logger.debug("new_search API discovery failed: {}", e.getMessage(), e);
+                logger.warn("new_search API discovery failed, falling back to legacy dashboard scrape: {}",
+                        e.getMessage());
                 return fetchMetersDashboardScrape();
             }
         } else {
@@ -171,7 +173,8 @@ public class EyeOnWaterClient {
             try {
                 return fetchMetersDashboardScrape();
             } catch (IOException e) {
-                logger.warn("Legacy dashboard discovery failed, falling back to new_search API.", e);
+                logger.debug("Legacy dashboard discovery failed: {}", e.getMessage(), e);
+                logger.warn("Legacy dashboard discovery failed, falling back to new_search API: {}", e.getMessage());
                 return fetchMetersNewSearch();
             }
         }

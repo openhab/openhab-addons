@@ -66,7 +66,8 @@ public class EyeOnWaterDiscoveryService extends AbstractDiscoveryService {
                 thingDiscovered(result);
             }
         } catch (IOException | IllegalStateException e) {
-            logger.warn("Failed to run EyeOnWater discovery scan", e);
+            logger.debug("Failed to run EyeOnWater discovery scan", e);
+            logger.warn("Failed to run EyeOnWater discovery scan: {}", e.getMessage());
         } catch (InterruptedException e) {
             logger.debug("Discovery scan interrupted", e);
             Thread.currentThread().interrupt();
