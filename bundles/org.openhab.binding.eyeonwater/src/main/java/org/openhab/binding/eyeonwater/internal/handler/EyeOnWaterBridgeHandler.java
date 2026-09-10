@@ -247,6 +247,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                         meterHandler.updateStatusOffline("@text/offline.interrupted-polling");
                     }
                 }
+                break;
             } catch (Exception e) {
                 synchronized (this) {
                     if (activeClient.equals(client)) {
