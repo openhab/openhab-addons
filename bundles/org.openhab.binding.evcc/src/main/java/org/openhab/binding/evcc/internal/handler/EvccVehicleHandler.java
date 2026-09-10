@@ -122,11 +122,12 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             }
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
             handler.register(this);
+            // Go ONLINE when bridge is connected, even if data hasn't arrived yet
+            // Data will populate via handleUpdate() when available
+            updateStatus(ThingStatus.ONLINE);
             JsonObject state = getStateFromCachedState(stateOpt);
             if (!state.isEmpty()) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                createChannelsAndSetStatesFromApiResponse(state);
             }
         }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED));
     }

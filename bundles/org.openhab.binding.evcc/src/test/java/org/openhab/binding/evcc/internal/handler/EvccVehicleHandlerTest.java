@@ -119,6 +119,15 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     }
 
     @Test
+    public void testInitializeWithBridgeHandlerWithMissingVehicleData() {
+        // Test when state is available but doesn't contain data for this vehicle
+        // Should still go ONLINE and wait for data via handleUpdate()
+        handler.initialize();
+
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+    }
+
+    @Test
     public void testMigrationFromIdToVehicleId() {
         Configuration config = new Configuration();
         config.put(PROPERTY_ID, "vehicle_1");
