@@ -59,6 +59,8 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
+    private @Nullable ScheduledFuture<?> reconnectJob;
+
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     private final @Nullable HttpClient httpClient;
@@ -89,7 +91,25 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
         EyeOnWaterClient activeClient = new EyeOnWaterClient(config.hostname, config.username, config.password,
                 clientInstance);
-        client = activeClient;
+        synchronized (this) {
+            client = activeClient;
+        }
+
+        initializeAsync();
+
+        // Register the Discovery Service dynamically for this bridge instance
+        EyeOnWaterDiscoveryService discoveryService = new EyeOnWaterDiscoveryService(this);
+        discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                new Hashtable<>());
+    }
+
+    private synchronized void initializeAsync() {
+        cancelReconnect();
+
+        final EyeOnWaterClient activeClient = client;
+        if (activeClient == null) {
+            return;
+        }
 
         // Perform async login verification
         pollingScheduler.execute(() -> {
@@ -104,11 +124,18 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             } catch (IOException e) {
                 synchronized (EyeOnWaterBridgeHandler.this) {
                     if (activeClient.equals(client)) {
-                        logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
-                                e.getMessage(), e);
                         String msg = e.getMessage();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                msg != null ? msg : "@text/offline.communication-error");
+                        if (msg != null && msg.contains("Authentication rejected")) {
+                            logger.debug("Authentication rejected for EyeOnWater API: {}", msg, e);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "@text/offline.bridge-config-rejected");
+                        } else {
+                            logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
+                                    msg, e);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    msg != null ? msg : "@text/offline.communication-error");
+                            scheduleReconnect();
+                        }
                     }
                 }
             } catch (InterruptedException e) {
@@ -131,11 +158,22 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                 }
             }
         });
+    }
 
-        // Register the Discovery Service dynamically for this bridge instance
-        EyeOnWaterDiscoveryService discoveryService = new EyeOnWaterDiscoveryService(this);
-        discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<>());
+    private synchronized void scheduleReconnect() {
+        cancelReconnect();
+        if (client != null) {
+            logger.debug("Scheduling EyeOnWater API reconnection attempt in 1 minute...");
+            reconnectJob = pollingScheduler.schedule(this::initializeAsync, 1, TimeUnit.MINUTES);
+        }
+    }
+
+    private synchronized void cancelReconnect() {
+        ScheduledFuture<?> job = reconnectJob;
+        if (job != null) {
+            job.cancel(true);
+            reconnectJob = null;
+        }
     }
 
     @Override
@@ -144,6 +182,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
         synchronized (this) {
             stopPolling();
+            cancelReconnect();
             client = null;
         }
 
