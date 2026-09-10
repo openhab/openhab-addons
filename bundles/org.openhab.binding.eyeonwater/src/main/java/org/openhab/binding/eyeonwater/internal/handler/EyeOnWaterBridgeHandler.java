@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.eyeonwater.internal.handler;
 
+import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.BINDING_ID;
+
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
@@ -49,7 +51,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EyeOnWaterBridgeHandler.class);
 
     private final BundleContext bundleContext;
-    private final ScheduledExecutorService pollingScheduler = ThreadPoolManager.getScheduledPool("eyeonwater");
+    private final ScheduledExecutorService pollingScheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
     private final Set<EyeOnWaterMeterHandler> registeredMeters = ConcurrentHashMap.newKeySet();
 
     private volatile @Nullable EyeOnWaterClient client;
