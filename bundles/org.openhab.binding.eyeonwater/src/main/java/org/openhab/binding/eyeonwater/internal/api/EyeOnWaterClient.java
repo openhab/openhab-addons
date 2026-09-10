@@ -51,7 +51,6 @@ import com.google.gson.JsonParser;
  * @author Richard Koshak - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class EyeOnWaterClient {
 
     private final Logger logger = LoggerFactory.getLogger(EyeOnWaterClient.class);
@@ -200,37 +199,70 @@ public class EyeOnWaterClient {
         String responseBody = sendRequestWithReauth(searchUrl, POST, "application/json", jsonPayload);
 
         List<EyeOnWaterMeterData> meters = new ArrayList<>();
-        JsonObject payload = JsonParser.parseString(responseBody).getAsJsonObject();
-        JsonObject elasticResults = payload.getAsJsonObject("elastic_results");
-        if (elasticResults != null) {
-            JsonObject hitsWrapper = elasticResults.getAsJsonObject("hits");
-            if (hitsWrapper != null) {
-                JsonArray hits = hitsWrapper.getAsJsonArray("hits");
-                if (hits != null) {
+        @Nullable
+        JsonElement parsedElement = JsonParser.parseString(responseBody);
+        if (parsedElement == null || !parsedElement.isJsonObject()) {
+            throw new IOException("Invalid JSON response received.");
+        }
+        JsonObject payload = parsedElement.getAsJsonObject();
+        @Nullable
+        JsonElement elasticResultsElement = payload.get("elastic_results");
+        if (elasticResultsElement != null && elasticResultsElement.isJsonObject()) {
+            JsonObject elasticResults = elasticResultsElement.getAsJsonObject();
+            @Nullable
+            JsonElement hitsWrapperElement = elasticResults.get("hits");
+            if (hitsWrapperElement != null && hitsWrapperElement.isJsonObject()) {
+                JsonObject hitsWrapper = hitsWrapperElement.getAsJsonObject();
+                @Nullable
+                JsonElement hitsElement = hitsWrapper.get("hits");
+                if (hitsElement != null && hitsElement.isJsonArray()) {
+                    JsonArray hits = hitsElement.getAsJsonArray();
                     for (JsonElement hitElement : hits) {
-                        JsonObject hit = hitElement.getAsJsonObject();
-                        JsonObject source = hit.getAsJsonObject("_source");
-                        if (source != null) {
-                            JsonObject meterObj = source.getAsJsonObject("meter");
-                            String meterUuid = null;
-                            String meterId = null;
-                            if (meterObj != null) {
-                                if (meterObj.has("meter_uuid")) {
-                                    meterUuid = meterObj.get("meter_uuid").getAsString();
+                        if (hitElement != null && hitElement.isJsonObject()) {
+                            JsonObject hit = hitElement.getAsJsonObject();
+                            @Nullable
+                            JsonElement sourceElement = hit.get("_source");
+                            if (sourceElement != null && sourceElement.isJsonObject()) {
+                                JsonObject source = sourceElement.getAsJsonObject();
+                                @Nullable
+                                JsonElement meterElement = source.get("meter");
+                                String meterUuid = null;
+                                String meterId = null;
+                                if (meterElement != null && meterElement.isJsonObject()) {
+                                    JsonObject meterObj = meterElement.getAsJsonObject();
+                                    if (meterObj.has("meter_uuid")) {
+                                        @Nullable
+                                        JsonElement uuidEl = meterObj.get("meter_uuid");
+                                        if (uuidEl != null && !uuidEl.isJsonNull()) {
+                                            meterUuid = uuidEl.getAsString();
+                                        }
+                                    }
+                                    if (meterObj.has("meter_id")) {
+                                        @Nullable
+                                        JsonElement idEl = meterObj.get("meter_id");
+                                        if (idEl != null && !idEl.isJsonNull()) {
+                                            meterId = idEl.getAsString();
+                                        }
+                                    }
                                 }
-                                if (meterObj.has("meter_id")) {
-                                    meterId = meterObj.get("meter_id").getAsString();
+                                if (meterUuid == null && source.has("meter_uuid")) {
+                                    @Nullable
+                                    JsonElement uuidEl = source.get("meter_uuid");
+                                    if (uuidEl != null && !uuidEl.isJsonNull()) {
+                                        meterUuid = uuidEl.getAsString();
+                                    }
                                 }
-                            }
-                            if (meterUuid == null && source.has("meter_uuid")) {
-                                meterUuid = source.get("meter_uuid").getAsString();
-                            }
-                            if (meterId == null && source.has("meter_id")) {
-                                meterId = source.get("meter_id").getAsString();
-                            }
+                                if (meterId == null && source.has("meter_id")) {
+                                    @Nullable
+                                    JsonElement idEl = source.get("meter_id");
+                                    if (idEl != null && !idEl.isJsonNull()) {
+                                        meterId = idEl.getAsString();
+                                    }
+                                }
 
-                            if (meterUuid != null && meterId != null) {
-                                meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
+                                if (meterUuid != null && meterId != null) {
+                                    meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
+                                }
                             }
                         }
                     }
@@ -255,14 +287,25 @@ public class EyeOnWaterClient {
 
         if (matcher.find()) {
             String jsonPart = matcher.group(1);
-            JsonArray meterInfos = JsonParser.parseString(jsonPart).getAsJsonArray();
-            for (JsonElement element : meterInfos) {
-                JsonObject meterInfo = element.getAsJsonObject();
-                if (meterInfo.has("meter_uuid") && !meterInfo.get("meter_uuid").isJsonNull()
-                        && meterInfo.has("meter_id") && !meterInfo.get("meter_id").isJsonNull()) {
-                    String uuid = meterInfo.get("meter_uuid").getAsString();
-                    String id = meterInfo.get("meter_id").getAsString();
-                    meters.add(new EyeOnWaterMeterData(uuid, id));
+            @Nullable
+            JsonElement parsedElement = JsonParser.parseString(jsonPart);
+            if (parsedElement != null && parsedElement.isJsonArray()) {
+                JsonArray meterInfos = parsedElement.getAsJsonArray();
+                for (JsonElement element : meterInfos) {
+                    if (element != null && element.isJsonObject()) {
+                        JsonObject meterInfo = element.getAsJsonObject();
+                        if (meterInfo.has("meter_uuid") && meterInfo.has("meter_id")) {
+                            @Nullable
+                            JsonElement uuidEl = meterInfo.get("meter_uuid");
+                            @Nullable
+                            JsonElement idEl = meterInfo.get("meter_id");
+                            if (uuidEl != null && !uuidEl.isJsonNull() && idEl != null && !idEl.isJsonNull()) {
+                                String uuid = uuidEl.getAsString();
+                                String id = idEl.getAsString();
+                                meters.add(new EyeOnWaterMeterData(uuid, id));
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -280,34 +323,59 @@ public class EyeOnWaterClient {
 
         String responseBody = sendRequestWithReauth(searchUrl, POST, "application/json", jsonPayload);
 
-        JsonObject payload = JsonParser.parseString(responseBody).getAsJsonObject();
-        JsonObject elasticResults = payload.getAsJsonObject("elastic_results");
-        if (elasticResults == null) {
+        @Nullable
+        JsonElement parsedElement = JsonParser.parseString(responseBody);
+        if (parsedElement == null || !parsedElement.isJsonObject()) {
+            throw new IOException("Invalid JSON response received.");
+        }
+        JsonObject payload = parsedElement.getAsJsonObject();
+        @Nullable
+        JsonElement elasticResultsElement = payload.get("elastic_results");
+        if (elasticResultsElement == null || !elasticResultsElement.isJsonObject()) {
             throw new IOException("Search response did not contain 'elastic_results'");
         }
-        JsonObject hitsWrapper = elasticResults.getAsJsonObject("hits");
-        if (hitsWrapper == null) {
+        JsonObject elasticResults = elasticResultsElement.getAsJsonObject();
+        @Nullable
+        JsonElement hitsWrapperElement = elasticResults.get("hits");
+        if (hitsWrapperElement == null || !hitsWrapperElement.isJsonObject()) {
             throw new IOException("Search response did not contain hits wrapper");
         }
-        JsonArray hits = hitsWrapper.getAsJsonArray("hits");
-        if (hits == null || hits.size() == 0) {
+        JsonObject hitsWrapper = hitsWrapperElement.getAsJsonObject();
+        @Nullable
+        JsonElement hitsElement = hitsWrapper.get("hits");
+        if (hitsElement == null || !hitsElement.isJsonArray()) {
+            throw new IOException("Search response did not contain hits array");
+        }
+        JsonArray hits = hitsElement.getAsJsonArray();
+        if (hits.size() == 0) {
             throw new IOException("Meter UUID " + meterUuid + " not found on account.");
         }
 
-        JsonObject source = hits.get(0).getAsJsonObject().getAsJsonObject("_source");
-        if (source == null) {
-            throw new IOException("Meter source payload was null");
+        @Nullable
+        JsonElement firstHitElement = hits.get(0);
+        if (firstHitElement == null || !firstHitElement.isJsonObject()) {
+            throw new IOException("First hit payload is not a valid JSON object");
         }
+        @Nullable
+        JsonElement sourceElement = firstHitElement.getAsJsonObject().get("_source");
+        if (sourceElement == null || !sourceElement.isJsonObject()) {
+            throw new IOException("Meter source payload was null or invalid");
+        }
+        JsonObject source = sourceElement.getAsJsonObject();
 
-        JsonObject register = source.getAsJsonObject("register_0");
-        if (register == null) {
+        @Nullable
+        JsonElement registerElement = source.get("register_0");
+        if (registerElement == null || !registerElement.isJsonObject()) {
             throw new IOException("Meter source is missing register_0 data");
         }
+        JsonObject register = registerElement.getAsJsonObject();
 
-        JsonObject latestRead = register.getAsJsonObject("latest_read");
-        if (latestRead == null) {
+        @Nullable
+        JsonElement latestReadElement = register.get("latest_read");
+        if (latestReadElement == null || !latestReadElement.isJsonObject()) {
             throw new IOException("Meter register_0 is missing latest_read");
         }
+        JsonObject latestRead = latestReadElement.getAsJsonObject();
 
         if (!latestRead.has("full_read") || latestRead.get("full_read").isJsonNull() || !latestRead.has("units")
                 || latestRead.get("units").isJsonNull() || !latestRead.has("read_time")
@@ -326,23 +394,31 @@ public class EyeOnWaterClient {
 
         // Fetch Alert Flags
         if (register.has("flags") && !register.get("flags").isJsonNull()) {
-            JsonObject flags = register.getAsJsonObject("flags");
-            if (flags.has("Leak") && !flags.get("Leak").isJsonNull()) {
-                meterData.setLeakAlert(flags.get("Leak").getAsBoolean());
-            }
-            if (flags.has("LowBattery") && !flags.get("LowBattery").isJsonNull()) {
-                meterData.setLowBatteryAlert(flags.get("LowBattery").getAsBoolean());
-            }
-            if (flags.has("ReverseFlow") && !flags.get("ReverseFlow").isJsonNull()) {
-                meterData.setReverseFlowAlert(flags.get("ReverseFlow").getAsBoolean());
+            @Nullable
+            JsonElement flagsEl = register.get("flags");
+            if (flagsEl != null && flagsEl.isJsonObject()) {
+                JsonObject flags = flagsEl.getAsJsonObject();
+                if (flags.has("Leak") && !flags.get("Leak").isJsonNull()) {
+                    meterData.setLeakAlert(flags.get("Leak").getAsBoolean());
+                }
+                if (flags.has("LowBattery") && !flags.get("LowBattery").isJsonNull()) {
+                    meterData.setLowBatteryAlert(flags.get("LowBattery").getAsBoolean());
+                }
+                if (flags.has("ReverseFlow") && !flags.get("ReverseFlow").isJsonNull()) {
+                    meterData.setReverseFlowAlert(flags.get("ReverseFlow").getAsBoolean());
+                }
             }
         }
 
         // Fetch Leak Flow rate
         if (register.has("leak") && !register.get("leak").isJsonNull()) {
-            JsonObject leak = register.getAsJsonObject("leak");
-            if (leak.has("rate") && !leak.get("rate").isJsonNull()) {
-                meterData.setLeakRate(leak.get("rate").getAsDouble());
+            @Nullable
+            JsonElement leakEl = register.get("leak");
+            if (leakEl != null && leakEl.isJsonObject()) {
+                JsonObject leak = leakEl.getAsJsonObject();
+                if (leak.has("rate") && !leak.get("rate").isJsonNull()) {
+                    meterData.setLeakRate(leak.get("rate").getAsDouble());
+                }
             }
         }
 
