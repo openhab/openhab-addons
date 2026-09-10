@@ -97,9 +97,9 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                             msg != null ? msg : "@text/offline.communication-error");
                 }
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 if (activeClient.equals(client)) {
                     logger.debug("Interrupted during EyeOnWater API initialization", e);
-                    Thread.currentThread().interrupt();
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.initialization-interrupted");
                 }
@@ -218,9 +218,9 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                             meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.failed-initial-poll");
                         }
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         if (registeredMeters.contains(meterHandler)) {
                             logger.debug("Interrupted during initial poll for meter {}", meterHandler.getMeterId(), e);
-                            Thread.currentThread().interrupt();
                             meterHandler.updateStatusOffline("@text/offline.poll-interrupted");
                         }
                     }
