@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -96,12 +97,18 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         BigDecimal maxKelvin = null;
 
         if (CHANNEL_COLOR_TEMP.equals(channelUID.getIdWithoutGroup())
-                && handler instanceof ShellyLightHandler lightHandler
-                && lightHandler.getLightModelByChannelUID(channelUID) instanceof ShellyLightModel model
-                && model.supportsColorTempChannel()) {
-            minKelvin = model.getColorTemperatureMinimumKelvin();
-            maxKelvin = model.getColorTemperatureMaximumKelvin();
-            hasColorTempRange = true;
+                && handler instanceof ShellyLightHandler lightHandler) {
+            ShellyLightModel model = lightHandler.getLightModelByChannelUID(channelUID);
+
+            if (model != null && model.supportsColorTempChannel()) {
+                minKelvin = model.getColorTemperatureMinimumKelvin();
+                maxKelvin = model.getColorTemperatureMaximumKelvin();
+                hasColorTempRange = true;
+            } else {
+                minKelvin = BigDecimal.valueOf(MIN_COLOR_TEMP_BULB);
+                maxKelvin = BigDecimal.valueOf(MAX_COLOR_TEMP_BULB);
+                hasColorTempRange = true;
+            }
         }
 
         if (!hasOptions && !hasColorTempRange) {

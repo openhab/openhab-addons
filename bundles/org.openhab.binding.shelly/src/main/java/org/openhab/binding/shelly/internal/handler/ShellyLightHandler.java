@@ -597,22 +597,13 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
     }
 
     /**
-     * Returns the light model for the given channel group suffix number, or null if no such model exists.
-     * Main light channels have no group number suffix which is equivalent to group suffix 0, while white
-     * channels have group suffixes 1 .. n
-     *
-     * @param channelGroupSuffix the channel group suffix number
-     * @return the light model, or null
-     */
-    public @Nullable ShellyLightModel getLightModelByChannelGroupSuffix(int channelGroupSuffix) {
-        return lightModels.get(channelGroupSuffix);
-    }
-
-    /**
      * Returns the light model for the given channel, or null if no such model exists. Main light channels
      * have no group number suffix which is equivalent to group suffix 0, while white channels have group
      * suffixes 1 .. n
-     *
+     * 
+     * Note: use this for read-only access; do not mutate the returned light model, as it may be shared
+     * with other threads. Use acquire() to get thread-safe (write-able) access.
+     * 
      * @param channel the channel
      * @return the light model, or null
      */
