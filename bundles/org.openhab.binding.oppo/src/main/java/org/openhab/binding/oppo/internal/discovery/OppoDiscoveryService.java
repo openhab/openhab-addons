@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.oppo.internal.OppoPlayerModel;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -246,9 +247,10 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                     displayName = DISPLAY_NAME_93;
                 }
             } else if (UDP20X_PORT.toString().equals(port)) {
-                if (displayName != null && displayName.contains(Integer.toString(MODEL203))) {
+                if (displayName != null && displayName.contains(OppoPlayerModel.UDP203.getModelNumberAsString())) {
                     thingTypeUID = THING_TYPE_UDP203;
-                } else if (displayName != null && displayName.contains(Integer.toString(MODEL205))) {
+                } else if (displayName != null
+                        && displayName.contains(OppoPlayerModel.UDP205.getModelNumberAsString())) {
                     thingTypeUID = THING_TYPE_UDP205;
                 } else {
                     thingTypeUID = THING_TYPE_UDP203;
