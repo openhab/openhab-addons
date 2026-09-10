@@ -67,14 +67,14 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
 
         if (meterUuid.isEmpty() || meterId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Meter UUID and Meter ID must be provided.");
+                    "@text/offline.meter-config-missing");
             return;
         }
 
         @Nullable
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Parent bridge is not defined.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/offline.bridge-undefined");
             return;
         }
 
@@ -85,7 +85,7 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
             ((EyeOnWaterBridgeHandler) bridgeHandler).registerMeterHandler(this);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Parent bridge is not initialized.");
+                    "@text/offline.bridge-not-initialized");
         }
     }
 

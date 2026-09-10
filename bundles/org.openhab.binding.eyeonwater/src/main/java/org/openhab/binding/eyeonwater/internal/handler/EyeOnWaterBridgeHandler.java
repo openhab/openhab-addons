@@ -74,7 +74,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
         if (config.username.trim().isEmpty() || config.password.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Username and Password must be provided.");
+                    "@text/offline.bridge-config-missing");
             return;
         }
 
@@ -94,19 +94,23 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
                             e.getMessage(), e);
                     logger.warn("Failed to connect to EyeOnWater API during initialization: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    String msg = e.getMessage();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            msg != null ? msg : "@text/offline.communication-error");
                 }
             } catch (InterruptedException e) {
                 if (activeClient.equals(client)) {
                     logger.debug("Interrupted during EyeOnWater API initialization", e);
                     Thread.currentThread().interrupt();
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Initialization interrupted");
+                            "@text/offline.initialization-interrupted");
                 }
             } catch (Exception e) {
                 if (activeClient.equals(client)) {
                     logger.error("Unexpected error during EyeOnWater API initialization", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    String msg = e.getMessage();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            msg != null ? msg : "@text/offline.unexpected-error");
                 }
             }
         });
@@ -172,15 +176,15 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                 logger.info("Communication error polling EyeOnWater meter {}: {}", meterHandler.getMeterId(),
                         e.getMessage());
                 String msg = e.getMessage();
-                meterHandler.updateStatusOffline(msg != null ? msg : "Communication error");
+                meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.communication-error");
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while polling EyeOnWater meter {}", meterHandler.getMeterId(), e);
                 Thread.currentThread().interrupt();
-                meterHandler.updateStatusOffline("Interrupted polling");
+                meterHandler.updateStatusOffline("@text/offline.interrupted-polling");
             } catch (Exception e) {
                 logger.error("Unexpected error polling EyeOnWater meter {}", meterHandler.getMeterId(), e);
                 String msg = e.getMessage();
-                meterHandler.updateStatusOffline(msg != null ? msg : "Unexpected error");
+                meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.unexpected-error");
             }
         }
     }
@@ -217,13 +221,13 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                             logger.info("Failed to perform initial poll for meter {}: {}", meterHandler.getMeterId(),
                                     e.getMessage());
                             String msg = e.getMessage();
-                            meterHandler.updateStatusOffline(msg != null ? msg : "Failed initial poll");
+                            meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.failed-initial-poll");
                         }
                     } catch (InterruptedException e) {
                         if (registeredMeters.contains(meterHandler)) {
                             logger.debug("Interrupted during initial poll for meter {}", meterHandler.getMeterId(), e);
                             Thread.currentThread().interrupt();
-                            meterHandler.updateStatusOffline("Poll interrupted");
+                            meterHandler.updateStatusOffline("@text/offline.poll-interrupted");
                         }
                     }
                 });
