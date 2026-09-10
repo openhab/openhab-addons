@@ -110,7 +110,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             bridgeHandler = handler;
             if (!bridgeHandler.isInitialStateReceived()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-                return;
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
