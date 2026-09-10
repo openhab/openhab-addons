@@ -1738,8 +1738,9 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ### Shelly Flood Gen4 (thing-type: shellyplusflood)
 
-The Shelly Flood Gen4 (S4SN-0071A) and Shelly Flood S Gen4 (S4SN-0071Z, stainless-steel sensor pads) are battery-powered water-leak sensors with a configurable alarm mode.
-The sensor probe connects via a cable; if the cable is unplugged, the `lastError` channel is updated and a `SENSOR_ERROR` event is posted to `device#alarm`.
+The Shelly Flood Gen4 (S4SN-0071A) and Shelly Flood S Gen4 (S4SN-0071Z) are battery-powered water-leak sensors with a configurable alarm mode.
+The Flood Gen4 uses a cable-connected sensor probe; if the cable is unplugged, the `lastError` channel is updated and a `SENSOR_ERROR` event is posted to `device#alarm`.
+The Flood S Gen4 instead uses integrated stainless-steel sensor pads.
 
 `Note:`
 The `alarmMode` and `reportHoldoff` channels are writable but only take effect while the sensor is online (awake and connected).
