@@ -49,7 +49,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotGenericS
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensorTypeAdapter;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyLightModelHandler;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -445,10 +445,10 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
 
-        ShellyLightModelHandler lightModelHandler = thingHandler instanceof ShellyLightModelHandler slmh ? slmh : null;
-        if (lightModelHandler != null) {
-            try {
-                lightModelHandler.acquireLock();
+        LightModelAccessor accessor = thingHandler instanceof LightModelAccessor lma ? lma : null;
+        if (accessor != null) {
+            try (LightModelAccessor.LightModels lightModels = accessor.acquire()) {
+                accessor.acquire();
 
                 // pass 1: process everything except light power state/output
                 for (CoIotSensor s : sensorUpdates) {
@@ -459,7 +459,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     if (isDeferredLightPowerUpdate(sen)) {
                         continue;
                     }
-                    if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModelHandler)) {
+                    if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
                         failed++;
                         logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}",
                                 thingName, sen.id, sen.type, sen.desc, s.value, payload);
@@ -475,14 +475,12 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     if (!isDeferredLightPowerUpdate(sen)) {
                         continue;
                     }
-                    if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModelHandler)) {
+                    if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
                         failed++;
                         logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}",
                                 thingName, sen.id, sen.type, sen.desc, s.value, payload);
                     }
                 }
-            } finally {
-                lightModelHandler.releaseLock();
             }
         } else {
             for (CoIotSensor s : sensorUpdates) {
@@ -583,7 +581,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     }
 
     private boolean isDeferredLightPowerUpdate(CoIotDescrSen sen) {
-        if (!(thingHandler instanceof ShellyLightModelHandler)) {
+        if (!(thingHandler instanceof LightModelAccessor)) {
             return false;
         }
         if (!"s".equalsIgnoreCase(sen.type)) {

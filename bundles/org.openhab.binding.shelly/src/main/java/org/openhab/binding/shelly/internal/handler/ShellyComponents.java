@@ -58,6 +58,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel.Mode;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
@@ -894,7 +895,7 @@ public class ShellyComponents {
             return false;
         }
 
-        if (!(thingHandler instanceof ShellyLightModelHandler lightModelHandler)) {
+        if (!(thingHandler instanceof LightModelAccessor accessor)) {
             return false;
         }
 
@@ -904,10 +905,8 @@ public class ShellyComponents {
         int idx = Objects.requireNonNull(value.id);
 
         boolean updated = false;
-        try {
-            lightModelHandler.acquireLock();
-
-            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(idx);
+        try (LightModels lightModels = accessor.acquire()) {
+            ShellyLightModel model = lightModels.getByApiLightIndex(idx);
             if (model == null) {
                 throw new ShellyApiException("updateRGBW() failed: index:%d model missing".formatted(idx));
             }
@@ -939,8 +938,6 @@ public class ShellyComponents {
                 model.setOnOff(Objects.requireNonNull(value.output));
                 updated = true;
             }
-        } finally {
-            lightModelHandler.releaseLock();
         }
         return updated;
     }
@@ -951,7 +948,7 @@ public class ShellyComponents {
             return false;
         }
 
-        if (!(thingHandler instanceof ShellyLightModelHandler lightModelHandler)) {
+        if (!(thingHandler instanceof LightModelAccessor accessor)) {
             return false;
         }
 
@@ -961,10 +958,9 @@ public class ShellyComponents {
         int idx = Objects.requireNonNull(value.id);
 
         boolean updated = false;
-        try {
-            lightModelHandler.acquireLock();
+        try (LightModels lightModels = accessor.acquire()) {
 
-            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(idx);
+            ShellyLightModel model = lightModels.getByApiLightIndex(idx);
             if (model == null) {
                 throw new ShellyApiException("updateRGBCCT() failed: index:%d model missing".formatted(idx));
             }
@@ -998,8 +994,6 @@ public class ShellyComponents {
                 model.setOnOff(Objects.requireNonNull(value.output));
                 updated = true;
             }
-        } finally {
-            lightModelHandler.releaseLock();
         }
         return updated;
     }
@@ -1010,7 +1004,7 @@ public class ShellyComponents {
             return false;
         }
 
-        if (!(thingHandler instanceof ShellyLightModelHandler lightModelHandler)) {
+        if (!(thingHandler instanceof LightModelAccessor accessor)) {
             return false;
         }
 
@@ -1020,10 +1014,9 @@ public class ShellyComponents {
         int idx = Objects.requireNonNull(value.id);
 
         boolean updated = false;
-        try {
-            lightModelHandler.acquireLock();
+        try (LightModels lightModels = accessor.acquire()) {
 
-            ShellyLightModel model = lightModelHandler.getLightModelByApiLightIndex(idx);
+            ShellyLightModel model = lightModels.getByApiLightIndex(idx);
             if (model == null) {
                 throw new ShellyApiException("updateLightMode() failed: index:%d model missing".formatted(idx));
             }
@@ -1042,8 +1035,6 @@ public class ShellyComponents {
                 model.setOnOff(Objects.requireNonNull(value.output));
                 updated = true;
             }
-        } finally {
-            lightModelHandler.releaseLock();
         }
         return updated;
     }

@@ -630,8 +630,10 @@ public class ShellyChannelDefinitions {
             String group = profile.getControlGroup(idx);
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHGR_WHITE;
 
-            boolean hasPower = profile.hasColorTag(idx)
-                    || (!profile.isGen2 && (profile.isVintage || profile.isBulb || profile.isDuo));
+            boolean isGen3Light = profile.isGen2 && profile.isDuo;
+            boolean isLegacyLight = !profile.isGen2 && (profile.isVintage || profile.isBulb || profile.isDuo);
+            boolean hasPower = (profile.hasColorTag(idx) && !isGen3Light) || isLegacyLight;
+
             boolean hasCT = status.temp != null || (profile.isDuo && profile.isGen2) || profile.isBulb;
 
             // dynamically add missing control group channels

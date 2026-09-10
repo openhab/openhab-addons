@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,12 +63,14 @@ import com.google.gson.Gson;
  * @author Andrew Fiddian-Green - Migrate to LightModel
  */
 @NonNullByDefault
-public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLightModelHandler {
+public class ShellyLightHandler extends ShellyBaseHandler implements LightModelAccessor {
 
     private final Logger logger = LoggerFactory.getLogger(ShellyLightHandler.class);
 
     // map of ShellyLightModels keyed on their channel group number suffix (or 0 for primary light)
     protected final Map<Integer, ShellyLightModel> lightModels = new ConcurrentHashMap<>();
+
+    private final ReentrantLock lightModelsLock = new ReentrantLock();
 
     /**
      * Enum to indicate what was updated by a channel command.
@@ -95,8 +98,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     @Override
     public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws ShellyApiException {
         logger.trace("{}: handleDeviceCommand() channel {}, command {}", thingName, channelUID, command);
-        try {
-            acquireLock();
+        try (LightModels models = acquire()) {
             int channelGroupSuffix = extractChannelGroupSuffix(channelUID);
             ShellyLightModel model = lightModels.get(channelGroupSuffix);
             if (model == null) {
@@ -105,17 +107,11 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
                 lightModels.put(channelGroupSuffix, model);
             }
             WhatUpdated whatUpdated = updateLightModelFromChannelCommand(model, channelUID, command);
-            switch (whatUpdated) {
-                case LIGHT_MODEL:
-                    updateRemoteDeviceFromLightModel(model);
-                    return true;
-                case OTHER:
-                    return true;
-                default:
-                    return false;
+            if (whatUpdated == WhatUpdated.LIGHT_MODEL) {
+                updateRemoteDeviceFromLightModel(model);
+                return true;
             }
-        } finally {
-            releaseLock();
+            return whatUpdated == WhatUpdated.OTHER;
         }
     }
 
@@ -133,24 +129,24 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
             logger.trace("{}: updateDeviceStatus() called with {}", thingName, new Gson().toJson(status));
         }
         boolean updated = false;
+        LightModels models = acquire();
         try {
-            acquireLock();
             for (int apiLightIndex = 0; apiLightIndex < status.lights.size(); apiLightIndex++) {
                 ShellyStatusLightChannel light = status.lights.get(apiLightIndex);
-                ShellyLightModel model = getLightModelByApiLightIndex(apiLightIndex);
+                int channelGroupSuffix = ShellyChannelDefinitions.deviceHasMainLight(thing, profile) //
+                        ? apiLightIndex
+                        : apiLightIndex + 1;
+                ShellyLightModel model = lightModels.get(channelGroupSuffix);
                 if (model == null) {
-                    int channelGroupSuffix = ShellyChannelDefinitions.deviceHasMainLight(thing, profile) //
-                            ? apiLightIndex
-                            : apiLightIndex + 1;
                     model = ShellyLightModel.create(this, channelGroupSuffix, profile, DIM_STEPSIZE);
                     model.acquire();
-                    lightModels.put(model.getChannelGroupSuffix(), model);
+                    lightModels.put(channelGroupSuffix, model);
                 }
                 updateLightModelFromStatus(model, light);
                 updated |= updateChannelsFromLightStatusDTO(light, apiLightIndex, model.getChannelGroupSuffix());
             }
         } finally {
-            updated |= releaseLock();
+            updated |= models.release();
         }
         return updated;
     }
@@ -515,27 +511,54 @@ public class ShellyLightHandler extends ShellyBaseHandler implements ShellyLight
     }
 
     @Override
-    public @Nullable ShellyLightModel getLightModelByApiLightIndex(int apiLightIndex) {
-        return lightModels.values().stream().filter(m -> m.getApiLightIndex() == apiLightIndex).findFirst()
-                .orElse(null);
-    }
-
-    @Override
-    public void acquireLock() {
+    public LightModels acquire() {
+        lightModelsLock.lock();
         for (ShellyLightModel model : lightModels.values()) {
             model.acquire();
         }
         logger.debug("{}: all light models acquired", thingName);
+        return new LightModelsImpl();
     }
 
-    @Override
-    public boolean releaseLock() {
-        boolean result = false;
-        for (ShellyLightModel model : lightModels.values()) {
-            result |= model.release();
+    /**
+     * Implementation of the LightModels interface that provides access to the light models and
+     * ensures that they can only be accessed by one thread at a time.
+     */
+    private final class LightModelsImpl implements LightModels {
+
+        @Override
+        public @Nullable ShellyLightModel getByApiLightIndex(int apiLightIndex) {
+            for (ShellyLightModel model : lightModels.values()) {
+                if (model.getApiLightIndex() == apiLightIndex) {
+                    return model;
+                }
+            }
+            return null;
         }
-        logger.debug("{}: all light models released", thingName);
-        return result;
+
+        @Override
+        public @Nullable ShellyLightModel getByChannelGroupSuffix(int channelGroupNo) {
+            return lightModels.get(channelGroupNo);
+        }
+
+        @Override
+        public boolean release() {
+            try {
+                boolean result = false;
+                for (ShellyLightModel model : lightModels.values()) {
+                    result |= model.release();
+                }
+                logger.debug("{}: all light models released", thingName);
+                return result;
+            } finally {
+                lightModelsLock.unlock();
+            }
+        }
+
+        @Override
+        public void close() {
+            release();
+        }
     }
 
     /**

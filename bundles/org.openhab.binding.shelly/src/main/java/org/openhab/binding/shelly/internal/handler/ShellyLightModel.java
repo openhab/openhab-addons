@@ -102,6 +102,7 @@ public class ShellyLightModel extends LightModel {
     // essential fields copied from profile
     private final boolean isBulb;
     private final boolean isDuo;
+    private final boolean isDuoRGBW;
     private final boolean isVintage;
     private final boolean isG3ColorTempBulb;
     private final boolean isG3FullColorBulb;
@@ -254,7 +255,7 @@ public class ShellyLightModel extends LightModel {
             boolean isOperatingModeReadOnly, ShellyDeviceProfile profile, Double stepSize)
             throws IllegalArgumentException {
 
-        super(lightCapabilities, rgbDataType, null, null, null, stepSize, null, null);
+        super(lightCapabilities, rgbDataType, 0.0, null, null, stepSize, null, null);
         super.setLedOperatingMode(ledOperatingMode);
 
         this.handler = handler;
@@ -268,6 +269,7 @@ public class ShellyLightModel extends LightModel {
         isVintage = THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
+        isDuoRGBW = THING_TYPE_SHELLYDUORGBW.equals(thingTypeUID);
         isRGBW2White = THING_TYPE_SHELLYRGBW2_WHITE.equals(thingTypeUID);
         isRGBW2Color = THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID);
         isG3ColorTempBulb = THING_TYPE_SHELLYPLUSDUOBULB.equals(thingTypeUID);
@@ -745,6 +747,7 @@ public class ShellyLightModel extends LightModel {
         return (
         // @formatter:off
            (isBulb) ||
+           (isDuoRGBW) ||
            (isRGBW2Color) || 
            (isG3FullColorBulb) ||
            (isProfileRGB) ||

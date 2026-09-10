@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -103,6 +104,10 @@ public class ShellyTestLightHandler extends ShellyLightHandler {
             Field lightLog = ShellyLightHandler.class.getDeclaredField("logger");
             lightLog.setAccessible(true);
             lightLog.set(handler, LoggerFactory.getLogger("ShellyTest"));
+
+            Field lockField = ShellyLightHandler.class.getDeclaredField("lightModelsLock");
+            lockField.setAccessible(true);
+            lockField.set(handler, new ReentrantLock());
 
             Thing thing = mock(Thing.class);
 

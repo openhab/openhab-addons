@@ -40,6 +40,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -118,14 +119,12 @@ class ShellyLightHandlerLightModelTest {
 
         assertNull(updates.get("control#mode")); // already in color mode, so no update
 
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
+        try (LightModelAccessor.LightModels lockedModels = handler.acquire()) {
+            ShellyLightModel model = lockedModels.getByApiLightIndex(0);
             assertNotNull(model);
             int[] rgbx = model.getRGBX();
             assertArrayEquals(new int[] { 255, 0, 0, 0 }, rgbx);
-        } finally {
-            assertFalse(handler.releaseLock()); // not dirty, so releaseLock returns false
+            // assertFalse(lockedModels.releaseLock()); // not dirty, so releaseLock returns false
         }
     }
 
@@ -176,14 +175,11 @@ class ShellyLightHandlerLightModelTest {
                 new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYBULB, "test"), "color"), "red"),
                 PercentType.HUNDRED);
 
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
+        try (LightModelAccessor.LightModels lockedModels = handler.acquire()) {
+            ShellyLightModel model = lockedModels.getByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
             assertArrayEquals(new int[] { 255, 0, 0, 0 }, model.getRGBX());
-        } finally {
-            handler.releaseLock();
         }
     }
 
@@ -195,14 +191,11 @@ class ShellyLightHandlerLightModelTest {
                 new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYDUO, "test"), "white"), "brightness"),
                 new PercentType(42));
 
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
+        try (LightModels lockedModels = handler.acquire()) {
+            ShellyLightModel model = lockedModels.getByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
             assertEquals(new PercentType(42), model.getBrightnessState());
-        } finally {
-            handler.releaseLock();
         }
     }
 
@@ -215,14 +208,11 @@ class ShellyLightHandlerLightModelTest {
                         "brightness"),
                 new PercentType(25));
 
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
+        try (LightModels lockedModels = handler.acquire()) {
+            ShellyLightModel model = lockedModels.getByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
             assertEquals(new PercentType(25), model.getBrightnessState());
-        } finally {
-            handler.releaseLock();
         }
     }
 
@@ -234,14 +224,11 @@ class ShellyLightHandlerLightModelTest {
                 new ChannelUID(new ChannelGroupUID(new ThingUID(THING_TYPE_SHELLYDUORGBW, "test"), "color"), "full"),
                 new StringType("white"));
 
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
+        try (LightModels lockedModels = handler.acquire()) {
+            ShellyLightModel model = lockedModels.getByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
             assertArrayEquals(new int[] { 0, 0, 0, 255 }, model.getRGBX());
-        } finally {
-            handler.releaseLock();
         }
     }
 
@@ -254,14 +241,11 @@ class ShellyLightHandlerLightModelTest {
                         "blue"),
                 PercentType.HUNDRED);
 
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
+        try (LightModels lockedModels = handler.acquire()) {
+            ShellyLightModel model = lockedModels.getByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
             assertArrayEquals(new int[] { 0, 0, 255, 0 }, model.getRGBX());
-        } finally {
-            handler.releaseLock();
         }
     }
 
@@ -274,14 +258,11 @@ class ShellyLightHandlerLightModelTest {
                         "brightness"),
                 new PercentType(73));
 
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
+        try (LightModels lockedModels = handler.acquire()) {
+            ShellyLightModel model = lockedModels.getByApiLightIndex(0);
             assertNotNull(model);
             assertEquals(ShellyLightModel.Mode.WHITE, model.getMode());
             assertEquals(new PercentType(73), model.getBrightnessState());
-        } finally {
-            handler.releaseLock();
         }
     }
 
@@ -309,7 +290,7 @@ class ShellyLightHandlerLightModelTest {
 
         assertTrue(updated);
         Map<String, State> updates = handler.getChannelUpdates();
-        assertNotNull(handler.getLightModelByApiLightIndex(0));
+        assertNotNull(handler.acquire().getByApiLightIndex(0));
         assertEquals(OnOffType.ON, updates.get("control#power"));
         assertEquals(PercentType.HUNDRED, updates.get("color#red"));
         assertEquals(PercentType.ZERO, updates.get("color#green"));
@@ -333,7 +314,7 @@ class ShellyLightHandlerLightModelTest {
 
         assertTrue(updated);
         Map<String, State> updates = handler.getChannelUpdates();
-        assertNotNull(handler.getLightModelByApiLightIndex(0));
+        assertNotNull(handler.acquire().getByApiLightIndex(0));
 
         assertEquals(new PercentType(80), updates.get("white#brightness"));
         assertEquals(QuantityType.valueOf(4000, Units.KELVIN), updates.get("white#temperature"));
@@ -355,7 +336,7 @@ class ShellyLightHandlerLightModelTest {
 
         handler.updateDeviceStatus(new ShellySettingsStatus());
 
-        ShellyLightModel model = handler.getLightModelByApiLightIndex(0);
+        ShellyLightModel model = handler.acquire().getByApiLightIndex(0);
         assertNotNull(model);
         assertEquals(ShellyLightModel.Mode.COLOR, model.getMode());
     }
@@ -940,14 +921,11 @@ class ShellyLightHandlerLightModelTest {
 
         assertTrue(handled, "command should be handled for " + thingTypeUID + " / " + profileOverride);
 
-        try {
-            handler.acquireLock();
-            ShellyLightModel model = handler.getLightModelByChannelGroupSuffix(channelGroupNo);
+        try (LightModels lockedModels = handler.acquire()) {
+            ShellyLightModel model = lockedModels.getByChannelGroupSuffix(channelGroupNo);
             assertNotNull(model, "expected light model for lightId " + channelGroupNo);
             assertEquals(expectedMode, model.getMode(), "unexpected operating mode");
             assertEquals(expectedApiLightIndex, model.getApiLightIndex(), "unexpected API light index");
-        } finally {
-            handler.releaseLock();
         }
 
         Map<String, State> updates = handler.getChannelUpdates();

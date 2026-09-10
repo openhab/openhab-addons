@@ -31,7 +31,8 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyLightModelHandler;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.types.State;
 
@@ -83,7 +84,7 @@ public class Shelly1CoIoTVersion2Test {
         CoIotSensor posSensor = rollerPosSensor(0);
         List<CoIotSensor> sensorUpdates = List.of(rollerStateSensor("open"), posSensor);
         Map<String, State> updates = new HashMap<>();
-        ShellyLightModelHandler lightModel = mock(ShellyLightModelHandler.class);
+        LightModels lightModel = mock(LightModelAccessor.LightModels.class);
 
         v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, lightModel);
 
@@ -97,7 +98,7 @@ public class Shelly1CoIoTVersion2Test {
         CoIotSensor posSensor = rollerPosSensor(30);
         List<CoIotSensor> sensorUpdates = List.of(rollerStateSensor("stop"), posSensor);
         Map<String, State> updates = new HashMap<>();
-        ShellyLightModelHandler lightModel = mock(ShellyLightModelHandler.class);
+        LightModels lightModel = mock(LightModelAccessor.LightModels.class);
 
         v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, lightModel);
 
@@ -117,7 +118,7 @@ public class Shelly1CoIoTVersion2Test {
         CoIotSensor posSensor = rollerPosSensor(50);
         List<CoIotSensor> sensorUpdates = List.of(posSensor);
         Map<String, State> updates = new HashMap<>();
-        ShellyLightModelHandler lightModel = mock(ShellyLightModelHandler.class);
+        LightModels lightModel = mock(LightModelAccessor.LightModels.class);
 
         v2.handleStatusUpdate(sensorUpdates, rollerPosDesc(), 0, posSensor, updates, lightModel);
 

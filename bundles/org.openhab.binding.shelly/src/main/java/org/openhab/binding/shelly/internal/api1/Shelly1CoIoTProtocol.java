@@ -28,8 +28,8 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
-import org.openhab.binding.shelly.internal.handler.ShellyLightModelHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -76,7 +76,7 @@ public class Shelly1CoIoTProtocol {
     }
 
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates, @Nullable ShellyLightModelHandler lightModelHandler) {
+            Map<String, State> updates, LightModelAccessor.@Nullable LightModels lightModels) {
         // Process status information and convert into channel updates
         int rIndex = getIdFromBlk(sen);
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
@@ -102,7 +102,7 @@ public class Shelly1CoIoTProtocol {
                 switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "state": // Relay status +
                     case "output":
-                        updatePower(profile, updates, rIndex, sen, s, sensorUpdates, lightModelHandler);
+                        updatePower(profile, updates, rIndex, sen, s, sensorUpdates, lightModels);
                         break;
                     case "input":
                         handleInput(sen, s, rGroup, updates);
@@ -149,8 +149,8 @@ public class Shelly1CoIoTProtocol {
                     case "white":
                     case "gain":
                     case "effect":
-                        if (lightModelHandler != null && lightModelHandler.getLightModelByApiLightIndex(
-                                getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
+                        if (lightModels != null && lightModels
+                                .getByApiLightIndex(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {
                                 case "red":
                                     model.setColor(R, (int) s.value);
@@ -246,7 +246,7 @@ public class Shelly1CoIoTProtocol {
      * @param lightModelHandler Optional light model handler, required for RGBW2/Bulb to update the model state
      */
     protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
-            CoIotSensor s, List<CoIotSensor> allUpdates, @Nullable ShellyLightModelHandler lightModelHandler) {
+            CoIotSensor s, List<CoIotSensor> allUpdates, LightModelAccessor.@Nullable LightModels lightModels) {
         if (profile.isLight || profile.isDimmer) {
             // RGBW-white uses 4 different Power, Brightness, VSwitch values
             String checkL = profile.isRGBW2 && !profile.inColor ? String.valueOf(id) : "";
@@ -277,8 +277,8 @@ public class Shelly1CoIoTProtocol {
                             toQuantityType(power == 1 ? brightness : 0, DIGITS_NONE, Units.PERCENT));
                 }
             } else if (profile.isLight) {
-                if (lightModelHandler != null
-                        && lightModelHandler.getLightModelByApiLightIndex(id - 1) instanceof ShellyLightModel model) {
+                if (lightModels != null
+                        && lightModels.getByApiLightIndex(id - 1) instanceof ShellyLightModel model) {
                     if (brightness != -1) {
                         if (ShellyLightModel.Mode.COLOR == model.getMode()) {
                             model.setGain((int) brightness);

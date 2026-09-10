@@ -916,6 +916,7 @@ public class ShellyComponentsTest {
         verify(handler, never()).postEvent(any(), anyBoolean());
     }
 
+    @Test
     void updateLightModeHybridProfileSkipsColorSlotAndUpdatesSecondaryComponent() throws Exception {
         ShellyDeviceProfile profile = proRgbwwPmHybridProfile();
         ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPRORGBWWPM);
@@ -925,7 +926,7 @@ public class ShellyComponentsTest {
         handler.addLightModel(1, THING_TYPE_SHELLYPRORGBWWPM, profile, 10.0);
 
         Shelly2DeviceStatusLight value = new Shelly2DeviceStatusLight();
-        value.id = 0;
+        value.id = 1;
         value.output = true;
         value.brightness = 42.0;
         value.ct = 4000;
