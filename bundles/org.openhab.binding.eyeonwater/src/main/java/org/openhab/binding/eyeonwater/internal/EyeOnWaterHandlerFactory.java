@@ -18,9 +18,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.eyeonwater.internal.handler.EyeOnWaterBridgeHandler;
 import org.openhab.binding.eyeonwater.internal.handler.EyeOnWaterMeterHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,6 +35,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EyeOnWaterHandlerFactory} is responsible for creating things and thing handlers.
@@ -45,21 +49,47 @@ public class EyeOnWaterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_METER);
 
+    private final Logger logger = LoggerFactory.getLogger(EyeOnWaterHandlerFactory.class);
+
     private @Nullable BundleContext bundleContext;
 
     @Reference
     private @Nullable TimeZoneProvider timeZoneProvider;
 
+    @Reference
+    private @Nullable HttpClientFactory httpClientFactory;
+
+    private @Nullable HttpClient httpClient;
+
     @Activate
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         this.bundleContext = componentContext.getBundleContext();
+        HttpClientFactory factory = httpClientFactory;
+        if (factory != null) {
+            HttpClient client = factory.createHttpClient(BINDING_ID);
+            try {
+                client.start();
+                this.httpClient = client;
+            } catch (Exception e) {
+                logger.error("Failed to start EyeOnWater HTTP client: {}", e.getMessage(), e);
+            }
+        }
     }
 
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
         this.bundleContext = null;
+        HttpClient client = httpClient;
+        if (client != null) {
+            try {
+                client.stop();
+            } catch (Exception e) {
+                logger.debug("Failed to stop EyeOnWater HTTP client: {}", e.getMessage());
+            }
+            this.httpClient = null;
+        }
     }
 
     @Override
@@ -74,7 +104,7 @@ public class EyeOnWaterHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             BundleContext bc = bundleContext;
             if (bc != null) {
-                return new EyeOnWaterBridgeHandler((Bridge) thing, bc);
+                return new EyeOnWaterBridgeHandler((Bridge) thing, bc, httpClient);
             }
         } else if (THING_TYPE_METER.equals(thingTypeUID)) {
             TimeZoneProvider tzp = timeZoneProvider;

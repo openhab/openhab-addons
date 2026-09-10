@@ -166,7 +166,7 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
 
         // Update Read Time
         String readTime = data.getReadTime();
-        if (!readTime.trim().isEmpty()) {
+        if (!readTime.isBlank()) {
             try {
                 java.time.ZonedDateTime zdt;
                 if (readTime.contains("Z") || readTime.contains("+") || (readTime.lastIndexOf("-") > 10)) {

@@ -12,24 +12,30 @@
  */
 package org.openhab.binding.eyeonwater.internal.api;
 
+import static org.eclipse.jetty.http.HttpHeader.*;
+import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.eclipse.jetty.http.HttpStatus.*;
+
 import java.io.IOException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
-import java.net.URI;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +46,7 @@ import com.google.gson.JsonParser;
 
 /**
  * Service to interact with the EyeOnWater REST API.
- * Uses native Java HttpClient with a CookieManager to persist login sessions.
+ * Uses Jetty HttpClient to persist login sessions via managed cookies.
  *
  * @author Richard Koshak - Initial contribution
  */
@@ -57,16 +63,11 @@ public class EyeOnWaterClient {
 
     private boolean authenticated = false;
 
-    public EyeOnWaterClient(String hostname, String username, String password) {
-        this.hostname = hostname.trim().isEmpty() ? "eyeonwater.com" : hostname.trim();
+    public EyeOnWaterClient(String hostname, String username, String password, HttpClient httpClient) {
+        this.hostname = hostname.isBlank() ? "eyeonwater.com" : hostname.trim();
         this.username = username;
         this.password = password;
-
-        CookieManager cookieManager = new CookieManager();
-        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-
-        this.httpClient = HttpClient.newBuilder().cookieHandler(cookieManager)
-                .followRedirects(HttpClient.Redirect.ALWAYS).connectTimeout(Duration.ofSeconds(10)).build();
+        this.httpClient = httpClient;
     }
 
     private String buildUrl(String path) {
@@ -87,22 +88,27 @@ public class EyeOnWaterClient {
         Map<Object, Object> formData = new HashMap<>();
         formData.put("username", username);
         formData.put("password", password);
+        String formDataString = ofFormData(formData);
 
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(loginUrl)).timeout(Duration.ofSeconds(15))
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0").POST(ofFormData(formData)).build();
+        Request request = httpClient.newRequest(loginUrl).method(POST).timeout(15, TimeUnit.SECONDS)
+                .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
+                .header(USER_AGENT, "openHAB-EyeOnWater-Addon/5.3.0").content(new StringContentProvider(
+                        "application/x-www-form-urlencoded", formDataString, StandardCharsets.UTF_8));
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() != 200) {
-            logger.warn("Authentication failed with HTTP code: {}", response.statusCode());
-            throw new IOException("Failed to authenticate: HTTP " + response.statusCode());
+        ContentResponse response;
+        try {
+            response = request.send();
+        } catch (ExecutionException | TimeoutException e) {
+            throw new IOException("Authentication execution failed: " + e.getMessage(), e);
         }
 
-        String body = response.body();
+        if (response.getStatus() != OK_200) {
+            throw new IOException("Failed to authenticate: HTTP " + response.getStatus());
+        }
+
+        String body = response.getContentAsString();
         if (body.contains("account/signin")
                 && (body.contains("Invalid username") || body.contains("password") && body.contains("form"))) {
-            logger.warn("EyeOnWater rejected username/password credentials.");
             throw new IOException("Authentication rejected: Invalid username or password.");
         }
 
@@ -112,33 +118,45 @@ public class EyeOnWaterClient {
     /**
      * Sends request and automatically re-authenticates if we receive 401 Unauthorized.
      */
-    private HttpResponse<String> sendRequestWithReauth(HttpRequest request) throws IOException, InterruptedException {
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    private String sendRequestWithReauth(String url, HttpMethod method, @Nullable String contentType,
+            @Nullable String contentPayload) throws IOException, InterruptedException {
+        ContentResponse response = sendRequest(url, method, contentType, contentPayload);
 
-        if (response.statusCode() == 401) {
+        if (response.getStatus() == UNAUTHORIZED_401) {
             logger.debug("Session expired (401). Attempting automatic re-authentication...");
             synchronized (this) {
                 authenticated = false;
                 authenticate();
             }
 
-            HttpRequest retryRequest = HttpRequest.newBuilder().uri(request.uri())
-                    .timeout(request.timeout().orElse(Duration.ofSeconds(15)))
-                    .header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0")
-                    .method(request.method(), request.bodyPublisher().orElse(HttpRequest.BodyPublishers.noBody()))
-                    .build();
-
-            response = httpClient.send(retryRequest, HttpResponse.BodyHandlers.ofString());
+            response = sendRequest(url, method, contentType, contentPayload);
         }
 
-        if (response.statusCode() != 200) {
-            throw new IOException("API request failed with HTTP " + response.statusCode());
+        if (response.getStatus() != OK_200) {
+            throw new IOException("API request failed with HTTP " + response.getStatus());
         }
 
-        return response;
+        return response.getContentAsString();
     }
 
-    private static HttpRequest.BodyPublisher ofFormData(Map<Object, Object> data) {
+    private ContentResponse sendRequest(String url, HttpMethod method, @Nullable String contentType,
+            @Nullable String contentPayload) throws IOException, InterruptedException {
+        Request request = httpClient.newRequest(url).method(method).timeout(15, TimeUnit.SECONDS).header(USER_AGENT,
+                "openHAB-EyeOnWater-Addon/5.3.0");
+
+        if (contentPayload != null) {
+            String type = contentType != null ? contentType : "application/json";
+            request.content(new StringContentProvider(type, contentPayload, StandardCharsets.UTF_8));
+        }
+
+        try {
+            return request.send();
+        } catch (ExecutionException | TimeoutException e) {
+            throw new IOException("HTTP request execution failed: " + e.getMessage(), e);
+        }
+    }
+
+    private static String ofFormData(Map<Object, Object> data) {
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<Object, Object> entry : data.entrySet()) {
             if (builder.length() > 0) {
@@ -148,7 +166,7 @@ public class EyeOnWaterClient {
             builder.append("=");
             builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
         }
-        return HttpRequest.BodyPublishers.ofString(builder.toString());
+        return builder.toString();
     }
 
     /**
@@ -162,9 +180,8 @@ public class EyeOnWaterClient {
             try {
                 return fetchMetersNewSearch();
             } catch (IOException e) {
-                logger.debug("new_search API discovery failed: {}", e.getMessage(), e);
-                logger.warn("new_search API discovery failed, falling back to legacy dashboard scrape: {}",
-                        e.getMessage());
+                logger.debug("new_search API discovery failed, falling back to legacy dashboard scrape: {}",
+                        e.getMessage(), e);
                 return fetchMetersDashboardScrape();
             }
         } else {
@@ -172,8 +189,8 @@ public class EyeOnWaterClient {
             try {
                 return fetchMetersDashboardScrape();
             } catch (IOException e) {
-                logger.debug("Legacy dashboard discovery failed: {}", e.getMessage(), e);
-                logger.warn("Legacy dashboard discovery failed, falling back to new_search API: {}", e.getMessage());
+                logger.debug("Legacy dashboard discovery failed, falling back to new_search API: {}", e.getMessage(),
+                        e);
                 return fetchMetersNewSearch();
             }
         }
@@ -183,14 +200,10 @@ public class EyeOnWaterClient {
         String searchUrl = buildUrl("api/2/residential/new_search");
         String jsonPayload = "{\"query\":{\"match_all\":{}}}";
 
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(searchUrl)).timeout(Duration.ofSeconds(15))
-                .header("Content-Type", "application/json").header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload)).build();
-
-        HttpResponse<String> response = sendRequestWithReauth(request);
+        String responseBody = sendRequestWithReauth(searchUrl, POST, "application/json", jsonPayload);
 
         List<EyeOnWaterMeterData> meters = new ArrayList<>();
-        JsonObject payload = JsonParser.parseString(response.body()).getAsJsonObject();
+        JsonObject payload = JsonParser.parseString(responseBody).getAsJsonObject();
         JsonObject elasticResults = payload.getAsJsonObject("elastic_results");
         if (elasticResults != null) {
             JsonObject hitsWrapper = elasticResults.getAsJsonObject("hits");
@@ -234,11 +247,8 @@ public class EyeOnWaterClient {
         String encodedUser = URLEncoder.encode(username, StandardCharsets.UTF_8);
         String dashboardUrl = buildUrl("dashboard/" + encodedUser);
 
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(dashboardUrl)).timeout(Duration.ofSeconds(15))
-                .header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0").GET().build();
-
-        HttpResponse<String> response = sendRequestWithReauth(request);
-        return parseMetersFromDashboard(response.body());
+        String responseBody = sendRequestWithReauth(dashboardUrl, GET, null, null);
+        return parseMetersFromDashboard(responseBody);
     }
 
     List<EyeOnWaterMeterData> parseMetersFromDashboard(String htmlBody) {
@@ -271,13 +281,9 @@ public class EyeOnWaterClient {
         String searchUrl = buildUrl("api/2/residential/new_search");
         String jsonPayload = "{\"query\":{\"terms\":{\"meter.meter_uuid\":[\"" + meterUuid + "\"]}}}";
 
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(searchUrl)).timeout(Duration.ofSeconds(15))
-                .header("Content-Type", "application/json").header("User-Agent", "openHAB-EyeOnWater-Addon/5.3.0")
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload)).build();
+        String responseBody = sendRequestWithReauth(searchUrl, POST, "application/json", jsonPayload);
 
-        HttpResponse<String> response = sendRequestWithReauth(request);
-
-        JsonObject payload = JsonParser.parseString(response.body()).getAsJsonObject();
+        JsonObject payload = JsonParser.parseString(responseBody).getAsJsonObject();
         JsonObject elasticResults = payload.getAsJsonObject("elastic_results");
         if (elasticResults == null) {
             throw new IOException("Search response did not contain 'elastic_results'");

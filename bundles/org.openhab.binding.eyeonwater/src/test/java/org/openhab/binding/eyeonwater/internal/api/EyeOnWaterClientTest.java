@@ -18,7 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.eyeonwater.internal.api.EyeOnWaterClient.EyeOnWaterMeterData;
 
 /**
@@ -29,7 +31,8 @@ import org.openhab.binding.eyeonwater.internal.api.EyeOnWaterClient.EyeOnWaterMe
 @NonNullByDefault
 class EyeOnWaterClientTest {
 
-    private final EyeOnWaterClient client = new EyeOnWaterClient("eyeonwater.com", "testuser", "testpassword");
+    private final EyeOnWaterClient client = new EyeOnWaterClient("eyeonwater.com", "testuser", "testpassword",
+            Mockito.mock(HttpClient.class));
 
     @Test
     void testParseMetersFromDashboardStandard() {

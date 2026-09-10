@@ -3,6 +3,7 @@
 This binding integrates with the EyeOnWater smart water meter service, allowing you to monitor water consumption, flow rates, and alerts directly from openHAB.
 
 ## Supported Things
+
 | Parameter         | Type    | Required | Default          | Description                                                                  |
 |-------------------|---------|----------|------------------|------------------------------------------------------------------------------|
 | `username`        | Text    | Yes      |                  | The email address or username for your EyeOnWater account                    |
@@ -27,8 +28,6 @@ The discovery service queries the EyeOnWater REST API to retrieve all physical m
 
 To configure the bridge, the following parameters are available:
 
-
-
 ### EyeOnWater Water Meter (`meter`)
 
 To manually configure a water meter, the following parameters are available:
@@ -50,7 +49,6 @@ The `meter` thing type exposes the following channels:
 | `low-battery`    | `Switch`                    | Low Battery Alert  | ON if the meter battery is running low                |
 | `reverse-flow`   | `Switch`                    | Reverse Flow Alert | ON if reverse water flow is detected                  |
 | `last-read-time` | `DateTime`                  | Last Read Time     | Exact timestamp of the latest water meter reading     |
-
 
 ## Full Example
 

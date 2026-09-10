@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.eyeonwater.internal.api.EyeOnWaterClient;
 import org.openhab.binding.eyeonwater.internal.api.EyeOnWaterClient.EyeOnWaterMeterData;
 import org.openhab.binding.eyeonwater.internal.config.EyeOnWaterBridgeConfiguration;
@@ -60,14 +61,23 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
-    public EyeOnWaterBridgeHandler(Bridge bridge, BundleContext bundleContext) {
+    private final @Nullable HttpClient httpClient;
+
+    public EyeOnWaterBridgeHandler(Bridge bridge, BundleContext bundleContext, @Nullable HttpClient httpClient) {
         super(bridge);
         this.bundleContext = bundleContext;
+        this.httpClient = httpClient;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing EyeOnWater Bridge: {}", getThing().getUID());
+
+        HttpClient clientInstance = httpClient;
+        if (clientInstance == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
+            return;
+        }
 
         EyeOnWaterBridgeConfiguration config = getConfigAs(EyeOnWaterBridgeConfiguration.class);
 
@@ -77,7 +87,8 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        EyeOnWaterClient activeClient = new EyeOnWaterClient(config.hostname, config.username, config.password);
+        EyeOnWaterClient activeClient = new EyeOnWaterClient(config.hostname, config.username, config.password,
+                clientInstance);
         client = activeClient;
 
         // Perform async login verification
