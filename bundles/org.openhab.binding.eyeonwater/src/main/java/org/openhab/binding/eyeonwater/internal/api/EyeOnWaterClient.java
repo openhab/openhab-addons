@@ -92,8 +92,9 @@ public class EyeOnWaterClient {
 
         Request request = httpClient.newRequest(loginUrl).method(POST).timeout(15, TimeUnit.SECONDS)
                 .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
-                .header(USER_AGENT, "openHAB-EyeOnWater-Addon/5.3.0").content(new StringContentProvider(
-                        "application/x-www-form-urlencoded", formDataString, StandardCharsets.UTF_8));
+                .header(USER_AGENT, "openHAB-EyeOnWater-Addon/5.3.0").followRedirects(false)
+                .content(new StringContentProvider("application/x-www-form-urlencoded", formDataString,
+                        StandardCharsets.UTF_8));
 
         ContentResponse response;
         try {
@@ -102,17 +103,13 @@ public class EyeOnWaterClient {
             throw new IOException("Authentication execution failed: " + e.getMessage(), e);
         }
 
-        if (response.getStatus() != OK_200) {
+        if (response.getStatus() == FOUND_302 || response.getStatus() == SEE_OTHER_303) {
+            authenticated = true;
+        } else if (response.getStatus() == OK_200) {
+            throw new IOException("Authentication rejected: Invalid username or password.");
+        } else {
             throw new IOException("Failed to authenticate: HTTP " + response.getStatus());
         }
-
-        String body = response.getContentAsString();
-        if (body.contains("account/signin")
-                && (body.contains("Invalid username") || body.contains("password") && body.contains("form"))) {
-            throw new IOException("Authentication rejected: Invalid username or password.");
-        }
-
-        authenticated = true;
     }
 
     /**
