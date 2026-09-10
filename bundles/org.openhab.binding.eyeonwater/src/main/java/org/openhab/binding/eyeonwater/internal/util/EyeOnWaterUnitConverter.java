@@ -53,8 +53,8 @@ public class EyeOnWaterUnitConverter {
      * @return the NormalizedReading containing the normalized value and openHAB unit string
      */
     public static NormalizedReading normalize(double value, @Nullable String rawUnit) {
-        if (rawUnit == null) {
-            return new NormalizedReading(value, "gal");
+        if (rawUnit == null || rawUnit.isBlank()) {
+            throw new IllegalArgumentException("Unit of measurement is missing");
         }
 
         return switch (rawUnit.toUpperCase()) {
@@ -62,12 +62,12 @@ public class EyeOnWaterUnitConverter {
             case "10 GAL" -> new NormalizedReading(value * 10, "gal");
             case "100 GAL" -> new NormalizedReading(value * 100, "gal");
             case "KGAL" -> new NormalizedReading(value * 1000, "gal");
-            case "CF", "CUBIC_FEET" -> new NormalizedReading(value, "cf");
-            case "10 CF" -> new NormalizedReading(value * 10, "cf");
-            case "CCF" -> new NormalizedReading(value * 100, "cf");
+            case "CF", "CUBIC_FEET" -> new NormalizedReading(value, "ft³");
+            case "10 CF" -> new NormalizedReading(value * 10, "ft³");
+            case "CCF" -> new NormalizedReading(value * 100, "ft³");
             case "CM", "CUBIC_METER" -> new NormalizedReading(value, "m³");
             case "LITER", "LITERS" -> new NormalizedReading(value / 1000.0, "m³");
-            default -> new NormalizedReading(value, "gal");
+            default -> throw new IllegalArgumentException("Unsupported unit: " + rawUnit);
         };
     }
 }

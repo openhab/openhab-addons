@@ -138,46 +138,53 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
      * Called by the bridge handler to update this meter's states.
      */
     public void updateState(EyeOnWaterMeterData data) {
-        updateStatus(ThingStatus.ONLINE);
+        @Nullable
+        String rawUnit = data.getReadingUnit();
+        try {
+            NormalizedReading normalized = EyeOnWaterUnitConverter.normalize(data.getReadingValue(), rawUnit);
+            updateStatus(ThingStatus.ONLINE);
 
-        NormalizedReading normalized = EyeOnWaterUnitConverter.normalize(data.getReadingValue(), data.getReadingUnit());
+            // Update Reading Channel
+            updateState(CHANNEL_READING, new QuantityType<>(normalized.getValue() + " " + normalized.getUnit()));
 
-        // Update Reading Channel
-        updateState(CHANNEL_READING, new QuantityType<>(normalized.getValue() + " " + normalized.getUnit()));
-
-        // Update Flow Rate if available
-        double leakRate = data.getLeakRate();
-        if (leakRate >= 0) {
-            String flowUnit;
-            if ("gal".equals(normalized.getUnit())) {
-                flowUnit = "gal/min";
-            } else if ("cf".equals(normalized.getUnit())) {
-                flowUnit = "cf/min";
-            } else {
-                flowUnit = "m³/h";
-            }
-            updateState(CHANNEL_LEAK_FLOW_RATE, new QuantityType<>(leakRate + " " + flowUnit));
-        }
-
-        // Update alerts
-        updateState(CHANNEL_LEAK_ALERT, data.isLeakAlert() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_LOW_BATTERY, data.isLowBatteryAlert() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_REVERSE_FLOW, data.isReverseFlowAlert() ? OnOffType.ON : OnOffType.OFF);
-
-        // Update Read Time
-        String readTime = data.getReadTime();
-        if (!readTime.isBlank()) {
-            try {
-                java.time.ZonedDateTime zdt;
-                if (readTime.contains("Z") || readTime.contains("+") || (readTime.lastIndexOf("-") > 10)) {
-                    zdt = java.time.ZonedDateTime.parse(readTime);
+            // Update Flow Rate if available
+            double leakRate = data.getLeakRate();
+            if (leakRate >= 0) {
+                String flowUnit;
+                if ("gal".equals(normalized.getUnit())) {
+                    flowUnit = "gal/min";
+                } else if ("ft³".equals(normalized.getUnit())) {
+                    flowUnit = "ft³/min";
                 } else {
-                    zdt = java.time.LocalDateTime.parse(readTime).atZone(timeZoneProvider.getTimeZone());
+                    flowUnit = "m³/h";
                 }
-                updateState(CHANNEL_LAST_READ_TIME, new DateTimeType(zdt));
-            } catch (java.time.format.DateTimeParseException e) {
-                logger.warn("Failed to parse ISO-8601 read time: {}", readTime, e);
+                updateState(CHANNEL_LEAK_FLOW_RATE, new QuantityType<>(leakRate + " " + flowUnit));
             }
+
+            // Update alerts
+            updateState(CHANNEL_LEAK_ALERT, data.isLeakAlert() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_LOW_BATTERY, data.isLowBatteryAlert() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_REVERSE_FLOW, data.isReverseFlowAlert() ? OnOffType.ON : OnOffType.OFF);
+
+            // Update Read Time
+            String readTime = data.getReadTime();
+            if (!readTime.isBlank()) {
+                try {
+                    java.time.ZonedDateTime zdt;
+                    if (readTime.contains("Z") || readTime.contains("+") || (readTime.lastIndexOf("-") > 10)) {
+                        zdt = java.time.ZonedDateTime.parse(readTime);
+                    } else {
+                        zdt = java.time.LocalDateTime.parse(readTime).atZone(timeZoneProvider.getTimeZone());
+                    }
+                    updateState(CHANNEL_LAST_READ_TIME, new DateTimeType(zdt));
+                } catch (java.time.format.DateTimeParseException e) {
+                    logger.warn("Failed to parse ISO-8601 read time: {}", readTime, e);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            logger.warn("Unsupported unit '{}' received for meter {}: {}", rawUnit, getThing().getUID(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.unsupported-unit");
         }
     }
 }

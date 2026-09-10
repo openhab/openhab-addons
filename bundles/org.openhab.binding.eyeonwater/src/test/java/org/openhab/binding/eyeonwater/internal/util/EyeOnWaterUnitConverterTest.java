@@ -13,6 +13,7 @@
 package org.openhab.binding.eyeonwater.internal.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -49,19 +50,19 @@ class EyeOnWaterUnitConverterTest {
     void testNormalizeCubicFeet() {
         NormalizedReading r1 = EyeOnWaterUnitConverter.normalize(2.0, "CF");
         assertEquals(2.0, r1.getValue());
-        assertEquals("cf", r1.getUnit());
+        assertEquals("ft³", r1.getUnit());
 
         NormalizedReading r2 = EyeOnWaterUnitConverter.normalize(2.0, "CUBIC_FEET");
         assertEquals(2.0, r2.getValue());
-        assertEquals("cf", r2.getUnit());
+        assertEquals("ft³", r2.getUnit());
 
         NormalizedReading r3 = EyeOnWaterUnitConverter.normalize(2.0, "10 CF");
         assertEquals(20.0, r3.getValue());
-        assertEquals("cf", r3.getUnit());
+        assertEquals("ft³", r3.getUnit());
 
         NormalizedReading r4 = EyeOnWaterUnitConverter.normalize(2.0, "CCF");
         assertEquals(200.0, r4.getValue());
-        assertEquals("cf", r4.getUnit());
+        assertEquals("ft³", r4.getUnit());
     }
 
     @Test
@@ -80,13 +81,9 @@ class EyeOnWaterUnitConverterTest {
     }
 
     @Test
-    void testNormalizeNullOrUnknown() {
-        NormalizedReading r1 = EyeOnWaterUnitConverter.normalize(4.0, null);
-        assertEquals(4.0, r1.getValue());
-        assertEquals("gal", r1.getUnit());
-
-        NormalizedReading r2 = EyeOnWaterUnitConverter.normalize(4.0, "UNKNOWN");
-        assertEquals(4.0, r2.getValue());
-        assertEquals("gal", r2.getUnit());
+    void testNormalizeNullOrUnknownThrows() {
+        assertThrows(IllegalArgumentException.class, () -> EyeOnWaterUnitConverter.normalize(4.0, null));
+        assertThrows(IllegalArgumentException.class, () -> EyeOnWaterUnitConverter.normalize(4.0, "UNKNOWN"));
+        assertThrows(IllegalArgumentException.class, () -> EyeOnWaterUnitConverter.normalize(4.0, ""));
     }
 }
