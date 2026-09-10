@@ -101,16 +101,10 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return getTemperatureState(s);
         }
     },
-    SPINNING_SPEED("spinningSpeed", "spinningspeed", StringType.class, false, false) {
+    SPINNING_SPEED("spinningSpeed", "spinningspeed", QuantityType.class, false, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
-            if ("0".equals(s)) {
-                return getState("Without spinning");
-            }
-            if ("256".equals(s)) {
-                return getState("Rinsing");
-            }
-            return getState(Integer.toString((Integer.valueOf(s))));
+            return getSpinningSpeedState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false, false) {
@@ -241,6 +235,16 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     public State getTemperatureState(String s) {
         try {
             return DeviceUtil.getTemperatureState(s);
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
+        }
+    }
+
+    public State getSpinningSpeedState(String s) {
+        try {
+            int speed = Integer.parseInt(s);
+            return speed == 0 ? UnDefType.UNDEF : new QuantityType<>(speed, Units.RPM);
         } catch (NumberFormatException e) {
             logger.warn("An exception occurred while converting '{}' into a State", s);
             return UnDefType.UNDEF;
