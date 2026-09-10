@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -41,7 +42,6 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -66,7 +66,7 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
-    private volatile JsonObject lastState = new JsonObject();
+    private final CachedJsonState cachedState = new CachedJsonState();
     private volatile boolean initialStateReceived = false;
 
     private @Nullable EvccWebSocketClient wsClient;
@@ -141,14 +141,12 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     }
 
     private void onFullState(JsonObject state) {
-        lastState = state.deepCopy();
-        for (Map.Entry<String, JsonElement> entry : state.entrySet()) {
-            mergeIntoState(entry.getKey(), entry.getValue());
-        }
+        cachedState.updateFull(state);
         initialStateReceived = true;
-        for (EvccThingLifecycleAware listener : listeners.values()) {
+        JsonObject stateCopy = cachedState.getCopy();
+        for (EvccThingLifecycleAware listener : new ArrayList<>(listeners.values())) {
             try {
-                listener.initializeThingFromLatestState(lastState);
+                listener.initializeThingFromLatestState(stateCopy);
             } catch (Exception e) {
                 logListenerError(listener, e);
             }
@@ -156,7 +154,7 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     }
 
     private void onPartialUpdate(String key, JsonElement value) {
-        mergeIntoState(key, value);
+        cachedState.updatePartial(key, value);
         dispatchUpdate(key, value);
     }
 
@@ -171,7 +169,7 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
                 propertyByRoot.put(root, handler.getType());
             }
             try {
-                handler.initializeThingFromLatestState(lastState);
+                handler.initializeThingFromLatestState(cachedState.getCopy());
             } catch (Exception e) {
                 logListenerError(handler, e);
             }
@@ -185,48 +183,6 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     }
 
     // --------------------------------------------------------------------
-    // State Merging
-    // --------------------------------------------------------------------
-
-    private void mergeIntoState(String key, JsonElement value) {
-        String[] parts = key.split("\\.", 2);
-        if (parts.length < 1) {
-            return;
-        }
-
-        String root = parts[0];
-
-        if (parts.length == 2) {
-            String[] indexParts = parts[1].split("\\.", 2);
-            if (indexParts.length == 2 && indexParts[0].matches("\\d+")) {
-                // Indexed array format: loadpoints.0.power
-                int index = Integer.parseInt(indexParts[0]);
-                lastState.remove(key);
-                JsonArray arr = lastState.getAsJsonArray(root);
-                if (arr == null) {
-                    arr = new JsonArray();
-                    lastState.add(root, arr);
-                }
-                while (arr.size() <= index) {
-                    arr.add(new JsonObject());
-                }
-                arr.get(index).getAsJsonObject().add(indexParts[1], value);
-            } else {
-                // Nested object format: forecast.co2
-                JsonObject obj = lastState.getAsJsonObject(root);
-                if (obj == null) {
-                    obj = new JsonObject();
-                    lastState.add(root, obj);
-                }
-                obj.add(parts[1], value);
-            }
-        } else {
-            // Root-level key
-            lastState.add(root, value);
-        }
-    }
-
-    // --------------------------------------------------------------------
     // Dispatching
     // --------------------------------------------------------------------
 
@@ -236,11 +192,11 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
         String id = p.length > 1 ? p[1] : "";
         String sub = p.length == 3 ? p[2] : p[0];
 
-        listeners.values().forEach(l -> {
+        for (EvccThingLifecycleAware l : new ArrayList<>(listeners.values())) {
             if (matchesType(l.getType(), root) && matchesIdentifier(l.getIdentifier(), id)) {
                 l.handleUpdate(sub, value);
             }
-        });
+        }
     }
 
     private boolean matchesType(String type, String root) {
@@ -264,7 +220,7 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     }
 
     public JsonObject getCachedEvccState() {
-        return lastState.deepCopy();
+        return cachedState.getCopy();
     }
 
     public boolean isInitialStateReceived() {
