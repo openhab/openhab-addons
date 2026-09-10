@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>EyeOnWater Binding</name>
 	<description>This is the binding for EyeOnWater.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
