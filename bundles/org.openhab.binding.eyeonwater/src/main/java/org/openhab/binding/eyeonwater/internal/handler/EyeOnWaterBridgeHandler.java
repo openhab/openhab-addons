@@ -225,22 +225,36 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Polling meter: {}", meterHandler.getMeterId());
                 EyeOnWaterMeterData data = activeClient.pollMeter(meterHandler.getMeterUuid(),
                         meterHandler.getMeterId());
-                if (registeredMeters.contains(meterHandler)) {
-                    meterHandler.updateState(data);
+                synchronized (this) {
+                    if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
+                        meterHandler.updateState(data);
+                    }
                 }
             } catch (IOException e) {
-                logger.debug("Communication error polling EyeOnWater meter {}: {}", meterHandler.getMeterId(),
-                        e.getMessage(), e);
-                String msg = e.getMessage();
-                meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.communication-error");
+                synchronized (this) {
+                    if (activeClient.equals(client)) {
+                        logger.debug("Communication error polling EyeOnWater meter {}: {}", meterHandler.getMeterId(),
+                                e.getMessage(), e);
+                        String msg = e.getMessage();
+                        meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.communication-error");
+                    }
+                }
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while polling EyeOnWater meter {}", meterHandler.getMeterId(), e);
                 Thread.currentThread().interrupt();
-                meterHandler.updateStatusOffline("@text/offline.interrupted-polling");
+                synchronized (this) {
+                    if (activeClient.equals(client)) {
+                        meterHandler.updateStatusOffline("@text/offline.interrupted-polling");
+                    }
+                }
             } catch (Exception e) {
-                logger.error("Unexpected error polling EyeOnWater meter {}", meterHandler.getMeterId(), e);
-                String msg = e.getMessage();
-                meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.unexpected-error");
+                synchronized (this) {
+                    if (activeClient.equals(client)) {
+                        logger.error("Unexpected error polling EyeOnWater meter {}", meterHandler.getMeterId(), e);
+                        String msg = e.getMessage();
+                        meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.unexpected-error");
+                    }
+                }
             }
         }
     }
@@ -261,30 +275,40 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
         registeredMeters.add(meterHandler);
         // Trigger an immediate poll only if the bridge is already ONLINE (i.e. added manually after startup)
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            EyeOnWaterClient activeClient = client;
-            if (activeClient != null) {
-                pollingScheduler.execute(() -> {
-                    try {
-                        EyeOnWaterMeterData data = activeClient.pollMeter(meterHandler.getMeterUuid(),
-                                meterHandler.getMeterId());
-                        if (registeredMeters.contains(meterHandler)) {
-                            meterHandler.updateState(data);
+            synchronized (this) {
+                EyeOnWaterClient activeClient = client;
+                if (activeClient != null) {
+                    pollingScheduler.execute(() -> {
+                        try {
+                            EyeOnWaterMeterData data = activeClient.pollMeter(meterHandler.getMeterUuid(),
+                                    meterHandler.getMeterId());
+                            synchronized (EyeOnWaterBridgeHandler.this) {
+                                if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
+                                    meterHandler.updateState(data);
+                                }
+                            }
+                        } catch (IOException e) {
+                            synchronized (EyeOnWaterBridgeHandler.this) {
+                                if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
+                                    logger.debug("Failed to perform initial poll for meter {}: {}",
+                                            meterHandler.getMeterId(), e.getMessage(), e);
+                                    String msg = e.getMessage();
+                                    meterHandler.updateStatusOffline(
+                                            msg != null ? msg : "@text/offline.failed-initial-poll");
+                                }
+                            }
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            synchronized (EyeOnWaterBridgeHandler.this) {
+                                if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
+                                    logger.debug("Interrupted during initial poll for meter {}",
+                                            meterHandler.getMeterId(), e);
+                                    meterHandler.updateStatusOffline("@text/offline.poll-interrupted");
+                                }
+                            }
                         }
-                    } catch (IOException e) {
-                        if (registeredMeters.contains(meterHandler)) {
-                            logger.debug("Failed to perform initial poll for meter {}: {}", meterHandler.getMeterId(),
-                                    e.getMessage(), e);
-                            String msg = e.getMessage();
-                            meterHandler.updateStatusOffline(msg != null ? msg : "@text/offline.failed-initial-poll");
-                        }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        if (registeredMeters.contains(meterHandler)) {
-                            logger.debug("Interrupted during initial poll for meter {}", meterHandler.getMeterId(), e);
-                            meterHandler.updateStatusOffline("@text/offline.poll-interrupted");
-                        }
-                    }
-                });
+                    });
+                }
             }
         }
     }
