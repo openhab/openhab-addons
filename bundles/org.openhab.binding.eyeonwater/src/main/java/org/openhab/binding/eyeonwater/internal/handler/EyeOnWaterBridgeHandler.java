@@ -307,6 +307,16 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                                     meterHandler.updateStatusOffline("@text/offline.poll-interrupted");
                                 }
                             }
+                        } catch (Exception e) {
+                            synchronized (EyeOnWaterBridgeHandler.this) {
+                                if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
+                                    logger.error("Unexpected error during initial poll for meter {}",
+                                            meterHandler.getMeterId(), e);
+                                    String msg = e.getMessage();
+                                    meterHandler
+                                            .updateStatusOffline(msg != null ? msg : "@text/offline.unexpected-error");
+                                }
+                            }
                         }
                     });
                 }
