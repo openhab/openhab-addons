@@ -68,5 +68,5 @@ Number:VolumetricFlowRate  WaterLeakFlowRate   "Water Leak Flow Rate [%.2f gal/m
 Switch                 WaterLeakAlert      "Water Leak Alert [%s]" <alarm> { channel="eyeonwater:meter:myaccount:mymeter:leak-alert" }
 Switch                 WaterLowBattery     "Water Meter Low Battery [%s]" <battery> { channel="eyeonwater:meter:myaccount:mymeter:low-battery" }
 Switch                 WaterReverseFlow    "Water Reverse Flow Alert [%s]" <alarm> { channel="eyeonwater:meter:myaccount:mymeter:reverse-flow" }
-DateTime               WaterLastReadTime   "Water Last Read Time [%1-%1-%1 %1:%1:%1]" <time> { channel="eyeonwater:meter:myaccount:mymeter:last-read-time" }
+DateTime               WaterLastReadTime   "Water Last Read Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" <time> { channel="eyeonwater:meter:myaccount:mymeter:last-read-time" }
 ```
