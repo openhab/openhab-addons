@@ -40,6 +40,7 @@ public class PacketListener {
 
     private final DefaultPacketListenerRegistry registry;
     private final List<PayloadHandler> handlers = new CopyOnWriteArrayList<>();
+    private static final int PACKET_BUFFER_SIZE = 2048;
 
     private String multicastGroup;
     private int port;
@@ -128,7 +129,7 @@ public class PacketListener {
         }
 
         public void run() {
-            byte[] bytes = new byte[608];
+            byte[] bytes = new byte[PACKET_BUFFER_SIZE];
             DatagramPacket msgPacket = new DatagramPacket(bytes, bytes.length);
             DatagramSocket socket = this.socket;
 
@@ -144,7 +145,7 @@ public class PacketListener {
                     for (PayloadHandler handler : handlers) {
                         handler.handle(meter);
                     }
-                } while (msgPacket.getLength() == 608);
+                } while (msgPacket.getLength() == bytes.length);
             } catch (IOException e) {
                 logger.debug("Unexpected payload received for group {}", group, e);
             }

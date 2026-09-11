@@ -13,11 +13,21 @@
 package org.openhab.binding.smaenergymeter.internal.handler;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.EnumMap;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.binding.smaenergymeter.internal.SerialNumber;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 
 /**
  * The {@link EnergyMeter} class is responsible for communication with the SMA device
@@ -26,55 +36,23 @@ import org.openhab.core.library.types.DecimalType;
  * @author Osman Basha - Initial contribution
  * @author Łukasz Dywicki - Extracted multicast group handling to
  *         {@link org.openhab.binding.smaenergymeter.internal.packet.PacketListener}.
+ * @author Marcel Goerentz - Refactor OBIS parsing, add power factor, reactive/apparent power, voltage, current, and
+ *         frequency
  */
 @NonNullByDefault
 public class EnergyMeter {
 
     private static final byte[] E_METER_PROTOCOL_ID = new byte[] { 0x60, 0x69 };
+    private static final int HEADER_LENGTH = 28;
+    private static final int VERSION_LENGTH = 4;
 
     private String serialNumber = "";
-    private final FieldDTO powerIn;
-    private final FieldDTO energyIn;
-    private final FieldDTO powerOut;
-    private final FieldDTO energyOut;
-    private final FieldDTO powerInL1;
-    private final FieldDTO energyInL1;
-    private final FieldDTO powerOutL1;
-    private final FieldDTO energyOutL1;
-    private final FieldDTO powerInL2;
-    private final FieldDTO energyInL2;
-    private final FieldDTO powerOutL2;
-    private final FieldDTO energyOutL2;
-    private final FieldDTO powerInL3;
-    private final FieldDTO energyInL3;
-    private final FieldDTO powerOutL3;
-    private final FieldDTO energyOutL3;
-
-    public EnergyMeter() {
-        powerIn = new FieldDTO(0x20, 4, 10);
-        energyIn = new FieldDTO(0x28, 8, 3600000);
-        powerOut = new FieldDTO(0x34, 4, 10);
-        energyOut = new FieldDTO(0x3C, 8, 3600000);
-
-        powerInL1 = new FieldDTO(0xA8, 4, 10);
-        energyInL1 = new FieldDTO(0xB0, 8, 3600000); // +8
-        powerOutL1 = new FieldDTO(0xBC, 4, 10); // + C
-        energyOutL1 = new FieldDTO(0xC4, 8, 3600000); // +8
-
-        powerInL2 = new FieldDTO(0x138, 4, 10);
-        energyInL2 = new FieldDTO(0x140, 8, 3600000); // +8
-        powerOutL2 = new FieldDTO(0x14C, 4, 10); // + C
-        energyOutL2 = new FieldDTO(0x154, 8, 3600000); // +8
-
-        powerInL3 = new FieldDTO(0x1C8, 4, 10);
-        energyInL3 = new FieldDTO(0x1D0, 8, 3600000); // +8
-        powerOutL3 = new FieldDTO(0x1DC, 4, 10); // + C
-        energyOutL3 = new FieldDTO(0x1E4, 8, 3600000); // +8
-    }
+    private final EnumMap<ObisId, BigDecimal> values = new EnumMap<>(ObisId.class);
+    private final EnumMap<ObisId, State> states = new EnumMap<>(ObisId.class);
 
     public void parse(byte[] bytes) throws IOException {
         try {
-            String sma = new String(Arrays.copyOfRange(bytes, 0, 3));
+            String sma = new String(Arrays.copyOfRange(bytes, 0, 3), StandardCharsets.US_ASCII);
             if (!"SMA".equals(sma)) {
                 throw new IOException("Not a SMA telegram." + sma);
             }
@@ -85,27 +63,40 @@ public class EnergyMeter {
             }
 
             ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0x14, 0x18));
-            serialNumber = Integer.toHexString(buffer.getInt());
+            serialNumber = SerialNumber.fromRaw(buffer.getInt());
+            values.clear();
+            states.clear();
 
-            powerIn.updateValue(bytes);
-            energyIn.updateValue(bytes);
-            powerOut.updateValue(bytes);
-            energyOut.updateValue(bytes);
+            int offset = HEADER_LENGTH;
+            while (offset + Integer.BYTES <= bytes.length) {
+                int obis = readInt32(bytes, offset);
+                offset += Integer.BYTES;
 
-            powerInL1.updateValue(bytes);
-            energyInL1.updateValue(bytes);
-            powerOutL1.updateValue(bytes);
-            energyOutL1.updateValue(bytes);
+                int valueLength = switch (obis & 0x0000FF00) {
+                    case 0x00000400 -> Integer.BYTES;
+                    case 0x00000800 -> Long.BYTES;
+                    default -> 0;
+                };
+                if (obis == ObisId.VERSION.getCode()) {
+                    valueLength = VERSION_LENGTH;
+                }
+                if (valueLength == 0) {
+                    break;
+                }
+                if (offset + valueLength > bytes.length) {
+                    break;
+                }
 
-            powerInL2.updateValue(bytes);
-            energyInL2.updateValue(bytes);
-            powerOutL2.updateValue(bytes);
-            energyOutL2.updateValue(bytes);
-
-            powerInL3.updateValue(bytes);
-            energyInL3.updateValue(bytes);
-            powerOutL3.updateValue(bytes);
-            energyOutL3.updateValue(bytes);
+                ObisId obisId = ObisId.fromCode(obis);
+                if (obisId == ObisId.VERSION) {
+                    states.put(obisId, decodeVersion(bytes, offset));
+                } else if (obisId != null) {
+                    long rawValue = valueLength == Integer.BYTES ? readInt32(bytes, offset) : readUint64(bytes, offset);
+                    values.put(obisId, scaleValue(rawValue, obisId));
+                    states.put(obisId, getQuantityType(obisId));
+                }
+                offset += valueLength;
+            }
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -115,67 +106,67 @@ public class EnergyMeter {
         return serialNumber;
     }
 
-    public DecimalType getPowerIn() {
-        return new DecimalType(powerIn.getValue());
+    public State getState(ObisId obisId) {
+        if (ObisId.VERSION == obisId) {
+            return states.getOrDefault(obisId, StringType.EMPTY);
+        }
+        return states.getOrDefault(obisId, getQuantityType(obisId));
     }
 
-    public DecimalType getPowerOut() {
-        return new DecimalType(powerOut.getValue());
+    private BigDecimal scaleValue(long rawValue, ObisId obisId) {
+        return BigDecimal.valueOf(rawValue).divide(BigDecimal.valueOf(obisId.getDivider()), 10, RoundingMode.HALF_UP)
+                .stripTrailingZeros();
     }
 
-    public DecimalType getEnergyIn() {
-        return new DecimalType(energyIn.getValue());
+    private StringType decodeVersion(byte[] bytes, int offset) {
+        int major = bytes[offset] & 0xFF;
+        int minor = bytes[offset + 1] & 0xFF;
+        int build = bytes[offset + 2] & 0xFF;
+        char revision = (char) (bytes[offset + 3] & 0xFF);
+        return new StringType("%d.%d.%d.%s".formatted(major, minor, build, revision == 0 ? "N" : revision));
     }
 
-    public DecimalType getEnergyOut() {
-        return new DecimalType(energyOut.getValue());
+    private int readInt32(byte[] bytes, int offset) {
+        return ByteBuffer.wrap(bytes, offset, Integer.BYTES).getInt();
     }
 
-    public DecimalType getPowerInL1() {
-        return new DecimalType(powerInL1.getValue());
+    private long readUint64(byte[] bytes, int offset) {
+        return ByteBuffer.wrap(bytes, offset, Long.BYTES).getLong();
     }
 
-    public DecimalType getPowerOutL1() {
-        return new DecimalType(powerOutL1.getValue());
-    }
-
-    public DecimalType getEnergyInL1() {
-        return new DecimalType(energyInL1.getValue());
-    }
-
-    public DecimalType getEnergyOutL1() {
-        return new DecimalType(energyOutL1.getValue());
-    }
-
-    public DecimalType getPowerInL2() {
-        return new DecimalType(powerInL2.getValue());
-    }
-
-    public DecimalType getPowerOutL2() {
-        return new DecimalType(powerOutL2.getValue());
-    }
-
-    public DecimalType getEnergyInL2() {
-        return new DecimalType(energyInL2.getValue());
-    }
-
-    public DecimalType getEnergyOutL2() {
-        return new DecimalType(energyOutL2.getValue());
-    }
-
-    public DecimalType getPowerInL3() {
-        return new DecimalType(powerInL3.getValue());
-    }
-
-    public DecimalType getPowerOutL3() {
-        return new DecimalType(powerOutL3.getValue());
-    }
-
-    public DecimalType getEnergyInL3() {
-        return new DecimalType(energyInL3.getValue());
-    }
-
-    public DecimalType getEnergyOutL3() {
-        return new DecimalType(energyOutL3.getValue());
+    private QuantityType<?> getQuantityType(ObisId obisId) {
+        BigDecimal value = values.getOrDefault(obisId, BigDecimal.ZERO);
+        Unit<?> unit = switch (obisId) {
+            case POSITIVE_REACTIVE_POWER, POSITIVE_REACTIVE_POWER_L1, POSITIVE_REACTIVE_POWER_L2,
+                    POSITIVE_REACTIVE_POWER_L3, NEGATIVE_REACTIVE_POWER, NEGATIVE_REACTIVE_POWER_L1,
+                    NEGATIVE_REACTIVE_POWER_L2, NEGATIVE_REACTIVE_POWER_L3 ->
+                (Unit<?>) Units.VAR;
+            case POSITIVE_REACTIVE_ENERGY, POSITIVE_REACTIVE_ENERGY_L1, POSITIVE_REACTIVE_ENERGY_L2,
+                    POSITIVE_REACTIVE_ENERGY_L3, NEGATIVE_REACTIVE_ENERGY, NEGATIVE_REACTIVE_ENERGY_L1,
+                    NEGATIVE_REACTIVE_ENERGY_L2, NEGATIVE_REACTIVE_ENERGY_L3 ->
+                (Unit<?>) Units.KILOVAR_HOUR;
+            case POSITIVE_APPARENT_POWER, POSITIVE_APPARENT_POWER_L1, POSITIVE_APPARENT_POWER_L2,
+                    POSITIVE_APPARENT_POWER_L3, NEGATIVE_APPARENT_POWER, NEGATIVE_APPARENT_POWER_L1,
+                    NEGATIVE_APPARENT_POWER_L2, NEGATIVE_APPARENT_POWER_L3 ->
+                (Unit<?>) Units.VOLT_AMPERE;
+            case POSITIVE_APPARENT_ENERGY, POSITIVE_APPARENT_ENERGY_L1, POSITIVE_APPARENT_ENERGY_L2,
+                    POSITIVE_APPARENT_ENERGY_L3, NEGATIVE_APPARENT_ENERGY, NEGATIVE_APPARENT_ENERGY_L1,
+                    NEGATIVE_APPARENT_ENERGY_L2, NEGATIVE_APPARENT_ENERGY_L3 ->
+                (Unit<?>) Units.VOLT_AMPERE_HOUR;
+            case POSITIVE_ACTIVE_POWER, POSITIVE_ACTIVE_POWER_L1, POSITIVE_ACTIVE_POWER_L2, POSITIVE_ACTIVE_POWER_L3,
+                    NEGATIVE_ACTIVE_POWER, NEGATIVE_ACTIVE_POWER_L1, NEGATIVE_ACTIVE_POWER_L2,
+                    NEGATIVE_ACTIVE_POWER_L3 ->
+                (Unit<?>) Units.WATT;
+            case POSITIVE_ACTIVE_ENERGY, POSITIVE_ACTIVE_ENERGY_L1, POSITIVE_ACTIVE_ENERGY_L2,
+                    POSITIVE_ACTIVE_ENERGY_L3, NEGATIVE_ACTIVE_ENERGY, NEGATIVE_ACTIVE_ENERGY_L1,
+                    NEGATIVE_ACTIVE_ENERGY_L2, NEGATIVE_ACTIVE_ENERGY_L3 ->
+                (Unit<?>) Units.KILOWATT_HOUR;
+            case POWER_FACTOR, POWER_FACTOR_L1, POWER_FACTOR_L2, POWER_FACTOR_L3 -> (Unit<?>) Units.ONE;
+            case CURRENT_L1, CURRENT_L2, CURRENT_L3 -> (Unit<?>) Units.AMPERE;
+            case VOLTAGE_L1, VOLTAGE_L2, VOLTAGE_L3 -> (Unit<?>) Units.VOLT;
+            case FREQUENCY -> (Unit<?>) Units.HERTZ;
+            default -> throw new IllegalArgumentException("Unsupported OBIS id for quantity state: " + obisId);
+        };
+        return new QuantityType<>(value, unit);
     }
 }

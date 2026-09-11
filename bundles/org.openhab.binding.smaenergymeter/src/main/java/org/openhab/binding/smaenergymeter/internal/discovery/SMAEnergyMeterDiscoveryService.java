@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * for discovering the SMA Energy Meter.
  *
  * @author Osman Basha - Initial contribution
+ * @author Marcel Goerentz - Fix property setting
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.smaenergymeter")
@@ -103,15 +104,16 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
 
     @Override
     public void handle(EnergyMeter energyMeter) throws IOException {
-        String identifier = energyMeter.getSerialNumber();
-        logger.debug("Adding a new SMA Energy Meter with S/N '{}' to inbox", identifier);
+        String decimalIdentifier = energyMeter.getSerialNumber();
+        String hexIdentifier = Integer.toHexString(Integer.parseInt(decimalIdentifier));
+        logger.debug("Adding a new SMA Energy Meter with S/N '{}' (0x{}) to inbox", decimalIdentifier, hexIdentifier);
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_VENDOR, "SMA");
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, identifier);
-        ThingUID uid = new ThingUID(THING_TYPE_ENERGY_METER, identifier);
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, decimalIdentifier);
+        ThingUID uid = new ThingUID(THING_TYPE_ENERGY_METER, hexIdentifier);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel("SMA Energy Meter #" + identifier)
-                .build();
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
+                .withLabel("SMA Energy Meter #" + hexIdentifier).build();
         thingDiscovered(result);
 
         logger.debug("Thing discovered '{}'", result);

@@ -15,6 +15,8 @@ package org.openhab.binding.smaenergymeter.internal.handler;
 import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -121,27 +123,26 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
     @Override
     public void handle(EnergyMeter energyMeter) {
         updateStatus(ThingStatus.ONLINE);
+        updateThingProperties(energyMeter.getSerialNumber());
 
         logger.debug("Update SMAEnergyMeter {} data '{}'", serialNumber, getThing().getUID());
 
-        updateState(CHANNEL_POWER_IN, energyMeter.getPowerIn());
-        updateState(CHANNEL_POWER_OUT, energyMeter.getPowerOut());
-        updateState(CHANNEL_ENERGY_IN, energyMeter.getEnergyIn());
-        updateState(CHANNEL_ENERGY_OUT, energyMeter.getEnergyOut());
+        CHANNEL_TO_OBIS.forEach((channelId, obisId) -> {
+            updateState(channelId, energyMeter.getState(obisId));
+        });
+    }
 
-        updateState(CHANNEL_POWER_IN_L1, energyMeter.getPowerInL1());
-        updateState(CHANNEL_POWER_OUT_L1, energyMeter.getPowerOutL1());
-        updateState(CHANNEL_ENERGY_IN_L1, energyMeter.getEnergyInL1());
-        updateState(CHANNEL_ENERGY_OUT_L1, energyMeter.getEnergyOutL1());
+    private void updateThingProperties(String actualSerialNumber) {
+        Map<String, String> currentProperties = editProperties();
+        String currentSerialNumber = currentProperties.get(Thing.PROPERTY_SERIAL_NUMBER);
+        String currentVendor = currentProperties.get(Thing.PROPERTY_VENDOR);
+        if (actualSerialNumber.equals(currentSerialNumber) && "SMA".equals(currentVendor)) {
+            return;
+        }
 
-        updateState(CHANNEL_POWER_IN_L2, energyMeter.getPowerInL2());
-        updateState(CHANNEL_POWER_OUT_L2, energyMeter.getPowerOutL2());
-        updateState(CHANNEL_ENERGY_IN_L2, energyMeter.getEnergyInL2());
-        updateState(CHANNEL_ENERGY_OUT_L2, energyMeter.getEnergyOutL2());
-
-        updateState(CHANNEL_POWER_IN_L3, energyMeter.getPowerInL3());
-        updateState(CHANNEL_POWER_OUT_L3, energyMeter.getPowerOutL3());
-        updateState(CHANNEL_ENERGY_IN_L3, energyMeter.getEnergyInL3());
-        updateState(CHANNEL_ENERGY_OUT_L3, energyMeter.getEnergyOutL3());
+        Map<String, String> updatedProperties = new HashMap<>(currentProperties);
+        updatedProperties.put(Thing.PROPERTY_SERIAL_NUMBER, actualSerialNumber);
+        updatedProperties.put(Thing.PROPERTY_VENDOR, "SMA");
+        updateProperties(updatedProperties);
     }
 }
