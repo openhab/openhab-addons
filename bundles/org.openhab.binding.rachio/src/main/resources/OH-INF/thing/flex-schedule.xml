@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rachio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="flex-schedule">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud"/>
+		</supported-bridge-type-refs>
+
+		<label>Rachio Flex Schedule Rule</label>
+		<description>A Rachio flex schedule rule.</description>
+
+		<channels>
+			<channel id="name" typeId="flex-schedule-name"/>
+			<channel id="enabled" typeId="flex-schedule-enabled"/>
+			<channel id="type" typeId="flex-schedule-type"/>
+			<channel id="start-time" typeId="flex-schedule-start-time"/>
+			<channel id="last-run" typeId="flex-schedule-last-run"/>
+			<channel id="next-run" typeId="flex-schedule-next-run"/>
+			<channel id="zones" typeId="flex-schedule-zones"/>
+			<channel id="seasonal-adjustment" typeId="flex-schedule-seasonal-adjustment"/>
+			<channel id="start" typeId="schedule-rule-start"/>
+			<channel id="skip" typeId="schedule-rule-skip"/>
+			<channel id="skip-forward-zone-run" typeId="schedule-rule-skip-forward-zone-run"/>
+			<channel id="last-update" typeId="flex-schedule-last-update"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>flexScheduleRuleId</representation-property>
+
+		<config-description>
+			<parameter name="flexScheduleRuleId" type="text" required="false">
+				<label>Flex Schedule Rule ID</label>
+				<description>Rachio API flex schedule rule UUID. Required for manually created flex schedule Things.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="flex-schedule-name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Flex schedule rule name.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flex-schedule-enabled">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>ON if the flex schedule rule is enabled.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flex-schedule-type">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>Flex schedule rule type.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flex-schedule-start-time">
+		<item-type>DateTime</item-type>
+		<label>Start Time</label>
+		<description>Flex schedule start time from Rachio startDate, with startTime used as a fallback when present.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flex-schedule-last-run">
+		<item-type>DateTime</item-type>
+		<label>Last Run</label>
+		<description>Last flex schedule run time when provided by Rachio. Remains UNDEF when the API does not provide a usable
+			value.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flex-schedule-next-run">
+		<item-type>DateTime</item-type>
+		<label>Next Run</label>
+		<description>Next flex schedule run time when provided by Rachio. Remains UNDEF when the API does not provide a usable
+			value.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flex-schedule-zones">
+		<item-type>String</item-type>
+		<label>Zones</label>
+		<description>Comma-separated Rachio zone IDs associated with this flex schedule.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="flex-schedule-seasonal-adjustment">
+		<item-type unitHint="one">Number:Dimensionless</item-type>
+		<label>Seasonal Adjustment</label>
+		<description>Seasonal adjustment value for the flex schedule rule. Sending a number updates the adjustment.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="schedule-rule-start">
+		<item-type>Switch</item-type>
+		<label>Start Schedule</label>
+		<description>Send ON to start this flex schedule rule.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Water</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="schedule-rule-skip">
+		<item-type>Switch</item-type>
+		<label>Skip Schedule</label>
+		<description>Send ON to skip this flex schedule rule.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="schedule-rule-skip-forward-zone-run">
+		<item-type>Switch</item-type>
+		<label>Skip Forward Zone Run</label>
+		<description>Send ON to skip the currently running zone in this flex schedule context.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="flex-schedule-last-update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp of last flex schedule state update.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

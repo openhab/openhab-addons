@@ -375,6 +375,7 @@
     <module>org.openhab.binding.pushsafer</module>
     <module>org.openhab.binding.qbus</module>
     <module>org.openhab.binding.qolsysiq</module>
+    <module>org.openhab.binding.rachio</module>
     <module>org.openhab.binding.radiobrowser</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
