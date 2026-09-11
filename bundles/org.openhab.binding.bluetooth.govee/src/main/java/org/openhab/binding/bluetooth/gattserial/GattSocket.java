@@ -37,11 +37,11 @@ public abstract class GattSocket<T extends GattMessage, R extends GattMessage> {
 
     private static final Future<?> COMPLETED_FUTURE = CompletableFuture.completedFuture(null);
 
-    private final Deque<MessageProcessor> messageProcessors = new ConcurrentLinkedDeque<>();
+    private final Deque<MessageProcessor<T, R>> messageProcessors = new ConcurrentLinkedDeque<>();
 
     public void registerMessageHandler(MessageHandler<@NonNull T, @NonNull R> messageHandler) {
         // we need to use a dummy future since ConcurrentHashMap doesn't allow null values
-        messageProcessors.addFirst(new MessageProcessor(messageHandler, COMPLETED_FUTURE));
+        messageProcessors.addFirst(new MessageProcessor<>(messageHandler, COMPLETED_FUTURE));
     }
 
     protected abstract ScheduledExecutorService getScheduler();
@@ -55,7 +55,7 @@ public abstract class GattSocket<T extends GattMessage, R extends GattMessage> {
             messageFuture.completeExceptionally(new TimeoutException("Timeout while waiting for response"));
         }, messageServicer.getTimeout(TimeUnit.NANOSECONDS), TimeUnit.NANOSECONDS);
 
-        MessageProcessor processor = new MessageProcessor(messageServicer, timeoutFuture);
+        MessageProcessor<T, R> processor = new MessageProcessor<>(messageServicer, timeoutFuture);
         messageProcessors.addLast(processor);
 
         messageFuture.whenComplete((v, ex) -> {
@@ -93,8 +93,8 @@ public abstract class GattSocket<T extends GattMessage, R extends GattMessage> {
     }
 
     private void handleMessage(R message) {
-        for (Iterator<MessageProcessor> it = messageProcessors.iterator(); it.hasNext();) {
-            MessageProcessor processor = it.next();
+        for (Iterator<MessageProcessor<T, R>> it = messageProcessors.iterator(); it.hasNext();) {
+            MessageProcessor<T, R> processor = it.next();
             if (processor.messageHandler.handleReceivedMessage(message)) {
                 processor.timeoutFuture.cancel(false);
                 it.remove();
@@ -106,7 +106,7 @@ public abstract class GattSocket<T extends GattMessage, R extends GattMessage> {
         }
     }
 
-    private class MessageProcessor {
+    private static class MessageProcessor<T extends GattMessage, R extends GattMessage> {
         private MessageHandler<@NonNull T, @NonNull R> messageHandler;
         private Future<?> timeoutFuture;
 
