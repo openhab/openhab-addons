@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.millheat.internal.dto;
 
+import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * This DTO class wraps the selectHomeList request
+ * One entry of {@code GET /houses/&#123;houseId&#125;/devices}: a room and the devices in it.
  *
- * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Initial contribution
  */
-public class GetHomesRequest implements AbstractRequest {
-    @Override
-    public String getRequestUrl() {
-        return "selectHomeList";
-    }
+public record RoomDevicesDTO(String roomId, @Nullable String roomName, @Nullable List<DeviceDTO> devices) {
 }

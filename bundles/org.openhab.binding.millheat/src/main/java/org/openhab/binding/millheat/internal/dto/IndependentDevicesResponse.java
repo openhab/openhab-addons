@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.millheat.internal.dto;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This DTO class wraps the selectHomeList response
+ * Response of {@code GET /houses/&#123;houseId&#125;/devices/independent}: devices that are not
+ * assigned to any room and are therefore controlled directly rather than through a room program.
  *
- * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Initial contribution
  */
-public class GetHomesResponse extends AbstractResponse {
-    public Integer hourSystem;
-    @SerializedName("homeList")
-    public HomeDTO[] homes = new HomeDTO[0];
+public record IndependentDevicesResponse(@Nullable List<DeviceDTO> items, @Nullable Integer totalRecords) {
 }

@@ -12,35 +12,46 @@
  */
 package org.openhab.binding.millheat.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * The {@link ModeType} represents a type of mode the user can set in the app.
+ * A mode a room or house can be in, as reported by the cloud API's lower case mode strings.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Map to the cloud API's string values
  */
+@NonNullByDefault
 public enum ModeType {
-    ALWAYSHOME(-1),
-    COMFORT(1),
-    SLEEP(2),
-    AWAY(3),
-    VACATION(4),
-    OFF(5);
+    WEEKLY_PROGRAM("weekly_program"),
+    COMFORT("comfort"),
+    SLEEP("sleep"),
+    AWAY("away"),
+    VACATION("vacation"),
+    NORMAL("normal"),
+    ALWAYS_HEATING("always_heating"),
+    OFF("off"),
+    UNKNOWN("unknown");
 
-    public static ModeType valueOf(final int modeVal) {
-        for (final ModeType mode : ModeType.values()) {
-            if (mode.value == modeVal) {
-                return mode;
+    private final String apiValue;
+
+    ModeType(final String apiValue) {
+        this.apiValue = apiValue;
+    }
+
+    public String getApiValue() {
+        return apiValue;
+    }
+
+    /** Unrecognised values map to {@link #UNKNOWN}, so a mode Mill adds later cannot break this. */
+    public static ModeType fromApiValue(final @Nullable String value) {
+        if (value != null) {
+            for (final ModeType mode : values()) {
+                if (mode.apiValue.equals(value)) {
+                    return mode;
+                }
             }
         }
-        return null;
-    }
-
-    private final int value;
-
-    ModeType(final int value) {
-        this.value = value;
-    }
-
-    public int getValue() {
-        return value;
+        return UNKNOWN;
     }
 }
