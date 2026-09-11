@@ -14,6 +14,7 @@ package org.openhab.binding.evcc.internal.discovery.mapper;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
 import org.openhab.binding.evcc.internal.discovery.Utils;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocaleProvider;
@@ -32,6 +33,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -45,6 +48,7 @@ import com.google.gson.JsonObject;
 @Component(service = EvccDiscoveryMapper.class)
 public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
 
+    private final Logger logger = LoggerFactory.getLogger(PlanDiscoveryMapper.class);
     private final BundleContext ctx;
     private final TranslationProvider tp;
     private final LocaleProvider lp;
@@ -57,7 +61,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
     }
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccWsBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
         JsonObject vehicles = state.getAsJsonObject(JSON_KEY_VEHICLES);
         if (vehicles == null) {
@@ -68,14 +72,19 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
             String id = entry.getKey();
             String title = v.has(JSON_KEY_TITLE) ? v.get(JSON_KEY_TITLE).getAsString() : id;
             if (v.has(JSON_KEY_PLAN) || v.has(JSON_KEY_REPEATING_PLANS)) {
-                results.addAll(discoverFromVehicle(v, id, title, bridgeHandler));
+                try {
+                    results.addAll(discoverFromVehicle(v, id, title, bridgeHandler));
+                } catch (NoSuchAlgorithmException e) {
+                    // should not happen
+                    logger.warn("Could not get hash algorithm instance");
+                }
             }
         }
         return results;
     }
 
     public Collection<DiscoveryResult> discoverFromVehicle(JsonObject vehicle, String id, String title,
-            EvccBridgeHandler bridgeHandler) {
+            EvccWsBridgeHandler bridgeHandler) throws NoSuchAlgorithmException {
         List<DiscoveryResult> results = new ArrayList<>();
         JsonObject plan = vehicle.getAsJsonObject(JSON_KEY_PLAN);
 
@@ -99,7 +108,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
     }
 
     private DiscoveryResult createPlanDiscoveryResult(String label, String planID, int index, String vehicleID,
-            EvccBridgeHandler bridgeHandler) {
+            EvccWsBridgeHandler bridgeHandler) {
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PLAN, bridgeHandler.getThing().getUID(), planID);
         return DiscoveryResultBuilder.create(uid).withLabel(label).withBridge(bridgeHandler.getThing().getUID())
                 .withProperty(PROPERTY_ID, planID).withProperty(PROPERTY_VEHICLE_ID, vehicleID)

@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.discovery.mapper.EvccDiscoveryMapper;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.osgi.service.component.annotations.Activate;
@@ -36,13 +36,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccDiscoveryService} is responsible for scanning the API response for things
- *
+ * The {@link EvccThingDiscoveryService} is responsible for scanning the API response for things
+ * 
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-@Component(scope = ServiceScope.PROTOTYPE, service = EvccDiscoveryService.class, configurationPid = "discovery.evcc")
-public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<EvccBridgeHandler> {
+@Component(scope = ServiceScope.PROTOTYPE, service = EvccThingDiscoveryService.class, configurationPid = "thing-discovery.evcc")
+public class EvccThingDiscoveryService extends AbstractThingHandlerDiscoveryService<EvccWsBridgeHandler> {
 
     private static final int TIMEOUT = 5;
     private static final int SCAN_INTERVAL_IN_SECONDS = 5; // We can scan every 5 seconds since we are using the cached
@@ -55,8 +55,8 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     private @Nullable ScheduledFuture<?> evccDiscoveryJob;
 
     @Activate
-    public EvccDiscoveryService(@Reference List<EvccDiscoveryMapper> mappers) {
-        super(EvccBridgeHandler.class, SUPPORTED_THING_TYPES, TIMEOUT, true);
+    public EvccThingDiscoveryService(@Reference List<EvccDiscoveryMapper> mappers) {
+        super(EvccWsBridgeHandler.class, SUPPORTED_THING_TYPES, TIMEOUT, true);
         this.mappers = mappers;
     }
 

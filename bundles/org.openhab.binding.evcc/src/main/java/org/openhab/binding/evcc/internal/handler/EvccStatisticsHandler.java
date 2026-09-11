@@ -14,6 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,14 +52,20 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            handler.register(this);
             JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
-            commonInitialize(new JsonObject());
+            handler.register(this);
+            initializeThingFromLatestState(stateOpt);
+            updateStatus(ThingStatus.ONLINE);
         });
+    }
+
+    @Override
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_STATISTICS);
     }
 
     @Override
@@ -66,13 +74,16 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public String getIdentifier() {
+        return "";
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
         state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
-        if (!isInitialized || state.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        if (state.isEmpty()) {
             return;
         }
-        updateStatus(ThingStatus.ONLINE);
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
             logger.debug("Extracting statistics for {}", statisticsKey);

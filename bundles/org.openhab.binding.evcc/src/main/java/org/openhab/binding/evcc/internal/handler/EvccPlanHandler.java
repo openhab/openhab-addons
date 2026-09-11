@@ -25,7 +25,9 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.time.format.TextStyle;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -74,7 +76,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         type = PROPERTY_TYPE_PLAN;
     }
 
-    private void buildLocalizedMaps(EvccBridgeHandler bridgeHandler) {
+    private void buildLocalizedMaps(EvccWsBridgeHandler bridgeHandler) {
         LocaleProvider localeProvider = bridgeHandler.getLocaleProvider();
         Locale locale = localeProvider.getLocale();
         localizedDayOfWeekMap.putAll(IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toUnmodifiableMap(d -> d,
@@ -100,19 +102,27 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 endpoint = String.join("/", endpoint, API_PATH_PLAN_REPEATING);
             }
             handler.register(this);
-            commonInitialize(new JsonObject());
+            updateStatus(ThingStatus.ONLINE);
         });
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_PLAN);
+    }
+
+    @Override
+    public String getIdentifier() {
+        return String.join(".", vehicleID, String.valueOf(index));
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
         if (state.has(JSON_KEY_VEHICLES)) {
             state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleID);
-            if (!isInitialized || state.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (state.isEmpty()) {
                 return;
             }
-            updateStatus(ThingStatus.ONLINE);
             if (index == 0) {
                 if (state.has(JSON_KEY_PLAN)) {
                     state = state.getAsJsonObject(JSON_KEY_PLAN);
@@ -131,7 +141,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
                 // Check the bounds
                 if (cachedRepeatingPlans.size() < index) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                     return;
                 }
                 // Get the corresponding repeating plan
@@ -139,15 +148,17 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 if (state.has(JSON_KEY_TIME) && state.has(JSON_KEY_TZ)) {
                     String time = state.get(JSON_KEY_TIME).getAsString();
                     String tz = state.get(JSON_KEY_TZ).getAsString();
-                    ZonedDateTime zdt = convertEvccTimeToLocal(time, tz);
-                    state.addProperty(JSON_KEY_TIME, zdt.toString());
+                    if (!TimeFormatValidator.isNotExactTimeFormat(time)) {
+                        ZonedDateTime zdt = convertEvccTimeToLocal(time, tz);
+                        state.addProperty(JSON_KEY_TIME, zdt.toString());
+                    }
                 }
                 if (state.has(JSON_KEY_WEEKDAYS)) {
                     parseWeekdaysResponse(state);
                 }
                 cachedRepeatingPlans.set(index - 1, state);
             }
-            updateStatesFromApiResponse(state);
+            createChannelsAndSetStatesFromApiResponse(state);
         }
     }
 
@@ -265,7 +276,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         ZonedDateTime zdt = ZonedDateTime.now(localZone).plusHours(1).withSecond(0).withNano(0);
         String time = zdt.toInstant().toString(); // Default time
         if (JSON_KEY_TIME.equals(channelKey)) {
-            if (!TimeFormatValidator.isExactTimeFormat(value)) {
+            if (!TimeFormatValidator.isNotExactTimeFormat(value)) {
                 try {
                     OffsetDateTime odt = OffsetDateTime.parse(value, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
                     time = odt.toZonedDateTime().toInstant().toString();
@@ -318,7 +329,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         /**
          * true, if input is exact yyyy-MM-dd'T'HH:mm:ss'Z'
          */
-        public static boolean isExactTimeFormat(String input) {
+        public static boolean isNotExactTimeFormat(String input) {
             try {
                 EXACT_TIME_FMT.parse(input);
                 return true;

@@ -18,13 +18,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
 import org.openhab.binding.evcc.internal.discovery.Utils;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -43,7 +42,7 @@ import com.google.gson.JsonObject;
 public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccWsBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
         JsonArray loadpoints = state.getAsJsonArray(JSON_KEY_LOADPOINTS);
         if (loadpoints == null) {
@@ -51,8 +50,7 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
         }
         for (int i = 0; i < loadpoints.size(); i++) {
             JsonObject lp = loadpoints.get(i).getAsJsonObject();
-            String title = lp.has(JSON_KEY_TITLE) ? lp.get(JSON_KEY_TITLE).getAsString().toLowerCase(Locale.ROOT)
-                    : "loadpoint" + i;
+            String title = lp.has(JSON_KEY_TITLE) ? lp.get(JSON_KEY_TITLE).getAsString() : "loadpoint" + i;
 
             ThingUID uid = new ThingUID("DUMMY:DUMMY:DUMMY");
             Map<String, Object> properties = new HashMap<>();

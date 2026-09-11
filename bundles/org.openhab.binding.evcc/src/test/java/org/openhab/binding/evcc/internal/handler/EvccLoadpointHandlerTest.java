@@ -133,7 +133,7 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
@@ -144,26 +144,28 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
-        handler.isInitialized = true;
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        handler.initialize();
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
+        handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
 
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testJsonGetsModifiedCorrectly() {
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        handler.initializeThingFromLatestState(exampleResponse);
         assertEquals(modifiedVerifyObject, modifiedTestState.getAsJsonArray("loadpoints").get(0));
     }
 

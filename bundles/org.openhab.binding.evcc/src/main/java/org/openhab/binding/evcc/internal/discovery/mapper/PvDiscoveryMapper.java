@@ -17,12 +17,11 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
 import org.openhab.binding.evcc.internal.discovery.Utils;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -41,7 +40,7 @@ import com.google.gson.JsonObject;
 public class PvDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccWsBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
         JsonArray pvs = state.getAsJsonArray(JSON_KEY_PV);
         if (pvs == null) {
@@ -49,8 +48,7 @@ public class PvDiscoveryMapper implements EvccDiscoveryMapper {
         }
         for (int i = 0; i < pvs.size(); i++) {
             JsonObject pv = pvs.get(i).getAsJsonObject();
-            String title = pv.has(JSON_KEY_TITLE) ? pv.get(JSON_KEY_TITLE).getAsString().toLowerCase(Locale.ROOT)
-                    : JSON_KEY_PV + i;
+            String title = pv.has(JSON_KEY_TITLE) ? pv.get(JSON_KEY_TITLE).getAsString() : JSON_KEY_PV + i;
 
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PV, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(title));

@@ -14,7 +14,6 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_ID;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_INDEX;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_VEHICLE_ID;
@@ -96,18 +95,48 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
-        handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+        when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
+
         handler.initialize();
+
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
+    @SuppressWarnings("null")
+    @Test
+    public void testInitializeWithoutBridgeHandler() {
+        handler.bridgeHandler = null;
+
+        handler.initialize();
+
+        assertSame(ThingStatus.OFFLINE, lastThingStatus);
+        assertSame(ThingStatusDetail.BRIDGE_UNINITIALIZED, lastThingStatusDetail);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testInitializeWithBridgeHandlerWithMissingVehicleData() {
+        // Test when state is available but doesn't contain data for this vehicle
+        // Should still go ONLINE and wait for data via handleUpdate()
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+        when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
+
+        handler.initialize();
+
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+    }
+
+    @SuppressWarnings("null")
     @Test
     public void testMigrationFromIdToVehicleId() {
         Configuration config = new Configuration();
@@ -117,9 +146,11 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
         when(thing.getProperties()).thenReturn(Map.of("type", "vehicle"));
 
         handler = spy(createHandler());
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        handler.bridgeHandler = bridgeHandler;
 
-        when(handler.bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+        when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
 
         handler.initialize();
 
