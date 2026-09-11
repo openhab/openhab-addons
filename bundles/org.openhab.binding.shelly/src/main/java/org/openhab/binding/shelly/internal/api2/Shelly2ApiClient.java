@@ -734,12 +734,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                     status.tmp = new ShellySensorTmp();
                 }
                 status.tmp.isValid = true;
-                status.tmp.tC = tC;
-                status.tmp.tF = temperature.tF;
-                status.tmp.units = "C";
                 sr.temperature = tC;
-                if (status.temperature == null || tC > status.temperature) {
+                // One reading per switch/PM component: status.tmp follows the hottest one, like status.temperature.
+                // NotifyStatus seeds SHELLY_API_INVTEMP, which is no real maximum.
+                boolean noMaxYet = status.temperature == null || status.temperature == SHELLY_API_INVTEMP;
+                if (noMaxYet || tC > status.temperature) {
                     status.temperature = sr.temperature;
+                    status.tmp.tC = tC;
+                    status.tmp.tF = temperature.tF;
+                    status.tmp.units = "C";
                 }
             }
         }
