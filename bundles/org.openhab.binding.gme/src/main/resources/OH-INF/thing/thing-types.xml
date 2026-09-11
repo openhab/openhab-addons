@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="api">
+		<label>GME API Account</label>
+		<description>Connection to the Gestore dei Mercati Energetici market data API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="password-expiry" typeId="timestamp">
+				<label>Password Expiry</label>
+				<description>Estimated expiry date of the current GME API password.</description>
+			</channel>
+			<channel id="password-days-remaining" typeId="password-days">
+				<label>Password Days Remaining</label>
+				<description>Estimated number of days remaining before the GME API password expires.</description>
+			</channel>
+			<channel id="password-status" typeId="password-status">
+				<label>Password Status</label>
+				<description>Password age status: OK, CHANGE_SOON or EXPIRED.</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username for the GME API.</description>
+			</parameter>
+
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for the GME API.</description>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" unit="min" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval used to refresh market data.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="pun">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>PUN Prices</label>
+		<description>Italian PUN electricity market prices from the GME MGP market.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="current-price" typeId="energy-price">
+				<label>Current Price</label>
+			</channel>
+			<channel id="next-price" typeId="energy-price">
+				<label>Next Price</label>
+			</channel>
+			<channel id="today-prices" typeId="energy-price">
+				<label>Today's Prices</label>
+				<description>Hourly PUN prices for today as a time series.</description>
+			</channel>
+			<channel id="tomorrow-prices" typeId="energy-price">
+				<label>Tomorrow's Prices</label>
+				<description>Hourly PUN prices for tomorrow as a time series.</description>
+			</channel>
+
+			<channel id="today-average" typeId="energy-price">
+				<label>Today Average</label>
+			</channel>
+			<channel id="today-min" typeId="energy-price">
+				<label>Today Minimum</label>
+			</channel>
+			<channel id="today-max" typeId="energy-price">
+				<label>Today Maximum</label>
+			</channel>
+			<channel id="today-min-time" typeId="timestamp">
+				<label>Today Minimum Time</label>
+			</channel>
+			<channel id="today-max-time" typeId="timestamp">
+				<label>Today Maximum Time</label>
+			</channel>
+
+			<channel id="tomorrow-average" typeId="energy-price">
+				<label>Tomorrow Average</label>
+			</channel>
+			<channel id="tomorrow-min" typeId="energy-price">
+				<label>Tomorrow Minimum</label>
+			</channel>
+			<channel id="tomorrow-max" typeId="energy-price">
+				<label>Tomorrow Maximum</label>
+			</channel>
+			<channel id="tomorrow-min-time" typeId="timestamp">
+				<label>Tomorrow Minimum Time</label>
+			</channel>
+			<channel id="tomorrow-max-time" typeId="timestamp">
+				<label>Tomorrow Maximum Time</label>
+			</channel>
+
+			<channel id="tomorrow-available" typeId="availability">
+				<label>Tomorrow Available</label>
+			</channel>
+
+			<channel id="last-update" typeId="timestamp">
+				<label>Last Update</label>
+			</channel>
+		</channels>
+	</thing-type>
+
+	<channel-type id="energy-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Energy Price</label>
+		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
+		<state readOnly="true" pattern="%.6f %unit%"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="password-days">
+		<item-type>Number</item-type>
+		<label>Password Days Remaining</label>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="password-status">
+		<item-type>String</item-type>
+		<label>Password Status</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="availability">
+		<item-type>Switch</item-type>
+		<label>Availability</label>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

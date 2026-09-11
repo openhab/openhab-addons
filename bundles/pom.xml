@@ -192,6 +192,7 @@
     <module>org.openhab.binding.govee</module>
     <module>org.openhab.binding.gpio</module>
     <module>org.openhab.binding.globalcache</module>
+    <module>org.openhab.binding.gme</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
     <module>org.openhab.binding.gridbox</module>
