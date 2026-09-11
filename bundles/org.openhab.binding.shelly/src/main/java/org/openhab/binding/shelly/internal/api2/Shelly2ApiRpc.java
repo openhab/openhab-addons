@@ -858,6 +858,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             getThing().updateWakeupReason(values);
         }
 
+        status.temperature = null; // hottest component is tracked per cycle, so a cooling device is followed
         fillDeviceStatus(status, ds, false);
         if (profile.isPresence) {
             updatePresenceZoneStatus(profile);
