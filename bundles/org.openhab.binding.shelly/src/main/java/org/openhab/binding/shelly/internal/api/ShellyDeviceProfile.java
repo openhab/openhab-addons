@@ -324,6 +324,32 @@ public class ShellyDeviceProfile {
         }
     }
 
+    /**
+     * (Re-)derive the watchdog timeout ({@link #updatePeriod}) from the current {@link #settings}.sleepMode.
+     * Callers re-invoke this whenever a fresher wakeup period becomes known, so the timeout self-corrects
+     * immediately instead of only taking effect on the next full re-initialization.
+     */
+    public void updateWatchdogPeriod() {
+        if (settings.sleepMode != null && !isTRV) {
+            // Sensor, usually 12h, H&T in USB mode 10min
+            int wakeupPeriod = "m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
+                    ? settings.sleepMode.period * 60 // minutes
+                    : settings.sleepMode.period * 3600; // hours
+            // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
+            // margin for the report round-trip itself
+            updatePeriod = (int) Math.round(wakeupPeriod * 1.1) + 60;
+            if (isSmoke) {
+                // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
+                updatePeriod += 1800;
+            }
+        } else if (settings.coiot != null && settings.coiot.updatePeriod != null) {
+            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
+            updatePeriod = 2 * Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(settings.coiot.updatePeriod)) + 10;
+        } else {
+            updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+        }
+    }
+
     public String getControlGroup(int i) {
         if (i < 0) {
             logger.debug("{}: Invalid index {} for getControlGroup()", thingName, i);
