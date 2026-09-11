@@ -970,6 +970,7 @@ public class ShellyComponents {
             if (value.mode != null) {
                 mode = SHELLY_RGBCCT_MODE_RGB.equals(Objects.requireNonNull(value.mode)) ? Mode.COLOR : Mode.WHITE;
                 model.setMode(mode);
+                updated = true;
             } else {
                 mode = model.getMode();
             }

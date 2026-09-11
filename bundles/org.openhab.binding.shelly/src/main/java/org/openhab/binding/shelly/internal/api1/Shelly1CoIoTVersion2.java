@@ -340,7 +340,6 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             case "5107": // {"I":5107,"T":"S","D":"blue","R":"0/255","L":1},
             case "5108": // {"I":5108,"T":"S","D":"white","R":"0/255","L":1},
                 // already covered by base handler
-                // TODO it looks like case "5109" 'effect' never gets handled..
                 break;
 
             case "6101": // A, overtemp, 0/1
