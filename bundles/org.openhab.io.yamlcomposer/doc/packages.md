@@ -205,23 +205,6 @@ Package consumers can use `!default`, `!replace` (or `!freeze`), and `!remove` t
 The [deep‑merge](deep-merge.md) documentation contains the authoritative, consolidated definitions and examples for these tags.
 Use the deep‑merge reference when you need the precise semantics for the merge behavior during package merging.
 
-## Automatic Removal of Empty Values
-
-During merging, empty structures are automatically stripped from the final configuration.
-Empty maps (`{}`) and lists (`[]`) as well as map keys whose value is `null` or an empty string are removed.
-This keeps the resulting configuration clean and allows packages to define catch‑all defaults.
-
-**Example:**
-
-```yaml
-variables:
-  icon: null   # default to avoid unknown‑variable warnings
-
-icon: ${icon}
-```
-
-Because `icon` evaluates to `null`, the entire `icon:` key is removed from the merged output unless the including file overrides it.
-
 ## How Package Merging Differs from YAML Merge Keys
 
 Mappings from packages are merged recursively with the corresponding mappings in the final top‑level section.
