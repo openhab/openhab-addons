@@ -651,28 +651,26 @@ Go to the Items list, select the Item, add a State Description Metadata, and set
 
 ## Full Example
 
-<!--
-FIXME(#15896): For an example to be a full example it should probably also show off use of `Thing` properties and such
--->
+Nested modules can take optional labels, locations, channel names, and additional properties (`refresh`, `dimspeed`, counter settings, subaddresses).
 
 .things:
 
 ```java
 Bridge velbus:bridge:1 [ port="COM1" ] {
-    vmb2ble     01
-    vmb2pbn     02
+    vmb2ble     01 "Kitchen blinds" @ "Kitchen" [ CH1="Window", CH2="Door" ]
+    vmb2pbn     02 "Kitchen buttons" @ "Kitchen" [ CH1="Light" ]
     vmb6pbn     03
     vmb8pbu     04
-    vmb7in      05
-    vmb4ryld    06
-    vmb4dc      07
-    vmbgp1      08
+    vmb7in      05 "Energy meters" [ refresh=60, counter1Unit="kWh", counter1PulseMultiplier=1 ]
+    vmb4ryld    06 "Living relays" [ CH1="Living Room" ]
+    vmb4dc      07 "TV dimmer" [ dimspeed=5, CH1="TV lights", CH2="Accent" ]
+    vmbgp1      08 "Living thermostat" [ refresh=30, subaddress1="21", CH9="Temperature" ]
     vmbgp2      09
     vmbgp4      0A
     vmbgp4pir   0B
     vmbgpo      0C
     vmbgpod     0D
-    vmbpiro     0E
+    vmbpiro     0E "Outside" [ refresh=120 ]
 }
 ```
 
