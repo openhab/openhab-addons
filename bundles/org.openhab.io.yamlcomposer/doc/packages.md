@@ -219,23 +219,6 @@ The way keys interact depends on their data type.
 | Map       | Merge     | Maps are merged key by key, recursively.                                                                 |
 | List      | Merge     | Lists are concatenated (package values first) and de-duplicated.                                         |
 
-### Automatic Removal of Empty Values
-
-During merging, empty structures are automatically stripped from the final configuration.
-Empty maps (`{}`) and lists (`[]`) as well as map keys whose value is `null` or an empty string are removed.
-This keeps the resulting configuration clean and allows packages to define catch‑all defaults.
-
-**Example:**
-
-```yaml
-variables:
-  icon: null   # default to avoid unknown‑variable warnings
-
-icon: ${icon}
-```
-
-Because `icon` evaluates to `null`, the entire `icon:` key is removed from the merged output unless the including file overrides it.
-
 ### How Package Merging Differs from YAML Merge Keys
 
 Mappings from packages are merged recursively with the corresponding mappings in the final top‑level section.
