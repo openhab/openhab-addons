@@ -14,7 +14,7 @@ The following databases are currently supported and tested:
 | [Apache Derby](https://db.apache.org/derby/) | [derby-10.17.1.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                                                            |
 | [H2](https://www.h2database.com/)            | [h2-2.4.240.jar](https://mvnrepository.com/artifact/com.h2database/h2)                                                                      |
 | [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.7.4.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb)                                                                    |
-| [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.5.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client)                                    |
+| [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.5.9.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client)                                    |
 | [MySQL](https://www.mysql.com/)              | [mysql-connector-j-9.7.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)                                               |
 | [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.7.12.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
 | [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.53.1.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)                                                       |
