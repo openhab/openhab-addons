@@ -442,7 +442,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Must run after updateAllChannels(): dynamic per-device channels (e.g. RGBW2's
         // channel1..4) don't exist yet before that call, so migration rules matching them
         // would find nothing and the schema version would get stamped as up-to-date anyway.
-        ShellyChannelMigration.migrateChannels(this);
+        migrateChannels();
+
         postEvent(ALARM_TYPE_NONE, false);
 
         logger.debug("{}: Thing successfully initialized.", thingName);
@@ -451,6 +452,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // would race with that fresh read and can transiently show a stale/wrong value
         setThingOnline(false);
         return true; // success
+    }
+
+    protected void migrateChannels() {
+        ShellyChannelMigration.migrateChannels(this);
     }
 
     /**

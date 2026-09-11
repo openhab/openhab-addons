@@ -172,40 +172,45 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             Map<String, Channel> add = ShellyChannelDefinitions.createLightChannels(getThing(), profile, status, idx);
             if (!add.isEmpty()) {
                 updateChannelDefinitions(add);
-                hideLegacyLightChannels();
                 return true;
             }
         }
         return false;
     }
 
+    @Override
+    protected void migrateChannels() {
+        super.migrateChannels();
+        hideSecondaryChannels();
+    }
+
     /**
-     * Hides legacy channels that are not primarily used in the openHAB light convention. The channels are 'hidden'
-     * by cloning them to an advanced channel-type. This is done to avoid breaking existing item channel links, but
-     * at the same time avoiding confusing new users about no longer important channels.
+     * Hides channels that are not primarily used in the openHAB light convention. The channels are 'hidden'
+     * by changing their channel-type to advanced. So all existing item channel links are retained, but at
+     * the same time it avoids confusing new less advanced users with less important channels.
      */
-    private void hideLegacyLightChannels() {
+    private void hideSecondaryChannels() {
         boolean dirty = false;
-        List<Channel> oldChannels = getThing().getChannels();
-        List<Channel> newChannels = new ArrayList<>(oldChannels.size());
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        boolean hasPrimaryColor = channels.stream().anyMatch(c -> CHAN_FULL_PRIMARY_COLOR.equals(c.getUID().getId()));
 
-        boolean hasColor = oldChannels.stream().anyMatch(channel -> CHAN_ID_COLOR.equals(channel.getUID().getId()));
-
-        for (Channel oldChannel : oldChannels) {
-            String id = oldChannel.getUID().getId();
-            ChannelTypeUID type = oldChannel.getChannelTypeUID();
-            if (CHAN_ID_POWER.equals(id) && !TYPE_UID_ADV_POWER.equals(type)) {
-                newChannels.add(ChannelBuilder.create(oldChannel).withType(TYPE_UID_ADV_POWER).build());
+        for (int i = 0; i < channels.size(); i++) {
+            Channel channel = channels.get(i);
+            String id = channel.getUID().getId();
+            ChannelTypeUID type = channel.getChannelTypeUID();
+            if (CHAN_FULL_LIGHT_POWER.equals(id) && !TYPE_UID_ADV_POWER.equals(type)) {
+                Channel advanced = ChannelBuilder.create(channel).withType(TYPE_UID_ADV_POWER).build();
+                channels.set(i, advanced);
                 dirty = true;
-            } else if (CHAN_ID_BRIGHTNESS.equals(id) && hasColor && !TYPE_UID_ADV_BRIGHTNESS.equals(type)) {
-                newChannels.add(ChannelBuilder.create(oldChannel).withType(TYPE_UID_ADV_BRIGHTNESS).build());
+            } else if (CHAN_FULL_WHITE_BRIGHT.equals(id) && hasPrimaryColor && !TYPE_UID_ADV_BRIGHT.equals(type)) {
+                Channel advanced = ChannelBuilder.create(channel).withType(TYPE_UID_ADV_BRIGHT).build();
+                channels.set(i, advanced);
                 dirty = true;
-            } else {
-                newChannels.add(oldChannel);
             }
         }
+
         if (dirty) {
-            updateThing(editThing().withChannels(newChannels).build());
+            updateThing(editThing().withChannels(channels).build());
         }
     }
 
