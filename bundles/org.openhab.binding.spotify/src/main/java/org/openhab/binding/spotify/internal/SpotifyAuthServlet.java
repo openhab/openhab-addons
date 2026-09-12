@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -48,6 +50,16 @@ public class SpotifyAuthServlet extends HttpServlet {
     private static final long serialVersionUID = -4719613645562518231L;
 
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
+
+    // Headers consulted, in order, to determine the scheme (http/https) used by the client when openHAB is
+    // reachable through a reverse proxy. The first header found to be present wins.
+    private static final String HEADER_X_FORWARDED_PROTO = "X-Forwarded-Proto";
+    private static final String HEADER_X_FORWARDED_SSL = "X-Forwarded-Ssl";
+    private static final String HEADER_FRONT_END_HTTPS = "Front-End-Https";
+    private static final String HEADER_FORWARDED = "Forwarded";
+    private static final Pattern FORWARDED_PROTO_PATTERN = Pattern.compile("proto=\"?([a-zA-Z]+)\"?",
+            Pattern.CASE_INSENSITIVE);
+    private static final Set<String> VALID_SCHEMES = Set.of("http", "https");
 
     // Simple HTML templates for inserting messages.
     private static final String HTML_EMPTY_PLAYERS = "<p class='block'>Manually add a Spotify Player Bridge to authorize it here.<p>";
@@ -85,7 +97,7 @@ public class SpotifyAuthServlet extends HttpServlet {
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
         logger.debug("Spotify auth callback servlet received GET request {}.", req.getRequestURI());
-        final String servletBaseURL = req.getRequestURL().toString();
+        final String servletBaseURL = extractServletBaseURL(req);
         final Map<String, String> replaceMap = new HashMap<>();
 
         handleSpotifyRedirect(replaceMap, servletBaseURL, req.getQueryString());
@@ -94,6 +106,140 @@ public class SpotifyAuthServlet extends HttpServlet {
         replaceMap.put(KEY_PLAYERS, formatPlayers(playerTemplate, servletBaseURL));
         resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
         resp.getWriter().close();
+    }
+
+    /**
+     * Extracts the servlet base url from the received http request, taking into account that openHAB may be running
+     * behind a reverse proxy that terminates https, which means {@link HttpServletRequest#getRequestURL()} would
+     * incorrectly report a http scheme instead of the https scheme used by the client.
+     *
+     * @param req the received http request
+     * @return the servlet base url with the correct scheme
+     */
+    String extractServletBaseURL(HttpServletRequest req) {
+        final StringBuffer requestURL = req.getRequestURL();
+        final String scheme;
+
+        if (spotifyAuthService.isForceHttps()) {
+            logger.debug("Force HTTPS is enabled, using 'https' as the redirect URI scheme.");
+            scheme = "https";
+        } else {
+            scheme = determineScheme(req);
+        }
+        return requestURL.replace(0, requestURL.indexOf(":"), scheme).toString();
+    }
+
+    /**
+     * Determines the scheme (http/https) used by the client, cascading through a series of headers commonly set by
+     * reverse proxies before falling back to the scheme reported by the servlet container itself, which is wrong
+     * when a reverse proxy terminates https and connects to openHAB over plain http.
+     *
+     * @param req the received http request
+     * @return the scheme to use for the redirect URI
+     */
+    String determineScheme(HttpServletRequest req) {
+        String scheme = schemeFromForwardedProto(req);
+        if (scheme == null) {
+            scheme = schemeFromOnOffHeader(req, HEADER_X_FORWARDED_SSL);
+        }
+        if (scheme == null) {
+            scheme = schemeFromOnOffHeader(req, HEADER_FRONT_END_HTTPS);
+        }
+        if (scheme == null) {
+            scheme = schemeFromForwarded(req);
+        }
+        if (scheme == null) {
+            scheme = req.getScheme();
+            logger.debug("None of the recognized forwarded-proto headers had a valid value, falling back to the "
+                    + "request scheme '{}'.", scheme);
+        }
+        return scheme;
+    }
+
+    private @Nullable String schemeFromForwardedProto(HttpServletRequest req) {
+        final String value = logAndGetHeader(req, HEADER_X_FORWARDED_PROTO);
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        // The header may contain a comma-separated list when multiple proxies are chained; the first entry is
+        // the scheme seen by the outermost proxy, i.e. the one the client actually used.
+        final String candidate = value.split(",")[0].trim();
+        return normalizeSchemeOrIgnore(HEADER_X_FORWARDED_PROTO, candidate);
+    }
+
+    /**
+     * Parses a de-facto "on"/"off" style header (e.g. {@code X-Forwarded-Ssl}, {@code Front-End-Https}) into a
+     * scheme. Any value other than the two documented ones is ignored rather than defaulting to http, so an
+     * unrecognized value does not incorrectly shadow a lower-priority but valid header.
+     *
+     * @param req the received http request
+     * @param headerName the name of the header to read
+     * @return "https" for "on", "http" for "off", or {@code null} if the header is absent or has any other value
+     */
+    private @Nullable String schemeFromOnOffHeader(HttpServletRequest req, String headerName) {
+        final String value = logAndGetHeader(req, headerName);
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        final String normalized = value.trim().toLowerCase(Locale.ROOT);
+        if ("on".equals(normalized)) {
+            return "https";
+        } else if ("off".equals(normalized)) {
+            return "http";
+        } else {
+            logger.debug("Header '{}' has unrecognized value '{}', expected 'on' or 'off'; ignoring it.", headerName,
+                    value);
+            return null;
+        }
+    }
+
+    private @Nullable String schemeFromForwarded(HttpServletRequest req) {
+        final String value = logAndGetHeader(req, HEADER_FORWARDED);
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        // RFC 7239, e.g. "for=1.2.3.4;proto=https;by=203.0.113.43"; only the first hop is relevant here.
+        final Matcher matcher = FORWARDED_PROTO_PATTERN.matcher(value.split(",")[0]);
+        if (!matcher.find()) {
+            return null;
+        }
+        return normalizeSchemeOrIgnore(HEADER_FORWARDED, matcher.group(1));
+    }
+
+    /**
+     * Normalizes a candidate scheme extracted from a header and validates it is either "http" or "https", logging
+     * and returning {@code null} for anything else so the caller can fall through to the next, lower-priority
+     * source instead of using an invalid scheme in the redirect URI.
+     *
+     * @param headerName the header the candidate was extracted from, used for logging only
+     * @param candidate the candidate scheme value
+     * @return the normalized scheme ("http" or "https"), or {@code null} if the candidate is not a valid scheme
+     */
+    private @Nullable String normalizeSchemeOrIgnore(String headerName, String candidate) {
+        final String normalized = candidate.toLowerCase(Locale.ROOT);
+        if (VALID_SCHEMES.contains(normalized)) {
+            return normalized;
+        }
+        logger.debug("Header '{}' has unrecognized scheme value '{}', expected 'http' or 'https'; ignoring it.",
+                headerName, candidate);
+        return null;
+    }
+
+    /**
+     * Reads the given header from the request and logs whether it was present and, if so, its value.
+     *
+     * @param req the received http request
+     * @param headerName the name of the header to read
+     * @return the header value, or {@code null} if not present
+     */
+    private @Nullable String logAndGetHeader(HttpServletRequest req, String headerName) {
+        final String value = req.getHeader(headerName);
+        if (value == null) {
+            logger.debug("Header '{}' is not present on the request.", headerName);
+        } else {
+            logger.debug("Header '{}' is present with value '{}'.", headerName, value);
+        }
+        return value;
     }
 
     /**
