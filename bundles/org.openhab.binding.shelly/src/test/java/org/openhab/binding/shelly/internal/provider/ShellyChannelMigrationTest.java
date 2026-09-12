@@ -147,6 +147,48 @@ public class ShellyChannelMigrationTest {
     }
 
     @Test
+    void createMeterChannelsCreatesOnlyReplacementForNewDevices() {
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("shelly", "shelly1pm", "test"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLY1PM);
+        ShellySettingsMeter meter = new ShellySettingsMeter();
+        meter.power = 42.0;
+        meter.total = 123.0;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createMeterChannels(thing, profile, meter,
+                CHANNEL_GROUP_METER);
+
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTWATTS)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALKWH)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALENERGY)));
+    }
+
+    @Test
+    void createEMeterChannelsCreatesOnlyReplacementForNewDevices() {
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("shelly", "shellyplus1pm", "test"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        ShellySettingsEMeter emeter = new ShellySettingsEMeter();
+        emeter.power = 42.0;
+        emeter.total = 123.0;
+        emeter.totalReturned = 5.0;
+        emeter.reactive = 1.0;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createEMeterChannels(thing, profile, emeter,
+                CHANNEL_GROUP_METER);
+
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTWATTS)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALKWH)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_TOTALRET)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_REACTWATTS)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALENERGY)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_RETURNEDENERGY)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_REACTPOWER)));
+    }
+
+    @Test
     void energyHistMinLabelHasNoTrailingDigitSuffix() {
         // Regression: createChannel() used to append a digit to any label whose channel NAME ended in a
         // digit, even when that digit is part of the channel's fixed identity, not a group index.

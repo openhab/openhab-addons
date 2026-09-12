@@ -13,16 +13,11 @@
 package org.openhab.io.yamlcomposer.internal.core;
 
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
-import org.openhab.io.yamlcomposer.internal.placeholders.ReplacePlaceholder;
-import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
 
 /**
  * Processor for handling 'packages' in YAML models.
@@ -45,14 +40,16 @@ public class PackageProcessor {
     private final Path relativePath;
     private final SourceLocator sourceLocator;
     private final RecursiveTransformer recursiveTransformer;
+    private final Scope scope;
 
-    public PackageProcessor(BufferedLogger logger, Path absolutePath, Path relativePath, SourceLocator sourceLocator,
-            RecursiveTransformer recursiveTransformer) {
+    public PackageProcessor(Scope scope, RecursiveTransformer recursiveTransformer, Path absolutePath,
+            Path relativePath, BufferedLogger logger, SourceLocator sourceLocator) {
         this.logger = logger;
         this.absolutePath = absolutePath;
         this.relativePath = relativePath;
         this.sourceLocator = sourceLocator;
         this.recursiveTransformer = recursiveTransformer;
+        this.scope = scope;
     }
 
     /**
@@ -69,7 +66,8 @@ public class PackageProcessor {
         }
 
         // Expand root structural directives (!for, !if) while deferring !include and !insert
-        Object expandedPackages = recursiveTransformer.transform(packagesObj, ProcessingPhase.DIRECTIVES);
+        EvaluationContext pkgContext = new EvaluationContext(scope, ProcessingPhase.DIRECTIVES_WITH_SUBSTITUTIONS);
+        Object expandedPackages = recursiveTransformer.transform(packagesObj, pkgContext);
 
         if (expandedPackages instanceof Map<?, ?> packagesMap) {
             mergePackages(yamlMap, packagesMap);
@@ -85,7 +83,8 @@ public class PackageProcessor {
      */
     private void mergePackages(Map<?, ?> mainData, Map<?, ?> packages) {
         packages.forEach((pkgKey, pkg) -> {
-            Object pkgKeyObj = recursiveTransformer.transform(pkgKey);
+            EvaluationContext keyContext = new EvaluationContext(scope, ProcessingPhase.STANDARD);
+            Object pkgKeyObj = recursiveTransformer.transform(pkgKey, keyContext);
             if (pkgKeyObj == null) {
                 var position = sourceLocator.findPosition(PACKAGES_KEY);
                 logger.warn("{}:{} package key resolved to null; skipping package entry", relativePath, position);
@@ -95,11 +94,11 @@ public class PackageProcessor {
 
             // Inject `package_id` into the package context for use in
             // !include and !insert within the package definition
-            Map<String, @Nullable Object> packageIdMap = Map.of(PACKAGE_ID_VAR, packageId);
-            RecursiveTransformer packageTransformer = recursiveTransformer.withOverrideVariables(packageIdMap);
-            Object resolvedPkg = packageTransformer.transform(pkg, ProcessingPhase.STANDARD);
+            Scope packageScope = scope.createChild();
+            packageScope.put(PACKAGE_ID_VAR, packageId);
+            EvaluationContext pkgContext = new EvaluationContext(packageScope, ProcessingPhase.STANDARD);
+            Object resolvedPkg = recursiveTransformer.transform(pkg, pkgContext);
 
-            resolvedPkg = stripEmptyMapsAndLists(resolvedPkg);
             if (!(resolvedPkg instanceof Map<?, ?> packageMap)) {
                 var position = sourceLocator.findPosition(PACKAGES_KEY, packageId);
                 logger.warn("{}:{} package '{}' resolved to {} instead of a Map", relativePath, position, packageId,
@@ -108,84 +107,7 @@ public class PackageProcessor {
             }
 
             logger.debug("Merging package '{}' {} into main data: {}", packageId, packageMap, mainData);
-            mergeElements(packageId, mainData, packageMap);
+            recursiveTransformer.getStructuralMerger().deepMerge(packageMap, mainData);
         });
-    }
-
-    private void mergeElements(String packageId, Map<?, ?> mainData, Map<?, ?> packageData) {
-        packageData.forEach((packageKey, packageValue) -> {
-            if (mainData.containsKey(packageKey)) {
-                Object mainValue = mainData.get(packageKey);
-                if (mainValue instanceof ReplacePlaceholder || mainValue instanceof SubstitutionPlaceholder) {
-                    return; // Ignore the package value - we'll process these later
-                }
-                if (mainValue instanceof Map<?, ?> mainValueMap) {
-                    if (packageValue instanceof Map<?, ?> packageValueMap) {
-                        mergeElements(packageId, mainValueMap, packageValueMap);
-                        @SuppressWarnings("unchecked")
-                        Map<@Nullable Object, Object> rawMainData = (Map<@Nullable Object, Object>) mainData;
-                        rawMainData.put(packageKey, mainValueMap);
-                        return;
-                    } else {
-                        // Type mismatch - keep main value
-                        var position = sourceLocator.findPosition(PACKAGES_KEY, packageId);
-                        logger.warn(
-                                "{}:{} Type mismatch when merging package ID '{}' for key '{}': main is Map, package is {}; keeping main value",
-                                relativePath, position, packageId, packageKey,
-                                packageValue == null ? "null" : packageValue.getClass().getSimpleName());
-                        return;
-                    }
-                }
-                if (mainValue instanceof List<?> mainValueList) {
-                    if (packageValue instanceof List<?> pkgValueList) {
-                        @SuppressWarnings("unchecked")
-                        Map<@Nullable Object, Object> rawMainData = (Map<@Nullable Object, Object>) mainData;
-                        rawMainData.put(packageKey,
-                                Stream.concat(pkgValueList.stream(), mainValueList.stream()).distinct().toList());
-                        return;
-                    } else {
-                        // Type mismatch - keep main value
-                        var position = sourceLocator.findPosition(PACKAGES_KEY, packageId);
-                        logger.warn(
-                                "{}:{} Type mismatch when merging package ID '{}' for key '{}': main is List, package is {}; keeping main value",
-                                relativePath, position, packageId, packageKey,
-                                packageValue == null ? "null" : packageValue.getClass().getSimpleName());
-                        return;
-                    }
-                }
-                // For non-map/non-list values, keep the main value ignoring the package value
-            } else {
-                @SuppressWarnings("unchecked")
-                Map<@Nullable Object, @Nullable Object> rawMainData = (Map<@Nullable Object, @Nullable Object>) mainData;
-                rawMainData.put(packageKey, packageValue);
-            }
-        });
-    }
-
-    private static @Nullable Object stripEmptyMapsAndLists(@Nullable Object data) {
-        if (data == null || data instanceof String s && s.isBlank()) {
-            return null;
-        }
-        if (data instanceof Map<?, ?> map) {
-            var result = new LinkedHashMap<Object, Object>();
-            for (Map.Entry<?, ?> e : map.entrySet()) {
-                Object key = e.getKey();
-                Object value = stripEmptyMapsAndLists(e.getValue());
-                if (value != null) {
-                    result.put(key, value);
-                }
-            }
-            return result.isEmpty() ? null : result;
-        } else if (data instanceof List<?> list) {
-            var result = new java.util.ArrayList<Object>(list.size());
-            for (Object item : list) {
-                Object value = stripEmptyMapsAndLists(item);
-                if (value != null) {
-                    result.add(value);
-                }
-            }
-            return result.isEmpty() ? null : result;
-        }
-        return data;
     }
 }

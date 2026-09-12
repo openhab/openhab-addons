@@ -141,10 +141,13 @@ public class TuyaDevice implements ChannelFutureListener {
         @Override
         public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
             if (ctx != null) {
-                if (msg != null && msg instanceof MessageWrapper<?> m && m.commandType == STATUS) {
+                if (msg != null && msg instanceof MessageWrapper<?> m
+                        && (m.commandType == STATUS || m.commandType == DP_REFRESH)) {
                     // The next heartbeat will be one heartbeat interval from now.
                     resetWriteTimeout();
-                    statusSeen = true;
+                    if (m.commandType == STATUS) {
+                        statusSeen = true;
+                    }
                 } else if (statusSeen && msg != null && msg instanceof MessageWrapper<?> m
                         && m.commandType == HEART_BEAT) {
                     // A heartbeat acknowledgement after a status message is proof-of-life

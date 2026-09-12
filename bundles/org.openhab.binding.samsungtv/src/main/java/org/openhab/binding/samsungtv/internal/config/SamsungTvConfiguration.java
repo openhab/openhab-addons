@@ -56,6 +56,7 @@ public class SamsungTvConfiguration {
     public boolean subscription;
     public boolean smartThingsSubscription;
     public String orientationKey;
+    public Boolean legacyCipherSuites;
 
     public boolean isWebsocketProtocol() {
         return PROTOCOL_WEBSOCKET.equals(getProtocol()) || PROTOCOL_SECUREWEBSOCKET.equals(getProtocol());
@@ -95,6 +96,10 @@ public class SamsungTvConfiguration {
 
     public boolean getSubscription() {
         return Optional.ofNullable(subscription).orElse(false);
+    }
+
+    public boolean getLegacyCipherSuites() {
+        return !Boolean.FALSE.equals(legacyCipherSuites);
     }
 
     public boolean getSmartThingsSubscription() {

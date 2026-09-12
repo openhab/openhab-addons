@@ -14,25 +14,26 @@ package org.openhab.io.yamlcomposer.internal.processors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
-import org.openhab.io.yamlcomposer.internal.core.RemovalSignal;
-import org.openhab.io.yamlcomposer.internal.placeholders.RemovePlaceholder;
+import org.openhab.io.yamlcomposer.internal.placeholders.DefaultPlaceholder;
 
 /**
- * The {@link RemoveProcessor} processes {@link RemovePlaceholder} instances in YAML models.
+ * Resolves {@link DefaultPlaceholder} values during final cleanup.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public class RemoveProcessor implements PlaceholderProcessor<RemovePlaceholder> {
+public class DefaultProcessor implements PlaceholderProcessor<DefaultPlaceholder> {
 
     @Override
-    public Class<RemovePlaceholder> getPlaceholderType() {
-        return RemovePlaceholder.class;
+    public Class<DefaultPlaceholder> getPlaceholderType() {
+        return DefaultPlaceholder.class;
     }
 
     @Override
-    public @Nullable Object process(RemovePlaceholder placeholder, RecursiveTransformer recursiveTransformer) {
-        return RemovalSignal.REMOVE;
+    public @Nullable Object process(DefaultPlaceholder placeholder, RecursiveTransformer transformer,
+            EvaluationContext context) {
+        return placeholder.value();
     }
 }

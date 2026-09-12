@@ -310,7 +310,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
+          <version>3.16.0</version>
           <configuration>
             <compilerId>eclipse</compilerId>
             <compilerArgs>
@@ -334,7 +334,7 @@ Import-Package: \
             <dependency>
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>ecj</artifactId>
-              <version>3.46.0</version>
+              <version>3.46.100</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -388,7 +388,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
-          <version>3.15.2</version>
+          <version>3.16.0</version>
         </plugin>
 
         <plugin>
@@ -421,7 +421,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.6</version>
+          <version>3.6.0</version>
           <configuration>
             <argLine>--add-opens java.base/java.lang=ALL-UNNAMED
               --add-opens java.base/java.util=ALL-UNNAMED

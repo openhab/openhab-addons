@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal.processors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.directives.ElseDirective;
 import org.openhab.io.yamlcomposer.internal.placeholders.ElsePlaceholder;
@@ -32,7 +33,8 @@ public class ElseProcessor implements PlaceholderProcessor<ElsePlaceholder> {
     }
 
     @Override
-    public @Nullable Object process(ElsePlaceholder elsePlaceholder, RecursiveTransformer recursiveTransformer) {
+    public @Nullable Object process(ElsePlaceholder elsePlaceholder, RecursiveTransformer recursiveTransformer,
+            EvaluationContext context) {
         return new ElseDirective(elsePlaceholder.sourceLocation());
     }
 }

@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNull;
  * @author Jan N. Klug - Initial contribution
  */
 public class SendConversationDTO {
-    public String conversationId;
     public String clientMessageId;
     public int messageId;
     public String time;
@@ -34,8 +33,8 @@ public class SendConversationDTO {
 
     @Override
     public @NonNull String toString() {
-        return "SendConversationDTO{conversationId='" + conversationId + "', clientMessageId='" + clientMessageId
-                + "', messageId=" + messageId + ", nextAlarmTime='" + time + "', sender='" + sender + "', type='" + type
-                + "', payload=" + payload + ", status=" + status + "}";
+        return "SendConversationDTO{clientMessageId='" + clientMessageId + "', messageId=" + messageId + ", time='"
+                + time + "', sender='" + sender + "', type='" + type + "', payload=" + payload + ", status=" + status
+                + "}";
     }
 }

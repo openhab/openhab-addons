@@ -18,10 +18,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
@@ -66,7 +69,7 @@ public class ShellyChannelDefinitionsLightTest {
     void gen1Rgbw2WhiteModeRoutesBrightnessToIndexedGroup() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight(), newLight(), newLight(), newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight(), newLight(), newLight(), newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.brightness = 42;
@@ -82,7 +85,7 @@ public class ShellyChannelDefinitionsLightTest {
     void gen1Rgbw2WhiteModeWithTempCreatesColorTempChannelSharedWithProRgbwwPmCctx2Profile() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight(), newLight(), newLight(), newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight(), newLight(), newLight(), newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.temp = 4500;
@@ -97,7 +100,7 @@ public class ShellyChannelDefinitionsLightTest {
     void gen2RgbwPmWhiteModeRoutesBrightnessToIndexedGroup() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight(), newLight(), newLight(), newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight(), newLight(), newLight(), newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.brightness = 77;
@@ -113,7 +116,7 @@ public class ShellyChannelDefinitionsLightTest {
     void bulbWhiteModeRoutesBrightnessAndColorTempToSharedWhiteGroup() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBULB);
         profile.inColor = false;
-        profile.settings.lights = new ArrayList<>(java.util.List.of(newLight()));
+        profile.settings.lights = new ArrayList<>(List.of(newLight()));
 
         ShellyStatusLightChannel status = new ShellyStatusLightChannel();
         status.brightness = 50;
@@ -124,6 +127,61 @@ public class ShellyChannelDefinitionsLightTest {
 
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)));
+    }
+
+    @Test
+    void vintageWhiteModeDoesNotCreateColorTempChannel() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYVINTAGE);
+        profile.inColor = false;
+        profile.settings.lights = new ArrayList<>(List.of(newLight()));
+
+        ShellyStatusLightChannel status = new ShellyStatusLightChannel();
+        status.brightness = 50;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellyvintage"), profile,
+                status, 0);
+
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)));
+    }
+
+    @Test
+    void gen3DuoBulbUsesKelvinColorTempTypeAndHasNoPowerChannel() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.inColor = false;
+        profile.settings.lights = new ArrayList<>(List.of(newLight()));
+
+        ShellyStatusLightChannel status = new ShellyStatusLightChannel();
+        status.brightness = 50;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellyplusduobulb"),
+                profile, status, 0);
+
+        Channel temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP));
+        assertNotNull(temp);
+        assertEquals(CHANNEL_TYPE_WHITE_TEMP_DUO, Objects.requireNonNull(temp.getChannelTypeUID()).getId());
+        assertEquals(ITEMT_TEMP, temp.getAcceptedItemType());
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER)));
+    }
+
+    @Test
+    void gen1ColorBulbInColorModeKeepsPercentColorTempTypeAndPowerChannel() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBULB);
+        profile.inColor = true;
+        profile.settings.lights = new ArrayList<>(List.of(newLight()));
+
+        ShellyStatusLightChannel status = new ShellyStatusLightChannel();
+        status.temp = 4500;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellybulb"), profile,
+                status, 0);
+
+        Channel temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP));
+        assertNotNull(temp);
+        assertEquals("whiteTemp", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
+        assertEquals(ITEMT_DIMMER, temp.getAcceptedItemType());
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER)));
     }
 
     @Test

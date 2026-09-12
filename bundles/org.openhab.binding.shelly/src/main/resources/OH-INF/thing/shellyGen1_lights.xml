@@ -263,8 +263,8 @@
 
 	<channel-type id="whiteTemp">
 		<item-type>Dimmer</item-type>
-		<label>Light Temperature</label>
-		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo/Pro RGBWW PM: 2700K-6500K). Link a Number item,
+		<label>Color Temperature</label>
+		<description>Color Temperature (Bulb/RGBW2: 3000K-6500K; Duo/Pro RGBWW PM: 2700K-6500K). Link a Number item,
 			not the
 			default Dimmer, or the slider will send an out-of-range command.</description>
 		<tags>
@@ -272,6 +272,17 @@
 			<tag>ColorTemperature</tag>
 		</tags>
 		<state min="3000" max="6500" step="10" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="whiteTempDuo">
+		<item-type unitHint="K">Number:Temperature</item-type>
+		<label>Color Temperature</label>
+		<description>Color Temperature in Kelvin (2700K-6500K)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
+		<state min="2700" max="6500" step="10" pattern="%.0f K" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="whiteBrightness">

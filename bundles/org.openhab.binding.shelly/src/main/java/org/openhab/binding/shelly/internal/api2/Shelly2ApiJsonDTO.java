@@ -77,6 +77,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CCT_STATUS = "CCT.GetStatus";
     public static final String SHELLYRPC_METHOD_CCT_SET = "CCT.Set";
     public static final String SHELLYRPC_METHOD_CCT_SETCONFIG = "CCT.SetConfig";
+    public static final String SHELLYRPC_METHOD_RGBCCT_STATUS = "RGBCCT.GetStatus";
+    public static final String SHELLYRPC_METHOD_RGBCCT_SET = "RGBCCT.Set";
+    public static final String SHELLYRPC_METHOD_RGBCCT_SETCONFIG = "RGBCCT.SetConfig";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_LORA_SENDDATA = "LoRa.SendBytes";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
@@ -119,6 +122,11 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_PROFILE_RGBCCT = "rgbcct"; // Pro RGBWW PM: RGB:0 + CCT:0
     public static final String SHELLY2_PROFILE_CCTX2 = "cctx2"; // Pro RGBWW PM: CCT:0 + CCT:1
     public static final String SHELLY2_PROFILE_RGBX2LIGHT = "rgbx2light"; // Pro RGBWW PM: RGB:0 + Light:0/1
+
+    // RGBCCT component runtime submode (RGBCCT.Set/GetStatus/NotifyStatus "mode" field) - distinct from the
+    // SHELLY2_PROFILE_* device profile selection above, even though the RGB value happens to coincide
+    public static final String SHELLY_RGBCCT_MODE_RGB = "rgb";
+    public static final String SHELLY_RGBCCT_MODE_CCT = "cct";
 
     // Button types/modes
     public static final String SHELLY2_BTNT_MOMENTARY = "momentary";
@@ -582,6 +590,8 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Shelly2GetConfigLight cct0;
             @SerializedName("cct:1")
             public @Nullable Shelly2GetConfigLight cct1;
+            @SerializedName("rgbcct:0")
+            public @Nullable Shelly2GetConfigLight rgbcct0;
 
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
@@ -692,6 +702,24 @@ public class Shelly2ApiJsonDTO {
         }
 
         public static class Shelly2DeviceStatusResult {
+            // Devices with combined RGB + CCT support - component "rgbcct:0"
+            // mode="cct": ct field valid; mode="rgb": rgb array valid
+            public static class Shelly2RGBCCTStatus {
+                public @Nullable Integer id;
+                public @Nullable String source;
+                public @Nullable String mode; // "cct" or "rgb"
+                public @Nullable Boolean output;
+                public @Nullable Double brightness;
+                public @Nullable Integer[] rgb; // [R, G, B] 0-255, valid when mode="rgb"
+                public @Nullable Integer ct; // color temperature K, valid when mode="cct"
+                public @Nullable Shelly2Energy aenergy;
+                public @Nullable Double apower;
+                @SerializedName("timer_started_at")
+                public @Nullable Double timerStartedAt;
+                @SerializedName("timer_duration")
+                public @Nullable Double timerDuration;
+            }
+
             public class Shelly2DeviceStatusBle {
 
             }
@@ -952,6 +980,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("cct:1")
             public @Nullable Shelly2DeviceStatusLight cct1;
 
+            @SerializedName("rgbcct:0")
+            public @Nullable Shelly2RGBCCTStatus rgbcct0;
+
             @SerializedName("temperature:0")
             public @Nullable Shelly2DeviceStatusTempId temperature0;
             @SerializedName("temperature:100")
@@ -1170,11 +1201,12 @@ public class Shelly2ApiJsonDTO {
 
             // Dimmer / Light
             public Integer brightness;
-            public Integer ct; // color temperature in Kelvin (CCT.Set)
+            public Integer ct; // color temperature in Kelvin (Light.Set / CCT.Set / RGBCCT.Set)
             @SerializedName("toggle_after")
             public Integer toggleAfter;
             public Integer white;
             public Integer[] rgb;
+            public String mode; // for RGBCCT mode switching: "rgb" or "cct"
 
             // Shelly.SetAuth
             public String user;

@@ -30,6 +30,7 @@ import javax.measure.quantity.Pressure;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
@@ -887,13 +888,19 @@ public class ShellyComponents {
             throws ShellyApiException {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        if (profile.isRGBW2) {
+        // RGBW2 (incl. hybrid Pro/Plus RGBWW-PM) always reports its color component at index 0; Duo/Multicolor
+        // Bulb G3 share the same slot 0 but only while actually operating in RGB/color mode
+        if (profile.isRGBW2 || (profile.isDuo && profile.inColor)) {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
             ShellySettingsLight light = orgStatus.lights.get(0);
+            if (light.red == null) {
+                return false; // partial NotifyStatus without rgb, nothing to push
+            }
             ShellyColorUtils col = new ShellyColorUtils();
-            col.setRGBW(light.red, light.green, light.blue, light.white);
+            col.setRGBW(getInteger(light.red), getInteger(light.green), getInteger(light.blue),
+                    getInteger(light.white));
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.percentRed);
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.percentGreen);
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.percentBlue);
@@ -908,28 +915,43 @@ public class ShellyComponents {
             throws ShellyApiException {
         boolean updated = false;
         ShellyDeviceProfile profile = thingHandler.getProfile();
-        if (profile.isRGBW2) {
+        // RGBW2 (incl. hybrid Pro/Plus RGBWW-PM) always has CCT/Light components to cover here; Duo/Multicolor
+        // Bulb G3 share slot 0, which hasColorTag() below skips while they're actually in color mode
+        if (profile.isRGBW2 || profile.isDuo) {
             if (!thingHandler.areChannelsCreated()) {
                 return false;
             }
+            boolean gen3Bulb = profile.isDuo && profile.isGen2;
             List<ShellySettingsLight> lights = orgStatus.lights;
             for (int i = 0; i < lights.size(); i++) {
+                String groupName = ShellyApiLightUtil.buildWhiteGroupName(profile, i);
                 if (profile.hasColorTag(i)) {
                     // color component is handled by updateRGBW(); this loop only covers CCT/Light components
                     // (a hybrid profile's secondary component(s), or all of them for a plain white-mode RGBW2)
+                    if (gen3Bulb) {
+                        // the shared LEDs are in RGB mode, the last reported color temperature no longer applies
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, UnDefType.UNDEF);
+                    }
                     continue;
                 }
                 ShellySettingsLight light = lights.get(i);
-                String groupName = profile.getControlGroup(i);
+                if (gen3Bulb && (light.ison == null || light.brightness == null)) {
+                    continue; // partial NotifyStatus before the first full status, nothing to push yet
+                }
                 OnOffType power = getOnOff(light.ison);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
                         toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
                                 Units.PERCENT));
                 if (light.temp != null) {
-                    ShellyColorUtils col = new ShellyColorUtils();
-                    col.setMinMaxTemp(profile.getMinTemp(i), profile.getMaxTemp(i));
-                    col.setTemp(getInteger(light.temp));
-                    updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
+                    if (gen3Bulb) {
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP,
+                                toQuantityType(light.temp, Units.KELVIN));
+                    } else {
+                        ShellyColorUtils col = new ShellyColorUtils();
+                        col.setMinMaxTemp(profile.getMinTemp(i), profile.getMaxTemp(i));
+                        col.setTemp(getInteger(light.temp));
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
+                    }
                 }
             }
         }

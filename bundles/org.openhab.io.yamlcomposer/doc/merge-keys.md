@@ -1,6 +1,6 @@
 # Merge Keys
 
-Merge keys (`<<`) let you combine mappings defined directly in a mapping with other mappings defined elsewhere, such as:
+Merge keys (`<<:`) let you combine mappings defined directly in a mapping with other mappings defined elsewhere, such as:
 
 - [Anchors](anchors.md)
 - [!include](include.md) (External files)
@@ -18,6 +18,14 @@ A merge key takes one or more source mappings and merges their key–value pairs
 The source mappings may be written inline, referenced through an anchor, or loaded from another file.
 The merged values behave exactly as if they were written inline.
 Local fields may add to or override the merged content.
+
+::: tip Shallow vs. Deep Merging
+Standard merge keys (`<<:`) perform a **shallow merge**.
+If a key already exists locally, the imported value for that key is ignored entirely.
+
+If you need recursive merging of nested maps or want to append sequence items, use the enhanced deep-merge tag (`!deep <<:`).
+See **[Deep Merge](deep-merge.md)** for details and examples.
+:::
 
 ## Merge Rules
 
@@ -68,7 +76,7 @@ items:
 [Anchors](anchors.md) define reusable structures whose content can be inserted into the current mapping via an alias.
 Merge keys then combine that anchored content with any local fields in the mapping.
 Anchors are a standard YAML feature for sharing data within a single file.
-Variables or templates are often preferred for more complex needs.
+Variables or templates are often preferred for more complex needs across multiple files.
 
 ```yaml
 items:
@@ -90,7 +98,7 @@ See also: [Using Hidden Keys for Anchors](anchors.md#using-hidden-keys-for-ancho
 The [!include](include.md) tag loads the contents of another file so it can be inserted into the current mapping.
 Merge keys then combine the included content with any local fields in the mapping.
 
-**Benefits over anchors:**
+Benefits over anchors:
 
 - Included files can be parameterized, allowing the same structure to be reused with different values.
 - Included files can be shared across many different YAML files, whereas anchors are limited to a single file.
@@ -117,8 +125,9 @@ color:
 things:
   mqtt:topic:living-room-light:
     channels:
-      <<: !include { file: light-common.inc.yaml, vars: { id: living-room-light } }
-      <<: !include { file: light-color.inc.yaml, vars: { id: living-room-light } }
+      <<:
+        - !include { file: light-common.inc.yaml, vars: { id: living-room-light } }
+        - !include { file: light-color.inc.yaml, vars: { id: living-room-light } }
 ```
 
 ### Templates (`!insert`)
@@ -146,8 +155,9 @@ templates:
 things:
   mqtt:topic:living-room-light:
     channels:
-      <<: !insert { template: common_channels, vars: { id: living-room-light } }
-      <<: !insert { template: color_channel, vars: { id: living-room-light } }
+      <<:
+        - !insert { template: common_channels, vars: { id: living-room-light } }
+        - !insert { template: color_channel, vars: { id: living-room-light } }
 ```
 
 ### Conditionals (`!if`)
@@ -188,7 +198,6 @@ things:
 ::: tip Hints
 
 - Merge keys only merge mappings, so the expression must resolve to a map.
-- Avoid compound patterns such as `${foo}${bar}` or `x${foo}` because they are interpreted as literal strings and cannot be merged.
 - Merging `null` or an empty map is a no-op, effectively omitting the merge key.
 
 :::
@@ -203,3 +212,12 @@ For details on how variables are resolved and how substitution interacts with YA
 - Keep anchors inside hidden keys to avoid clutter.
 - Use includes or packages to centralize shared structures.
 - Prefer simple, predictable structures for reusable blocks.
+
+## Merge Keys (`<<:`) vs. Deep Merge (`!deep <<:`)
+
+| Need                                                              | Recommended Feature                           |
+|:------------------------------------------------------------------|:----------------------------------------------|
+| Combine simple, flat structures                                   | **Merge Keys (`<<:`)**                        |
+| Share configurations using standard YAML syntax                   | **Merge Keys (`<<:`)**                        |
+| Combine deeply nested structures without overwriting sibling keys | **[Deep Merge](deep-merge.md) (`!deep <<:`)** |
+| Append tags or list items from a shared block                     | **[Deep Merge](deep-merge.md) (`!deep <<:`)** |
