@@ -31,6 +31,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocationProvider;
@@ -66,9 +67,10 @@ public class ShellyTestLightHandler extends ShellyLightHandler {
 
     public ShellyTestLightHandler(Thing thing, ShellyTranslationProvider translationProvider,
             ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable, Shelly1CoapServer coapServer,
-            HttpClient httpClient, WebSocketClient webSocketClient, LocationProvider locationProvider) {
+            HttpClient httpClient, WebSocketClient webSocketClient, LocationProvider locationProvider,
+            ShellyStateDescriptionProvider stateDescriptionProvider) {
         super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
-                locationProvider);
+                locationProvider, stateDescriptionProvider);
     }
 
     public static ShellyTestLightHandler create(ThingTypeUID thingTypeUID) {

@@ -60,6 +60,7 @@ import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
@@ -98,6 +99,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     protected final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
     protected final ShellyChannelDefinitions channelDefinitions;
+    protected final ShellyStateDescriptionProvider stateDescriptionProvider;
 
     public String thingName = "";
     public String thingType = "";
@@ -156,7 +158,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
-            final LocationProvider locationProvider) {
+            final LocationProvider locationProvider, final ShellyStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
 
         this.thingTable = thingTable;
@@ -166,6 +168,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         this.cache = new ShellyChannelCache(this);
         this.channelDefinitions = new ShellyChannelDefinitions(messages);
         this.httpClient = httpClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
 
         // Create thing handler depending on device generation
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();

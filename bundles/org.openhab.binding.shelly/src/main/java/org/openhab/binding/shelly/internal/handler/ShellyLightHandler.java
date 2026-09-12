@@ -38,6 +38,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel.Mode;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -88,9 +89,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, final ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
-            LocationProvider locationProvider) {
+            LocationProvider locationProvider, ShellyStateDescriptionProvider stateDescriptionProvider) {
         super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
-                locationProvider);
+                locationProvider, stateDescriptionProvider);
     }
 
     @Override
@@ -156,6 +157,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
                 }
                 updateLightModelFromStatus(model, light);
                 lightChannelsCreatedThisPass |= createLightChannels(light, apiLightIndex);
+                notifyColorTempStateDescriptionChanged(model);
                 updated |= updateChannelsFromLightStatusDTO(light, apiLightIndex, model.getChannelGroupSuffix());
             }
         } finally {
@@ -654,5 +656,23 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             }
         }
         return null;
+    }
+
+    /**
+     * Notifies the state description provider that the color temperature state description has changed
+     * for the given light model.
+     *
+     * @param model the light model
+     */
+    private void notifyColorTempStateDescriptionChanged(ShellyLightModel model) {
+        if (!model.supportsColorTempChannel()) {
+            return;
+        }
+        String group = model.getChannelGroupSuffix() == 0 ? CHANNEL_GROUP_WHITE_CONTROL
+                : lightChannelGroupPrefix(profile) + model.getChannelGroupSuffix();
+        Channel channel = thing.getChannel(group + "#" + CHANNEL_COLOR_TEMP);
+        if (channel != null) {
+            stateDescriptionProvider.notifyStateDescriptionUpdated(channel);
+        }
     }
 }

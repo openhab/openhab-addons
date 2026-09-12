@@ -13,12 +13,12 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,11 +32,13 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
+import org.openhab.core.thing.events.ThingEventFactory;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Activate;
@@ -50,7 +52,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  */
 @NonNullByDefault
-@Component(service = { DynamicStateDescriptionProvider.class, ShellyStateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, ShellyStateDescriptionProvider.class })
 public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     private final ThingRegistry thingRegistry;
 
@@ -67,6 +69,12 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
 
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
+            @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
+        StateDescriptionFragment fragment = getStateDescriptionFragment(channel, originalStateDescription, locale);
+        return fragment != null ? fragment.toStateDescription() : null;
+    }
+
+    private @Nullable StateDescriptionFragment getStateDescriptionFragment(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         ChannelTypeUID uid = channel.getChannelTypeUID();
         if (uid == null || originalStateDescription == null) {
@@ -99,14 +107,9 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         if (CHANNEL_COLOR_TEMP.equals(channelUID.getIdWithoutGroup())
                 && handler instanceof ShellyLightHandler lightHandler) {
             ShellyLightModel model = lightHandler.getLightModelByChannelUID(channelUID);
-
             if (model != null && model.supportsColorTempChannel()) {
                 minKelvin = model.getColorTemperatureMinimumKelvin();
                 maxKelvin = model.getColorTemperatureMaximumKelvin();
-                hasColorTempRange = true;
-            } else {
-                minKelvin = BigDecimal.valueOf(MIN_COLOR_TEMP_BULB);
-                maxKelvin = BigDecimal.valueOf(MAX_COLOR_TEMP_BULB);
                 hasColorTempRange = true;
             }
         }
@@ -127,6 +130,23 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
             builder = builder.withPattern("%.0f K");
         }
 
-        return builder.build().toStateDescription();
+        return builder.build();
+    }
+
+    /**
+     * Notifies the system that the state description of a channel has changed. This method should be
+     * called whenever the state description of a channel is updated, so that the system can refresh
+     * the state description and notify any listeners.
+     *
+     * @param channel The channel whose state description has changed.
+     */
+    public void notifyStateDescriptionUpdated(Channel channel) {
+        ChannelUID channelUID = channel.getUID();
+        StateDescriptionFragment fragment = getStateDescriptionFragment(channel, null, null);
+        if (fragment != null) {
+            ItemChannelLinkRegistry registry = itemChannelLinkRegistry;
+            postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
+                    registry != null ? registry.getLinkedItemNames(channelUID) : Set.of(), fragment, null));
+        }
     }
 }
