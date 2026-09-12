@@ -310,7 +310,10 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_BLUCLASS_WS, "", THING_TYPE_SHELLYBLUWS90), //
 
                 // Wall displays
-                Arguments.of(SHELLYDT_PLUSWALLDISPLAY, "", THING_TYPE_SHELLYPLUSWALLDISPLAY));
+                Arguments.of(SHELLYDT_PLUSWALLDISPLAY, "", THING_TYPE_SHELLYPLUSWALLDISPLAY), //
+                Arguments.of(SHELLYDT_PLUSWALLDISPLAYX2, "", THING_TYPE_SHELLYPLUSWALLDISPLAY), //
+                Arguments.of(SHELLYDT_PLUSWALLDISPLAYX2I, "", THING_TYPE_SHELLYPLUSWALLDISPLAY), //
+                Arguments.of(SHELLYDT_PLUSWALLDISPLAYXL, "", THING_TYPE_SHELLYPLUSWALLDISPLAY));
     }
 
     @ParameterizedTest

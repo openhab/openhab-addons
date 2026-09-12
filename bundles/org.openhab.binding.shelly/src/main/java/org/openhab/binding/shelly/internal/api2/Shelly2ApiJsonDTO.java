@@ -24,6 +24,8 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBase
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -106,6 +108,13 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SCRIPT_PUTCODE = "Script.PutCode";
     public static final String SHELLYRPC_METHOD_SCRIPT_START = "Script.Start";
     public static final String SHELLYRPC_METHOD_SCRIPT_STOP = "Script.Stop";
+    public static final String SHELLYRPC_METHOD_MEDIA_PLAYORPAUSE = "Media.MediaPlayer.PlayOrPause";
+    public static final String SHELLYRPC_METHOD_MEDIA_NEXT = "Media.MediaPlayer.Next";
+    public static final String SHELLYRPC_METHOD_MEDIA_PREVIOUS = "Media.MediaPlayer.Previous";
+    public static final String SHELLYRPC_METHOD_MEDIA_PLAY = "Media.MediaPlayer.Play";
+    public static final String SHELLYRPC_METHOD_MEDIA_SETVOLUME = "Media.SetVolume";
+    public static final String SHELLYRPC_METHOD_MEDIA_RADIO_PLAYFAVOURITE = "Media.Radio.PlayFavourite";
+    public static final String SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG = "Thermostat.SetConfig";
 
     public static final String SHELLYRPC_METHOD_NOTIFYSTATUS = "NotifyStatus"; // inbound status
     public static final String SHELLYRPC_METHOD_NOTIFYFULLSTATUS = "NotifyFullStatus"; // inbound status from bat device
@@ -1023,9 +1032,18 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+            @SerializedName("devicepower:1")
+            public @Nullable Shelly2DeviceStatusPower devicepower1;
 
             @SerializedName("lora:100")
             public Shelly2DeviceStatusLora lora100;
+
+            // Media is a singleton (Media.GetStatus takes no id), some firmware reports it indexed
+            @SerializedName(value = "media", alternate = { "media:0" })
+            public @Nullable Shelly2DeviceStatusMedia media;
+
+            @SerializedName("thermostat:0")
+            public @Nullable Shelly2DeviceStatusThermostat thermostat0;
         }
 
         public class Shelly2DeviceStatusSys {
@@ -1058,6 +1076,12 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusWakeup wakeUpReason;
             @SerializedName("wakeup_period")
             public Integer wakeupPeriod;
+
+            // Wall Display: reported inside sys, not as a top level component
+            @SerializedName("relay_in_thermostat")
+            public @Nullable Boolean relayInThermostat;
+            @SerializedName("sensor_in_thermostat")
+            public @Nullable Boolean sensorInThermostat;
         }
 
         public class Shelly2DeviceStatusSysWiFi {
@@ -1185,6 +1209,10 @@ public class Shelly2ApiJsonDTO {
         public @Nullable String alarmMode;
         @SerializedName("report_holdoff")
         public @Nullable Integer reportHoldoff;
+
+        // Thermostat.SetConfig
+        @SerializedName("target_C")
+        public @Nullable Double targetC;
     }
 
     public static class Shelly2RpcRequest {
@@ -1226,6 +1254,9 @@ public class Shelly2ApiJsonDTO {
             // LoRa.SendBytes
             public String data;
 
+            // Media
+            public Integer volume;
+
             public Shelly2RpcRequestParams withConfig() {
                 config = new Shelly2ConfigParms();
                 return this;
@@ -1249,6 +1280,11 @@ public class Shelly2ApiJsonDTO {
 
         public Shelly2RpcRequest withPos(int pos) {
             params.pos = pos;
+            return this;
+        }
+
+        public Shelly2RpcRequest withVolume(int volume) {
+            params.volume = volume;
             return this;
         }
 

@@ -207,6 +207,24 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_BAT_LEVEL = "batteryLevel";
     public static final String CHANNEL_SENSOR_BAT_LOW = "lowBattery";
 
+    // Wall Display Media Player
+    public static final String CHANNEL_GROUP_MEDIA = "media";
+    public static final String CHANNEL_MEDIA_CONTROL = "mediaControl";
+    public static final String CHANNEL_MEDIA_VOLUME = "volume";
+    public static final String CHANNEL_MEDIA_TITLE = "title";
+    public static final String CHANNEL_MEDIA_ARTIST = "artist";
+    public static final String CHANNEL_MEDIA_ALBUM = "album";
+    public static final String CHANNEL_MEDIA_TYPE = "mediaType";
+    public static final String CHANNEL_MEDIA_PLAY_MEDIA_ID = "playMediaId";
+    public static final String CHANNEL_MEDIA_PLAY_RADIO_FAV_ID = "playRadioFavId";
+    public static final int MEDIA_VOLUME_DEVICE_MAX = 10;
+    // A smaller step would map back to the same device volume, making INCREASE/DECREASE a no-op
+    public static final int MEDIA_VOLUME_STEPSIZE = 100 / MEDIA_VOLUME_DEVICE_MAX;
+
+    // Wall Display Thermostat reuses the "control" group and CHANNEL_CONTROL_SETTEMP ("targetTemp") from the TRV
+    // channel set; current_C/output are covered by the existing sensors#temperature / relay#output channels.
+    public static final String CHANNEL_THERMOSTAT_ENABLE = "thermostatEnable";
+
     public static final String CHANNEL_GROUP_LIGHT_CONTROL = "control";
     public static final String CHANNEL_LIGHT_COLOR_MODE = "mode";
     public static final String CHANNEL_LIGHT_POWER = "power";
@@ -258,6 +276,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_VOLTAGE = "supplyVoltage";
     public static final String CHANNEL_DEVST_CALIBRATED = "calibrated";
     public static final String CHANNEL_DEVST_FIRMWARE = "firmware";
+    public static final String CHANNEL_DEVST_RELAY_IN_THERMOSTAT = "relayInThermostat";
+    public static final String CHANNEL_DEVST_SENSOR_IN_THERMOSTAT = "sensorInThermostat";
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";

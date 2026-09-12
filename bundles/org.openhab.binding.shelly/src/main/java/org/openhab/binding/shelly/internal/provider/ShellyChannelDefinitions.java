@@ -90,6 +90,7 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_PERCENT = "Number:Dimensionless"; // 0–100% (battery, humidity)
     public static final String ITEMT_DIMENSIONLESS = "Number:Dimensionless"; // ratios (dB)
     public static final String ITEMT_PRESSURE = "Number:Pressure";
+    public static final String ITEMT_PLAYER = "Player"; // Media playback control (PLAY/PAUSE/NEXT/PREVIOUS)
 
     // shortcuts to avoid line breaks (make code more readable)
     private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
@@ -105,6 +106,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_CONTROL = CHANNEL_GROUP_CONTROL;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
     private static final String CHGR_LORA = CHANNEL_GROUP_LORA;
+    private static final String CHGR_MEDIA = CHANNEL_GROUP_MEDIA;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
@@ -204,6 +206,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_RELAY_IN_THERMOSTAT, "relayInThermostat",
+                        ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_SENSOR_IN_THERMOSTAT, "sensorInThermostat",
+                        ITEMT_SWITCH))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -366,11 +372,28 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
 
+                // Battery of an attached external sensor (Gen2 devicepower:1)
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
+
+                // Wall Display Media Player
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_CONTROL, "mediaControl", ITEMT_PLAYER))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_VOLUME, "mediaVolume", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_TITLE, "mediaTitle", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_ARTIST, "mediaArtist", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_ALBUM, "mediaAlbum", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_TYPE, "mediaContentType", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_MEDIA_ID, "playMediaId", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_RADIO_FAV_ID, "playRadioFavId", ITEMT_NUMBER))
+
                 // TRV
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_POSITION, "sensorPosition", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MODE, "controlMode", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_PROFILE, "controlProfile", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP, "targetTemp", ITEMT_TEMP))
+
+                // Wall Display Thermostat (reuses CHGR_CONTROL / CHANNEL_CONTROL_SETTEMP from TRV above)
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_THERMOSTAT_ENABLE, "thermostatEnable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BCONTROL, "boostControl", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH))
@@ -477,6 +500,8 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
         addChannel(thing, add, profile.settings.ledStatusDisable != null, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi
         addChannel(thing, add, profile.settings.calibrated != null, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED);
+        addChannel(thing, add, status.relayInThermostat != null, CHGR_DEVST, CHANNEL_DEVST_RELAY_IN_THERMOSTAT);
+        addChannel(thing, add, status.sensorInThermostat != null, CHGR_DEVST, CHANNEL_DEVST_SENSOR_IN_THERMOSTAT);
 
         if (!profile.isBlu) { // currently not supported for BLU devices
             addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
@@ -527,6 +552,77 @@ public class ShellyChannelDefinitions {
             return LORA_ALL_CHANNELS;
         }
         return profile.settings.loraRxEnabled ? Set.of() : LORA_RX_ONLY_CHANNELS;
+    }
+
+    /**
+     * Auto-create the battery channels for a sensor attached to the device (e.g. an H&amp;T paired with a Wall
+     * Display, reported as devicepower:1) as soon as it shows up in the status, since it can be paired after the
+     * Thing already exists.
+     */
+    public static Map<String, Channel> createExtBatteryChannels(final Thing thing, final ShellyStatusSensor sdata) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        boolean hasExtBattery = sdata.bat1 != null;
+        addChannel(thing, add, hasExtBattery, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LEVEL);
+        addChannel(thing, add, hasExtBattery, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LOW);
+        return add;
+    }
+
+    /**
+     * Auto-create the Wall Display Media Player channels when the device reports a media:0 component
+     */
+    public static Map<String, Channel> createMediaChannels(final Thing thing, final ShellySettingsStatus status) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        boolean hasMedia = status.media != null;
+        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_CONTROL);
+        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_VOLUME);
+        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_TITLE);
+        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_ARTIST);
+        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_ALBUM);
+        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_TYPE);
+        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_MEDIA_ID);
+        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_RADIO_FAV_ID);
+        return add;
+    }
+
+    /**
+     * Auto-create the Wall Display Thermostat channels when the device reports a thermostat:0 component.
+     * Reuses the "control" group and the existing TRV targetTemp channel; current_C/output are already
+     * covered by the sensors#temperature / relay#output channels.
+     */
+    public static Map<String, Channel> createThermostatChannels(final Thing thing, final ShellySettingsStatus status) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        boolean hasThermostat = status.thermostat != null;
+        addChannel(thing, add, hasThermostat, CHGR_CONTROL, CHANNEL_THERMOSTAT_ENABLE);
+        addChannel(thing, add, hasThermostat, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP);
+        return add;
+    }
+
+    private static final Set<String> MEDIA_CHANNELS = Set.of(CHGR_MEDIA + "#" + CHANNEL_MEDIA_CONTROL,
+            CHGR_MEDIA + "#" + CHANNEL_MEDIA_VOLUME, CHGR_MEDIA + "#" + CHANNEL_MEDIA_TITLE,
+            CHGR_MEDIA + "#" + CHANNEL_MEDIA_ARTIST, CHGR_MEDIA + "#" + CHANNEL_MEDIA_ALBUM,
+            CHGR_MEDIA + "#" + CHANNEL_MEDIA_TYPE, CHGR_MEDIA + "#" + CHANNEL_MEDIA_PLAY_MEDIA_ID,
+            CHGR_MEDIA + "#" + CHANNEL_MEDIA_PLAY_RADIO_FAV_ID);
+
+    /**
+     * @return "group#channel" ids of the Media Player channels, stale once the device no longer reports a
+     *         media:0 component (media player disabled in the Shelly app) and to be removed
+     */
+    public static Set<String> getObsoleteMediaChannelIds(final ShellySettingsStatus status) {
+        return status.media == null ? MEDIA_CHANNELS : Set.of();
+    }
+
+    /**
+     * @return "group#channel" ids of the Thermostat channels, stale once the device no longer reports a
+     *         thermostat:0 component (thermostat disabled in the Shelly app) and to be removed. targetTemp
+     *         (CHANNEL_CONTROL_SETTEMP) is shared with TRV devices and is never removed for those.
+     */
+    public static Set<String> getObsoleteThermostatChannelIds(final ShellyDeviceProfile profile,
+            final ShellySettingsStatus status) {
+        if (status.thermostat != null) {
+            return Set.of();
+        }
+        return profile.isTRV ? Set.of(CHGR_CONTROL + "#" + CHANNEL_THERMOSTAT_ENABLE)
+                : Set.of(CHGR_CONTROL + "#" + CHANNEL_THERMOSTAT_ENABLE, CHGR_CONTROL + "#" + CHANNEL_CONTROL_SETTEMP);
     }
 
     /**
@@ -750,7 +846,8 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, hasMinute1 && hasMinute2 && hasMinute3, group, CHANNEL_METER_ENERGYAVGLAST3MIN);
         // Per-meter reset is only meaningful when each meter has its own resettable counter component
         // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
-        addChannel(thing, newChannels, !profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL);
+        // Requires a real meter, otherwise devices without a power meter get a reset switch for a missing meter
+        addChannel(thing, newChannels, !profile.is3EM && !newChannels.isEmpty(), group, CHANNEL_EMETER_RESETTOTAL);
         // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
         // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
         addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
@@ -884,6 +981,8 @@ public class ShellyChannelDefinitions {
         boolean hasBatteryValue = sdata.bat != null && sdata.bat.value != null;
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
+        // Battery of an attached external sensor (e.g. Wall Display devicepower:1) is created separately via
+        // createExtBatteryChannels(), because the sensor can be paired after the Thing already exists
 
         addChannel(thing, newChannels, sdata.sensorError != null || (profile.isFlood && profile.isGen2),
                 CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);

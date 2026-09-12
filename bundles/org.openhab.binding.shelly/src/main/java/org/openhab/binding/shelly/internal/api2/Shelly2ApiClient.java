@@ -86,6 +86,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
@@ -647,7 +648,24 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (flood0 != null) {
             updateFloodStatus(sensorData, flood0);
         }
-        updateBatteryStatus(sensorData, result.devicepower0);
+        updateBatteryStatus(0, sensorData, result.devicepower0);
+        updateBatteryStatus(1, sensorData, result.devicepower1);
+        // NotifyStatus only carries the components it reports, don't wipe the last known value
+        Shelly2DeviceStatusSys sys = result.sys;
+        if (sys != null) {
+            if (sys.relayInThermostat != null) {
+                status.relayInThermostat = sys.relayInThermostat;
+            }
+            if (sys.sensorInThermostat != null) {
+                status.sensorInThermostat = sys.sensorInThermostat;
+            }
+        }
+        if (result.media != null) {
+            status.media = result.media;
+        }
+        if (result.thermostat0 != null) {
+            status.thermostat = result.thermostat0;
+        }
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
         return updated;
@@ -1616,19 +1634,34 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.reportHoldoff = reportHoldoff;
     }
 
-    protected void updateBatteryStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusPower value) {
+    protected static void updateBatteryStatus(int index, ShellyStatusSensor sdata,
+            @Nullable Shelly2DeviceStatusPower value) {
         if (value == null) {
             return;
         }
-        if (sdata.bat == null) {
-            sdata.bat = new ShellySensorBat();
+        ShellySensorBat bat;
+        if (index == 0) {
+            if (sdata.bat == null) {
+                sdata.bat = new ShellySensorBat();
+            }
+            bat = sdata.bat;
+        } else {
+            if (value.battery == null) {
+                // bat1 drives the channel creation for the attached sensor, so don't create it for a
+                // devicepower:1 that reports something other than a battery
+                return;
+            }
+            if (sdata.bat1 == null) {
+                sdata.bat1 = new ShellySensorBat();
+            }
+            bat = sdata.bat1;
         }
 
         if (value.battery != null) {
-            sdata.bat.voltage = getDouble(value.battery.volt);
-            sdata.bat.value = getDouble(value.battery.percent);
+            bat.voltage = getDouble(value.battery.volt);
+            bat.value = getDouble(value.battery.percent);
         }
-        if (value.external != null && value.external.present != null) {
+        if (index == 0 && value.external != null && value.external.present != null) {
             sdata.charger = value.external.present;
         }
     }

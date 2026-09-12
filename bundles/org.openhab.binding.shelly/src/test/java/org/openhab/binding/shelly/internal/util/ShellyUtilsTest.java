@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.MEDIA_VOLUME_STEPSIZE;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -79,5 +80,41 @@ public class ShellyUtilsTest {
     @Test
     void stripDeprecatedSuffixLeavesRegularChannelIdUnchanged() {
         assertEquals("light1#brightness", ShellyUtils.stripDeprecatedSuffix("light1#brightness"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForMediaVolumeToPercent")
+    void mediaVolumeToPercent(int volume, int expectedPercent) {
+        assertEquals(expectedPercent, ShellyUtils.mediaVolumeToPercent(volume));
+    }
+
+    private static Stream<Arguments> provideTestCasesForMediaVolumeToPercent() {
+        return Stream.of(Arguments.of(0, 0), Arguments.of(1, 10), Arguments.of(5, 50), Arguments.of(10, 100),
+                Arguments.of(-1, 0), Arguments.of(11, 100));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForPercentToMediaVolume")
+    void percentToMediaVolume(int percent, int expectedVolume) {
+        assertEquals(expectedVolume, ShellyUtils.percentToMediaVolume(percent));
+    }
+
+    private static Stream<Arguments> provideTestCasesForPercentToMediaVolume() {
+        return Stream.of(Arguments.of(0, 0), Arguments.of(4, 0), Arguments.of(5, 1), Arguments.of(50, 5),
+                Arguments.of(55, 6), Arguments.of(100, 10), Arguments.of(-5, 0), Arguments.of(120, 10));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForVolumeStepRoundTrip")
+    void volumeStepChangesTheDeviceVolumeInBothDirections(int volume) {
+        int percent = ShellyUtils.mediaVolumeToPercent(volume);
+
+        assertEquals(volume, ShellyUtils.percentToMediaVolume(percent));
+        assertEquals(volume + 1, ShellyUtils.percentToMediaVolume(percent + MEDIA_VOLUME_STEPSIZE));
+        assertEquals(volume - 1, ShellyUtils.percentToMediaVolume(percent - MEDIA_VOLUME_STEPSIZE));
+    }
+
+    private static Stream<Arguments> provideTestCasesForVolumeStepRoundTrip() {
+        return Stream.of(Arguments.of(1), Arguments.of(5), Arguments.of(9));
     }
 }
