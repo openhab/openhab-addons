@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="atagone"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="thermostat">
+		<label>Thermostat</label>
+		<description>ATAG ONE smart thermostat.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="control" typeId="control"/>
+			<channel-group id="heating" typeId="heating"/>
+			<channel-group id="hotwater" typeId="hotwater"/>
+			<channel-group id="device" typeId="device"/>
+			<channel-group id="alerts" typeId="alerts"/>
+		</channel-groups>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:atagone:thermostat"/>
+	</thing-type>
+
+	<channel-group-type id="control">
+		<label>Operating Mode</label>
+		<description>Active preset and timed modes (vacation, extend, fireplace).</description>
+		<channels>
+			<channel id="preset-mode" typeId="preset-mode"/>
+			<channel id="preset-mode-duration" typeId="preset-mode-duration"/>
+			<channel id="vacation-duration" typeId="vacation-duration"/>
+			<channel id="vacation-temperature" typeId="vacation-temperature"/>
+			<channel id="vacation-start" typeId="vacation-start"/>
+			<channel id="vacation-end" typeId="vacation-end"/>
+			<channel id="vacation-remaining" typeId="vacation-remaining"/>
+			<channel id="extend-duration" typeId="extend-duration"/>
+			<channel id="extend-remaining" typeId="extend-remaining"/>
+			<channel id="fireplace-duration" typeId="fireplace-duration"/>
+			<channel id="fireplace-remaining" typeId="fireplace-remaining"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="heating">
+		<label>Central Heating</label>
+		<description>Central heating circuit status and diagnostics.</description>
+		<channels>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="room-temperature" typeId="room-temperature"/>
+			<channel id="outside-temperature" typeId="outside-temperature"/>
+			<channel id="average-outside-temperature" typeId="average-outside-temperature"/>
+			<channel id="weather-status" typeId="weather-status"/>
+			<channel id="water-temperature" typeId="ch-water-temperature"/>
+			<channel id="return-temperature" typeId="ch-return-temperature"/>
+			<channel id="water-pressure" typeId="ch-water-pressure"/>
+			<channel id="water-setpoint" typeId="ch-setpoint"/>
+			<channel id="control-mode" typeId="ch-control-mode"/>
+			<channel id="flame" typeId="flame"/>
+			<channel id="burner-target" typeId="burner-target"/>
+			<channel id="modulation-level" typeId="modulation-level"/>
+			<channel id="min-modulation-level" typeId="min-modulation-level"/>
+			<channel id="burning-hours" typeId="burning-hours"/>
+			<channel id="time-to-target" typeId="time-to-target"/>
+			<channel id="shown-set-temperature" typeId="shown-set-temperature"/>
+			<channel id="boiler-temperature" typeId="boiler-temperature"/>
+			<channel id="boiler-return-temperature" typeId="boiler-return-temperature"/>
+			<channel id="max-boiler-temperature" typeId="max-boiler-temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hotwater">
+		<label>Hot Water</label>
+		<description>Domestic hot water status and diagnostics.</description>
+		<channels>
+			<channel id="temperature" typeId="dhw-temperature"/>
+			<channel id="target-temperature" typeId="dhw-target-temperature"/>
+			<channel id="flow-rate" typeId="dhw-flow-rate"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="device">
+		<label>Device</label>
+		<description>Thermostat hardware diagnostics — WiFi, power supply, and controller health.</description>
+		<channels>
+			<channel id="wifi-signal" typeId="wifi-signal"/>
+			<channel id="voltage" typeId="voltage"/>
+			<channel id="resets" typeId="resets"/>
+			<channel id="memory-allocation" typeId="memory-allocation"/>
+			<channel id="pcb-temperature" typeId="pcb-temperature"/>
+			<channel id="report-time" typeId="report-time"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="alerts">
+		<label>Alerts</label>
+		<description>Active device and boiler error codes.</description>
+		<channels>
+			<channel id="device-errors" typeId="device-errors"/>
+			<channel id="boiler-errors" typeId="boiler-errors"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="room-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature</label>
+		<description>Room temperature measured by the thermostat's built-in sensor.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Room temperature setpoint for the currently active preset.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" min="4" max="30" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="outside-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outside Temperature</label>
+		<description>Outside temperature as estimated by the boiler. May be stale outside the heating season; use an
+			independent sensor for reliable year-round readings.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ch-water-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Flow Temperature</label>
+		<description>Temperature of the water circulating in the central heating circuit. Reads ambient temperature when the
+			boiler is idle.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ch-return-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Return Temperature</label>
+		<description>Temperature of water returning from the heating circuit to the boiler.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ch-water-pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Water Pressure</label>
+		<description>Central heating circuit water pressure.</description>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ch-setpoint" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Flow Setpoint</label>
+		<description>Water temperature the boiler is currently targeting for central heating. Reads 0 °C when there's no
+			heating demand.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dhw-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Water Temperature</label>
+		<description>Current temperature of the hot water supply (taps and shower).</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dhw-target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Water Setpoint</label>
+		<description>Target temperature for the hot water supply, reflecting the active schedule period.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ch-control-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Heating Control Type</label>
+		<description>Whether heating is controlled by the room sensor or by an outdoor-temperature-driven curve (no room
+			setpoint). A system-level setting — change it on the thermostat itself, not here.</description>
+		<category>HVAC</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="room">Room</option>
+				<option value="weather">Weather</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="preset-mode">
+		<item-type>String</item-type>
+		<label>Preset Mode</label>
+		<description>The thermostat's active mode. Set to auto to follow the schedule, or to holiday, extend, or fireplace to
+			start that mode using its currently configured duration. Manual can only be set on the thermostat itself.</description>
+		<category>HVAC</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="manual">Manual</option>
+				<option value="auto">Auto</option>
+				<option value="holiday">Holiday / Vacation</option>
+				<option value="extend">Extend</option>
+				<option value="fireplace">Fireplace</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="preset-mode-duration">
+		<item-type>Number:Time</item-type>
+		<label>Preset Mode Duration</label>
+		<description>Time remaining in the active timed mode (extend, holiday, or fireplace). Not shown in manual or auto
+			mode.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="flame">
+		<item-type>Switch</item-type>
+		<label>Flame</label>
+		<description>ON when the burner is actively firing.</description>
+		<category>Fire</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="burner-target">
+		<item-type>String</item-type>
+		<label>Burner Target</label>
+		<description>What the burner is currently heating.</description>
+		<state readOnly="true">
+			<options>
+				<option value="none">None</option>
+				<option value="ch">Central Heating</option>
+				<option value="dhw">Hot Water</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="modulation-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Modulation Level</label>
+		<description>How hard the burner is currently working, as a percentage of its maximum output.</description>
+		<category>Heating</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="burning-hours">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Burning Hours</label>
+		<description>Total duration the burner has been running.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="time-to-target">
+		<item-type>Number:Time</item-type>
+		<label>Time to Target</label>
+		<description>Estimated time until the room reaches the target temperature.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="vacation-duration">
+		<item-type unitHint="d">Number:Time</item-type>
+		<label>Vacation Duration</label>
+		<description>How long holiday mode runs for, in whole days. Setting this stores the duration for next time — it does
+			not start holiday mode. Resets to 0 each time holiday mode ends.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state pattern="%.0f %unit%" min="1" max="365" step="1"/>
+	</channel-type>
+
+	<channel-type id="vacation-start" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Vacation Start</label>
+		<description>When the current holiday period started.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacation-end" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Vacation End</label>
+		<description>When the current holiday period ends.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacation-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Vacation Temperature</label>
+		<description>Configured setpoint for holiday mode. Shows the active setpoint while holiday mode is running, otherwise
+			the stored default. To change the live setpoint while any mode is active, use target-temperature instead — writing
+			here has not been confirmed to take effect immediately.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" min="4" max="15" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="fireplace-duration">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Fireplace Duration</label>
+		<description>How long fireplace mode runs for, in whole hours. Setting this stores the duration for next time — it
+			does not start fireplace mode. Resets to 1 hour each time fireplace mode ends. Ending fireplace mode requires a
+			button press on the thermostat display.</description>
+		<state pattern="%.0f %unit%" min="1" step="1"/>
+	</channel-type>
+
+	<channel-type id="extend-duration">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Extend Duration</label>
+		<description>Extra time added on top of the remaining schedule when extend mode starts, in whole hours — not a fixed
+			session length. Setting this stores the value for next time; it does not start extend mode. Unlike holiday and
+			fireplace, this value is kept after extend mode ends.</description>
+		<state pattern="%.0f %unit%" min="1" step="1"/>
+	</channel-type>
+
+	<channel-type id="weather-status">
+		<item-type>String</item-type>
+		<label>Weather Status</label>
+		<description>Current weather condition reported by the thermostat.</description>
+		<category>Sun</category>
+		<state readOnly="true">
+			<options>
+				<option value="sunny">Sunny</option>
+				<option value="clear">Clear</option>
+				<option value="rainy">Rainy</option>
+				<option value="snowy">Snowy</option>
+				<option value="hail">Hail</option>
+				<option value="windy">Windy</option>
+				<option value="fog">Fog</option>
+				<option value="cloudy">Cloudy</option>
+				<option value="partly-sunny">Partly Sunny</option>
+				<option value="partly-cloudy">Partly Cloudy</option>
+				<option value="pouring">Pouring</option>
+				<option value="lightning">Lightning</option>
+				<option value="hurricane">Hurricane</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="device-errors">
+		<item-type>String</item-type>
+		<label>Device Errors</label>
+		<description>Active thermostat error codes, comma-separated. Empty when there are none.</description>
+		<category>Error</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="boiler-errors">
+		<item-type>String</item-type>
+		<label>Boiler Errors</label>
+		<description>Active boiler error codes, comma-separated. Empty when there are none.</description>
+		<category>Error</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="shown-set-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Displayed Setpoint</label>
+		<description>Setpoint currently shown on the thermostat's display.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="average-outside-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Average Outside Temp</label>
+		<description>Weighted average outside temperature used by the regulation algorithm.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="pcb-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>PCB Temperature</label>
+		<description>Temperature inside the thermostat's circuit board.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wifi-signal" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>WiFi Signal</label>
+		<description>WiFi signal strength. Closer to 0 is stronger.</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltage" advanced="true">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Supply Voltage</label>
+		<description>Thermostat supply voltage.</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dhw-flow-rate" advanced="true">
+		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
+		<label>Hot Water Flow Rate</label>
+		<description>Current hot water flow rate.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="resets" advanced="true">
+		<item-type>Number</item-type>
+		<label>Controller Resets</label>
+		<description>Number of times the thermostat's controller has restarted.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="memory-allocation" advanced="true">
+		<item-type>Number</item-type>
+		<label>Memory Allocation</label>
+		<description>Thermostat memory usage indicator, for diagnostics only.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="boiler-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Flow Temp</label>
+		<description>Temperature of water flowing out of the boiler.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler-return-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Return Temp</label>
+		<description>Temperature of water returning to the boiler.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="min-modulation-level" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Min Modulation Level</label>
+		<description>Minimum output level the burner can sustain.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="max-boiler-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Max Boiler Temp</label>
+		<description>Maximum boiler water temperature limit.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="vacation-remaining" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Vacation Remaining</label>
+		<description>Time remaining in the current holiday period.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="extend-remaining" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Extend Remaining</label>
+		<description>Time remaining in the current extend session.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="fireplace-remaining" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Fireplace Remaining</label>
+		<description>Time remaining in the current fireplace session.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="report-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Report Time</label>
+		<description>When the thermostat last reported data.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
