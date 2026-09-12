@@ -125,7 +125,7 @@ See section [Discovery](#discovery) for details.
 | shellyprorgbwwpm     | Shelly Pro RGBWW PM                                      | SPDC-0D5PE16EU                                                            |
 | shellyplusduobulb    | Shelly Duo Bulb E27 Gen3                                 | S3BL-D010009AEU                                                           |
 | shellypluscolorbulb  | Shelly Multicolor Bulb E27 Gen3                          | S3BL-C010007AEU                                                           |
-| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
+| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1, SAWD-2A1XX10EU1, SAWD-5A1XX10EU0, SAWD-3A1XE10EU2        |
 | shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
 | shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
 
@@ -499,6 +499,10 @@ The accumulated channels are only available for devices with more than 1 meter.
 `accumulatedReturnedEnergy` and `accumulatedApparent` are available for multi-meter EM devices (Gen1: Shelly EM, 3EM; Gen2: Plus EM, Plus 3EM-63, Pro 3EM, Pro EM-50).
 The LED channels are available for the Plug-S with firmware 1.6x and for various other devices with firmware 1.8 or newer.
 The binding detects them automatically.
+
+Mains-powered devices with an attached battery-operated sensor (e.g. the Wall Display with an external H&T sensor) report that sensor's battery as Gen2 `devicepower:1`.
+In this case the binding adds the channels `batteryLevel` (Number, battery level in percent) and `lowBattery` (Switch, ON when the battery is low) to the `sensors` group.
+Those channels only appear when the device actually reports a battery for the attached sensor.
 
 ## Events
 
@@ -2400,19 +2404,28 @@ end
 
 ## Shelly Wall Displays
 
-| Group   | Channel     | Type     | read-only | Description                                                                       |
-| ------- | ----------- | -------- | --------- | --------------------------------------------------------------------------------- |
-| relay   | output      | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
-|         | outputName  | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|         | input       | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|         | autoOn      | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|         | autoOff     | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|         | timerActive | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|         | button      | Trigger  | yes       | Event trigger, see section Button Events                                          |
-| sensors | temperature | Number   | yes       | Temperature reported by the integrated sensor                                     |
-|         | humidity    | Number   | yes       | Relative Humidity in percent reported by the integrated sensor                    |
-|         | lux         | Number   | yes       | Brightness in Lux reported by the integrated sensor                               |
-|         | lastUpdate  | DateTime | yes       | Timestamp of the last update (any sensor value changed)                           |
+| Group   | Channel            | Type     | read-only | Description                                                                       |
+| ------- | ------------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay   | output             | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|         | outputName         | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|         | input              | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|         | autoOn             | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff            | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive        | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|         | button             | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| sensors | temperature        | Number   | yes       | Temperature reported by the integrated sensor                                     |
+|         | humidity           | Number   | yes       | Relative Humidity in percent reported by the integrated sensor                    |
+|         | lux                | Number   | yes       | Brightness in Lux reported by the integrated sensor                               |
+|         | lastUpdate         | DateTime | yes       | Timestamp of the last update (any sensor value changed)                           |
+|         | batteryLevel       | Number   | yes       | Battery level of an attached battery-operated sensor in percent                   |
+|         | lowBattery         | Switch   | yes       | ON: Battery of the attached sensor is low                                         |
+| device  | relayInThermostat  | Switch   | yes       | ON: The relay output is used by a thermostat/climate profile                      |
+|         | sensorInThermostat | Switch   | yes       | ON: The temperature sensor input is used by a thermostat/climate profile          |
+
+The `sensors` group's `batteryLevel`/`lowBattery` channels are only available
+when a battery-operated sensor is attached to the Wall Display. They are added
+as soon as the attached sensor's battery is reported, so pairing a sensor
+after the Thing was already created is picked up on the next status update.
 
 ## Full Example
 

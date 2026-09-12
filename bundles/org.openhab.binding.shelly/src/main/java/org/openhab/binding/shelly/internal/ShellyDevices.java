@@ -114,6 +114,9 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSDIMMER0110VG3 = "S3DM-0010WW";
     public static final String SHELLYDT_PRODM2PM = "SPDM-002PE01EU";
     public static final String SHELLYDT_PLUSWALLDISPLAY = "SAWD-0A1XX10EU1";
+    public static final String SHELLYDT_PLUSWALLDISPLAYX2 = "SAWD-2A1XX10EU1";
+    public static final String SHELLYDT_PLUSWALLDISPLAYX2I = "SAWD-5A1XX10EU0";
+    public static final String SHELLYDT_PLUSWALLDISPLAYXL = "SAWD-3A1XE10EU2";
     public static final String SHELLYDT_PLUSRGBWPM = "SNDC-0D4P10WW";
     public static final String SHELLYDT_PRORGBWWPM = "SPDC-0D5PE16EU";
     public static final String SHELLYDT_PLUSSTRIP = "S4PL-00416EU";
@@ -557,7 +560,10 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUCLASS_WS, THING_TYPE_SHELLYBLUWS90),
 
             // Wall displays
-            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
+            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY),
+            Map.entry(SHELLYDT_PLUSWALLDISPLAYX2, THING_TYPE_SHELLYPLUSWALLDISPLAY),
+            Map.entry(SHELLYDT_PLUSWALLDISPLAYX2I, THING_TYPE_SHELLYPLUSWALLDISPLAY),
+            Map.entry(SHELLYDT_PLUSWALLDISPLAYXL, THING_TYPE_SHELLYPLUSWALLDISPLAY));
 
     // Relay devices (mode="relay")
     public static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(

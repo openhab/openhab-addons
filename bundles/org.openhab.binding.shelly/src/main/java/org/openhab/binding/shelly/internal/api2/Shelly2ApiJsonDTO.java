@@ -1023,6 +1023,8 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+            @SerializedName("devicepower:1")
+            public @Nullable Shelly2DeviceStatusPower devicepower1;
 
             @SerializedName("lora:100")
             public Shelly2DeviceStatusLora lora100;
@@ -1058,6 +1060,12 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusWakeup wakeUpReason;
             @SerializedName("wakeup_period")
             public Integer wakeupPeriod;
+
+            // Wall Display: reported inside sys, not as a top level component
+            @SerializedName("relay_in_thermostat")
+            public @Nullable Boolean relayInThermostat;
+            @SerializedName("sensor_in_thermostat")
+            public @Nullable Boolean sensorInThermostat;
         }
 
         public class Shelly2DeviceStatusSysWiFi {
