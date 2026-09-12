@@ -561,6 +561,63 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateMetersNumMetersZeroRemovesObsoleteMeterChannels() {
+        ShellyDeviceProfile profile = simpleRelayProfile(0);
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+
+        ShellySettingsStatus status = statusWithMeters(m0);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler)
+                .removeChannels(argThat(ids -> ids.contains(CHANNEL_GROUP_METER + "#" + CHANNEL_METER_CURRENTWATTS)
+                        && ids.contains(CHANNEL_GROUP_METER + "#" + CHANNEL_METER_TOTALKWH)
+                        && ids.contains(CHANNEL_GROUP_METER + "#" + CHANNEL_LAST_UPDATE)));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_METER), anyString(), any(State.class));
+    }
+
+    @Test
+    void updateMetersNumMetersPositiveKeepsMeterChannels() {
+        ShellyDeviceProfile profile = simpleRelayProfile(1);
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 55.0;
+
+        ShellySettingsStatus status = statusWithMeters(m0);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).removeChannels(any());
+    }
+
+    @Test
+    void updateMetersEMeterNumMetersZeroKeepsMeterChannels() {
+        ShellyDeviceProfile profile = emeterProfile(false, 0);
+
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0));
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).removeChannels(any());
+    }
+
+    @Test
+    void updateMetersRollerNumMetersZeroKeepsMeterChannels() {
+        ShellyDeviceProfile profile = rollerGen2Profile(0);
+
+        ShellySettingsStatus status = statusWithEMeters(emeter(100.0));
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, never()).removeChannels(any());
+    }
+
+    @Test
     void gen1RollerAggregatedMeterSumsBothMotorChannels() {
         ShellyDeviceProfile profile = gen1RollerProfile();
         ShellySettingsMeter m0 = new ShellySettingsMeter();

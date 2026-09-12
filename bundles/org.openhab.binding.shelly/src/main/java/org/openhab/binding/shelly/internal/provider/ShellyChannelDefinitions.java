@@ -757,6 +757,25 @@ public class ShellyChannelDefinitions {
         return newChannels;
     }
 
+    private static final Set<String> SIMPLE_METER_CHANNELS = Set.of(CHGR_METER + "#" + CHANNEL_METER_CURRENTWATTS,
+            CHGR_METER + "#" + CHANNEL_METER_TOTALKWH, CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN1,
+            CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN2, CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN3,
+            CHGR_METER + "#" + CHANNEL_METER_ENERGYAVGLAST3MIN, CHGR_METER + "#" + CHANNEL_LAST_UPDATE);
+
+    /**
+     * @return simple-meter channel ids ("group#channel") stale once resolveNumMeters() reports no metering
+     *         hardware for this device (numMeters == 0), left over on Things created before
+     *         THING_TYPE_CAP_NUM_METERS covered it, and to be removed. Never returned for EMeter/3EM or the
+     *         roller/RGBW2 aggregated-meter devices, which share several of the same channel ids under their
+     *         own code paths.
+     */
+    public static Set<String> getObsoleteMeterChannelIds(final ShellyDeviceProfile profile) {
+        if (profile.numMeters > 0 || profile.isEMeter || profile.isRoller || profile.isRGBW2) {
+            return Set.of();
+        }
+        return SIMPLE_METER_CHANNELS;
+    }
+
     public static Map<String, Channel> createEMNCurrentChannels(final Thing thing,
             @Nullable ShellyEMNCurrentSettings settings, ShellyEMNCurrentStatus status) {
         String group = CHANNEL_GROUP_NMETER;
