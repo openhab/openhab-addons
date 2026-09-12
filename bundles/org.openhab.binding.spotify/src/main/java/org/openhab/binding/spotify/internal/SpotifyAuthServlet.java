@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -58,6 +59,7 @@ public class SpotifyAuthServlet extends HttpServlet {
     private static final String HEADER_FORWARDED = "Forwarded";
     private static final Pattern FORWARDED_PROTO_PATTERN = Pattern.compile("proto=\"?([a-zA-Z]+)\"?",
             Pattern.CASE_INSENSITIVE);
+    private static final Set<String> VALID_SCHEMES = Set.of("http", "https");
 
     // Simple HTML templates for inserting messages.
     private static final String HTML_EMPTY_PLAYERS = "<p class='block'>Manually add a Spotify Player Bridge to authorize it here.<p>";
@@ -114,7 +116,7 @@ public class SpotifyAuthServlet extends HttpServlet {
      * @param req the received http request
      * @return the servlet base url with the correct scheme
      */
-    private String extractServletBaseURL(HttpServletRequest req) {
+    String extractServletBaseURL(HttpServletRequest req) {
         final StringBuffer requestURL = req.getRequestURL();
         final String scheme;
 
@@ -135,20 +137,20 @@ public class SpotifyAuthServlet extends HttpServlet {
      * @param req the received http request
      * @return the scheme to use for the redirect URI
      */
-    private String determineScheme(HttpServletRequest req) {
+    String determineScheme(HttpServletRequest req) {
         String scheme = schemeFromForwardedProto(req);
         if (scheme == null) {
-            scheme = schemeFromForwardedSsl(req);
+            scheme = schemeFromOnOffHeader(req, HEADER_X_FORWARDED_SSL);
         }
         if (scheme == null) {
-            scheme = schemeFromFrontEndHttps(req);
+            scheme = schemeFromOnOffHeader(req, HEADER_FRONT_END_HTTPS);
         }
         if (scheme == null) {
             scheme = schemeFromForwarded(req);
         }
         if (scheme == null) {
             scheme = req.getScheme();
-            logger.debug("None of the recognized forwarded-proto headers were present, falling back to the "
+            logger.debug("None of the recognized forwarded-proto headers had a valid value, falling back to the "
                     + "request scheme '{}'.", scheme);
         }
         return scheme;
@@ -156,19 +158,39 @@ public class SpotifyAuthServlet extends HttpServlet {
 
     private @Nullable String schemeFromForwardedProto(HttpServletRequest req) {
         final String value = logAndGetHeader(req, HEADER_X_FORWARDED_PROTO);
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         // The header may contain a comma-separated list when multiple proxies are chained; the first entry is
         // the scheme seen by the outermost proxy, i.e. the one the client actually used.
-        return value == null || value.isBlank() ? null : value.split(",")[0].trim();
+        final String candidate = value.split(",")[0].trim();
+        return normalizeSchemeOrIgnore(HEADER_X_FORWARDED_PROTO, candidate);
     }
 
-    private @Nullable String schemeFromForwardedSsl(HttpServletRequest req) {
-        final String value = logAndGetHeader(req, HEADER_X_FORWARDED_SSL);
-        return value == null || value.isBlank() ? null : ("on".equalsIgnoreCase(value.trim()) ? "https" : "http");
-    }
-
-    private @Nullable String schemeFromFrontEndHttps(HttpServletRequest req) {
-        final String value = logAndGetHeader(req, HEADER_FRONT_END_HTTPS);
-        return value == null || value.isBlank() ? null : ("on".equalsIgnoreCase(value.trim()) ? "https" : "http");
+    /**
+     * Parses a de-facto "on"/"off" style header (e.g. {@code X-Forwarded-Ssl}, {@code Front-End-Https}) into a
+     * scheme. Any value other than the two documented ones is ignored rather than defaulting to http, so an
+     * unrecognized value does not incorrectly shadow a lower-priority but valid header.
+     *
+     * @param req the received http request
+     * @param headerName the name of the header to read
+     * @return "https" for "on", "http" for "off", or {@code null} if the header is absent or has any other value
+     */
+    private @Nullable String schemeFromOnOffHeader(HttpServletRequest req, String headerName) {
+        final String value = logAndGetHeader(req, headerName);
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        final String normalized = value.trim().toLowerCase(Locale.ROOT);
+        if ("on".equals(normalized)) {
+            return "https";
+        } else if ("off".equals(normalized)) {
+            return "http";
+        } else {
+            logger.debug("Header '{}' has unrecognized value '{}', expected 'on' or 'off'; ignoring it.", headerName,
+                    value);
+            return null;
+        }
     }
 
     private @Nullable String schemeFromForwarded(HttpServletRequest req) {
@@ -178,7 +200,29 @@ public class SpotifyAuthServlet extends HttpServlet {
         }
         // RFC 7239, e.g. "for=1.2.3.4;proto=https;by=203.0.113.43"; only the first hop is relevant here.
         final Matcher matcher = FORWARDED_PROTO_PATTERN.matcher(value.split(",")[0]);
-        return matcher.find() ? matcher.group(1).toLowerCase(Locale.ROOT) : null;
+        if (!matcher.find()) {
+            return null;
+        }
+        return normalizeSchemeOrIgnore(HEADER_FORWARDED, matcher.group(1));
+    }
+
+    /**
+     * Normalizes a candidate scheme extracted from a header and validates it is either "http" or "https", logging
+     * and returning {@code null} for anything else so the caller can fall through to the next, lower-priority
+     * source instead of using an invalid scheme in the redirect URI.
+     *
+     * @param headerName the header the candidate was extracted from, used for logging only
+     * @param candidate the candidate scheme value
+     * @return the normalized scheme ("http" or "https"), or {@code null} if the candidate is not a valid scheme
+     */
+    private @Nullable String normalizeSchemeOrIgnore(String headerName, String candidate) {
+        final String normalized = candidate.toLowerCase(Locale.ROOT);
+        if (VALID_SCHEMES.contains(normalized)) {
+            return normalized;
+        }
+        logger.debug("Header '{}' has unrecognized scheme value '{}', expected 'http' or 'https'; ignoring it.",
+                headerName, candidate);
+        return null;
     }
 
     /**
