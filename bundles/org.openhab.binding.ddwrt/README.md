@@ -34,9 +34,10 @@ After adding and configuring the `network` bridge, the binding automatically dis
 - **Clients** — from radio association lists, DHCP lease tables, and ARP/neighbor caches on each device
 - **Firewall rules** — from DD-WRT nvram `filter_rule` entries (DD-WRT gateway devices only)
 
-For clients without a hostname supplied by the router, discovery reuses a friendly name published by another openHAB
-Thing or inbox result when it has the same MAC address. Router-supplied hostnames take precedence. If neither source has
-a name, discovery uses the existing OUI-based name or a stable `client-<MAC>` fallback so the client is not omitted.
+For clients without an administrator-assigned hostname, discovery reuses a friendly name published by another openHAB
+Thing or inbox result when it has the same MAC address. Explicit mappings, `/etc/hosts` entries, and static DHCP
+hostnames take precedence; a matching friendly name may replace a dynamic DHCP or reverse-DNS name. If none of these
+sources has a name, discovery uses the existing OUI-based name or a stable `client-<MAC>` fallback.
 
 Discovery results appear in the openHAB inbox after each device refresh cycle.
 
@@ -282,7 +283,9 @@ Radio enable and disable operations on generic Linux may require additional priv
 
 The thing ID is derived from the client's sanitized hostname (e.g. `Joes-Phone` → `joesphone`).
 If the client uses MAC randomization, the binding tracks it by hostname rather than MAC address.
-When a new randomized MAC appears with the same DHCP hostname, the binding merges it with the existing client.
+When a new randomized MAC appears with the same unique DHCP hostname, the binding merges it with the existing client.
+If multiple active DHCP leases use the same dynamic hostname, the binding instead uses exact-MAC discovery metadata or
+an OUI/MAC-based name so that the clients remain distinct.
 
 ### `firewall-rule` Thing Configuration
 
@@ -509,7 +512,9 @@ Dynamic neighbor entries are classified as **active** for 60 seconds, **stale** 
 
 Modern mobile devices randomize their MAC address per network.
 The binding handles this by tracking clients primarily by their DHCP hostname.
-When a device reconnects with a new randomized MAC but the same hostname, the binding automatically merges the new MAC with the existing client record.
+When a device reconnects with a new randomized MAC but the same unique hostname, the binding automatically merges the new MAC with the existing client record.
+Concurrent leases that share a dynamic hostname remain separate clients and use exact-MAC metadata or OUI/MAC-based
+discovery names.
 
 If a client has no DHCP hostname (some IoT devices), the binding generates a synthetic hostname from the MAC address OUI vendor prefix (e.g. `Espressif-a1b2c3`).
 
