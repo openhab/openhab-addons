@@ -149,8 +149,8 @@ public class Shelly1CoIoTProtocol {
                     case "white":
                     case "gain":
                     case "effect":
-                        if (lightModels != null && lightModels
-                                .getByApiLightIndex(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
+                        ShellyLightModel model = getLightModelForSensor(sen, lightModels);
+                        if (model != null) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {
                                 case "red":
                                     model.setColor(R, (int) s.value);
@@ -350,6 +350,9 @@ public class Shelly1CoIoTProtocol {
                     if (desc.substring(0, 6).equalsIgnoreCase(SHELLY_CLASS_ROLLER)) {
                         idx = Integer.parseInt(substringAfter(desc, SHELLY_CLASS_ROLLER));
                     }
+                    if (desc.substring(0, SHELLY_CLASS_LIGHT.length()).equalsIgnoreCase(SHELLY_CLASS_LIGHT)) {
+                        idx = Integer.parseInt(substringAfter(desc, SHELLY_CLASS_LIGHT));
+                    }
                     if (desc.substring(0, SHELLY_CLASS_EMETER.length()).equalsIgnoreCase(SHELLY_CLASS_EMETER)) {
                         idx = Integer.parseInt(substringAfter(desc, SHELLY_CLASS_EMETER));
                     }
@@ -406,5 +409,18 @@ public class Shelly1CoIoTProtocol {
 
     public String getLastWakeup() {
         return lastWakeup;
+    }
+
+    @Nullable
+    protected ShellyLightModel getLightModelForSensor(CoIotDescrSen sen,
+            LightModelAccessor.@Nullable LightModels lightModels) {
+        if (lightModels == null) {
+            return null;
+        }
+        int channelGroupSuffix = getIdFromBlk(sen);
+        if (channelGroupSuffix <= 0) {
+            return null;
+        }
+        return lightModels.getByChannelGroupSuffix(channelGroupSuffix);
     }
 }

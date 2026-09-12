@@ -205,7 +205,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
                         if (lightModels != null && lightModels
-                                .getByApiLightIndex(getIdFromBlk(sen) - 1) instanceof ShellyLightModel model) {
+                                .getByChannelGroupSuffix(getIdFromBlk(sen)) instanceof ShellyLightModel model) {
                             model.setColorTemp(s.value);
                         } else {
                             logger.debug("{}: Unable to update color temperature for {}: LightModel not found",
