@@ -96,11 +96,12 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     protected ScheduledExecutorService executorService = this.scheduler;
     protected HomeWizardConfiguration config = new HomeWizardConfiguration();
     private @Nullable ScheduledFuture<?> dataPollingJob;
-    private @Nullable ScheduledFuture<?> deviceInformationPollingJob;
+    private @Nullable ScheduledFuture<?> firmwarePollingJob;
     private HttpClient httpClient = new HttpClient();
 
     protected List<String> supportedTypes = new ArrayList<String>();
     protected List<Integer> supportedApiVersions = Arrays.asList(API_V1);
+    private boolean deviceConfigurationOk = false;
     private String apiURL = "";
 
     /**
@@ -146,7 +147,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
             dataPollingJob = executorService.scheduleWithFixedDelay(this::retrieveData, 0, config.refreshDelay,
                     TimeUnit.SECONDS);
-            deviceInformationPollingJob = executorService.scheduleWithFixedDelay(this::retrieveDeviceInformation, 1, 1,
+            firmwarePollingJob = executorService.scheduleWithFixedDelay(this::retrieveFirmwareVersion, 1, 1,
                     TimeUnit.DAYS);
         }
     }
@@ -226,21 +227,26 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      * The data polling loop
      */
     protected void retrieveData() {
-        if (this.thing.getStatus() == ThingStatus.ONLINE || retrieveDeviceInformation()) {
-            try {
-                handleSystemData(getSystemData());
-                handleMeasurementData(getMeasurementData());
-                updateStatus(ThingStatus.ONLINE);
-            } catch (JsonSyntaxException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error-device-offline");
-                logger.debug("Unable to get data from the API", ex);
+        if (!deviceConfigurationOk) {
+            deviceConfigurationOk = checkDeviceConfiguration();
+            if (!deviceConfigurationOk) {
                 return;
             }
         }
+
+        try {
+            handleSystemData(getSystemData());
+            handleMeasurementData(getMeasurementData());
+            updateStatus(ThingStatus.ONLINE);
+        } catch (JsonSyntaxException ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-device-offline");
+            logger.debug("Unable to get data from the API", ex);
+            return;
+        }
     }
 
-    private boolean retrieveDeviceInformation() {
+    private boolean checkDeviceConfiguration() {
         String deviceInformation = "";
 
         try {
@@ -252,15 +258,16 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             return false;
         }
 
-        if (deviceInformation.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-no-data");
-            return false;
+        HomeWizardDeviceInformationPayload payload = null;
+        try {
+            payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
+        } catch (JsonSyntaxException ex) {
+            payload = null;
         }
 
-        var payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
-
         if (payload == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-no-data");
             return false;
         } else {
             if ("".equals(payload.getProductType())) {
@@ -286,6 +293,27 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
     }
 
+    private void retrieveFirmwareVersion() {
+        String deviceInformation = "";
+
+        try {
+            deviceInformation = getDeviceInformationData();
+            var payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
+            if (payload == null) {
+                // Only log a warning here. Updating the firmware version will be attempted again when the device is
+                // polled next time.
+                logger.warn("Unable to update the firmare version. No device information available.");
+                return;
+            }
+            updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
+        } catch (SecurityException | JsonSyntaxException ex) {
+            // Only log a warning here. Updating the firmware version will be attempted again when the device is polled
+            // next time.
+            logger.warn("Unable to update the firmare version. No device information available.");
+            return;
+        }
+    }
+
     protected String getApiUrl() {
         if (config.isUsingApiVersion2()) {
             return apiURL;
@@ -304,11 +332,11 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             dataJob.cancel(true);
         }
         dataPollingJob = null;
-        var deviceJob = deviceInformationPollingJob;
-        if (deviceJob != null) {
-            deviceJob.cancel(true);
+        var firmwareJob = firmwarePollingJob;
+        if (firmwareJob != null) {
+            firmwareJob.cancel(true);
         }
-        deviceInformationPollingJob = null;
+        firmwarePollingJob = null;
         try {
             httpClient.stop();
         } catch (Exception ex) { // No specific exception is thrown by the stop method
