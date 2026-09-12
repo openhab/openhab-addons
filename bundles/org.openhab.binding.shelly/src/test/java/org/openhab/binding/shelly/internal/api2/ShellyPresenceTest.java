@@ -16,12 +16,14 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_GROUP_SENSOR;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_LAST_UPDATE;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_SENSOR_OBJECT_COUNT;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_SENSOR_PRESENCE;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
@@ -50,6 +52,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.net.NetworkAddressService;
@@ -190,6 +193,15 @@ public class ShellyPresenceTest {
     }
 
     @Test
+    void presenceEventFromMainZoneUpdatesLastUpdate() throws ShellyApiException {
+        Fixture f = build();
+
+        f.rpc.onNotifyEvent(presenceEventJson("presencezone:200", true));
+
+        verify(f.thing).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_LAST_UPDATE), any(DateTimeType.class));
+    }
+
+    @Test
     void counterEventFromMainZoneUpdatesChannelAndCache() throws ShellyApiException {
         Fixture f = build();
 
@@ -207,6 +219,15 @@ public class ShellyPresenceTest {
 
         verify(f.thing, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_OBJECT_COUNT), any());
         assertThat(f.rpc.getSensorStatus().objectCount, is(nullValue()));
+    }
+
+    @Test
+    void counterEventFromMainZoneUpdatesLastUpdate() throws ShellyApiException {
+        Fixture f = build();
+
+        f.rpc.onNotifyEvent(counterEventJson("presencezone:200", 3));
+
+        verify(f.thing).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_LAST_UPDATE), any(DateTimeType.class));
     }
 
     @Test
@@ -346,6 +367,7 @@ public class ShellyPresenceTest {
         when(thing.getThing()).thenReturn(ohThing);
         when(thing.getHttpClient()).thenReturn(mock(HttpClient.class));
         when(thing.getProfile()).thenReturn(profile);
+        when(thing.updateChannel(anyString(), anyString(), any())).thenReturn(true);
 
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, "192.168.1.1"));

@@ -716,13 +716,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_PRESENCE:
                     if (profile.isPresence && isMainZoneEvent(profile, e) && e.value != null) {
                         sensorData.presence = e.value;
-                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE, getOnOff(e.value));
+                        if (updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE, getOnOff(e.value))) {
+                            updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+                        }
                     }
                     break;
                 case SHELLY2_EVENT_COUNTER:
                     if (profile.isPresence && isMainZoneEvent(profile, e) && e.numObjects != null) {
                         sensorData.objectCount = e.numObjects;
-                        updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT, getDecimal(e.numObjects));
+                        if (updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT,
+                                getDecimal(e.numObjects))) {
+                            updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+                        }
                     }
                     break;
                 default:
