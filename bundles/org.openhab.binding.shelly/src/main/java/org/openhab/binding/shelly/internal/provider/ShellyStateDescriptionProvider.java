@@ -14,10 +14,8 @@ package org.openhab.binding.shelly.internal.provider;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -97,40 +95,45 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
             return null;
         }
 
+        StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create(originalStateDescription);
+
+        boolean hasOptions = false;
         List<StateOption> stateOptions = handler.getStateOptions(uid);
-        boolean hasOptions = stateOptions != null && !stateOptions.isEmpty();
+        if (stateOptions != null && !stateOptions.isEmpty()) {
+            builder.withOptions(stateOptions);
+            hasOptions = true;
+        }
 
         boolean hasColorTempRange = false;
-        BigDecimal minKelvin = null;
-        BigDecimal maxKelvin = null;
-
-        if (CHANNEL_COLOR_TEMP.equals(channelUID.getIdWithoutGroup())
+        if (CHANNEL_COLOR_TEMP.equals(channelUID.getIdWithoutGroup()) && isColorTempLightChannel(channelUID)
                 && handler instanceof ShellyLightHandler lightHandler) {
             ShellyLightModel model = lightHandler.getLightModelByChannelUID(channelUID);
             if (model != null && model.supportsColorTempChannel()) {
-                minKelvin = model.getColorTemperatureMinimumKelvin();
-                maxKelvin = model.getColorTemperatureMaximumKelvin();
+                builder.withMinimum(model.getColorTemperatureMinimumKelvin());
+                builder.withMaximum(model.getColorTemperatureMaximumKelvin());
+                builder.withPattern("%.0f K");
                 hasColorTempRange = true;
             }
         }
 
-        if (!hasOptions && !hasColorTempRange) {
-            return null;
+        return (hasOptions || hasColorTempRange) ? builder.build() : null;
+    }
+
+    private boolean isColorTempLightChannel(ChannelUID channelUID) {
+        String groupId = channelUID.getGroupId();
+        if (groupId == null) {
+            return false;
         }
-
-        StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create(originalStateDescription);
-
-        if (hasOptions) {
-            builder = builder.withOptions(Objects.requireNonNull(stateOptions));
+        if (CHANNEL_GROUP_WHITE_CONTROL.equals(groupId)) {
+            return true;
         }
-
-        if (hasColorTempRange) {
-            builder = builder.withMinimum(Objects.requireNonNull(minKelvin));
-            builder = builder.withMaximum(Objects.requireNonNull(maxKelvin));
-            builder = builder.withPattern("%.0f K");
+        if (groupId.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
+            return true;
         }
-
-        return builder.build();
+        if (groupId.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
+            return true;
+        }
+        return false;
     }
 
     /**
