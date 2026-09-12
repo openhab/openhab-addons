@@ -32,6 +32,7 @@ public class VDRBindingConstants {
     public static final String CHANNEL_UID_POWER = "power";
     public static final String CHANNEL_UID_MESSAGE = "message";
     public static final String CHANNEL_UID_CHANNEL = "channel";
+    public static final String CHANNEL_UID_AUDIO = "audio";
     public static final String CHANNEL_UID_CHANNEL_NAME = "channelName";
     public static final String CHANNEL_UID_VOLUME = "volume";
     public static final String CHANNEL_UID_KEYCODE = "keyCode";
