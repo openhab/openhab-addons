@@ -107,14 +107,15 @@ public class ShellyComponents {
             reconcileLoraChannels(thingHandler, profile);
         }
 
-        // Media and Thermostat can be enabled at any time, so create those channels as soon as the
-        // component shows up in the status, not only on the first update cycle
+        // Media and Thermostat can be enabled/disabled at any time, so create/remove those channels as soon as
+        // the component (dis)appears in the status, not only on the first update cycle
         Map<String, Channel> dynChannels = ShellyChannelDefinitions.createMediaChannels(thingHandler.getThing(),
                 status);
         dynChannels.putAll(ShellyChannelDefinitions.createThermostatChannels(thingHandler.getThing(), status));
         if (!dynChannels.isEmpty()) {
             thingHandler.updateThingChannels(Map.of(), dynChannels);
         }
+        reconcileMediaChannels(thingHandler, status);
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
         if (!profile.gateway.isEmpty()) {
@@ -1123,6 +1124,13 @@ public class ShellyComponents {
         if (!profile.settings.loraDetected) {
             profile.addOnFw = "";
             thingHandler.removeProperty(PROPERTY_ADDON_FIRMWARE);
+        }
+    }
+
+    private static void reconcileMediaChannels(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
+        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteMediaChannelIds(status);
+        if (!obsolete.isEmpty()) {
+            thingHandler.removeChannels(obsolete);
         }
     }
 

@@ -512,6 +512,36 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateDeviceStatusMediaAbsentRemovesMediaChannels() throws Exception {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).removeChannels(argThat(
+                ids -> ids.contains(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_MEDIA_CONTROL)));
+    }
+
+    @Test
+    void updateDeviceStatusMediaPresentKeepsMediaChannels() throws Exception {
+        Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
+        media.playback = new Shelly2DeviceStatusMediaPlayback();
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.media = media;
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler, never()).removeChannels(argThat(
+                ids -> ids.contains(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_MEDIA_CONTROL)));
+    }
+
+    @Test
     void updateDeviceStatusMediaAppearingAfterChannelsCreatedAddsMediaChannels() throws Exception {
         Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
         media.playback = new Shelly2DeviceStatusMediaPlayback();

@@ -597,6 +597,20 @@ public class ShellyChannelDefinitions {
         return add;
     }
 
+    private static final Set<String> MEDIA_CHANNELS = Set.of(CHGR_MEDIA + "#" + CHANNEL_MEDIA_CONTROL,
+            CHGR_MEDIA + "#" + CHANNEL_MEDIA_VOLUME, CHGR_MEDIA + "#" + CHANNEL_MEDIA_TITLE,
+            CHGR_MEDIA + "#" + CHANNEL_MEDIA_ARTIST, CHGR_MEDIA + "#" + CHANNEL_MEDIA_ALBUM,
+            CHGR_MEDIA + "#" + CHANNEL_MEDIA_TYPE, CHGR_MEDIA + "#" + CHANNEL_MEDIA_PLAY_MEDIA_ID,
+            CHGR_MEDIA + "#" + CHANNEL_MEDIA_PLAY_RADIO_FAV_ID);
+
+    /**
+     * @return "group#channel" ids of the Media Player channels, stale once the device no longer reports a
+     *         media:0 component (media player disabled in the Shelly app) and to be removed
+     */
+    public static Set<String> getObsoleteMediaChannelIds(final ShellySettingsStatus status) {
+        return status.media == null ? MEDIA_CHANNELS : Set.of();
+    }
+
     /**
      * Auto-create relay channels depending on relay type/mode
      *
