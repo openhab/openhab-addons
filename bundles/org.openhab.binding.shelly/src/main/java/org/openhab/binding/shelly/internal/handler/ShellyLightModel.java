@@ -731,12 +731,10 @@ public class ShellyLightModel extends LightModel {
     }
 
     /**
-     * Returns true if the light model supports brightness channels, false otherwise.
+     * Always returns true as all light models support brightness channels.
+     * Used to align with the semantics of the other supportsXyz methods.
      * 
-     * NOTE: the gain channel valid when devices are in COLOR mode, and the brightness
-     * channel is valid when devices are in WHITE mode.
-     * 
-     * @return true if such channels are supported, false otherwise.
+     * @return true as such channels are always supported.
      */
     public boolean supportsBrightnessChannel() {
         return true;

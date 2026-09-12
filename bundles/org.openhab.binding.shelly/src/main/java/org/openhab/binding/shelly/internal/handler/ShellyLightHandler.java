@@ -485,7 +485,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
     public boolean updateChannelsFromLightModel(ShellyLightModel model, boolean forceUpdate) {
         logger.trace("{}: updateDirtyChannelsForLightModel({})", thingName, model);
         boolean updated = false;
-        String group = null;
+        String group;
         int groupSuffix = model.getChannelGroupSuffix();
 
         // ON-OFF:
