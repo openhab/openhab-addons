@@ -16,7 +16,6 @@ import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.Set;
 import java.util.TimeZone;
@@ -45,17 +44,6 @@ import org.openhab.binding.astro.internal.util.MathUtils;
 public class MoonCalc {
     private static final double FL = 1.0 - AstroConstants.WGS84_EARTH_FLATTENING;
     private static final EclipseCalc ECLIPSE_CALC = new MoonEclipseCalc();
-
-    private final InstantSource instantSource;
-
-    /**
-     * Creates a new instance using the specified {@link InstantSource}.
-     *
-     * @param instantSource the source of the current time.
-     */
-    public MoonCalc(InstantSource instantSource) {
-        this.instantSource = instantSource;
-    }
 
     /**
      * Calculates all moon data at the specified coordinates
@@ -102,7 +90,7 @@ public class MoonCalc {
     public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Moon moon, TimeZone zone) {
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
 
-        moon.setPhaseSet(MoonPhaseCalc.calculate(instantSource, julianDate, moon.getPhaseSet(), zone.toZoneId()));
+        moon.setPhaseSet(MoonPhaseCalc.calculate(julianDate, moon.getPhaseSet(), zone.toZoneId()));
 
         MoonPosition moonPosition = getMoonPosition(julianDate, latitude, longitude);
         moon.setPosition(moonPosition);

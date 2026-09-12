@@ -14,7 +14,6 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.openhab.binding.astro.internal.util.MathUtils.*;
 
-import java.time.InstantSource;
 import java.time.ZoneId;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,6 +23,7 @@ import org.openhab.binding.astro.internal.calc.moon.LunarArguments;
 import org.openhab.binding.astro.internal.calc.moon.LunationArguments;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseSet;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Moon Phase Calculator
@@ -32,20 +32,21 @@ import org.openhab.binding.astro.internal.model.MoonPhaseSet;
  */
 @NonNullByDefault
 public class MoonPhaseCalc {
-    public static MoonPhaseSet calculate(InstantSource instantSource, double julianDate, MoonPhaseSet previousMP,
-            ZoneId zone) {
+    public static MoonPhaseSet calculate(double julianDate, MoonPhaseSet previousMP, ZoneId zone) {
         final MoonPhaseSet result;
 
         if (previousMP.needsRecalc(julianDate)) {
-            double julianDateMidnight = Math.floor(julianDate + 0.5) - 0.5;
-            double parentNewMoon = getPhase(julianDateMidnight, MoonPhase.NEW, false);
+            double localMidnight = DateTimeUtils.instantToJulianDay(
+                    DateTimeUtils.jdToInstant(julianDate).atZone(zone).toLocalDate().atStartOfDay(zone).toInstant());
+            double previousNewMoon = getPhase(julianDate, MoonPhase.NEW, false);
+            double nextNewMoon = getPhase(julianDate, MoonPhase.NEW, true);
 
             Map<MoonPhase, Double> comingPhases = MoonPhase.remarkables().stream()
-                    .collect(Collectors.toMap(phase -> phase, phase -> getPhase(julianDateMidnight, phase, true)));
+                    .collect(Collectors.toMap(phase -> phase, phase -> getPhase(localMidnight, phase, true)));
 
-            result = new MoonPhaseSet(instantSource, parentNewMoon, comingPhases);
+            result = new MoonPhaseSet(julianDate, previousNewMoon, nextNewMoon, comingPhases);
         } else {
-            result = previousMP;
+            result = previousMP.withJulianDate(julianDate);
         }
 
         result.setIllumination(getIllumination(julianDate));

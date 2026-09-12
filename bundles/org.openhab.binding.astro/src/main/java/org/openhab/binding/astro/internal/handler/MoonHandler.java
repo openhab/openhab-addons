@@ -63,7 +63,7 @@ public class MoonHandler extends AstroThingHandler {
     public MoonHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
             LocaleProvider localeProvider, InstantSource instantSource) {
         super(thing, scheduler, timeZoneProvider, localeProvider, instantSource, POSITIONAL_CHANNELS);
-        moonCalc = new MoonCalc(instantSource);
+        moonCalc = new MoonCalc();
     }
 
     @Override
