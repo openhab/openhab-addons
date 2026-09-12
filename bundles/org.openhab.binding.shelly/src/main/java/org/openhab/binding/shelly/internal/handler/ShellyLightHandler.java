@@ -13,10 +13,10 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -523,13 +523,13 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
 
         // BRIGHTNESS:
         if (model.supportsBrightnessChannel() && (forceUpdate || model.isBrightnessDirty())) {
-        	group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
+            group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
         }
 
         // COLOR TEMP:
         if (model.supportsColorTempChannel() && (forceUpdate || model.isColorTempDirty())) {
-        	group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
+            group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP_PCT, model.getColorTemperaturePercentState());
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperatureAbsoluteState());
         }
