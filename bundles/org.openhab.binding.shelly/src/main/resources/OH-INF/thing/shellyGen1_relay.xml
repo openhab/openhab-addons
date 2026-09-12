@@ -496,6 +496,24 @@
 		</tags>
 	</channel-type>
 
+	<channel-type id="daliDeviceCount" advanced="true">
+		<item-type>Number</item-type>
+		<label>DALI Device Count</label>
+		<description>Number of control gears (devices) found on the DALI bus</description>
+		<category>Status</category>
+		<state readOnly="true" pattern="%d">
+		</state>
+	</channel-type>
+
+	<channel-type id="daliScanActive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>DALI Scan Active</label>
+		<description>ON: A scan of the DALI bus is currently in progress</description>
+		<category>Status</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
 	<channel-type id="meterWatts" advanced="true">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Power Consumption</label>

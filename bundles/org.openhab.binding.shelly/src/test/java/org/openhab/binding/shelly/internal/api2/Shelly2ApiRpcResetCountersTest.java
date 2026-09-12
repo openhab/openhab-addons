@@ -77,6 +77,15 @@ public class Shelly2ApiRpcResetCountersTest {
     }
 
     @Test
+    void dimmerPmUsesLightReset() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        profile.isDimmer = true;
+        profile.hasRelays = true;
+
+        assertEquals(SHELLYRPC_METHOD_LIGHT_RESETCOUNTERS, Shelly2ApiRpc.resetCountersMethod(profile));
+    }
+
+    @Test
     void standalonePowerMeterUsesPm1Reset() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
 
