@@ -30,4 +30,7 @@ public class DeviceConfiguration {
     public String protocol = "";
 
     public int pollingInterval = 0;
+
+    // trigger parameter, reset to false by the handler after the schema has been reloaded
+    public boolean reloadSchema = false;
 }

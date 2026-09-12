@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ import org.openhab.core.storage.StorageService;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -48,15 +50,26 @@ public class TuyaSchemaDB {
 
     public static Map<String, Map<String, SchemaDp>> cache = new ConcurrentHashMap<>();
 
+    private static Set<String> builtInKeys = Set.of();
+
     public static void setStorage(StorageService storageService, String name) {
         storage = storageService.getStorage(name);
 
         cache = getSchemas();
+        builtInKeys = Set.copyOf(cache.keySet());
         addRemoteSchemas();
     }
 
     public static boolean contains(String key) {
         return cache.containsKey(key);
+    }
+
+    /**
+     * Checks whether the schema of a product is shipped with the binding. Built-in schemas take precedence over
+     * stored schemas when the binding starts, so replacing them at runtime would not persist.
+     */
+    public static boolean isBuiltIn(String key) {
+        return builtInKeys.contains(key);
     }
 
     public static @Nullable Map<String, SchemaDp> get(String key) {
@@ -98,8 +111,16 @@ public class TuyaSchemaDB {
         }
     }
 
+    /**
+     * Stores the schema of a product, replacing a previously stored schema. An empty schema is ignored so a
+     * previously stored schema is neither replaced in the cache nor overwritten in the storage.
+     */
     public static void put(String key, List<SchemaDp> listDps) {
-        addToCache(key, listDps);
+        if (listDps.isEmpty()) {
+            return;
+        }
+
+        cache.put(key, toSchema(listDps));
 
         Storage<String> persistent = storage;
 
@@ -108,13 +129,9 @@ public class TuyaSchemaDB {
         }
     }
 
-    private static void addToCache(String key, List<SchemaDp> listDps) {
-        if (!listDps.isEmpty()) {
-            Map<String, SchemaDp> schemaDps = listDps.stream().sorted((s1, s2) -> s1.id - s2.id)
-                    .collect(Collectors.toMap(s -> s.code, s -> s, (e1, e2) -> e1, LinkedHashMap::new));
-
-            cache.putIfAbsent(key, schemaDps);
-        }
+    private static Map<String, SchemaDp> toSchema(List<SchemaDp> listDps) {
+        return listDps.stream().sorted((s1, s2) -> s1.id - s2.id)
+                .collect(Collectors.toMap(s -> s.code, s -> s, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     private static Map<String, Map<String, SchemaDp>> getSchemas() {
@@ -143,9 +160,18 @@ public class TuyaSchemaDB {
 
         if (persistent != null) {
             for (String productId : persistent.getKeys()) {
-                List<SchemaDp> listDps = gson.fromJson(persistent.get(productId), STORAGE_TYPE);
-                if (listDps != null) {
-                    addToCache(productId, listDps);
+                List<SchemaDp> listDps;
+                try {
+                    listDps = gson.fromJson(persistent.get(productId), STORAGE_TYPE);
+                } catch (JsonParseException e) {
+                    // a single unreadable entry must not prevent the binding from starting
+                    LoggerFactory.getLogger(TuyaSchemaDB.class).warn(
+                            "Ignoring stored schema of product '{}', it cannot be read: {}", productId, e.getMessage());
+                    continue;
+                }
+                if (listDps != null && !listDps.isEmpty()) {
+                    // built-in schemas take precedence over stored ones
+                    cache.putIfAbsent(productId, toSchema(listDps));
                 }
             }
         }

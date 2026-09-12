@@ -13,6 +13,7 @@
 package org.openhab.binding.tuya.internal.util;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,7 +53,42 @@ public class SchemaDp {
     public BigDecimal step = BigDecimal.ONE;
     public Integer scale = 0;
     public @Nullable List<String> range;
-    public @Nullable Unit<?> parsedUnit;
+    // Runtime cache of the parsed unit, must not be persisted: Gson cannot deserialize the Unit interface.
+    public transient @Nullable Unit<?> parsedUnit;
+
+    /**
+     * Converts a device specification retrieved from the cloud into a list of datapoints.
+     *
+     * Datapoints without an id and duplicate ids are skipped. Functions are added first (writable), status
+     * datapoints afterwards (read-only), so a datapoint listed in both sections is writable.
+     *
+     * @param gson the {@link Gson} instance used for parsing the datapoint properties
+     * @param schema the device specification
+     * @return the converted datapoints, empty if the specification does not contain any usable datapoint
+     */
+    public static List<SchemaDp> fromRemoteSchema(Gson gson, DeviceSchema schema) {
+        List<SchemaDp> schemaDps = new ArrayList<>();
+        schema.functions.forEach(description -> addUniqueSchemaDp(gson, description, schemaDps, Boolean.FALSE));
+        schema.status.forEach(description -> addUniqueSchemaDp(gson, description, schemaDps, Boolean.TRUE));
+        return schemaDps;
+    }
+
+    private static void addUniqueSchemaDp(Gson gson, DeviceSchema.Description description, List<SchemaDp> schemaDps,
+            Boolean readOnly) {
+        if (description.dp_id == 0 || schemaDps.stream().anyMatch(schemaDp -> schemaDp.id == description.dp_id)) {
+            // dp is missing or already present, skip it
+            return;
+        }
+        // some devices report the same function code for different dps
+        // we add an index only if this is the case
+        String originalCode = description.code;
+        int index = 1;
+        while (schemaDps.stream().anyMatch(schemaDp -> schemaDp.code.equals(description.code))) {
+            description.code = originalCode + "_" + index++;
+        }
+
+        schemaDps.add(fromRemoteSchema(gson, description, readOnly));
+    }
 
     public static SchemaDp fromRemoteSchema(Gson gson, DeviceSchema.Description function, Boolean readOnly) {
         SchemaDp schemaDp = new SchemaDp();

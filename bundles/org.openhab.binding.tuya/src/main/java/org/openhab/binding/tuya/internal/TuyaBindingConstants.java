@@ -44,6 +44,7 @@ public class TuyaBindingConstants {
     public static final String CONFIG_MAX = "max";
     public static final String CONFIG_PROTOCOL = "protocol";
     public static final String CONFIG_RANGE = "range";
+    public static final String CONFIG_RELOAD_SCHEMA = "reloadSchema";
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");

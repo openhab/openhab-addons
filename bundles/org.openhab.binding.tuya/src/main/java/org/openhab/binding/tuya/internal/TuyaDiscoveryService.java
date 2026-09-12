@@ -19,7 +19,6 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.PROPERTY_CA
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_DEVICE;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tuya.internal.cloud.TuyaOpenAPI;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceListInfo;
-import org.openhab.binding.tuya.internal.cloud.dto.DeviceSchema;
 import org.openhab.binding.tuya.internal.handler.ProjectHandler;
 import org.openhab.binding.tuya.internal.local.UdpDiscoverySender;
 import org.openhab.binding.tuya.internal.util.SchemaDp;
@@ -125,33 +123,15 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUid).withLabel(device.name)
                     .withRepresentationProperty(CONFIG_DEVICE_ID).withProperties(properties).build();
 
-            api.getDeviceSchema(device.id).thenAccept(schema -> {
-                if (!TuyaSchemaDB.contains(device.productId)) {
-                    List<SchemaDp> schemaDps = new ArrayList<>();
-                    schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.FALSE));
-                    schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.TRUE));
-                    TuyaSchemaDB.put(device.productId, schemaDps);
-                }
-            });
+            if (!TuyaSchemaDB.contains(device.productId)) {
+                // Stored schemas are only replaced on request (see TuyaCommandExtension), so the
+                // specification is not requested at all for known products.
+                api.getDeviceSchema(device.id).thenAccept(
+                        schema -> TuyaSchemaDB.put(device.productId, SchemaDp.fromRemoteSchema(gson, schema)));
+            }
 
             thingDiscovered(discoveryResult);
         });
-    }
-
-    private void addUniqueSchemaDp(DeviceSchema.Description description, List<SchemaDp> schemaDps, Boolean readOnly) {
-        if (description.dp_id == 0 || schemaDps.stream().anyMatch(schemaDp -> schemaDp.id == description.dp_id)) {
-            // dp is missing or already present, skip it
-            return;
-        }
-        // some devices report the same function code for different dps
-        // we add an index only if this is the case
-        String originalCode = description.code;
-        int index = 1;
-        while (schemaDps.stream().anyMatch(schemaDp -> schemaDp.code.equals(description.code))) {
-            description.code = originalCode + "_" + index;
-        }
-
-        schemaDps.add(SchemaDp.fromRemoteSchema(gson, description, readOnly));
     }
 
     @Override
