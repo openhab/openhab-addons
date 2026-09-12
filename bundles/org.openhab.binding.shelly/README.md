@@ -2429,22 +2429,31 @@ end
 |         | mediaType          | String   | yes       | Type of the currently playing media, e.g. AUDIO, RADIO                            |
 |         | playMediaId        | Number   | r/w       | Start playback of a media library item by its id                                  |
 |         | playRadioFavId     | Number   | r/w       | Start playback of a radio favorite by its id                                      |
+| control | thermostatEnable   | Switch   | r/w       | Enable or disable the Wall Display thermostat                                     |
+|         | targetTemp         | Number   | r/w       | Thermostat target temperature in °C                                               |
 
 The `media` channel group is only available on devices reporting a Media RPC
 component (e.g. Wall Display when a speaker/radio is configured). Media
 library and radio favorite ids must be looked up via the Shelly app or API;
 there is no channel to browse them.
 
-The `media` channels are added as soon as the corresponding component shows
-up in the device status, so enabling the media player in the Shelly app makes
-the channels appear on the next status update - the Thing does not need to be
-deleted and re-discovered.
+The `control` group is labeled `Thermostat Control` on the Wall Display.
+Its `thermostatEnable`/`targetTemp` channels are only
+available on devices reporting a Thermostat RPC component (e.g. Wall Display
+when a virtual thermostat is configured in the Shelly app). The thermostat's
+current temperature and controlled output are already reflected by the
+existing `sensors#temperature` and `relay#output` channels.
+
+The `media` and `control` channels are added as soon as the corresponding
+component shows up in the device status, so enabling the media player or the
+thermostat in the Shelly app makes the channels appear on the next status
+update - the Thing does not need to be deleted and re-discovered.
 
 The `sensors` group's `batteryLevel`/`lowBattery` channels are only available
 when a battery-operated sensor is attached to the Wall Display. Like the
-`media` channels above, they are added as soon as the attached sensor's
-battery is reported, so pairing a sensor after the Thing was already created
-is picked up on the next status update.
+`media`/`control` channels above, they are added as soon as the attached
+sensor's battery is reported, so pairing a sensor after the Thing was
+already created is picked up on the next status update.
 
 ## Full Example
 

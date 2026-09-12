@@ -28,6 +28,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelaySt
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -87,23 +88,42 @@ public class Shelly2WallDisplayStatusJsonTest {
     }
 
     @Test
-    void statusWithoutSecondPowerSourceLeavesFieldsNull() throws ShellyApiException {
+    void statusWithoutWallDisplayComponentsLeavesFieldsNull() throws ShellyApiException {
         Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, "{\"switch:0\":{\"id\":0,\"output\":true}}",
                 Shelly2DeviceStatusResult.class);
 
         assertThat(status.sys, is(nullValue()));
+        assertThat(status.media, is(nullValue()));
+        assertThat(status.thermostat0, is(nullValue()));
         assertThat(status.devicepower1, is(nullValue()));
     }
 
     @Test
-    void deviceStatusWithoutThermostatReportsUsageFlagsFalse() throws ShellyApiException {
+    void deviceStatusWithoutThermostatLeavesThermostatChannelsUnmapped() throws ShellyApiException {
         Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PAUSED,
                 Shelly2DeviceStatusResult.class);
 
+        assertThat(status.thermostat0, is(nullValue()));
         Shelly2DeviceStatusSys sys = status.sys;
         assertNotNull(sys);
         assertThat(sys.relayInThermostat, is(equalTo(Boolean.FALSE)));
         assertThat(sys.sensorInThermostat, is(equalTo(Boolean.FALSE)));
+    }
+
+    @Test
+    void thermostatKeyMapsToThermostatStatus() throws ShellyApiException {
+        String json = """
+                {"thermostat:0":{"enable":true,"target_C":21.5,"current_C":20.3,"output":true,
+                "schedules":{"enable":false}}}
+                """;
+
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusThermostat thermostat = status.thermostat0;
+        assertNotNull(thermostat);
+        assertThat(thermostat.enable, is(equalTo(Boolean.TRUE)));
+        assertThat(thermostat.targetC, is(equalTo(21.5)));
+        assertThat(thermostat.currentC, is(equalTo(20.3)));
+        assertThat(thermostat.output, is(equalTo(Boolean.TRUE)));
     }
 
     @Test

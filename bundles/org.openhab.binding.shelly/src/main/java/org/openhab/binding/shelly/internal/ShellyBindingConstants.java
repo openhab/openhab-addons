@@ -221,6 +221,10 @@ public class ShellyBindingConstants {
     // A smaller step would map back to the same device volume, making INCREASE/DECREASE a no-op
     public static final int MEDIA_VOLUME_STEPSIZE = 100 / MEDIA_VOLUME_DEVICE_MAX;
 
+    // Wall Display Thermostat reuses the "control" group and CHANNEL_CONTROL_SETTEMP ("targetTemp") from the TRV
+    // channel set; current_C/output are covered by the existing sensors#temperature / relay#output channels.
+    public static final String CHANNEL_THERMOSTAT_ENABLE = "thermostatEnable";
+
     public static final String CHANNEL_GROUP_LIGHT_CONTROL = "control";
     public static final String CHANNEL_LIGHT_COLOR_MODE = "mode";
     public static final String CHANNEL_LIGHT_POWER = "power";

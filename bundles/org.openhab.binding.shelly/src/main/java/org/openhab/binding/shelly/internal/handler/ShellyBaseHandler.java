@@ -543,7 +543,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
-                    api.setValveTemperature(0, getNumber(command).doubleValue());
+                    if (profile.isTRV) {
+                        api.setValveTemperature(0, getNumber(command).doubleValue());
+                    } else {
+                        api.setThermostatTargetTemp(0, getNumber(command).doubleValue());
+                    }
                     break;
                 case CHANNEL_CONTROL_POSITION:
                     logger.debug("{}: Set position to {}", thingName, command);

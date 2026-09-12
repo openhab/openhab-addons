@@ -146,4 +146,8 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
     void mediaPlayMedia(int id) throws ShellyApiException;
 
     void mediaPlayRadioFavourite(int id) throws ShellyApiException;
+
+    void setThermostatTargetTemp(int id, double targetTemp) throws ShellyApiException;
+
+    void setThermostatEnable(int id, boolean enable) throws ShellyApiException;
 }

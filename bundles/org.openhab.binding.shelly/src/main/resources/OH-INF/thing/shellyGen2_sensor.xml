@@ -61,6 +61,9 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 			<channel-group id="media" typeId="mediaPlayer"/>
+			<channel-group id="control" typeId="control">
+				<label>Thermostat Control</label>
+			</channel-group>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -147,6 +150,13 @@
 		<item-type>Number</item-type>
 		<label>Play Radio Favorite</label>
 		<description>Start playback of a radio favorite by its id</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="thermostatEnable">
+		<item-type>Switch</item-type>
+		<label>Thermostat Enabled</label>
+		<description>Enable or disable the Wall Display thermostat</description>
 		<state readOnly="false"/>
 	</channel-type>
 

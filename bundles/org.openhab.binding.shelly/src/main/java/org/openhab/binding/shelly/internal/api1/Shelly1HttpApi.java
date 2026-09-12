@@ -597,6 +597,16 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
+    public void setThermostatTargetTemp(int id, double targetTemp) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
+    }
+
+    @Override
+    public void setThermostatEnable(int id, boolean enable) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
+    }
+
+    @Override
     public void setFloodConfig(int id, @Nullable String alarmMode, int reportHoldoff) throws ShellyApiException {
         throw new ShellyApiException("Request not supported");
     }

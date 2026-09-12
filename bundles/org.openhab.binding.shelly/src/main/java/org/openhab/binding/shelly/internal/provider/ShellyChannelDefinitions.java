@@ -391,6 +391,9 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MODE, "controlMode", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_PROFILE, "controlProfile", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP, "targetTemp", ITEMT_TEMP))
+
+                // Wall Display Thermostat (reuses CHGR_CONTROL / CHANNEL_CONTROL_SETTEMP from TRV above)
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_THERMOSTAT_ENABLE, "thermostatEnable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BCONTROL, "boostControl", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_BTIMER, "boostTimer", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_SCHEDULE, "controlSchedule", ITEMT_SWITCH))
@@ -578,6 +581,19 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_TYPE);
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_MEDIA_ID);
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_RADIO_FAV_ID);
+        return add;
+    }
+
+    /**
+     * Auto-create the Wall Display Thermostat channels when the device reports a thermostat:0 component.
+     * Reuses the "control" group and the existing TRV targetTemp channel; current_C/output are already
+     * covered by the sensors#temperature / relay#output channels.
+     */
+    public static Map<String, Channel> createThermostatChannels(final Thing thing, final ShellySettingsStatus status) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        boolean hasThermostat = status.thermostat != null;
+        addChannel(thing, add, hasThermostat, CHGR_CONTROL, CHANNEL_THERMOSTAT_ENABLE);
+        addChannel(thing, add, hasThermostat, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP);
         return add;
     }
 
