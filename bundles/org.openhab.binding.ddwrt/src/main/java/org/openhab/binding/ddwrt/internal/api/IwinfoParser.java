@@ -163,7 +163,7 @@ public final class IwinfoParser {
                     }
                 }
 
-                radio.setEnabled(true);
+                radio.setEnabled(isInterfaceEnabled(logger, runner, currentIface));
 
                 // Get channel info
                 String chStr = runner
@@ -181,5 +181,16 @@ public final class IwinfoParser {
             }
         }
         return radios;
+    }
+
+    private static boolean isInterfaceEnabled(Logger logger, SshRunner runner, String iface) {
+        String flags = runner.execStdout("cat /sys/class/net/" + iface + "/flags").trim();
+        try {
+            // IFF_UP is the least-significant bit of the Linux network-interface flags.
+            return (Long.decode(flags) & 1) != 0;
+        } catch (NumberFormatException e) {
+            logger.debug("Could not read interface flags for {}, assuming enabled", iface);
+            return true;
+        }
     }
 }
