@@ -215,6 +215,7 @@
     <module>org.openhab.binding.homewizard</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.http</module>
+    <module>org.openhab.binding.httphook</module>
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.huesync</module>
     <module>org.openhab.binding.hydrawise</module>
