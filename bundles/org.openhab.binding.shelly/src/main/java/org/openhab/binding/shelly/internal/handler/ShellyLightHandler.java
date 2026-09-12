@@ -103,7 +103,10 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
     public boolean handleDeviceCommand(ChannelUID channelUID, Command command) throws ShellyApiException {
         logger.trace("{}: handleDeviceCommand() channel {}, command {}", thingName, channelUID, command);
         try (LightModels models = acquire()) {
-            int channelGroupSuffix = extractChannelGroupSuffix(channelUID);
+            Integer channelGroupSuffix = extractChannelGroupSuffix(channelUID);
+            if (channelGroupSuffix == null) {
+                return false;
+            }
             ShellyLightModel model = lightModels.get(channelGroupSuffix);
             if (model == null) {
                 model = ShellyLightModel.create(this, channelGroupSuffix, profile, DIM_STEPSIZE);
@@ -589,17 +592,32 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
      * equivalent to group suffix 0, while white channels have group suffixes 1 .. n
      *
      * @param channelUID the channel UID
-     * @return the channel group suffix number, or 0
+     * @return the channel group suffix number, or 0, or null if the channel group is invalid
      */
-    private static int extractChannelGroupSuffix(ChannelUID channelUID) {
+    private static @Nullable Integer extractChannelGroupSuffix(ChannelUID channelUID) {
         String groupId = channelUID.getGroupId();
-        if (groupId != null) {
+        if (groupId == null) {
+            return null;
+        }
+        if (CHANNEL_GROUP_LIGHT_CONTROL.equals(groupId) || CHANNEL_GROUP_COLOR_CONTROL.equals(groupId)
+                || CHANNEL_GROUP_WHITE_CONTROL.equals(groupId)) {
+            return 0;
+        }
+        if (groupId.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
             try {
-                return Integer.parseInt(groupId.replaceAll("\\D+(\\d+)", "$1"));
+                return Integer.parseInt(groupId.substring(CHANNEL_GROUP_LIGHT_INDEX.length()));
             } catch (NumberFormatException e) {
+                return null;
             }
         }
-        return 0;
+        if (groupId.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
+            try {
+                return Integer.parseInt(groupId.substring(CHANNEL_GROUP_LIGHT_CHANNEL.length()));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -628,7 +646,12 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             return lightModels.get(0);
         }
         if (groupId.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
-            return lightModels.get(extractChannelGroupSuffix(channelUID));
+            try {
+                Integer suffix = Integer.parseInt(groupId.substring(CHANNEL_GROUP_LIGHT_INDEX.length()));
+                return lightModels.get(suffix);
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
         return null;
     }
