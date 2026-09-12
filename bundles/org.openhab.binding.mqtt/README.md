@@ -164,7 +164,8 @@ You can add the following channels:
 - **transformationPatternOut**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
 - **commandTopic**: The MQTT topic that commands are send to. This can be empty, the Thing channel will be read-only then. Transformations are not applied for sending data.
 - **formatBeforePublish**: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported. Note that this format does not apply to the special on/off command values for dimmer channels, or up/down/stop command values for rollershutter channels.
-- **postCommand**: If `true`, the received MQTT value will not only update the state of linked items, but command it.
+- **postCommand**: If `true`, the received MQTT value is processed as a command instead of a state update.
+  Profiles that react only to state updates, such as `timestamp-update` and `timestamp-change`, do not process incoming values when this option is enabled.
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor.
 - **retained**: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time.
