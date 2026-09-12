@@ -95,7 +95,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     protected ScheduledExecutorService executorService = this.scheduler;
     protected HomeWizardConfiguration config = new HomeWizardConfiguration();
-    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> dataPollingJob;
+    private @Nullable ScheduledFuture<?> deviceInformationPollingJob;
     private HttpClient httpClient = new HttpClient();
 
     protected List<String> supportedTypes = new ArrayList<String>();
@@ -141,10 +142,12 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             }
         }
 
-        if (configure() && processDeviceInformation()) {
+        if (configure()) {
             updateStatus(ThingStatus.UNKNOWN);
-            pollingJob = executorService.scheduleWithFixedDelay(this::retrieveData, 0, config.refreshDelay,
+            dataPollingJob = executorService.scheduleWithFixedDelay(this::retrieveData, 0, config.refreshDelay,
                     TimeUnit.SECONDS);
+            deviceInformationPollingJob = executorService.scheduleWithFixedDelay(this::retrieveDeviceInformation, 1, 1,
+                    TimeUnit.DAYS);
         }
     }
 
@@ -220,30 +223,24 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * The actual polling loop
+     * The data polling loop
      */
     protected void retrieveData() {
-        try {
-            handleSystemData(getSystemData());
-            handleMeasurementData(getMeasurementData());
-            updateStatus(ThingStatus.ONLINE);
-        } catch (JsonSyntaxException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-device-offline");
-            logger.debug("Unable to get data from the API", ex);
-            return;
+        if (this.thing.getStatus() == ThingStatus.ONLINE || retrieveDeviceInformation()) {
+            try {
+                handleSystemData(getSystemData());
+                handleMeasurementData(getMeasurementData());
+                updateStatus(ThingStatus.ONLINE);
+            } catch (JsonSyntaxException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-device-offline");
+                logger.debug("Unable to get data from the API", ex);
+                return;
+            }
         }
     }
 
-    protected String getApiUrl() {
-        if (config.isUsingApiVersion2()) {
-            return apiURL;
-        } else {
-            return apiURL + "v1/";
-        }
-    }
-
-    private boolean processDeviceInformation() {
+    private boolean retrieveDeviceInformation() {
         String deviceInformation = "";
 
         try {
@@ -278,12 +275,22 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                 return false;
             }
 
-            updateProperty(PRODUCT_NAME, payload.getProductName());
-            updateProperty(PRODUCT_TYPE, payload.getProductType());
-            updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
-            updateProperty(API_VERSION, payload.getApiVersion());
+            var properties = editProperties();
+            properties.put(PRODUCT_NAME, payload.getProductName());
+            properties.put(PRODUCT_TYPE, payload.getProductType());
+            properties.put(FIRMWARE_VERSION, payload.getFirmwareVersion());
+            properties.put(API_VERSION, payload.getApiVersion());
+            updateProperties(properties);
 
             return true;
+        }
+    }
+
+    protected String getApiUrl() {
+        if (config.isUsingApiVersion2()) {
+            return apiURL;
+        } else {
+            return apiURL + "v1/";
         }
     }
 
@@ -292,11 +299,16 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
-        var job = pollingJob;
-        if (job != null) {
-            job.cancel(true);
+        var dataJob = dataPollingJob;
+        if (dataJob != null) {
+            dataJob.cancel(true);
         }
-        pollingJob = null;
+        dataPollingJob = null;
+        var deviceJob = deviceInformationPollingJob;
+        if (deviceJob != null) {
+            deviceJob.cancel(true);
+        }
+        deviceInformationPollingJob = null;
         try {
             httpClient.stop();
         } catch (Exception ex) { // No specific exception is thrown by the stop method
