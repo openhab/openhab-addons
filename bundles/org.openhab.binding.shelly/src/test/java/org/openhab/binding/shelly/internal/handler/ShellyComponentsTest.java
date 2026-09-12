@@ -61,6 +61,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -528,13 +529,62 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateDeviceStatusMediaAbsentAddsNoDynamicChannels() throws Exception {
+    void updateDeviceStatusThermostatAppearingAfterChannelsCreatedAddsControlChannels() throws Exception {
+        Shelly2DeviceStatusThermostat thermostat = new Shelly2DeviceStatusThermostat();
+        thermostat.enable = true;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.thermostat = thermostat;
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).updateThingChannels(any(), argThat(channels -> channels
+                .containsKey(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_THERMOSTAT_ENABLE)));
+    }
+
+    @Test
+    void updateDeviceStatusWithoutMediaOrThermostatAddsNoChannels() throws Exception {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
         ShellyThingInterface handler = mockHandler(profile);
 
         ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
 
         verify(handler, never()).updateThingChannels(any(), argThat(channels -> !channels.isEmpty()));
+    }
+
+    @Test
+    void updateDeviceStatusThermostatPublishesControlChannels() throws Exception {
+        Shelly2DeviceStatusThermostat thermostat = new Shelly2DeviceStatusThermostat();
+        thermostat.enable = true;
+        thermostat.targetC = 23.5;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.thermostat = thermostat;
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_THERMOSTAT_ENABLE, OnOffType.ON);
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_CONTROL_SETTEMP),
+                argThat(s -> s instanceof QuantityType<?>));
+    }
+
+    @Test
+    void updateDeviceStatusThermostatAbsentSkipsControlChannels() throws Exception {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_THERMOSTAT_ENABLE), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_CONTROL_SETTEMP), any());
     }
 
     @Test

@@ -58,6 +58,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -106,9 +107,11 @@ public class ShellyComponents {
             reconcileLoraChannels(thingHandler, profile);
         }
 
-        // Media can be enabled at any time, so create the channels as soon as the component shows up
+        // Media and Thermostat can be enabled at any time, so create those channels as soon as the
+        // component shows up in the status, not only on the first update cycle
         Map<String, Channel> dynChannels = ShellyChannelDefinitions.createMediaChannels(thingHandler.getThing(),
                 status);
+        dynChannels.putAll(ShellyChannelDefinitions.createThermostatChannels(thingHandler.getThing(), status));
         if (!dynChannels.isEmpty()) {
             thingHandler.updateThingChannels(Map.of(), dynChannels);
         }
@@ -178,6 +181,19 @@ public class ShellyComponents {
                     thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ALBUM,
                             getStringType(mediaMeta.album));
                 }
+            }
+        }
+
+        // current_C/output are already covered by sensors#temperature / relay#output
+        Shelly2DeviceStatusThermostat thermostat = status.thermostat;
+        if (thermostat != null) {
+            if (thermostat.enable != null) {
+                thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_THERMOSTAT_ENABLE,
+                        getOnOff(thermostat.enable));
+            }
+            if (thermostat.targetC != null) {
+                thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
+                        toQuantityType(thermostat.targetC, DIGITS_TEMP, SIUnits.CELSIUS));
             }
         }
 
