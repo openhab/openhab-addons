@@ -77,6 +77,20 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="relayInThermostat" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Relay in Thermostat</label>
+		<description>ON: The relay output is used by a thermostat/climate profile</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="sensorInThermostat" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sensor in Thermostat</label>
+		<description>ON: The temperature sensor input is used by a thermostat/climate profile</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="charger" advanced="true">
 		<item-type>Switch</item-type>
 		<label>External Power</label>
