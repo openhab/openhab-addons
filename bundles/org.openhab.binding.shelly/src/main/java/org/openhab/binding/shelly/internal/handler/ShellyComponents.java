@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY_RGBCCT_MODE_RGB;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.nio.charset.StandardCharsets;
@@ -21,6 +22,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.measure.MetricPrefix;
@@ -30,13 +32,11 @@ import javax.measure.quantity.Pressure;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
@@ -54,7 +54,12 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModel.Mode;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -884,75 +889,153 @@ public class ShellyComponents {
         return updated;
     }
 
-    public static boolean updateRGBW(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+    public static boolean updateRGBW(Shelly2RGBWStatus value, ShellyThingInterface thingHandler)
             throws ShellyApiException {
-        boolean updated = false;
-        ShellyDeviceProfile profile = thingHandler.getProfile();
-        // RGBW2 (incl. hybrid Pro/Plus RGBWW-PM) always reports its color component at index 0; Duo/Multicolor
-        // Bulb G3 share the same slot 0 but only while actually operating in RGB/color mode
-        if (profile.isRGBW2 || (profile.isDuo && profile.inColor)) {
-            if (!thingHandler.areChannelsCreated()) {
-                return false;
-            }
-            ShellySettingsLight light = orgStatus.lights.get(0);
-            if (light.red == null) {
-                return false; // partial NotifyStatus without rgb, nothing to push
-            }
-            ShellyColorUtils col = new ShellyColorUtils();
-            col.setRGBW(getInteger(light.red), getInteger(light.green), getInteger(light.blue),
-                    getInteger(light.white));
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.percentRed);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.percentGreen);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.percentBlue);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.percentWhite);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER, col.toHSB());
+        if (!thingHandler.areChannelsCreated()) {
+            return false;
+        }
 
+        if (!(thingHandler instanceof LightModelAccessor accessor)) {
+            return false;
+        }
+
+        if (value.id == null) {
+            return false;
+        }
+        int idx = Objects.requireNonNull(value.id);
+
+        boolean updated = false;
+        try (LightModels lightModels = accessor.acquire()) {
+
+            ShellyLightModel model = lightModels.getByApiLightIndex(idx);
+            if (model == null) {
+                throw new ShellyApiException("updateRGBW() failed: index:%d model missing".formatted(idx));
+            }
+
+            Integer[] rgb = value.rgb;
+            int[] rgbx = model.getRGBX();
+            boolean colorUpdated = false;
+            if (rgb != null && rgb.length >= 3) {
+                rgbx[0] = rgb[0];
+                rgbx[1] = rgb[1];
+                rgbx[2] = rgb[2];
+                colorUpdated = true;
+            }
+            if (value.white != null && rgbx.length >= 4) {
+                rgbx[3] = Objects.requireNonNull(value.white);
+                colorUpdated = true;
+            }
+            if (colorUpdated) {
+                model.setRGBX(rgbx);
+                updated = true;
+            }
+
+            if (value.brightness != null) {
+                model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
+                updated = true;
+            }
+
+            if (value.output != null) {
+                model.setOnOff(Objects.requireNonNull(value.output));
+                updated = true;
+            }
         }
         return updated;
     }
 
-    public static boolean updateLightMode(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+    public static boolean updateRGBCCT(Shelly2RGBCCTStatus value, ShellyThingInterface thingHandler)
             throws ShellyApiException {
+        if (!thingHandler.areChannelsCreated()) {
+            return false;
+        }
+
+        if (!(thingHandler instanceof LightModelAccessor accessor)) {
+            return false;
+        }
+
+        if (value.id == null) {
+            return false;
+        }
+        int idx = Objects.requireNonNull(value.id);
+
         boolean updated = false;
-        ShellyDeviceProfile profile = thingHandler.getProfile();
-        // RGBW2 (incl. hybrid Pro/Plus RGBWW-PM) always has CCT/Light components to cover here; Duo/Multicolor
-        // Bulb G3 share slot 0, which hasColorTag() below skips while they're actually in color mode
-        if (profile.isRGBW2 || profile.isDuo) {
-            if (!thingHandler.areChannelsCreated()) {
-                return false;
+        try (LightModels lightModels = accessor.acquire()) {
+
+            ShellyLightModel model = lightModels.getByApiLightIndex(idx);
+            if (model == null) {
+                throw new ShellyApiException("updateRGBCCT() failed: index:%d model missing".formatted(idx));
             }
-            boolean gen3Bulb = profile.isDuo && profile.isGen2;
-            List<ShellySettingsLight> lights = orgStatus.lights;
-            for (int i = 0; i < lights.size(); i++) {
-                String groupName = ShellyApiLightUtil.buildWhiteGroupName(profile, i);
-                if (profile.hasColorTag(i)) {
-                    // color component is handled by updateRGBW(); this loop only covers CCT/Light components
-                    // (a hybrid profile's secondary component(s), or all of them for a plain white-mode RGBW2)
-                    if (gen3Bulb) {
-                        // the shared LEDs are in RGB mode, the last reported color temperature no longer applies
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, UnDefType.UNDEF);
-                    }
-                    continue;
-                }
-                ShellySettingsLight light = lights.get(i);
-                if (gen3Bulb && (light.ison == null || light.brightness == null)) {
-                    continue; // partial NotifyStatus before the first full status, nothing to push yet
-                }
-                OnOffType power = getOnOff(light.ison);
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                        toQuantityType(power == OnOffType.ON ? (double) getInteger(light.brightness) : 0.0, DIGITS_NONE,
-                                Units.PERCENT));
-                if (light.temp != null) {
-                    if (gen3Bulb) {
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP,
-                                toQuantityType(light.temp, Units.KELVIN));
-                    } else {
-                        ShellyColorUtils col = new ShellyColorUtils();
-                        col.setMinMaxTemp(profile.getMinTemp(i), profile.getMaxTemp(i));
-                        col.setTemp(getInteger(light.temp));
-                        updated |= thingHandler.updateChannel(groupName, CHANNEL_COLOR_TEMP, col.percentTemp);
-                    }
-                }
+
+            Mode mode;
+            if (value.mode != null) {
+                mode = SHELLY_RGBCCT_MODE_RGB.equals(Objects.requireNonNull(value.mode)) ? Mode.COLOR : Mode.WHITE;
+                model.setMode(mode);
+                updated = true;
+            } else {
+                mode = model.getMode();
+            }
+
+            Integer[] rgb = value.rgb;
+            if (Mode.COLOR == mode && rgb != null && rgb.length >= 3) {
+                int[] rgbx = new int[] { rgb[0], rgb[1], rgb[2] };
+                model.setRGBX(rgbx);
+                updated = true;
+            }
+
+            if (Mode.WHITE == mode && value.ct != null) {
+                model.setColorTemp(Objects.requireNonNull(value.ct));
+                updated = true;
+            }
+
+            if (value.brightness != null) {
+                model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
+                updated = true;
+            }
+
+            if (value.output != null) {
+                model.setOnOff(Objects.requireNonNull(value.output));
+                updated = true;
+            }
+        }
+        return updated;
+    }
+
+    public static boolean updateLightMode(Shelly2DeviceStatusLight value, ShellyThingInterface thingHandler)
+            throws ShellyApiException {
+        if (!thingHandler.areChannelsCreated()) {
+            return false;
+        }
+
+        if (!(thingHandler instanceof LightModelAccessor accessor)) {
+            return false;
+        }
+
+        if (value.id == null) {
+            return false;
+        }
+        int idx = Objects.requireNonNull(value.id);
+
+        boolean updated = false;
+        try (LightModels lightModels = accessor.acquire()) {
+
+            ShellyLightModel model = lightModels.getByApiLightIndex(idx);
+            if (model == null) {
+                throw new ShellyApiException("updateLightMode() failed: index:%d model missing".formatted(idx));
+            }
+
+            if (value.ct != null) {
+                model.setColorTemp(Objects.requireNonNull(value.ct));
+                updated = true;
+            }
+
+            if (value.brightness != null) {
+                model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
+                updated = true;
+            }
+
+            if (value.output != null) {
+                model.setOnOff(Objects.requireNonNull(value.output));
+                updated = true;
             }
         }
         return updated;

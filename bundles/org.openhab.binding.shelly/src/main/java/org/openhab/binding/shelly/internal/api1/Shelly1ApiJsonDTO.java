@@ -201,6 +201,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_COLOR_BRIGHTNESS = "brightness";
     public static final String SHELLY_COLOR_TEMP = "temp";
     public static final String SHELLY_COLOR_EFFECT = "effect";
+    public static final String SHELLY_COLOR_UNDEFINED = "undefined";
 
     public static final int SHELLY_MIN_ROLLER_POS = 0;
     public static final int SHELLY_MAX_ROLLER_POS = 100;

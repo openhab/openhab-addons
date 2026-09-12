@@ -42,7 +42,8 @@
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
-			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
+			<channel-group id="color" typeId="colorSettings"/>
+			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="light1" typeId="rgbwChannel">
 				<label>LED Channel 1</label>
 			</channel-group>
@@ -70,7 +71,8 @@
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
-			<channel-group id="color" typeId="colorSettingsRGB"/>
+			<channel-group id="color" typeId="colorSettings"/>
+			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="light1" typeId="rgbwChannel">
 				<label>LED Channel 1</label>
 			</channel-group>
@@ -105,11 +107,16 @@
 		<description>Control your LED stripes</description>
 	</channel-group-type>
 
+	<channel-group-type id="colorSettings">
+		<label>Colors</label>
+		<description>Light colors</description>
+	</channel-group-type>
+
 	<channel-group-type id="colorSettingsRGBWpm">
 		<label>Colors</label>
 		<description>Light colors</description>
 		<channels>
-			<channel id="hsb" typeId="system.color"/>
+			<channel id="hsb" typeId="colorMain"/>
 			<channel id="full" typeId="colorFull"/>
 			<channel id="red" typeId="colorRed"/>
 			<channel id="green" typeId="colorGreen"/>
@@ -122,7 +129,7 @@
 		<label>Colors</label>
 		<description>Light colors</description>
 		<channels>
-			<channel id="hsb" typeId="system.color"/>
+			<channel id="hsb" typeId="colorMain"/>
 			<channel id="full" typeId="colorFull"/>
 			<channel id="red" typeId="colorRed"/>
 			<channel id="green" typeId="colorGreen"/>

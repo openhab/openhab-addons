@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
-import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.hasColorComponent;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyDiscoveryInterface;
@@ -88,6 +90,8 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusTemp;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2Energy;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
@@ -104,6 +108,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * {@link Shelly2ApiClient} Low level part of the RPC API
@@ -624,9 +630,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
         updated |= updateDimmerStatus(1, status, result.light1, channelUpdate);
-        updated |= updateDuoBulbStatus(status, result.cct0, result.rgbcct0, channelUpdate);
-        updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
-        updated |= updateRGBWStatus(0, status, result.rgb0, channelUpdate);
+        updated |= updateRGBCCTStatus(status, result.rgbcct0, channelUpdate);
+        updated |= updateRGBWStatus(status, result.rgbw0, channelUpdate);
+        updated |= updateRGBWStatus(status, result.rgb0, channelUpdate);
         updated |= updateLightModeStatus(0, status, result.light0, channelUpdate);
         updated |= updateLightModeStatus(1, status, result.light1, channelUpdate);
         updated |= updateLightModeStatus(2, status, result.light2, channelUpdate);
@@ -1326,128 +1332,146 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
 
-    private boolean updateRGBWStatus(int id, ShellySettingsStatus status, @Nullable Shelly2RGBWStatus value,
+    private boolean updateRGBWStatus(ShellySettingsStatus status, @Nullable Shelly2RGBWStatus value,
             boolean channelUpdate) throws ShellyApiException {
-        ShellyDeviceProfile profile = getProfile();
-        if (!profile.isRGBW2 || value == null) {
+        if (value == null) {
             return false;
         }
-        Integer rawId = value.id;
-        boolean updated = applyLightStatus(status, rawId != null ? rawId : id, value.output, value.brightness,
-                value.rgb, value.white, null, channelUpdate, true);
-        if (profile.isProRgbwwPm) {
-            // the color component always sits at settings.lights[0]
-            updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
-        }
-        return updated;
-    }
 
-    private boolean updateDuoBulbStatus(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight cctValue,
-            @Nullable Shelly2RGBCCTStatus rgbcctValue, boolean channelUpdate) throws ShellyApiException {
-        ShellyDeviceProfile profile = getProfile();
-        if (!profile.isDuo) {
-            return false;
-        }
-        if (profile.isRGBCCT && rgbcctValue != null) {
-            String mode = rgbcctValue.mode;
-            if (mode != null) {
-                // NotifyStatus payloads may omit unchanged attributes, so preserve the current mode when absent
-                profile.inColor = SHELLY_RGBCCT_MODE_RGB.equals(mode);
-                profile.device.mode = profile.inColor ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
-            }
-            boolean inColor = profile.inColor;
-            if (inColor && status.lights != null && !status.lights.isEmpty()) {
-                // clear stale CCT temperature so it doesn't linger while the device is in RGB mode
-                status.lights.get(0).temp = null;
-            }
-            // trigger the immediate WS-push color update only while the device is actually in RGB mode;
-            // the white/CCT push below (applyLightStatus -> updateLightMode) always runs regardless of mode
-            return applyLightStatus(status, 0, rgbcctValue.output, rgbcctValue.brightness,
-                    inColor ? rgbcctValue.rgb : null, null, inColor ? null : rgbcctValue.ct, channelUpdate, inColor);
-        }
-        if (cctValue == null) {
-            return false;
-        }
-        return applyLightStatus(status, 0, cctValue.output, cctValue.brightness, null, null, cctValue.ct, channelUpdate,
-                false);
-    }
+        int idx = 0; // always the first light component
 
-    private boolean applyLightStatus(ShellySettingsStatus status, int idx, @Nullable Boolean ison,
-            @Nullable Double brightness, @Nullable Integer @Nullable [] rgb, @Nullable Integer white,
-            @Nullable Integer ct, boolean channelUpdate, boolean triggerUpdate) throws ShellyApiException {
         List<ShellySettingsLight> lights = status.lights;
         if (lights == null || idx >= lights.size()) {
             return false;
         }
+
         ShellySettingsLight ds = lights.get(idx);
-        if (ison != null) { // null = no update (partial response), preserve persisted state
-            ds.ison = ison;
+        value.id = idx;
+
+        if (value.output != null) {
+            ds.ison = value.output;
         }
-        if (brightness != null) {
-            ds.brightness = brightness.intValue();
+
+        if (value.brightness != null) {
+            ds.brightness = Objects.requireNonNull(value.brightness).intValue();
         }
+
+        Integer[] rgb = value.rgb;
         if (rgb != null && rgb.length >= 3) {
             ds.red = rgb[0];
             ds.green = rgb[1];
             ds.blue = rgb[2];
         }
-        if (white != null) {
-            ds.white = white;
+
+        if (value.white != null) {
+            ds.white = value.white;
         }
-        if (ct != null) {
-            ds.temp = ct;
+
+        lights.set(idx, ds);
+
+        if (profile.isProRgbwwPm) {
+            // the color component always sits at settings.lights[0]
+            updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
-        boolean updated = triggerUpdate && channelUpdate && ShellyComponents.updateRGBW(getThing(), status);
-        ShellyDeviceProfile profile = getProfile();
-        if (channelUpdate && profile.isDuo) {
-            // push brightness/CCT channels immediately for white/CCT mode; updateLightMode() itself skips the
-            // color-tagged slot while the bulb is actually in RGB mode, so this is a safe no-op there
-            updated |= ShellyComponents.updateLightMode(getThing(), status);
-        }
-        return updated;
+
+        logger.debug("updateRGBWStatus() id={}, value={}, channelUpdate={}", idx, new Gson().toJson(value),
+                channelUpdate);
+
+        return channelUpdate ? ShellyComponents.updateRGBW(value, getThing()) : false;
     }
 
-    private boolean updateLightModeStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
+    private boolean updateRGBCCTStatus(ShellySettingsStatus status, @Nullable Shelly2RGBCCTStatus value,
             boolean channelUpdate) throws ShellyApiException {
-        ShellyDeviceProfile profile = getProfile();
-        if (!profile.isRGBW2 || value == null) {
+        if (value == null) {
             return false;
         }
-        if (value.id == null) {
-            value.id = id;
+
+        int idx = 0; // always the first light component
+
+        List<ShellySettingsLight> lights = status.lights;
+        if (lights == null || idx >= lights.size()) {
+            return false;
         }
+
+        ShellySettingsLight ds = lights.get(idx);
+        value.id = idx;
+
+        String mode = value.mode;
+        if (mode != null) {
+            // NotifyStatus payloads may omit unchanged attributes, so preserve the current mode when absent
+            profile.inColor = SHELLY_RGBCCT_MODE_RGB.equals(mode);
+            profile.device.mode = profile.inColor ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
+        }
+
+        if (value.output != null) {
+            ds.ison = value.output;
+        }
+
+        if (value.brightness != null) {
+            ds.brightness = Objects.requireNonNull(value.brightness).intValue();
+        }
+
+        Integer[] rgb = value.rgb;
+        if (rgb != null && rgb.length >= 3) {
+            ds.red = rgb[0];
+            ds.green = rgb[1];
+            ds.blue = rgb[2];
+        }
+
+        if (value.ct != null) {
+            ds.temp = value.ct;
+        }
+
+        lights.set(idx, ds);
+
+        if (channelUpdate) {
+            return ShellyComponents.updateRGBCCT(value, getThing());
+        }
+
+        return false;
+    }
+
+    private boolean updateLightModeStatus(int idIn, ShellySettingsStatus status,
+            @Nullable Shelly2DeviceStatusLight value, boolean channelUpdate) throws ShellyApiException {
+        if (value == null) {
+            return false;
+        }
+
         // device reports each component type 0-based; the flat settings.lights list reserves slot 0 for the
         // color component (rgb0/rgbw0) whenever one is present, so shift by that offset here.
-        int lightId = getInteger(value.id) + profile.getColorComponentCount();
-        List<@Nullable ShellySettingsLight> lights = status.lights;
-        if (lights == null || lightId >= lights.size()) {
+        int idx = getInteger(idIn) + profile.getColorComponentCount();
+
+        List<ShellySettingsLight> lights = status.lights;
+        if (lights == null || idx >= lights.size()) {
             return false;
         }
-        ShellySettingsLight ds = lights.get(lightId);
-        if (ds == null) {
-            return false;
+
+        ShellySettingsLight ds = lights.get(idx);
+        value.id = idx;
+
+        if (value.brightness != null) {
+            ds.brightness = Objects.requireNonNull(value.brightness).intValue();
         }
-        Double brightness = value.brightness;
-        if (brightness != null) {
-            ds.brightness = brightness.intValue();
+
+        if (value.output != null) {
+            ds.ison = value.output;
         }
-        Boolean output = value.output;
-        if (output != null) {
-            ds.ison = output;
+
+        if (value.ct != null) {
+            ds.temp = value.ct;
         }
-        Integer ct = value.ct;
-        if (ct != null) {
-            ds.temp = ct;
-        }
-        lights.set(lightId, ds);
+
+        lights.set(idx, ds);
+
         if (profile.isProRgbwwPm) {
             // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
-            updateComponentMeter(status, lightId, value.apower, value.aenergy, value.voltage, value.current,
-                    channelUpdate);
+            updateComponentMeter(status, idx, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
+
         if (channelUpdate) {
-            ShellyComponents.updateLightMode(getThing(), status);
+            ShellyComponents.updateLightMode(value, getThing());
         }
+
         // Always true: signals the watchdog even if the channel value itself didn't change.
         return true;
     }

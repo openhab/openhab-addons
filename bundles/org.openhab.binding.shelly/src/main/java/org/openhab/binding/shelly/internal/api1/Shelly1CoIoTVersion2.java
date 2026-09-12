@@ -27,10 +27,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -72,9 +73,9 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
      */
     @Override
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
-            Map<String, State> updates, ShellyColorUtils col) {
+            Map<String, State> updates, LightModelAccessor.@Nullable LightModels lightModels) {
         // first check the base implementation
-        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, col)) {
+        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, lightModels)) {
             // process by the base class
             return true;
         }
@@ -163,7 +164,7 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             case "1201": // relay_1: output, 0/1
             case "1301": // relay_2: output, 0/1
             case "1401": // relay_3: output, 0/1
-                updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
+                updatePower(profile, updates, rIndex, sen, s, sensorUpdates, lightModels);
                 break;
             case "1102": // roler_0: S, roller, open/close/stop -> roller state
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_STATE, getStringType(s.valueStr));

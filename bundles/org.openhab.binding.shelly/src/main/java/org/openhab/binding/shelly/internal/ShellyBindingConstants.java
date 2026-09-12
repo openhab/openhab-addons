@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link ShellyBindingConstants} class defines common constants, which are
@@ -214,6 +215,9 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_GROUP_LIGHT_CHANNEL = "channel";
     public static final String CHANNEL_GROUP_LIGHT_INDEX = "light";
 
+    public static final String CHAN_FULL_LIGHT_POWER = CHANNEL_GROUP_LIGHT_CONTROL + "#" + CHANNEL_LIGHT_POWER;
+    public static final ChannelTypeUID TYPE_UID_ADV_POWER = new ChannelTypeUID(BINDING_ID, "powerAdvanced");
+
     // Bulb/RGBW2 in color mode
     public static final String CHANNEL_GROUP_COLOR_CONTROL = "color";
     public static final String CHANNEL_COLOR_PICKER = "hsb";
@@ -225,9 +229,15 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_COLOR_GAIN = "gain";
     public static final String CHANNEL_COLOR_EFFECT = "effect";
 
+    public static final String CHAN_FULL_PRIMARY_COLOR = CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER;
+
     // Bulb/RGBW2/Dup in White Mode
     public static final String CHANNEL_GROUP_WHITE_CONTROL = "white";
+    public static final String CHANNEL_COLOR_TEMP_PCT = "temperature-pct";
     public static final String CHANNEL_COLOR_TEMP = "temperature";
+
+    public static final String CHAN_FULL_WHITE_BRIGHT = CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS;
+    public static final ChannelTypeUID TYPE_UID_ADV_BRIGHT = new ChannelTypeUID(BINDING_ID, "brightnessAdvanced");
 
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";

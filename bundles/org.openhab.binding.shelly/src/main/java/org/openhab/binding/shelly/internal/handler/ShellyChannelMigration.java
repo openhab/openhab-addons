@@ -87,7 +87,26 @@ public class ShellyChannelMigration {
                 new ChannelMigrationRule(6, mkWildcardChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER),
                         CHANNEL_EMETER_RESETTOTAL, false, ShellyChannelMigration::supportsPerMeterReset),
                 new ChannelMigrationRule(6, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER),
-                        CHANNEL_DEVST_RESETTOTAL, false, profile -> profile.is3EM)));
+                        CHANNEL_DEVST_RESETTOTAL, false, profile -> profile.is3EM),
+                // @formatter:off
+                // PR #21286: color group: refresh color picker as OH main, promote secondary channels to advanced
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER), null, true),
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL), null, true),
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED), null, true),
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN), null, true),
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE), null, true),
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE), null, true),
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN), null, true),
+
+                // PR #21286: white group: refresh/promote brightness, refresh temperature, add temperature-pct
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS), null, true),
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP), CHANNEL_COLOR_TEMP_PCT, true),
+                
+                // PR #21286: control group: promote secondary channels to advanced
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_COLOR_MODE), null, true),
+                new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER), null, true)
+                // @formatter:on
+        ));
         for (int i = 1; i <= 4; i++) {
             rules.addAll(lightGroupMigrationRules(i));
         }
@@ -105,7 +124,13 @@ public class ShellyChannelMigration {
                 new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_AUTOOFF),
                         mkChannelId(newGroup, CHANNEL_TIMER_AUTOOFF), false, ShellyChannelMigration::isGen1Rgbw2),
                 new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_ACTIVE),
-                        mkChannelId(newGroup, CHANNEL_TIMER_ACTIVE), false, ShellyChannelMigration::isGen1Rgbw2));
+                        mkChannelId(newGroup, CHANNEL_TIMER_ACTIVE), false, ShellyChannelMigration::isGen1Rgbw2),
+                // @formatter:off
+                // PR #21286: white group: refresh/promote brightness, refresh temperature, add temperature-pct
+                new ChannelMigrationRule(8, mkChannelId(newGroup, CHANNEL_BRIGHTNESS), null, true),
+                new ChannelMigrationRule(8, mkChannelId(newGroup, CHANNEL_COLOR_TEMP), mkChannelId(newGroup, CHANNEL_COLOR_TEMP_PCT), true)
+                // @formatter:on
+        );
     }
 
     // Gen2 switch/cover/pm1 report aenergy.by_minute; Gen1 /meter devices report counters[].
