@@ -188,6 +188,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
                 break;
 
+            case CHANNEL_THERMOSTAT_ENABLE:
+                logger.debug("{}: Set thermostat enable to {}", thingName, command);
+                api.setThermostatEnable(0, command == OnOffType.ON);
+                break;
+
         }
         return true;
     }
