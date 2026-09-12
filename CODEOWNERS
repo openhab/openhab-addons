@@ -416,6 +416,7 @@
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.teslapowerwall/ @psmedley
 /bundles/org.openhab.binding.teslascope/ @psmedley
+/bundles/org.openhab.binding.threedprinter/ @computergeek1507
 /bundles/org.openhab.binding.tibber/ @kjoglum @weymann
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
