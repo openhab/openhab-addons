@@ -116,6 +116,7 @@ public class ShellyComponents {
             thingHandler.updateThingChannels(Map.of(), dynChannels);
         }
         reconcileMediaChannels(thingHandler, status);
+        reconcileThermostatChannels(thingHandler, profile, status);
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
         if (!profile.gateway.isEmpty()) {
@@ -1129,6 +1130,14 @@ public class ShellyComponents {
 
     private static void reconcileMediaChannels(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         Set<String> obsolete = ShellyChannelDefinitions.getObsoleteMediaChannelIds(status);
+        if (!obsolete.isEmpty()) {
+            thingHandler.removeChannels(obsolete);
+        }
+    }
+
+    private static void reconcileThermostatChannels(ShellyThingInterface thingHandler, ShellyDeviceProfile profile,
+            ShellySettingsStatus status) {
+        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteThermostatChannelIds(profile, status);
         if (!obsolete.isEmpty()) {
             thingHandler.removeChannels(obsolete);
         }

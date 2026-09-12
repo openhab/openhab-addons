@@ -612,6 +612,20 @@ public class ShellyChannelDefinitions {
     }
 
     /**
+     * @return "group#channel" ids of the Thermostat channels, stale once the device no longer reports a
+     *         thermostat:0 component (thermostat disabled in the Shelly app) and to be removed. targetTemp
+     *         (CHANNEL_CONTROL_SETTEMP) is shared with TRV devices and is never removed for those.
+     */
+    public static Set<String> getObsoleteThermostatChannelIds(final ShellyDeviceProfile profile,
+            final ShellySettingsStatus status) {
+        if (status.thermostat != null) {
+            return Set.of();
+        }
+        return profile.isTRV ? Set.of(CHGR_CONTROL + "#" + CHANNEL_THERMOSTAT_ENABLE)
+                : Set.of(CHGR_CONTROL + "#" + CHANNEL_THERMOSTAT_ENABLE, CHGR_CONTROL + "#" + CHANNEL_CONTROL_SETTEMP);
+    }
+
+    /**
      * Auto-create relay channels depending on relay type/mode
      *
      * @return {@code ArrayList<Channel>} of channels to be added to the thing
