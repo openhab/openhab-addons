@@ -24,6 +24,7 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLKeyException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtConfiguration;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtCredentials;
@@ -126,6 +127,38 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
                 sendAsyncRequest(url, payload, command);
             } else {
                 sendSyncRequest(url, payload, command);
+            }
+        } else {
+            logger.trace("({}) query skipped cause of min_gap: {} <- {}", uid, now, lastQuery);
+        }
+    }
+
+    /**
+     * Applies an update to nvram variable on the device. Will execute rcService if provided.
+     *
+     * @param variable nvram variable to update
+     * @param value new value for the nvram variable
+     * @param rcService optional rc service to apply the change
+     * @param asyncRequest <code>true</code> if request should be sent asynchronous, <code>false</code> if synchronous
+     */
+    public void applyNVRAMCommand(String variable, String value, @Nullable String rcService, boolean asyncRequest) {
+        Long now = System.currentTimeMillis();
+
+        router.errorHandler.reset();
+        if (cookieStore.cookieIsExpired()) {
+            login();
+        }
+
+        if (now > this.lastQuery + HTTP_QUERY_MIN_GAP_MS) {
+            String url = getURL("apply.cgi");
+            String payload = "action_mode=apply&action_script=" + rcService + "&" + variable + "=" + value;
+            this.lastQuery = now;
+
+            // Send asynchronous or synchronous HTTP request
+            if (asyncRequest) {
+                sendAsyncRequest(url, payload, "applyNVRAMCommand");
+            } else {
+                sendSyncRequest(url, payload, "applyNVRAMCommand");
             }
         } else {
             logger.trace("({}) query skipped cause of min_gap: {} <- {}", uid, now, lastQuery);

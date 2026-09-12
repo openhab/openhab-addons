@@ -17,6 +17,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link AsuswrtBindingConstants} class defines common constants, which are used across the whole binding.
@@ -93,6 +94,11 @@ public class AsuswrtBindingConstants {
     public static final String CHANNEL_TRAFFIC_TODAY_TX = "today-tx";
     public static final String CHANNEL_TRAFFIC_CURRENT_RX = "current-rx";
     public static final String CHANNEL_TRAFFIC_CURRENT_TX = "current-tx";
+
+    // Channel extensible NVRAM
+    public static final String CHANNEL_GROUP_NVRAM = "nvram-variables";
+    public static final ChannelTypeUID CHANNEL_TYPE_EXTENSIBLE_NVRAM = new ChannelTypeUID(BINDING_ID,
+            "nvram-variable-type");
 
     /*
      * Properties

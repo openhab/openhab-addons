@@ -176,4 +176,27 @@
 		<state pattern="%.0f %unit%" readOnly="true"></state>
 	</channel-type>
 
+	<!-- Extensible NVRAM value -->
+	<channel-type id="nvram-variable-type">
+		<item-type>String</item-type>
+		<label>NVRAM Variable</label>
+		<description>Router NVRAM variable</description>
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>NVRAM Variable Name</label>
+				<description>The name of the NVRAM variable</description>
+			</parameter>
+			<parameter name="readonly" type="boolean">
+				<label>Read Only</label>
+				<description>Indicates if the NVRAM variable is read-only</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="service" type="text">
+				<label>RC service command to execute after setting the NVRAM value</label>
+				<description>Command to execute after setting the NVRAM value, common command prefixes are restart_*, stop_*,
+					start_*, reboot.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
 </thing:thing-descriptions>

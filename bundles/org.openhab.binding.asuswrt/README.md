@@ -1,6 +1,7 @@
 # Asuswrt Binding
 
-This binding adds support to read information from ASUS-Routers (Copyright © ASUS).
+This binding adds support to primarily read information from ASUS-Routers (Copyright © ASUS).
+For advanced use cases, it also supports the ability to directly read and write nvram variables.
 
 ## Discovery
 
@@ -29,6 +30,14 @@ Firmware 5.x.x (some DSL models) is NOT supported (not Asuswrt).
 | refreshInterval | integer | Interval the device is polled in sec. | 20                  | no       | yes      |
 | httpPort        | integer | HTTP-Port                             | 80                  | no       | yes      |
 | httpsPort       | integer | HTTPS-Port                            | 443                 | no       | yes      |
+
+#### Router NVRAM variable channel configuration
+
+| Name            | Type    | Description                           | Default             | Required | Advanced |
+|-----------------|---------|---------------------------------------|---------------------|----------|----------|
+| name            | text    | Name of the router nvram variable     | N/A                 | yes      | no       |
+| readonly        | boolean | Whether variable should be readonly   | true                | no       | no       |
+| service         | text    | Service to run after variable is set  | N/A                 | no       | no       |
 
 ### `interface` Thing Configuration
 
@@ -75,12 +84,15 @@ All devices support some of the following channels:
 |                  | online-clients       | text (RO)              | Online clients with name and MAC addresses | router                            |
 |                  | online-macs          | text (RO)              | List with MAC addresses of online clients  | router                            |
 |                  | online-clients-count | Number:Dimensionless   | Count of online clients                    | router                            |
+| nvram-variables  | (user defined)       | text (RW)              | Router nvram variable                      | router                            |
 | traffic          | current-rx           | Number:DataTransferRate| Current DataTransferRate MBits/s (receive) | interface, client                 |
 |                  | current-tx           | Number:DataTransferRate| Current DataTransferRate MBits/s (send)    | interface, client                 |
 |                  | today-rx             | Number:DataAmount      | Data received since 0:00 a clock in MB     | interface, client                 |
 |                  | today-tx             | Number:DataAmount      | Data sent since 0:00 a clock in MB         | interface, client                 |
 |                  | total-rx             | Number:DataAmount      | Data received since reboot in MB           | interface, client                 |
 |                  | total-tx             | Number:DataAmount      | Data sent since reboot in MB               | interface, client                 |
+
+An NVRAM variable channel can be setup in the UI by selecting "Add Channel" in the channel list of the router.
 
 ## Events
 
