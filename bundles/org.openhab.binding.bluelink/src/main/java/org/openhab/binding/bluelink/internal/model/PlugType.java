@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
-
-import com.google.gson.annotations.SerializedName;
+package org.openhab.binding.bluelink.internal.model;
 
 /**
- * 12V battery status.
+ * The EV charging type.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-public record BatteryStatus(@SerializedName("batSoc") double stateOfCharge) {
+public enum PlugType {
+    DC, // ordinal = 0
+    AC // ordinal = 1
 }

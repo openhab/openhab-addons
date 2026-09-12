@@ -22,7 +22,7 @@
 			</parameter>
 			<parameter name="pin" type="text" required="false">
 				<label>PIN</label>
-				<description>Your Bluelink/Connect service PIN (required for lock/unlock commands)</description>
+				<description>Your Bluelink/Connect service PIN (required for lock/unlock commands, not required for EU region)</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="region" type="text" required="false">
