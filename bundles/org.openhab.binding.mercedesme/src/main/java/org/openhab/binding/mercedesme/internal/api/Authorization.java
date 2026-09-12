@@ -13,6 +13,7 @@
 package org.openhab.binding.mercedesme.internal.api;
 
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -67,11 +69,26 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class Authorization {
     private static final int EXPIRATION_BUFFER = 5;
+    /**
+     * Number of attempts for login-flow steps that may fail transiently with a gateway error (502/503/504).
+     * Mirrors mbapi2020's {@code Oauth.LOGIN_MAX_ATTEMPTS}.
+     */
+    private static final int LOGIN_MAX_ATTEMPTS = 3;
+    /**
+     * Backoff base in seconds between login retries, multiplied by the attempt number. Mirrors mbapi2020's
+     * {@code Oauth.LOGIN_RETRY_BACKOFF_SECONDS}.
+     */
+    private static final int LOGIN_RETRY_BACKOFF_SECONDS = 5;
+    private static final String DEVICE_GUID_STORAGE_SUFFIX = "-device-guid";
+    private static final String RESULT_RESUME_TO_OIDCP = "RESUME2OIDCP";
+    private static final String RESULT_GOTO_OTP = "GOTO_LOGIN_OTP";
+    private static final String RESULT_GOTO_LEGAL_TEXTS = "GOTO_LOGIN_LEGAL_TEXTS";
     private final Logger logger = LoggerFactory.getLogger(Authorization.class);
 
     private AccessTokenRefreshListener listener;
     private AccessTokenResponse token = Utils.INVALID_TOKEN;
     private String identifier;
+    private String deviceGuid;
 
     protected static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
     protected static final String CONTENT_TYPE_JSON = "application/json";
@@ -90,6 +107,7 @@ public class Authorization {
         identifier = config.email;
         localeProvider = l;
         storage = store;
+        deviceGuid = loadOrCreateDeviceGuid();
 
         baseUrl = Utils.getLoginServer(config.region);
         // restore token from persistence if available
@@ -111,6 +129,22 @@ public class Authorization {
         } else {
             logger.trace("No token for {} stored, stay on invalid token", config.email);
         }
+    }
+
+    /**
+     * Load a persisted device GUID for this account, or generate and persist a new one. Sent as a
+     * {@code CIAM.DEVICE} cookie on every login-flow request so the CIAM backend sees a stable device identity
+     * across logins and restarts - mirrors mbapi2020's {@code Oauth._device_guid}.
+     */
+    private String loadOrCreateDeviceGuid() {
+        String key = identifier + DEVICE_GUID_STORAGE_SUFFIX;
+        String stored = storage.get(key);
+        if (stored != null && !stored.isBlank()) {
+            return stored;
+        }
+        String generated = UUID.randomUUID().toString();
+        storage.put(key, generated);
+        return generated;
     }
 
     protected synchronized String getToken() {
@@ -248,12 +282,49 @@ public class Authorization {
         try {
             loginHttpClient.start();
             loginHttpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+            // Attach a stable CIAM.DEVICE cookie to every request this client sends, mirroring mbapi2020's
+            // device_guid cookie jar
+            loginHttpClient.getCookieStore().add(URI.create(baseUrl), new HttpCookie("CIAM.DEVICE", deviceGuid));
+
             String codeVerifier = generateCodeVerifier(32);
             String codeChallenge = generateCodeChallenge(codeVerifier);
             String resumeUrl = getResumeUrl(loginHttpClient, codeChallenge);
+            // The user-agent step is best-effort in the reference implementation - a failure here must not
+            // abort the login
             sendUserAgent(loginHttpClient);
             sendUsername(loginHttpClient);
-            String preLoginToken = performPasswordLogin(loginHttpClient);
+
+            String rid = generateCodeVerifier(24);
+            JSONObject preLoginData = performPasswordLogin(loginHttpClient, rid);
+
+            if (preLoginData.optBoolean("passkeyDemoEnabled", false)) {
+                logger.trace("Step 4b: Passkey setup prompt detected, declining to continue password login");
+                preLoginData = disablePasskeyDemo(loginHttpClient, rid);
+            }
+
+            String result = preLoginData.optString("result", "");
+            if (!RESULT_RESUME_TO_OIDCP.equals(result)) {
+                if (RESULT_GOTO_OTP.equals(result)) {
+                    throw new MercedesMeAuthException(
+                            "Two-factor authentication (2FA) is enabled for this account and is not supported by this binding");
+                } else if (RESULT_GOTO_LEGAL_TEXTS.equals(result)) {
+                    logger.trace("Step 4c: Legal consent prompt detected, accepting automatically");
+                    String homeCountry = preLoginData.optString("homeCountry", "");
+                    String consentCountry = preLoginData.optString("consentCountry", "");
+                    preLoginData = submitLegalConsent(loginHttpClient, homeCountry, consentCountry);
+                    if (!RESULT_RESUME_TO_OIDCP.equals(preLoginData.optString("result", ""))) {
+                        throw new MercedesMeAuthException("Failed to accept legal terms during login: " + preLoginData);
+                    }
+                } else {
+                    throw new MercedesMeAuthException("Unexpected login result: " + result);
+                }
+            }
+
+            String preLoginToken = preLoginData.optString("token", "");
+            if (preLoginToken.isBlank()) {
+                throw new MercedesMeAuthException("No login token delivered: " + preLoginData);
+            }
+
             String authCode = resumeAuthentication(loginHttpClient, resumeUrl, preLoginToken);
             requestAccessToken(loginHttpClient, authCode, codeVerifier);
         } catch (MercedesMeAuthException | MercedesMeApiException e) {
@@ -288,15 +359,16 @@ public class Authorization {
         resumeContent.put("response_type", "code");
         resumeContent.put("scope", Constants.AUTH_SCOPE);
         resumeContent.put("code_challenge", codeChallenge);
+        String url = baseUrl + "/as/authorization.oauth2?" + FormContentProvider.convert(resumeContent);
 
         String resumeUrl = null;
-        Request resumeRequest = loginHttpClient
-                .newRequest(baseUrl + "/as/authorization.oauth2?" + FormContentProvider.convert(resumeContent))
-                .followRedirects(true);
-        resumeRequest.agent(Constants.AUTH_USER_AGENT);
-        resumeRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
-        resumeRequest.header(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        ContentResponse resumeResponse = send(resumeRequest);
+        ContentResponse resumeResponse = loginRequest(() -> {
+            Request resumeRequest = loginHttpClient.newRequest(url).followRedirects(true);
+            resumeRequest.agent(Constants.AUTH_USER_AGENT);
+            resumeRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+            resumeRequest.header(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            return resumeRequest;
+        }, "Step 1: Get resume code");
         logger.trace("Step 1: Get resume code {} - {}", resumeResponse.getStatus(),
                 resumeResponse.getRequest().getURI());
         if (resumeResponse.getStatus() == HttpStatus.OK_200) {
@@ -312,12 +384,13 @@ public class Authorization {
     }
 
     /**
-     * Send user agent.
+     * Send user agent info. This step is best-effort in the reference flow: a failure here does not abort the
+     * login, it is only logged - mirrors mbapi2020's {@code Oauth._send_user_agent_info()}, which only warns on
+     * failure.
      *
-     * @throws MercedesMeAuthException if response status isn't correct
      * @throws MercedesMeApiException if an error occurs during API call
      */
-    private void sendUserAgent(HttpClient loginHttpClient) throws MercedesMeAuthException, MercedesMeApiException {
+    private void sendUserAgent(HttpClient loginHttpClient) throws MercedesMeApiException {
         Request agentRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/ua");
         agentRequest.agent(Constants.AUTH_USER_AGENT);
         agentRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
@@ -333,7 +406,7 @@ public class Authorization {
         ContentResponse agentResponse = send(agentRequest);
         logger.trace("Step 2: Post Agent {} - {}", agentResponse.getStatus(), agentResponse.getContentAsString());
         if (agentResponse.getStatus() != HttpStatus.OK_200) {
-            throw new MercedesMeAuthException("Failed to post user agent. HTTP " + agentResponse.getStatus());
+            logger.warn("Failed to post user agent info, continuing login anyway. HTTP {}", agentResponse.getStatus());
         }
     }
 
@@ -344,18 +417,21 @@ public class Authorization {
      * @throws MercedesMeApiException if an error occurs during API call
      */
     private void sendUsername(HttpClient loginHttpClient) throws MercedesMeAuthException, MercedesMeApiException {
-        Request userRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/login/user");
-        userRequest.agent(Constants.AUTH_USER_AGENT);
-        userRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
-        userRequest.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
-        userRequest.header(HttpHeader.ORIGIN, baseUrl);
-        userRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
-
+        String url = baseUrl + "/ciam/auth/login/user";
         JSONObject userContent = new JSONObject();
         userContent.put("username", config.email);
-        userRequest.content(new StringContentProvider(userContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
 
-        ContentResponse userResponse = send(userRequest);
+        ContentResponse userResponse = loginRequest(() -> {
+            Request userRequest = loginHttpClient.POST(url);
+            userRequest.agent(Constants.AUTH_USER_AGENT);
+            userRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+            userRequest.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
+            userRequest.header(HttpHeader.ORIGIN, baseUrl);
+            userRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+            userRequest.content(new StringContentProvider(userContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
+            return userRequest;
+        }, "Step 3: Post username");
+
         int status = userResponse.getStatus();
         logger.trace("Step 3: Post username {} - {}", status, userResponse.getContentAsString());
         if (status != HttpStatus.OK_200) {
@@ -364,42 +440,143 @@ public class Authorization {
     }
 
     /**
-     * Perform login with user name and password to get pre-login token.
+     * Perform login with user name and password to get the pre-login response. Contains the pre-login
+     * {@code token}, as well as {@code result}, {@code passkeyDemoEnabled}, {@code homeCountry} and
+     * {@code consentCountry} fields that the calling {@link #login()} flow branches on.
      *
-     * @throws MercedesMeAuthException if response status isn't correct or token not delivered
+     * @throws MercedesMeAuthException if response status isn't correct
      * @throws MercedesMeApiException if an error occurs during API call
      */
-    private String performPasswordLogin(HttpClient loginHttpClient)
+    private JSONObject performPasswordLogin(HttpClient loginHttpClient, String rid)
             throws MercedesMeAuthException, MercedesMeApiException {
-        Request loginRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/login/pass");
-        loginRequest.agent(Constants.AUTH_USER_AGENT);
-        loginRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
-        loginRequest.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
-        loginRequest.header(HttpHeader.ORIGIN, baseUrl);
-        loginRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
-
-        String rid = generateCodeVerifier(24);
+        String url = baseUrl + "/ciam/auth/login/pass";
         JSONObject loginContent = new JSONObject();
         loginContent.put("username", config.email);
         loginContent.put("password", config.password);
         loginContent.put("rememberMe", false);
         loginContent.put("rid", rid);
-        loginRequest.content(new StringContentProvider(loginContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
 
-        String preLoginToken = null;
-        ContentResponse loginResponse = send(loginRequest);
+        ContentResponse loginResponse = loginRequest(() -> {
+            Request loginRequest = loginHttpClient.POST(url);
+            loginRequest.agent(Constants.AUTH_USER_AGENT);
+            loginRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+            loginRequest.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
+            loginRequest.header(HttpHeader.ORIGIN, baseUrl);
+            loginRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+            loginRequest.content(new StringContentProvider(loginContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
+            return loginRequest;
+        }, "Step 4: Login");
+
         int status = loginResponse.getStatus();
         String loginResponseString = loginResponse.getContentAsString();
         logger.trace("Step 4: Login {} - {}", status, loginResponseString);
-        if (status == HttpStatus.OK_200) {
-            JSONObject loginResponseJSON = new JSONObject(loginResponseString);
-            preLoginToken = loginResponseJSON.optString("token", null);
-        }
-        if (preLoginToken != null) {
-            return preLoginToken;
-        } else {
+        if (status != HttpStatus.OK_200) {
             throw new MercedesMeAuthException("Failed to login. HTTP " + status + " " + loginResponseString);
         }
+        return new JSONObject(loginResponseString);
+    }
+
+    /**
+     * Decline the passkey setup prompt so the password-based login flow can continue. Triggered when the
+     * pre-login response has {@code passkeyDemoEnabled=true} - mirrors mbapi2020's
+     * {@code Oauth._disable_passkey_demo()}.
+     *
+     * @throws MercedesMeAuthException if response status isn't correct
+     * @throws MercedesMeApiException if an error occurs during API call
+     */
+    private JSONObject disablePasskeyDemo(HttpClient loginHttpClient, String rid)
+            throws MercedesMeAuthException, MercedesMeApiException {
+        String url = baseUrl + "/ciam/auth/disablePasskeyDemo";
+        JSONObject content = new JSONObject();
+        content.put("username", config.email);
+        content.put("password", config.password);
+        content.put("rememberMe", false);
+        content.put("rid", rid);
+        content.put("disablePasskeyDemo", true);
+
+        ContentResponse response = loginRequest(() -> {
+            Request request = loginHttpClient.POST(url);
+            request.agent(Constants.AUTH_USER_AGENT);
+            request.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+            request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
+            request.header(HttpHeader.ORIGIN, baseUrl);
+            request.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+            request.content(new StringContentProvider(content.toString(), "utf-8"), CONTENT_TYPE_JSON);
+            return request;
+        }, "Step 4b: Decline passkey prompt");
+
+        int status = response.getStatus();
+        String body = response.getContentAsString();
+        logger.trace("Step 4b: Decline passkey prompt {} - {}", status, body);
+        if (status != HttpStatus.OK_200) {
+            throw new MercedesMeAuthException("Failed to decline passkey prompt. HTTP " + status + " " + body);
+        }
+        return new JSONObject(body);
+    }
+
+    /**
+     * Accept the legal consent texts on behalf of the user. Triggered when the pre-login (or passkey-decline)
+     * response has {@code result=GOTO_LOGIN_LEGAL_TEXTS} - mirrors mbapi2020's
+     * {@code Oauth._submit_legal_consent()}. Not retried on gateway errors, matching the reference
+     * implementation.
+     *
+     * @throws MercedesMeAuthException if response status isn't correct
+     * @throws MercedesMeApiException if an error occurs during API call
+     */
+    private JSONObject submitLegalConsent(HttpClient loginHttpClient, String homeCountry, String consentCountry)
+            throws MercedesMeAuthException, MercedesMeApiException {
+        JSONObject content = new JSONObject();
+        content.put("texts", new JSONObject());
+        content.put("homeCountry", homeCountry);
+        content.put("consentCountry", consentCountry);
+
+        Request request = loginHttpClient.POST(baseUrl + "/ciam/auth/toas/saveLoginConsent");
+        request.agent(Constants.AUTH_USER_AGENT);
+        request.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+        request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
+        request.header(HttpHeader.ORIGIN, baseUrl);
+        request.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+        request.content(new StringContentProvider(content.toString(), "utf-8"), CONTENT_TYPE_JSON);
+
+        ContentResponse response = send(request);
+        int status = response.getStatus();
+        String body = response.getContentAsString();
+        logger.trace("Step 4c: Submit legal consent {} - {}", status, body);
+        if (status != HttpStatus.OK_200) {
+            throw new MercedesMeAuthException("Failed to submit legal consent. HTTP " + status + " " + body);
+        }
+        return new JSONObject(body);
+    }
+
+    /**
+     * Perform a login-flow HTTP request, retrying up to {@link #LOGIN_MAX_ATTEMPTS} times on transient gateway
+     * errors (502/503/504) with a backoff of {@link #LOGIN_RETRY_BACKOFF_SECONDS} * attempt seconds - mirrors
+     * mbapi2020's {@code Oauth._login_request()}. {@link Request} instances can only be sent once, so a fresh
+     * request is built on every attempt via {@code requestSupplier}.
+     *
+     * @param requestSupplier builds a fresh, unsent request for each attempt
+     * @param step label used for log messages
+     * @throws MercedesMeApiException if an error occurs during API call
+     */
+    private ContentResponse loginRequest(Supplier<Request> requestSupplier, String step) throws MercedesMeApiException {
+        for (int attempt = 1; attempt <= LOGIN_MAX_ATTEMPTS; attempt++) {
+            ContentResponse response = send(requestSupplier.get());
+            int status = response.getStatus();
+            boolean gatewayError = status == HttpStatus.BAD_GATEWAY_502 || status == HttpStatus.SERVICE_UNAVAILABLE_503
+                    || status == HttpStatus.GATEWAY_TIMEOUT_504;
+            if (!gatewayError || attempt == LOGIN_MAX_ATTEMPTS) {
+                return response;
+            }
+            logger.warn("{} failed with HTTP {} - retry {}/{}", step, status, attempt, LOGIN_MAX_ATTEMPTS - 1);
+            try {
+                Thread.sleep(LOGIN_RETRY_BACKOFF_SECONDS * attempt * 1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new MercedesMeApiException(step + " retry interrupted");
+            }
+        }
+        // unreachable: the loop above always returns on the final attempt
+        throw new MercedesMeApiException(step + " failed after " + LOGIN_MAX_ATTEMPTS + " attempts");
     }
 
     /**
@@ -491,13 +668,15 @@ public class Authorization {
     }
 
     public void addBasicHeaders(Request req) {
-        req.agent(Utils.getApplication(config.region));
+        // User-Agent is the full app/OS identifier string, X-Applicationname the short app id - matches
+        // mbapi2020's AppVersionManager.apply_oauth_headers() (was swapped before, checked 2026-07-31)
+        req.agent(Utils.getUserAgent(config.region));
         req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
         req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
         req.header("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
         req.header("X-Locale",
                 localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry()); // de-DE
-        req.header("X-Applicationname", Utils.getUserAgent(config.region));
+        req.header("X-Applicationname", Utils.getApplication(config.region));
         req.header("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
     }
 

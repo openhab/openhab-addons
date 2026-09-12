@@ -37,6 +37,7 @@ message ClientMessage {
     AcknowledgeVEPUpdatesByVIN acknowledge_vep_updates_by_vin = 22;
     AcknowledgeAssignedVehicles acknowledge_assigned_vehicles = 23;
     AcknowledgeDataChangeEvent acknowledge_data_change_event = 26;
+    AcknowledgeVehicleStatusUpdates acknowledge_vehicle_status_updates = 28;
   }
 }
 
