@@ -95,11 +95,13 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     protected ScheduledExecutorService executorService = this.scheduler;
     protected HomeWizardConfiguration config = new HomeWizardConfiguration();
-    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> dataPollingJob;
+    private @Nullable ScheduledFuture<?> firmwarePollingJob;
     private HttpClient httpClient = new HttpClient();
 
     protected List<String> supportedTypes = new ArrayList<String>();
     protected List<Integer> supportedApiVersions = Arrays.asList(API_V1);
+    private boolean deviceConfigurationOk = false;
     private String apiURL = "";
 
     /**
@@ -141,10 +143,12 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             }
         }
 
-        if (configure() && processDeviceInformation()) {
+        if (configure()) {
             updateStatus(ThingStatus.UNKNOWN);
-            pollingJob = executorService.scheduleWithFixedDelay(this::retrieveData, 0, config.refreshDelay,
+            dataPollingJob = executorService.scheduleWithFixedDelay(this::retrieveData, 0, config.refreshDelay,
                     TimeUnit.SECONDS);
+            firmwarePollingJob = executorService.scheduleWithFixedDelay(this::retrieveFirmwareVersion, 1, 1,
+                    TimeUnit.DAYS);
         }
     }
 
@@ -220,9 +224,16 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * The actual polling loop
+     * The data polling loop
      */
     protected void retrieveData() {
+        if (!deviceConfigurationOk) {
+            deviceConfigurationOk = checkDeviceConfiguration();
+            if (!deviceConfigurationOk) {
+                return;
+            }
+        }
+
         try {
             handleSystemData(getSystemData());
             handleMeasurementData(getMeasurementData());
@@ -235,15 +246,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
     }
 
-    protected String getApiUrl() {
-        if (config.isUsingApiVersion2()) {
-            return apiURL;
-        } else {
-            return apiURL + "v1/";
-        }
-    }
-
-    private boolean processDeviceInformation() {
+    private boolean checkDeviceConfiguration() {
         String deviceInformation = "";
 
         try {
@@ -255,15 +258,16 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             return false;
         }
 
-        if (deviceInformation.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-no-data");
-            return false;
+        HomeWizardDeviceInformationPayload payload = null;
+        try {
+            payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
+        } catch (JsonSyntaxException ex) {
+            payload = null;
         }
 
-        var payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
-
         if (payload == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-no-data");
             return false;
         } else {
             if ("".equals(payload.getProductType())) {
@@ -278,12 +282,43 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                 return false;
             }
 
-            updateProperty(PRODUCT_NAME, payload.getProductName());
-            updateProperty(PRODUCT_TYPE, payload.getProductType());
-            updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
-            updateProperty(API_VERSION, payload.getApiVersion());
+            var properties = editProperties();
+            properties.put(PRODUCT_NAME, payload.getProductName());
+            properties.put(PRODUCT_TYPE, payload.getProductType());
+            properties.put(FIRMWARE_VERSION, payload.getFirmwareVersion());
+            properties.put(API_VERSION, payload.getApiVersion());
+            updateProperties(properties);
 
             return true;
+        }
+    }
+
+    private void retrieveFirmwareVersion() {
+        String deviceInformation = "";
+
+        try {
+            deviceInformation = getDeviceInformationData();
+            var payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
+            if (payload == null) {
+                // Only log a warning here. Updating the firmware version will be attempted again when the device is
+                // polled next time.
+                logger.warn("Unable to update the firmare version. No device information available.");
+                return;
+            }
+            updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
+        } catch (SecurityException | JsonSyntaxException ex) {
+            // Only log a warning here. Updating the firmware version will be attempted again when the device is polled
+            // next time.
+            logger.warn("Unable to update the firmare version. No device information available.");
+            return;
+        }
+    }
+
+    protected String getApiUrl() {
+        if (config.isUsingApiVersion2()) {
+            return apiURL;
+        } else {
+            return apiURL + "v1/";
         }
     }
 
@@ -292,11 +327,16 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
-        var job = pollingJob;
-        if (job != null) {
-            job.cancel(true);
+        var dataJob = dataPollingJob;
+        if (dataJob != null) {
+            dataJob.cancel(true);
         }
-        pollingJob = null;
+        dataPollingJob = null;
+        var firmwareJob = firmwarePollingJob;
+        if (firmwareJob != null) {
+            firmwareJob.cancel(true);
+        }
+        firmwarePollingJob = null;
         try {
             httpClient.stop();
         } catch (Exception ex) { // No specific exception is thrown by the stop method
