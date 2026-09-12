@@ -14,9 +14,14 @@ package org.openhab.binding.wemo.internal.discovery;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,9 +30,13 @@ import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.openhab.core.io.net.mac.MacResolver;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +52,15 @@ import org.slf4j.LoggerFactory;
 @Component(service = UpnpDiscoveryParticipant.class)
 public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(WemoDiscoveryParticipant.class);
+    private static final int MAC_RESOLUTION_TIMEOUT_MILLIS = 2000;
+
+    private final Logger logger = LoggerFactory.getLogger(WemoDiscoveryParticipant.class);
+    private final MacResolver macResolver;
+
+    @Activate
+    public WemoDiscoveryParticipant(@Reference MacResolver macResolver) {
+        this.macResolver = macResolver;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -62,6 +79,8 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 // ignore and use default label
             }
             properties.put(UDN, device.getIdentity().getUdn().getIdentifierString());
+            resolveMacAddress(device.getIdentity().getDescriptorURL())
+                    .ifPresent(macAddress -> properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress));
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
                     .withRepresentationProperty(UDN).build();
@@ -72,6 +91,18 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
             return result;
         } else {
             return null;
+        }
+    }
+
+    private Optional<String> resolveMacAddress(URL descriptorUrl) {
+        try {
+            return Optional.ofNullable(macResolver.resolveMac(descriptorUrl.getHost())
+                    .get(MAC_RESOLUTION_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return Optional.empty();
+        } catch (ExecutionException | TimeoutException e) {
+            return Optional.empty();
         }
     }
 
