@@ -149,6 +149,9 @@ public class Shelly1CoIoTProtocol {
                     case "white":
                     case "gain":
                     case "effect":
+                        if (!profile.inColor) {
+                            break;
+                        }
                         ShellyLightModel model = getLightModelForSensor(sen, lightModels);
                         if (model != null) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {

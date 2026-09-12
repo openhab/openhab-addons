@@ -204,8 +204,11 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
-                        if (lightModels != null && lightModels
-                                .getByChannelGroupSuffix(getIdFromBlk(sen)) instanceof ShellyLightModel model) {
+                        if (profile.inColor) {
+                            break;
+                        }
+                        ShellyLightModel model = getLightModelForSensor(sen, lightModels);
+                        if (model != null) {
                             model.setColorTemp(s.value);
                         } else {
                             logger.debug("{}: Unable to update color temperature for {}: LightModel not found",
