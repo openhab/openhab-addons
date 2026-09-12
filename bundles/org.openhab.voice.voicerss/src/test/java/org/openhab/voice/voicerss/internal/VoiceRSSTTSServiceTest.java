@@ -26,8 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.storage.StorageService;
-import org.openhab.core.voice.TTSService;
-import org.openhab.core.voice.internal.cache.TTSLRUCacheImpl;
+import org.openhab.core.voice.internal.tts.cache.TTSLRUCacheImpl;
+import org.openhab.core.voice.tts.TTSService;
 
 /**
  * Tests for {@link VoiceRSSTTSService}.
