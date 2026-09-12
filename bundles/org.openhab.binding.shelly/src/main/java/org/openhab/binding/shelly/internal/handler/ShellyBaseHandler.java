@@ -634,6 +634,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * Update device status and channels
      */
     protected void refreshStatus() {
+        if (stopping) {
+            // cancel(true) only interrupts the job, a cycle which is already running has to bail out itself
+            return;
+        }
         try {
             if (vibrationFilter > 0) {
                 vibrationFilter--;
