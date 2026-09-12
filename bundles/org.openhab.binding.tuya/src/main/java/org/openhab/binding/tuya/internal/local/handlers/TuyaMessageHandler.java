@@ -38,6 +38,7 @@ import io.netty.channel.ChannelHandlerContext;
  * The {@link TuyaMessageHandler} is a Netty channel handler
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Report the sub-device a status belongs to
  */
 @NonNullByDefault
 public class TuyaMessageHandler extends ChannelDuplexHandler {
@@ -64,14 +65,21 @@ public class TuyaMessageHandler extends ChannelDuplexHandler {
         ProtocolVersion protocol = ctx.channel().attr(TuyaDevice.PROTOCOL_ATTR).get();
 
         if (msg instanceof MessageWrapper<?> m) {
-            if (m.commandType == CommandType.DP_QUERY || m.commandType == CommandType.STATUS) {
+            if (m.commandType == CommandType.DP_QUERY || m.commandType == CommandType.DP_QUERY_NEW
+                    || m.commandType == CommandType.STATUS) {
                 Map<Integer, Object> stateMap = null;
+                String cid = null;
                 if (m.content instanceof TcpStatusPayload payload) {
-                    stateMap = payload.protocol == 4 ? payload.data.dps : payload.dps;
+                    boolean nested = payload.protocol == 4;
+                    stateMap = nested ? payload.data.dps : payload.dps;
+                    // Gateways report the originating sub-device in "cid". An empty value means the
+                    // status belongs to the gateway itself.
+                    String payloadCid = nested ? payload.data.cid : payload.cid;
+                    cid = payloadCid.isEmpty() ? null : payloadCid;
                 }
 
                 if (stateMap != null && !stateMap.isEmpty()) {
-                    deviceStatusListener.processDeviceStatus(stateMap);
+                    deviceStatusListener.processDeviceStatus(cid, stateMap);
                 }
             } else if (m.commandType == CommandType.SESS_KEY_NEG_RESPONSE) {
                 if (!ctx.channel().hasAttr(TuyaDevice.SESSION_KEY_ATTR)
