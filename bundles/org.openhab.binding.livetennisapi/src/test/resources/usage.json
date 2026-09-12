@@ -1,0 +1,29 @@
+{
+  "principal": "key:demo",
+  "tier": "free",
+  "base_tier": "free",
+  "tier_expires_at": null,
+  "channel": "direct",
+  "limits": {
+    "per_minute": 30,
+    "per_day": 100
+  },
+  "today": {
+    "calls": 42,
+    "errors": 1,
+    "remaining_day": 58
+  },
+  "history": [
+    {
+      "day": "2026-08-14",
+      "calls": 96,
+      "errors": 0
+    },
+    {
+      "day": "2026-08-15",
+      "calls": 42,
+      "errors": 1
+    }
+  ],
+  "as_of": "2026-08-15T20:02:11Z"
+}

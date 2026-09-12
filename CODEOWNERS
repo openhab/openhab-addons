@@ -220,6 +220,7 @@
 /bundles/org.openhab.binding.linuxinput/ @t-8ch
 /bundles/org.openhab.binding.liquidcheck/ @marcelGoerentz
 /bundles/org.openhab.binding.lirc/ @kabili207
+/bundles/org.openhab.binding.livetennisapi/ @bensynapse
 /bundles/org.openhab.binding.livisismarthome/ @Novanic
 /bundles/org.openhab.binding.logreader/ @paulianttila
 /bundles/org.openhab.binding.loxone/ @ppieczul
