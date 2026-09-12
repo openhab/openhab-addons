@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.handler.ShellyLightModel.RGBX.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -455,7 +456,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         if (lights != null && apiLightIndex < lights.size()) {
             ShellySettingsRgbwLight ls = lights.get(apiLightIndex);
             String group = channelGroupSuffix == 0 ? CHANNEL_GROUP_LIGHT_CONTROL
-                    : CHANNEL_GROUP_LIGHT_INDEX + channelGroupSuffix;
+                    : lightChannelGroupPrefix(profile) + channelGroupSuffix;
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOON, toQuantityType(getDouble(ls.autoOn), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_AUTOOFF, toQuantityType(getDouble(ls.autoOff), Units.SECOND));
             updated |= updateChannel(group, CHANNEL_TIMER_ACTIVE, getOnOff(light.hasTimer));
@@ -522,13 +523,13 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
 
         // BRIGHTNESS:
         if (model.supportsBrightnessChannel() && (forceUpdate || model.isBrightnessDirty())) {
-            group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupSuffix;
+        	group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
         }
 
         // COLOR TEMP:
         if (model.supportsColorTempChannel() && (forceUpdate || model.isColorTempDirty())) {
-            group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : CHANNEL_GROUP_LIGHT_INDEX + groupSuffix;
+        	group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP_PCT, model.getColorTemperaturePercentState());
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperatureAbsoluteState());
         }
