@@ -618,6 +618,50 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateDeviceStatusThermostatAbsentRemovesControlChannels() throws Exception {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).removeChannels(argThat(ids -> ids
+                .contains(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_THERMOSTAT_ENABLE)
+                && ids.contains(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_CONTROL_SETTEMP)));
+    }
+
+    @Test
+    void updateDeviceStatusThermostatPresentKeepsControlChannels() throws Exception {
+        Shelly2DeviceStatusThermostat thermostat = new Shelly2DeviceStatusThermostat();
+        thermostat.enable = true;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.thermostat = thermostat;
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler, never()).removeChannels(argThat(ids -> ids
+                .contains(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_THERMOSTAT_ENABLE)));
+    }
+
+    @Test
+    void updateDeviceStatusThermostatAbsentOnTrvKeepsTargetTempChannel() throws Exception {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYTRV);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler, never()).removeChannels(argThat(ids -> ids
+                .contains(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_CONTROL_SETTEMP)));
+    }
+
+    @Test
     void updateSensorsRelayWithAddonTempUpdatesLastUpdate() throws Exception {
         ShellyThingInterface handler = relayHandlerWith(new ShellySettingsStatus());
         ShellySettingsStatus status = new ShellySettingsStatus();
