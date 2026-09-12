@@ -233,8 +233,9 @@ public class ShellyLightModel extends LightModel {
             return new Parameters(COLOR_WITH_COLOR_TEMPERATURE, RGB_NO_BRIGHTNESS, RGB_ONLY, Mode.COLOR, false);
         }
 
-        throw new IllegalArgumentException("%s: Error creating Light Model for %s"
-                .formatted(handler.getThing().getLabel(), thingTypeUID.toString()));
+        LOGGER.warn("{}: Error creating Light Model for {} - using default", handler.getThing().getLabel(),
+                thingTypeUID);
+        return new Parameters(ON_OFF, DEFAULT, WHITE_ONLY, Mode.WHITE, false);
     }
 
     /**
