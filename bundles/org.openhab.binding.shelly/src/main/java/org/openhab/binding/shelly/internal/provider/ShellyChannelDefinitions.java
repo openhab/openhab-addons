@@ -274,7 +274,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_GREEN, "colorGreen", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_BLUE, "colorBlue", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_WHITE, "colorWhite", ITEMT_DIMMER))
-                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_EFFECT, "lightEffect", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_EFFECT, "colorEffectBulb", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_GAIN, "whiteGain", ITEMT_DIMMER))
 
                 // Power Meter
@@ -656,11 +656,27 @@ public class ShellyChannelDefinitions {
                 addChannel(thing, add, true, CHGR_COLOR, CHANNEL_COLOR_BLUE);
                 addChannel(thing, add, status.white != null, CHGR_COLOR, CHANNEL_COLOR_WHITE);
                 addChannel(thing, add, status.gain != null, CHGR_COLOR, CHANNEL_COLOR_GAIN);
-                addChannel(thing, add, status.effect != null, CHGR_COLOR, CHANNEL_COLOR_EFFECT);
+
+                String effectChannelType = getEffectChannelType(profile, idx);
+                addChannel(thing, add, status.effect != null && effectChannelType != null, CHGR_COLOR,
+                        CHANNEL_COLOR_EFFECT, effectChannelType);
             }
         }
 
         return add;
+    }
+
+    private static @Nullable String getEffectChannelType(ShellyDeviceProfile profile, int idx) {
+        if (!profile.hasColorTag(idx) || profile.isGen2) {
+            return null;
+        }
+        if (profile.isRGBW2) {
+            return "colorEffectRGBW2";
+        }
+        if (profile.isBulb || profile.isDuo) {
+            return "colorEffectBulb";
+        }
+        return null;
     }
 
     /**
