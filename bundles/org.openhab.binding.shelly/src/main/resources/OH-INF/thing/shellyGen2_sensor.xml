@@ -60,6 +60,7 @@
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="media" typeId="mediaPlayer"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -86,6 +87,67 @@
 		<description>Minimum time in seconds between consecutive flood alarm reports (0-60s)</description>
 		<category>Time</category>
 		<state min="0" max="60" step="5" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-group-type id="mediaPlayer">
+		<label>Media Player</label>
+		<description>Media playback control (Wall Display Media component)</description>
+	</channel-group-type>
+
+	<channel-type id="mediaControl">
+		<item-type>Player</item-type>
+		<label>Playback Control</label>
+		<description>Control media playback (play/pause/next/previous)</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="mediaVolume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Media player volume in percent</description>
+		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="mediaTitle" advanced="true">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Title of the currently playing media</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mediaArtist" advanced="true">
+		<item-type>String</item-type>
+		<label>Artist</label>
+		<description>Artist of the currently playing media</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mediaAlbum" advanced="true">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Album of the currently playing media</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mediaContentType" advanced="true">
+		<item-type>String</item-type>
+		<label>Media Type</label>
+		<description>Type of the currently playing media (e.g. AUDIO, RADIO)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="playMediaId" advanced="true">
+		<item-type>Number</item-type>
+		<label>Play Media</label>
+		<description>Start playback of a library item by its id</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="playRadioFavId" advanced="true">
+		<item-type>Number</item-type>
+		<label>Play Radio Favorite</label>
+		<description>Start playback of a radio favorite by its id</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -58,12 +58,16 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtTemperature.ShellyShortTemp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -428,6 +432,109 @@ public class ShellyComponentsTest {
 
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_BAT_LEVEL), any());
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_BAT_LOW), any());
+    }
+
+    @Test
+    void updateDeviceStatusMediaPlaybackPublishesAllChannels() throws Exception {
+        Shelly2DeviceStatusMediaMeta meta = new Shelly2DeviceStatusMediaMeta();
+        meta.title = "Song";
+        meta.artist = "Artist";
+        meta.album = "Album";
+
+        Shelly2DeviceStatusMediaPlayback playback = new Shelly2DeviceStatusMediaPlayback();
+        playback.enable = true;
+        playback.volume = 5;
+        playback.mediaType = "RADIO";
+        playback.mediaMeta = meta;
+
+        Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
+        media.playback = playback;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.media = media;
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_CONTROL, PlayPauseType.PLAY);
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_VOLUME, new PercentType(50));
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TYPE, new StringType("RADIO"));
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TITLE, new StringType("Song"));
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ARTIST, new StringType("Artist"));
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ALBUM, new StringType("Album"));
+    }
+
+    @Test
+    void updateDeviceStatusMediaPausedPublishesPauseState() throws Exception {
+        Shelly2DeviceStatusMediaPlayback playback = new Shelly2DeviceStatusMediaPlayback();
+        playback.enable = false;
+
+        Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
+        media.playback = playback;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.media = media;
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_CONTROL, PlayPauseType.PAUSE);
+    }
+
+    @Test
+    void updateDeviceStatusMediaAbsentSkipsMediaChannels() throws Exception {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_MEDIA), anyString(), any());
+    }
+
+    @Test
+    void updateDeviceStatusMediaNullPlaybackSkipsMediaChannels() throws Exception {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.media = new Shelly2DeviceStatusMedia();
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_MEDIA), anyString(), any());
+    }
+
+    @Test
+    void updateDeviceStatusMediaAppearingAfterChannelsCreatedAddsMediaChannels() throws Exception {
+        Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
+        media.playback = new Shelly2DeviceStatusMediaPlayback();
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.media = media;
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).updateThingChannels(any(), argThat(channels -> channels.keySet().stream()
+                .anyMatch(id -> id.startsWith(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR))));
+    }
+
+    @Test
+    void updateDeviceStatusMediaAbsentAddsNoDynamicChannels() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateThingChannels(any(), argThat(channels -> !channels.isEmpty()));
     }
 
     @Test
@@ -1191,8 +1298,12 @@ public class ShellyComponentsTest {
     }
 
     private static ShellyThingInterface mockHandler(ShellyDeviceProfile profile) {
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_SHELLYPLUSWALLDISPLAY, "test"));
+
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         when(handler.getProfile()).thenReturn(profile);
+        when(handler.getThing()).thenReturn(thing);
         when(handler.areChannelsCreated()).thenReturn(true);
         when(handler.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
         return handler;

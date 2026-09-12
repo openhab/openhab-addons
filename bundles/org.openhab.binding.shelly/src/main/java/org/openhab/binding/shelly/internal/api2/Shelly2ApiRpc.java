@@ -1144,6 +1144,36 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
+    public void mediaPlayOrPause() throws ShellyApiException {
+        apiRequest(SHELLYRPC_METHOD_MEDIA_PLAYORPAUSE, null, String.class);
+    }
+
+    @Override
+    public void mediaNext() throws ShellyApiException {
+        apiRequest(SHELLYRPC_METHOD_MEDIA_NEXT, null, String.class);
+    }
+
+    @Override
+    public void mediaPrevious() throws ShellyApiException {
+        apiRequest(SHELLYRPC_METHOD_MEDIA_PREVIOUS, null, String.class);
+    }
+
+    @Override
+    public void mediaSetVolume(int volume) throws ShellyApiException {
+        apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_MEDIA_SETVOLUME).withVolume(volume));
+    }
+
+    @Override
+    public void mediaPlayMedia(int id) throws ShellyApiException {
+        apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_MEDIA_PLAY).withId(id));
+    }
+
+    @Override
+    public void mediaPlayRadioFavourite(int id) throws ShellyApiException {
+        apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_MEDIA_RADIO_PLAYFAVOURITE).withId(id));
+    }
+
+    @Override
     public ShellySettingsLogin getLoginSettings() throws ShellyApiException {
         return new ShellySettingsLogin();
     }

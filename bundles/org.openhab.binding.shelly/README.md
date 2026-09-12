@@ -2421,11 +2421,30 @@ end
 |         | lowBattery         | Switch   | yes       | ON: Battery of the attached sensor is low                                         |
 | device  | relayInThermostat  | Switch   | yes       | ON: The relay output is used by a thermostat/climate profile                      |
 |         | sensorInThermostat | Switch   | yes       | ON: The temperature sensor input is used by a thermostat/climate profile          |
+| media   | mediaControl       | Player   | r/w       | Control media playback (PLAY/PAUSE/NEXT/PREVIOUS)                                 |
+|         | volume             | Dimmer   | r/w       | Media player volume in percent (0-100%)                                           |
+|         | title              | String   | yes       | Title of the currently playing media                                              |
+|         | artist             | String   | yes       | Artist of the currently playing media                                             |
+|         | album              | String   | yes       | Album of the currently playing media                                              |
+|         | mediaType          | String   | yes       | Type of the currently playing media, e.g. AUDIO, RADIO                            |
+|         | playMediaId        | Number   | r/w       | Start playback of a media library item by its id                                  |
+|         | playRadioFavId     | Number   | r/w       | Start playback of a radio favorite by its id                                      |
+
+The `media` channel group is only available on devices reporting a Media RPC
+component (e.g. Wall Display when a speaker/radio is configured). Media
+library and radio favorite ids must be looked up via the Shelly app or API;
+there is no channel to browse them.
+
+The `media` channels are added as soon as the corresponding component shows
+up in the device status, so enabling the media player in the Shelly app makes
+the channels appear on the next status update - the Thing does not need to be
+deleted and re-discovered.
 
 The `sensors` group's `batteryLevel`/`lowBattery` channels are only available
-when a battery-operated sensor is attached to the Wall Display. They are added
-as soon as the attached sensor's battery is reported, so pairing a sensor
-after the Thing was already created is picked up on the next status update.
+when a battery-operated sensor is attached to the Wall Display. Like the
+`media` channels above, they are added as soon as the attached sensor's
+battery is reported, so pairing a sensor after the Thing was already created
+is picked up on the next status update.
 
 ## Full Example
 

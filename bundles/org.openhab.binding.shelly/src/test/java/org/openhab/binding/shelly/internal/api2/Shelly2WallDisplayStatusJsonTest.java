@@ -25,6 +25,9 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -104,6 +107,79 @@ public class Shelly2WallDisplayStatusJsonTest {
     }
 
     @Test
+    void deviceStatusWhilePlayingIsMapped() throws ShellyApiException {
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PLAYING,
+                Shelly2DeviceStatusResult.class);
+
+        Shelly2DeviceStatusMedia media = status.media;
+        assertNotNull(media);
+        Shelly2DeviceStatusMediaPlayback playback = media.playback;
+        assertNotNull(playback);
+        assertThat(playback.enable, is(equalTo(Boolean.TRUE)));
+        assertThat(playback.volume, is(equalTo(6)));
+        assertThat(playback.mediaType, is(equalTo("RADIO")));
+        Shelly2DeviceStatusMediaMeta meta = playback.mediaMeta;
+        assertNotNull(meta);
+        assertThat(meta.title, is(equalTo("Radio Regenbogen 2")));
+        assertThat(meta.artist, is(nullValue()));
+    }
+
+    @Test
+    void deviceStatusWhilePausedIsMapped() throws ShellyApiException {
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PAUSED,
+                Shelly2DeviceStatusResult.class);
+
+        Shelly2DeviceStatusMedia media = status.media;
+        assertNotNull(media);
+        Shelly2DeviceStatusMediaPlayback playback = media.playback;
+        assertNotNull(playback);
+        assertThat(playback.enable, is(equalTo(Boolean.FALSE)));
+        assertThat(playback.volume, is(equalTo(6)));
+    }
+
+    @Test
+    void singletonMediaKeyMapsToMediaStatus() throws ShellyApiException {
+        String json = """
+                {"media":{"playback":{"enable":true,"buffering":false,"volume":4,"media_type":"RADIO",
+                "media_meta":{"title":"Some Song","artist":"Some Artist","album":"Some Album",
+                "duration":215000,"position":42000,"thumb":"http://1.2.3.4/thumb.png"}}}}
+                """;
+
+        Shelly2DeviceStatusMediaMeta meta = mediaMetaOf(json);
+        assertThat(meta.title, is(equalTo("Some Song")));
+        assertThat(meta.artist, is(equalTo("Some Artist")));
+        assertThat(meta.album, is(equalTo("Some Album")));
+    }
+
+    @Test
+    void indexedMediaKeyMapsToMediaStatus() throws ShellyApiException {
+        String json = """
+                {"media:0":{"playback":{"enable":true,"volume":10,"media_type":"AUDIO",
+                "media_meta":{"title":"Indexed Song"}}}}
+                """;
+
+        Shelly2DeviceStatusMediaMeta meta = mediaMetaOf(json);
+        assertThat(meta.title, is(equalTo("Indexed Song")));
+    }
+
+    @Test
+    void mediaPlaybackAttributesAreMapped() throws ShellyApiException {
+        String json = """
+                {"media":{"playback":{"enable":true,"buffering":false,"volume":7,"media_type":"RADIO"}}}
+                """;
+
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusMedia media = status.media;
+        assertNotNull(media);
+        Shelly2DeviceStatusMediaPlayback playback = media.playback;
+        assertNotNull(playback);
+        assertThat(playback.enable, is(equalTo(Boolean.TRUE)));
+        assertThat(playback.buffering, is(equalTo(Boolean.FALSE)));
+        assertThat(playback.volume, is(equalTo(7)));
+        assertThat(playback.mediaType, is(equalTo("RADIO")));
+    }
+
+    @Test
     void deviceStatusReportsAttachedSensorBatteryButNoPowerMeter() throws ShellyApiException {
         Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PLAYING,
                 Shelly2DeviceStatusResult.class);
@@ -120,5 +196,16 @@ public class Shelly2WallDisplayStatusJsonTest {
         assertThat(relay.aenergy, is(nullValue()));
         assertThat(relay.voltage, is(nullValue()));
         assertThat(relay.current, is(nullValue()));
+    }
+
+    private Shelly2DeviceStatusMediaMeta mediaMetaOf(String json) throws ShellyApiException {
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusMedia media = status.media;
+        assertNotNull(media);
+        Shelly2DeviceStatusMediaPlayback playback = media.playback;
+        assertNotNull(playback);
+        Shelly2DeviceStatusMediaMeta meta = playback.mediaMeta;
+        assertNotNull(meta);
+        return meta;
     }
 }
