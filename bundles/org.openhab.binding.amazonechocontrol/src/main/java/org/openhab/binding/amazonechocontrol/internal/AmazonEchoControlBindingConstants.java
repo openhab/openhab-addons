@@ -99,6 +99,8 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_ACTIVE = "active";
     public static final String CHANNEL_PLAY_ON_DEVICE = "playOnDevice";
 
+    public static final String DEVICE_FAMILY_THIRD_PARTY_AVS_MEDIA_DISPLAY = "THIRD_PARTY_AVS_MEDIA_DISPLAY";
+
     // List of all Properties
     public static final String DEVICE_PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String DEVICE_PROPERTY_FAMILY = "deviceFamily";
