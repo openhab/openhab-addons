@@ -203,6 +203,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_RELAY_IN_THERMOSTAT, "relayInThermostat",
+                        ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_SENSOR_IN_THERMOSTAT, "sensorInThermostat",
+                        ITEMT_SWITCH))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -375,6 +379,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
 
+                // Battery of an attached external sensor (Gen2 devicepower:1)
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
+
                 // TRV
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_POSITION, "sensorPosition", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_MODE, "controlMode", ITEMT_STRING))
@@ -486,6 +494,8 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.settings.ledPowerDisable != null, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
         addChannel(thing, add, profile.settings.ledStatusDisable != null, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi
         addChannel(thing, add, profile.settings.calibrated != null, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED);
+        addChannel(thing, add, status.relayInThermostat != null, CHGR_DEVST, CHANNEL_DEVST_RELAY_IN_THERMOSTAT);
+        addChannel(thing, add, status.sensorInThermostat != null, CHGR_DEVST, CHANNEL_DEVST_SENSOR_IN_THERMOSTAT);
 
         if (!profile.isBlu) { // currently not supported for BLU devices
             addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
@@ -536,6 +546,19 @@ public class ShellyChannelDefinitions {
             return LORA_ALL_CHANNELS;
         }
         return profile.settings.loraRxEnabled ? Set.of() : LORA_RX_ONLY_CHANNELS;
+    }
+
+    /**
+     * Auto-create the battery channels for a sensor attached to the device (e.g. an H&amp;T paired with a Wall
+     * Display, reported as devicepower:1) as soon as it shows up in the status, since it can be paired after the
+     * Thing already exists.
+     */
+    public static Map<String, Channel> createExtBatteryChannels(final Thing thing, final ShellyStatusSensor sdata) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        boolean hasExtBattery = sdata.bat1 != null;
+        addChannel(thing, add, hasExtBattery, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LEVEL);
+        addChannel(thing, add, hasExtBattery, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LOW);
+        return add;
     }
 
     /**
@@ -932,6 +955,8 @@ public class ShellyChannelDefinitions {
         boolean hasBatteryValue = sdata.bat != null && sdata.bat.value != null;
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
+        // Battery of an attached external sensor (e.g. Wall Display devicepower:1) is created separately via
+        // createExtBatteryChannels(), because the sensor can be paired after the Thing already exists
 
         addChannel(thing, newChannels, sdata.sensorError != null || (profile.isFlood && profile.isGen2),
                 CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
