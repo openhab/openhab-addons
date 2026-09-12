@@ -18,13 +18,16 @@
 			<channel id="upSince" typeId="upSince"/>
 			<channel id="updateAvailable" typeId="updateAvailable"/>
 		</channels>
+
 		<properties>
+			<property name="thingTypeVersion">1</property>
 			<property name="vendor">Mikrotik</property>
 			<property name="modelId">RouterOS</property>
 			<property name="firmware"/>
 			<property name="serial"/>
 		</properties>
-		<representation-property>name</representation-property>
+		<representation-property>host</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>
@@ -160,6 +163,48 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="kidControl">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="routeros"/>
+		</supported-bridge-type-refs>
+		<label>Kid Control</label>
+		<description>A set of devices linked to a kid that allows you to control the internet to a collection of devices
+			assigned to a child</description>
+		<channels>
+			<channel id="enabled" typeId="enabled"/>
+			<channel id="paused" typeId="paused"/>
+			<channel id="txRate" typeId="txRate"/>
+			<channel id="rxRate" typeId="rxRate"/>
+		</channels>
+		<representation-property>name</representation-property>
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>Kid Name</label>
+				<description>Name of the kid that has been setup with one or more devices</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="routeros"/>
+		</supported-bridge-type-refs>
+		<label>LAN Device</label>
+		<description>A device on your LAN that has a MAC address</description>
+		<channels>
+			<channel id="enabled" typeId="enabled"/>
+			<channel id="txRate" typeId="txRate"/>
+			<channel id="rxRate" typeId="rxRate"/>
+		</channels>
+		<representation-property>mac</representation-property>
+		<config-description>
+			<parameter name="mac" type="text" required="true">
+				<label>MAC Address</label>
+				<context>mac-address</context>
+				<description>The MAC address of your LAN device you wish to control</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<channel-type id="freeSpace" advanced="true">
 		<item-type>Number:DataAmount</item-type>
@@ -250,6 +295,12 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Reflects enabled or disabled state</description>
+	</channel-type>
+
+	<channel-type id="paused">
+		<item-type>Switch</item-type>
+		<label>Paused</label>
+		<description>Reflects a paused or un-paused state</description>
 	</channel-type>
 
 	<channel-type id="connected">
