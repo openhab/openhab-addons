@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shelly.internal.util;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.MEDIA_VOLUME_DEVICE_MAX;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -287,6 +289,21 @@ public class ShellyUtils {
 
     public static OnOffType getOnOff(int value) {
         return OnOffType.from(value != 0);
+    }
+
+    /**
+     * Convert the Media component's coarse 0-MEDIA_VOLUME_DEVICE_MAX volume to the percent scale of the Dimmer
+     * channel.
+     */
+    public static int mediaVolumeToPercent(int volume) {
+        return Math.min(Math.max(volume * 100 / MEDIA_VOLUME_DEVICE_MAX, 0), 100);
+    }
+
+    /**
+     * Inverse of {@link #mediaVolumeToPercent}: every percent value maps to the nearest device volume step.
+     */
+    public static int percentToMediaVolume(int percent) {
+        return Math.round(Math.min(Math.max(percent, 0), 100) * MEDIA_VOLUME_DEVICE_MAX / 100f);
     }
 
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {
