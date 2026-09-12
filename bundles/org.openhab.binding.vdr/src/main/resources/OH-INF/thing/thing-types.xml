@@ -51,6 +51,7 @@
 
 		<properties>
 			<property name="version">VDR Version</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
