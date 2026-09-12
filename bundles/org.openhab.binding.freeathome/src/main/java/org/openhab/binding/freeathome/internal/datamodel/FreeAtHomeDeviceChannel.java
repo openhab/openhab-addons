@@ -366,7 +366,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_BLIND_SENSOR: {
                 this.channelId = channelId;
 
-                logger.warn("Blind sensor channel - Channel FID: 0x{}, not implemented yet", channelFunctionID);
+                logger.debug("Blind sensor channel - Channel FID: 0x{}, not implemented yet", channelFunctionID);
 
                 break;
             }
@@ -565,7 +565,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_SCENE_SENSOR: {
                 this.channelId = channelId;
 
-                logger.warn("Scene sensor channel - Channel FID: 0x{} is not yet implemented", channelFunctionID);
+                logger.debug("Scene sensor channel - Channel FID: 0x{} is not yet implemented", channelFunctionID);
 
                 break;
             }
@@ -620,11 +620,8 @@ public class FreeAtHomeDeviceChannel {
             logger.debug("Datapoint group is added");
             datapointGroups.add(DatapointGroup);
         } else {
-            /*
-             * There is no constantrelationship between Function IDs and the required pairing IDs. As a result, a
-             * "needed" pairing ID may sometimes not exist. In such cases, we avoid adding an invalid datapoint group.
-             */
-            logger.warn("Datapoint group is not added, because it is not valid");
+            logger.debug("Skipping datapoint group for channel {} (FID 0x{}): the needed pairing IDs do not exist here",
+                    channelId, channelFunctionID);
         }
     }
 }
