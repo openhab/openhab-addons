@@ -495,7 +495,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onConnect(InetSocketAddress deviceSocketAddr, boolean connected) {
-        thing = thingTable.getThing(deviceSocketAddr);
+        ShellyThingInterface thing = thingTable.getThing(deviceSocketAddr);
+        if (thing.isStopping()) {
+            logger.debug("{}: Thing is shutting down, ignore WebSocket connect", thingName);
+            return;
+        }
+        this.thing = thing;
         logger.debug("{}: Get thing from thingTable for {}", thingName, deviceSocketAddr);
 
         if (profile.initialized && alwaysOn) {
@@ -1572,6 +1577,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     public Shelly2RpctInterface getRpcHandler() {
         return this;
+    }
+
+    @Override
+    public void dispose() {
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (rpcSocket != null) {
+            rpcSocket.dispose();
+        }
+        initialized = false;
+        thing = null;
     }
 
     @Override

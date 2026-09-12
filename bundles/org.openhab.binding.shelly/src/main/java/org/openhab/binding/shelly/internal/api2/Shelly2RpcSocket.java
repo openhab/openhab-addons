@@ -86,6 +86,9 @@ public class Shelly2RpcSocket implements WriteCallback {
     // All access must be guarded by "this"
     private @Nullable Shelly2RpctInterface websocketHandler;
 
+    // All access must be guarded by "this"
+    private boolean disposed = false;
+
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
 
@@ -195,6 +198,11 @@ public class Shelly2RpcSocket implements WriteCallback {
             return;
         }
 
+        if (isDisposed()) {
+            closeDisposedSession(session);
+            return;
+        }
+
         InetSocketAddress socketAddr = this.deviceSocketAddr;
         if (socketAddr == null) {
             // This is the inbound event web socket
@@ -215,21 +223,32 @@ public class Shelly2RpcSocket implements WriteCallback {
             return;
         }
 
+        @Nullable
         Shelly2RpctInterface handler;
         List<String> queue = null;
         synchronized (this) {
-            handler = websocketHandler;
-            this.session = session;
-            if (handler == null) {
-                Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
-                handler = api.getRpcHandler();
-                websocketHandler = handler;
-            }
+            if (disposed) {
+                handler = null;
+            } else {
+                handler = websocketHandler;
+                this.session = session;
+                if (handler == null) {
+                    Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
+                    handler = api.getRpcHandler();
+                    websocketHandler = handler;
+                }
 
-            if (!sendQueue.isEmpty()) {
-                queue = List.copyOf(sendQueue);
-                sendQueue.clear();
+                if (!sendQueue.isEmpty()) {
+                    queue = List.copyOf(sendQueue);
+                    sendQueue.clear();
+                }
             }
+        }
+
+        if (handler == null) {
+            // dispose() came in while this connect was being processed
+            closeDisposedSession(session);
+            return;
         }
 
         if (logger.isDebugEnabled()) {
@@ -318,6 +337,30 @@ public class Shelly2RpcSocket implements WriteCallback {
             }
             session.close(StatusCode.NORMAL, "Socket closed");
         }
+    }
+
+    /**
+     * Detach the socket from its message handler for good and close the session.
+     * <p>
+     * Jetty delivers connect, close and error callbacks asynchronously on its own threads, so they can still arrive
+     * after {@link #disconnect()} has returned. Dropping the handler first makes sure that a socket which is torn
+     * down while the Thing is being disposed can no longer report anything to a handler which no longer exists.
+     */
+    public void dispose() {
+        synchronized (this) {
+            disposed = true;
+            websocketHandler = null;
+        }
+        disconnect();
+    }
+
+    private synchronized boolean isDisposed() {
+        return disposed;
+    }
+
+    private void closeDisposedSession(Session session) {
+        logger.debug("{}: WebSocket connected after the Thing was disposed, closing session", thingName);
+        session.close(StatusCode.SHUTDOWN, "Thing disposed");
     }
 
     /**

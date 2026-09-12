@@ -700,9 +700,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
         updateMarkerSet = false;
-        if (stopping) {
-            return;
-        }
         super.updateStatus(status, statusDetail, description);
     }
 
@@ -1792,6 +1789,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         logger.debug("{}: Stopping Thing", thingName);
         stopping = true;
         stop();
+        api.dispose(); // detach async callbacks, they would otherwise still reach this disposed handler
         super.dispose();
     }
 
