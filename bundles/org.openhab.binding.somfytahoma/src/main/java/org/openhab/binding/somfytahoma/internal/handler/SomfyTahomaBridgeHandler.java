@@ -474,8 +474,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        super.handleRemoval();
         logout();
+        super.handleRemoval();
     }
 
     @Override
