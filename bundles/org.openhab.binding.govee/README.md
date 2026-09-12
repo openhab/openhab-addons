@@ -176,10 +176,16 @@ arp -a | grep "MAC_ADDRESS"
 | Name            | Type    | Description                                                      | Default | Required | Advanced |
 |-----------------|---------|------------------------------------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device                             | N/A     | yes      | no       |
-| macAddress      | text    | MAC address of the device                                        | N/A     | yes      | no       |
+| macAddress      | text    | Govee device identifier reported by the LAN API                  | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in sec.                            | 5       | no       | yes      |
 | minKelvin       | integer | The minimum color temperature that the light supports in Kelvin. | N/A     | no       | yes      |
 | maxKelvin       | integer | The maximum color temperature that the light supports in Kelvin. | N/A     | no       | yes      |
+
+The legacy `macAddress` parameter contains the eight-byte device identifier returned by the Govee LAN API, not the
+device's six-byte network interface MAC address. Discovery also exposes this value as the `deviceId` Thing property,
+which is the convention used by other bindings for protocol-specific identifiers. The LAN API discovery response does
+not include the device's network interface MAC address. When possible, the binding resolves that address from the
+device's IP address and exposes it as the `mac` Thing property so other bindings can correlate the device.
 
 ## Channels
 
