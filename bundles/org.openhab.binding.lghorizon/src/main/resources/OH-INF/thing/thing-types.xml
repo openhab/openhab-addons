@@ -10,6 +10,7 @@
 			An LG Horizon powered TV platform account (Telenet, Ziggo, Virgin Media, UPC, Sunrise, BASE TV).
 			Discovers the set-top boxes registered on the account and provides the connection used to control them.
 		</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="provider" type="text">
@@ -72,6 +73,7 @@
 
 		<label>LG Horizon Set-Top Box</label>
 		<description>A single LG Horizon set-top box (e.g. a Telenet or Ziggo TV box).</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

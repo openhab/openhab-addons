@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.lghorizon.internal.handler;
 
+import static org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants.*;
+import static org.openhab.binding.lghorizon.internal.api.LGHorizonApiConstants.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +47,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants;
 import org.openhab.binding.lghorizon.internal.LGHorizonContentAnonymizer;
 import org.openhab.binding.lghorizon.internal.api.LGHorizonApiException;
 import org.openhab.binding.lghorizon.internal.api.LGHorizonAuthClient;
@@ -59,7 +61,6 @@ import org.openhab.binding.lghorizon.internal.discovery.LGHorizonDiscoveryServic
 import org.openhab.binding.lghorizon.internal.mqtt.LGHorizonMqttClient;
 import org.openhab.binding.lghorizon.internal.mqtt.LGHorizonMqttListener;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -72,6 +73,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -79,8 +81,7 @@ import com.google.gson.JsonObject;
  * Bridge handler for one LG Horizon (Telenet/Ziggo/Virgin Media/UPC/Sunrise/ BASE TV) account. Owns:
  * <ul>
  * <li>the REST auth session (access/refresh token lifecycle)</li>
- * <li>the household's channel line-up (needed to translate a channel name/number into the internal channel id used by
- * the API)</li>
+ * <li>the household's channel line-up</li>
  * <li>the single MQTT connection shared by all set-top boxes on the account</li>
  * </ul>
  * Individual set-top boxes are represented by child {@link LGHorizonBoxHandler} things, which register themselves here
@@ -94,7 +95,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     private final Logger logger = LoggerFactory.getLogger(LGHorizonAccountHandler.class);
     private static final Gson GSON = new Gson();
 
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
 
     private @Nullable LGHorizonAuthClient authClient;
     private @Nullable LGHorizonMqttClient mqttClient;
@@ -107,40 +108,28 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
     private final Map<String, LGHorizonBoxHandler> registeredBoxes = new ConcurrentHashMap<>();
 
-    // A single logical "refresh this box" event (e.g. all channels being refreshed at once after linking, or
-    // a UI refresh) triggers one independent RefreshType command per linked channel - without debouncing, a
-    // box with N channels would fire N separate CPE.getUiStatus requests within milliseconds of each other.
+    // Fields used to debounce repeated state requests from the same box
     private final Map<String, Long> lastStateRequestMillis = new ConcurrentHashMap<>();
     private static final long STATE_REQUEST_DEBOUNCE_MILLIS = 2000;
 
-    // How long the box's own per-publish display time lasts, in seconds. Not user-configurable: it describes fixed box
-    // behaviour, not a preference.
+    // How long the box's own per-publish display time lasts, in seconds
     private static final int DISPLAY_MESSAGE_REPEAT_INTERVAL_SECONDS = 3;
-    // Message ids of our own displayMessage() publishes, so a CPE.pushToTV.rsp failure for one of them can
-    // be told apart from a genuine tune-command rejection. displayMessage deliberately sends a fake, non-existent
-    // channelId ("1234") purely to trigger the box's "something wants to push content to your screen" notification
-    // banner without performing a real tune - the box rejecting that fake tune is expected, and unrelated
-    // to whether the notification itself renders.
+    // Keep track of display messages sent to filter out the returned failure status messages that are not relevant.
     private final java.util.Set<String> pendingDisplayMessageIds = ConcurrentHashMap.newKeySet();
     private static final int MAX_TRACKED_DISPLAY_MESSAGE_IDS = 50;
 
     // Limit size of fetched images
     private static final int MAX_IMAGE_BYTES = 8 * 1024 * 1024; // 8 MiB
 
-    // The account does not resend the status, even when polled, so we keep the last one around.
+    // Last known status, account does not send refreshes
     private final Map<String, JsonObject> lastKnownStatusByDeviceId = new ConcurrentHashMap<>();
 
+    // Used by the fingerprint and capture console commands
     private final Map<String, CompletableFuture<JsonObject>> pendingStatusCaptures = new ConcurrentHashMap<>();
-    // For the lghorizon fingerprint console command's duration-based live capture: unlike the single-shot
-    // captures above, this stays registered and keeps firing for every matching message until explicitly
-    // stopped, rather than completing once and being removed.
     private final List<BiConsumer<String, JsonObject>> liveCaptureListeners = new CopyOnWriteArrayList<>();
-    // Metadata-only image-fetch capture for the lghorizon capture command - see fetchImage(); deliberately
-    // never carries the actual image bytes, only a one-line description of the call.
     private volatile @Nullable Consumer<String> imageCaptureListener;
 
-    // Retry for a transient failure during initialize() itself. Without this, a network outage at openHAB start leaves
-    // the bridge permanently OFFLINE/COMMUNICATION_ERROR until manually disabling and re-enabling.
+    // Retry for a transient failure during initialize
     private static final int INITIALIZE_RETRY_FIRST_DELAY_SECONDS = 30;
     private static final int INITIALIZE_RETRY_MAX_DELAY_SECONDS = 300;
     private final AtomicInteger initializeRetryAttempt = new AtomicInteger();
@@ -148,9 +137,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     private @Nullable ScheduledFuture<?> initializeFuture;
     private @Nullable ScheduledFuture<?> tokenRefreshFuture;
 
-    public LGHorizonAccountHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
+    public LGHorizonAccountHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -169,10 +158,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
-
         persistResolvedProviderFields(config, provider);
 
-        HttpClient httpClient = httpClientFactory.getCommonHttpClient();
         LGHorizonAuthClient auth = new LGHorizonAuthClient(httpClient, provider.apiUrl(), provider.countryCode(),
                 provider.useRefreshToken(), config.username, config.password, config.refreshToken);
         auth.setRefreshTokenListener(this::persistRefreshToken);
@@ -183,10 +170,10 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             String householdId = auth.getHouseholdId();
             if (householdId == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Authenticated but no household id was returned");
+                        "@text/offline.account-missing-household-id");
                 return;
             }
-            updateProperty(LGHorizonBindingConstants.PROPERTY_HOUSEHOLD_ID, householdId);
+            updateProperty(PROPERTY_HOUSEHOLD_ID, householdId);
 
             refreshCustomerAndChannels(auth);
 
@@ -206,9 +193,11 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             tokenRefreshFuture = scheduler.scheduleWithFixedDelay(this::checkTokenRefresh, 1, 1, TimeUnit.HOURS);
         } catch (LGHorizonApiException | IllegalArgumentException e) {
             if (e instanceof LGHorizonApiException apiException && apiException.isAuthenticationFailure()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        textWithArg("offline.account-configuration-error", String.valueOf(e.getMessage())));
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        textWithArg("offline.account-communication-error", String.valueOf(e.getMessage())));
                 scheduleInitializeRetry();
             }
         }
@@ -229,11 +218,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
     }
 
-    /**
-     * The three pieces of provider configuration {@link LGHorizonAuthClient} actually needs,
-     * resolved from either a {@link ProviderPresets} preset or the account thing's advanced
-     * {@code country}/{@code apiUrl}/{@code useRefreshToken} fields.
-     */
     private record ResolvedProvider(String apiUrl, String countryCode, boolean useRefreshToken) {
     }
 
@@ -244,16 +228,14 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             return new ResolvedProvider(preset.apiUrl(), preset.countryCode(), preset.useRefreshToken());
         }
         if (config.apiUrl.isBlank() || config.country.isBlank()) {
-            throw new IllegalArgumentException("Either 'Provider' or both 'Country' and 'API URL' must be set");
+            throw new IllegalArgumentException("@text/offline.account-provider-or-country-apiurl-required");
         }
         String normalizedApiUrl = requireHttpsUrl(config.apiUrl);
         return new ResolvedProvider(normalizedApiUrl, config.country, config.useRefreshToken);
     }
 
     /**
-     * Rejects anything but a well-formed https:// URL - except when the value has no scheme prefix at all
-     * ("spark-prod-be.gnp.cloud.telenet.tv" rather than "https://spark-prod-be.gnp.cloud.telenet.tv"), in
-     * which case https:// is assumed and prepended.
+     * Rejects anything but a well-formed https:// URL.
      *
      * @return the URL, with a missing scheme filled in as https:// if needed
      */
@@ -265,20 +247,15 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         try {
             uri = new URI(url);
         } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("'API URL' is not a valid URL: " + url);
+            throw new IllegalArgumentException(textWithArg("offline.account-invalid-api-url", url));
         }
         String scheme = uri.getScheme();
         if (scheme == null || !scheme.equalsIgnoreCase("https") || uri.getHost() == null) {
-            throw new IllegalArgumentException("'API URL' must be a valid https:// URL (got: " + url
-                    + ") - refusing to send credentials over an insecure connection");
+            throw new IllegalArgumentException(textWithArg("offline.account-api-url-not-https", url));
         }
         return url;
     }
 
-    /**
-     * Writes a preset's resolved values back into the visible {@code country}/{@code apiUrl}/
-     * {@code useRefreshToken} fields when a provider is selected.
-     */
     private void persistResolvedProviderFields(LGHorizonAccountConfiguration config, ResolvedProvider provider) {
         String currentProvider = config.provider;
         if (currentProvider == null || currentProvider.isBlank()) {
@@ -289,49 +266,39 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             return;
         }
         Configuration configuration = editConfiguration();
-        configuration.put(LGHorizonBindingConstants.CONFIG_COUNTRY, provider.countryCode());
-        configuration.put(LGHorizonBindingConstants.CONFIG_API_URL, provider.apiUrl());
-        configuration.put(LGHorizonBindingConstants.CONFIG_USE_REFRESH_TOKEN, provider.useRefreshToken());
+        configuration.put(CONFIG_COUNTRY, provider.countryCode());
+        configuration.put(CONFIG_API_URL, provider.apiUrl());
+        configuration.put(CONFIG_USE_REFRESH_TOKEN, provider.useRefreshToken());
         updateConfiguration(configuration);
     }
 
     /**
      * Keeps {@code provider} and the advanced {@code country}/{@code apiUrl}/{@code useRefreshToken} fields in
-     * sync as the account configuration is edited, so the advanced fields always reflect either a chosen preset
-     * or an explicit manual override - never a stale mix of both:
-     * <ul>
-     * <li>selecting a provider (including switching from one preset to another) overwrites the three advanced
-     * fields with that provider's preset values, discarding whatever was in them before;</li>
-     * <li>hand-editing any of the three advanced fields while a preset is active clears {@code provider} back to
-     * "Custom", since the configuration no longer matches that preset and should not silently keep re-applying
-     * it on the next save.</li>
+     * sync as the account configuration is edited.
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         Map<String, Object> updated = new HashMap<>(configurationParameters);
 
-        String oldProvider = stringConfig(LGHorizonBindingConstants.CONFIG_PROVIDER);
-        Object submittedProvider = updated.get(LGHorizonBindingConstants.CONFIG_PROVIDER);
+        String oldProvider = stringConfig(CONFIG_PROVIDER);
+        Object submittedProvider = updated.get(CONFIG_PROVIDER);
         String newProvider = submittedProvider == null ? oldProvider : submittedProvider.toString();
 
         if (!newProvider.equals(oldProvider) && !newProvider.isBlank()) {
-            // A provider was (newly) selected, or switched to a different one: its preset always wins over
-            // whatever was previously in the advanced fields.
+            // A provider was (newly) selected, or switched to a different one: preset wins.
             try {
                 ProviderPresets.Preset preset = ProviderPresets.get(newProvider);
-                updated.put(LGHorizonBindingConstants.CONFIG_COUNTRY, preset.countryCode());
-                updated.put(LGHorizonBindingConstants.CONFIG_API_URL, preset.apiUrl());
-                updated.put(LGHorizonBindingConstants.CONFIG_USE_REFRESH_TOKEN, preset.useRefreshToken());
+                updated.put(CONFIG_COUNTRY, preset.countryCode());
+                updated.put(CONFIG_API_URL, preset.apiUrl());
+                updated.put(CONFIG_USE_REFRESH_TOKEN, preset.useRefreshToken());
             } catch (IllegalArgumentException e) {
-                // Unknown provider id - leave the advanced fields as submitted; doInitialize() will surface a
-                // clear configuration error for it.
+                // Unknown provider id - leave fields as-is
             }
         } else if (newProvider.equals(oldProvider) && !oldProvider.isBlank()
-                && (configFieldChanged(updated, LGHorizonBindingConstants.CONFIG_COUNTRY)
-                        || configFieldChanged(updated, LGHorizonBindingConstants.CONFIG_API_URL)
-                        || configFieldChanged(updated, LGHorizonBindingConstants.CONFIG_USE_REFRESH_TOKEN))) {
+                && (configFieldChanged(updated, CONFIG_COUNTRY) || configFieldChanged(updated, CONFIG_API_URL)
+                        || configFieldChanged(updated, CONFIG_USE_REFRESH_TOKEN))) {
             // A preset was active, but one of its fields was hand-edited: fall through to manual/"Custom" mode.
-            updated.put(LGHorizonBindingConstants.CONFIG_PROVIDER, "");
+            updated.put(CONFIG_PROVIDER, "");
         }
 
         super.handleConfigurationUpdate(updated);
@@ -342,15 +309,22 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         return value == null ? "" : value.toString();
     }
 
+    /**
+     * Builds a {@code "@text/key [\"arg\"]"}-style status description safely, avoiding issues with quotes in messages.
+     */
+    private static String textWithArg(String key, String arg) {
+        JsonArray args = new JsonArray();
+        args.add(arg);
+        return "@text/" + key + " " + args;
+    }
+
     private boolean configFieldChanged(Map<String, Object> submitted, String key) {
         return submitted.containsKey(key) && !Objects.equals(getConfig().get(key), submitted.get(key));
     }
 
     /**
      * Fetches the raw (untyped) JSON for the REST calls this handler makes during normal operation, for the
-     * {@code lghorizon fingerprint} console command - e.g. to see fields our DTOs don't yet model, or
-     * differences across provider/box combinations the maintainer doesn't have physical access to. Each
-     * entry may be missing if that particular call failed; a failure never aborts the rest of the snapshot.
+     * {@code lghorizon fingerprint} console command.
      *
      * @return map of a short logical name (used as a filename) to the raw JSON response
      */
@@ -364,25 +338,23 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
         tryFetch(snapshot, "service-config", () -> auth.getServiceConfigAsJsonElement().toString());
         try {
-            String personalizationServiceUrl = auth.getServiceConfig().getServiceUrl("personalizationService");
-            tryFetch(snapshot, "customer", () -> auth.getAsJsonElement(personalizationServiceUrl,
-                    "/v1/customer/" + householdId + "?with=profiles%2Cdevices").toString());
+            String personalizationServiceUrl = auth.getServiceConfig().getServiceUrl(PERSONALIZATION_SERVICE_URL_FIELD);
+            tryFetch(snapshot, "customer", () -> auth
+                    .getAsJsonElement(personalizationServiceUrl, CUSTOMER_PATH.formatted(householdId)).toString());
 
-            String purchaseServiceUrl = auth.getServiceConfig().getServiceUrl("purchaseService");
-            tryFetch(snapshot, "entitlements", () -> auth.getAsJsonElement(purchaseServiceUrl,
-                    "/v2/customers/" + householdId + "/entitlements?enableDaypass=true").toString());
+            String purchaseServiceUrl = auth.getServiceConfig().getServiceUrl(PURCHASE_SERVICE_URL_FIELD);
+            tryFetch(snapshot, "entitlements", () -> auth
+                    .getAsJsonElement(purchaseServiceUrl, ENTITLEMENTS_PATH.formatted(householdId)).toString());
 
-            String linearServiceUrl = auth.getServiceConfig().getServiceUrl("linearService");
+            String linearServiceUrl = auth.getServiceConfig().getServiceUrl(LINEAR_SERVICE_URL_FIELD);
             CustomerDto c = customer;
             Integer cityId = c != null ? c.cityId : null;
             if (cityId == null) {
                 throw new LGHorizonApiException("Cannot fetch channels: customer cityId not available");
             }
             for (String lang : languageByProfileId.values().stream().distinct().toList()) {
-                tryFetch(snapshot, "channels-" + lang,
-                        () -> auth.getAsJsonElement(linearServiceUrl,
-                                "/v2/channels?cityId=" + cityId + "&language=" + lang + "&productClass=Orion-DASH")
-                                .toString());
+                tryFetch(snapshot, "channels-" + lang, () -> auth
+                        .getAsJsonElement(linearServiceUrl, CHANNELS_PATH.formatted(cityId, lang)).toString());
             }
         } catch (LGHorizonApiException | IllegalArgumentException e) {
             logger.debug("Could not resolve service URLs for diagnostic snapshot: {}", e.getMessage());
@@ -420,11 +392,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     }
 
     /**
-     * Starts capturing every REST call this account's auth client makes (regardless of which method
-     * triggers it - event/VOD/recording detail lookups, the intent image URL lookup, ...), for the
-     * {@code lghorizon capture} console command's live-capture window. Image byte fetches are NOT REST
-     * calls in this sense (they bypass the auth client entirely, being unauthenticated CDN requests) - see
-     * {@link #startImageCapture} for those.
+     * Starts capturing every REST call this account's auth client makes, for the {@code lghorizon capture} console
+     * command's live-capture window.
      */
     public void startRestCapture(BiConsumer<String, String> onCall) {
         LGHorizonAuthClient auth = authClient;
@@ -450,8 +419,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     }
 
     /**
-     * Captures the next {@code .../status} message for the given device, for the {@code lghorizon
-     * fingerprint} console command.
+     * Captures the next {@code .../status} message for the given device.
      *
      * @param deviceId the device to capture the next status for
      * @return a future that completes with the next status message, or immediately with the last known cached status
@@ -469,8 +437,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     private void refreshCustomerAndChannels(LGHorizonAuthClient auth)
             throws LGHorizonApiException, IllegalArgumentException {
         String householdId = auth.getHouseholdId();
-        CustomerDto customerDto = auth.get(auth.getServiceConfig().getServiceUrl("personalizationService"),
-                "/v1/customer/" + householdId + "?with=profiles%2Cdevices", CustomerDto.class);
+        CustomerDto customerDto = auth.get(auth.getServiceConfig().getServiceUrl(PERSONALIZATION_SERVICE_URL_FIELD),
+                CUSTOMER_PATH.formatted(householdId), CustomerDto.class);
         logger.trace("Received: {} customer info: {}", LGHorizonContentAnonymizer.anonymizeTopic(householdId),
                 LGHorizonContentAnonymizer.anonymizeMessage(GSON.toJson(customerDto)));
         this.customer = customerDto;
@@ -480,13 +448,12 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             throw new LGHorizonApiException("LG Horizon account has no profiles");
         }
 
-        String defaultLanguage = "en";
         this.languageByProfileId = profiles.stream().filter(p -> p.profileId != null)
                 .collect(Collectors.<CustomerDto.ProfileDto, String, String> toMap(p -> p.profileId,
-                        p -> p.options != null && p.options.lang != null ? p.options.lang : defaultLanguage));
+                        p -> p.options != null && p.options.lang != null ? p.options.lang : DEFAULT_LANGUAGE));
 
-        EntitlementsDto entitlementsDto = auth.get(auth.getServiceConfig().getServiceUrl("purchaseService"),
-                "/v2/customers/" + householdId + "/entitlements?enableDaypass=true", EntitlementsDto.class);
+        EntitlementsDto entitlementsDto = auth.get(auth.getServiceConfig().getServiceUrl(PURCHASE_SERVICE_URL_FIELD),
+                ENTITLEMENTS_PATH.formatted(householdId), EntitlementsDto.class);
         logger.trace("Received: {} entitlements: {}", LGHorizonContentAnonymizer.anonymizeTopic(householdId),
                 LGHorizonContentAnonymizer.anonymizeMessage(GSON.toJson(entitlementsDto)));
         this.entitlements = entitlementsDto;
@@ -498,9 +465,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             if (cityId == null) {
                 throw new LGHorizonApiException("Cannot fetch channels: customer cityId not available");
             }
-            ChannelDto[] channelArray = auth.get(auth.getServiceConfig().getServiceUrl("linearService"),
-                    "/v2/channels?cityId=" + cityId + "&language=" + lang + "&productClass=Orion-DASH",
-                    ChannelDto[].class);
+            ChannelDto[] channelArray = auth.get(auth.getServiceConfig().getServiceUrl(LINEAR_SERVICE_URL_FIELD),
+                    CHANNELS_PATH.formatted(cityId, lang), ChannelDto[].class);
             logger.trace("Received: {}, {} channels: {}", LGHorizonContentAnonymizer.anonymizeTopic(householdId), lang,
                     Arrays.toString(channelArray));
 
@@ -516,18 +482,18 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
         String customerId = customerDto.customerId;
         if (customerId != null) {
-            updateProperty(LGHorizonBindingConstants.PROPERTY_CUSTOMER_ID, customerId);
+            updateProperty(PROPERTY_CUSTOMER_ID, customerId);
         }
         String countryId = customerDto.countryId;
         if (countryId != null) {
-            updateProperty(LGHorizonBindingConstants.PROPERTY_COUNTRY_ID, countryId);
+            updateProperty(PROPERTY_COUNTRY_ID, countryId);
         }
-        updateProperty(LGHorizonBindingConstants.PROPERTY_CITY_ID, String.valueOf(customerDto.cityId));
+        updateProperty(PROPERTY_CITY_ID, String.valueOf(customerDto.cityId));
     }
 
     private void persistRefreshToken(String newRefreshToken) {
         Configuration configuration = editConfiguration();
-        configuration.put(LGHorizonBindingConstants.CONFIG_REFRESH_TOKEN, newRefreshToken);
+        configuration.put(CONFIG_REFRESH_TOKEN, newRefreshToken);
         updateConfiguration(configuration);
     }
 
@@ -566,7 +532,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
     public String getLanguageForProfile(@Nullable String profileId) {
         String lang = profileId != null ? languageByProfileId.get(profileId) : null;
-        return lang != null ? lang : "en";
+        return lang != null ? lang : DEFAULT_LANGUAGE;
     }
 
     public Map<String, ChannelDto> getChannels(String language) {
@@ -604,11 +570,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             return null;
         }
         try {
-            String linearServiceUrl = auth.getServiceConfig().getServiceUrl("linearService");
-            return auth.get(
-                    linearServiceUrl, "/v2/replayEvent/" + eventId
-                            + "?returnLinearContent=true&forceLinearResponse=true&language=" + language,
-                    EventDetailDto.class);
+            String linearServiceUrl = auth.getServiceConfig().getServiceUrl(LINEAR_SERVICE_URL_FIELD);
+            return auth.get(linearServiceUrl, EVENT_DETAIL_PATH.formatted(eventId, language), EventDetailDto.class);
         } catch (LGHorizonApiException | IllegalArgumentException e) {
             logger.debug("Could not resolve event detail for {}: {}", eventId, e.getMessage());
             return null;
@@ -629,13 +592,13 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             return null;
         }
         try {
-            String vodServiceUrl = auth.getServiceConfig().getServiceUrl("vodService");
+            String vodServiceUrl = auth.getServiceConfig().getServiceUrl(VOD_SERVICE_URL_FIELD);
             Integer cityId = c.cityId;
             if (cityId == null) {
                 throw new LGHorizonApiException("Cannot fetch VOD detail: customer cityId not available");
             }
-            return auth.get(vodServiceUrl, "/v2/detailscreen/" + titleId + "?language=" + language + "&profileId="
-                    + profileId + "&cityId=" + cityId, VodDetailDto.class);
+            return auth.get(vodServiceUrl, VOD_DETAIL_PATH.formatted(titleId, language, profileId, cityId),
+                    VodDetailDto.class);
         } catch (LGHorizonApiException | IllegalArgumentException e) {
             logger.debug("Could not resolve VOD detail for {}: {}", titleId, e.getMessage());
             return null;
@@ -656,9 +619,10 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             return null;
         }
         try {
-            String recordingServiceUrl = auth.getServiceConfig().getServiceUrl("recordingService");
-            return auth.get(recordingServiceUrl, "/customers/" + householdId + "/details/single/" + recordingId
-                    + "?profileId=" + profileId + "&language=" + language, RecordingDetailDto.class);
+            String recordingServiceUrl = auth.getServiceConfig().getServiceUrl(RECORDING_SERVICE_URL_FIELD);
+            return auth.get(recordingServiceUrl,
+                    RECORDING_DETAIL_PATH.formatted(householdId, recordingId, profileId, language),
+                    RecordingDetailDto.class);
         } catch (LGHorizonApiException | IllegalArgumentException e) {
             logger.debug("Could not resolve recording detail for {}: {}", recordingId, e.getMessage());
             return null;
@@ -676,7 +640,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         String anonymizedUrl = LGHorizonContentAnonymizer.anonymizeTopic(url);
         try {
             InputStreamResponseListener listener = new InputStreamResponseListener();
-            httpClientFactory.getCommonHttpClient().newRequest(url).timeout(10, TimeUnit.SECONDS).send(listener);
+            httpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).send(listener);
             Response response = listener.get(10, TimeUnit.SECONDS);
             if (response.getStatus() >= 300) {
                 notifyImageCapture("GET " + anonymizedUrl + " -> status=" + response.getStatus() + " (fetch failed)");
@@ -708,7 +672,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             String contentType = response.getHeaders().get(HttpHeader.CONTENT_TYPE);
             notifyImageCapture("GET " + anonymizedUrl + " -> status=" + response.getStatus() + ", contentType="
                     + contentType + ", bytes=" + bytes.length + " (content omitted)");
-            return new RawType(bytes, contentType != null ? contentType : "image/jpeg");
+            return new RawType(bytes, contentType != null ? contentType : IMAGE_JPEG);
         } catch (TimeoutException | ExecutionException | IOException e) {
             logger.debug("Could not fetch image from {}: {}", url, e.getMessage());
             notifyImageCapture("GET " + anonymizedUrl + " -> exception: " + e.getMessage());
@@ -733,9 +697,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     }
 
     /**
-     * Registers a box handler so it receives status/UI-status updates for its
-     * device id, and (re)subscribes the MQTT topics needed to actually receive
-     * them for this specific box.
+     * Registers a box handler so it receives status/UI-status updates for its device id, and (re)subscribes the MQTT
+     * topics needed to actually receive them for this specific box.
      */
     public void registerBox(String deviceId, LGHorizonBoxHandler handler) {
         registeredBoxes.put(deviceId, handler);
@@ -750,8 +713,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         LGHorizonMqttClient mqtt = mqttClient;
         String householdId = getHouseholdId();
         if (mqtt != null && householdId != null) {
-            // Ask the box to push its current UI status right away so the thing doesn't
-            // sit without state until the next spontaneous update.
             requestBoxState(deviceId);
         }
     }
@@ -759,10 +720,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     public void unregisterBox(String deviceId) {
         registeredBoxes.remove(deviceId);
     }
-
-    // ------------------------------------------------------------------
-    // Outgoing commands, called by LGHorizonBoxHandler
-    // ------------------------------------------------------------------
 
     public void sendKey(String deviceId, String w3cKey) {
         JsonObject payload = new JsonObject();
@@ -872,10 +829,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         return sb.toString();
     }
 
-    // ------------------------------------------------------------------
-    // LGHorizonMqttListener
-    // ------------------------------------------------------------------
-
     @Override
     public void onConnected() {
         LGHorizonMqttClient mqtt = mqttClient;
@@ -892,7 +845,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     @Override
     public void onConnectionLost(Throwable cause) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "Lost connection to LG Horizon MQTT broker: " + cause.getMessage());
+                textWithArg("offline.account-mqtt-connection-lost", String.valueOf(cause.getMessage())));
     }
 
     @Override

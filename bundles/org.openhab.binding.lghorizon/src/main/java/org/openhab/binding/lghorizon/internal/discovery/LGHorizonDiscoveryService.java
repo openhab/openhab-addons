@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.lghorizon.internal.discovery;
 
+import static org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants.*;
+
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants;
 import org.openhab.binding.lghorizon.internal.api.dto.CustomerDto;
 import org.openhab.binding.lghorizon.internal.api.dto.CustomerDto.DeviceDto.SettingsDto;
 import org.openhab.binding.lghorizon.internal.handler.LGHorizonAccountHandler;
@@ -42,7 +43,7 @@ public class LGHorizonDiscoveryService extends AbstractThingHandlerDiscoveryServ
     private static final int TIMEOUT_SECONDS = 10;
 
     public LGHorizonDiscoveryService() {
-        super(LGHorizonAccountHandler.class, Set.of(LGHorizonBindingConstants.THING_TYPE_BOX), TIMEOUT_SECONDS, false);
+        super(LGHorizonAccountHandler.class, Set.of(THING_TYPE_BOX), TIMEOUT_SECONDS, false);
     }
 
     @Override
@@ -67,17 +68,17 @@ public class LGHorizonDiscoveryService extends AbstractThingHandlerDiscoveryServ
             if (deviceId == null) {
                 continue;
             }
-            ThingUID thingUid = new ThingUID(LGHorizonBindingConstants.THING_TYPE_BOX, bridgeUid, deviceId);
+            ThingUID thingUid = new ThingUID(THING_TYPE_BOX, bridgeUid, deviceId);
             SettingsDto settings = device.settings;
             String label = settings != null && settings.deviceFriendlyName != null ? settings.deviceFriendlyName
                     : "LG Horizon box " + deviceId;
 
             DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUid).withBridge(bridgeUid)
-                    .withProperty(LGHorizonBindingConstants.CONFIG_DEVICE_ID, deviceId)
-                    .withRepresentationProperty(LGHorizonBindingConstants.CONFIG_DEVICE_ID).withLabel(label);
+                    .withProperty(CONFIG_DEVICE_ID, deviceId).withRepresentationProperty(CONFIG_DEVICE_ID)
+                    .withLabel(label);
             String platformType = device.platformType;
             if (platformType != null) {
-                builder = builder.withProperty(LGHorizonBindingConstants.PROPERTY_PLATFORM_TYPE, platformType);
+                builder = builder.withProperty(PROPERTY_PLATFORM_TYPE, platformType);
             }
             DiscoveryResult result = builder.build();
             thingDiscovered(result);

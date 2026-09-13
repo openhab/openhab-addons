@@ -23,23 +23,19 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class LGHorizonAccountConfiguration {
 
-    // Selects a known provider from {@link org.openhab.binding.lghorizon.internal.api.ProviderPresets},
-    // e.g. {@code telenet}. When set, it determines {@link #country}, {@link #apiUrl} and
-    // {@link #useRefreshToken} automatically. Leave empty to configure an unlisted provider (a new
-    // white-label deployment, or a provider's preprod/test backend) manually via those three
-    // advanced fields instead.
+    // Known provider from {@link org.openhab.binding.lghorizon.internal.api.ProviderPresets}, e.g. {@code telenet} or
+    // left empty to configure an unlisted provider (or a provider's preprod/test backend) manually using the {@link
+    // #country}, {@link #apiUrl} and {@link #useRefreshToken} fields instead.
     public @Nullable String provider;
 
-    // Two-letter locale code used in the service-discovery URL path (e.g. {@code be}, {@code nl},
-    // {@code ch}) - not necessarily the same region as the API URL itself. Known automatically
-    // when {@link #provider} is set; required if it is left empty.
+    // Two-letter locale code, known automatically when {@link #provider} is set, required if it is left empty.
     public String country = "";
 
-    // Base URL of the provider's "spark" REST API, e.g. {@code https://spark-prod-be.gnp.cloud.telenet.tv}. Known
-    // automatically when {@link #provider} is set; required if it is left empty.
+    // Base URL of the provider's REST API. Known automatically when {@link #provider} is set; required if it is left
+    // empty.
     public String apiUrl = "";
 
-    // * Whether the provider requires refresh-token auth instead of username/password. Known
+    // Whether the provider requires refresh-token auth instead of username/password. Known
     // automatically when {@link #provider} is set; only consulted if it is left empty.
     public boolean useRefreshToken = false;
 
@@ -50,10 +46,5 @@ public class LGHorizonAccountConfiguration {
     public @Nullable String password;
 
     // Only used for token-based providers (e.g. Telenet BE, UPC/Sunrise CH, Virgin Media GB).
-    // Refresh token extracted from the provider's web player. The binding will keep this up to date automatically once
-    // it starts rotating tokens, but the very first value has to be supplied manually.
     public String refreshToken = "";
-
-    // Poll interval (seconds) for the lightweight REST-based reachability check.
-    public int refreshInterval = 300;
 }

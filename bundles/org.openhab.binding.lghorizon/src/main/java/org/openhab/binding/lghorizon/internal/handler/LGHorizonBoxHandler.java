@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.lghorizon.internal.handler;
 
+import static org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants.*;
+import static org.openhab.binding.lghorizon.internal.api.LGHorizonApiConstants.*;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -69,20 +72,13 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     private String deviceId = "";
     private String profileId = "";
 
-    // Last known running state, used to guard the power toggle key (see below). Defaults to {@code true}
-    // (running) so an OFF command is never silently dropped before the first status message arrives; a
-    // false-positive ON attempt against an already-running box is harmless (the box just ignores it), while
-    // a dropped OFF command is a much worse failure mode to default into.
+    // Last known running state, used to guard the power toggle key
     private volatile boolean running = true;
 
-    // Last known paused state, from the {@code speed} field of the most recent {@code CPE.uiStatus} message
-    // (0 = paused). Used to guard the play/pause toggle key the same way {@link #running} guards power - see
-    // the comment on the CHANNEL_PLAYER case below.
+    // Last known paused state, used to guard the play/pause toggle key
     private volatile boolean paused = false;
 
-    // Last content id (eventId / VOD titleId / recordingId / app logoPath) we already resolved metadata
-    // for, to avoid re-fetching from the network on every uiStatus message while the same content is still
-    // playing.
+    // Last content id (eventId / VOD titleId / recordingId / app logoPath) we already resolved metadata for
     private volatile @Nullable String lastResolvedContentId;
 
     public LGHorizonBoxHandler(Thing thing, LGHorizonDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
@@ -94,7 +90,8 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     public void initialize() {
         LGHorizonBoxConfiguration config = getConfigAs(LGHorizonBoxConfiguration.class);
         if (config.deviceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "deviceId must be set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.box-missing-device-id");
             return;
         }
         this.deviceId = config.deviceId;
@@ -112,27 +109,27 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         if (device != null) {
             String defaultProfileId = device.defaultProfileId;
             if (defaultProfileId != null) {
-                updateProperty(LGHorizonBindingConstants.PROPERTY_DEFAULT_PROFILE_ID, defaultProfileId);
+                updateProperty(PROPERTY_DEFAULT_PROFILE_ID, defaultProfileId);
             }
             String deviceType = device.deviceType;
             if (deviceType != null) {
-                updateProperty(LGHorizonBindingConstants.PROPERTY_DEVICE_TYPE, deviceType);
+                updateProperty(PROPERTY_DEVICE_TYPE, deviceType);
             }
             String platformType = device.platformType;
             if (platformType != null) {
-                updateProperty(LGHorizonBindingConstants.PROPERTY_PLATFORM_TYPE, platformType);
+                updateProperty(PROPERTY_PLATFORM_TYPE, platformType);
             }
             String serialNumber = device.serialNumber;
             if (serialNumber != null) {
-                updateProperty(LGHorizonBindingConstants.PROPERTY_SERIAL_NUMBER, serialNumber);
+                updateProperty(PROPERTY_SERIAL_NUMBER, serialNumber);
             }
             String wifiMacAddress = device.wifiMacAddress;
             if (wifiMacAddress != null) {
-                updateProperty(LGHorizonBindingConstants.PROPERTY_WIFI_MAC_ADDRESS, wifiMacAddress);
+                updateProperty(PROPERTY_WIFI_MAC_ADDRESS, wifiMacAddress);
             }
             String ethernetMacAddress = device.ethernetMacAddress;
             if (ethernetMacAddress != null) {
-                updateProperty(LGHorizonBindingConstants.PROPERTY_ETHERNET_MAC_ADDRESS, ethernetMacAddress);
+                updateProperty(PROPERTY_ETHERNET_MAC_ADDRESS, ethernetMacAddress);
             }
         }
     }
@@ -156,8 +153,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         if (bridge == null) {
             return null;
         }
-        Object handler = bridge.getHandler();
-        return handler instanceof LGHorizonAccountHandler accountHandler ? accountHandler : null;
+        return bridge.getHandler() instanceof LGHorizonAccountHandler accountHandler ? accountHandler : null;
     }
 
     @Override
@@ -172,10 +168,8 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         }
 
         switch (channelUID.getId()) {
-            case LGHorizonBindingConstants.CHANNEL_POWER:
-                // The box has a single physical "Power" toggle button, not separate discrete on/off keys -
-                // Guard on the last known state so we never send the toggle in the wrong direction if our cached state
-                // happens to be stale - that would turn the box off when asked to turn it on, or vice versa.
+            case CHANNEL_POWER:
+                // The box has a single physical "Power" toggle button, not separate discrete on/off keys
                 if (command == OnOffType.ON) {
                     if (!running) {
                         account.sendKey(deviceId, LGHorizonKeys.POWER);
@@ -186,10 +180,8 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                     }
                 }
                 break;
-            case LGHorizonBindingConstants.CHANNEL_PLAYER:
-                // Like Power, the box has a single physical "Play/Pause" toggle button, not separate discrete
-                // play/pause keys - gated on the box being ONLINE_RUNNING and on the current paused state, so the
-                // toggle never fires in the wrong direction.
+            case CHANNEL_PLAYER:
+                // The box has a single physical "Play/Pause" toggle button, not separate discrete play/pause keys
                 if (command == PlayPauseType.PLAY) {
                     if (running && paused) {
                         account.sendKey(deviceId, LGHorizonKeys.PLAY_PAUSE);
@@ -204,60 +196,60 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                     account.sendKey(deviceId, LGHorizonKeys.REWIND);
                 }
                 break;
-            case LGHorizonBindingConstants.CHANNEL_STOP:
+            case CHANNEL_STOP:
                 sendKeyOnPress(account, command, LGHorizonKeys.STOP);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_RECORD:
+            case CHANNEL_RECORD:
                 sendKeyOnPress(account, command, LGHorizonKeys.RECORD);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_CHANNEL_UP:
+            case CHANNEL_CHANNEL_UP:
                 sendKeyOnPress(account, command, LGHorizonKeys.CHANNEL_UP);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_CHANNEL_DOWN:
+            case CHANNEL_CHANNEL_DOWN:
                 sendKeyOnPress(account, command, LGHorizonKeys.CHANNEL_DOWN);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_ARROW_UP:
+            case CHANNEL_ARROW_UP:
                 sendKeyOnPress(account, command, LGHorizonKeys.ARROW_UP);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_ARROW_DOWN:
+            case CHANNEL_ARROW_DOWN:
                 sendKeyOnPress(account, command, LGHorizonKeys.ARROW_DOWN);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_ARROW_LEFT:
+            case CHANNEL_ARROW_LEFT:
                 sendKeyOnPress(account, command, LGHorizonKeys.ARROW_LEFT);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_ARROW_RIGHT:
+            case CHANNEL_ARROW_RIGHT:
                 sendKeyOnPress(account, command, LGHorizonKeys.ARROW_RIGHT);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_TOP_MENU:
+            case CHANNEL_TOP_MENU:
                 sendKeyOnPress(account, command, LGHorizonKeys.TOP_MENU);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_INFO:
+            case CHANNEL_INFO:
                 sendKeyOnPress(account, command, LGHorizonKeys.INFO);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_CONTEXT_MENU:
+            case CHANNEL_CONTEXT_MENU:
                 sendKeyOnPress(account, command, LGHorizonKeys.CONTEXT_MENU);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_TV:
+            case CHANNEL_TV:
                 sendKeyOnPress(account, command, LGHorizonKeys.TV);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_ENTER:
+            case CHANNEL_ENTER:
                 sendKeyOnPress(account, command, LGHorizonKeys.ENTER);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_ESCAPE:
+            case CHANNEL_ESCAPE:
                 sendKeyOnPress(account, command, LGHorizonKeys.ESCAPE);
                 break;
-            case LGHorizonBindingConstants.CHANNEL_CHANNEL_NUMBER:
-            case LGHorizonBindingConstants.CHANNEL_FAVORITE_CHANNEL_NUMBER:
+            case CHANNEL_CHANNEL_NUMBER:
+            case CHANNEL_FAVORITE_CHANNEL_NUMBER:
                 resolveChannelByNumber(account, command.toString()).ifPresentOrElse(
                         channel -> account.tuneToChannel(deviceId, channel.id),
                         () -> logger.warn("Unknown LG Horizon channel number '{}' for box {}", command, deviceId));
                 break;
-            case LGHorizonBindingConstants.CHANNEL_CHANNEL_NAME:
+            case CHANNEL_CHANNEL_NAME:
                 resolveChannelByName(account, command.toString()).ifPresentOrElse(
                         channel -> account.tuneToChannel(deviceId, channel.id),
                         () -> logger.warn("Unknown LG Horizon channel name '{}' for box {}", command, deviceId));
                 break;
-            case LGHorizonBindingConstants.CHANNEL_KEY_CODE:
+            case CHANNEL_KEY_CODE:
                 account.sendKey(deviceId, command.toString());
                 break;
             default:
@@ -282,12 +274,8 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     }
 
     private Optional<ChannelDto> resolveChannelByName(LGHorizonAccountHandler account, String name) {
-        // Fuzzy fallback: channel with the lowest logical channel number whose name contains the given text,
-        // case-insensitive - e.g. "vtm" matches VTM HD/2/3/4/GOLD/series, and deterministically picks
-        // whichever of those has the lowest channel number (usually the "main" one). Only used when no exact match
-        // exists, so an exact name is never shadowed by a shorter, unrelated channel that happens to contain it as a
-        // substring. A channel with a missing or non-numeric channel number sorts last, never winning over
-        // one with a real number.
+        // Fuzzy fallback: when exact match does not exist, pick the first channel whose name contains the requested
+        // string (case-insensitive)
         String needle = name.toLowerCase();
         return account.getChannels(getLanguage(account)).values().stream()
                 .filter(c -> c.id != null && c.name != null && c.name.toLowerCase().contains(needle))
@@ -307,13 +295,8 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     }
 
     /**
-     * Populates the five channel-number selection channels' dynamic state options (channel number as the
-     * value, channel name as the label): the unfiltered {@code channel-number}, plus four filtered subsets
-     * crossing "TV vs radio" with "favorite vs not" - {@code tv-channel-number}, {@code radio-channel-number},
-     * {@code favorite-tv-channel-number}, {@code favorite-radio-channel-number}. All five accept the same
-     * channel numbers as commands (a channel is addressed identically regardless of which list it appeared
-     * in); they only differ in which numbers show up as options, and which one reflects the currently
-     * playing channel - see {@link #updateChannelFromId}.
+     * Populates the channel-number selection channels' dynamic state options (channel number as the
+     * value, channel name as the label).
      */
     public void updateChannelNumberOptions() {
         LGHorizonAccountHandler account = getAccountHandler();
@@ -323,8 +306,8 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         Map<String, ChannelDto> channels = account.getChannels(getLanguage(account));
         List<String> favoriteIds = account.getFavoriteChannelIds(resolveProfileId(account));
 
-        setChannelNumberOptions(LGHorizonBindingConstants.CHANNEL_CHANNEL_NUMBER, channels.values().stream());
-        setChannelNumberOptions(LGHorizonBindingConstants.CHANNEL_FAVORITE_CHANNEL_NUMBER,
+        setChannelNumberOptions(CHANNEL_CHANNEL_NUMBER, channels.values().stream());
+        setChannelNumberOptions(CHANNEL_FAVORITE_CHANNEL_NUMBER,
                 channels.values().stream().filter(c -> favoriteIds.contains(c.id)));
     }
 
@@ -344,30 +327,25 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         if (account == null) {
             return;
         }
-        int resolvedDuration = duration != null ? duration
-                : LGHorizonBindingConstants.DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS;
+        int resolvedDuration = duration != null ? duration : DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS;
         account.displayMessage(deviceId, message, resolvedDuration);
     }
 
     private String getLanguage(LGHorizonAccountHandler account) {
         DeviceDto device = account.getAssignedDevice(deviceId);
         if (device == null) {
-            return "en";
+            return DEFAULT_LANGUAGE;
         }
         String profileId = this.profileId.isBlank() ? device.defaultProfileId : this.profileId;
         return account.getLanguageForProfile(profileId);
     }
 
-    // ------------------------------------------------------------------
-    // Inbound updates, called by LGHorizonAccountHandler
-    // ------------------------------------------------------------------
-
     /** Handles a {@code .../status} message: coarse running state (online/standby/offline). */
     public void handleStatusMessage(String rawState) {
-        running = "ONLINE_RUNNING".equalsIgnoreCase(rawState);
-        boolean reachable = running || "ONLINE_STANDBY".equalsIgnoreCase(rawState);
+        running = BOX_STATE_ONLINE_RUNNING.equalsIgnoreCase(rawState);
+        boolean reachable = running || BOX_STATE_ONLINE_STANDBY.equalsIgnoreCase(rawState);
 
-        updateState(LGHorizonBindingConstants.CHANNEL_POWER, OnOffType.from(running));
+        updateState(CHANNEL_POWER, OnOffType.from(running));
 
         if (reachable) {
             updateStatus(ThingStatus.ONLINE);
@@ -400,7 +378,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
 
         String sourceType = getString(playerState, "sourceType").orElse(null);
         if (sourceType != null) {
-            updateState(LGHorizonBindingConstants.CHANNEL_SOURCE_TYPE, new StringType(sourceType));
+            updateState(CHANNEL_SOURCE_TYPE, new StringType(sourceType));
         }
 
         if (playerState.has("speed")) {
@@ -409,7 +387,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             State channelPlayerState = speed == 0 ? PlayPauseType.PAUSE
                     : speed < 0 ? RewindFastforwardType.REWIND
                             : speed > 1 ? RewindFastforwardType.FASTFORWARD : PlayPauseType.PLAY;
-            updateState(LGHorizonBindingConstants.CHANNEL_PLAYER, channelPlayerState);
+            updateState(CHANNEL_PLAYER, channelPlayerState);
         }
 
         JsonObject source = playerState.has("source") && playerState.get("source").isJsonObject()
@@ -419,12 +397,12 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             lastResolvedContentId = null;
             clearTitleMetadata();
             clearChannelSelections();
-            updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+            updateState(CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
             return;
         }
 
         switch (sourceType.toLowerCase(java.util.Locale.ROOT)) {
-            case "linear", "reviewbuffer" -> {
+            case SOURCE_TYPE_LINEAR, SOURCE_TYPE_REVIEWBUFFER -> {
                 String channelId = getString(source, "channelId").orElse(null);
                 if (channelId != null) {
                     updateChannelFromId(channelId);
@@ -433,15 +411,15 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                 }
                 getString(source, "eventId").ifPresent(this::resolveEventMetadata);
             }
-            case "replay" -> {
+            case SOURCE_TYPE_REPLAY -> {
                 clearChannelSelections();
                 getString(source, "eventId").ifPresent(this::resolveEventMetadata);
             }
-            case "vod" -> {
+            case SOURCE_TYPE_VOD -> {
                 clearChannelSelections();
                 getString(source, "titleId").ifPresent(this::resolveVodMetadata);
             }
-            case "ndvr" -> {
+            case SOURCE_TYPE_NDVR -> {
                 clearChannelSelections();
                 getString(source, "recordingId").ifPresent(this::resolveRecordingMetadata);
             }
@@ -450,19 +428,14 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                 lastResolvedContentId = null;
                 clearTitleMetadata();
                 clearChannelSelections();
-                updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+                updateState(CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
             }
         }
     }
 
     /**
-     * Updates {@code channel-name} plus all five number-selection channels for the currently playing linear
-     * channel: {@code channel-number} always gets the number, while {@code tv-channel-number}/
-     * {@code radio-channel-number}/{@code favorite-tv-channel-number}/{@code favorite-radio-channel-number}
-     * only get it when the channel actually qualifies for that particular list - {@link UnDefType#UNDEF}
-     * otherwise, so switching to a channel that isn't a favorite (or isn't radio) doesn't leave a stale
-     * number from whatever qualified before. If the channel id can't be resolved at all, every one of these
-     * six channels is cleared via {@link #clearChannelSelections}.
+     * Updates {@code channel-name} plus number-selection channels for the currently playing linear
+     * channel.
      */
     private void updateChannelFromId(String channelId) {
         LGHorizonAccountHandler account = getAccountHandler();
@@ -471,16 +444,14 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             clearChannelSelections();
             return;
         }
-        updateState(LGHorizonBindingConstants.CHANNEL_CHANNEL_NAME,
-                channel.name != null ? new StringType(channel.name) : UnDefType.UNDEF);
+        updateState(CHANNEL_CHANNEL_NAME, channel.name != null ? new StringType(channel.name) : UnDefType.UNDEF);
 
         State numberState = toChannelNumberState(channel.logicalChannelNumber);
-        updateState(LGHorizonBindingConstants.CHANNEL_CHANNEL_NUMBER, numberState);
+        updateState(CHANNEL_CHANNEL_NUMBER, numberState);
 
         boolean isFavorite = account.getFavoriteChannelIds(resolveProfileId(account)).contains(channel.id);
 
-        updateState(LGHorizonBindingConstants.CHANNEL_FAVORITE_CHANNEL_NUMBER,
-                isFavorite ? numberState : UnDefType.UNDEF);
+        updateState(CHANNEL_FAVORITE_CHANNEL_NUMBER, isFavorite ? numberState : UnDefType.UNDEF);
     }
 
     private State toChannelNumberState(@Nullable String logicalChannelNumber) {
@@ -495,14 +466,14 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     }
 
     /**
-     * Clears {@code channel-name} and all five number-selection channels - used whenever the box is not
+     * Clears {@code channel-name} and all number-selection channels - used whenever the box is not
      * showing a specific, currently-known linear channel (VOD, a recording, replay, an app, localDVR, or an
-     * unresolvable channel id), so none of them keep showing a stale value from whatever was on before.
+     * unresolvable channel id).
      */
     private void clearChannelSelections() {
-        updateState(LGHorizonBindingConstants.CHANNEL_CHANNEL_NAME, UnDefType.UNDEF);
-        updateState(LGHorizonBindingConstants.CHANNEL_CHANNEL_NUMBER, UnDefType.UNDEF);
-        updateState(LGHorizonBindingConstants.CHANNEL_FAVORITE_CHANNEL_NUMBER, UnDefType.UNDEF);
+        updateState(CHANNEL_CHANNEL_NAME, UnDefType.UNDEF);
+        updateState(CHANNEL_CHANNEL_NUMBER, UnDefType.UNDEF);
+        updateState(CHANNEL_FAVORITE_CHANNEL_NUMBER, UnDefType.UNDEF);
     }
 
     /** Whether {@code contentId} is still what we're currently resolving for - see {@link #resolveEventMetadata}. */
@@ -523,17 +494,16 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             EventDetailDto detail = account.getEventDetail(eventId, language);
             if (!isStillCurrent(eventId)) {
-                // A newer request superseded this one while the REST call was in flight.
                 return;
             }
             if (detail == null) {
                 clearTitleMetadata();
-                updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+                updateState(CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
                 lastResolvedContentId = null;
                 return;
             }
             // For linear/reviewBuffer/replay, "title" is the show/program title and "episodeName" is the episode's own
-            // title - both already unambiguous.
+            // title
             applyTitleMetadata(detail.title, detail.episodeName, detail.seasonNumber, detail.episodeNumber);
 
             String imageUrl = null;
@@ -559,24 +529,23 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             VodDetailDto detail = account.getVodDetail(titleId, effectiveProfileId, language);
             if (!isStillCurrent(titleId)) {
-                // A newer request superseded this one while the REST call was in flight.
                 return;
             }
             if (detail == null) {
                 clearTitleMetadata();
-                updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+                updateState(CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
                 lastResolvedContentId = null;
                 return;
             }
             // For an episode, the field "title" holds the EPISODE's own name - the show name is in the separate
             // "seriesTitle" field instead. For a movie, "title" is the movie's own title and there is no
-            // series/episode concept.
+            // series/episode concept
             if (detail.isEpisode()) {
                 applyTitleMetadata(detail.seriesTitle, detail.title, detail.season, detail.episode);
             } else {
                 applyTitleMetadata(detail.title, null, null, null);
             }
-            updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+            updateState(CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
         });
     }
 
@@ -594,18 +563,17 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             RecordingDetailDto detail = account.getRecordingDetail(recordingId, effectiveProfileId, language);
             if (!isStillCurrent(recordingId)) {
-                // A newer request superseded this one while the REST call was in flight.
                 return;
             }
             if (detail == null) {
                 clearTitleMetadata();
-                updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+                updateState(CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
                 lastResolvedContentId = null;
                 return;
             }
             // nDVR is conditional on "source": for a "show"-sourced (standalone) recording, "title"
             // is the show name; for anything recorded as part of a series/season rule, the show name is in
-            // the "showTitle" field instead - RecordingDetailDto.getShowTitle() already applies this distinction.
+            // the "showTitle" field instead
             applyTitleMetadata(detail.getShowTitle(), detail.episodeTitle, detail.seasonNumber, detail.episodeNumber);
             String imageUrl = null;
             if (detail.channelId != null) {
@@ -618,32 +586,24 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
 
     /**
      * Populates the five separate title/episode channels from whichever content type just resolved -
-     * {@code programTitle} always mirrors the reference implementation's own "show_title" concept (computed
-     * differently per content type, but always meant as *the* title), while {@code seriesTitle} is only
-     * populated alongside it when the content is genuinely episodic (an episode title, season, or episode
-     * number is present) - so a rule can check "is seriesTitle set" as a simple signal for "is this a TV
-     * series episode" versus a movie or standalone broadcast. A missing episode title text falls back to a
-     * plain "Episode N" using the episode number, if that's available.
+     * {@code seriesTitle} is only populated alongside {@code programTitle} when the content is genuinely episodic.
      */
     private void applyTitleMetadata(@Nullable String programTitle, @Nullable String episodeTitleText,
             @Nullable Integer season, @Nullable Integer episode) {
-        updateState(LGHorizonBindingConstants.CHANNEL_PROGRAM_TITLE,
-                programTitle != null ? new StringType(programTitle) : UnDefType.UNDEF);
+        updateState(CHANNEL_PROGRAM_TITLE, programTitle != null ? new StringType(programTitle) : UnDefType.UNDEF);
 
         boolean isEpisodic = (episodeTitleText != null && !episodeTitleText.isBlank()) || season != null
                 || episode != null;
-        updateState(LGHorizonBindingConstants.CHANNEL_SERIES_TITLE,
+        updateState(CHANNEL_SERIES_TITLE,
                 isEpisodic && programTitle != null ? new StringType(programTitle) : UnDefType.UNDEF);
 
         String resolvedEpisodeTitle = episodeTitleText != null && !episodeTitleText.isBlank() ? episodeTitleText
                 : episode != null ? "Episode " + episode : null;
-        updateState(LGHorizonBindingConstants.CHANNEL_EPISODE_TITLE,
+        updateState(CHANNEL_EPISODE_TITLE,
                 resolvedEpisodeTitle != null ? new StringType(resolvedEpisodeTitle) : UnDefType.UNDEF);
 
-        updateState(LGHorizonBindingConstants.CHANNEL_SEASON,
-                season != null ? new DecimalType(season) : UnDefType.UNDEF);
-        updateState(LGHorizonBindingConstants.CHANNEL_EPISODE,
-                episode != null ? new DecimalType(episode) : UnDefType.UNDEF);
+        updateState(CHANNEL_SEASON, season != null ? new DecimalType(season) : UnDefType.UNDEF);
+        updateState(CHANNEL_EPISODE, episode != null ? new DecimalType(episode) : UnDefType.UNDEF);
     }
 
     private void clearTitleMetadata() {
@@ -667,20 +627,18 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         }
         RawType image = account.fetchImage(url);
         if (!isStillCurrent(contentId)) {
-            // A newer request superseded this one while the REST call was in flight.
             return;
         }
-        updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, image != null ? image : UnDefType.UNDEF);
+        updateState(CHANNEL_MEDIA_IMAGE, image != null ? image : UnDefType.UNDEF);
     }
 
     /** Clears media-image immediately if no image URL could be resolved at all, otherwise fetches it. */
     private void updateImageFromUrlOrClear(String contentId, @Nullable String url) {
         if (!isStillCurrent(contentId)) {
-            // A newer request superseded this one while the REST call was in flight.
             return;
         }
         if (url == null) {
-            updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+            updateState(CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
             return;
         }
         updateImageFromUrl(contentId, url);
@@ -694,16 +652,16 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         if (appsState == null) {
             return;
         }
-        updateState(LGHorizonBindingConstants.CHANNEL_SOURCE_TYPE, new StringType("app"));
+        updateState(CHANNEL_SOURCE_TYPE, new StringType("app"));
         clearTitleMetadata();
         clearChannelSelections();
-        getString(appsState, "appName").ifPresent(
-                appName -> updateState(LGHorizonBindingConstants.CHANNEL_PROGRAM_TITLE, new StringType(appName)));
+        getString(appsState, "appName")
+                .ifPresent(appName -> updateState(CHANNEL_PROGRAM_TITLE, new StringType(appName)));
 
         String logoPath = getString(appsState, "logoPath").orElse(null);
         if (logoPath == null) {
             lastResolvedContentId = null;
-            updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+            updateState(CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
         } else if (!logoPath.equals(lastResolvedContentId)) {
             lastResolvedContentId = logoPath;
             scheduler.execute(() -> updateImageFromUrl(logoPath, logoPath));

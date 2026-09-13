@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lghorizon.internal.console;
 
+import static org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants.*;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,7 +48,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants;
 import org.openhab.binding.lghorizon.internal.LGHorizonContentAnonymizer;
 import org.openhab.binding.lghorizon.internal.api.dto.CustomerDto.DeviceDto;
 import org.openhab.binding.lghorizon.internal.api.dto.CustomerDto.DeviceDto.SettingsDto;
@@ -103,8 +104,7 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static final String FINGERPRINT_ROOT_PATH = System.getProperty("user.home") + File.separator
-            + LGHorizonBindingConstants.BINDING_ID;
+    private static final String FINGERPRINT_ROOT_PATH = System.getProperty("user.home") + File.separator + BINDING_ID;
 
     private static final int CAPTURE_TIMEOUT_SECONDS = 10;
     // Safety cap so a mistyped duration doesn't lock the console shell for an unreasonable time.
@@ -212,10 +212,9 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
     }
 
     private List<LGHorizonAccountHandler> allAccountHandlers() {
-        return thingRegistry.stream()
-                .filter(t -> LGHorizonBindingConstants.THING_TYPE_ACCOUNT.equals(t.getThingTypeUID()))
-                .map(Thing::getHandler).filter(LGHorizonAccountHandler.class::isInstance)
-                .map(LGHorizonAccountHandler.class::cast).collect(Collectors.toList());
+        return thingRegistry.stream().filter(t -> THING_TYPE_ACCOUNT.equals(t.getThingTypeUID())).map(Thing::getHandler)
+                .filter(LGHorizonAccountHandler.class::isInstance).map(LGHorizonAccountHandler.class::cast)
+                .collect(Collectors.toList());
     }
 
     /** Label used in section headers: the customer id when known, falling back to the thing UID otherwise. */
@@ -228,7 +227,7 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
         for (LGHorizonAccountHandler handler : handlers) {
             Thing thing = handler.getThing();
             String customerId = handler.getCustomerId();
-            Object provider = thing.getConfiguration().get(LGHorizonBindingConstants.CONFIG_PROVIDER);
+            Object provider = thing.getConfiguration().get(CONFIG_PROVIDER);
             console.println(String.format("%-20s: %-12s provider=%-20s thingUID=%s",
                     customerId != null ? customerId : "(not yet known)", thing.getStatus(), provider, thing.getUID()));
         }
@@ -236,8 +235,9 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
 
     private List<Thing> boxThingsFor(LGHorizonAccountHandler handler) {
         ThingUID bridgeUid = handler.getThing().getUID();
-        return thingRegistry.stream().filter(t -> LGHorizonBindingConstants.THING_TYPE_BOX.equals(t.getThingTypeUID())
-                && bridgeUid.equals(t.getBridgeUID())).collect(Collectors.toList());
+        return thingRegistry.stream()
+                .filter(t -> THING_TYPE_BOX.equals(t.getThingTypeUID()) && bridgeUid.equals(t.getBridgeUID()))
+                .collect(Collectors.toList());
     }
 
     private void profiles(Console console, List<LGHorizonAccountHandler> handlers) {
@@ -274,7 +274,7 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
             }
             Map<String, ThingUID> thingUidByDeviceId = new HashMap<>();
             for (Thing box : boxThingsFor(handler)) {
-                Object deviceIdObj = box.getConfiguration().get(LGHorizonBindingConstants.CONFIG_DEVICE_ID);
+                Object deviceIdObj = box.getConfiguration().get(CONFIG_DEVICE_ID);
                 if (deviceIdObj != null) {
                     thingUidByDeviceId.put(deviceIdObj.toString(), box.getUID());
                 }
@@ -341,7 +341,7 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
                 console.println("No box things found");
             }
             for (Thing box : boxThings) {
-                Object deviceIdObj = box.getConfiguration().get(LGHorizonBindingConstants.CONFIG_DEVICE_ID);
+                Object deviceIdObj = box.getConfiguration().get(CONFIG_DEVICE_ID);
                 String deviceId = deviceIdObj == null ? "" : deviceIdObj.toString();
                 console.println("###### Box " + box.getUID() + " - " + box.getLabel());
                 captureAndSave(console, accountPath,

@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.lghorizon.internal.api;
 
+import static org.openhab.binding.lghorizon.internal.api.LGHorizonApiConstants.*;
+
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -27,6 +31,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.lghorizon.internal.LGHorizonContentAnonymizer;
 import org.openhab.binding.lghorizon.internal.api.dto.AuthResponseDto;
 import org.openhab.binding.lghorizon.internal.api.dto.ServiceConfigDto;
@@ -57,8 +62,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class LGHorizonAuthClient {
-
-    private static final long TOKEN_REFRESH_MARGIN_SECONDS = TimeUnit.DAYS.toSeconds(1);
 
     private final Logger logger = LoggerFactory.getLogger(LGHorizonAuthClient.class);
 
@@ -144,29 +147,29 @@ public class LGHorizonAuthClient {
         JsonObject payload = new JsonObject();
         String path;
         if (!usesRefreshTokenFlow() && accessToken == null) {
-            payload.addProperty("username", username);
-            payload.addProperty("password", password);
-            path = "/auth-service/v1/authorization";
+            payload.addProperty(USERNAME_FIELD, username);
+            payload.addProperty(PASSWORD_FIELD, password);
+            path = AUTH_SERVICE_AUTHORIZATION_PATH;
         } else {
-            payload.addProperty("refreshToken", refreshToken);
-            path = "/auth-service/v1/authorization/refresh";
+            payload.addProperty(REFRESH_TOKEN_FIELD, refreshToken);
+            path = AUTH_SERVICE_AUTHORIZATION_REFRESH_PATH;
         }
 
         Request request = httpClient.newRequest(apiBaseUrl + path).method(HttpMethod.POST)
-                .header("content-type", "application/json").header("charset", "utf-8")
-                .content(new StringContentProvider("application/json", gson.toJson(payload), StandardCharsets.UTF_8));
+                .header(CONTENT_TYPE_HEADER, APPLICATION_JSON).header(CHARSET_HEADER, UTF_8)
+                .content(new StringContentProvider(APPLICATION_JSON, gson.toJson(payload), StandardCharsets.UTF_8));
         if (!usesRefreshTokenFlow() && accessToken == null) {
-            request = request.header("x-device-code", "web");
+            request = request.header(X_DEVICE_CODE_HEADER, X_DEVICE_CODE_WEB);
         }
 
         ContentResponse response = send(request);
         AuthResponseDto auth = parse(response, AuthResponseDto.class);
 
-        if (response.getStatus() >= 300 || auth.accessToken == null) {
+        if (response.getStatus() >= HttpStatus.MULTIPLE_CHOICES_300 || auth.accessToken == null) {
             AuthResponseDto.ErrorDto error = auth.error;
-            if (error != null && error.statusCode == 97401) {
+            if (error != null && error.statusCode == CREDENTIALS_ERROR) {
                 throw new LGHorizonApiException("Invalid credentials", true);
-            } else if (error != null && error.statusCode == 97402) {
+            } else if (error != null && error.statusCode == TOKEN_ERROR) {
                 throw new LGHorizonApiException("Invalid or expired refresh token", true);
             } else if (error != null) {
                 throw new LGHorizonApiException("LG Horizon auth error: " + error.message, true);
@@ -217,15 +220,15 @@ public class LGHorizonAuthClient {
         String url = serviceBaseUrl + path;
         String anonymizedUrl = String.valueOf(LGHorizonContentAnonymizer.anonymizeTopic(url));
         ContentResponse response = send(
-                httpClient.newRequest(url).method(HttpMethod.GET).header("Authorization", "Bearer " + accessToken));
+                httpClient.newRequest(url).method(HttpMethod.GET).header(AUTHORIZATION_HEADER, BEARER + accessToken));
 
-        if (response.getStatus() == 401) {
+        if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
             logger.debug("Got HTTP 401 from {}, refreshing token and retrying once", anonymizedUrl);
             fetchAccessToken();
-            response = send(
-                    httpClient.newRequest(url).method(HttpMethod.GET).header("Authorization", "Bearer " + accessToken));
+            response = send(httpClient.newRequest(url).method(HttpMethod.GET).header(AUTHORIZATION_HEADER,
+                    BEARER + accessToken));
         }
-        if (response.getStatus() >= 300) {
+        if (response.getStatus() >= HttpStatus.MULTIPLE_CHOICES_300) {
             throw new LGHorizonApiException(
                     "Unable to call " + anonymizedUrl + ", HTTP status " + response.getStatus());
         }
@@ -254,10 +257,14 @@ public class LGHorizonAuthClient {
 
     private ContentResponse send(Request request) throws LGHorizonApiException {
         try {
-            return request.timeout(15, TimeUnit.SECONDS).send();
-        } catch (Exception e) {
+            return request.timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS).send();
+        } catch (TimeoutException | ExecutionException e) {
             throw new LGHorizonApiException(
                     "Unable to call " + LGHorizonContentAnonymizer.anonymizeTopic(request.getURI().toString()), e);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new LGHorizonApiException("Interrupted while calling "
+                    + LGHorizonContentAnonymizer.anonymizeTopic(request.getURI().toString()), ie);
         }
     }
 
@@ -304,18 +311,18 @@ public class LGHorizonAuthClient {
      * document instead of the cached {@link ServiceConfigDto} wrapper.
      */
     public JsonElement getServiceConfigAsJsonElement() throws LGHorizonApiException {
-        return getAsJsonElement(apiBaseUrl, "/" + localeCode + "/en/config-service/conf/web/backoffice.json");
+        return getAsJsonElement(apiBaseUrl, "/" + localeCode + EN_CONFIG_SERVICE_CONF_WEB_BACKOFFICE_JSON);
     }
 
     /**
      * Fetches a short-lived token used as the MQTT password (username is the household id).
      */
     public String getMqttToken() throws LGHorizonApiException {
-        String url = getServiceConfig().getServiceUrl("authorizationService");
-        JsonObject result = getAsJsonObject(url, "/v1/mqtt/token");
-        if (!result.has("token")) {
-            throw new LGHorizonApiException("MQTT token response did not contain a 'token' field");
+        String url = getServiceConfig().getServiceUrl(AUTHORIZATION_SERVICE_URL_FIELD);
+        JsonObject result = getAsJsonObject(url, V1_MQTT_TOKEN_PATH);
+        if (!result.has(TOKEN_FIELD)) {
+            throw new LGHorizonApiException("MQTT token response did not contain a '" + TOKEN_FIELD + "' field");
         }
-        return result.get("token").getAsString();
+        return result.get(TOKEN_FIELD).getAsString();
     }
 }

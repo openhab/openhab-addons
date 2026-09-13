@@ -159,10 +159,6 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
         connection.stop();
     }
 
-    // ------------------------------------------------------------------
-    // MqttMessageSubscriber
-    // ------------------------------------------------------------------
-
     @Override
     public void processMessage(String topic, byte[] payload) {
         try {
@@ -174,10 +170,6 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
                     LGHorizonContentAnonymizer.anonymizeTopic(topic), e.getMessage());
         }
     }
-
-    // ------------------------------------------------------------------
-    // MqttConnectionObserver
-    // ------------------------------------------------------------------
 
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {

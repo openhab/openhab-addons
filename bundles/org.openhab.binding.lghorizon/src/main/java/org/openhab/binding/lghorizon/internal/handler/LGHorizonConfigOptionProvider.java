@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lghorizon.internal.handler;
 
+import static org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants.*;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +23,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants;
 import org.openhab.binding.lghorizon.internal.api.ProviderPresets;
 import org.openhab.core.config.core.ConfigOptionProvider;
 import org.openhab.core.config.core.ParameterOption;
@@ -39,13 +40,12 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ConfigOptionProvider.class)
 public class LGHorizonConfigOptionProvider implements ConfigOptionProvider {
 
-    private static final URI ACCOUNT_CONFIG_URI = URI
-            .create("thing-type:" + LGHorizonBindingConstants.THING_TYPE_ACCOUNT.getAsString());
+    private static final URI ACCOUNT_CONFIG_URI = URI.create("thing-type:" + THING_TYPE_ACCOUNT.getAsString());
 
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        if (!ACCOUNT_CONFIG_URI.equals(uri) || !LGHorizonBindingConstants.CONFIG_PROVIDER.equals(param)) {
+        if (!ACCOUNT_CONFIG_URI.equals(uri) || !CONFIG_PROVIDER.equals(param)) {
             return null;
         }
 

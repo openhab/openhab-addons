@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lghorizon.internal.discovery;
 
+import static org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants.THING_TYPE_ACCOUNT;
+
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -20,7 +22,6 @@ import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ManufacturerDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -55,8 +56,7 @@ import org.slf4j.LoggerFactory;
 public class LGHorizonUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private static final Set<String> EXPECTED_MANUFACTURERS = Set.of("TELENETTVBOX");
-    private static final ThingUID SUGGESTED_ACCOUNT_UID = new ThingUID(LGHorizonBindingConstants.THING_TYPE_ACCOUNT,
-            "detected");
+    private static final ThingUID SUGGESTED_ACCOUNT_UID = new ThingUID(THING_TYPE_ACCOUNT, "detected");
 
     private final Logger logger = LoggerFactory.getLogger(LGHorizonUpnpDiscoveryParticipant.class);
     private final ThingRegistry thingRegistry;
@@ -68,7 +68,7 @@ public class LGHorizonUpnpDiscoveryParticipant implements UpnpDiscoveryParticipa
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(LGHorizonBindingConstants.THING_TYPE_ACCOUNT);
+        return Set.of(THING_TYPE_ACCOUNT);
     }
 
     @Override
@@ -116,7 +116,6 @@ public class LGHorizonUpnpDiscoveryParticipant implements UpnpDiscoveryParticipa
     }
 
     private boolean hasExistingAccount() {
-        return thingRegistry.getAll().stream()
-                .anyMatch(thing -> LGHorizonBindingConstants.THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID()));
+        return thingRegistry.getAll().stream().anyMatch(thing -> THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID()));
     }
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lghorizon.internal;
 
-import java.util.Set;
+import static org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,9 +39,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.lghorizon", service = ThingHandlerFactory.class)
 public class LGHorizonHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
-            .of(LGHorizonBindingConstants.THING_TYPE_ACCOUNT, LGHorizonBindingConstants.THING_TYPE_BOX);
-
     private final HttpClientFactory httpClientFactory;
     private final LGHorizonDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
 
@@ -61,10 +58,10 @@ public class LGHorizonHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (LGHorizonBindingConstants.THING_TYPE_ACCOUNT.equals(thingTypeUID) && thing instanceof Bridge bridge) {
-            return new LGHorizonAccountHandler(bridge, httpClientFactory);
+        if (THING_TYPE_ACCOUNT.equals(thingTypeUID) && thing instanceof Bridge bridge) {
+            return new LGHorizonAccountHandler(bridge, httpClientFactory.getCommonHttpClient());
         }
-        if (LGHorizonBindingConstants.THING_TYPE_BOX.equals(thingTypeUID)) {
+        if (THING_TYPE_BOX.equals(thingTypeUID)) {
             return new LGHorizonBoxHandler(thing, dynamicStateDescriptionProvider);
         }
         return null;
