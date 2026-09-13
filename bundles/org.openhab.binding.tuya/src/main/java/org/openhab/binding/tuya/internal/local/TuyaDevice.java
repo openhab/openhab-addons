@@ -168,10 +168,24 @@ public class TuyaDevice implements ChannelFutureListener {
         }
     }
 
-    private class ResponseTimeoutHandler extends ChannelDuplexHandler {
+    static class ResponseTimeoutHandler extends ChannelDuplexHandler {
+        private final Logger logger = LoggerFactory.getLogger(TuyaDevice.class);
+        private final String deviceId;
+        private final String address;
+        private final MessageWrapper<?> statusQuery;
         private @Nullable Future<?> responseTimeout = null;
+        private boolean awaitingCommandAck = false;
         private @Nullable ChannelHandlerContext context = null;
         private TimeoutTask timeoutTask = new TimeoutTask();
+
+        /**
+         * @param statusQuery the CONTROL message sent when connecting to ask the device for its status
+         */
+        ResponseTimeoutHandler(String deviceId, String address, MessageWrapper<?> statusQuery) {
+            this.deviceId = deviceId;
+            this.address = address;
+            this.statusQuery = statusQuery;
+        }
 
         @Override
         public void handlerAdded(@Nullable ChannelHandlerContext ctx) throws Exception {
@@ -217,6 +231,12 @@ public class TuyaDevice implements ChannelFutureListener {
                         future.cancel(false);
                     }
 
+                    // The acknowledgement is all a device sends in reply to a command that changes nothing it
+                    // reports, such as an infrared code. The status query still needs a real response, see
+                    // channelRead.
+                    awaitingCommandAck = (m.commandType == CONTROL || m.commandType == CONTROL_NEW)
+                            && !statusQuery.equals(m);
+
                     responseTimeout = ctx.executor().schedule(timeoutTask, //
                             TCP_CONNECTION_MESSAGE_RESPONSE, TimeUnit.MILLISECONDS);
                 }
@@ -232,13 +252,14 @@ public class TuyaDevice implements ChannelFutureListener {
                     // ignored because there is normally some other response (DP_QUERY or STATUS)
                     // as well. If there isn't either the device or API is not active. (Sometimes
                     // devices seem to accept TCP connections before the API is fully initialized.)
-                    if (m.commandType != CONTROL_NEW && m.commandType != CONTROL //
-                    ) {
+                    // A command is different: its acknowledgement is the only reply a device owes, see write.
+                    if ((m.commandType != CONTROL_NEW && m.commandType != CONTROL) || awaitingCommandAck) {
                         var future = responseTimeout;
                         if (future != null) {
                             future.cancel(false);
                             responseTimeout = null;
                         }
+                        awaitingCommandAck = false;
                     }
                 }
 
@@ -310,7 +331,8 @@ public class TuyaDevice implements ChannelFutureListener {
                 pipeline.addLast("messageEncoder", new TuyaEncoder(gson));
                 pipeline.addLast("messageDecoder", new TuyaDecoder(gson));
                 pipeline.addLast("heartbeatSender", new HeartbeatSender());
-                pipeline.addLast("responseTimeoutHandler", new ResponseTimeoutHandler());
+                pipeline.addLast("responseTimeoutHandler",
+                        new ResponseTimeoutHandler(deviceId, address, msgRequestAllControl));
                 pipeline.addLast("maxLifetimeHandler", new MaxLifetimeHandler());
                 pipeline.addLast("deviceHandler", new TuyaMessageHandler(deviceStatusListener));
                 pipeline.addLast("userEventHandler", new UserEventHandler());
