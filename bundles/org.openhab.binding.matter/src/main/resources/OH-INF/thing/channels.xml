@@ -283,6 +283,90 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="thermostat-runningstate-heat">
+		<item-type>Switch</item-type>
+		<label>Heating Running State</label>
+		<description>Indicates if the thermostat is currently heating</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="thermostat-runningstate-cool">
+		<item-type>Switch</item-type>
+		<label>Cooling Running State</label>
+		<description>Indicates if the thermostat is currently cooling</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="thermostat-runningstate-fan">
+		<item-type>Switch</item-type>
+		<label>Fan Running State</label>
+		<description>Indicates if the thermostat fan is currently running</description>
+		<category>Fan</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Ventilation</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="thermostat-runningstate-heatstage2">
+		<item-type>Switch</item-type>
+		<label>Heating Stage 2 Running State</label>
+		<description>Indicates if the thermostat is currently heating with its second stage</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="thermostat-runningstate-coolstage2">
+		<item-type>Switch</item-type>
+		<label>Cooling Stage 2 Running State</label>
+		<description>Indicates if the thermostat is currently cooling with its second stage</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="thermostat-runningstate-fanstage2">
+		<item-type>Switch</item-type>
+		<label>Fan Stage 2 Running State</label>
+		<description>Indicates if the thermostat fan is currently running at its second stage</description>
+		<category>Fan</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Ventilation</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="thermostat-runningstate-fanstage3">
+		<item-type>Switch</item-type>
+		<label>Fan Stage 3 Running State</label>
+		<description>Indicates if the thermostat fan is currently running at its third stage</description>
+		<category>Fan</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Ventilation</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="windowcovering-lift">
 		<item-type>Rollershutter</item-type>
 		<label>Window Covering Lift</label>

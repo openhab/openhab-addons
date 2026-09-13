@@ -295,6 +295,29 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
         }
 
         @Test
+        @DisplayName("Warns and ignores deep merge operations (!deep) in variables")
+        void warnsAndIgnoresDeepMergeInVariables() throws IOException {
+            String yaml = """
+                    variables:
+                      base:
+                        nested:
+                          key: "main"
+                      !deep <<:
+                        base:
+                          nested:
+                            key2: "from_deep"
+
+                    target: key2_${base.nested.key2}
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat(getNestedValue(data, "target"), equalTo("key2_"));
+            assertThat(logSession.getTrackedWarnings(),
+                    hasItem(containsString("Deep merge operations (!deep) are not supported in this context")));
+        }
+
+        @Test
         @DisplayName("Supports substitution within variables block (Recursive resolution)")
         void supportsSubstitutionWithinVariablesBlock() throws IOException {
             String yaml = """
@@ -311,6 +334,23 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
 
             assertThat("Variables must support self-referential resolution", getNestedValue(data, "test", "result"),
                     is("root-to-middle-to-leaf"));
+        }
+
+        @Test
+        @DisplayName("Preserves sequential variable references inside directive-generated maps")
+        void preservesSequentialVariableReferencesInsideDirectives() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    variables:
+                      baseDir: "/var/log"
+                      appDir: "${baseDir}/openhab"
+                      !if true:
+                        logFile: "${appDir}/events.log"
+
+                    target:
+                      activeLog: "${logFile}"
+                    """);
+
+            assertThat(getNestedValue(result, "target", "activeLog"), equalTo("/var/log/openhab/events.log"));
         }
     }
 

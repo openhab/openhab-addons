@@ -15,6 +15,7 @@ package org.openhab.io.yamlcomposer.internal.processors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.directives.VarDirective;
 import org.openhab.io.yamlcomposer.internal.placeholders.VarPlaceholder;
@@ -39,7 +40,8 @@ public class VarProcessor implements PlaceholderProcessor<VarPlaceholder> {
     }
 
     @Override
-    public @Nullable Object process(VarPlaceholder placeholder, RecursiveTransformer transformer) {
+    public @Nullable Object process(VarPlaceholder placeholder, RecursiveTransformer transformer,
+            EvaluationContext context) {
         String sourceLocation = placeholder.sourceLocation();
 
         if (placeholder.value() instanceof String strVal) {

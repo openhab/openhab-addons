@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.StringInterpolator;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.directives.IfDirective;
 import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
@@ -51,11 +52,13 @@ public class IfProcessor extends AbstractConditionalProcessor implements Placeho
     }
 
     @Override
-    public @Nullable Object process(IfPlaceholder ifPlaceholder, RecursiveTransformer recursiveTransformer) {
+    public @Nullable Object process(IfPlaceholder ifPlaceholder, RecursiveTransformer recursiveTransformer,
+            EvaluationContext context) {
         Object value = ifPlaceholder.value();
 
         @Nullable
-        Boolean simpleSyntaxResult = processSimpleSyntax(value, ifPlaceholder.sourceLocation(), recursiveTransformer);
+        Boolean simpleSyntaxResult = processSimpleSyntax(value, ifPlaceholder.sourceLocation(), recursiveTransformer,
+                context);
         if (simpleSyntaxResult != null) {
             return new IfDirective(simpleSyntaxResult, ifPlaceholder.sourceLocation());
         }
@@ -71,11 +74,12 @@ public class IfProcessor extends AbstractConditionalProcessor implements Placeho
             return null;
         }
 
+        Map<String, @Nullable Object> flattenedScope = context.scope().flatten();
         for (Branch branch : logic.branches()) {
             Object evaluated = switch (branch.condition()) {
                 case null -> "false"; // Treat null condition as false
-                case String s -> StringInterpolator.evaluateExpression(s, recursiveTransformer.getVariables(),
-                        envVarCallback, logger.getLogSession(), ifPlaceholder.sourceLocation());
+                case String s -> StringInterpolator.evaluateExpression(s, flattenedScope, envVarCallback,
+                        logger.getLogSession(), ifPlaceholder.sourceLocation());
                 default -> branch.condition();
             };
 

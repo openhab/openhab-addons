@@ -42,13 +42,52 @@ class DDWRTDiscoveryServiceTest {
     }
 
     @Test
-    void routerHostnameTakesPrecedenceOverExternalName() {
+    void staticRouterHostnameTakesPrecedenceOverExternalName() {
         DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
-        client.setHostname("router-name");
+        client.setHostname("router-name", DDWRTClient.HostnameSource.STATIC_DHCP);
         ClientNameResolver resolver = new ClientNameResolver();
         resolver.addIdentity("External Name", java.util.Map.of("mac", client.getMac()));
 
         assertThat(DDWRTDiscoveryService.selectClientName(client, resolver), is("router-name"));
+    }
+
+    @Test
+    void exactMacNameTakesPrecedenceOverDynamicDhcpName() {
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
+        client.setHostname("HS103", DDWRTClient.HostnameSource.DHCP);
+        ClientNameResolver resolver = new ClientNameResolver();
+        resolver.addIdentity("Kitchen Lamp", java.util.Map.of("mac", client.getMac()));
+
+        assertThat(DDWRTDiscoveryService.selectClientName(client, resolver), is("Kitchen Lamp"));
+    }
+
+    @Test
+    void dynamicDhcpNameIsRetainedWithoutExactMacName() {
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
+        client.setHostname("HS103", DDWRTClient.HostnameSource.DHCP);
+
+        assertThat(DDWRTDiscoveryService.selectClientName(client, new ClientNameResolver()), is("HS103"));
+    }
+
+    @Test
+    void duplicateDynamicDhcpNameFallsBackToOuiName() {
+        DDWRTClient client = new DDWRTClient("10:11:22:33:44:55");
+        client.setHostname("KP115", DDWRTClient.HostnameSource.DUPLICATE_DHCP);
+        client.setOuiHostname("TpLink-334455");
+
+        assertThat(DDWRTDiscoveryService.selectClientName(client, new ClientNameResolver()), is("TpLink-334455"));
+        assertThat(client.getPrimaryHostname(), is("KP115"));
+    }
+
+    @Test
+    void exactMacNameTakesPrecedenceOverDuplicateDynamicDhcpName() {
+        DDWRTClient client = new DDWRTClient("10:11:22:33:44:55");
+        client.setHostname("KP115", DDWRTClient.HostnameSource.DUPLICATE_DHCP);
+        client.setOuiHostname("TpLink-334455");
+        ClientNameResolver resolver = new ClientNameResolver();
+        resolver.addIdentity("Kitchen Plug", java.util.Map.of("mac", client.getMac()));
+
+        assertThat(DDWRTDiscoveryService.selectClientName(client, resolver), is("Kitchen Plug"));
     }
 
     @Test

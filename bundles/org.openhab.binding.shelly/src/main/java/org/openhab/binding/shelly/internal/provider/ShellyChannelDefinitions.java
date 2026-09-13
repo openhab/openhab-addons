@@ -359,6 +359,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STEPS, "sensorSteps", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DISTANCE, "sensorDistance", ITEMT_DISTANCE))
 
+                // Presence sensor (mmWave)
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESENCE, "sensorPresence", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT, "sensorObjectCount", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE, "presenceSensorEnable",
+                        ITEMT_SWITCH))
+
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
@@ -427,8 +433,8 @@ public class ShellyChannelDefinitions {
             group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
 
-        if (channel.startsWith(CHANNEL_INPUT)) {
-            channel = CHANNEL_INPUT;
+        if (!CHGR_SENSOR.equals(group) && channel.startsWith(CHANNEL_INPUT)) {
+            channel = CHANNEL_INPUT; // status#input0..n -> status#input; sensors#input1 (Addon) is a fixed name
         } else if (channel.startsWith(CHANNEL_BUTTON_TRIGGER)) {
             channel = CHANNEL_BUTTON_TRIGGER;
         } else if (channel.startsWith(CHANNEL_STATUS_EVENTTYPE)) {
@@ -574,12 +580,14 @@ public class ShellyChannelDefinitions {
 
     private static void addAddonChannels(final Thing thing, final ShellyDeviceProfile profile, int idx,
             Map<String, Channel> add) {
-        // Shelly 1/1PM and Plus 1/1PM Addon
-        boolean addon = profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
-                && idx == getInteger(profile.settings.extSwitch.input0.relayNum);
-        if (addon) {
-            addChannel(thing, add, addon, CHGR_SENSOR,
-                    CHANNEL_ESENSOR_INPUT + (profile.settings.extSwitch.input0.relayNum + 1));
+        // Shelly 1/1PM Addon as external switch (e.g. reed contact); relay_num -1 means standalone.
+        ShellyStatusSensor.ShellyExtSwitchSettings.ShellyExtSwitchSettingsInput extSwitchInput = profile.settings.extSwitch != null
+                ? profile.settings.extSwitch.input0
+                : null;
+        if (extSwitchInput != null) {
+            int relayNum = getInteger(extSwitchInput.relayNum);
+            boolean addon = idx == relayNum || (idx == 0 && relayNum == -1);
+            addChannel(thing, add, addon, CHGR_SENSOR, CHANNEL_ESENSOR_INPUT1);
         }
         ShellyStatusSensor.ShellyExtTemperature extTemp = profile.status.extTemperature;
         if (extTemp != null) {
@@ -839,6 +847,11 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
+        // Presence Gen4: the zone readings only appear once a zone matches the configured main zone,
+        // so gate them on the device type rather than on the value to keep the channel set complete.
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE);
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT);
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE);
         // Flood Gen4 has no mute channel; a mute/unmute is reported via the device#alarm trigger instead
         addChannel(thing, newChannels, sdata.mute != null && profile.isSmoke, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_MUTE);

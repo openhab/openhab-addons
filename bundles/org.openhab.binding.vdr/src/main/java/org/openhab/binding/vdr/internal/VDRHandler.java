@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.vdr.internal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.vdr.internal.svdrp.SVDRPAudio;
+import org.openhab.binding.vdr.internal.svdrp.SVDRPAudioTrack;
 import org.openhab.binding.vdr.internal.svdrp.SVDRPChannel;
 import org.openhab.binding.vdr.internal.svdrp.SVDRPClient;
 import org.openhab.binding.vdr.internal.svdrp.SVDRPClientImpl;
@@ -42,6 +46,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +62,15 @@ public class VDRHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(VDRHandler.class);
 
+    private final VDRDynamicStateDescriptionProvider stateDescriptionProvider;
+
     private VDRConfiguration config = new VDRConfiguration();
 
     private @Nullable ScheduledFuture<?> refreshThreadFuture = null;
 
-    public VDRHandler(Thing thing) {
+    public VDRHandler(Thing thing, VDRDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     /**
@@ -132,6 +140,13 @@ public class VDRHandler extends BaseThingHandler {
                         result = new DecimalType(channel.getNumber());
                         updateState(channelUID, result);
                         break;
+                    case VDRBindingConstants.CHANNEL_UID_AUDIO:
+                        con.setSVDRPAudio(Integer.parseInt(cmd));
+                        SVDRPAudio audio = con.getSVDRPAudio();
+                        updateAudioTrackOptions(audio);
+                        result = new DecimalType(audio.getActiveTrackNumber());
+                        updateState(channelUID, result);
+                        break;
                     case VDRBindingConstants.CHANNEL_UID_VOLUME:
                         SVDRPVolume volume = con.setSVDRPVolume(Integer.parseInt(cmd));
                         result = new PercentType(volume.getVolume());
@@ -196,6 +211,11 @@ public class VDRHandler extends BaseThingHandler {
                         case VDRBindingConstants.CHANNEL_UID_CHANNEL_NAME:
                             SVDRPChannel svdrpChannel = con.getCurrentSVDRPChannel();
                             result = new StringType(svdrpChannel.getName());
+                            break;
+                        case VDRBindingConstants.CHANNEL_UID_AUDIO:
+                            SVDRPAudio svdrpAudio = con.getSVDRPAudio();
+                            updateAudioTrackOptions(svdrpAudio);
+                            result = new DecimalType(svdrpAudio.getActiveTrackNumber());
                             break;
                         case VDRBindingConstants.CHANNEL_UID_POWER:
                             SVDRPDiskStatus status = con.getDiskStatus();
@@ -283,6 +303,21 @@ public class VDRHandler extends BaseThingHandler {
                 logger.trace("Error on VDR Refresh while closing SVDRP Connection for Thing : {} with message {}",
                         this.getThing().getUID(), e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Update Audio state options on Audio Channel
+     */
+    private void updateAudioTrackOptions(SVDRPAudio audio) {
+        if (isLinked(VDRBindingConstants.CHANNEL_UID_AUDIO)) {
+            List<StateOption> options = new ArrayList<>();
+            for (SVDRPAudioTrack track : audio.getAudioTracks()) {
+                options.add(new StateOption(Integer.toString(track.getId()),
+                        String.format("%s (%s)", track.getDescription(), track.getLanguage())));
+            }
+            stateDescriptionProvider.setStateOptions(
+                    new ChannelUID(getThing().getUID(), VDRBindingConstants.CHANNEL_UID_AUDIO), options);
         }
     }
 

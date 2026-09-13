@@ -95,12 +95,9 @@ import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceNotific
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceWifiDetailsTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DoNotDisturbDeviceStatusesTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.EndpointTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.ListItemTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.ListMediaSessionTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.MediaSessionTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.MusicProviderTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.NamedListsInfoTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.NamedListsItemsTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.NotificationListResponseTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.NotificationSoundResponseTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.PlayerStateTO;
@@ -719,26 +716,6 @@ public class Connection {
         return customerHistoryRecords.customerHistoryRecords.stream()
                 .filter(r -> !"DEVICE_ARBITRATION".equals(r.utteranceType))
                 .sorted(Comparator.comparing(r -> r.timestamp)).toList();
-    }
-
-    public @Nullable NamedListsInfoTO getNamedListInfo(String listId) {
-        try {
-            String url = getAlexaServer() + "/api/namedLists/" + listId + "?_=" + System.currentTimeMillis();
-            return requestBuilder.get(url).syncSend(NamedListsInfoTO.class);
-        } catch (ConnectionException e) {
-            logger.info("getting information for list {} failed", listId, e);
-        }
-        return null;
-    }
-
-    public List<ListItemTO> getNamedListItems(String listId) {
-        try {
-            String url = getAlexaServer() + "/api/namedLists/" + listId + "/items?_=" + System.currentTimeMillis();
-            return requestBuilder.get(url).syncSend(NamedListsItemsTO.class).list;
-        } catch (ConnectionException e) {
-            logger.info("getting items from list '{}' failed", listId, e);
-        }
-        return List.of();
     }
 
     public List<BluetoothStateTO> getBluetoothConnectionStates() {

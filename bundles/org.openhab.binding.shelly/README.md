@@ -117,7 +117,8 @@ See section [Discovery](#discovery) for details.
 | shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
-| shellyplusflood      | Shelly Flood Gen4 water leak sensor                      | S4SN-0071A                                                                |
+| shellyplusflood      | Shelly Flood Gen4 / Flood S Gen4 water leak sensor       | S4SN-0071A, S4SN-0071Z                                                    |
+| shellypluspresence   | Shelly Presence Gen4 mmWave radar sensor                 | S4SN-0U61X                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US, S4DM-0A102US                                                 |
 | shellyplusdimmer     | Shelly Plus Wall Dimmer EU / Dimmer Gen 3                | SNDM-0011EU, S3DM-0A101WWL                                                |
 | shellyprodm2pm       | Shelly Pro Dimmer 2PM                                    | SPDM-002PE01EU                                                            |
@@ -231,6 +232,8 @@ Battery powered devices need to wake up by pressing the button, they will stay a
 
 The binding uses mDNS to discover the Shelly devices.
 They periodically announce their presence, which is used by the binding to find them on the local network.
+Most devices announce themselves as a web server (`_http._tcp`), newer firmware releases use a Shelly-specific announcement (`_shelly._tcp`) instead.
+The binding listens to both, so no additional setup is required.
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
 `Important for Generation 1 Devices:`
@@ -1806,8 +1809,9 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ### Shelly Flood Gen4 (thing-type: shellyplusflood)
 
-The Shelly Flood Gen4 (S4SN-0071A) is a battery-powered water-leak sensor with a configurable alarm mode.
-The sensor probe connects via a cable; if the cable is unplugged, the `lastError` channel is updated and a `SENSOR_ERROR` event is posted to `device#alarm`.
+The Shelly Flood Gen4 (S4SN-0071A) and Shelly Flood S Gen4 (S4SN-0071Z) are battery-powered water-leak sensors with a configurable alarm mode.
+The Flood Gen4 uses a cable-connected sensor probe; if the cable is unplugged, the `lastError` channel is updated and a `SENSOR_ERROR` event is posted to `device#alarm`.
+The Flood S Gen4 instead uses integrated stainless-steel sensor pads.
 
 `Note:`
 The `alarmMode` and `reportHoldoff` channels are writable but only take effect while the sensor is online (awake and connected).
@@ -1830,6 +1834,26 @@ The `alarmMode` channel reflects the Shelly app's Alarm Mode screen:
 | battery | batteryLevel  | Number      | yes       | Battery level in %                                                                                               |
 |         | lowBattery    | Switch      | yes       | ON: Low battery alert (< 20%)                                                                                    |
 | device  | alarm         | Trigger     | yes       | Trigger: `FLOOD` on flood alarm, `SENSOR_ERROR` on cable fault, `ALARM_MUTED` when muted via the physical button |
+
+### Shelly Presence Gen4 (thing-type: shellypluspresence)
+
+Mains-powered (USB-C) mmWave radar occupancy sensor.
+`presence` and `objectCount` are pushed in real time when the device reports a change and are also refreshed on every poll cycle.
+The remaining channels are updated on the poll cycle.
+The device supports up to 10 detection zones.
+The binding reports the zone that is selected as main zone in the Shelly App, which is the same zone the device uses for its own presence indication.
+Readings from the other zones are not published.
+
+| Group   | Channel      | Type               | read-only | Description                                                   |
+| ------- | ------------ | ------------------ | --------- | ------------------------------------------------------------- |
+| sensors | presence     | Switch             | yes       | ON: Occupancy detected in the main detection zone              |
+|         | objectCount  | Number             | yes       | Number of persons/objects currently detected in the main zone  |
+|         | lux          | Number:Illuminance | yes       | Brightness in Lux (see note below)                              |
+|         | illumination | String             | yes       | Ambient light class (dark / twilight / bright)                 |
+|         | lastUpdate   | DateTime           | yes       | Timestamp of the last update                                   |
+| control | sensorEnable | Switch             | r/w       | Enable or disable the mmWave radar sensor                      |
+
+Real Presence Gen4 hardware never reports a numeric lux value, only the `illumination` class - `lux` stays `NULL`/undefined.
 
 ### Shelly Plus Wall Dimmer US (thing-type: shellypluswdus)
 

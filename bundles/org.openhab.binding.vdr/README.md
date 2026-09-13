@@ -30,7 +30,7 @@ Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"    [ host="192.168.0.51", port=641
 
 ## Channels
 
-`power`, `channel`, and `volume` can be used for basic control of your VDR. `diskUsage` can be used within a rule to notify you when disk space for recordings runs short. It is also possible to display custom messages on the VDR OSD via `message`. You can build your own remote control widget in openHAB by using the `keyCode` channel.
+`power`, `channel`, and `volume` can be used for basic control of your VDR. `diskUsage` can be used within a rule to notify you when disk space for recordings runs short. It is also possible to display custom messages on the VDR OSD via `message`. You can build your own remote control widget in openHAB by using the `keyCode` channel. With VDR 2.7.1 or later, the audio track can be selected using the `audio` channel.
 
 You can also show information about the current channel's program on your VDR by displaying the EPG event channels in your favorite openHAB user interface.
 
@@ -41,6 +41,7 @@ To turn on the device VDR is running on, use the Wake-on-LAN functionality from 
 | power                | Switch      | Power State (to switch off VDR)         |
 | channel              | Number      | Current Channel Number (can be changed) |
 | channelName          | String      | Name of Current Channel                 |
+| audio                | Number      | Current Audio Track                     |
 | volume               | Dimmer      | Current Volume                          |
 | recording            | Switch      | Is currently a Recording Active?        |
 | diskUsage            | Number      | Current Disk Usage in %                 |
@@ -71,6 +72,7 @@ Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"    [ host="192.168.0.77", port=641
 Switch      VDR_LivingRoom_Power                "Power"                                     {channel="vdr:vdr:livingRoom:power" }
 Number      VDR_LivingRoom_Channel              "Channel Number"                            {channel="vdr:vdr:livingRoom:channel" }
 String      VDR_LivingRoom_ChannelName          "Channel Name"                              {channel="vdr:vdr:livingRoom:channelName" }
+Number      VDR_LivingRoom_AudioTrack           "Audio Track"                               {channel="vdr:vdr:livingRoom:audio" }
 Dimmer      VDR_LivingRoom_Volume               "Volume"                                    {channel="vdr:vdr:livingRoom:volume" }
 Number      VDR_LivingRoom_DiskUsage            "Disk [%d %%]"                              {channel="vdr:vdr:livingRoom:diskUsage" }
 Switch      VDR_LivingRoom_Recording            "Recording"                                 {channel="vdr:vdr:livingRoom:recording" }
@@ -95,6 +97,7 @@ Frame label="VDR" {
     Switch item=VDR_LivingRoom_Power
     Selection item=VDR_LivingRoom_Channel mappings=[1="DasErste HD", 2="ZDF HD"] visibility=[VDR_LivingRoom_Power==ON]
     Text item=VDR_LivingRoom_ChannelName visibility=[VDR_LivingRoom_Power==ON]
+    Selection item=VDR_LivingRoom_AudioTrack visibility=[VDR_LivingRoom_Power==ON]
     Slider item=VDR_LivingRoom_Volume visibility=[VDR_LivingRoom_Power==ON]
     Text item=VDR_LivingRoom_DiskUsage
     Switch item=VDR_LivingRoom_Recording
