@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
@@ -61,6 +62,32 @@ class ShellyBaseHandlerDisposeTest {
         handler.refreshStatus();
 
         verify(handler, never()).setThingOnline();
+    }
+
+    @Test
+    void refreshStatusDisposedDuringApiCallExceptionDoesNotSetOffline() throws Exception {
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        Thing thing = mock(Thing.class);
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        profile.initialized = true;
+        profile.alwaysOn = false;
+
+        setField(handler, "api", api);
+        setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        handler.profile = profile;
+        handler.scheduledUpdates = 1;
+        doReturn(thing).when(handler).getThing();
+        when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        doReturn(ThingStatusDetail.NONE).when(handler).getThingStatusDetail();
+        when(api.getStatus()).thenAnswer(invocation -> {
+            setField(handler, "stopping", true);
+            throw new ShellyApiException("simulated failure during shutdown");
+        });
+
+        handler.refreshStatus();
+
+        verify(handler, never()).setThingOfflineAndDisconnect(any(), any(), any());
     }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {
