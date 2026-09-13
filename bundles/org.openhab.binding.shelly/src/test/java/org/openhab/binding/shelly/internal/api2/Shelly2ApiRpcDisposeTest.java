@@ -73,6 +73,17 @@ public class Shelly2ApiRpcDisposeTest {
     }
 
     @Test
+    void webSocketErrorWhileTheThingIsStoppingDoesNotSetTheThingOffline() throws Exception {
+        ShellyThingInterface thing = mock(ShellyThingInterface.class);
+        Shelly2ApiRpc api = buildApi(thing, mock(ShellyThingTable.class));
+        when(thing.isStopping()).thenReturn(true);
+
+        api.onError(new EOFException("connection reset"));
+
+        verify(thing, never()).setThingOfflineAndDisconnect(any(ThingStatusDetail.class), anyString(), any());
+    }
+
+    @Test
     void connectWhileTheThingIsStoppingIsIgnored() throws Exception {
         ShellyThingInterface thing = mock(ShellyThingInterface.class);
         ShellyThingTable thingTable = mock(ShellyThingTable.class);
