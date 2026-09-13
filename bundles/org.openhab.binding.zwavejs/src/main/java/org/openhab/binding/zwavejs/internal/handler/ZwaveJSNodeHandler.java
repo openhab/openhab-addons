@@ -150,6 +150,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                     "@text/offline.conf-error.no-node-details");
             return;
         }
+        if (!node.ready) {
+            logger.debug("Node {}. Deferring configuration update until the node is ready", config.id);
+            return;
+        }
 
         ZwaveJSTypeGeneratorResult result;
         try {
@@ -498,6 +502,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                     "@text/offline.comm-error.dead-node");
             return;
         }
+        if (!nodeDetails.ready) {
+            logger.debug("Node {}. Deferring setup until the node is ready", config.id);
+            return;
+        }
         if (!setupThing(nodeDetails)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.build-channels-failed");
@@ -729,6 +737,22 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     public void onNodeAlive(Event event) {
         logger.trace("Node {}. Alive", config.id);
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void onNodeReady(Node node) {
+        logger.debug("Node {}. Ready, rebuilding channels and configuration", config.id);
+        executorService.execute(() -> {
+            if (node.nodeId != config.id || !node.ready) {
+                logger.debug("Node {}. Ignoring invalid ready state for node {}", config.id, node.nodeId);
+                return;
+            }
+            if (!setupThing(node)) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.build-channels-failed");
+                return;
+            }
+            updateStatus(ThingStatus.ONLINE);
+        });
     }
 
     @Override

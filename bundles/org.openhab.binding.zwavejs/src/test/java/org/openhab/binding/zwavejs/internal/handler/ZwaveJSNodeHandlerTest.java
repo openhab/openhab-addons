@@ -30,6 +30,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.zwavejs.internal.DataUtil;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
+import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Statistics;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand;
@@ -83,6 +84,36 @@ public class ZwaveJSNodeHandlerTest {
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)
                     && arg.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNodeSetupIsDeferredUntilReady() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(4);
+        final ChannelUID existingChannelUID = new ChannelUID(thing.getUID(), "existing-channel");
+        final Channel existingChannel = mock(Channel.class);
+        when(existingChannel.getUID()).thenReturn(existingChannelUID);
+        when(thing.getChannels()).thenReturn(List.of(existingChannel));
+
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            assertEquals(List.of(existingChannel), handler.getThing().getChannels());
+            verify(callback, never()).statusUpdated(any(Thing.class),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+
+            Node readyNode = DataUtil.getNodeFromStore("store_4.json", 7);
+            readyNode.nodeId = 4;
+            handler.onNodeReady(readyNode);
+
+            assertNull(handler.getThing().getChannel(existingChannelUID));
+            assertFalse(handler.getThing().getChannels().isEmpty());
+            verify(callback).statusUpdated(argThat(updatedThing -> updatedThing.getUID().equals(thing.getUID())),
+                    argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
         } finally {
             handler.dispose();
         }
