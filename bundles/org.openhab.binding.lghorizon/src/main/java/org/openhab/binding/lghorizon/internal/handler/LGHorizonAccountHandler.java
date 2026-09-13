@@ -506,7 +506,18 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         try {
             auth.fetchAccessToken();
         } catch (LGHorizonApiException e) {
-            logger.debug("Background LG Horizon token refresh failed: {}", e.getMessage());
+            if (e.isAuthenticationFailure()) {
+                logger.warn("Background LG Horizon token refresh failed authentication, going offline: {}",
+                        e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        textWithArg("offline.account-configuration-error", String.valueOf(e.getMessage())));
+                ScheduledFuture<?> refresh = tokenRefreshFuture;
+                if (refresh != null) {
+                    refresh.cancel(false);
+                }
+            } else {
+                logger.debug("Background LG Horizon token refresh failed: {}", e.getMessage());
+            }
         }
     }
 
