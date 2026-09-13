@@ -15,18 +15,16 @@ package org.openhab.binding.shelly.internal.handler;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.mockito.MockedConstruction;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
@@ -38,17 +36,13 @@ import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
-import org.slf4j.LoggerFactory;
-
-import sun.misc.Unsafe;
 
 /**
  * A test harness for {@link ShellyLightHandler} that allows us to create a handler instance outside
- * of the OH framework. This is achieved by avoiding calling the real constructor. The harness creates
- * or mocks some required fields and getters, and provides a way to capture channel updates for
- * testing purposes.
+ * of the OH framework. The harness creates or mocks some required fields and getters, and provides a
+ * way to capture channel updates for testing purposes.
  * 
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -74,74 +68,60 @@ public class ShellyTestLightHandler extends ShellyLightHandler {
     }
 
     public static ShellyTestLightHandler create(ThingTypeUID thingTypeUID) {
-        try {
-            // use Unsafe to allocate an instance of TestLightHandler without calling its constructor
-            Field f = Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            Unsafe unsafe = (Unsafe) f.get(null);
+        Thing thing = mock(Thing.class);
 
-            // allocate ShellyLightHandler without calling its constructor
-            ShellyTestLightHandler handler = (ShellyTestLightHandler) Objects.requireNonNull(unsafe)
-                    .allocateInstance(ShellyTestLightHandler.class);
+        ThingUID uid = new ThingUID(thingTypeUID, "test");
+        Configuration cfg = new Configuration();
+        cfg.setProperties(new HashMap<>());
 
-            // manually initialize required fields
-            handler.profile = new ShellyDeviceProfile(thingTypeUID);
-            handler.profile.initialized = true;
+        lenient().when(thing.getUID()).thenReturn(uid);
+        // First constructor-time lookup forces a Gen1 API instance; all later lookups return the requested type.
+        lenient().when(thing.getThingTypeUID()).thenReturn(THING_TYPE_SHELLYBULB, thingTypeUID);
+        lenient().when(thing.getLabel()).thenReturn("TestThing");
+        lenient().when(thing.getConfiguration()).thenReturn(cfg);
+        lenient().when(thing.getProperties()).thenReturn(new HashMap<>());
 
-            if (THING_TYPE_SHELLYBULB.equals(thingTypeUID)) {
-                handler.profile.inColor = true;
+        ShellyTranslationProvider translationProvider = mock(ShellyTranslationProvider.class, invocation -> {
+            if (String.class.equals(invocation.getMethod().getReturnType()) && invocation.getArguments().length > 0
+                    && invocation.getArguments()[0] instanceof String text) {
+                return text;
             }
-            if (THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
-                handler.profile.inColor = true;
-            }
+            return RETURNS_DEFAULTS.answer(invocation);
+        });
 
-            Field lmField = ShellyLightHandler.class.getDeclaredField("lightModels");
-            lmField.setAccessible(true);
-            lmField.set(handler, new TreeMap<Integer, ShellyLightModel>());
+        ShellyBindingRuntimeConfig bindingConfig = mock(ShellyBindingRuntimeConfig.class);
+        lenient().when(bindingConfig.getLocalIP()).thenReturn("");
+        lenient().when(bindingConfig.getHttpPort()).thenReturn(8080);
+        lenient().when(bindingConfig.getDefaultUserId()).thenReturn("");
+        lenient().when(bindingConfig.getDefaultPassword()).thenReturn("");
 
-            Field baseLog = ShellyBaseHandler.class.getDeclaredField("logger");
-            baseLog.setAccessible(true);
-            baseLog.set(handler, LoggerFactory.getLogger("ShellyTest"));
+        ShellyThingTable thingTable = mock(ShellyThingTable.class);
+        Shelly1CoapServer coapServer = mock(Shelly1CoapServer.class);
+        HttpClient httpClient = mock(HttpClient.class);
+        WebSocketClient webSocketClient = mock(WebSocketClient.class);
+        LocationProvider locationProvider = mock(LocationProvider.class);
+        ShellyStateDescriptionProvider stateDescriptionProvider = mock(ShellyStateDescriptionProvider.class);
 
-            Field lightLog = ShellyLightHandler.class.getDeclaredField("logger");
-            lightLog.setAccessible(true);
-            lightLog.set(handler, LoggerFactory.getLogger("ShellyTest"));
-
-            Field lockField = ShellyLightHandler.class.getDeclaredField("lightModelsLock");
-            lockField.setAccessible(true);
-            lockField.set(handler, new ReentrantLock());
-
-            Thing thing = mock(Thing.class);
-
-            ThingUID uid = new ThingUID(thingTypeUID, "test");
-
-            Configuration cfg = new Configuration();
-            cfg.setProperties(new HashMap<>());
-
-            lenient().when(thing.getUID()).thenReturn(uid);
-            lenient().when(thing.getThingTypeUID()).thenReturn(thingTypeUID);
-            lenient().when(thing.getLabel()).thenReturn("TestThing");
-            lenient().when(thing.getConfiguration()).thenReturn(cfg);
-
-            Field thingField = BaseThingHandler.class.getDeclaredField("thing");
-            thingField.setAccessible(true);
-            thingField.set(handler, thing);
-
-            handler.channelUpdates = new HashMap<>();
-            handler.apiCalls = new ArrayList<>();
-
-            Shelly1HttpApi api = mock(Shelly1HttpApi.class, invocation -> {
-                handler.apiCalls.add(new ApiCall(invocation.getMethod().getName(), invocation.getArguments()));
-                return RETURNS_DEFAULTS.answer(invocation);
-            });
-            Field apiField = ShellyBaseHandler.class.getDeclaredField("api");
-            apiField.setAccessible(true);
-            apiField.set(handler, api);
-
-            return handler;
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to create ShellyTestLightHandler", e);
+        List<ApiCall> recordedApiCalls = new ArrayList<>();
+        ShellyTestLightHandler handler;
+        try (MockedConstruction<Shelly1HttpApi> ignored = mockConstruction(Shelly1HttpApi.class,
+                withSettings().defaultAnswer(invocation -> {
+                    recordedApiCalls.add(new ApiCall(invocation.getMethod().getName(), invocation.getArguments()));
+                    return RETURNS_DEFAULTS.answer(invocation);
+                }))) {
+            handler = new ShellyTestLightHandler(thing, translationProvider, bindingConfig, thingTable, coapServer,
+                    httpClient, webSocketClient, locationProvider, stateDescriptionProvider);
         }
+
+        handler.setCallback(mock(ThingHandlerCallback.class));
+        handler.profile = new ShellyDeviceProfile(thingTypeUID);
+        handler.profile.initialized = true;
+        if (THING_TYPE_SHELLYBULB.equals(thingTypeUID) || THING_TYPE_SHELLYRGBW2_COLOR.equals(thingTypeUID)) {
+            handler.profile.inColor = true;
+        }
+        handler.channelUpdates = new HashMap<>();
+        handler.apiCalls = recordedApiCalls;
+        return handler;
     }
 
     @Override
