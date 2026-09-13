@@ -124,7 +124,6 @@ class ShellyLightHandlerLightModelTest {
             assertNotNull(model);
             int[] rgbx = model.getRGBX();
             assertArrayEquals(new int[] { 255, 0, 0, 0 }, rgbx);
-            // assertFalse(lockedModels.releaseLock()); // not dirty, so releaseLock returns false
         }
     }
 
