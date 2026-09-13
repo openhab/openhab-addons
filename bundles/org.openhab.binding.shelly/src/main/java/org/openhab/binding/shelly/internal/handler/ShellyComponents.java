@@ -224,6 +224,7 @@ public class ShellyComponents {
      */
     public static boolean updateMeters(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
+        reconcileMeterChannels(thingHandler, profile);
         if (status.meters == null && status.emeters == null) {
             return false;
         }
@@ -1043,6 +1044,13 @@ public class ShellyComponents {
         if (!profile.settings.loraDetected) {
             profile.addOnFw = "";
             thingHandler.removeProperty(PROPERTY_ADDON_FIRMWARE);
+        }
+    }
+
+    private static void reconcileMeterChannels(ShellyThingInterface thingHandler, ShellyDeviceProfile profile) {
+        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteMeterChannelIds(profile);
+        if (!obsolete.isEmpty()) {
+            thingHandler.removeChannels(obsolete);
         }
     }
 
