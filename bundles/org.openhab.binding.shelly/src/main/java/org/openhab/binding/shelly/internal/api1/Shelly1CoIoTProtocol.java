@@ -292,7 +292,7 @@ public class Shelly1CoIoTProtocol {
                         model.setOnOff(power == 1.0); // do power after gain / brightness
                     }
                 } else {
-                    logger.warn("{}: updatePower() for index={} but no light model found!", thingName, id - 1);
+                    logger.debug("{}: updatePower() for index={} but no light model found!", thingName, id - 1);
                 }
             }
         } else if (profile.hasRelays) {
