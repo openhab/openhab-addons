@@ -112,19 +112,6 @@
 		<description>Light colors</description>
 	</channel-group-type>
 
-	<channel-group-type id="colorSettingsRGBWpm">
-		<label>Colors</label>
-		<description>Light colors</description>
-		<channels>
-			<channel id="hsb" typeId="colorMain"/>
-			<channel id="full" typeId="colorFull"/>
-			<channel id="red" typeId="colorRed"/>
-			<channel id="green" typeId="colorGreen"/>
-			<channel id="blue" typeId="colorBlue"/>
-			<channel id="white" typeId="colorWhite"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="colorSettingsRGB">
 		<label>Colors</label>
 		<description>Light colors</description>
