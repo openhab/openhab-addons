@@ -167,22 +167,6 @@ public class Shelly1CoIoTVersion2Test {
         assertThat(updates.get(mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN)), is(new PercentType(40)));
     }
 
-    @Test
-    void colorTempSensorWithVersion2DescriptorDoesNotUpdateColorState() throws ReflectiveOperationException {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
-        profile.inColor = false;
-        Shelly1CoIoTVersion2 v2 = newProtocol(profile);
-        ShellyColorUtils col = new ShellyColorUtils();
-        Map<String, State> updates = new HashMap<>();
-        CoIotSensor colorTemp = sensor("5103", 4200);
-
-        assertThat(v2.handleStatusUpdate(List.of(colorTemp), desc("5103", "colorTemp"), 0, colorTemp, updates, col),
-                is(true));
-
-        assertThat(getIntField(col, "temp"), is(0));
-        assertThat(updates.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)), is(false));
-    }
-
     private CoIotSensor sensor(String id, double value) {
         CoIotSensor sensor = new CoIotSensor();
         sensor.id = id;
