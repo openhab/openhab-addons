@@ -57,8 +57,6 @@ public class SpotifyAuthServlet extends HttpServlet {
     private static final String HEADER_X_FORWARDED_SSL = "X-Forwarded-Ssl";
     private static final String HEADER_FRONT_END_HTTPS = "Front-End-Https";
     private static final String HEADER_FORWARDED = "Forwarded";
-    private static final Pattern FORWARDED_PROTO_PATTERN = Pattern.compile("proto=\"?([a-zA-Z]+)\"?",
-            Pattern.CASE_INSENSITIVE);
     private static final Set<String> VALID_SCHEMES = Set.of("http", "https");
 
     // Simple HTML templates for inserting messages.
@@ -198,12 +196,25 @@ public class SpotifyAuthServlet extends HttpServlet {
         if (value == null || value.isBlank()) {
             return null;
         }
-        // RFC 7239, e.g. "for=1.2.3.4;proto=https;by=203.0.113.43"; only the first hop is relevant here.
-        final Matcher matcher = FORWARDED_PROTO_PATTERN.matcher(value.split(",")[0]);
-        if (!matcher.find()) {
-            return null;
+        // RFC 7239, e.g. "for=1.2.3.4;proto=https;by=203.0.113.43"; only the first hop is relevant here. A hop is a
+        // semicolon-separated list of "token=value" forwarded-pairs, with the value optionally quoted.
+        final String firstHop = value.split(",")[0];
+        for (String pair : firstHop.split(";")) {
+            final int equals = pair.indexOf('=');
+            if (equals < 0) {
+                continue;
+            }
+            final String name = pair.substring(0, equals).trim();
+            if (!"proto".equalsIgnoreCase(name)) {
+                continue;
+            }
+            String candidate = pair.substring(equals + 1).trim();
+            if (candidate.length() >= 2 && candidate.startsWith("\"") && candidate.endsWith("\"")) {
+                candidate = candidate.substring(1, candidate.length() - 1);
+            }
+            return normalizeSchemeOrIgnore(HEADER_FORWARDED, candidate);
         }
-        return normalizeSchemeOrIgnore(HEADER_FORWARDED, matcher.group(1));
+        return null;
     }
 
     /**

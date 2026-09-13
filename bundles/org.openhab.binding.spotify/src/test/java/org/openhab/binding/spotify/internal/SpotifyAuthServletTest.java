@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
  * Tests for {@link SpotifyAuthServlet}, focused on how it determines the scheme (http/https) to use for the Spotify
  * redirect_uri from a request that may have passed through one or more reverse proxies.
  *
- * @author Claude Sonnet 5 - Initial contribution
+ * @author David MARTIN - Initial contribution
  */
 @NonNullByDefault
 public class SpotifyAuthServletTest {
@@ -134,6 +134,36 @@ public class SpotifyAuthServletTest {
         when(req.getHeader("Forwarded")).thenReturn("for=1.2.3.4;proto=ftp;by=203.0.113.43");
 
         assertEquals("http", servlet.determineScheme(req));
+    }
+
+    @Test
+    public void forwardedHeaderExtensionParameterNamedProtoIsNotMistakenForProto() {
+        // Regression test: "xproto" is a distinct RFC 7239 extension parameter, not "proto", and must not match.
+        when(req.getHeader("Forwarded")).thenReturn("xproto=https");
+
+        assertEquals("http", servlet.determineScheme(req));
+    }
+
+    @Test
+    public void forwardedHeaderProtoValueWithTrailingCharactersIsRejected() {
+        // Regression test: "https1" is not a valid scheme and must not be truncated down to a match on "https".
+        when(req.getHeader("Forwarded")).thenReturn("proto=https1");
+
+        assertEquals("http", servlet.determineScheme(req));
+    }
+
+    @Test
+    public void forwardedHeaderProtoValueMayBeQuoted() {
+        when(req.getHeader("Forwarded")).thenReturn("for=1.2.3.4;proto=\"https\";by=203.0.113.43");
+
+        assertEquals("https", servlet.determineScheme(req));
+    }
+
+    @Test
+    public void forwardedHeaderProtoParameterNameIsCaseInsensitive() {
+        when(req.getHeader("Forwarded")).thenReturn("PROTO=https");
+
+        assertEquals("https", servlet.determineScheme(req));
     }
 
     @Test
