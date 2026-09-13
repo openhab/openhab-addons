@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Wraps an openHAB {@link MqttBrokerConnection} to talk to the LG Horizon "obomsg" push broker over
@@ -168,8 +169,9 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
             String json = new String(payload, StandardCharsets.UTF_8);
             JsonObject parsed = JsonParser.parseString(json).getAsJsonObject();
             listener.onMessage(topic, parsed);
-        } catch (Exception e) {
-            logger.debug("Ignoring non-JSON or malformed MQTT message on topic {}: {}", topic, e.getMessage());
+        } catch (JsonSyntaxException | IllegalStateException e) {
+            logger.debug("Ignoring non-JSON or malformed MQTT message on topic {}: {}",
+                    LGHorizonContentAnonymizer.anonymizeTopic(topic), e.getMessage());
         }
     }
 

@@ -30,7 +30,7 @@ public class CustomerDto {
     public String countryId;
 
     @SerializedName("cityId")
-    public int cityId;
+    public Integer cityId;
 
     @SerializedName("profiles")
     public List<ProfileDto> profiles;

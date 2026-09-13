@@ -336,9 +336,8 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     }
 
     /**
-     * Displays an on-screen message. Called by {@link LGHorizonActions}. {@code title}/{@code duration} fall
-     * back to {@link LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_TITLE}/
-     * {@link LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS} when not supplied.
+     * Displays an on-screen message. Called by {@link LGHorizonActions}. {@code duration} falls
+     * back to {@link LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS} when not supplied.
      */
     public void displayMessage(String message, @Nullable Integer duration) {
         LGHorizonAccountHandler account = getAccountHandler();
@@ -503,6 +502,11 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         updateState(LGHorizonBindingConstants.CHANNEL_FAVORITE_CHANNEL_NUMBER, UnDefType.UNDEF);
     }
 
+    /** Whether {@code contentId} is still what we're currently resolving for - see {@link #resolveEventMetadata}. */
+    private boolean isStillCurrent(String contentId) {
+        return contentId.equals(lastResolvedContentId);
+    }
+
     private void resolveEventMetadata(String eventId, boolean useChannelImage) {
         if (eventId.equals(lastResolvedContentId)) {
             return;
@@ -515,9 +519,14 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         String language = getLanguage(account);
         scheduler.execute(() -> {
             EventDetailDto detail = account.getEventDetail(eventId, language);
+            if (!isStillCurrent(eventId)) {
+                // A newer request superseded this one while the REST call was in flight.
+                return;
+            }
             if (detail == null) {
                 clearTitleMetadata();
                 updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+                lastResolvedContentId = null;
                 return;
             }
             // For linear/reviewBuffer/replay, "title" is the show/program title and "episodeName" is the episode's own
@@ -531,7 +540,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             } else {
                 imageUrl = account.getIntentImageUrl(eventId);
             }
-            updateImageFromUrlOrClear(imageUrl);
+            updateImageFromUrlOrClear(eventId, imageUrl);
         });
     }
 
@@ -548,9 +557,14 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         String effectiveProfileId = resolveProfileId(account);
         scheduler.execute(() -> {
             VodDetailDto detail = account.getVodDetail(titleId, effectiveProfileId, language);
+            if (!isStillCurrent(titleId)) {
+                // A newer request superseded this one while the REST call was in flight.
+                return;
+            }
             if (detail == null) {
                 clearTitleMetadata();
                 updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+                lastResolvedContentId = null;
                 return;
             }
             // For an episode, the field "title" holds the EPISODE's own name - the show name is in the separate
@@ -562,7 +576,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                 applyTitleMetadata(detail.title, null, null, null);
             }
             String imageUrl = account.getIntentImageUrl(detail.id != null ? detail.id : titleId);
-            updateImageFromUrlOrClear(imageUrl);
+            updateImageFromUrlOrClear(titleId, imageUrl);
         });
     }
 
@@ -579,9 +593,14 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         String effectiveProfileId = resolveProfileId(account);
         scheduler.execute(() -> {
             RecordingDetailDto detail = account.getRecordingDetail(recordingId, effectiveProfileId, language);
+            if (!isStillCurrent(recordingId)) {
+                // A newer request superseded this one while the REST call was in flight.
+                return;
+            }
             if (detail == null) {
                 clearTitleMetadata();
                 updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+                lastResolvedContentId = null;
                 return;
             }
             // nDVR is conditional on "source": for a "show"-sourced (standalone) recording, "title"
@@ -589,7 +608,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             // the "showTitle" field instead - RecordingDetailDto.getShowTitle() already applies this distinction.
             applyTitleMetadata(detail.getShowTitle(), detail.episodeTitle, detail.seasonNumber, detail.episodeNumber);
             String imageUrl = account.getIntentImageUrl(detail.id != null ? detail.id : recordingId);
-            updateImageFromUrlOrClear(imageUrl);
+            updateImageFromUrlOrClear(recordingId, imageUrl);
         });
     }
 
@@ -637,22 +656,30 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     }
 
     /** Fetches the image bytes (a real network call) and updates the media-image channel. */
-    private void updateImageFromUrl(String url) {
+    private void updateImageFromUrl(String contentId, String url) {
         LGHorizonAccountHandler account = getAccountHandler();
         if (account == null) {
             return;
         }
         RawType image = account.fetchImage(url);
+        if (!isStillCurrent(contentId)) {
+            // A newer request superseded this one while the REST call was in flight.
+            return;
+        }
         updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, image != null ? image : UnDefType.UNDEF);
     }
 
     /** Clears media-image immediately if no image URL could be resolved at all, otherwise fetches it. */
-    private void updateImageFromUrlOrClear(@Nullable String url) {
+    private void updateImageFromUrlOrClear(String contentId, @Nullable String url) {
+        if (!isStillCurrent(contentId)) {
+            // A newer request superseded this one while the REST call was in flight.
+            return;
+        }
         if (url == null) {
             updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
             return;
         }
-        updateImageFromUrl(url);
+        updateImageFromUrl(contentId, url);
     }
 
     /** Handles the {@code status.appsState} shape used when {@code status.uiStatus} is {@code "apps"}. */
@@ -672,7 +699,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         String logoPath = getString(appsState, "logoPath").orElse(null);
         if (logoPath != null && !logoPath.equals(lastResolvedContentId)) {
             lastResolvedContentId = logoPath;
-            scheduler.execute(() -> updateImageFromUrl(logoPath));
+            scheduler.execute(() -> updateImageFromUrl(logoPath, logoPath));
         }
     }
 

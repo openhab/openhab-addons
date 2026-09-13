@@ -8,7 +8,7 @@
 	<description>Integrates TV set-top boxes using the LG Horizon platform.</description>
 	<keywords>Telenet, Base, Ziggo, Virgin Media, UPC, Sunrise</keywords>
 	<connection>cloud</connection>
-	<countries>be,nl,uk,ie,ch,pl</countries>
+	<countries>be,nl,gb,ie,ch,pl</countries>
 
 	<discovery-methods>
 		<discovery-method>

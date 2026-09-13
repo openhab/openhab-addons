@@ -192,8 +192,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             }
 
             tokenRefreshFuture = scheduler.scheduleWithFixedDelay(this::checkTokenRefresh, 1, 1, TimeUnit.HOURS);
-        } catch (LGHorizonApiException e) {
-            if (e.isAuthenticationFailure()) {
+        } catch (LGHorizonApiException | IllegalArgumentException e) {
+            if (e instanceof LGHorizonApiException apiException && apiException.isAuthenticationFailure()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -327,14 +327,17 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
             String linearServiceUrl = auth.getServiceConfig().getServiceUrl("linearService");
             CustomerDto c = customer;
-            int cityId = c != null ? c.cityId : 0;
+            Integer cityId = c != null ? c.cityId : null;
+            if (cityId == null) {
+                throw new LGHorizonApiException("Cannot fetch channels: customer cityId not available");
+            }
             for (String lang : languageByProfileId.values().stream().distinct().toList()) {
                 tryFetch(snapshot, "channels-" + lang,
                         () -> auth.getAsJsonElement(linearServiceUrl,
                                 "/v2/channels?cityId=" + cityId + "&language=" + lang + "&productClass=Orion-DASH")
                                 .toString());
             }
-        } catch (LGHorizonApiException e) {
+        } catch (LGHorizonApiException | IllegalArgumentException e) {
             logger.debug("Could not resolve service URLs for diagnostic snapshot: {}", e.getMessage());
         }
         return snapshot;
@@ -416,7 +419,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         return future;
     }
 
-    private void refreshCustomerAndChannels(LGHorizonAuthClient auth) throws LGHorizonApiException {
+    private void refreshCustomerAndChannels(LGHorizonAuthClient auth)
+            throws LGHorizonApiException, IllegalArgumentException {
         String householdId = auth.getHouseholdId();
         CustomerDto customerDto = auth.get(auth.getServiceConfig().getServiceUrl("personalizationService"),
                 "/v1/customer/" + householdId + "?with=profiles%2Cdevices", CustomerDto.class);
@@ -443,8 +447,12 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         List<String> entitlementIds = entitlementsDto.getEntitlementIds();
         Map<String, Map<String, ChannelDto>> channelsByLanguage = new HashMap<>();
         for (String lang : languageByProfileId.values()) {
+            Integer cityId = customerDto.cityId;
+            if (cityId == null) {
+                throw new LGHorizonApiException("Cannot fetch channels: customer cityId not available");
+            }
             ChannelDto[] channelArray = auth.get(auth.getServiceConfig().getServiceUrl("linearService"),
-                    "/v2/channels?cityId=" + customerDto.cityId + "&language=" + lang + "&productClass=Orion-DASH",
+                    "/v2/channels?cityId=" + cityId + "&language=" + lang + "&productClass=Orion-DASH",
                     ChannelDto[].class);
             logger.trace("Received: {}, {} channels: {}", LGHorizonContentAnonymizer.anonymizeTopic(householdId), lang,
                     Arrays.toString(channelArray));
@@ -554,7 +562,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
                     linearServiceUrl, "/v2/replayEvent/" + eventId
                             + "?returnLinearContent=true&forceLinearResponse=true&language=" + language,
                     EventDetailDto.class);
-        } catch (LGHorizonApiException e) {
+        } catch (LGHorizonApiException | IllegalArgumentException e) {
             logger.debug("Could not resolve event detail for {}: {}", eventId, e.getMessage());
             return null;
         }
@@ -575,9 +583,13 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
         try {
             String vodServiceUrl = auth.getServiceConfig().getServiceUrl("vodService");
+            Integer cityId = c.cityId;
+            if (cityId == null) {
+                throw new LGHorizonApiException("Cannot fetch VOD detail: customer cityId not available");
+            }
             return auth.get(vodServiceUrl, "/v2/detailscreen/" + titleId + "?language=" + language + "&profileId="
-                    + profileId + "&cityId=" + c.cityId, VodDetailDto.class);
-        } catch (LGHorizonApiException e) {
+                    + profileId + "&cityId=" + cityId, VodDetailDto.class);
+        } catch (LGHorizonApiException | IllegalArgumentException e) {
             logger.debug("Could not resolve VOD detail for {}: {}", titleId, e.getMessage());
             return null;
         }
@@ -600,7 +612,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             String recordingServiceUrl = auth.getServiceConfig().getServiceUrl("recordingService");
             return auth.get(recordingServiceUrl, "/customers/" + householdId + "/details/single/" + recordingId
                     + "?profileId=" + profileId + "&language=" + language, RecordingDetailDto.class);
-        } catch (LGHorizonApiException e) {
+        } catch (LGHorizonApiException | IllegalArgumentException e) {
             logger.debug("Could not resolve recording detail for {}: {}", recordingId, e.getMessage());
             return null;
         }
@@ -640,7 +652,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             }
             JsonObject firstIntent = first.getAsJsonArray("intents").get(0).getAsJsonObject();
             return firstIntent.has("url") ? firstIntent.get("url").getAsString() : null;
-        } catch (LGHorizonApiException | RuntimeException e) {
+        } catch (LGHorizonApiException | IllegalArgumentException | IllegalStateException e) {
             logger.debug("Could not resolve intent image for {}: {}", intentId, e.getMessage());
             return null;
         }

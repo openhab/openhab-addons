@@ -49,8 +49,6 @@ public class AuthResponseDto {
 
     @Override
     public String toString() {
-        return "AuthResponseDto [householdId=" + householdId + ", accessToken=" + accessToken + ", refreshToken="
-                + refreshToken + ", refreshTokenExpiry=" + refreshTokenExpiry + ", username=" + username + ", error="
-                + error + "]";
+        return "AuthResponseDto [refreshTokenExpiry=" + refreshTokenExpiry + ", error=" + error + "]";
     }
 }

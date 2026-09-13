@@ -39,7 +39,6 @@ Once an `account` is configured and active, the binding will discover available 
 | username        | no       | Only for password-based providers                                           |
 | password        | no       | Only for password-based providers                                           |
 | refreshToken    | no       | Only for refresh-token-based providers                                      |
-| mqttClientId    | no       | Fixed MQTT client id; random if left blank                                  |
 
 ### Refresh token based authentication (BASE TV, Telenet, UPC/Sunrise, Virgin Media GB)
 

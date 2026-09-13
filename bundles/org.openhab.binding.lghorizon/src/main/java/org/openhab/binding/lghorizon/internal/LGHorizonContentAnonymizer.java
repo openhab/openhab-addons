@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.lghorizon.internal;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,37 +38,40 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class LGHorizonContentAnonymizer {
 
-    private static final Map<String, String> CUSTOMER_ID_MAP = new HashMap<>();
+    // Avoid maps growing unboundedly in a long-running openHAB instance.
+    private static final int MAX_TRACKED_VALUES_PER_MAP = 500;
+
+    private static final Map<String, String> CUSTOMER_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger CUSTOMER_ID_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> HASHED_ID_MAP = new HashMap<>();
+    private static final Map<String, String> HASHED_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger HASHED_ID_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> DEVICE_ID_MAP = new HashMap<>();
+    private static final Map<String, String> DEVICE_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger DEVICE_ID_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> DEVICE_NAME_MAP = new HashMap<>();
+    private static final Map<String, String> DEVICE_NAME_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger DEVICE_NAME_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> SERIAL_MAP = new HashMap<>();
+    private static final Map<String, String> SERIAL_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger SERIAL_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> PROFILE_ID_MAP = new HashMap<>();
+    private static final Map<String, String> PROFILE_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger PROFILE_ID_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> AD_DEVICE_ID_MAP = new HashMap<>();
+    private static final Map<String, String> AD_DEVICE_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger AD_DEVICE_ID_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> PIN_MAP = new HashMap<>();
+    private static final Map<String, String> PIN_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger PIN_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> TOKEN_MAP = new HashMap<>();
+    private static final Map<String, String> TOKEN_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger TOKEN_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> HOUSEHOLD_ID_MAP = new HashMap<>();
+    private static final Map<String, String> HOUSEHOLD_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger HOUSEHOLD_ID_COUNTER = new AtomicInteger();
 
-    private static final Map<String, String> CITY_ID_MAP = new HashMap<>();
+    private static final Map<String, String> CITY_ID_MAP = new ConcurrentHashMap<>();
     private static final AtomicInteger CITY_ID_COUNTER = new AtomicInteger();
 
     // Field-name-scoped patterns: "<fieldName>":"<value>" (value may be empty)
@@ -159,6 +162,32 @@ public final class LGHorizonContentAnonymizer {
     }
 
     /**
+     * Anonymizes a bare device id value - not embedded in JSON or a topic string, but used as-is (e.g. in a
+     * generated filename or archive path).
+     */
+    public static String anonymizeDeviceId(@Nullable String deviceId) {
+        if (deviceId == null || deviceId.isBlank()) {
+            return "UNKNOWN_DEVICE";
+        }
+        evictIfTooLarge(DEVICE_ID_MAP);
+        String anonymous = DEVICE_ID_MAP.computeIfAbsent(deviceId,
+                v -> "DEVICE_" + DEVICE_ID_COUNTER.incrementAndGet());
+        return anonymous == null ? "UNKNOWN_DEVICE" : anonymous;
+    }
+
+    /**
+     * Simple, imprecise-by-design bound on map growth: once a map gets unreasonably large, just clear it
+     * and let it rebuild - not an LRU cache, but sufficient for a diagnostic anonymizer, where "the same
+     * real value always maps to the same placeholder" only needs to hold within one session/capture, not
+     * for the entire lifetime of a long-running openHAB instance.
+     */
+    private static void evictIfTooLarge(Map<String, String> map) {
+        if (map.size() > MAX_TRACKED_VALUES_PER_MAP) {
+            map.clear();
+        }
+    }
+
+    /**
      * Replaces every match of an unquoted {@code field:123} or {@code field=123} numeric pattern, mapping
      * each distinct value consistently. The replacement is itself numeric (not wrapped in quotes) so JSON
      * stays syntactically valid and the field's original type (a number, not a string) is preserved.
@@ -171,6 +200,7 @@ public final class LGHorizonContentAnonymizer {
         while (matcher.find()) {
             result.append(content, last, matcher.start());
             String value = matcher.group("value");
+            evictIfTooLarge(map);
             String anonymous = map.computeIfAbsent(value, v -> String.valueOf(10000 + counter.incrementAndGet()));
             result.append(matcher.group("leading")).append(anonymous);
             last = matcher.end();
@@ -191,6 +221,7 @@ public final class LGHorizonContentAnonymizer {
             if (value.isEmpty()) {
                 result.append(matcher.group());
             } else {
+                evictIfTooLarge(map);
                 String anonymous = map.computeIfAbsent(value, v -> placeholderPrefix + counter.incrementAndGet());
                 result.append(matcher.group("leading")).append(":\"").append(anonymous).append('"');
             }
@@ -223,6 +254,7 @@ public final class LGHorizonContentAnonymizer {
         while (matcher.find()) {
             result.append(content, last, matcher.start());
             String value = matcher.group();
+            evictIfTooLarge(map);
             String anonymous = map.computeIfAbsent(value, v -> placeholderPrefix + counter.incrementAndGet());
             result.append(anonymous);
             last = matcher.end();

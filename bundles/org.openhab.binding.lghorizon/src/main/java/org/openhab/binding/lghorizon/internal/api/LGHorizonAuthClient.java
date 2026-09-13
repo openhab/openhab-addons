@@ -86,7 +86,7 @@ public class LGHorizonAuthClient {
      * JsonElement/JsonObject fetches all funnel through {@link #getRaw}, so this one hook point covers all
      * of them uniformly. {@code null} when no capture is active (the normal case).
      */
-    private @Nullable BiConsumer<String, String> callCaptureListener;
+    private volatile @Nullable BiConsumer<String, String> callCaptureListener;
 
     public void setCallCaptureListener(@Nullable BiConsumer<String, String> listener) {
         this.callCaptureListener = listener;

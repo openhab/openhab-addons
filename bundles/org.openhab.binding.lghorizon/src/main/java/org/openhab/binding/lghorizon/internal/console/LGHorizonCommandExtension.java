@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -353,7 +355,9 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
                 Object deviceIdObj = box.getConfiguration().get(LGHorizonBindingConstants.CONFIG_DEVICE_ID);
                 String deviceId = deviceIdObj == null ? "" : deviceIdObj.toString();
                 console.println("###### Box " + box.getUID() + " - " + box.getLabel());
-                captureAndSave(console, accountPath, "box-status_" + deviceId, handler.captureNextStatus(deviceId));
+                captureAndSave(console, accountPath,
+                        "box-status_" + LGHorizonContentAnonymizer.anonymizeDeviceId(deviceId),
+                        handler.captureNextStatus(deviceId));
             }
             if (multipleAccount) {
                 console.println("### End account " + accountLabel(handler));
@@ -378,15 +382,14 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
      * appended log file - MQTT status/uiStatus messages, every REST call the binding makes in response
      * (event/VOD/recording detail lookups, the intent image URL lookup), and metadata (never bytes) for
      * every image fetch, all sharing one sequence number so the actual order events happened in is
-     * preserved and scannable, rather than split across separate per-type files that each restart their
-     * own counter - that made it impossible to see what triggered what.
+     * preserved and scannable.
      * <p>
      * Meant to be run while a user actively interacts with the box (changing channels, rewinding, launching
-     * an app, starting a recording, ...). Blocks the console's own command thread for the duration, which is the point:
-     * the command doesn't return control until the window has elapsed.
+     * an app, starting a recording, ...). Blocks the console's own command thread for the duration.
      */
     private void capture(Console console, LGHorizonAccountHandler handler, String deviceId, int durationSeconds) {
-        String path = nextPath(FINGERPRINT_ROOT_PATH + File.separator + "capture-" + deviceId + "-"
+        String anonymizedDeviceId = LGHorizonContentAnonymizer.anonymizeDeviceId(deviceId);
+        String path = nextPath(FINGERPRINT_ROOT_PATH + File.separator + "capture-" + anonymizedDeviceId + "-"
                 + LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE), "log");
 
         console.println("Capturing live traffic for " + durationSeconds
@@ -394,32 +397,26 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
         console.println("Writing to: " + path);
 
         AtomicInteger sequence = new AtomicInteger();
-        // Guards the actual file append: the three capture callbacks below can each fire concurrently, on
-        // different threads (the MQTT client's own thread for live messages, whichever thread happened to
-        // trigger a given REST/image call), so appends need to be serialized to avoid interleaved writes.
-        Object fileLock = new Object();
+        ExecutorService writer = Executors.newSingleThreadExecutor();
 
         handler.startLiveCapture(deviceId, (topic, payload) -> {
-            String anonymizedTopic = String.valueOf(LGHorizonContentAnonymizer.anonymizeTopic(topic));
+            int index = sequence.incrementAndGet();
+            String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
             JsonObject wrapper = new JsonObject();
             wrapper.addProperty("topic", topic);
             wrapper.add("payload", payload);
-            String body = prettyJson(anonymizeOrEmpty(wrapper.toString()));
-            appendCaptureEntry(console, path, fileLock, sequence, "MQTT", anonymizedTopic, body);
+            submitCaptureEntry(writer, console, path, index, timestamp, "MQTT", topic, wrapper.toString());
         });
         handler.startRestCapture((url, responseBody) -> {
-            JsonObject wrapper = new JsonObject();
-            wrapper.addProperty("url", url);
-            try {
-                wrapper.add("response", JsonParser.parseString(responseBody));
-            } catch (JsonSyntaxException e) {
-                wrapper.addProperty("response", responseBody);
-            }
-            String body = prettyJson(anonymizeOrEmpty(wrapper.toString()));
-            appendCaptureEntry(console, path, fileLock, sequence, "REST", url, body);
+            int index = sequence.incrementAndGet();
+            String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
+            submitCaptureEntry(writer, console, path, index, timestamp, "REST", url, responseBody);
         });
-        handler.startImageCapture(description -> appendCaptureEntry(console, path, fileLock, sequence, "IMAGE",
-                anonymizeOrEmpty(description), null));
+        handler.startImageCapture(description -> {
+            int index = sequence.incrementAndGet();
+            String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
+            submitCaptureEntry(writer, console, path, index, timestamp, "IMAGE", description, null);
+        });
 
         try {
             Thread.sleep(durationSeconds * 1000L);
@@ -431,6 +428,13 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
             handler.stopImageCapture();
         }
 
+        writer.shutdown();
+        try {
+            writer.awaitTermination(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         console.println("Live capture complete (" + sequence.get() + " events captured)");
         console.println("Capture written to: " + path);
     }
@@ -440,20 +444,21 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
      * type, short label - topic/URL/description) followed by the full pretty-printed body, if any. Callers
      * are responsible for anonymizing both {@code label} and {@code body} beforehand.
      */
-    private void appendCaptureEntry(Console console, String path, Object fileLock, AtomicInteger sequence, String type,
-            String label, @Nullable String body) {
-        int index = sequence.incrementAndGet();
-        String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
-        StringBuilder entry = new StringBuilder();
-        entry.append(String.format("--- #%03d %s %-5s %s ---%n", index, timestamp, type, label));
-        if (body != null) {
-            entry.append(body).append(System.lineSeparator());
-        }
-        entry.append(System.lineSeparator());
-        String text = entry.toString();
+    private void submitCaptureEntry(ExecutorService writer, Console console, String path, int index, String timestamp,
+            String type, String rawLabel, @Nullable String rawBody) {
+        writer.execute(() -> {
+            String label = String.valueOf(LGHorizonContentAnonymizer.anonymizeTopic(rawLabel));
+            String body = rawBody == null ? null : prettyJson(anonymizeOrEmpty(rawBody));
 
-        console.println(text);
-        synchronized (fileLock) {
+            StringBuilder entry = new StringBuilder();
+            entry.append(String.format("--- #%03d %s %-5s %s ---%n", index, timestamp, type, label));
+            if (body != null) {
+                entry.append(body).append(System.lineSeparator());
+            }
+            entry.append(System.lineSeparator());
+            String text = entry.toString();
+
+            console.println(text);
             try {
                 File file = new File(path);
                 Objects.requireNonNull(file.getParentFile()).mkdirs();
@@ -462,7 +467,7 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
             } catch (IOException e) {
                 console.println("Exception writing to capture file: " + e.getMessage());
             }
-        }
+        });
     }
 
     private String anonymizeOrEmpty(String content) {

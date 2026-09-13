@@ -24,9 +24,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
- * Thing Actions for a {@code box}: displays a short on-screen message. {@code title} and {@code duration} are
+ * Thing Actions for a {@code box}: displays a short on-screen message. {@code duration} is
  * optional; when omitted, {@link LGHorizonBoxHandler#displayMessage} falls back to
- * {@link org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_TITLE} /
  * {@link org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS}.
  *
  * @author Mark - Initial contribution
