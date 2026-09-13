@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -80,6 +81,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable ScheduledFuture<?> gatewayProbeRetry;
     private volatile boolean disposed = false;
+    private final AtomicInteger scanGeneration = new AtomicInteger();
     private @Nullable ScheduledFuture<?> broadcastJob;
 
     private final UdpDiscoverySender udpDiscoverySender = new UdpDiscoverySender();
@@ -104,6 +106,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         // Stops the asynchronous scan from issuing further cloud requests or publishing results for a project that
         // is being removed or reinitialized
         disposed = true;
+        scanGeneration.incrementAndGet();
         cancelGatewayProbeRetry();
 
         super.dispose();
@@ -122,10 +125,19 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             return;
         }
 
-        // A previous scan may still have a probe pending; it must not report into this one
+        // A previous scan may still have requests in flight; they must not report into this one
         cancelGatewayProbeRetry();
 
-        collectDevices(new ArrayList<>(), List.of(), api, 0);
+        collectDevices(new ArrayList<>(), List.of(), api, 0, scanGeneration.incrementAndGet());
+    }
+
+    /**
+     * @param generation the scan this callback belongs to
+     * @return whether the service was disposed or a newer scan superseded that scan, in which case the callback must
+     *         neither issue further cloud requests nor publish results
+     */
+    private boolean isStale(int generation) {
+        return disposed || generation != scanGeneration.get();
     }
 
     private synchronized void cancelGatewayProbeRetry() {
@@ -136,8 +148,12 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         }
     }
 
-    private void collectDevices(List<DeviceListInfo> allDevices, List<DeviceListInfo> page, TuyaOpenAPI api,
-            int pageNo) {
+    private void collectDevices(List<DeviceListInfo> allDevices, List<DeviceListInfo> page, TuyaOpenAPI api, int pageNo,
+            int generation) {
+        if (isStale(generation)) {
+            return;
+        }
+
         allDevices.addAll(page);
         if (pageNo == 0 || page.size() == 100) {
             int nextPageNo = pageNo + 1;
@@ -145,13 +161,13 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
                 if (throwable != null || nextPage == null) {
                     // Report what we have rather than nothing at all
                     logger.debug("Could not retrieve device list page {}", nextPageNo);
-                    processDevices(allDevices, api);
+                    processDevices(allDevices, api, generation);
                 } else {
-                    collectDevices(allDevices, nextPage, api, nextPageNo);
+                    collectDevices(allDevices, nextPage, api, nextPageNo, generation);
                 }
             });
         } else {
-            processDevices(allDevices, api);
+            processDevices(allDevices, api, generation);
         }
     }
 
@@ -162,14 +178,22 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
      * asking every device for its sub-devices. The extra request is only made if the account contains sub-devices at
      * all. Note that a gateway can itself be flagged as a sub-device, so no device can be excluded up front.
      */
-    private void processDevices(List<DeviceListInfo> allDevices, TuyaOpenAPI api) {
-        if (allDevices.stream().noneMatch(device -> device.subDevice)) {
-            collectMacAddresses(allDevices, api).thenAccept(macAddresses -> allDevices
-                    .forEach(device -> processDevice(device, api, THING_TYPE_TUYA_DEVICE, macAddresses)));
+    private void processDevices(List<DeviceListInfo> allDevices, TuyaOpenAPI api, int generation) {
+        if (isStale(generation)) {
             return;
         }
 
-        probeGateway(new GatewayScan(allDevices, new HashMap<>(), new HashSet<>()), allDevices, 0, 1, api);
+        if (allDevices.stream().noneMatch(device -> device.subDevice)) {
+            collectMacAddresses(allDevices, api).thenAccept(macAddresses -> {
+                if (isStale(generation)) {
+                    return;
+                }
+                allDevices.forEach(device -> processDevice(device, api, THING_TYPE_TUYA_DEVICE, macAddresses));
+            });
+            return;
+        }
+
+        probeGateway(new GatewayScan(allDevices, new HashMap<>(), new HashSet<>()), allDevices, 0, 1, api, generation);
     }
 
     /**
@@ -178,8 +202,9 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
      * The requests are chained rather than issued at once because a scan already makes several cloud calls per device
      * and the API rejects large bursts.
      */
-    private void probeGateway(GatewayScan scan, List<DeviceListInfo> queue, int index, int attempt, TuyaOpenAPI api) {
-        if (disposed) {
+    private void probeGateway(GatewayScan scan, List<DeviceListInfo> queue, int index, int attempt, TuyaOpenAPI api,
+            int generation) {
+        if (isStale(generation)) {
             return;
         }
 
@@ -197,7 +222,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
                     }
                 }
 
-                probeGateway(scan, queue, index + 1, attempt, api);
+                probeGateway(scan, queue, index + 1, attempt, api, generation);
                 return null;
             });
             return;
@@ -210,8 +235,9 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             // a failed probe, and an unresolved device holds back the classification of the whole account.
             logger.debug("Retrying the gateway probe for {} device(s)", failed.size());
             synchronized (this) {
-                gatewayProbeRetry = scheduler.schedule(() -> probeGateway(scan, failed, 0, attempt + 1, api),
-                        GATEWAY_PROBE_RETRY_DELAY, TimeUnit.SECONDS);
+                gatewayProbeRetry = scheduler.schedule(
+                        () -> probeGateway(scan, failed, 0, attempt + 1, api, generation), GATEWAY_PROBE_RETRY_DELAY,
+                        TimeUnit.SECONDS);
             }
             return;
         }
@@ -221,7 +247,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
                     failed.size());
         }
 
-        reportDevices(scan, api);
+        reportDevices(scan, api, generation);
     }
 
     /**
@@ -229,12 +255,13 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
      * a gateway together with its children, a device claimed by a gateway is left to that gateway, and everything else
      * is a regular device.
      */
-    private void reportDevices(GatewayScan scan, TuyaOpenAPI api) {
-        if (disposed) {
+    private void reportDevices(GatewayScan scan, TuyaOpenAPI api, int generation) {
+        if (isStale(generation)) {
             return;
         }
 
-        collectMacAddresses(scan.allDevices(), api).thenAccept(macAddresses -> reportDevices(scan, api, macAddresses));
+        collectMacAddresses(scan.allDevices(), api)
+                .thenAccept(macAddresses -> reportDevices(scan, api, macAddresses, generation));
     }
 
     /**
@@ -265,8 +292,8 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         return macAddresses;
     }
 
-    private void reportDevices(GatewayScan scan, TuyaOpenAPI api, Map<String, String> macAddresses) {
-        if (disposed) {
+    private void reportDevices(GatewayScan scan, TuyaOpenAPI api, Map<String, String> macAddresses, int generation) {
+        if (isStale(generation)) {
             return;
         }
 
@@ -294,8 +321,10 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
                 continue;
             }
 
-            if (claimed.contains(device.id) || scan.unclassifiedDeviceIds().contains(device.id)) {
-                // Reported by its gateway, or this scan could not tell what the device is
+            if (claimed.contains(device.id) || (classified && scan.unclassifiedDeviceIds().contains(device.id))) {
+                // Reported by its gateway, or this scan could not tell what the device is. When not a single probe
+                // succeeded every device is unclassified, and skipping them here would discover nothing at all, so
+                // that case is left to the fallback below.
                 continue;
             }
 
