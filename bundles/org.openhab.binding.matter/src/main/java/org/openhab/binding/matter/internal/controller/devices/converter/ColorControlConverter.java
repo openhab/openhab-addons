@@ -170,6 +170,9 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
             }
         } else if (channelUID.getIdWithoutGroup().equals(CHANNEL_ID_COLOR_TEMPERATURE_ABS)
                 && command instanceof DecimalType decimal) {
+            if (!lastOnOff) {
+                handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
+            }
             ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(decimal.intValue(), 0,
                     initializingCluster.options, initializingCluster.options);
             handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
@@ -177,6 +180,9 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 && command instanceof QuantityType<?> quantity) {
             quantity = quantity.toInvertibleUnit(Units.MIRED);
             if (quantity != null) {
+                if (!lastOnOff) {
+                    handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
+                }
                 ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(quantity.intValue(), 0,
                         initializingCluster.options, initializingCluster.options);
                 handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
@@ -420,11 +426,9 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     }
 
     private void updateColorTemperature() {
-        if (lastOnOff) {
-            updateState(CHANNEL_ID_COLOR_TEMPERATURE, miredsToPercentType(lastColorTemperatureMireds));
-            updateState(CHANNEL_ID_COLOR_TEMPERATURE_ABS,
-                    QuantityType.valueOf(Double.valueOf(lastColorTemperatureMireds), Units.MIRED));
-        }
+        updateState(CHANNEL_ID_COLOR_TEMPERATURE, miredsToPercentType(lastColorTemperatureMireds));
+        updateState(CHANNEL_ID_COLOR_TEMPERATURE_ABS,
+                QuantityType.valueOf(Double.valueOf(lastColorTemperatureMireds), Units.MIRED));
         colorTemperatureState = ColorUpdateState.READY;
         colorModeToTemperature();
     }
