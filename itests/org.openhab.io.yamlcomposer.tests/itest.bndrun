@@ -16,10 +16,7 @@ Fragment-Host: org.openhab.io.yamlcomposer
 # done
 #
 -runbundles: \
-	ch.qos.logback.classic;version='[1.5.32,1.5.33)',\
-	ch.qos.logback.core;version='[1.5.32,1.5.33)',\
 	com.google.gson;version='[2.13.2,2.13.3)',\
-	com.sun.jna;version='[5.19.0,5.19.1)',\
 	io.methvin.directory-watcher;version='[0.19.1,0.19.2)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	jakarta.inject.jakarta.inject-api;version='[2.0.1,2.0.2)',\
@@ -82,4 +79,7 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	com.fasterxml.jackson.core.jackson-core;version='[2.22.2,2.22.3)',\
 	com.fasterxml.jackson.core.jackson-databind;version='[2.22.2,2.22.3)',\
 	com.fasterxml.jackson.datatype.jackson-datatype-jdk8;version='[2.22.2,2.22.3)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.22.2,2.22.3)'
+	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.22.2,2.22.3)',\
+	ch.qos.logback.classic;version='[1.5.38,1.5.39)',\
+	ch.qos.logback.core;version='[1.5.38,1.5.39)',\
+	com.sun.jna;version='[5.19.1,5.19.2)'

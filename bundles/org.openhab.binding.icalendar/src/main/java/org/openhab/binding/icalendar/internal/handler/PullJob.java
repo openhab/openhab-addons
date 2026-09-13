@@ -94,7 +94,8 @@ class PullJob implements Runnable {
         // A calendar server can close a pooled connection without the client seeing it go, and the
         // next pull minutes later then fails with an EOFException. Do not keep the connection.
         final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET)
-                .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS).header(HttpHeader.CONNECTION, "close");
+                .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS)
+                .headers(headers -> headers.put(HttpHeader.CONNECTION, "close"));
         if (userAgent != null && !userAgent.isBlank()) {
             request.agent(userAgent);
         }
