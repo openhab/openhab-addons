@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.solaredge.internal.handler;
 
-import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.STATUS_WAITING_FOR_LOGIN;
+import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,14 +30,27 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
 import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePrivateApi;
 import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePublicApi;
+import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePublicApiV2;
+import org.openhab.binding.solaredge.internal.command.AggregateDeviceTelemetryUpdatePublicApiV2;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdateMeterless;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePrivateApi;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePublicApi;
+import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePublicApiV2;
+import org.openhab.binding.solaredge.internal.command.LiveDeviceTelemetryUpdatePublicApiV2;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
+import org.openhab.binding.solaredge.internal.config.PublicApiAuthentication;
+import org.openhab.binding.solaredge.internal.config.PublicApiVersion;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.connector.CommunicationStatus;
+import org.openhab.binding.solaredge.internal.connector.PublicApiV2RequestCounter;
 import org.openhab.binding.solaredge.internal.connector.WebInterface;
 import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
+import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthClient;
+import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthException;
+import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthServlet;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -61,11 +77,37 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
 
     private static final long LIVE_POLLING_INITIAL_DELAY = 1;
     private static final long AGGREGATE_POLLING_INITIAL_DELAY = 2;
+    private static final long YEARLY_AGGREGATE_POLLING_INITIAL_DELAY = 3;
+    private static final long YEARLY_AGGREGATE_POLLING_INTERVAL = TimeUnit.DAYS.toMinutes(1);
 
     /**
      * Interface object for querying the Solaredge web interface
      */
     private WebInterface webInterface;
+    private final SolarEdgeOAuthClient oAuthClient;
+    private final PublicApiV2RequestCounter publicApiV2RequestCounter;
+    private final SolarEdgeOAuthServlet oAuthServlet;
+    private String authorizationUrl = "";
+    private long v2PollingCycle;
+    private @Nullable TimedPower v2Production;
+    private @Nullable TimedPower v2Import;
+    private @Nullable TimedPower v2Export;
+    private @Nullable TimedPower v2Charge;
+    private @Nullable TimedPower v2Discharge;
+    private @Nullable TimedPower v2Consumption;
+    private final Map<AggregatePeriod, AggregateBalance> v2AggregateBalances = new EnumMap<>(AggregatePeriod.class);
+
+    private record TimedPower(double value, long cycleId) {
+    }
+
+    private static class AggregateBalance {
+        private @Nullable TimedPower production;
+        private @Nullable TimedPower imported;
+        private @Nullable TimedPower exported;
+        private @Nullable TimedPower charged;
+        private @Nullable TimedPower discharged;
+        private @Nullable TimedPower consumption;
+    }
 
     /**
      * Schedule for polling live data
@@ -77,11 +119,19 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
      */
     private final AtomicReference<@Nullable Future<?>> aggregateDataPollingJobReference;
 
-    public SolarEdgeGenericHandler(Thing thing, HttpClient httpClient) {
+    /** Schedule for polling yearly Monitoring API V2 aggregate data. */
+    private final AtomicReference<@Nullable Future<?>> yearlyAggregateDataPollingJobReference;
+
+    public SolarEdgeGenericHandler(Thing thing, HttpClient httpClient, SolarEdgeOAuthClient oAuthClient,
+            PublicApiV2RequestCounter publicApiV2RequestCounter, SolarEdgeOAuthServlet oAuthServlet) {
         super(thing);
         this.webInterface = new WebInterface(scheduler, this, httpClient);
+        this.oAuthClient = oAuthClient;
+        this.publicApiV2RequestCounter = publicApiV2RequestCounter;
+        this.oAuthServlet = oAuthServlet;
         this.liveDataPollingJobReference = new AtomicReference<>(null);
         this.aggregateDataPollingJobReference = new AtomicReference<>(null);
+        this.yearlyAggregateDataPollingJobReference = new AtomicReference<>(null);
     }
 
     @Override
@@ -91,12 +141,216 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     }
 
     @Override
+    public synchronized void updatePublicApiV2Production(long cycleId, @Nullable Double production) {
+        v2Production = timed(production, cycleId);
+        updateStatus(CHANNEL_ID_PV_STATUS, production);
+        updatePublicApiV2LiveValues(cycleId);
+    }
+
+    @Override
+    public synchronized void updatePublicApiV2Grid(long cycleId, @Nullable Double imported, @Nullable Double exported,
+            @Nullable Double consumption) {
+        v2Import = timed(imported, cycleId);
+        v2Export = timed(exported, cycleId);
+        v2Consumption = timed(consumption, cycleId);
+        updateStatus(CHANNEL_ID_GRID_STATUS, imported, exported);
+        updatePublicApiV2LiveValues(cycleId);
+    }
+
+    @Override
+    public synchronized void updatePublicApiV2Storage(long cycleId, @Nullable Double charged,
+            @Nullable Double discharged, @Nullable Double level) {
+        v2Charge = timed(charged, cycleId);
+        v2Discharge = timed(discharged, cycleId);
+        Map<Channel, State> values = new HashMap<>();
+        putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL,
+                batteryCriticalState(level, getConfiguration().getBatteryCriticalLevel()));
+        updateChannelStatus(values);
+        updateStatus(CHANNEL_ID_BATTERY_STATUS, charged, discharged);
+        updatePublicApiV2LiveValues(cycleId);
+    }
+
+    @Override
+    public synchronized void updatePublicApiV2AggregateProduction(long cycleId, AggregatePeriod period,
+            @Nullable Double production) {
+        AggregateBalance balance = aggregateBalance(period);
+        balance.production = timed(production, cycleId);
+        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
+    }
+
+    @Override
+    public synchronized void updatePublicApiV2AggregateGrid(long cycleId, AggregatePeriod period,
+            @Nullable Double imported, @Nullable Double exported, @Nullable Double consumption) {
+        AggregateBalance balance = aggregateBalance(period);
+        balance.imported = timed(imported, cycleId);
+        balance.exported = timed(exported, cycleId);
+        balance.consumption = timed(consumption, cycleId);
+        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
+    }
+
+    @Override
+    public synchronized void updatePublicApiV2AggregateStorage(long cycleId, AggregatePeriod period,
+            @Nullable Double charged, @Nullable Double discharged) {
+        AggregateBalance balance = aggregateBalance(period);
+        balance.charged = timed(charged, cycleId);
+        balance.discharged = timed(discharged, cycleId);
+        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
+    }
+
+    private AggregateBalance aggregateBalance(AggregatePeriod period) {
+        AggregateBalance balance = v2AggregateBalances.get(period);
+        if (balance == null) {
+            balance = new AggregateBalance();
+            v2AggregateBalances.put(period, balance);
+        }
+        return balance;
+    }
+
+    private void updatePublicApiV2AggregateConsumption(long cycleId, AggregatePeriod period, AggregateBalance balance) {
+        TimedPower production = balance.production;
+        TimedPower directConsumption = balance.consumption;
+        Map<Channel, State> values = new HashMap<>();
+        @Nullable
+        Double consumption = null;
+        if (directConsumption != null && directConsumption.cycleId == cycleId) {
+            consumption = directConsumption.value;
+        } else if (production != null && production.cycleId == cycleId
+                && sameCycle(production, balance.imported, balance.exported, balance.charged, balance.discharged)) {
+            consumption = calculateConsumption(valueOf(production), valueOf(balance.imported),
+                    valueOf(balance.exported), valueOf(balance.charged), valueOf(balance.discharged));
+        }
+        if (consumption != null) {
+            putState(values, aggregateGroup(period), CHANNEL_ID_CONSUMPTION,
+                    new QuantityType<>(consumption, Units.WATT_HOUR));
+        }
+        if (production != null && production.cycleId == cycleId
+                && sameCycle(production, balance.exported, balance.charged)) {
+            double selfConsumption = calculateSelfConsumption(valueOf(production), valueOf(balance.exported),
+                    valueOf(balance.charged));
+            putState(values, aggregateGroup(period), CHANNEL_ID_SELF_CONSUMPTION_FOR_CONSUMPTION,
+                    new QuantityType<>(selfConsumption, Units.WATT_HOUR));
+            if (consumption != null) {
+                putState(values, aggregateGroup(period), CHANNEL_ID_SELF_CONSUMPTION_COVERAGE,
+                        new QuantityType<>(calculateCoverage(selfConsumption, consumption), Units.PERCENT));
+            }
+        }
+        if (!values.isEmpty()) {
+            updateChannelStatus(values);
+        }
+    }
+
+    private @Nullable TimedPower timed(@Nullable Double value, long cycleId) {
+        return value == null ? null : new TimedPower(value, cycleId);
+    }
+
+    private void updatePublicApiV2LiveValues(long cycleId) {
+        TimedPower directConsumption = v2Consumption;
+        if (directConsumption != null && directConsumption.cycleId == cycleId) {
+            updateLiveConsumption(directConsumption.value);
+            return;
+        }
+        TimedPower production = v2Production;
+        TimedPower imported = v2Import;
+        TimedPower exported = v2Export;
+        TimedPower charge = v2Charge;
+        TimedPower discharge = v2Discharge;
+        if (production != null && production.cycleId == cycleId
+                && sameCycle(production, imported, exported, charge, discharge)) {
+            updateLiveConsumption(calculateConsumption(valueOf(production), valueOf(imported), valueOf(exported),
+                    valueOf(charge), valueOf(discharge)));
+        }
+    }
+
+    private void updateLiveConsumption(double consumption) {
+        Map<Channel, State> values = new HashMap<>();
+        putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_CONSUMPTION, new QuantityType<>(consumption, Units.WATT));
+        putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_LOAD_STATUS, new StringType(activeStatus(consumption)));
+        updateChannelStatus(values);
+    }
+
+    private void putState(Map<Channel, State> values, String group, String channelId, State state) {
+        Channel channel = getChannel(group, channelId);
+        if (channel != null) {
+            values.put(channel, state);
+        }
+    }
+
+    private boolean sameCycle(TimedPower reference, @Nullable TimedPower... values) {
+        for (TimedPower value : values) {
+            if (value == null || value.cycleId != reference.cycleId) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private double valueOf(@Nullable TimedPower power) {
+        return Objects.requireNonNull(power).value;
+    }
+
+    private void updateStatus(String channelId, @Nullable Double... powers) {
+        boolean active = false;
+        for (Double power : powers) {
+            if (power == null) {
+                return;
+            }
+            active |= power > 0;
+        }
+        Map<Channel, State> values = new HashMap<>();
+        putState(values, CHANNEL_GROUP_LIVE, channelId, new StringType(active ? "Active" : "Idle"));
+        updateChannelStatus(values);
+    }
+
+    static double calculateConsumption(double production, double imported, double exported, double charged,
+            double discharged) {
+        return Math.max(0, production + imported + discharged - exported - charged);
+    }
+
+    static double calculateSelfConsumption(double production, double exported, double charged) {
+        return Math.max(0, production - exported - charged);
+    }
+
+    static double calculateCoverage(double selfConsumption, double consumption) {
+        return consumption > 0 ? selfConsumption / consumption * 100 : 0;
+    }
+
+    static String activeStatus(double... powers) {
+        for (double power : powers) {
+            if (power > 0) {
+                return "Active";
+            }
+        }
+        return "Idle";
+    }
+
+    static State batteryCriticalState(@Nullable Double level, int threshold) {
+        return level == null ? UnDefType.UNDEF : new StringType(Boolean.toString(level < threshold));
+    }
+
+    private String aggregateGroup(AggregatePeriod period) {
+        return switch (period) {
+            case DAY -> CHANNEL_GROUP_AGGREGATE_DAY;
+            case WEEK -> CHANNEL_GROUP_AGGREGATE_WEEK;
+            case MONTH -> CHANNEL_GROUP_AGGREGATE_MONTH;
+            case YEAR -> CHANNEL_GROUP_AGGREGATE_YEAR;
+        };
+    }
+
+    @Override
     public void initialize() {
         logger.debug("About to initialize SolarEdge");
         SolarEdgeConfiguration config = getConfiguration();
         logger.debug("SolarEdge initialized with configuration: {}", config);
+        updatePublicApiV2RequestCountProperty(publicApiV2RequestCounter.getRequestCount());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+        if (isOAuthConfigured() && !oAuthClient.hasRefreshToken() && !config.getOAuthClientId().isBlank()
+                && !config.getOAuthClientSecret().isBlank()) {
+            setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, authorizationDescription());
+        } else {
+            setAuthorizationUrl("");
+        }
         webInterface.start();
         startPolling();
     }
@@ -111,17 +365,37 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         updateJobReference(aggregateDataPollingJobReference,
                 scheduler.scheduleWithFixedDelay(this::aggregateDataPollingRun, AGGREGATE_POLLING_INITIAL_DELAY,
                         getConfiguration().getAggregateDataPollingInterval(), TimeUnit.MINUTES));
+
+        if (!getConfiguration().isUsePrivateApi()
+                && PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
+            updateJobReference(yearlyAggregateDataPollingJobReference,
+                    scheduler.scheduleWithFixedDelay(this::yearlyAggregateDataPollingRun,
+                            YEARLY_AGGREGATE_POLLING_INITIAL_DELAY, YEARLY_AGGREGATE_POLLING_INTERVAL,
+                            TimeUnit.MINUTES));
+        }
     }
 
     /**
      * Poll the SolarEdge Webservice one time per call to retrieve live data.
      */
     void liveDataPollingRun() {
+        if (!hasPublicApiV2Credential()) {
+            return;
+        }
         logger.debug("polling SolarEdge live data {}", getConfiguration());
         SolarEdgeCommand ldu;
 
         if (getConfiguration().isUsePrivateApi()) {
             ldu = new LiveDataUpdatePrivateApi(this, this::updateOnlineStatus);
+        } else if (PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
+            long cycleId = ++v2PollingCycle;
+            ldu = new LiveDataUpdatePublicApiV2(this, cycleId, this::updateOnlineStatus);
+            getWebInterface().enqueueCommand(ldu);
+            getWebInterface().enqueueCommand(
+                    new LiveDeviceTelemetryUpdatePublicApiV2(this, cycleId, false, this::updateOnlineStatus));
+            getWebInterface().enqueueCommand(
+                    new LiveDeviceTelemetryUpdatePublicApiV2(this, cycleId, true, this::updateOnlineStatus));
+            return;
         } else {
             if (getConfiguration().isMeterInstalled()) {
                 ldu = new LiveDataUpdatePublicApi(this, this::updateOnlineStatus);
@@ -136,8 +410,12 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
      * Poll the SolarEdge Webservice one time per call to retrieve aggregate data.
      */
     void aggregateDataPollingRun() {
-        // if no meter is present all data will be fetched by the 'LiveDataUpdateMeterless'
-        if (getConfiguration().isMeterInstalled()) {
+        if (!hasPublicApiV2Credential()) {
+            return;
+        }
+        // V1 meterless aggregate data is part of the overview response. V2 exposes it through the energy endpoint.
+        if (getConfiguration().isMeterInstalled()
+                || PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
             logger.debug("polling SolarEdge aggregate data {}", getConfiguration());
             List<SolarEdgeCommand> commands = new ArrayList<>();
 
@@ -146,6 +424,13 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
                 commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.WEEK, this::updateOnlineStatus));
                 commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.MONTH, this::updateOnlineStatus));
                 commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.YEAR, this::updateOnlineStatus));
+            } else if (PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
+                long cycleId = ++v2PollingCycle;
+                commands.add(new AggregateDataUpdatePublicApiV2(this, cycleId, false, this::updateOnlineStatus));
+                commands.add(new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, false, false,
+                        this::updateOnlineStatus));
+                commands.add(new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, true, false,
+                        this::updateOnlineStatus));
             } else {
                 commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.DAY, this::updateOnlineStatus));
                 commands.add(new AggregateDataUpdatePublicApi(this, AggregatePeriod.WEEK, this::updateOnlineStatus));
@@ -157,6 +442,22 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
                 getWebInterface().enqueueCommand(command);
             }
         }
+    }
+
+    /** Poll yearly Monitoring API V2 aggregate data once per day. */
+    void yearlyAggregateDataPollingRun() {
+        if (getConfiguration().isUsePrivateApi() || !hasPublicApiV2Credential()
+                || !PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
+            return;
+        }
+        logger.debug("polling SolarEdge yearly aggregate data {}", getConfiguration());
+        long cycleId = ++v2PollingCycle;
+        getWebInterface()
+                .enqueueCommand(new AggregateDataUpdatePublicApiV2(this, cycleId, true, this::updateOnlineStatus));
+        getWebInterface().enqueueCommand(
+                new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, false, true, this::updateOnlineStatus));
+        getWebInterface().enqueueCommand(
+                new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, true, true, this::updateOnlineStatus));
     }
 
     private void updateOnlineStatus(CommunicationStatus status) {
@@ -182,8 +483,10 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
 
         cancelJobReference(liveDataPollingJobReference);
         cancelJobReference(aggregateDataPollingJobReference);
+        cancelJobReference(yearlyAggregateDataPollingJobReference);
 
         webInterface.dispose();
+        oAuthServlet.unregister(this);
     }
 
     @Override
@@ -224,6 +527,93 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     @Override
     public SolarEdgeConfiguration getConfiguration() {
         return this.getConfigAs(SolarEdgeConfiguration.class);
+    }
+
+    @Override
+    public String getPublicApiV2Credential() {
+        SolarEdgeConfiguration config = getConfiguration();
+        if (!isOAuthConfigured()) {
+            return config.getTokenOrApiKey();
+        }
+        try {
+            return oAuthClient.getAccessToken(config);
+        } catch (SolarEdgeOAuthException e) {
+            logger.debug("Unable to obtain SolarEdge OAuth access token: {}", e.getMessage());
+            if (e.isAuthorizationRequired() && authorizationUrl.isBlank() && !config.getOAuthClientId().isBlank()) {
+                setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
+            }
+            String description = authorizationUrl.isBlank() ? e.getMessage() : authorizationDescription();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, description);
+            return "";
+        }
+    }
+
+    @Override
+    public boolean hasPublicApiV2Credential() {
+        return !isOAuthConfigured() || oAuthClient.hasRefreshToken();
+    }
+
+    @Override
+    public void invalidatePublicApiV2Credential() {
+        if (isOAuthConfigured()) {
+            oAuthClient.invalidateAccessToken();
+        }
+    }
+
+    @Override
+    public void recordPublicApiV2Request() {
+        updatePublicApiV2RequestCountProperty(publicApiV2RequestCounter.recordRequest());
+    }
+
+    private void updatePublicApiV2RequestCountProperty(int count) {
+        getThing().setProperty(PROPERTY_API_CALLS_LAST_30_DAYS, Integer.toString(count));
+    }
+
+    @Override
+    public void updatePublicApiV2RateLimit(@Nullable String limit, @Nullable String remaining,
+            @Nullable String retryAfter) {
+        logger.debug("SolarEdge API rate limit: minute={}, remaining={}, retryAfter={}", displayHeader(limit),
+                displayHeader(remaining), displayHeader(retryAfter));
+        if (limit != null && !limit.isBlank()) {
+            getThing().setProperty(PROPERTY_API_RATE_LIMIT_MINUTE, limit);
+        }
+        if (remaining != null && !remaining.isBlank()) {
+            getThing().setProperty(PROPERTY_API_RATE_LIMIT_REMAINING_MINUTE, remaining);
+        }
+        getThing().setProperty(PROPERTY_API_RATE_LIMIT_RETRY_AFTER,
+                retryAfter == null || retryAfter.isBlank() ? null : retryAfter);
+    }
+
+    private String displayHeader(@Nullable String value) {
+        return value == null || value.isBlank() ? "<not provided>" : value;
+    }
+
+    public void onOAuthAuthorized(String code, String siteId) throws SolarEdgeOAuthException {
+        SolarEdgeConfiguration config = getConfiguration();
+        if (!config.getSolarId().equals(siteId)) {
+            throw new SolarEdgeOAuthException(
+                    "Authorized site " + siteId + " does not match configured site " + config.getSolarId());
+        }
+        oAuthClient.exchangeAuthorizationCode(config, code);
+        setAuthorizationUrl("");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+    }
+
+    private void setAuthorizationUrl(String url) {
+        authorizationUrl = url;
+        getThing().setProperty(PROPERTY_OAUTH_AUTHORIZATION_URL, url.isBlank() ? null : url);
+    }
+
+    private String authorizationDescription() {
+        return "SolarEdge authorization required: <a class=\"external\" href=\""
+                + authorizationUrl.replace("&", "&amp;")
+                + "\" target=\"_blank\" rel=\"noopener noreferrer\">Click here to authorize access</a>";
+    }
+
+    private boolean isOAuthConfigured() {
+        SolarEdgeConfiguration config = getConfiguration();
+        return !config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication());
     }
 
     @Override
