@@ -25,6 +25,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -188,16 +190,8 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
     }
 
     private void executeCapture(String[] args, Console console, List<LGHorizonAccountHandler> accountHandlers) {
-        if (args.length != 4) {
-            console.println("Usage: " + CAPTURE + " <customerId> <deviceId> <durationSeconds>");
-            return;
-        }
-        String customerId = args[1];
-        String deviceId = args[2];
-        LGHorizonAccountHandler handler = accountHandlers.stream()
-                .filter(h -> customerId.equalsIgnoreCase(h.getCustomerId())).findFirst().orElse(null);
-        if (handler == null) {
-            console.println("No Liberty Global Horizon account with customer id '" + customerId + "'");
+        if (args.length != 2) {
+            console.println("Usage: " + CAPTURE + " <durationSeconds>");
             return;
         }
         Integer duration = tryParseInt(args[3]);
@@ -206,12 +200,7 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
                     + MAX_LIVE_CAPTURE_DURATION_SECONDS);
             return;
         }
-        if (!handler.hasRegisteredBox(deviceId)) {
-            console.println("Device '" + deviceId
-                    + "' has no configured box thing on this account - live capture requires an actual box thing to attach to, since it works by listening in on that thing's own message handling. Add the box thing first (see the 'boxes' command), then retry.");
-            return;
-        }
-        capture(console, handler, deviceId, duration);
+        capture(console, accountHandlers, duration);
     }
 
     private static @Nullable Integer tryParseInt(String s) {
@@ -378,54 +367,65 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
     }
 
     /**
-     * Actively records live traffic for one specific box over a fixed window into a single, sequentially
-     * appended log file - MQTT status/uiStatus messages, every REST call the binding makes in response
-     * (event/VOD/recording detail lookups, the intent image URL lookup), and metadata (never bytes) for
-     * every image fetch, all sharing one sequence number so the actual order events happened in is
-     * preserved and scannable.
-     * <p>
-     * Meant to be run while a user actively interacts with the box (changing channels, rewinding, launching
-     * an app, starting a recording, ...). Blocks the console's own command thread for the duration.
+     * Actively records live traffic across every configured account for a fixed window into a single, sequentially
+     * appended log file. Every MQTT message, REST call, and image fetch across every account is captured,
+     * unconditionally.
      */
-    private void capture(Console console, LGHorizonAccountHandler handler, String deviceId, int durationSeconds) {
-        String anonymizedDeviceId = LGHorizonContentAnonymizer.anonymizeDeviceId(deviceId);
-        String path = nextPath(FINGERPRINT_ROOT_PATH + File.separator + "capture-" + anonymizedDeviceId + "-"
+    private void capture(Console console, List<LGHorizonAccountHandler> handlers, int durationSeconds) {
+        String path = nextPath(FINGERPRINT_ROOT_PATH + File.separator + "capture-"
                 + LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE), "log");
 
-        console.println("Capturing live traffic for " + durationSeconds
-                + "s - interact with the box now (change channels, rewind, launch an app, start a recording, ...)");
+        console.println("Capturing all live traffic across " + handlers.size() + " account(s) for " + durationSeconds
+                + "s - interact with any box now (change channels, rewind, launch an app, "
+                + "start a recording, ...)");
         console.println("Writing to: " + path);
 
         AtomicInteger sequence = new AtomicInteger();
         ExecutorService writer = Executors.newSingleThreadExecutor();
+        List<BiConsumer<String, JsonObject>> mqttListeners = new ArrayList<>();
 
-        handler.startLiveCapture(deviceId, (topic, payload) -> {
-            int index = sequence.incrementAndGet();
-            String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
-            JsonObject wrapper = new JsonObject();
-            wrapper.addProperty("topic", topic);
-            wrapper.add("payload", payload);
-            submitCaptureEntry(writer, console, path, index, timestamp, "MQTT", topic, wrapper.toString());
-        });
-        handler.startRestCapture((url, responseBody) -> {
-            int index = sequence.incrementAndGet();
-            String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
-            submitCaptureEntry(writer, console, path, index, timestamp, "REST", url, responseBody);
-        });
-        handler.startImageCapture(description -> {
-            int index = sequence.incrementAndGet();
-            String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
-            submitCaptureEntry(writer, console, path, index, timestamp, "IMAGE", description, null);
-        });
+        for (LGHorizonAccountHandler handler : handlers) {
+            BiConsumer<String, JsonObject> mqttListener = (topic, payload) -> {
+                int index = sequence.incrementAndGet();
+                String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
+                JsonObject wrapper = new JsonObject();
+                wrapper.addProperty("topic", topic);
+                wrapper.add("payload", payload);
+                submitCaptureEntry(writer, console, path, index, timestamp, "MQTT", topic, wrapper.toString());
+            };
+            mqttListeners.add(mqttListener);
+            handler.startLiveCapture(mqttListener);
+
+            handler.startRestCapture((url, responseBody) -> {
+                int index = sequence.incrementAndGet();
+                String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
+                JsonObject wrapper = new JsonObject();
+                wrapper.addProperty("url", url);
+                try {
+                    wrapper.add("response", JsonParser.parseString(responseBody));
+                } catch (JsonSyntaxException e) {
+                    wrapper.addProperty("response", responseBody);
+                }
+                submitCaptureEntry(writer, console, path, index, timestamp, "REST", url, responseBody);
+            });
+            handler.startImageCapture(description -> {
+                int index = sequence.incrementAndGet();
+                String timestamp = LocalDateTime.now().format(CAPTURE_ENTRY_TIME_FORMAT);
+                submitCaptureEntry(writer, console, path, index, timestamp, "IMAGE", description, null);
+            });
+        }
 
         try {
             Thread.sleep(durationSeconds * 1000L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            handler.stopLiveCapture(deviceId);
-            handler.stopRestCapture();
-            handler.stopImageCapture();
+            for (int i = 0; i < handlers.size(); i++) {
+                LGHorizonAccountHandler handler = handlers.get(i);
+                handler.stopLiveCapture(mqttListeners.get(i));
+                handler.stopRestCapture();
+                handler.stopImageCapture();
+            }
         }
 
         writer.shutdown();
@@ -439,11 +439,6 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
         console.println("Capture written to: " + path);
     }
 
-    /**
-     * Appends one entry to the shared capture log: a scannable one-line header (sequence number, timestamp,
-     * type, short label - topic/URL/description) followed by the full pretty-printed body, if any. Callers
-     * are responsible for anonymizing both {@code label} and {@code body} beforehand.
-     */
     private void submitCaptureEntry(ExecutorService writer, Console console, String path, int index, String timestamp,
             String type, String rawLabel, @Nullable String rawBody) {
         writer.execute(() -> {
@@ -572,8 +567,8 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
                 buildCommandUsage(FINGERPRINT,
                         "quick REST-only snapshot (+ each box's last known status) for all accounts"),
                 buildCommandUsage(FINGERPRINT + " <customerId>", "quick REST-only snapshot for one account"),
-                buildCommandUsage(CAPTURE + " <customerId> <deviceId> <durationSeconds>",
-                        "actively record live MQTT/REST traffic for one box over a fixed duration - requires an existing box thing for that device"));
+                buildCommandUsage(CAPTURE + " <durationSeconds>",
+                        "actively record live MQTT/REST traffic across every configured account over a fixed duration"));
     }
 
     @Override
@@ -586,22 +581,15 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
         if (cursorArgumentIndex <= 0) {
             return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
         }
+        if (CAPTURE.equalsIgnoreCase(args[0])) {
+            return false;
+        }
         List<LGHorizonAccountHandler> allHandlers = allAccountHandlers();
         if (cursorArgumentIndex == 1) {
             List<String> customerIds = allHandlers.stream().map(LGHorizonAccountHandler::getCustomerId)
                     .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
             return new StringsCompleter(customerIds, false).complete(args, cursorArgumentIndex, cursorPosition,
                     candidates);
-        }
-        if (CAPTURE.equalsIgnoreCase(args[0]) && cursorArgumentIndex == 2 && args.length > 1) {
-            LGHorizonAccountHandler handler = allHandlers.stream()
-                    .filter(h -> args[1].equalsIgnoreCase(h.getCustomerId())).findFirst().orElse(null);
-            if (handler != null) {
-                List<String> deviceIds = handler.getAssignedDevices().stream().map(d -> d.deviceId)
-                        .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
-                return new StringsCompleter(deviceIds, false).complete(args, cursorArgumentIndex, cursorPosition,
-                        candidates);
-            }
         }
         return false;
     }

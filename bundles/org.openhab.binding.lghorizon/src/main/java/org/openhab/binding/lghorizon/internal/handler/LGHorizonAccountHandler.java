@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -133,7 +134,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     // For the lghorizon fingerprint console command's duration-based live capture: unlike the single-shot
     // captures above, this stays registered and keeps firing for every matching message until explicitly
     // stopped, rather than completing once and being removed.
-    private final Map<String, BiConsumer<String, JsonObject>> liveCaptureListeners = new ConcurrentHashMap<>();
+    private final List<BiConsumer<String, JsonObject>> liveCaptureListeners = new CopyOnWriteArrayList<>();
     // Metadata-only image-fetch capture for the lghorizon capture command - see fetchImage(); deliberately
     // never carries the actual image bytes, only a one-line description of the call.
     private volatile @Nullable Consumer<String> imageCaptureListener;
@@ -402,27 +403,20 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     }
 
     /**
-     * Registers a callback invoked for every {@code .../status} or {@code CPE.uiStatus} message concerning
-     * the given device, for as long as the capture is active - used by the {@code lghorizon fingerprint}
-     * console command's duration-based live capture. Runs alongside (not instead of) the box handler's own
-     * normal message handling and any pending single-shot capture; the callback itself runs on whatever
-     * thread the message arrived on (the MQTT client's own thread), not the caller's, so it should be quick
-     * and non-blocking.
+     * Registers a callback invoked for every MQTT message this account's connection sees, used by the
+     * {@code lghorizon capture} console command.
      */
-    public void startLiveCapture(String deviceId, BiConsumer<String, JsonObject> onMessage) {
-        liveCaptureListeners.put(deviceId, onMessage);
+    public void startLiveCapture(BiConsumer<String, JsonObject> onMessage) {
+        liveCaptureListeners.add(onMessage);
     }
 
     /** Stops a live capture previously started with {@link #startLiveCapture}. */
-    public void stopLiveCapture(String deviceId) {
-        liveCaptureListeners.remove(deviceId);
+    public void stopLiveCapture(BiConsumer<String, JsonObject> onMessage) {
+        liveCaptureListeners.remove(onMessage);
     }
 
-    private void notifyLiveCapture(String deviceId, String topic, JsonObject payload) {
-        BiConsumer<String, JsonObject> listener = liveCaptureListeners.get(deviceId);
-        if (listener != null) {
-            listener.accept(topic, payload);
-        }
+    private void notifyLiveCapture(String topic, JsonObject payload) {
+        liveCaptureListeners.forEach(listener -> listener.accept(topic, payload));
     }
 
     /**
@@ -766,11 +760,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         registeredBoxes.remove(deviceId);
     }
 
-    /** Whether the given device id has an actual, registered box thing - live capture requires one. */
-    public boolean hasRegisteredBox(String deviceId) {
-        return registeredBoxes.containsKey(deviceId);
-    }
-
     // ------------------------------------------------------------------
     // Outgoing commands, called by LGHorizonBoxHandler
     // ------------------------------------------------------------------
@@ -911,6 +900,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         logger.debug("MQTT Received on {}: {}", LGHorizonContentAnonymizer.anonymizeTopic(topic),
                 LGHorizonContentAnonymizer.anonymizeMessage(payload.toString()));
 
+        notifyLiveCapture(topic, payload);
+
         if (topic.contains("status") && payload.has("source") && payload.has("state")) {
             String source = payload.get("source").getAsString();
             lastKnownStatusByDeviceId.put(source, payload);
@@ -922,7 +913,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             if (pendingStatus != null) {
                 pendingStatus.complete(payload);
             }
-            notifyLiveCapture(source, topic, payload);
             return;
         }
 
@@ -932,7 +922,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             if (handler != null) {
                 handler.handleUiStatusMessage(payload);
             }
-            notifyLiveCapture(source, topic, payload);
             return;
         }
 
@@ -956,16 +945,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
                             LGHorizonContentAnonymizer.anonymizeMessage(payload.toString()));
                 }
             }
-            if (payload.has("source") && !payload.get("source").isJsonNull()) {
-                notifyLiveCapture(payload.get("source").getAsString(), topic, payload);
-            }
-            return;
-        }
-
-        // Fallback for any message that doesn't match the above known types: notify live capture if it has a source,
-        // but otherwise ignore it.
-        if (payload.has("source") && !payload.get("source").isJsonNull()) {
-            notifyLiveCapture(payload.get("source").getAsString(), topic, payload);
         }
     }
 

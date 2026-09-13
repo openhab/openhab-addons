@@ -164,6 +164,7 @@ public final class LGHorizonContentAnonymizer {
         anonymized = replaceFixed(anonymized, IP_ADDRESS_PATTERN, "xxx.xxx.xxx.xxx");
         anonymized = replaceConsistently(anonymized, HOUSEHOLD_ID_PATTERN, "HOUSEHOLD_", HOUSEHOLD_ID_MAP,
                 HOUSEHOLD_ID_COUNTER);
+        anonymized = replaceKnownDeviceIds(anonymized); // final catch for device ids
         return anonymized;
     }
 

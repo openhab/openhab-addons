@@ -196,7 +196,7 @@ Accounts and boxes are identified by their own `customerId`/`deviceId`, not the 
 lghorizon profiles [<customerId>]
 lghorizon boxes [<customerId>]
 lghorizon fingerprint [<customerId>]
-lghorizon capture <customerId> <deviceId> <durationSeconds>
+lghorizon capture <durationSeconds>
 ```
 
 `accounts`, `profiles` and `boxes` take no arguments to list across all accounts, or a `customerId` to limit the output to one account.
@@ -206,9 +206,8 @@ lghorizon capture <customerId> <deviceId> <durationSeconds>
 
 - `fingerprint` is a quick, mostly-instant REST-only snapshot (customer/entitlements/channels/service config), plus a passive wait for each box's next (or already-cached) `.../status` message - not an active request for a fresh one.
   Useful for a first look at an unsupported provider/device, or to check what the REST side of things looks like.
-- `capture <customerId> <deviceId> <durationSeconds>` actively records live traffic for **one specific box** over a fixed window: every MQTT status/uiStatus message, every REST call the binding makes.
-  Requires that device to already have a box thing configured - interact with the box (change channels, rewind, launch an app, start a recording,
-  ...) for the duration of the capture to get a meaningful sequence of events.
+- `capture <durationSeconds>` actively records live traffic for all active accounts over a fixed window: every MQTT status/uiStatus message, every REST call the binding makes.
+  Interact with the box (change channels, rewind, launch an app, start a recording,...) for the duration of the capture to get a meaningful sequence of events.
 
 Both commands write their output in the user's home `lghorizon` directory.
 All personal information is masked.
