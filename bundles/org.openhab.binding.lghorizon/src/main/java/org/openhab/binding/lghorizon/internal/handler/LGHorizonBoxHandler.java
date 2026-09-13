@@ -115,7 +115,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                 updateProperty(LGHorizonBindingConstants.PROPERTY_DEFAULT_PROFILE_ID, defaultProfileId);
             }
             String deviceType = device.deviceType;
-            if (defaultProfileId != null) {
+            if (deviceType != null) {
                 updateProperty(LGHorizonBindingConstants.PROPERTY_DEVICE_TYPE, deviceType);
             }
             String platformType = device.platformType;
@@ -431,17 +431,20 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                 } else {
                     clearChannelSelections();
                 }
-                getString(source, "eventId").ifPresent(eventId -> resolveEventMetadata(eventId, true));
+                getString(source, "eventId").ifPresent(this::resolveEventMetadata);
             }
             case "replay" -> {
                 clearChannelSelections();
-                getString(source, "eventId").ifPresent(eventId -> resolveEventMetadata(eventId, false));
+                getString(source, "eventId").ifPresent(this::resolveEventMetadata);
             }
             case "vod" -> {
                 clearChannelSelections();
                 getString(source, "titleId").ifPresent(this::resolveVodMetadata);
             }
-            case "ndvr" -> getString(source, "recordingId").ifPresent(this::resolveRecordingMetadata);
+            case "ndvr" -> {
+                clearChannelSelections();
+                getString(source, "recordingId").ifPresent(this::resolveRecordingMetadata);
+            }
             default -> {
                 // localDVR and anything else: not implemented - reset all title/image channels
                 lastResolvedContentId = null;
@@ -507,7 +510,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         return contentId.equals(lastResolvedContentId);
     }
 
-    private void resolveEventMetadata(String eventId, boolean useChannelImage) {
+    private void resolveEventMetadata(String eventId) {
         if (eventId.equals(lastResolvedContentId)) {
             return;
         }
@@ -533,12 +536,10 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             // title - both already unambiguous.
             applyTitleMetadata(detail.title, detail.episodeName, detail.seasonNumber, detail.episodeNumber);
 
-            String imageUrl;
-            if (useChannelImage && detail.channelId != null) {
+            String imageUrl = null;
+            if (detail.channelId != null) {
                 ChannelDto channel = account.getChannels(language).get(detail.channelId);
                 imageUrl = channel == null ? null : channel.getStreamImage();
-            } else {
-                imageUrl = account.getIntentImageUrl(eventId);
             }
             updateImageFromUrlOrClear(eventId, imageUrl);
         });
@@ -575,8 +576,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             } else {
                 applyTitleMetadata(detail.title, null, null, null);
             }
-            String imageUrl = account.getIntentImageUrl(detail.id != null ? detail.id : titleId);
-            updateImageFromUrlOrClear(titleId, imageUrl);
+            updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
         });
     }
 
@@ -607,7 +607,11 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             // is the show name; for anything recorded as part of a series/season rule, the show name is in
             // the "showTitle" field instead - RecordingDetailDto.getShowTitle() already applies this distinction.
             applyTitleMetadata(detail.getShowTitle(), detail.episodeTitle, detail.seasonNumber, detail.episodeNumber);
-            String imageUrl = account.getIntentImageUrl(detail.id != null ? detail.id : recordingId);
+            String imageUrl = null;
+            if (detail.channelId != null) {
+                ChannelDto channel = account.getChannels(language).get(detail.channelId);
+                imageUrl = channel == null ? null : channel.getStreamImage();
+            }
             updateImageFromUrlOrClear(recordingId, imageUrl);
         });
     }
@@ -697,7 +701,10 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                 appName -> updateState(LGHorizonBindingConstants.CHANNEL_PROGRAM_TITLE, new StringType(appName)));
 
         String logoPath = getString(appsState, "logoPath").orElse(null);
-        if (logoPath != null && !logoPath.equals(lastResolvedContentId)) {
+        if (logoPath == null) {
+            lastResolvedContentId = null;
+            updateState(LGHorizonBindingConstants.CHANNEL_MEDIA_IMAGE, UnDefType.UNDEF);
+        } else if (!logoPath.equals(lastResolvedContentId)) {
             lastResolvedContentId = logoPath;
             scheduler.execute(() -> updateImageFromUrl(logoPath, logoPath));
         }

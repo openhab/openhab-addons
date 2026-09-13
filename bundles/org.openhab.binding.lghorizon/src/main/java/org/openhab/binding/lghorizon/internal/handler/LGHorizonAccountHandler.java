@@ -13,9 +13,10 @@
 package org.openhab.binding.lghorizon.internal.handler;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,8 +28,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -67,7 +71,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -124,7 +127,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     private static final int MAX_IMAGE_BYTES = 8 * 1024 * 1024; // 8 MiB
 
     // The account does not resend the status, even when polled, so we keep the last one around.
-    private final Map<String, String> lastKnownStatusByDeviceId = new ConcurrentHashMap<>();
+    private final Map<String, JsonObject> lastKnownStatusByDeviceId = new ConcurrentHashMap<>();
 
     private final Map<String, CompletableFuture<JsonObject>> pendingStatusCaptures = new ConcurrentHashMap<>();
     // For the lghorizon fingerprint console command's duration-based live capture: unlike the single-shot
@@ -134,6 +137,12 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     // Metadata-only image-fetch capture for the lghorizon capture command - see fetchImage(); deliberately
     // never carries the actual image bytes, only a one-line description of the call.
     private volatile @Nullable Consumer<String> imageCaptureListener;
+
+    // Retry for a transient failure during initialize() itself. Without this, a network outage at openHAB start leaves
+    // the bridge permanently OFFLINE/COMMUNICATION_ERROR until manually disabling and re-enabling.
+    private static final int INITIALIZE_RETRY_FIRST_DELAY_SECONDS = 30;
+    private static final int INITIALIZE_RETRY_MAX_DELAY_SECONDS = 300;
+    private final AtomicInteger initializeRetryAttempt = new AtomicInteger();
 
     private @Nullable ScheduledFuture<?> initializeFuture;
     private @Nullable ScheduledFuture<?> tokenRefreshFuture;
@@ -182,9 +191,11 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
             LGHorizonMqttClient mqtt = new LGHorizonMqttClient(auth, this, scheduler);
             this.mqttClient = mqtt;
+            mqtt.subscribeAccountTopics(householdId);
             mqtt.connect();
 
             updateStatus(ThingStatus.ONLINE);
+            initializeRetryAttempt.set(0);
 
             LGHorizonDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {
@@ -197,8 +208,17 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                scheduleInitializeRetry();
             }
         }
+    }
+
+    private void scheduleInitializeRetry() {
+        int attempt = initializeRetryAttempt.getAndIncrement();
+        int delaySeconds = (int) Math.min(INITIALIZE_RETRY_FIRST_DELAY_SECONDS * Math.pow(2, attempt),
+                INITIALIZE_RETRY_MAX_DELAY_SECONDS);
+        logger.debug("LG Horizon account initialization failed, retrying in {}s", delaySeconds);
+        initializeFuture = scheduler.schedule(this::doInitialize, delaySeconds, TimeUnit.SECONDS);
     }
 
     public void setDiscoveryService(LGHorizonDiscoveryService discoveryService) {
@@ -225,7 +245,33 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         if (config.apiUrl.isBlank() || config.country.isBlank()) {
             throw new IllegalArgumentException("Either 'Provider' or both 'Country' and 'API URL' must be set");
         }
-        return new ResolvedProvider(config.apiUrl, config.country, config.useRefreshToken);
+        String normalizedApiUrl = requireHttpsUrl(config.apiUrl);
+        return new ResolvedProvider(normalizedApiUrl, config.country, config.useRefreshToken);
+    }
+
+    /**
+     * Rejects anything but a well-formed https:// URL - except when the value has no scheme prefix at all
+     * ("spark-prod-be.gnp.cloud.telenet.tv" rather than "https://spark-prod-be.gnp.cloud.telenet.tv"), in
+     * which case https:// is assumed and prepended.
+     *
+     * @return the URL, with a missing scheme filled in as https:// if needed
+     */
+    private String requireHttpsUrl(String url) {
+        if (!url.contains("://")) {
+            return requireHttpsUrl("https://" + url);
+        }
+        URI uri;
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("'API URL' is not a valid URL: " + url);
+        }
+        String scheme = uri.getScheme();
+        if (scheme == null || !scheme.equalsIgnoreCase("https") || uri.getHost() == null) {
+            throw new IllegalArgumentException("'API URL' must be a valid https:// URL (got: " + url
+                    + ") - refusing to send credentials over an insecure connection");
+        }
+        return url;
     }
 
     /**
@@ -412,8 +458,15 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     /**
      * Captures the next {@code .../status} message for the given device, for the {@code lghorizon
      * fingerprint} console command.
+     *
+     * @param deviceId the device to capture the next status for
+     * @return a future that completes with the next status message, or immediately with the last known cached status
      */
     public CompletableFuture<JsonObject> captureNextStatus(String deviceId) {
+        JsonObject cached = lastKnownStatusByDeviceId.get(deviceId);
+        if (cached != null) {
+            return CompletableFuture.completedFuture(cached);
+        }
         CompletableFuture<JsonObject> future = new CompletableFuture<>();
         pendingStatusCaptures.put(deviceId, future);
         return future;
@@ -619,46 +672,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     }
 
     /**
-     * Resolves an image URL for a replay/VOD/nDVR asset via the shared "intent" image lookup - all three
-     * use this same mechanism, keyed by the asset's own id (the eventId for replay, or the asset's own {@code id} field
-     * from its detail response for VOD/nDVR).
-     *
-     * @return the image URL, or {@code null} if it could not be resolved
-     */
-    public @Nullable String getIntentImageUrl(String intentId) {
-        LGHorizonAuthClient auth = authClient;
-        if (auth == null) {
-            return null;
-        }
-        try {
-            String imageServiceUrl = auth.getServiceConfig().getServiceUrl("imageService");
-            JsonArray intents = new JsonArray();
-            intents.add("detailedBackground");
-            intents.add("posterTile");
-            JsonObject item = new JsonObject();
-            item.addProperty("id", intentId);
-            item.add("intents", intents);
-            JsonArray body = new JsonArray();
-            body.add(item);
-            String encodedBody = URLEncoder.encode(body.toString(), StandardCharsets.UTF_8);
-            JsonElement result = auth.getAsJsonElement(imageServiceUrl, "/intent?jsonBody=" + encodedBody);
-            if (!result.isJsonArray() || result.getAsJsonArray().isEmpty()) {
-                return null;
-            }
-            JsonObject first = result.getAsJsonArray().get(0).getAsJsonObject();
-            if (!first.has("intents") || !first.get("intents").isJsonArray()
-                    || first.getAsJsonArray("intents").isEmpty()) {
-                return null;
-            }
-            JsonObject firstIntent = first.getAsJsonArray("intents").get(0).getAsJsonObject();
-            return firstIntent.has("url") ? firstIntent.get("url").getAsString() : null;
-        } catch (LGHorizonApiException | IllegalArgumentException | IllegalStateException e) {
-            logger.debug("Could not resolve intent image for {}: {}", intentId, e.getMessage());
-            return null;
-        }
-    }
-
-    /**
      * Fetches raw image bytes from a (public, unauthenticated) CDN image URL and wraps them as a
      * {@link RawType} suitable for an {@code Image} channel. Performs a real network call - callers must
      * invoke this off the MQTT/event-bus thread.
@@ -673,6 +686,11 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             Response response = listener.get(10, TimeUnit.SECONDS);
             if (response.getStatus() >= 300) {
                 notifyImageCapture("GET " + anonymizedUrl + " -> status=" + response.getStatus() + " (fetch failed)");
+                try {
+                    listener.getInputStream().close();
+                } catch (IOException e) {
+                    // Expected/harmless: closing before EOF signals to "abandon this response" to Jetty.
+                }
                 return null;
             }
             byte[] bytes;
@@ -697,9 +715,13 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             notifyImageCapture("GET " + anonymizedUrl + " -> status=" + response.getStatus() + ", contentType="
                     + contentType + ", bytes=" + bytes.length + " (content omitted)");
             return new RawType(bytes, contentType != null ? contentType : "image/jpeg");
-        } catch (Exception e) {
+        } catch (TimeoutException | ExecutionException | IOException e) {
             logger.debug("Could not fetch image from {}: {}", url, e.getMessage());
             notifyImageCapture("GET " + anonymizedUrl + " -> exception: " + e.getMessage());
+            return null;
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while fetching image from {}", url);
             return null;
         }
     }
@@ -723,9 +745,12 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
      */
     public void registerBox(String deviceId, LGHorizonBoxHandler handler) {
         registeredBoxes.put(deviceId, handler);
-        String cachedState = lastKnownStatusByDeviceId.get(deviceId);
+        JsonObject cachedState = lastKnownStatusByDeviceId.get(deviceId);
         if (cachedState != null) {
-            handler.handleStatusMessage(cachedState);
+            JsonElement stateElement = cachedState.get("state");
+            if (stateElement != null && stateElement.isJsonPrimitive()) {
+                handler.handleStatusMessage(cachedState.get("state").getAsString());
+            }
         }
         handler.updateChannelNumberOptions();
         LGHorizonMqttClient mqtt = mqttClient;
@@ -869,7 +894,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         if (mqtt == null || householdId == null) {
             return;
         }
-        mqtt.subscribeAccountTopics(householdId);
         updateStatus(ThingStatus.ONLINE);
         for (String deviceId : registeredBoxes.keySet()) {
             requestBoxState(deviceId);
@@ -887,13 +911,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         logger.debug("MQTT Received on {}: {}", LGHorizonContentAnonymizer.anonymizeTopic(topic),
                 LGHorizonContentAnonymizer.anonymizeMessage(payload.toString()));
 
-        if (payload.has("source") && !payload.get("source").isJsonNull()) {
-            notifyLiveCapture(payload.get("source").getAsString(), topic, payload);
-        }
-
         if (topic.contains("status") && payload.has("source") && payload.has("state")) {
             String source = payload.get("source").getAsString();
-            lastKnownStatusByDeviceId.put(source, payload.get("state").getAsString());
+            lastKnownStatusByDeviceId.put(source, payload);
             LGHorizonBoxHandler handler = registeredBoxes.get(source);
             if (handler != null) {
                 handler.handleStatusMessage(payload.get("state").getAsString());
@@ -902,6 +922,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
             if (pendingStatus != null) {
                 pendingStatus.complete(payload);
             }
+            notifyLiveCapture(source, topic, payload);
             return;
         }
 
@@ -935,6 +956,16 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
                             LGHorizonContentAnonymizer.anonymizeMessage(payload.toString()));
                 }
             }
+            if (payload.has("source") && !payload.get("source").isJsonNull()) {
+                notifyLiveCapture(payload.get("source").getAsString(), topic, payload);
+            }
+            return;
+        }
+
+        // Fallback for any message that doesn't match the above known types: notify live capture if it has a source,
+        // but otherwise ignore it.
+        if (payload.has("source") && !payload.get("source").isJsonNull()) {
+            notifyLiveCapture(payload.get("source").getAsString(), topic, payload);
         }
     }
 

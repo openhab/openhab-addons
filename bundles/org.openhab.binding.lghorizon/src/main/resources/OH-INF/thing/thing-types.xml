@@ -33,6 +33,7 @@
 					Base URL of the provider's "spark" REST API, e.g. https://spark-prod-be.gnp.cloud.telenet.tv. Known
 					automatically when Provider is set; required if Provider is left empty.
 				</description>
+				<context>url</context>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="useRefreshToken" type="boolean">

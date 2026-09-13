@@ -78,13 +78,15 @@ public final class LGHorizonContentAnonymizer {
     private static final Pattern CUSTOMER_ID_PATTERN = fieldPattern("customerId");
     private static final Pattern HASHED_ID_PATTERN = fieldPattern("hashed\\w*Id");
     private static final Pattern DEVICE_ID_PATTERN = fieldPattern("deviceId");
+    private static final Pattern SOURCE_AS_DEVICE_ID_PATTERN = fieldPattern("source");
     private static final Pattern DEVICE_NAME_PATTERN = fieldPattern("deviceFriendlyName");
     private static final Pattern SERIAL_PATTERN = fieldPattern("serialNumber");
     private static final Pattern PROFILE_ID_PATTERN = fieldPattern("profileId");
     private static final Pattern DEFAULT_PROFILE_ID_PATTERN = fieldPattern("defaultProfileId");
     private static final Pattern AD_DEVICE_ID_PATTERN = fieldPattern("advertisementDeviceId");
     private static final Pattern PIN_PATTERN = fieldPattern("pin");
-    private static final Pattern TOKEN_PATTERN = fieldPattern("(claimsToken|token)");
+    private static final Pattern TOKEN_PATTERN = fieldPattern(
+            "(accessToken|refreshToken|claimsToken|token|access_token|refresh_token)");
 
     // Content-shape patterns, not scoped to a specific field name.
     private static final Pattern MAC_ADDRESS_PATTERN = fieldPattern("\\w*[Mm]ac\\w*",
@@ -118,15 +120,18 @@ public final class LGHorizonContentAnonymizer {
 
     /**
      * Anonymizes an MQTT topic string (may contain an embedded household id, e.g.
-     * {@code DTV123456_be/E0B7B1-APPSTB-301179302106/status}).
+     * {@code DTV123456_be/DEVICE_ID/status}).
+     * Does NOT redact a device id segment - see the overload below for that, which needs the caller to
+     * supply the specific device id it's looking for.
      */
     public static @Nullable String anonymizeTopic(@Nullable String topic) {
         if (topic == null) {
             return null;
         }
         String withCityId = replaceNumericField(topic, CITY_ID_URL_PATTERN, CITY_ID_MAP, CITY_ID_COUNTER);
-        return replaceConsistently(withCityId, HOUSEHOLD_ID_PATTERN, "HOUSEHOLD_", HOUSEHOLD_ID_MAP,
+        String withHouseholdId = replaceConsistently(withCityId, HOUSEHOLD_ID_PATTERN, "HOUSEHOLD_", HOUSEHOLD_ID_MAP,
                 HOUSEHOLD_ID_COUNTER);
+        return replaceKnownDeviceIds(withHouseholdId);
     }
 
     /**
@@ -142,6 +147,7 @@ public final class LGHorizonContentAnonymizer {
         anonymized = replaceField(anonymized, CUSTOMER_ID_PATTERN, "CUSTOMER_", CUSTOMER_ID_MAP, CUSTOMER_ID_COUNTER);
         anonymized = replaceField(anonymized, HASHED_ID_PATTERN, "HASHED_", HASHED_ID_MAP, HASHED_ID_COUNTER);
         anonymized = replaceField(anonymized, DEVICE_ID_PATTERN, "DEVICE_", DEVICE_ID_MAP, DEVICE_ID_COUNTER);
+        anonymized = replaceField(anonymized, SOURCE_AS_DEVICE_ID_PATTERN, "DEVICE_", DEVICE_ID_MAP, DEVICE_ID_COUNTER);
         anonymized = replaceField(anonymized, DEVICE_NAME_PATTERN, "DEVICE_NAME_", DEVICE_NAME_MAP,
                 DEVICE_NAME_COUNTER);
         anonymized = replaceField(anonymized, SERIAL_PATTERN, "SERIAL_", SERIAL_MAP, SERIAL_COUNTER);
@@ -185,6 +191,22 @@ public final class LGHorizonContentAnonymizer {
         if (map.size() > MAX_TRACKED_VALUES_PER_MAP) {
             map.clear();
         }
+    }
+
+    /**
+     * Replaces any known device ids in an MQTT topic string with their already known anonymized placeholders.
+     *
+     * @param topic
+     * @return topic with any known device ids replaced by their anonymized placeholders, if any are found
+     */
+    private static String replaceKnownDeviceIds(String topic) {
+        String result = topic;
+        for (Map.Entry<String, String> entry : DEVICE_ID_MAP.entrySet()) {
+            if (result.contains(entry.getKey())) {
+                result = result.replace(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
     }
 
     /**

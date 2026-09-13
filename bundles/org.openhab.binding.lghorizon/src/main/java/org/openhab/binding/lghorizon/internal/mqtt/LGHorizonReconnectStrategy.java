@@ -81,7 +81,7 @@ public class LGHorizonReconnectStrategy extends AbstractReconnectStrategy {
         scheduledTask = scheduler.schedule(this::attemptReconnect, delay, TimeUnit.SECONDS);
     }
 
-    private void attemptReconnect() {
+    private synchronized void attemptReconnect() {
         MqttBrokerConnection connection = getBrokerConnection();
         if (connection == null || scheduler == null) {
             return;

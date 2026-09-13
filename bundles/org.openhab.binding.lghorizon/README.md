@@ -121,9 +121,9 @@ rule can check whether `series-title` is set as a simple "is this a TV series ep
 | Source type             | Title/episode from                         | Image from                            |
 |-------------------------|--------------------------------------------|---------------------------------------|
 | live / time shift       | EPG lookup by event id                     | the channel's own logo/preview image  |
-| replay                  | EPG lookup by event id                     | a separate per-event image lookup     |
-| video on demand         | VOD detail-screen lookup                   | a separate per-title image lookup     |
-| recordings              | recording detail lookup                    | a separate per-recording image lookup |
+| replay                  | EPG lookup by event id                     | the channel's own logo/preview image  |
+| video on demand         | VOD detail-screen lookup                   | no image                              |
+| recordings              | recording detail lookup                    | the channel's own logo/preview image  |
 | app (e.g. Netflix)      | the app's own name (as program-title only) | the app's own logo                    |
 
 ### `key-code` values
@@ -140,7 +140,7 @@ Any of the values from the box's `CPE.KeyEvent` protocol, for example:
 ### Thing Configuration
 
 ```java
-Bridge lghorizon:account:home "Telenet Account" [ country="be-nl", refreshToken="eyJ..." ] {
+Bridge lghorizon:account:home "Telenet Account" [ provider="telenet", refreshToken="eyJ..." ] {
     Thing box livingroom "Living Room Box" [ deviceId="AB12CD34EF56" ]
 }
 ```
@@ -149,7 +149,6 @@ Bridge lghorizon:account:home "Telenet Account" [ country="be-nl", refreshToken=
 
 ```java
 Switch  TV_Power           "TV Power"          { channel="lghorizon:box:home:livingroom:power" }
-String  TV_State           "TV State"          { channel="lghorizon:box:home:livingroom:state" }
 String  TV_Channel         "TV Channel"        { channel="lghorizon:box:home:livingroom:channel-name" }
 Number  TV_ChannelNumber   "TV Channel Number" { channel="lghorizon:box:home:livingroom:channel-number" }
 String  TV_Program         "TV Program"        { channel="lghorizon:box:home:livingroom:program-title" }
@@ -185,7 +184,7 @@ Shows a short text message as an on-screen overlay on the TV.
 ```java
 val actions = getActions("lghorizon", "lghorizon:box:home:livingroom")
 actions.displayMessage("Doorbell")
-actions.displayMessage("Doorbell", "Front Door", 15)
+actions.displayMessage("Doorbell", 15)
 ```
 
 ## Console Commands
@@ -211,7 +210,7 @@ lghorizon capture <customerId> <deviceId> <durationSeconds>
   Requires that device to already have a box thing configured - interact with the box (change channels, rewind, launch an app, start a recording,
   ...) for the duration of the capture to get a meaningful sequence of events.
 
-Both commands write their output as a zip file in the user's home `lghorizon` directory.
+Both commands write their output in the user's home `lghorizon` directory.
 All personal information is masked.
 
 ## Known Limitations / Roadmap
@@ -219,8 +218,7 @@ All personal information is masked.
 The binding focuses on live status + control.
 Not implemented:
 
-- EPG / program guide browsing
-- Replay/catch-up TV channel list
+- EPG / program guide browsing (apart from emulating the keys on the TV remote)
 - Ad-break detection/skipping
 - localDVR (locally-recorded content) title/image resolution
 
