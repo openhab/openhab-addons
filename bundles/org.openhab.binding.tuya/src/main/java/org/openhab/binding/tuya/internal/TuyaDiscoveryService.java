@@ -184,7 +184,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         }
 
         if (allDevices.stream().noneMatch(device -> device.subDevice)) {
-            collectMacAddresses(allDevices, api).thenAccept(macAddresses -> {
+            collectMacAddresses(allDevices, api, generation).thenAccept(macAddresses -> {
                 if (isStale(generation)) {
                     return;
                 }
@@ -260,7 +260,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             return;
         }
 
-        collectMacAddresses(scan.allDevices(), api)
+        collectMacAddresses(scan.allDevices(), api, generation)
                 .thenAccept(macAddresses -> reportDevices(scan, api, macAddresses, generation));
     }
 
@@ -269,24 +269,30 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
      * whole account is covered by a handful of requests instead of one per device.
      *
      * The batches are chained rather than issued at once because the cloud rejects request bursts. A MAC address is
-     * optional enrichment, so a failed batch only means those devices are reported without one.
+     * optional enrichment, so a failed batch only means those devices are reported without one. Once the scan is stale
+     * the remaining batches are skipped, as they would only use up request capacity a newer scan needs.
      */
-    private CompletableFuture<Map<String, String>> collectMacAddresses(List<DeviceListInfo> devices, TuyaOpenAPI api) {
+    private CompletableFuture<Map<String, String>> collectMacAddresses(List<DeviceListInfo> devices, TuyaOpenAPI api,
+            int generation) {
         List<String> deviceIds = devices.stream().map(device -> device.id).toList();
         CompletableFuture<Map<String, String>> macAddresses = CompletableFuture.completedFuture(new HashMap<>());
 
         for (int from = 0; from < deviceIds.size(); from += FACTORY_INFORMATION_BATCH_SIZE) {
             List<String> batch = deviceIds.subList(from,
                     Math.min(from + FACTORY_INFORMATION_BATCH_SIZE, deviceIds.size()));
-            macAddresses = macAddresses
-                    .thenCompose(collected -> api.getFactoryInformation(batch).exceptionally(throwable -> {
-                        logger.debug("Could not retrieve factory information for {} device(s): {}", batch.size(),
-                                throwable.getMessage());
-                        return List.of();
-                    }).thenApply(factoryInformation -> {
-                        factoryInformation.forEach(information -> collected.put(information.id, information.mac));
-                        return collected;
-                    }));
+            macAddresses = macAddresses.thenCompose(collected -> {
+                if (isStale(generation)) {
+                    return CompletableFuture.completedFuture(collected);
+                }
+                return api.getFactoryInformation(batch).exceptionally(throwable -> {
+                    logger.debug("Could not retrieve factory information for {} device(s): {}", batch.size(),
+                            throwable.getMessage());
+                    return List.of();
+                }).thenApply(factoryInformation -> {
+                    factoryInformation.forEach(information -> collected.put(information.id, information.mac));
+                    return collected;
+                });
+            });
         }
 
         return macAddresses;

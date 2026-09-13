@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,6 +43,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.tuya.internal.cloud.TuyaOpenAPI;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceListInfo;
+import org.openhab.binding.tuya.internal.cloud.dto.FactoryInformation;
 import org.openhab.binding.tuya.internal.handler.ProjectHandler;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -164,6 +167,28 @@ public class TuyaDiscoveryServiceTest {
 
         assertEquals(Set.of(), listener.discovered);
         verify(apiMock, never()).getFactoryInformation(any());
+    }
+
+    /**
+     * The MAC addresses of a large account are retrieved in consecutive batches. A scan that becomes stale while one
+     * batch is in flight must not request the remaining ones.
+     */
+    @Test
+    public void disposeStopsTheRemainingFactoryInformationBatches() throws Exception {
+        // One device more than a single factory information request accepts
+        List<DeviceListInfo> devices = IntStream.rangeClosed(1, 21).mapToObj(i -> device("d" + i, false)).toList();
+        when(projectHandlerMock.getAllDevices(1)).thenReturn(CompletableFuture.completedFuture(devices));
+        CompletableFuture<List<FactoryInformation>> firstBatch = new CompletableFuture<>();
+        when(apiMock.getFactoryInformation(any())).thenReturn(firstBatch);
+
+        discoveryService.startScan();
+        discoveryService.dispose();
+
+        // The first batch only answers after the project was removed
+        firstBatch.complete(List.of());
+
+        assertEquals(Set.of(), listener.discovered);
+        verify(apiMock, times(1)).getFactoryInformation(any());
     }
 
     /**
