@@ -623,13 +623,21 @@ public class EchoHandler extends BaseThingHandler {
             }
         } catch (ConnectionException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage(), e);
+                logger.debug("Failed to handle command '{}' to '{}' (device family {}): {}", command, channelUID,
+                        deviceFamily(), e.getMessage(), e);
             } else {
-                logger.warn("Failed to handle command '{}' to '{}': {}", command, channelUID, e.getMessage());
+                logger.warn("Failed to handle command '{}' to '{}' (device family {}): {}", command, channelUID,
+                        deviceFamily(), e.getMessage());
             }
         } catch (RuntimeException e) {
             logger.warn("RuntimeException in handle command for channel '{}': {}", channelUID, e.getMessage(), e);
         }
+    }
+
+    private String deviceFamily() {
+        DeviceTO device = this.device;
+        String family = device == null ? null : device.deviceFamily;
+        return family == null ? "UNKNOWN" : family;
     }
 
     private boolean handleEqualizerCommands(String channelId, Command command, Connection connection, DeviceTO device) {
