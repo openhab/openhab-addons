@@ -23,6 +23,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * used across the whole binding.
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add gateway and sub-device thing types
  */
 @NonNullByDefault
 public class TuyaBindingConstants {
@@ -31,6 +32,8 @@ public class TuyaBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PROJECT = new ThingTypeUID(BINDING_ID, "project");
     public static final ThingTypeUID THING_TYPE_TUYA_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaDevice");
+    public static final ThingTypeUID THING_TYPE_TUYA_GATEWAY = new ThingTypeUID(BINDING_ID, "tuyaGateway");
+    public static final ThingTypeUID THING_TYPE_TUYA_SUB_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaSubDevice");
 
     public static final String PROPERTY_CATEGORY = "category";
 
@@ -44,6 +47,7 @@ public class TuyaBindingConstants {
     public static final String CONFIG_MAX = "max";
     public static final String CONFIG_PROTOCOL = "protocol";
     public static final String CONFIG_RANGE = "range";
+    public static final String CONFIG_SUB_DEVICE_ID = "subDeviceId";
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");

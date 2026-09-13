@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.directives.ElseIfDirective;
 import org.openhab.io.yamlcomposer.internal.placeholders.ElseIfPlaceholder;
@@ -39,12 +40,13 @@ public class ElseIfProcessor extends AbstractConditionalProcessor implements Pla
     }
 
     @Override
-    public @Nullable Object process(ElseIfPlaceholder elseIfPlaceholder, RecursiveTransformer recursiveTransformer) {
+    public @Nullable Object process(ElseIfPlaceholder elseIfPlaceholder, RecursiveTransformer recursiveTransformer,
+            EvaluationContext context) {
         Object value = elseIfPlaceholder.value();
 
         @Nullable
         Boolean simpleSyntaxResult = processSimpleSyntax(value, elseIfPlaceholder.sourceLocation(),
-                recursiveTransformer);
+                recursiveTransformer, context);
         if (simpleSyntaxResult != null) {
             return new ElseIfDirective(elseIfPlaceholder.tag(), simpleSyntaxResult, elseIfPlaceholder.sourceLocation());
         }

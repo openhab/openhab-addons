@@ -13,11 +13,15 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +32,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThermostatClus
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Channel;
@@ -35,6 +40,7 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Test class for ThermostatConverter
@@ -87,6 +93,47 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
     }
 
     @Test
+    void testCreateChannelsWithRunningState() {
+        mockCluster.thermostatRunningState = new ThermostatCluster.RelayStateBitmap(false, false, false, false, false,
+                false, false);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
+
+        assertEquals(13, channels.size());
+
+        for (Channel channel : channels.keySet()) {
+            switch (channel.getUID().getIdWithoutGroup()) {
+                case "thermostat-runningstate-heat":
+                case "thermostat-runningstate-cool":
+                case "thermostat-runningstate-fan":
+                case "thermostat-runningstate-heatstage2":
+                case "thermostat-runningstate-coolstage2":
+                case "thermostat-runningstate-fanstage2":
+                case "thermostat-runningstate-fanstage3":
+                    assertEquals("Switch", channel.getAcceptedItemType());
+                    break;
+            }
+        }
+    }
+
+    @Test
+    void testCreateChannelsWithRunningStateCoolingOnly() {
+        mockCluster.featureMap = new ThermostatCluster.FeatureMap(false, true, false, false, false, false, false);
+        mockCluster.thermostatRunningState = new ThermostatCluster.RelayStateBitmap(false, false, false, false, false,
+                false, false);
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+
+        Set<String> channelIds = converter.createChannels(channelGroupUID).keySet().stream()
+                .map(channel -> channel.getUID().getIdWithoutGroup()).collect(Collectors.toSet());
+
+        assertTrue(channelIds.containsAll(Set.of("thermostat-runningstate-cool", "thermostat-runningstate-coolstage2",
+                "thermostat-runningstate-fan", "thermostat-runningstate-fanstage2",
+                "thermostat-runningstate-fanstage3")));
+        assertFalse(channelIds.contains("thermostat-runningstate-heat"));
+        assertFalse(channelIds.contains("thermostat-runningstate-heatstage2"));
+    }
+
+    @Test
     void testHandleCommandSystemMode() {
         ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#thermostat-systemmode");
         Command command = new DecimalType(1); // Heat mode
@@ -127,11 +174,41 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
     }
 
     @Test
+    void testOnEventWithRunningMode() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = "thermostatRunningMode";
+        message.value = ThermostatCluster.ThermostatRunningModeEnum.COOL;
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningmode"),
+                eq(new DecimalType(ThermostatCluster.ThermostatRunningModeEnum.COOL.getValue())));
+    }
+
+    @Test
+    void testOnEventWithRunningState() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = "thermostatRunningState";
+        message.value = new ThermostatCluster.RelayStateBitmap(false, true, true, false, true, true, false);
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-heat"), eq(OnOffType.OFF));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-cool"), eq(OnOffType.ON));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fan"), eq(OnOffType.ON));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-heatstage2"), eq(OnOffType.OFF));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-coolstage2"), eq(OnOffType.ON));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fanstage2"), eq(OnOffType.ON));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fanstage3"), eq(OnOffType.OFF));
+    }
+
+    @Test
     void testInitState() {
         mockCluster.localTemperature = 2000; // 20°C
         mockCluster.systemMode = ThermostatCluster.SystemModeEnum.HEAT;
         mockCluster.occupiedHeatingSetpoint = 2200; // 22°C
         mockCluster.occupiedCoolingSetpoint = 2500; // 25°C
+        mockCluster.thermostatRunningMode = ThermostatCluster.ThermostatRunningModeEnum.HEAT;
+        mockCluster.thermostatRunningState = new ThermostatCluster.RelayStateBitmap(true, false, true, true, false,
+                false, false);
 
         converter.initState();
 
@@ -143,5 +220,28 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
                 eq(new QuantityType<>(22.0, SIUnits.CELSIUS)));
         verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-occupiedcooling"),
                 eq(new QuantityType<>(25.0, SIUnits.CELSIUS)));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningmode"),
+                eq(new DecimalType(ThermostatCluster.ThermostatRunningModeEnum.HEAT.getValue())));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-heat"), eq(OnOffType.ON));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-cool"), eq(OnOffType.OFF));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fan"), eq(OnOffType.ON));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-heatstage2"), eq(OnOffType.ON));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-coolstage2"), eq(OnOffType.OFF));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fanstage2"), eq(OnOffType.OFF));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fanstage3"), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void testInitStateWithoutRunningState() {
+        converter.initState();
+
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningmode"), eq(UnDefType.NULL));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-heat"), eq(UnDefType.NULL));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-cool"), eq(UnDefType.NULL));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fan"), eq(UnDefType.NULL));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-heatstage2"), eq(UnDefType.NULL));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-coolstage2"), eq(UnDefType.NULL));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fanstage2"), eq(UnDefType.NULL));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("thermostat-runningstate-fanstage3"), eq(UnDefType.NULL));
     }
 }

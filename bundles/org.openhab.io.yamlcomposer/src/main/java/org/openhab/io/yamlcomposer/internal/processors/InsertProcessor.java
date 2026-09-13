@@ -18,6 +18,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
+import org.openhab.io.yamlcomposer.internal.ComposerConfig;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.ProcessingPhase;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.InsertPlaceholder;
@@ -55,7 +57,8 @@ public class InsertProcessor implements PlaceholderProcessor<InsertPlaceholder> 
      * following any nested inserts, and returns the fully expanded content.
      */
     @Override
-    public @Nullable Object process(InsertPlaceholder placeholder, RecursiveTransformer recursiveTransformer) {
+    public @Nullable Object process(InsertPlaceholder placeholder, RecursiveTransformer recursiveTransformer,
+            EvaluationContext context) {
         FragmentUtils.Parameters params = FragmentUtils.parseParameters(placeholder, "template");
         if (params == null) {
             logger.warn("{} Failed to process !insert: invalid parameters", placeholder.sourceLocation());
@@ -75,14 +78,24 @@ public class InsertProcessor implements PlaceholderProcessor<InsertPlaceholder> 
             return null;
         }
 
+        if (context.templateDepth() >= ComposerConfig.MAX_RECURSION_DEPTH) {
+            logger.warn("{} Maximum template recursion depth ({}) exceeded while inserting '{}'.",
+                    placeholder.sourceLocation(), ComposerConfig.MAX_RECURSION_DEPTH, templateName);
+            return null;
+        }
+
         // The substitution placeholders in the template are resolved using the templateVariables context
         // unlike any other processing which uses the main variables map
         Map<String, @Nullable Object> templateVariables = new HashMap<>(params.varsMap());
         templateVariables.put("ARGS", params.varsMap());
-        RecursiveTransformer localTransformer = recursiveTransformer.withOverrideVariables(templateVariables);
+        var templateScope = context.scope().createChild();
+        templateScope.putAll(templateVariables);
         // Keep package override placeholders (!remove/!replace) intact so they are only
-        // applied in the dedicated PACKAGE_OVERRIDES phase.
-        Object resolvedTemplate = localTransformer.transform(templateObj, ProcessingPhase.STANDARD);
+        // applied in the dedicated FINALIZATION phase.
+        // A template can intentionally be inserted recursively. Do not let the caller's
+        // container cycle tracking turn the second expansion into a reference to the first result.
+        Object resolvedTemplate = recursiveTransformer.transform(templateObj,
+                context.forFragment(templateScope).withProcessingPhase(ProcessingPhase.STANDARD));
         return resolvedTemplate;
     }
 }

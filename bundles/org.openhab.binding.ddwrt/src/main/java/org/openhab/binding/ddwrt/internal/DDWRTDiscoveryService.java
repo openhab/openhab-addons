@@ -255,10 +255,13 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     static String selectClientName(DDWRTClient client, ClientNameResolver resolver) {
         String routerHostname = client.getPrimaryHostname();
-        if (!routerHostname.isEmpty()) {
+        if (client.isHostnameAuthoritative()) {
             return routerHostname;
         }
         return resolver.resolve(client.getMac()).orElseGet(() -> {
+            if (!routerHostname.isEmpty() && !client.isHostnameAmbiguous()) {
+                return routerHostname;
+            }
             String ouiHostname = client.getOuiHostname();
             return !ouiHostname.isEmpty() ? ouiHostname : "client-" + ClientNameResolver.normalizeMac(client.getMac());
         });

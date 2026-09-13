@@ -624,4 +624,8 @@ public class RemoteControllerService implements SamsungTvService {
     public @Nullable WebSocketFactory getWebSocketFactory() {
         return handler.getWebSocketFactory();
     }
+
+    public boolean getLegacyCipherSuites() {
+        return handler.configuration.getLegacyCipherSuites();
+    }
 }

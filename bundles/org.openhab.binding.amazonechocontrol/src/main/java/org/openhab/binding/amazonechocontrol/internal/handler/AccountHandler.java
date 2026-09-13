@@ -60,12 +60,10 @@ import org.openhab.binding.amazonechocontrol.internal.dto.push.NotifyNowPlayingU
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushCommandTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushDeviceTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushDopplerIdTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.push.PushListItemChangeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.request.SendConversationDTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.AccountTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.BluetoothStateTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHistoryRecordTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.ListItemTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.MusicProviderTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.SmartHomeTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.WakeWordTO;
@@ -244,7 +242,6 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 }
 
                 SendConversationDTO conversation = new SendConversationDTO();
-                conversation.conversationId = "amzn1.comms.messaging.id.conversationV2~31e6fe8f-8b0c-4e84-a1e4-80030a09009b";
                 conversation.clientMessageId = java.util.UUID.randomUUID().toString();
                 conversation.messageId = lastMessageId++;
                 conversation.sender = currentAccount.commsId;
@@ -827,10 +824,6 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 echoHandlers.values().forEach(EchoHandler::updateMediaSessions);
                 break;
             case "PUSH_LIST_ITEM_CHANGE":
-                PushListItemChangeTO itemChange = Objects
-                        .requireNonNull(gson.fromJson(payload, PushListItemChangeTO.class));
-                List<ListItemTO> lists = connection.getNamedListItems(itemChange.listId);
-                // TODO: create channels
                 break;
             default:
                 logger.warn("Detected unknown command from activity stream: {}", pushCommand);

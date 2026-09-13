@@ -87,6 +87,8 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
 
     void muteSmokeAlarm(int smokeId) throws ShellyApiException;
 
+    void setPresenceSensor(boolean enable) throws ShellyApiException;
+
     void setFloodConfig(int id, @Nullable String alarmMode, int reportHoldoff) throws ShellyApiException;
 
     ShellyOtaCheckResult checkForUpdate() throws ShellyApiException;
