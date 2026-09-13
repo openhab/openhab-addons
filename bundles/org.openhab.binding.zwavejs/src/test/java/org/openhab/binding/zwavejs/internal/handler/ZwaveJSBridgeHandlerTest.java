@@ -14,11 +14,13 @@ package org.openhab.binding.zwavejs.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -97,7 +99,7 @@ public class ZwaveJSBridgeHandlerTest {
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(discoveryService, times(29)).addNodeDiscovery(any());
+            verify(discoveryService, times(24)).addNodeDiscovery(any());
         } finally {
             handler.dispose();
         }
@@ -193,11 +195,96 @@ public class ZwaveJSBridgeHandlerTest {
         eventMessage.event.node = new Node();
         eventMessage.event.node.nodeId = 5;
         eventMessage.event.node.status = Status.ALIVE;
+        eventMessage.event.node.ready = true;
 
         handler.onEvent(eventMessage);
 
         try {
             verify(discoveryService).addNodeDiscovery(eq(eventMessage.event.node));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testFullStateDefersUnreadyNodeDiscovery() {
+        final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSBridgeHandler handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
+        final NodeDiscoveryService discoveryService = mock(NodeDiscoveryService.class);
+        handler.registerDiscoveryListener(discoveryService);
+
+        Node node = new Node();
+        node.nodeId = 5;
+        node.status = Status.ALIVE;
+        node.ready = false;
+
+        ResultMessage resultMessage = new ResultMessage();
+        resultMessage.result = new Result();
+        resultMessage.result.state = new State();
+        resultMessage.result.state.nodes = List.of(node);
+
+        handler.onEvent(resultMessage);
+
+        try {
+            verify(discoveryService, never()).addNodeDiscovery(any());
+            assertSame(node, handler.requestNodeDetails(node.nodeId));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testReadyEventUpdatesCachedNodeAndNotifiesListener() {
+        final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSBridgeHandlerMock handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
+        final ZwaveNodeListener nodeListener = mock(ZwaveNodeListener.class);
+        when(nodeListener.getId()).thenReturn(5);
+        handler.registerNodeListener(nodeListener);
+
+        Node node = new Node();
+        node.nodeId = 5;
+        node.ready = true;
+
+        EventMessage eventMessage = new EventMessage();
+        eventMessage.event = new Event();
+        eventMessage.event.event = "ready";
+        eventMessage.event.nodeId = node.nodeId;
+        eventMessage.event.nodeState = node;
+
+        handler.onEvent(eventMessage);
+
+        try {
+            assertSame(node, handler.requestNodeDetails(node.nodeId));
+            verify(nodeListener).onNodeReady(node);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testReadyEventDiscoversNodeWithoutListener() {
+        final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSBridgeHandlerMock handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
+        final NodeDiscoveryService discoveryService = mock(NodeDiscoveryService.class);
+        handler.registerDiscoveryListener(discoveryService);
+
+        Node node = new Node();
+        node.nodeId = 5;
+        node.ready = true;
+
+        EventMessage eventMessage = new EventMessage();
+        eventMessage.event = new Event();
+        eventMessage.event.event = "ready";
+        eventMessage.event.nodeId = node.nodeId;
+        eventMessage.event.nodeState = node;
+
+        handler.onEvent(eventMessage);
+
+        try {
+            verify(discoveryService).addNodeDiscovery(node);
         } finally {
             handler.dispose();
         }

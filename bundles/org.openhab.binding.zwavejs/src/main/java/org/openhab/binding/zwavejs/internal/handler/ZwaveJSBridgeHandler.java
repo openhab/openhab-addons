@@ -202,9 +202,34 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                     }
                     break;
                 case "node added":
-                    final NodeDiscoveryService discovery = discoveryService;
-                    if (discovery != null) {
-                        discovery.addNodeDiscovery(eventMsg.event.node);
+                    Node addedNode = eventMsg.event.node;
+                    if (addedNode != null) {
+                        lastNodeStates.put(addedNode.nodeId, addedNode);
+                        final NodeDiscoveryService discovery = discoveryService;
+                        if (addedNode.ready && discovery != null) {
+                            discovery.addNodeDiscovery(addedNode);
+                        } else if (!addedNode.ready) {
+                            logger.trace("Node {}. Deferring discovery until the node is ready", addedNode.nodeId);
+                        }
+                    }
+                    break;
+                case "ready":
+                    Node readyNode = eventMsg.event.nodeState;
+                    if (readyNode != null) {
+                        lastNodeStates.put(readyNode.nodeId, readyNode);
+                        if (!readyNode.ready) {
+                            logger.trace("Node {}. Ignoring ready event with an unready node state", readyNode.nodeId);
+                            break;
+                        }
+                        ZwaveNodeListener readyNodeListener = nodeListeners.get(readyNode.nodeId);
+                        if (readyNodeListener != null) {
+                            readyNodeListener.onNodeReady(readyNode);
+                        } else {
+                            final NodeDiscoveryService discovery = discoveryService;
+                            if (discovery != null) {
+                                discovery.addNodeDiscovery(readyNode);
+                            }
+                        }
                     }
                     break;
                 case "statistics updated":
@@ -288,6 +313,12 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             if (nodeListener == null) {
                 if (Status.DEAD == node.status) {
                     logger.warn("Node {}. Ignored due to state: {}", nodeId, node.status);
+                    continue;
+                }
+                if (!node.ready) {
+                    logger.trace("Node {}. Deferring discovery until the node is ready", nodeId);
+                    lastNodeStates.put(nodeId, node);
+                    lastNodeStatesCopy.remove(nodeId);
                     continue;
                 }
                 logger.trace("Node {}. No listener, pass to discovery", nodeId);

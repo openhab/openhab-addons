@@ -14,6 +14,7 @@ package org.openhab.binding.zwavejs.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
+import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Statistics;
 
 /**
@@ -62,6 +63,13 @@ public interface ZwaveNodeListener {
      * @param event the event that contains information about the removed node
      */
     void onNodeRemoved(Event event);
+
+    /**
+     * This method is called when a node is ready and its complete state is available.
+     *
+     * @param node the complete node state
+     */
+    void onNodeReady(Node node);
 
     /**
      * This method is called when the statistics of a node are updated.
