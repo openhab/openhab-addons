@@ -479,6 +479,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
         this.channelsByLanguage = Map.copyOf(channelsByLanguage);
         registeredBoxes.values().forEach(LGHorizonBoxHandler::updateChannelNumberOptions);
+        registeredBoxes.values().forEach(LGHorizonBoxHandler::updateDeviceProperties);
 
         String customerId = customerDto.customerId;
         if (customerId != null) {

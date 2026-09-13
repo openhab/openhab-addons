@@ -104,34 +104,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
         account.registerBox(deviceId, this);
-
-        DeviceDto device = account.getAssignedDevice(deviceId);
-        if (device != null) {
-            String defaultProfileId = device.defaultProfileId;
-            if (defaultProfileId != null) {
-                updateProperty(PROPERTY_DEFAULT_PROFILE_ID, defaultProfileId);
-            }
-            String deviceType = device.deviceType;
-            if (deviceType != null) {
-                updateProperty(PROPERTY_DEVICE_TYPE, deviceType);
-            }
-            String platformType = device.platformType;
-            if (platformType != null) {
-                updateProperty(PROPERTY_PLATFORM_TYPE, platformType);
-            }
-            String serialNumber = device.serialNumber;
-            if (serialNumber != null) {
-                updateProperty(PROPERTY_SERIAL_NUMBER, serialNumber);
-            }
-            String wifiMacAddress = device.wifiMacAddress;
-            if (wifiMacAddress != null) {
-                updateProperty(PROPERTY_WIFI_MAC_ADDRESS, wifiMacAddress);
-            }
-            String ethernetMacAddress = device.ethernetMacAddress;
-            if (ethernetMacAddress != null) {
-                updateProperty(PROPERTY_ETHERNET_MAC_ADDRESS, ethernetMacAddress);
-            }
-        }
+        updateDeviceProperties();
     }
 
     @Override
@@ -291,6 +264,40 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
             return Integer.parseInt(number);
         } catch (NumberFormatException e) {
             return Integer.MAX_VALUE;
+        }
+    }
+
+    public void updateDeviceProperties() {
+        LGHorizonAccountHandler account = getAccountHandler();
+        if (account == null) {
+            return;
+        }
+        DeviceDto device = account.getAssignedDevice(deviceId);
+        if (device != null) {
+            String defaultProfileId = device.defaultProfileId;
+            if (defaultProfileId != null) {
+                updateProperty(PROPERTY_DEFAULT_PROFILE_ID, defaultProfileId);
+            }
+            String deviceType = device.deviceType;
+            if (deviceType != null) {
+                updateProperty(PROPERTY_DEVICE_TYPE, deviceType);
+            }
+            String platformType = device.platformType;
+            if (platformType != null) {
+                updateProperty(PROPERTY_PLATFORM_TYPE, platformType);
+            }
+            String serialNumber = device.serialNumber;
+            if (serialNumber != null) {
+                updateProperty(PROPERTY_SERIAL_NUMBER, serialNumber);
+            }
+            String wifiMacAddress = device.wifiMacAddress;
+            if (wifiMacAddress != null) {
+                updateProperty(PROPERTY_WIFI_MAC_ADDRESS, wifiMacAddress);
+            }
+            String ethernetMacAddress = device.ethernetMacAddress;
+            if (ethernetMacAddress != null) {
+                updateProperty(PROPERTY_ETHERNET_MAC_ADDRESS, ethernetMacAddress);
+            }
         }
     }
 
