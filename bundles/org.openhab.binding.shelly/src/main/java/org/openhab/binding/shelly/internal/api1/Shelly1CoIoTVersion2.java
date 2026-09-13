@@ -32,6 +32,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.LightModelAccessor;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -334,12 +335,24 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
 
             case "5101": // {"I":5101,"T":"S","D":"brightness","R":"0/100","L":1},
             case "5102": // {"I":5102,"T":"S","D":"gain","R":"0/100","L":1},
-            case "5103": // {"I":5103,"T":"S","D":"colorTemp","U":"K","R":"3000/6500","L":1},
             case "5105": // {"I":5105,"T":"S","D":"red","R":"0/255","L":1},
             case "5106": // {"I":5106,"T":"S","D":"green","R":"0/255","L":1},
             case "5107": // {"I":5107,"T":"S","D":"blue","R":"0/255","L":1},
             case "5108": // {"I":5108,"T":"S","D":"white","R":"0/255","L":1},
                 // already covered by base handler
+                break;
+
+            case "5103": // {"I":5103,"T":"S","D":"colorTemp","U":"K","R":"3000/6500","L":1},
+                if (profile.inColor) {
+                    break;
+                }
+                ShellyLightModel model = getLightModelForSensor(sen, lightModels);
+                if (model != null) {
+                    model.setColorTemp(s.value);
+                } else {
+                    logger.debug("{}: Unable to update color temperature for {}: LightModel not found", thingName,
+                            sen.desc);
+                }
                 break;
 
             case "6101": // A, overtemp, 0/1
