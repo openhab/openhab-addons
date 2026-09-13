@@ -166,7 +166,7 @@ public class ZwaveJSNodeHandlerTest {
                         .filter(other -> channelId.equals(new ChannelMetadata(node.nodeId, other).id)).count() > 1;
             }).findFirst().orElseThrow();
             String channelId = new ChannelMetadata(node.nodeId, removedValue).id;
-            node.values = node.values.stream().filter(value -> value.equals(removedValue) != true).toList();
+            node.values = node.values.stream().filter(value -> !value.equals(removedValue)).toList();
 
             handler.onNodeDefinitionChanged(node);
 
