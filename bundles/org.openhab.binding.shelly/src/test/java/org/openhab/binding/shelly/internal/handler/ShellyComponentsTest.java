@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_PROFILE_RGBCCT;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -55,14 +56,18 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -980,6 +985,164 @@ public class ShellyComponentsTest {
         assertThat(updated, is(true));
         assertThat(updates.get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP_PCT),
                 is(new PercentType(ctPercent)));
+    }
+
+    @Test
+    void updateRGBWPushesColorChannelsForMulticolorBulb() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPLUSCOLORBULB);
+        ShellyDeviceProfile profile = handler.getProfile();
+        profile.inColor = true;
+        handler.setProfile(profile);
+        handler.addLightModel(0, THING_TYPE_SHELLYPLUSCOLORBULB, profile, 10.0);
+
+        Shelly2RGBWStatus value = new Shelly2RGBWStatus();
+        value.id = 0;
+        value.rgb = new Integer[] { 10, 20, 30 };
+
+        boolean updated = ShellyComponents.updateRGBW(value, handler);
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        assertThat(updated, is(true));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER), instanceOf(HSBType.class));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_RED), is(new PercentType(4)));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_GREEN), is(new PercentType(8)));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_BLUE), is(new PercentType(12)));
+    }
+
+    @Test
+    void updateRGBWPreservesExistingColorChannelsForPartialStatusWithoutRgbOnMulticolorBulb() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPLUSCOLORBULB);
+        ShellyDeviceProfile profile = handler.getProfile();
+        profile.inColor = true;
+        handler.setProfile(profile);
+        handler.addLightModel(0, THING_TYPE_SHELLYPLUSCOLORBULB, profile, 10.0);
+
+        try (LightModelAccessor.LightModels lightModels = handler.acquire()) {
+            ShellyLightModel model = lightModels.getByApiLightIndex(0);
+            assertNotNull(model);
+            model.setRGBX(new int[] { 10, 20, 30 });
+            model.setOnOff(true);
+        }
+
+        handler.getChannelUpdates().clear();
+
+        Shelly2RGBWStatus value = new Shelly2RGBWStatus();
+        value.id = 0;
+        value.brightness = 42.0;
+
+        boolean updated = ShellyComponents.updateRGBW(value, handler);
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        assertThat(updated, is(true));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER), instanceOf(HSBType.class));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_RED), is(new PercentType(4)));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_GREEN), is(new PercentType(8)));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_BLUE), is(new PercentType(12)));
+    }
+
+    @Test
+    void updateRGBCCTSkipsColorChannelsForDuoBulbInWhiteMode() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPLUSDUOBULB);
+        ShellyDeviceProfile profile = handler.getProfile();
+        profile.inColor = false;
+        handler.setProfile(profile);
+        handler.addLightModel(0, THING_TYPE_SHELLYPLUSDUOBULB, profile, 10.0);
+
+        Shelly2RGBCCTStatus value = new Shelly2RGBCCTStatus();
+        value.id = 0;
+        value.mode = "white";
+
+        boolean updated = ShellyComponents.updateRGBCCT(value, handler);
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        assertThat(updated, is(true));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER), is(nullValue()));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_RED), is(nullValue()));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_GREEN), is(nullValue()));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_BLUE), is(nullValue()));
+    }
+
+    @Test
+    void updateRGBCCTPushesBrightnessAndCtForDuoBulbInWhiteMode() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPLUSDUOBULB);
+        ShellyDeviceProfile profile = handler.getProfile();
+        profile.inColor = false;
+        handler.setProfile(profile);
+        handler.addLightModel(0, THING_TYPE_SHELLYPLUSDUOBULB, profile, 10.0);
+
+        Shelly2RGBCCTStatus value = new Shelly2RGBCCTStatus();
+        value.id = 0;
+        value.mode = "white";
+        value.output = true;
+        value.brightness = 55.0;
+        value.ct = 3200;
+
+        boolean updated = ShellyComponents.updateRGBCCT(value, handler);
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        assertThat(updated, is(true));
+        assertThat(updates.get(CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS), is(new PercentType(55)));
+        assertThat(updates.get(CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_COLOR_TEMP),
+                is(QuantityType.valueOf(3200, Units.KELVIN)));
+    }
+
+    @Test
+    void updateRGBCCTPartialStatusForDuoBulbUpdatesCtWithoutBrightness() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPLUSDUOBULB);
+        ShellyDeviceProfile profile = handler.getProfile();
+        profile.inColor = false;
+        handler.setProfile(profile);
+        handler.addLightModel(0, THING_TYPE_SHELLYPLUSDUOBULB, profile, 10.0);
+
+        Shelly2RGBCCTStatus value = new Shelly2RGBCCTStatus();
+        value.id = 0;
+        value.mode = "white";
+        value.ct = 3200;
+
+        boolean updated = ShellyComponents.updateRGBCCT(value, handler);
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        assertThat(updated, is(true));
+        assertThat(updates.get(CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS), is(nullValue()));
+        assertThat(updates.get(CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_COLOR_TEMP),
+                is(QuantityType.valueOf(3200, Units.KELVIN)));
+    }
+
+    @Test
+    void updateRGBCCTUpdatesBrightnessWithoutResettingColorTempForMulticolorBulbInColorMode() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPLUSCOLORBULB);
+        ShellyDeviceProfile profile = handler.getProfile();
+        profile.inColor = true;
+        handler.setProfile(profile);
+        handler.addLightModel(0, THING_TYPE_SHELLYPLUSCOLORBULB, profile, 10.0);
+
+        try (LightModelAccessor.LightModels lightModels = handler.acquire()) {
+            ShellyLightModel model = lightModels.getByApiLightIndex(0);
+            assertNotNull(model);
+            model.setColorTemp(3200);
+            model.setOnOff(true);
+        }
+
+        handler.getChannelUpdates().clear();
+
+        Shelly2RGBCCTStatus value = new Shelly2RGBCCTStatus();
+        value.id = 0;
+        value.mode = "rgb";
+        value.output = true;
+        value.brightness = 55.0;
+
+        boolean updated = ShellyComponents.updateRGBCCT(value, handler);
+        Map<String, State> updates = handler.getChannelUpdates();
+
+        assertThat(updated, is(true));
+        assertThat(updates.get(CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_COLOR_TEMP), is(nullValue()));
+        assertThat(updates.get(CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS), is(new PercentType(55)));
+
+        try (LightModelAccessor.LightModels lightModels = handler.acquire()) {
+            ShellyLightModel model = lightModels.getByApiLightIndex(0);
+            assertNotNull(model);
+            assertThat(model.getColorTemperatureAbsoluteState(), is(QuantityType.valueOf(3200, Units.KELVIN)));
+        }
     }
 
     private static ShellyThingInterface relayHandlerWith(ShellySettingsStatus profileStatus) {
