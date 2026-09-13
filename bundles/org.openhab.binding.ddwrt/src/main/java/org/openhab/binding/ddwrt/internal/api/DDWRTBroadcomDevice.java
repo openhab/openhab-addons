@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -150,7 +151,12 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
                     }
                 }
 
-                radio.setEnabled(true);
+                String radioStatus = safeTrim(runner.execStdout("wl -i " + iface + " radio"));
+                try {
+                    radio.setEnabled(Long.decode(radioStatus) == 0);
+                } catch (NumberFormatException e) {
+                    logger.debug("Failed to parse radio status '{}' for {}", radioStatus, iface);
+                }
                 radios.add(radio);
                 foundIfaces.add(iface);
                 logger.debug("Found Broadcom radio: {}", radio);
@@ -251,11 +257,11 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
+    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) throws IOException {
         if (enabled) {
-            runner.execStdout("wl -i " + iface + " radio on");
+            runner.exec("wl -i " + iface + " radio on");
         } else {
-            runner.execStdout("wl -i " + iface + " radio off");
+            runner.exec("wl -i " + iface + " radio off");
         }
     }
 
