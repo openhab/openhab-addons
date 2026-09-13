@@ -89,7 +89,7 @@ public class ShellyChannelMigration {
                 new ChannelMigrationRule(6, mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER),
                         CHANNEL_DEVST_RESETTOTAL, false, profile -> profile.is3EM),
                 // @formatter:off
-                // PR #21286: color group: refresh color picker as OH main, promote secondary channels to advanced
+                // OH Light Convention: color group: refresh color picker as OH main, promote secondary channels to advanced
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER), null, true),
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_FULL), null, true),
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED), null, true),
@@ -98,11 +98,11 @@ public class ShellyChannelMigration {
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE), null, true),
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN), null, true),
 
-                // PR #21286: white group: refresh/promote brightness, refresh temperature, add temperature-pct
+                // OH Light Convention: white group: refresh/promote brightness, refresh temperature, add temperature-pct
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS), null, true),
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP), CHANNEL_COLOR_TEMP_PCT, true),
-                
-                // PR #21286: control group: promote secondary channels to advanced
+
+                // OH Light Convention: control group: promote secondary channels to advanced
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_COLOR_MODE), null, true),
                 new ChannelMigrationRule(8, mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER), null, true)
                 // @formatter:on
@@ -126,9 +126,9 @@ public class ShellyChannelMigration {
                 new ChannelMigrationRule(7, mkChannelId(oldGroup, CHANNEL_TIMER_ACTIVE),
                         mkChannelId(newGroup, CHANNEL_TIMER_ACTIVE), false, ShellyChannelMigration::isGen1Rgbw2),
                 // @formatter:off
-                // PR #21286: white group: refresh/promote brightness, refresh temperature, add temperature-pct
+                // OH Light Convention: white group: refresh/promote brightness, refresh temperature, add temperature-pct
                 new ChannelMigrationRule(8, mkChannelId(newGroup, CHANNEL_BRIGHTNESS), null, true),
-                new ChannelMigrationRule(8, mkChannelId(newGroup, CHANNEL_COLOR_TEMP), mkChannelId(newGroup, CHANNEL_COLOR_TEMP_PCT), true)
+                new ChannelMigrationRule(8, mkChannelId(newGroup, CHANNEL_COLOR_TEMP), CHANNEL_COLOR_TEMP_PCT, true)
                 // @formatter:on
         );
     }
