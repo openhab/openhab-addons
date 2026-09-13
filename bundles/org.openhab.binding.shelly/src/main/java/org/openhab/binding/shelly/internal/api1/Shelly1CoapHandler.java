@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.api1;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_CLASS_LIGHT;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.californium.core.CoapClient;
@@ -444,10 +445,12 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         Map<String, State> updates = new TreeMap<>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
+        boolean coapDataConsumedByLightModel = false;
 
         LightModelAccessor accessor = thingHandler instanceof LightModelAccessor lma ? lma : null;
         if (accessor != null) {
             try (LightModelAccessor.LightModels lightModels = accessor.acquire()) {
+                Map<CoIotSensor, CoIotDescrSen> deferredUpdates = new LinkedHashMap<>();
 
                 // pass 1: process everything except light power state/output
                 for (CoIotSensor s : sensorUpdates) {
@@ -456,26 +459,24 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                         continue;
                     }
                     if (isDeferredLightPowerUpdate(sen)) {
+                        deferredUpdates.put(s, sen);
                         continue;
                     }
-                    if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
-                        failed++;
+                    if (coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
+                        coapDataConsumedByLightModel = true;
+                    } else {
                         logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}",
                                 thingName, sen.id, sen.type, sen.desc, s.value, payload);
                     }
                 }
 
                 // pass 2: process deferred light power state/output last
-                for (CoIotSensor s : sensorUpdates) {
-                    CoIotDescrSen sen = resolveSensorUpdate(s, payload);
-                    if (sen == null) {
-                        continue;
-                    }
-                    if (!isDeferredLightPowerUpdate(sen)) {
-                        continue;
-                    }
-                    if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
-                        failed++;
+                for (Entry<CoIotSensor, CoIotDescrSen> deferred : deferredUpdates.entrySet()) {
+                    CoIotSensor s = deferred.getKey();
+                    CoIotDescrSen sen = deferred.getValue();
+                    if (coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
+                        coapDataConsumedByLightModel = true;
+                    } else {
                         logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}",
                                 thingName, sen.id, sen.type, sen.desc, s.value, payload);
                     }
@@ -488,14 +489,13 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     continue;
                 }
                 if (!coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, null)) {
-                    failed++;
                     logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
                             sen.id, sen.type, sen.desc, s.value, payload);
                 }
             }
         }
 
-        if (!updates.isEmpty()) {
+        if (!updates.isEmpty() || coapDataConsumedByLightModel) {
             int updated = 0;
             boolean sensorGroupUpdated = false;
             for (Map.Entry<String, State> u : updates.entrySet()) {
