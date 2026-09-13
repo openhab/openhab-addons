@@ -39,9 +39,8 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 
 /**
- * Tests for {@link Shelly1CoIoTVersion2#handleStatusUpdate}, specifically the roller position ("1103") handling:
- * the device keeps reporting the pre-move position while the roller is moving, which must not be published as a
- * channel flicker.
+ * Tests for {@link Shelly1CoIoTVersion2#handleStatusUpdate}, including roller-position handling and the shared
+ * light-sensor paths delegated to the base protocol.
  *
  * @author Markus Michels - Initial contribution
  */
