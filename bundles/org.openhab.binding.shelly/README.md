@@ -641,7 +641,7 @@ The Shelly lighting ecosystem exposes different mixes of channels for different 
 In previous binding versions the channels were "orthogonal" where each channel was distinctly responsible for one specific light attribute e.g. on-off, brightness, color, etc.
 So three distinct commands were required to turn on a light with a specific color and brightness.
 By contrast the openHAB Light Control Convention expects integrated channels which are responsible for multiple light attributes; and one command covers all such attributes.
-So the current binding version extends the channels have gained extended so that they also can follow the openHAB Light Control Convention, as described in the following chapters.
+So the current binding version extends the channels so that they also can follow the openHAB Light Control Convention, as described in the following chapters.
 
 ### Extra Features for HSB (was ColorPicker) Channels (*)
 
@@ -662,8 +662,8 @@ This `color#hsb` channel is no longer just a color picker; it can be linked to m
 
 ### Extra Features for Brightness Channels (*)
 
-White- only lights have a `white#brightness` channel.
-This is the single main control entry point for lights that support white- only output.
+White only lights have a `white#brightness` channel.
+This is the single main control entry point for lights that support white only output.
 The `white#brightness` is not just an intensity control; it can be linked to several Item types as follows, marked with (*) in the tables below:
 
 - It can be linked to `Dimmer` Items in which case the slider controls the brightness, and depending if it is zero or not, also the On-Off state.
@@ -688,9 +688,9 @@ Some lights have `white#temperature` and `white#temperature-pct` channels, as fo
 Some hybrid light devices have a main `rgb` ir `rgbw` light plus one or more secondary `cct` or `light` lights.
 Such secondary lights have extra features as follows:
 
-- The `lightN:brightness` channels behave as the `white:brightness` channel above.
-- The `lightN:temperature` channels behave as the `white:temperature` channel above.
-- The `lightN:temperature-pct` channels behave as the `white:temperature-pct` channel above.
+- The `lightN#brightness` channels behave as the `white#brightness` channel above.
+- The `lightN#temperature` channels behave as the `white#temperature` channel above.
+- The `lightN#temperature-pct` channels behave as the `white#temperature-pct` channel above.
 
 ### LoRa Add-On (Channel Group: lora)
 
