@@ -43,7 +43,8 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@NonNullByDefault({})
+@NonNullByDefault
+@SuppressWarnings("null")
 class Shelly2RpcSocketMixedFrameTest {
 
     private @Mock ShellyThingTable thingTable;
