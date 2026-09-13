@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -517,8 +518,8 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                 || keyWords.isEmpty()) {
             return false;
         }
-        String labelLower = label != null ? label.toLowerCase() : "";
-        String descLower = description != null ? description.toLowerCase() : "";
+        String labelLower = label != null ? label.toLowerCase(Locale.ROOT) : "";
+        String descLower = description != null ? description.toLowerCase(Locale.ROOT) : "";
         return keyWords.stream().map(String::toLowerCase)
                 .anyMatch(kw -> labelLower.contains(kw) || descLower.contains(kw)
                         || labelLower.endsWith(kw.stripTrailing()) || descLower.endsWith(kw.stripTrailing())
@@ -860,7 +861,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                                 if (upChannel[0] != null && downChannel[0] != null) {
                                     return;
                                 }
-                                String channelId = otherChannel.getUID().getId().toLowerCase();
+                                String channelId = otherChannel.getUID().getId().toLowerCase(Locale.ROOT);
                                 if ((channelId.contains("-up") || channelId.contains("-open")
                                         || channelId.contains("-on"))
                                         && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription)) {

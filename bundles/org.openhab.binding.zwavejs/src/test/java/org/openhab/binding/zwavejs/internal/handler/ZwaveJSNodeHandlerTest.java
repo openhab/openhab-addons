@@ -166,7 +166,7 @@ public class ZwaveJSNodeHandlerTest {
                         .filter(other -> channelId.equals(new ChannelMetadata(node.nodeId, other).id)).count() > 1;
             }).findFirst().orElseThrow();
             String channelId = new ChannelMetadata(node.nodeId, removedValue).id;
-            node.values = node.values.stream().filter(value -> value != removedValue).toList();
+            node.values = node.values.stream().filter(value -> value.equals(removedValue) != true).toList();
 
             handler.onNodeDefinitionChanged(node);
 
@@ -850,7 +850,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_NonExistingChannel() {
+    public void testHandleCommandNonExistingChannel() {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
@@ -867,7 +867,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_RefreshType() {
+    public void testHandleCommandRefreshType() {
         ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
 
         try {
@@ -881,7 +881,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_OnOffType() {
+    public void testHandleCommandOnOffType() {
         ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
 
         try {
@@ -897,7 +897,7 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_QuantityType() {
+    public void testHandleCommandQuantityType() {
         ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
 
         try {

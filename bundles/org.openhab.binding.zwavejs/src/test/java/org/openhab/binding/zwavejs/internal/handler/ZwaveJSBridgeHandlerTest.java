@@ -444,11 +444,7 @@ public class ZwaveJSBridgeHandlerTest {
 
         handler.onEvent(eventMessage);
 
-        try {
-            // No specific verification, just ensuring no exceptions are thrown
-        } finally {
-            handler.dispose();
-        }
+        handler.dispose();
     }
 
     private static Value createValue() {
