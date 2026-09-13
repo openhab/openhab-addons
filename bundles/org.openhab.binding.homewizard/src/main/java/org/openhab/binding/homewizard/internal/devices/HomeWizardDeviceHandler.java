@@ -118,6 +118,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        deviceConfigurationOk = false;
         config = getConfigAs(HomeWizardConfiguration.class);
 
         if (config.isUsingApiVersion2()) {
