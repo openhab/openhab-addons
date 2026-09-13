@@ -615,25 +615,46 @@ Depending on the device type and firmware release channels might be not availabl
 
 ### Channel Migration and Deprecated Channels
 
-openHAB 5.2.1 renamed several meter-related channels for naming consistency.
+openHAB 5.2.1 renamed several meter- related channels for naming consistency.
+And openHAB renamed several light- related channels for naming consistency, as well as promoting some channels to 'advanced'.
 The binding migrates existing Things automatically at startup (one-time, schema-versioned); no re-discovery is required.
 Old channel IDs stay active as deprecated, advanced channels and keep receiving updates, so existing item links and rules keep working; move to the new channel ID at your convenience since deprecated channels will be removed in a future release.
 
-| Old channel ID               | New channel ID                     | Notes                                                                    |
-| ---------------------------- | ---------------------------------- | ------------------------------------------------------------------------ |
-| `meterN#currentWatts`        | `meterN#currentPower`              | unit unchanged (W)                                                       |
-| `meterN#totalKWH`            | `meterN#totalEnergy`               | unit unchanged (kWh)                                                     |
-| `meterN#returnedKWH`         | `meterN#returnedEnergy`            | unit unchanged (kWh)                                                     |
-| `meterN#reactiveWatts`       | `meterN#reactivePower`             | old channel keeps its W unit, new channel reports VAR                    |
-| `meterN#lastPower1`          | `meterN#energyHistMin1`            | old channel reports average power in W, new channel reports energy in Wh |
-| `device#accumulatedWatts`    | `device#accumulatedPower`          | unit unchanged (W)                                                       |
-| `device#accumulatedReturned` | `device#accumulatedReturnedEnergy` | unit unchanged (kWh)                                                     |
-| `device#accumulatedWTotal`   | `device#totalEnergy`               | old channel reported incorrect values; use the new channel               |
-| `device#totalKWH`            | `device#totalEnergy`               | unit unchanged (kWh)                                                     |
-| `nmeter#nmTreshhold`         | `nmeter#nmThreshold`               | unit unchanged (A)                                                       |
+| Old channel ID               | New channel ID                     | Notes                                                                                  |
+|------------------------------|------------------------------------|----------------------------------------------------------------------------------------|
+| `meterN#currentWatts`        | `meterN#currentPower`              | unit unchanged (W)                                                                     |
+| `meterN#totalKWH`            | `meterN#totalEnergy`               | unit unchanged (kWh)                                                                   |
+| `meterN#returnedKWH`         | `meterN#returnedEnergy`            | unit unchanged (kWh)                                                                   |
+| `meterN#reactiveWatts`       | `meterN#reactivePower`             | old channel keeps its W unit, new channel reports VAR                                  |
+| `meterN#lastPower1`          | `meterN#energyHistMin1`            | old channel reports average power in W, new channel reports energy in Wh               |
+| `device#accumulatedWatts`    | `device#accumulatedPower`          | unit unchanged (W)                                                                     |
+| `device#accumulatedReturned` | `device#accumulatedReturnedEnergy` | unit unchanged (kWh)                                                                   |
+| `device#accumulatedWTotal`   | `device#totalEnergy`               | old channel reported incorrect values; use the new channel                             |
+| `device#totalKWH`            | `device#totalEnergy`               | unit unchanged (kWh)                                                                   |
+| `nmeter#nmTreshhold`         | `nmeter#nmThreshold`               | unit unchanged (A)                                                                     |
+| `channelN#...`               | `lightN#...`                       | channel group prefix changed for better understanding of the meaning                   |
+| `color#hsb`                  | `color#hsb`                        | unchanged but becomes the primary light control channel under the OH light convention  |
+| `control#power`              | `control#power`                    | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `control#mode`               | `control#mode`                     | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#full`                 | `color#full`                       | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#red`                  | `color#red`                        | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#green`                | `color#green`                      | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#blue`                 | `color#blue`                       | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#white`                | `color#white`                      | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#gai`                  | `color#gain`                       | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `color#effect`               | `color#effect`                     | promoted to advanced channel type for lights using the OH light convention (see below) |
+| `white#brightness`           | `white#brightness`                 | promoted to advanced channel type on combined color/white devices                      |
+| `white#temperature`          | `white#temperature`                | changed from a hybrid `Dimmer` / `Number:Temperature` to pure `Number:Temperature`     |
+|                              | `white#temperature-pct`            | new channel for pure `Dimmer` percent-based white temperature control                  |
+| `lightN#brightness`          | `lightN#brightness`                | refreshed for light-model based white/light profiles                                   |
+| `lightN#temperature`         | `lightN#temperature`               | changed from a hybrid `Dimmer` / `Number:Temperature` to pure `Number:Temperature`     |
+|                              | `lightN#temperature-pct`           | new channel for pure `Dimmer` percent-based white temperature control                  |
 
 `meterN#powerFactor` additionally changed type from `Number:Dimensionless` to plain `Number` (range −1.0 to +1.0).
 This is an in-place type change on the same channel ID, not a rename, so there is no dual-write; items statically linked as `Number:Dimensionless` need relinking.
+
+`white#temperature` and `lightN#temperature` were hybrid hybrid `Dimmer` and `Number:Temperature` channels and are now pure `Number:Temperature` only.
+So `Dimmer` type items that were linked to `...#temperature` need to be relinked to the counterpart `...#temperature-pct` channels.
 
 ### Extra Channels Features for Lights according to openHAB Light Control Convention
 
