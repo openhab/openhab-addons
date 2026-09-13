@@ -757,8 +757,12 @@ public class ShellyChannelDefinitions {
         return newChannels;
     }
 
+    // Includes both the deprecated ids (currentWatts/totalKWH) and their replacements
+    // (currentPower/totalEnergy): ShellyChannelMigration adds the replacement alongside the
+    // deprecated channel on any Thing that already has it, so both must be reconciled away.
     private static final Set<String> SIMPLE_METER_CHANNELS = Set.of(CHGR_METER + "#" + CHANNEL_METER_CURRENTWATTS,
-            CHGR_METER + "#" + CHANNEL_METER_TOTALKWH, CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN1,
+            CHGR_METER + "#" + CHANNEL_METER_CURRENTPOWER, CHGR_METER + "#" + CHANNEL_METER_TOTALKWH,
+            CHGR_METER + "#" + CHANNEL_METER_TOTALENERGY, CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN1,
             CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN2, CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN3,
             CHGR_METER + "#" + CHANNEL_METER_ENERGYAVGLAST3MIN, CHGR_METER + "#" + CHANNEL_LAST_UPDATE);
 

@@ -573,7 +573,9 @@ public class ShellyComponentsTest {
 
         verify(handler)
                 .removeChannels(argThat(ids -> ids.contains(CHANNEL_GROUP_METER + "#" + CHANNEL_METER_CURRENTWATTS)
+                        && ids.contains(CHANNEL_GROUP_METER + "#" + CHANNEL_METER_CURRENTPOWER)
                         && ids.contains(CHANNEL_GROUP_METER + "#" + CHANNEL_METER_TOTALKWH)
+                        && ids.contains(CHANNEL_GROUP_METER + "#" + CHANNEL_METER_TOTALENERGY)
                         && ids.contains(CHANNEL_GROUP_METER + "#" + CHANNEL_LAST_UPDATE)));
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_METER), anyString(), any(State.class));
     }
