@@ -44,15 +44,20 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
-@SuppressWarnings("null")
 class Shelly2RpcSocketMixedFrameTest {
 
+    @SuppressWarnings("null")
     private @Mock ShellyThingTable thingTable;
+    @SuppressWarnings("null")
     private @Mock WebSocketClient webSocketClient;
+    @SuppressWarnings("null")
     private @Mock ScheduledExecutorService scheduler;
+    @SuppressWarnings("null")
     private @Mock Shelly2RpctInterface handler;
+    @SuppressWarnings("null")
     private @Mock Session session;
 
+    @SuppressWarnings("null")
     private Shelly2RpcSocket socket;
 
     @BeforeEach
