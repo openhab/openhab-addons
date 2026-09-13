@@ -72,6 +72,13 @@ public interface ZwaveNodeListener {
     void onNodeReady(Node node);
 
     /**
+     * This method is called when values or metadata change the generated definition of a ready node.
+     *
+     * @param node the node with its incrementally updated values
+     */
+    void onNodeDefinitionChanged(Node node);
+
+    /**
      * This method is called when the statistics of a node are updated.
      *
      * @param statistics the event that contains information about the updated statistics

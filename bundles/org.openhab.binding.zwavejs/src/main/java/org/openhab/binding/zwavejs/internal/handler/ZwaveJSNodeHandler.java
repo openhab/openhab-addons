@@ -74,6 +74,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -92,6 +93,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeListener {
+
+    private static final Set<String> GENERATED_CHANNEL_CONFIGURATION = Set.of(CONFIG_CHANNEL_COMMANDCLASS_NAME,
+            CONFIG_CHANNEL_COMMANDCLASS_ID, CONFIG_CHANNEL_ENDPOINT, CONFIG_CHANNEL_PROPERTY_KEY_STR,
+            CONFIG_CHANNEL_PROPERTY_KEY_INT, CONFIG_CHANNEL_READ_PROPERTY, CONFIG_CHANNEL_WRITE_PROPERTY_STR,
+            CONFIG_CHANNEL_WRITE_PROPERTY_INT);
 
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSNodeHandler.class);
     private final ZwaveJSTypeGenerator typeGenerator;
@@ -753,6 +759,20 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
+    public void onNodeDefinitionChanged(Node node) {
+        logger.debug("Node {}. Definition changed, reconciling channels and configuration", config.id);
+        executorService.execute(() -> {
+            if (node.nodeId != config.id || !node.ready) {
+                logger.debug("Node {}. Ignoring invalid definition update for node {}", config.id, node.nodeId);
+                return;
+            }
+            if (!setupThing(node)) {
+                logger.debug("Node {}. Unable to reconcile updated definition", config.id);
+            }
+        });
+    }
+
+    @Override
     public void onStatisticsUpdated(Statistics statistics) {
         Map<String, String> properties = thing.getProperties();
         String lastSeenPropString = properties.getOrDefault(PROPERTY_NODE_LASTSEEN, "");
@@ -787,14 +807,18 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         ThingBuilder builder = editThing();
+        boolean thingChanged = false;
 
         // Update location if needed
         if (!result.location.equals(getThing().getLocation()) && !result.location.isBlank()) {
             builder.withLocation(result.location);
+            thingChanged = true;
         }
 
         // Update channels
-        builder = updateChannels(builder, result);
+        ChannelUpdate channelUpdate = updateChannels(builder, result);
+        builder = channelUpdate.builder();
+        thingChanged |= channelUpdate.changed();
 
         colorCapabilities = result.colorCapabilities;
         if (logger.isDebugEnabled()) {
@@ -804,7 +828,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (logger.isDebugEnabled()) {
             rollerShutterCapabilities.forEach((e, c) -> logger.debug("Node {}. Endpoint {}, {}", node.nodeId, e, c));
         }
-        updateThing(builder.build());
+        if (thingChanged) {
+            updateThing(builder.build());
+        }
 
         // Initialize state for channels and configuration
         initializeChannelAndConfigState(node, result);
@@ -817,13 +843,14 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
     /**
      * Updates the channels of a ThingBuilder based on the provided ZwaveJSTypeGeneratorResult.
-     * Does not touch existing Thing channels and their configuration.
+     * Replaces changed generated channel definitions while preserving user-controlled configuration.
      * 
      * <p>
      * This method performs the following actions:
      * <ul>
      * <li>Removes channels from the ThingBuilder that are no longer part of the result.</li>
      * <li>Adds new channels from the result that are not already present in the ThingBuilder.</li>
+     * <li>Replaces channels whose generated definition changed, retaining user configuration.</li>
      * <li>Sets a semantic equipment tag for the ThingBuilder if applicable.</li>
      * </ul>
      * 
@@ -831,35 +858,67 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
      * @param result The {@link ZwaveJSTypeGeneratorResult} containing the updated channel information.
      * @return The updated {@link ThingBuilder}.
      */
-    private ThingBuilder updateChannels(ThingBuilder builder, ZwaveJSTypeGeneratorResult result) {
+    private ChannelUpdate updateChannels(ThingBuilder builder, ZwaveJSTypeGeneratorResult result) {
         Map<String, Channel> existingChannelEntries = thing.getChannels().stream()
                 .collect(Collectors.toMap(channel -> channel.getUID().getId(), channel -> channel));
+        boolean changed = false;
 
         // remove channels that are no longer part of the thing
         for (Map.Entry<String, Channel> existingEntry : existingChannelEntries.entrySet()) {
             if (!result.channels.containsKey(existingEntry.getKey())) {
                 logger.trace("Node {}. Removing {} channel", this.config.id, existingEntry.getKey());
                 builder.withoutChannel(existingEntry.getValue().getUID());
+                changed = true;
             }
         }
 
         // Add new channels that are not already present
         for (Map.Entry<String, Channel> newEntry : result.channels.entrySet()) {
-            if (!existingChannelEntries.containsKey(newEntry.getKey())) {
+            Channel existingChannel = existingChannelEntries.get(newEntry.getKey());
+            if (existingChannel == null) {
                 logger.trace("Node {}. Adding {} channel", this.config.id, newEntry.getKey());
                 builder.withChannel(newEntry.getValue());
+                changed = true;
+            } else {
+                Channel updatedChannel = preserveUserConfiguration(existingChannel, newEntry.getValue());
+                if (!existingChannel.equals(updatedChannel)) {
+                    logger.trace("Node {}. Updating {} channel", this.config.id, newEntry.getKey());
+                    builder.withoutChannel(existingChannel.getUID());
+                    builder.withChannel(updatedChannel);
+                    changed = true;
+                }
             }
         }
 
         SemanticTag equipmentTag = getEquipmentTag(result.channels.values());
         if (equipmentTag != null) {
             logger.debug("Node {}. Setting semantic equipment tag {}", this.config.id, equipmentTag);
-            builder.withSemanticEquipmentTag(equipmentTag);
+            if (!equipmentTag.getName().equals(thing.getSemanticEquipmentTag())) {
+                builder.withSemanticEquipmentTag(equipmentTag);
+                changed = true;
+            }
         } else {
             logger.debug("Node {}. No semantic equipment tag set", this.config.id);
         }
 
-        return builder;
+        return new ChannelUpdate(builder, changed);
+    }
+
+    private Channel preserveUserConfiguration(Channel existingChannel, Channel generatedChannel) {
+        Configuration configuration = new Configuration(existingChannel.getConfiguration());
+        Configuration generatedConfiguration = generatedChannel.getConfiguration();
+
+        for (String key : GENERATED_CHANNEL_CONFIGURATION) {
+            configuration.remove(key);
+            if (generatedConfiguration.containsKey(key)) {
+                configuration.put(key, generatedConfiguration.get(key));
+            }
+        }
+
+        return ChannelBuilder.create(generatedChannel).withConfiguration(configuration).build();
+    }
+
+    private record ChannelUpdate(ThingBuilder builder, boolean changed) {
     }
 
     private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {

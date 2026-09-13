@@ -15,10 +15,13 @@ package org.openhab.binding.zwavejs.internal.handler;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.VIRTUAL_COMMAND_CLASS_NOTIFICATION;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.VIRTUAL_NOTIFICATION_PROPERTY;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,9 +35,11 @@ import org.openhab.binding.zwavejs.internal.action.ZwaveJSActions;
 import org.openhab.binding.zwavejs.internal.api.ZWaveJSClient;
 import org.openhab.binding.zwavejs.internal.api.dto.Args;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
+import org.openhab.binding.zwavejs.internal.api.dto.Metadata;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.State;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
+import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.ControllerExclusionCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.ControllerInclusionCommand;
@@ -73,6 +78,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSBridgeHandler.class);
     private final Map<Integer, ZwaveNodeListener> nodeListeners = new ConcurrentHashMap<>();
     private final Map<Integer, Node> lastNodeStates = new ConcurrentHashMap<>();
+    private final Map<Integer, Map<ValueId, PendingValue>> pendingNodeValues = new ConcurrentHashMap<>();
 
     protected ScheduledExecutorService executorService = scheduler;
     private @Nullable NodeDiscoveryService discoveryService;
@@ -181,6 +187,11 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                         nodeListener.onNodeStateChanged(eventMsg.event);
                     }
                     break;
+                case "metadata updated":
+                case "value added":
+                case "value removed":
+                    processNodeDefinitionEvent(eventMsg.event);
+                    break;
                 case "value notification":
                     if (nodeListener != null) {
                         nodeListener.onNodeStateChanged(normalizeValueNotification(eventMsg.event));
@@ -197,6 +208,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                     }
                     break;
                 case "node removed":
+                    pendingNodeValues.remove(eventMsg.event.nodeId);
                     if (nodeListener != null) {
                         nodeListener.onNodeRemoved(eventMsg.event);
                     }
@@ -216,6 +228,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                 case "ready":
                     Node readyNode = eventMsg.event.nodeState;
                     if (readyNode != null) {
+                        pendingNodeValues.remove(readyNode.nodeId);
                         lastNodeStates.put(readyNode.nodeId, readyNode);
                         if (!readyNode.ready) {
                             logger.trace("Node {}. Ignoring ready event with an unready node state", readyNode.nodeId);
@@ -240,6 +253,213 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                 default:
                     logger.trace("Unhandled event type: {}", eventType);
             }
+        }
+    }
+
+    private void processNodeDefinitionEvent(Event event) {
+        Args args = event.args;
+        Node node = lastNodeStates.get(event.nodeId);
+        if (args == null || node == null || !node.ready || node.values == null) {
+            logger.trace("Node {}. Ignoring {} without a complete cached node", event.nodeId, event.event);
+            return;
+        }
+
+        ValueId valueId = ValueId.from(args);
+        boolean definitionChanged = false;
+        synchronized (node) {
+            List<Value> values = new ArrayList<>(node.values);
+            int valueIndex = findValue(values, valueId);
+            switch (event.event) {
+                case "metadata updated":
+                    Metadata metadata = args.metadata;
+                    if (metadata == null) {
+                        logger.trace("Node {}. Ignoring metadata update without metadata", event.nodeId);
+                        return;
+                    }
+                    if (valueIndex >= 0) {
+                        Value previous = values.get(valueIndex);
+                        Value updated = copyValue(previous);
+                        updateValueIdentityFromArgs(updated, args);
+                        updated.metadata = metadata;
+                        values.set(valueIndex, updated);
+                        definitionChanged = !hasSameGeneratedDefinition(previous, updated);
+                    } else {
+                        PendingValue pending = pendingValue(event.nodeId, valueId, args);
+                        pending.value.metadata = metadata;
+                        definitionChanged = addPendingValueIfComplete(event.nodeId, valueId, values);
+                    }
+                    break;
+                case "value added":
+                    definitionChanged = processValueAdded(event.nodeId, valueId, args, values, valueIndex);
+                    break;
+                case "value removed":
+                    removePendingValue(event.nodeId, valueId);
+                    if (valueIndex >= 0) {
+                        values.remove(valueIndex);
+                        definitionChanged = true;
+                    }
+                    break;
+                default:
+                    return;
+            }
+            node.values = List.copyOf(values);
+        }
+
+        if (!definitionChanged) {
+            logger.trace("Node {}. {} did not change the generated definition", event.nodeId, event.event);
+            return;
+        }
+
+        ZwaveNodeListener listener = nodeListeners.get(event.nodeId);
+        if (listener != null) {
+            listener.onNodeDefinitionChanged(node);
+        }
+    }
+
+    private boolean processValueAdded(int nodeId, ValueId valueId, Args args, List<Value> values, int valueIndex) {
+        if (valueIndex >= 0) {
+            Value previous = values.get(valueIndex);
+            Value updated = copyValue(previous);
+            updateValueFromArgs(updated, args);
+            PendingValue pending = removePendingValue(nodeId, valueId);
+            if (updated.metadata == null && pending != null) {
+                updated.metadata = pending.value.metadata;
+            }
+            values.set(valueIndex, updated);
+            return !hasSameGeneratedDefinition(previous, updated);
+        }
+
+        PendingValue pending = pendingValue(nodeId, valueId, args);
+        updateValueFromArgs(pending.value, args);
+        pending.valueAdded = true;
+        return addPendingValueIfComplete(nodeId, valueId, values);
+    }
+
+    private PendingValue pendingValue(int nodeId, ValueId valueId, Args args) {
+        Map<ValueId, PendingValue> pendingValues = Objects
+                .requireNonNull(pendingNodeValues.computeIfAbsent(nodeId, ignored -> new HashMap<>()));
+        return Objects.requireNonNull(pendingValues.computeIfAbsent(valueId, ignored -> {
+            Value value = new Value();
+            updateValueFromArgs(value, args);
+            return new PendingValue(value);
+        }));
+    }
+
+    private boolean addPendingValueIfComplete(int nodeId, ValueId valueId, List<Value> values) {
+        PendingValue pending = pendingNodeValues.getOrDefault(nodeId, Map.of()).get(valueId);
+        if (pending == null || !pending.valueAdded || pending.value.metadata == null) {
+            return false;
+        }
+        values.add(pending.value);
+        removePendingValue(nodeId, valueId);
+        return true;
+    }
+
+    private @Nullable PendingValue removePendingValue(int nodeId, ValueId valueId) {
+        Map<ValueId, PendingValue> pendingValues = pendingNodeValues.get(nodeId);
+        if (pendingValues == null) {
+            return null;
+        }
+        PendingValue value = pendingValues.remove(valueId);
+        if (pendingValues.isEmpty()) {
+            pendingNodeValues.remove(nodeId);
+        }
+        return value;
+    }
+
+    private static int findValue(List<Value> values, ValueId valueId) {
+        for (int i = 0; i < values.size(); i++) {
+            if (valueId.equals(ValueId.from(values.get(i)))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static boolean hasSameGeneratedDefinition(Value first, Value second) {
+        Metadata firstMetadata = first.metadata;
+        Metadata secondMetadata = second.metadata;
+        return first.endpoint == second.endpoint && first.commandClass == second.commandClass
+                && Objects.equals(first.commandClassName, second.commandClassName)
+                && Objects.equals(first.property, second.property)
+                && Objects.equals(first.propertyName, second.propertyName)
+                && Objects.equals(first.propertyKey, second.propertyKey) && firstMetadata != null
+                && secondMetadata != null && firstMetadata.hasSameGeneratedDefinition(secondMetadata)
+                && Objects.equals(valueShape(first.value), valueShape(second.value));
+    }
+
+    private static @Nullable Object valueShape(@Nullable Object value) {
+        if (value instanceof Map<?, ?> map) {
+            Object nestedValue = map.get("value");
+            Object nestedType = nestedValue == null ? null : valueShape(nestedValue);
+            return List.of(normalizeIdPart(map.get("unit")), nestedType == null ? "" : nestedType,
+                    map.containsKey("red"), map.containsKey("green"), map.containsKey("blue"),
+                    map.containsKey("warmWhite"), map.containsKey("coldWhite"));
+        }
+        if (value instanceof Double || value instanceof Float) {
+            return Double.class;
+        }
+        if (value instanceof Number) {
+            return Number.class;
+        }
+        return value == null ? null : value.getClass();
+    }
+
+    private static Value copyValue(Value source) {
+        Value copy = new Value();
+        copy.endpoint = source.endpoint;
+        copy.commandClass = source.commandClass;
+        copy.commandClassName = source.commandClassName;
+        copy.property = source.property;
+        copy.propertyName = source.propertyName;
+        copy.ccVersion = source.ccVersion;
+        copy.metadata = source.metadata;
+        copy.value = source.value;
+        copy.propertyKey = source.propertyKey;
+        copy.propertyKeyName = source.propertyKeyName;
+        return copy;
+    }
+
+    private static void updateValueFromArgs(Value value, Args args) {
+        updateValueIdentityFromArgs(value, args);
+        value.value = args.newValue;
+        if (args.metadata != null) {
+            value.metadata = args.metadata;
+        }
+    }
+
+    private static void updateValueIdentityFromArgs(Value value, Args args) {
+        value.endpoint = args.endpoint;
+        value.commandClass = args.commandClass;
+        value.commandClassName = args.commandClassName;
+        value.property = args.property;
+        value.propertyName = args.propertyName;
+        value.propertyKey = args.propertyKey;
+        value.propertyKeyName = args.propertyKeyName;
+    }
+
+    private record ValueId(int endpoint, int commandClass, String property, String propertyKey) {
+        private static ValueId from(Args args) {
+            return new ValueId(args.endpoint, args.commandClass, normalizeIdPart(args.property),
+                    normalizeIdPart(args.propertyKey));
+        }
+
+        private static ValueId from(Value value) {
+            return new ValueId(value.endpoint, value.commandClass, normalizeIdPart(value.property),
+                    normalizeIdPart(value.propertyKey));
+        }
+    }
+
+    private static String normalizeIdPart(@Nullable Object value) {
+        return value != null ? value.toString() : "";
+    }
+
+    private static class PendingValue {
+        private final Value value;
+        private boolean valueAdded;
+
+        private PendingValue(Value value) {
+            this.value = value;
         }
     }
 
@@ -328,6 +548,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                 }
             }
             lastNodeStates.put(nodeId, node);
+            pendingNodeValues.remove(nodeId);
             lastNodeStatesCopy.remove(nodeId);
         }
 
@@ -335,6 +556,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         lastNodeStatesCopy.forEach((nodeId, node) -> {
             logger.trace("Node {}. Removed state is missing update", nodeId);
             lastNodeStates.remove(nodeId);
+            pendingNodeValues.remove(nodeId);
 
             final ZwaveNodeListener nodeListener = nodeListeners.get(nodeId);
             if (nodeListener != null) {
@@ -417,6 +639,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
     @Override
     public void dispose() {
         stopInitialConnectionJob();
+        pendingNodeValues.clear();
         client.stop();
         super.dispose();
     }

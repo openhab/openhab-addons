@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -27,8 +28,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -37,10 +40,13 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.zwavejs.internal.DataUtil;
 import org.openhab.binding.zwavejs.internal.api.dto.Args;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
+import org.openhab.binding.zwavejs.internal.api.dto.Metadata;
+import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Result;
 import org.openhab.binding.zwavejs.internal.api.dto.State;
 import org.openhab.binding.zwavejs.internal.api.dto.Status;
+import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.VersionMessage;
@@ -291,6 +297,71 @@ public class ZwaveJSBridgeHandlerTest {
     }
 
     @Test
+    public void testMetadataUpdateFiltersUnchangedGeneratedDefinition() {
+        final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSBridgeHandlerMock handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
+        final ZwaveNodeListener nodeListener = mock(ZwaveNodeListener.class);
+        when(nodeListener.getId()).thenReturn(5);
+        handler.registerNodeListener(nodeListener);
+
+        Value value = createValue();
+        Node node = createReadyNode(value);
+        handler.onEvent(createReadyEvent(node));
+        clearInvocations(nodeListener);
+
+        Metadata unchanged = createMetadata("Level");
+        unchanged.comments = "Changed upstream comment";
+        handler.onEvent(createDefinitionEvent("metadata updated", unchanged, null));
+
+        try {
+            verify(nodeListener, never()).onNodeDefinitionChanged(any());
+            assertSame(unchanged, Objects.requireNonNull(handler.requestNodeDetails(5)).values.get(0).metadata);
+
+            handler.onEvent(createDefinitionEvent("metadata updated", createMetadata("Updated level"), null));
+            verify(nodeListener).onNodeDefinitionChanged(node);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testValueAddedPairsWithMetadataAndValueRemovedIsFiltered() {
+        final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSBridgeHandlerMock handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
+        final ZwaveNodeListener nodeListener = mock(ZwaveNodeListener.class);
+        when(nodeListener.getId()).thenReturn(5);
+        handler.registerNodeListener(nodeListener);
+
+        Node node = createReadyNode();
+        handler.onEvent(createReadyEvent(node));
+        clearInvocations(nodeListener);
+
+        handler.onEvent(createDefinitionEvent("metadata updated", createMetadata("Level"), null));
+        verify(nodeListener, never()).onNodeDefinitionChanged(any());
+        assertEquals(0, node.values.size());
+
+        handler.onEvent(createDefinitionEvent("value added", null, 42));
+        verify(nodeListener).onNodeDefinitionChanged(node);
+        assertEquals(1, node.values.size());
+        assertEquals(42, node.values.get(0).value);
+
+        clearInvocations(nodeListener);
+        handler.onEvent(createDefinitionEvent("value removed", null, null));
+        verify(nodeListener).onNodeDefinitionChanged(node);
+        assertEquals(0, node.values.size());
+
+        clearInvocations(nodeListener);
+        handler.onEvent(createDefinitionEvent("value removed", null, null));
+        try {
+            verify(nodeListener, never()).onNodeDefinitionChanged(any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     public void testOnEventWithEventMessageValueNotification() throws IOException {
         final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -378,5 +449,61 @@ public class ZwaveJSBridgeHandlerTest {
         } finally {
             handler.dispose();
         }
+    }
+
+    private static Value createValue() {
+        Value value = new Value();
+        value.endpoint = 0;
+        value.commandClass = 38;
+        value.commandClassName = "Multilevel Switch";
+        value.property = "currentValue";
+        value.propertyName = "currentValue";
+        value.metadata = createMetadata("Level");
+        value.value = 42;
+        return value;
+    }
+
+    private static Metadata createMetadata(String label) {
+        Metadata metadata = new Metadata();
+        metadata.type = MetadataType.NUMBER;
+        metadata.readable = true;
+        metadata.label = label;
+        metadata.min = 0;
+        metadata.max = 99L;
+        return metadata;
+    }
+
+    private static Node createReadyNode(Value... values) {
+        Node node = new Node();
+        node.nodeId = 5;
+        node.ready = true;
+        node.values = List.of(values);
+        return node;
+    }
+
+    private static EventMessage createReadyEvent(Node node) {
+        EventMessage message = new EventMessage();
+        message.event = new Event();
+        message.event.event = "ready";
+        message.event.nodeId = node.nodeId;
+        message.event.nodeState = node;
+        return message;
+    }
+
+    private static EventMessage createDefinitionEvent(String eventType, @Nullable Metadata metadata,
+            @Nullable Object value) {
+        EventMessage message = new EventMessage();
+        message.event = new Event();
+        message.event.event = eventType;
+        message.event.nodeId = 5;
+        message.event.args = new Args();
+        message.event.args.endpoint = 0;
+        message.event.args.commandClass = 38;
+        message.event.args.commandClassName = "Multilevel Switch";
+        message.event.args.property = "currentValue";
+        message.event.args.propertyName = "currentValue";
+        message.event.args.metadata = metadata;
+        message.event.args.newValue = value;
+        return message;
     }
 }

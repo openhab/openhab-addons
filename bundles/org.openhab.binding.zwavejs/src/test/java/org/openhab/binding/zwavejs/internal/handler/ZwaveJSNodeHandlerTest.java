@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.measure.quantity.Power;
@@ -26,11 +27,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.zwavejs.internal.DataUtil;
+import org.openhab.binding.zwavejs.internal.api.dto.Metadata;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
+import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
+import org.openhab.binding.zwavejs.internal.conversion.ChannelMetadata;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
 import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.config.core.Configuration;
@@ -99,6 +103,71 @@ public class ZwaveJSNodeHandlerTest {
             assertFalse(handler.getThing().getChannels().isEmpty());
             verify(callback).statusUpdated(argThat(updatedThing -> updatedThing.getUID().equals(thing.getUID())),
                     argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testDefinitionChangeUpdatesOnlyChangedChannelAndPreservesUserConfiguration() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream().filter(value -> value.metadata != null).filter(value -> {
+                String channelId = new ChannelMetadata(node.nodeId, value).id;
+                return handler.getThing().getChannel(channelId) != null && node.values.stream()
+                        .filter(other -> channelId.equals(new ChannelMetadata(node.nodeId, other).id)).count() == 1;
+            }).findFirst().orElseThrow();
+            String channelId = new ChannelMetadata(node.nodeId, targetValue).id;
+            Channel channel = handler.getThing().getChannel(channelId);
+            assertNotNull(channel);
+            channel.getConfiguration().put(CONFIG_CHANNEL_FACTOR, 2.5);
+            channel.getConfiguration().put(CONFIG_CHANNEL_INVERTED, true);
+
+            clearInvocations(handler);
+            handler.onNodeDefinitionChanged(node);
+            verify(handler, never()).updateThing(any());
+
+            Metadata changedMetadata = new Gson().fromJson(new Gson().toJson(targetValue.metadata), Metadata.class);
+            changedMetadata.label = "updated metadata label";
+            targetValue.metadata = changedMetadata;
+            handler.onNodeDefinitionChanged(node);
+
+            Channel updatedChannel = handler.getThing().getChannel(channelId);
+            assertNotNull(updatedChannel);
+            assertEquals("Updated Metadata Label", updatedChannel.getLabel());
+            assertEquals(new BigDecimal("2.5"), updatedChannel.getConfiguration().get(CONFIG_CHANNEL_FACTOR));
+            assertEquals(true, updatedChannel.getConfiguration().get(CONFIG_CHANNEL_INVERTED));
+            verify(handler).updateThing(any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testDefinitionChangeKeepsChannelWithAnotherContributingValue() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value removedValue = node.values.stream().filter(value -> {
+                String channelId = new ChannelMetadata(node.nodeId, value).id;
+                return handler.getThing().getChannel(channelId) != null && node.values.stream()
+                        .filter(other -> channelId.equals(new ChannelMetadata(node.nodeId, other).id)).count() > 1;
+            }).findFirst().orElseThrow();
+            String channelId = new ChannelMetadata(node.nodeId, removedValue).id;
+            node.values = node.values.stream().filter(value -> value != removedValue).toList();
+
+            handler.onNodeDefinitionChanged(node);
+
+            assertNotNull(handler.getThing().getChannel(channelId));
         } finally {
             handler.dispose();
         }
