@@ -35,23 +35,24 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpConversation;
-import org.eclipse.jetty.client.HttpRequest;
-import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.ProtocolHandler;
-import org.eclipse.jetty.client.ResponseNotifier;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.transport.HttpConversation;
+import org.eclipse.jetty.client.transport.HttpRequest;
+import org.eclipse.jetty.client.transport.HttpResponse;
+import org.eclipse.jetty.client.transport.ResponseListeners;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
@@ -65,7 +66,7 @@ import org.eclipse.jetty.io.RetainableByteBuffer;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.URIUtil;
-import org.eclipse.jetty.util.thread.Locker;
+import org.eclipse.jetty.util.thread.AutoLock;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -578,11 +579,8 @@ public class CloudClient {
             logger.debug("Request method is {}", requestMethod);
             Request request = jettyClient.newRequest(requestUri);
             setRequestHeaders(request, requestHeadersJson);
-            String proto = protocol;
-            if (data.has("protocol")) {
-                proto = data.getString("protocol");
-            }
-            request.header("X-Forwarded-Proto", proto);
+            final String proto = data.has("protocol") ? data.getString("protocol") : protocol;
+            request.headers(headers -> headers.put("X-Forwarded-Proto", proto));
             HttpMethod method = HttpMethod.fromString(requestMethod);
             if (method == null) {
                 logger.debug("Unsupported request method {}", requestMethod);
@@ -590,7 +588,7 @@ public class CloudClient {
             }
             request.method(method);
             if (!requestBody.isEmpty()) {
-                request.content(new BytesContentProvider(requestBody.getBytes()));
+                request.body(new BytesRequestContent(requestBody.getBytes(StandardCharsets.UTF_8)));
             }
 
             request.onResponseHeaders(response -> {
@@ -677,7 +675,7 @@ public class CloudClient {
                 headerValue = requestHeadersJson.getString(headerName);
                 logger.debug("Jetty set header {} = {}", headerName, headerValue);
                 if (!"Content-Length".equalsIgnoreCase(headerName)) {
-                    request.header(headerName, headerValue);
+                    request.headers(headers -> headers.put(headerName, headerValue));
                 }
             } catch (JSONException e) {
                 logger.warn("Error processing request headers: {}", e.getMessage());
@@ -1114,7 +1112,7 @@ public class CloudClient {
 
         @Override
         public Response.Listener getResponseListener() {
-            return new Response.Listener.Adapter() {
+            return new Response.Listener() {
                 @Override
                 public void onComplete(Result result) {
                     HttpResponse response = (HttpResponse) result.getResponse();
@@ -1152,11 +1150,9 @@ public class CloudClient {
         private void forwardFailureComplete(HttpRequest request, Throwable requestFailure, Response response,
                 Throwable responseFailure) {
             HttpConversation conversation = request.getConversation();
+            ResponseListeners responseListeners = new ResponseListeners(conversation.getResponseListeners());
             conversation.updateResponseListeners(null);
-            List<Response.ResponseListener> responseListeners = conversation.getResponseListeners();
-            ResponseNotifier notifier = new ResponseNotifier();
-            notifier.forwardFailure(responseListeners, response, responseFailure);
-            notifier.notifyComplete(responseListeners, new Result(request, requestFailure, response, responseFailure));
+            responseListeners.emitFailureComplete(new Result(request, requestFailure, response, responseFailure));
         }
     }
 
@@ -1172,7 +1168,7 @@ public class CloudClient {
         private final EndPoint endPoint;
         private final HttpResponse upgradeResponse;
         private final Supplier<Socket> socketIOSupplier;
-        private final Locker lock;
+        private final AutoLock lock;
         private final ByteBufferPool byteBufferPool;
         private final AtomicBoolean isFilling = new AtomicBoolean(false);
         private final AtomicBoolean writing = new AtomicBoolean(false);
@@ -1187,7 +1183,7 @@ public class CloudClient {
             this.upgradeResponse = upgradeResponse;
             this.socketIOSupplier = socketIOSupplier;
             this.byteBufferPool = client.getByteBufferPool();
-            this.lock = new Locker();
+            this.lock = new AutoLock();
             setInputBufferSize(4 * 1024); // Default jetty WebSocket network transport read size
             emitUpgradeHeaders();
         }
@@ -1256,9 +1252,9 @@ public class CloudClient {
                         return;
                     }
                     assert (networkBuffer != null);
-                    int read = endPoint.fill(networkBuffer.getBuffer());
+                    int read = endPoint.fill(networkBuffer.getByteBuffer());
                     if (read == 0) {
-                        emitDataToConnector(networkBuffer.getBuffer(), totalRead);
+                        emitDataToConnector(networkBuffer.getByteBuffer(), totalRead);
                         releaseNetworkBuffer();
                         isFilling.set(false);
                         fillInterested();
@@ -1267,8 +1263,8 @@ public class CloudClient {
                         if (networkBuffer.hasRemaining()) {
                             totalRead += read;
                         } else {
-                            emitDataToConnector(networkBuffer.getBuffer(), networkBuffer.getBuffer().limit());
-                            networkBuffer.getBuffer().clear();
+                            emitDataToConnector(networkBuffer.getByteBuffer(), networkBuffer.getByteBuffer().limit());
+                            networkBuffer.getByteBuffer().clear();
                             totalRead = 0;
                         }
                     } else {
@@ -1302,13 +1298,13 @@ public class CloudClient {
         }
 
         @Override
-        public boolean onIdleExpired() {
+        public boolean onIdleExpired(TimeoutException timeoutException) {
             // no idle timeout for websocket
             return false;
         }
 
         @Override
-        protected boolean onReadTimeout(Throwable timeout) {
+        protected boolean onReadTimeout(TimeoutException timeoutException) {
             // no read timeout for websocket
             return false;
         }
@@ -1360,7 +1356,7 @@ public class CloudClient {
         private void acquireNetworkBuffer() {
             try (var l = lock.lock()) {
                 if (networkBuffer == null) {
-                    networkBuffer = new RetainableByteBuffer(byteBufferPool, getInputBufferSize());
+                    networkBuffer = byteBufferPool.acquire(getInputBufferSize(), true);
                 }
             }
         }

@@ -15,14 +15,14 @@ package org.openhab.binding.siemenshvac.internal.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  *

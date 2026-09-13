@@ -29,18 +29,17 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
@@ -127,14 +126,14 @@ public class Authorization {
         try {
             String url = Utils.getTokenUrl(config.region);
             Request req = httpClient.POST(url);
-            req.header("X-Device-Id", UUID.randomUUID().toString());
-            req.header("X-Request-Id", UUID.randomUUID().toString());
+            req.headers(h -> h.add("X-Device-Id", UUID.randomUUID().toString()));
+            req.headers(h -> h.add("X-Request-Id", UUID.randomUUID().toString()));
 
             String grantAttribute = "grant_type=refresh_token";
             String refreshTokenAttribute = "refresh_token="
                     + URLEncoder.encode(token.getRefreshToken(), StandardCharsets.UTF_8.toString());
             String content = grantAttribute + "&" + refreshTokenAttribute;
-            req.content(new StringContentProvider(content), CONTENT_TYPE_URL_ENCODED);
+            req.body(new StringRequestContent(CONTENT_TYPE_URL_ENCODED, content));
 
             ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             int tokenResponseStatus = cr.getStatus();
@@ -227,7 +226,7 @@ public class Authorization {
      */
     public void login() throws MercedesMeAuthException, MercedesMeApiException, MercedesMeBindingException {
         logger.trace("Start login");
-        HttpClient loginHttpClient = new HttpClient(new SslContextFactory.Client());
+        HttpClient loginHttpClient = new HttpClient();
         /**
          * I need to start an extra client
          * Using common HttpClient causes problems with
@@ -290,12 +289,16 @@ public class Authorization {
         resumeContent.put("code_challenge", codeChallenge);
 
         String resumeUrl = null;
-        Request resumeRequest = loginHttpClient
-                .newRequest(baseUrl + "/as/authorization.oauth2?" + FormContentProvider.convert(resumeContent))
+        String resumeQuery = resumeContent.stream()
+                .map(f -> URLEncoder.encode(f.getName(), StandardCharsets.UTF_8) + "="
+                        + URLEncoder.encode(f.getValue(), StandardCharsets.UTF_8))
+                .collect(java.util.stream.Collectors.joining("&"));
+        Request resumeRequest = loginHttpClient.newRequest(baseUrl + "/as/authorization.oauth2?" + resumeQuery)
                 .followRedirects(true);
         resumeRequest.agent(Constants.AUTH_USER_AGENT);
-        resumeRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
-        resumeRequest.header(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        resumeRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
+        resumeRequest.headers(
+                h -> h.add(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"));
         ContentResponse resumeResponse = send(resumeRequest);
         logger.trace("Step 1: Get resume code {} - {}", resumeResponse.getStatus(),
                 resumeResponse.getRequest().getURI());
@@ -320,15 +323,15 @@ public class Authorization {
     private void sendUserAgent(HttpClient loginHttpClient) throws MercedesMeAuthException, MercedesMeApiException {
         Request agentRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/ua");
         agentRequest.agent(Constants.AUTH_USER_AGENT);
-        agentRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
-        agentRequest.header(HttpHeader.ACCEPT, "*/*");
-        agentRequest.header(HttpHeader.ORIGIN, baseUrl);
+        agentRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
+        agentRequest.headers(h -> h.add(HttpHeader.ACCEPT, "*/*"));
+        agentRequest.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
 
         JSONObject agentContent = new JSONObject();
         agentContent.put("browserName", "Mobile Safari");
         agentContent.put("browserVersion", "15.6.6");
         agentContent.put("osName", "iOS");
-        agentRequest.content(new StringContentProvider(agentContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
+        agentRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, agentContent.toString()));
 
         ContentResponse agentResponse = send(agentRequest);
         logger.trace("Step 2: Post Agent {} - {}", agentResponse.getStatus(), agentResponse.getContentAsString());
@@ -346,14 +349,14 @@ public class Authorization {
     private void sendUsername(HttpClient loginHttpClient) throws MercedesMeAuthException, MercedesMeApiException {
         Request userRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/login/user");
         userRequest.agent(Constants.AUTH_USER_AGENT);
-        userRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
-        userRequest.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
-        userRequest.header(HttpHeader.ORIGIN, baseUrl);
-        userRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+        userRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
+        userRequest.headers(h -> h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*"));
+        userRequest.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
+        userRequest.headers(h -> h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login"));
 
         JSONObject userContent = new JSONObject();
         userContent.put("username", config.email);
-        userRequest.content(new StringContentProvider(userContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
+        userRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, userContent.toString()));
 
         ContentResponse userResponse = send(userRequest);
         int status = userResponse.getStatus();
@@ -373,10 +376,10 @@ public class Authorization {
             throws MercedesMeAuthException, MercedesMeApiException {
         Request loginRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/login/pass");
         loginRequest.agent(Constants.AUTH_USER_AGENT);
-        loginRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
-        loginRequest.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
-        loginRequest.header(HttpHeader.ORIGIN, baseUrl);
-        loginRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+        loginRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
+        loginRequest.headers(h -> h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*"));
+        loginRequest.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
+        loginRequest.headers(h -> h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login"));
 
         String rid = generateCodeVerifier(24);
         JSONObject loginContent = new JSONObject();
@@ -384,7 +387,7 @@ public class Authorization {
         loginContent.put("password", config.password);
         loginContent.put("rememberMe", false);
         loginContent.put("rid", rid);
-        loginRequest.content(new StringContentProvider(loginContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
+        loginRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, loginContent.toString()));
 
         String preLoginToken = null;
         ContentResponse loginResponse = send(loginRequest);
@@ -416,11 +419,12 @@ public class Authorization {
 
         Request authRequest = loginHttpClient.POST(baseUrl + resumeUrl).followRedirects(false);
         authRequest.agent(Constants.AUTH_USER_AGENT);
-        authRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
-        authRequest.header(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        authRequest.header(HttpHeader.ORIGIN, baseUrl);
-        authRequest.header(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
-        authRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
+        authRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
+        authRequest.headers(
+                h -> h.add(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"));
+        authRequest.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
+        authRequest.headers(h -> h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login"));
+        authRequest.body(new StringRequestContent(CONTENT_TYPE_URL_ENCODED,
                 UrlEncoded.encode(authParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
 
         ContentResponse authResponse = send(authRequest);
@@ -456,7 +460,7 @@ public class Authorization {
 
         Request tokenRequest = loginHttpClient.POST(baseUrl + "/as/token.oauth2");
         addBasicHeaders(tokenRequest);
-        tokenRequest.content(new FormContentProvider(tokenParams));
+        tokenRequest.body(new FormRequestContent(tokenParams));
 
         ContentResponse tokenResponse = send(tokenRequest);
         int status = tokenResponse.getStatus();
@@ -492,19 +496,20 @@ public class Authorization {
 
     public void addBasicHeaders(Request req) {
         req.agent(Utils.getApplication(config.region));
-        req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
-        req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
-        req.header("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
-        req.header("X-Locale",
-                localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry()); // de-DE
-        req.header("X-Applicationname", Utils.getUserAgent(config.region));
-        req.header("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
+        req.headers(h -> h.add("Ris-Os-Name", Constants.RIS_OS_NAME));
+        req.headers(h -> h.add("Ris-Os-Version", Constants.RIS_OS_VERSION));
+        req.headers(h -> h.add("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region)));
+        req.headers(h -> h.add("X-Locale",
+                localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry())); // de-DE
+        req.headers(h -> h.add("X-Applicationname", Utils.getUserAgent(config.region)));
+        req.headers(h -> h.add("Ris-Application-Version", Utils.getRisApplicationVersion(config.region)));
     }
 
     protected void addAuthHeaders(Request request) {
-        request.header("X-SessionId", UUID.randomUUID().toString());
-        request.header("X-TrackingId", UUID.randomUUID().toString());
-        request.header("Authorization", getToken());
+        request.headers(h -> h.add("X-SessionId", UUID.randomUUID().toString()));
+        request.headers(h -> h.add("X-TrackingId", UUID.randomUUID().toString()));
+        final String token = getToken();
+        request.headers(h -> h.add("Authorization", token));
     }
 
     /**

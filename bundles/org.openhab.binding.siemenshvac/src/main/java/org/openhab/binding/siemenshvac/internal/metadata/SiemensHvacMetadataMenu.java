@@ -15,9 +15,9 @@ package org.openhab.binding.siemenshvac.internal.metadata;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  *

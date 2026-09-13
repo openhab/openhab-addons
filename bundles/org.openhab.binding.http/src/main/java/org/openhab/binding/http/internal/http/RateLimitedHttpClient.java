@@ -23,11 +23,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.AuthenticationStore;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,9 +207,9 @@ public class RateLimitedHttpClient {
             Request request = httpClient.newRequest(finalUrl).method(method);
             if ((method == HttpMethod.POST || method == HttpMethod.PUT) && !content.isEmpty()) {
                 if (contentType == null) {
-                    request.content(new StringContentProvider(content));
+                    request.body(new StringRequestContent(content));
                 } else {
-                    request.content(new StringContentProvider(content), contentType);
+                    request.body(new StringRequestContent(contentType, content));
                 }
             }
             future.complete(request);

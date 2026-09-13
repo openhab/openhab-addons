@@ -15,10 +15,10 @@ package org.openhab.binding.linktap.internal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The {@link LookupWrapper} is a container providing common functionality for providing

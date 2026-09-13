@@ -15,17 +15,17 @@ package org.openhab.binding.ntfy.internal.network;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -37,37 +37,38 @@ import org.junit.jupiter.api.Test;
 public class NtfyMessageHeaderBuilderTest {
 
     private static Request createRequestProxy(Map<String, String> headers) {
-        InvocationHandler handler = new InvocationHandler() {
-            @Override
-            public @Nullable Object invoke(@Nullable Object proxy, @Nullable Method method,
-                    @Nullable Object @Nullable [] args) throws Throwable {
-                if (method == null) {
-                    return null;
-                }
-                if ("header".equals(method.getName()) && args != null && args.length == 2) {
-                    Object nameObj = args[0];
-                    Object valueObj = args[1];
-                    if (nameObj == null || valueObj == null) {
-                        return proxy;
-                    }
-                    String name = (String) nameObj;
-                    String value = (String) valueObj;
-                    headers.put(name, value);
-                    return proxy;
-                }
-                if (method.getReturnType().isPrimitive()) {
-                    if (method.getReturnType() == boolean.class) {
-                        return false;
-                    }
-                    if (method.getReturnType() == int.class) {
-                        return 0;
-                    }
-                }
-                return null;
+        InvocationHandler fieldsHandler = (proxy, method, args) -> {
+            if (method != null && "add".equals(method.getName()) && args != null && args.length == 2
+                    && args[0] instanceof String name && args[1] instanceof String value) {
+                headers.put(name, value);
             }
+            return proxy;
         };
 
-        return (Request) Proxy.newProxyInstance(Request.class.getClassLoader(), new Class[] { Request.class }, handler);
+        HttpFields.Mutable mutableFields = (HttpFields.Mutable) Proxy.newProxyInstance(
+                HttpFields.Mutable.class.getClassLoader(), new Class[] { HttpFields.Mutable.class }, fieldsHandler);
+
+        InvocationHandler requestHandler = (proxy, method, args) -> {
+            if (method != null && "headers".equals(method.getName()) && args != null && args.length == 1
+                    && args[0] instanceof Consumer<?>) {
+                @SuppressWarnings("unchecked")
+                Consumer<HttpFields.Mutable> consumer = (Consumer<HttpFields.Mutable>) args[0];
+                consumer.accept(mutableFields);
+                return proxy;
+            }
+            if (method != null && method.getReturnType().isPrimitive()) {
+                if (method.getReturnType() == boolean.class) {
+                    return false;
+                }
+                if (method.getReturnType() == int.class) {
+                    return 0;
+                }
+            }
+            return null;
+        };
+
+        return (Request) Proxy.newProxyInstance(Request.class.getClassLoader(), new Class[] { Request.class },
+                requestHandler);
     }
 
     /**

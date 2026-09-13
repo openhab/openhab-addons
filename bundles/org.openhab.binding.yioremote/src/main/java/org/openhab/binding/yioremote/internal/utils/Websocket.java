@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.yioremote.internal.utils;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,7 @@ public class Websocket {
         }
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         this.session = session;
         if (websocketHandler != null) {
@@ -86,12 +85,9 @@ public class Websocket {
     }
 
     public void sendMessage(String str) {
+        Session session = this.session;
         if (session != null) {
-            try {
-                session.getRemote().sendString(str);
-            } catch (IOException e) {
-                logger.warn("Error during sendMessage function {}", e.getMessage());
-            }
+            session.sendText(str, Callback.NOOP);
         }
     }
 

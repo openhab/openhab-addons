@@ -14,7 +14,7 @@ package org.openhab.binding.siemenshvac.internal.network;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeThingHandler;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;

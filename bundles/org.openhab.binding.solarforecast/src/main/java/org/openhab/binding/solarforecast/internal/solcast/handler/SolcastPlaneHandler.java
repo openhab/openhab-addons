@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONObject;
@@ -248,7 +248,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private int fetchData(String urlPattern) throws InterruptedException, TimeoutException, ExecutionException {
         String fetchUrl = String.format(urlPattern, configuration.resourceId);
         Request fetchRequest = httpClient.newRequest(fetchUrl);
-        fetchRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge().getApiKey());
+        final String authHeader = BEARER + bridge().getApiKey();
+        fetchRequest.headers(h -> h.add(HttpHeader.AUTHORIZATION, authHeader));
         ContentResponse response = fetchRequest.send();
         int callStatus = response.getStatus();
         counter.count(callStatus);

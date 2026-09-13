@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.visualcrossing.internal.api.rest;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
 

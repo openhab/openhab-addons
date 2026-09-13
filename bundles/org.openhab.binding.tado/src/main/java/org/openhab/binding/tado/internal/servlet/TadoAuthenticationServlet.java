@@ -14,17 +14,17 @@ package org.openhab.binding.tado.internal.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tado.internal.handler.TadoHandlerFactory;
 import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link TadoAuthenticationServlet} manages the authorization with the Tado API.
@@ -76,6 +76,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
      * </ul>
      */
     @Override
+    @org.eclipse.jdt.annotation.NonNullByDefault({})
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // if the query string contains "oauth=start" then serve the user authentication page

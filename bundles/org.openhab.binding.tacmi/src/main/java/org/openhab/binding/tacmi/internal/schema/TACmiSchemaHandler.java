@@ -38,9 +38,9 @@ import org.attoparser.simple.ISimpleMarkupParser;
 import org.attoparser.simple.SimpleMarkupParser;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
@@ -151,10 +151,10 @@ public class TACmiSchemaHandler extends BaseThingHandler {
 
     private Request prepareRequest(final URI uri) {
         final Request req = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(10000, TimeUnit.MILLISECONDS);
-        req.header(HttpHeader.ACCEPT_LANGUAGE, "en"); // we want the on/off states in english
+        req.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, "en")); // we want the on/off states in english
         final String ah = this.authHeader;
         if (ah != null) {
-            req.header(HttpHeader.AUTHORIZATION, ah);
+            req.headers(h -> h.add(HttpHeader.AUTHORIZATION, ah));
         }
         return req;
     }
@@ -239,14 +239,14 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             case SWITCH_BUTTON:
                 reqUpdate = prepareRequest(buildUri("INCLUDE/change.cgi?changeadrx2=" + e.address + "&changetox2="
                         + (command == OnOffType.ON ? "1" : "0")));
-                reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
+                reqUpdate.headers(h -> h.add(HttpHeader.REFERER, this.serverBase + "schema.html")); // required...
                 break;
             case SWITCH_FORM:
                 ChangerX2Entry cx2e = e.changerX2Entry;
                 if (cx2e != null) {
                     reqUpdate = prepareRequest(buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2e.address
                             + "&changetox2=" + (command == OnOffType.ON ? "1" : "0")));
-                    reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
+                    reqUpdate.headers(h -> h.add(HttpHeader.REFERER, this.serverBase + "schema.html")); // required...
                 } else {
                     logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
                     return;
@@ -259,7 +259,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                     if (val != null) {
                         reqUpdate = prepareRequest(
                                 buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2sf.address + "&changetox2=" + val));
-                        reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
+                        reqUpdate.headers(h -> h.add(HttpHeader.REFERER, this.serverBase + "schema.html")); // required...
                     } else {
                         logger.warn("Got unknown form command {} for channel {}; Valid commands are: {}", command,
                                 channelUID, cx2sf.options.keySet());
@@ -306,7 +306,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                     }
                     reqUpdate = prepareRequest(
                             buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2en.address + "&changetox2=" + val));
-                    reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
+                    reqUpdate.headers(h -> h.add(HttpHeader.REFERER, this.serverBase + "schema.html")); // required...
                 } else {
                     logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
                     return;
@@ -349,7 +349,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                     }
                     reqUpdate = prepareRequest(
                             buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2enTime.address + "&changetox2=" + val));
-                    reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
+                    reqUpdate.headers(h -> h.add(HttpHeader.REFERER, this.serverBase + "schema.html")); // required...
                 } else {
                     logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
                     return;

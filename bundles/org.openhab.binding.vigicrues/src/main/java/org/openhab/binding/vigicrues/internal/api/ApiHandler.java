@@ -23,10 +23,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FutureResponseListener;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
@@ -125,16 +124,13 @@ public class ApiHandler {
                 retry++;
 
                 Request req = httpClient.newRequest(url).timeout(TIMEOUT_S, TimeUnit.SECONDS).method("GET");
-                req.header("User-Agent",
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36");
-                req.header("Accept",
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-                req.header("Accept-Language", "en-US,en;q=0.9,fr-FR;q=0.8,fr;q=0.7");
+                req.headers(h -> h.add("User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"));
+                req.headers(h -> h.add("Accept",
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"));
+                req.headers(h -> h.add("Accept-Language", "en-US,en;q=0.9,fr-FR;q=0.8,fr;q=0.7"));
 
-                FutureResponseListener listener = new FutureResponseListener(req, 50 * 1024 * 1024);
-                req.send(listener);
-
-                ContentResponse response = listener.get(TIMEOUT_S, TimeUnit.SECONDS);
+                ContentResponse response = req.send();
 
                 int status = response.getStatus();
                 if (status == HttpStatus.OK_200) {

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.siemenshvac.internal.network;
 
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -27,11 +25,15 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeThingHandler;
@@ -103,7 +105,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         this.updateCommand = new Hashtable<String, Type>();
         this.httpClientFactory = httpClientFactory;
 
-        SslContextFactory ctxFactory = new SslContextFactory.Client(true);
+        SslContextFactory.Client ctxFactory = new SslContextFactory.Client(true);
         ctxFactory.setRenegotiationAllowed(false);
         ctxFactory.setEnableCRLDP(false);
         ctxFactory.setEnableOCSP(false);
@@ -112,7 +114,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         ctxFactory.setValidatePeerCerts(false);
         ctxFactory.setEndpointIdentificationAlgorithm(null);
 
-        this.httpClient = new HttpClient(ctxFactory);
+        ClientConnector clientConnector = new ClientConnector();
+        clientConnector.setSslContextFactory(ctxFactory);
+        this.httpClient = new HttpClient(new HttpClientTransportDynamic(clientConnector));
         this.httpClient.setMaxConnectionsPerDestination(10);
         this.httpClient.setMaxRequestsQueuedPerDestination(10000);
         this.httpClient.setConnectTimeout(10000);
@@ -334,8 +338,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                     String result = response.getContentAsString();
 
                     if (http) {
-                        CookieStore cookieStore = httpClient.getCookieStore();
-                        List<HttpCookie> cookies = cookieStore.getCookies();
+                        HttpCookieStore cookieStore = httpClient.getHttpCookieStore();
+                        List<HttpCookie> cookies = cookieStore.all();
 
                         for (HttpCookie httpCookie : cookies) {
                             if (httpCookie.getName().equals("SessionId")) {
@@ -419,10 +423,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             mUri = mUri + "SessionId=" + sessionId;
         }
 
-        CookieStore c = httpClient.getCookieStore();
-        java.net.HttpCookie cookie = new HttpCookie("SessionId", sessionIdHttp);
-        cookie.setPath("/");
-        cookie.setVersion(0);
+        HttpCookieStore c = httpClient.getHttpCookieStore();
+        HttpCookie cookie = HttpCookie.build("SessionId", sessionIdHttp).path("/").build();
 
         try {
             c.add(new URI(baseUri), cookie);

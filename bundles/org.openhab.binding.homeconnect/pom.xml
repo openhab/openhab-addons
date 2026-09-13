@@ -15,11 +15,23 @@
   <name>openHAB Add-ons :: Bundles :: Home Connect Binding</name>
 
   <properties>
-    <bnd.importpackage>android.*;resolution:="optional",com.android.*;resolution:="optional",dalvik.*;resolution:="optional",org.apache.harmony.*;resolution:="optional",org.conscrypt.*;resolution:="optional",sun.*;resolution:="optional",javax.annotation.meta.*;resolution:="optional",com.fasterxml.jackson.*;resolution:="optional",com.sun.jdi.*;resolution:="optional",com.sun.tools.attach.*;resolution:="optional",jakarta.servlet.*;resolution:="optional",jdk.internal.module.*;resolution:="optional"</bnd.importpackage>
+    <bnd.importpackage>android.*;resolution:="optional",com.android.*;resolution:="optional",dalvik.*;resolution:="optional",org.apache.harmony.*;resolution:="optional",org.conscrypt.*;resolution:="optional",sun.*;resolution:="optional",javax.annotation.meta.*;resolution:="optional",javax.servlet;resolution:="optional",javax.servlet.*;resolution:="optional",com.fasterxml.jackson.*;resolution:="optional",com.sun.jdi.*;resolution:="optional",com.sun.tools.attach.*;resolution:="optional",jakarta.servlet.*;resolution:="optional",jdk.internal.module.*;resolution:="optional"</bnd.importpackage>
   </properties>
 
   <dependencies>
 
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>3.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.jakartars</artifactId>
+      <version>2.0.0</version>
+      <scope>compile</scope>
+    </dependency>
     <!--Thymeleaf -->
     <dependency>
       <groupId>org.thymeleaf</groupId>

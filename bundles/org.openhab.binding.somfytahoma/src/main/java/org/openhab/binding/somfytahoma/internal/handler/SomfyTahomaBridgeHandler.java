@@ -32,15 +32,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.jmdns.JmDNS;
-import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -82,6 +81,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link SomfyTahomaBridgeHandler} is responsible for handling commands, which are
@@ -324,7 +325,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("CozyTouch Oauth2 authentication flow");
         String urlParameters = "jwt=" + getCozytouchJWT();
         ContentResponse response = sendRequestBuilder("login", HttpMethod.POST)
-                .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
+                .body(new StringRequestContent("application/x-www-form-urlencoded; charset=UTF-8", urlParameters))
                 .send();
 
         if (logger.isTraceEnabled()) {
@@ -829,7 +830,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("Sending {} to url: {} with data: {}", method.asString(), getApiFullUrl(url), urlParameters);
         Request request = sendRequestBuilder(url, method);
         if (!urlParameters.isEmpty()) {
-            request = request.content(new StringContentProvider(urlParameters), "application/json");
+            request = request.body(new StringRequestContent("application/json", urlParameters));
         }
 
         ContentResponse response = request.send();
@@ -867,21 +868,24 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private Request sendRequestBuilderCloud(String subUrl, HttpMethod method) {
-        Request request = httpClient.newRequest(getApiFullUrl(subUrl)).method(method)
-                .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
-                .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
-                .agent(TAHOMA_AGENT);
+        Request request = httpClient.newRequest(getApiFullUrl(subUrl)).method(method).headers(h -> {
+            h.add(HttpHeader.ACCEPT_LANGUAGE, "en-US,en");
+            h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate");
+            h.add("X-Requested-With", "XMLHttpRequest");
+        }).timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT);
 
         if (!thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)) {
-            // user OAuth token if not cozytouch
-            request = request.header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            final String authHeader = "Bearer " + accessToken;
+            request = request.headers(h -> h.add(HttpHeader.AUTHORIZATION, authHeader));
         }
         return request;
     }
 
     private Request sendRequestBuilderLocal(String subUrl, HttpMethod method) {
+        final String localAuthHeader = "Bearer " + localToken;
         return httpClient.newRequest(getApiFullUrl(subUrl)).method(method).accept("application/json")
-                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).header(HttpHeader.AUTHORIZATION, "Bearer " + localToken);
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
+                .headers(h -> h.add(HttpHeader.AUTHORIZATION, localAuthHeader));
     }
 
     /**
@@ -901,11 +905,13 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 + urlEncode(thingConfig.getPassword());
 
         ContentResponse response = httpClient.newRequest(authBaseUrl + COZYTOUCH_OAUTH2_TOKEN_URL)
-                .method(HttpMethod.POST).header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate").header("X-Requested-With", "XMLHttpRequest")
-                .header(HttpHeader.AUTHORIZATION, "Basic " + COZYTOUCH_OAUTH2_BASICAUTH)
-                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT)
-                .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
+                .method(HttpMethod.POST).headers(h -> {
+                    h.add(HttpHeader.ACCEPT_LANGUAGE, "en-US,en");
+                    h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate");
+                    h.add("X-Requested-With", "XMLHttpRequest");
+                    h.add(HttpHeader.AUTHORIZATION, "Basic " + COZYTOUCH_OAUTH2_BASICAUTH);
+                }).timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT)
+                .body(new StringRequestContent("application/x-www-form-urlencoded; charset=UTF-8", urlParameters))
                 .send();
 
         if (response.getStatus() != 200) {
@@ -928,8 +934,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
         logger.debug("OAuth2 Access Token: {}", oauth2response.getAccessToken());
 
+        final String oauth2AuthHeader = "Bearer " + oauth2response.getAccessToken();
         response = httpClient.newRequest(authBaseUrl + COZYTOUCH_OAUTH2_JWT_URL).method(HttpMethod.GET)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + oauth2response.getAccessToken())
+                .headers(h -> h.add(HttpHeader.AUTHORIZATION, oauth2AuthHeader))
                 .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).send();
 
         if (response.getStatus() == 200) {
@@ -948,11 +955,12 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 + "&grant_type=password&username=" + urlEncode(thingConfig.getEmail()) + "&password="
                 + urlEncode(thingConfig.getPassword());
 
-        ContentResponse response = httpClient.newRequest(authBaseUrl).method(HttpMethod.POST)
-                .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
-                .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
-                .agent(TAHOMA_AGENT)
-                .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
+        ContentResponse response = httpClient.newRequest(authBaseUrl).method(HttpMethod.POST).headers(h -> {
+            h.add(HttpHeader.ACCEPT_LANGUAGE, "en-US,en");
+            h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate");
+            h.add("X-Requested-With", "XMLHttpRequest");
+        }).timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT)
+                .body(new StringRequestContent("application/x-www-form-urlencoded; charset=UTF-8", urlParameters))
                 .send();
 
         if (response.getStatus() != 200) {

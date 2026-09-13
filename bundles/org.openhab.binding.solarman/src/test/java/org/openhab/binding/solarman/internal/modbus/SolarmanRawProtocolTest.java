@@ -19,8 +19,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
@@ -29,6 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 import org.openhab.binding.solarman.internal.SolarmanLoggerMode;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Catalin Sanda - Initial contribution

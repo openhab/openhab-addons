@@ -33,9 +33,9 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.jsoup.Jsoup;
@@ -277,7 +277,8 @@ public class IpObserverHandler extends BaseThingHandler {
 
     private void sendGetRequest(String url) {
         Request request = httpClient.newRequest("http://" + config.address + url);
-        request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
+        request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS);
+        request.headers(headers -> headers.put(HttpHeader.ACCEPT_ENCODING, "gzip"));
         String errorReason = "";
         try {
             long start = System.currentTimeMillis();

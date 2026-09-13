@@ -16,22 +16,18 @@ import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.S
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Dictionary;
-import java.util.Hashtable;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorBaseHandler;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorHandlerFactory;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Servlet for SIP call control endpoints.
@@ -48,35 +44,26 @@ public class SipCallControlServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = LoggerFactory.getLogger(SipCallControlServlet.class);
 
-    private final HttpService httpService;
     private final DahuaDoorHandlerFactory handlerFactory;
 
-    public SipCallControlServlet(HttpService httpService, DahuaDoorHandlerFactory handlerFactory) {
-        this.httpService = httpService;
+    public SipCallControlServlet(DahuaDoorHandlerFactory handlerFactory) {
         this.handlerFactory = handlerFactory;
     }
 
     public void activate() {
-        Dictionary<String, String> params = new Hashtable<>();
-        try {
-            httpService.registerServlet(SIP_CONTROL_SERVLET_PATH, this, params, httpService.createDefaultHttpContext());
-            LOGGER.debug("SipCallControlServlet registered at {}", SIP_CONTROL_SERVLET_PATH);
-        } catch (ServletException | NamespaceException e) {
-            LOGGER.error("Failed to register SipCallControlServlet: {}", e.getMessage(), e);
-        }
+        LOGGER.debug("SipCallControlServlet activation requested at {}", SIP_CONTROL_SERVLET_PATH);
     }
 
     public void deactivate() {
-        try {
-            httpService.unregister(SIP_CONTROL_SERVLET_PATH);
-            LOGGER.debug("SipCallControlServlet unregistered");
-        } catch (IllegalArgumentException e) {
-            LOGGER.trace("SipCallControlServlet was not registered: {}", e.getMessage());
-        }
+        LOGGER.debug("SipCallControlServlet deactivated");
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    @NonNullByDefault({})
+    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
+        if (req == null || resp == null) {
+            return;
+        }
         addCorsHeaders(resp);
 
         String action = getAction(req);
@@ -148,7 +135,11 @@ public class SipCallControlServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    @NonNullByDefault({})
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
+        if (req == null || resp == null) {
+            return;
+        }
         addCorsHeaders(resp);
 
         String action = getAction(req);
@@ -218,7 +209,12 @@ public class SipCallControlServlet extends HttpServlet {
     }
 
     @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    @NonNullByDefault({})
+    protected void doOptions(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws ServletException, IOException {
+        if (resp == null) {
+            return;
+        }
         addCorsHeaders(resp);
         resp.setStatus(HttpServletResponse.SC_OK);
     }

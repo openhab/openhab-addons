@@ -21,7 +21,7 @@
          embed protobuf-java privately so the exported proto classes can load their runtime deps.
          All other io.opentelemetry.* and io.micrometer.* packages stay private (not exported). -->
     <bnd.exportpackage>io.opentelemetry.proto.*;-noimport:=true,!io.opentelemetry.*,!io.micrometer.*,!com.google.protobuf.*</bnd.exportpackage>
-    <bnd.importpackage>io.grpc*;resolution:=optional,io.opentelemetry.api.incubator*;resolution:=optional,io.opentelemetry.sdk.autoconfigure*;resolution:=optional,org.jspecify.annotations*;resolution:=optional,io.micrometer.core.lang*;resolution:=optional,*</bnd.importpackage>
+    <bnd.importpackage>javax.annotation;resolution:=optional,io.grpc*;resolution:=optional,io.opentelemetry.api.incubator*;resolution:=optional,io.opentelemetry.sdk.autoconfigure*;resolution:=optional,org.jspecify.annotations*;resolution:=optional,io.micrometer.core.lang*;resolution:=optional,*</bnd.importpackage>
   </properties>
 
   <dependencies>

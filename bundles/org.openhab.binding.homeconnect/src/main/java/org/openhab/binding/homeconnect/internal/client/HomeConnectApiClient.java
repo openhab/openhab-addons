@@ -25,14 +25,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
@@ -812,8 +811,9 @@ public class HomeConnectApiClient {
 
     public String putRaw(String haId, String path, String requestBodyPayload)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        Request request = createRequest(HttpMethod.PUT, path).content(new StringContentProvider(requestBodyPayload),
-                BSH_JSON_V1);
+        Request request = createRequest(HttpMethod.PUT, path);
+        request.headers(headers -> headers.put(HttpHeader.CONTENT_TYPE, BSH_JSON_V1));
+        request.body(new StringRequestContent(requestBodyPayload));
         try {
             ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.NO_CONTENT_204, request, response, haId, requestBodyPayload);
@@ -924,8 +924,9 @@ public class HomeConnectApiClient {
         dataObject.add("data", innerObject);
         String requestBodyPayload = dataObject.toString();
 
-        Request request = createRequest(HttpMethod.PUT, path).content(new StringContentProvider(requestBodyPayload),
-                BSH_JSON_V1);
+        Request request = createRequest(HttpMethod.PUT, path);
+        request.headers(headers -> headers.put(HttpHeader.CONTENT_TYPE, BSH_JSON_V1));
+        request.body(new StringRequestContent(requestBodyPayload));
         try {
             ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.NO_CONTENT_204, request, response, haId, requestBodyPayload);
@@ -967,8 +968,9 @@ public class HomeConnectApiClient {
 
         String requestBodyPayload = dataObject.toString();
 
-        Request request = createRequest(HttpMethod.PUT, path).content(new StringContentProvider(requestBodyPayload),
-                BSH_JSON_V1);
+        Request request = createRequest(HttpMethod.PUT, path);
+        request.headers(headers -> headers.put(HttpHeader.CONTENT_TYPE, BSH_JSON_V1));
+        request.body(new StringRequestContent(requestBodyPayload));
         try {
             ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.NO_CONTENT_204, request, response, haId, requestBodyPayload);
@@ -1136,9 +1138,14 @@ public class HomeConnectApiClient {
 
     private Request createRequest(HttpMethod method, String path)
             throws AuthorizationException, CommunicationException {
-        return client.newRequest(apiUrl + path)
-                .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeader(oAuthClientService))
-                .header(HttpHeaders.ACCEPT, BSH_JSON_V1).method(method).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
+        String authorizationHeader = getAuthorizationHeader(oAuthClientService);
+        Request request = client.newRequest(apiUrl + path).method(method).timeout(REQUEST_TIMEOUT_SEC,
+                TimeUnit.SECONDS);
+        request.headers(headers -> {
+            headers.put(HttpHeader.AUTHORIZATION, authorizationHeader);
+            headers.put(HttpHeader.ACCEPT, BSH_JSON_V1);
+        });
+        return request;
     }
 
     private void trackAndLogApiRequest(@Nullable String haId, Request request, @Nullable String requestBody,

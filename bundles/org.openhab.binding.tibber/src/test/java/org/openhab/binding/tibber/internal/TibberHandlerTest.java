@@ -26,10 +26,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
@@ -65,8 +64,7 @@ public class TibberHandlerTest {
         when(responseMock.getContentAsString()).thenReturn(readResponse(responseFileName));
         Request requestMock = mock(Request.class);
         when(requestMock.timeout(anyLong(), any())).thenReturn(requestMock);
-        when(requestMock.header(any(HttpHeader.class), anyString())).thenReturn(requestMock);
-        when(requestMock.header(anyString(), anyString())).thenReturn(requestMock);
+        when(requestMock.headers(any())).thenReturn(requestMock);
         try {
             when(requestMock.send()).thenReturn(responseMock);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

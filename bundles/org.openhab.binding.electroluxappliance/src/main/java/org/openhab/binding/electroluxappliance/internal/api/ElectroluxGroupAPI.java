@@ -19,15 +19,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -52,6 +50,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link ElectroluxGroupAPI} class defines the Elextrolux Group API
@@ -331,10 +331,11 @@ public class ElectroluxGroupAPI {
     }
 
     private Request createRequest(String uri, HttpMethod httpMethod) {
-        Request request = httpClient.newRequest(uri).method(httpMethod);
-        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
-        request.header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+        Request request = httpClient.newRequest(uri).method(httpMethod)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                    h.add(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+                    h.add(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+                });
 
         logger.trace("HTTP Request {}.", request.toString());
 
@@ -345,7 +346,7 @@ public class ElectroluxGroupAPI {
         try {
             String json = "{\"refreshToken\": \"" + this.configuration.refreshToken + "\"}";
             Request request = createRequest(TOKEN_URL, HttpMethod.POST);
-            request.content(new StringContentProvider(json), MediaType.APPLICATION_JSON);
+            request.body(new StringRequestContent(MediaType.APPLICATION_JSON, json));
             logger.debug("HTTP POST Request {}.", request.toString());
             ContentResponse httpResponse;
             httpResponse = request.send();
@@ -384,8 +385,10 @@ public class ElectroluxGroupAPI {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
                     Request request = createRequest(uri, HttpMethod.GET);
-                    request.header("x-api-key", this.configuration.apiKey);
-                    request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken);
+                    request.headers(h -> {
+                        h.add("x-api-key", this.configuration.apiKey);
+                        h.add(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken);
+                    });
                     logger.trace("Request header {}", request);
 
                     ContentResponse response = request.send();
@@ -447,9 +450,11 @@ public class ElectroluxGroupAPI {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
                     Request request = createRequest(APPLIANCES_URL + "/" + applianceId + "/command", HttpMethod.PUT);
-                    request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken);
-                    request.header("x-api-key", this.configuration.apiKey);
-                    request.content(new StringContentProvider(commandJSON), MediaType.APPLICATION_JSON);
+                    request.headers(h -> {
+                        h.add(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken);
+                        h.add("x-api-key", this.configuration.apiKey);
+                    });
+                    request.body(new StringRequestContent(MediaType.APPLICATION_JSON, commandJSON));
                     logger.trace("Command JSON: {}", commandJSON);
 
                     ContentResponse response = request.send();
