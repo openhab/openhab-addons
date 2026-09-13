@@ -242,6 +242,9 @@ public class Shelly2RpcSocket implements WriteCallback {
                     queue = List.copyOf(sendQueue);
                     sendQueue.clear();
                 }
+
+                // keep atomic with the disposed check, or a racing dispose() won't cancel this task
+                startPing(session);
             }
         }
 
@@ -255,7 +258,6 @@ public class Shelly2RpcSocket implements WriteCallback {
             logger.debug("{}: WebSocket connected {}<-{}, Idle Timeout={}", thingName, session.getLocalAddress(),
                     session.getRemoteAddress(), session.getIdleTimeout());
         }
-        startPing(session);
         handler.onConnect(socketAddr, true);
 
         if (queue != null) {
