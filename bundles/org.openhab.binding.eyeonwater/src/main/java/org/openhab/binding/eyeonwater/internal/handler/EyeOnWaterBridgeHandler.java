@@ -32,6 +32,7 @@ import org.openhab.binding.eyeonwater.internal.config.EyeOnWaterBridgeConfigurat
 import org.openhab.binding.eyeonwater.internal.discovery.EyeOnWaterDiscoveryService;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -63,20 +64,43 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
-    private final @Nullable HttpClient httpClient;
+    private final @Nullable HttpClientFactory httpClientFactory;
 
-    public EyeOnWaterBridgeHandler(Bridge bridge, BundleContext bundleContext, @Nullable HttpClient httpClient) {
+    private @Nullable HttpClient httpClient;
+
+    public EyeOnWaterBridgeHandler(Bridge bridge, BundleContext bundleContext,
+            @Nullable HttpClientFactory httpClientFactory) {
         super(bridge);
         this.bundleContext = bundleContext;
-        this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing EyeOnWater Bridge: {}", getThing().getUID());
 
-        HttpClient clientInstance = httpClient;
-        if (clientInstance == null) {
+        HttpClient oldClient = httpClient;
+        if (oldClient != null) {
+            try {
+                oldClient.stop();
+            } catch (Exception e) {
+                logger.debug("Failed to stop existing EyeOnWater HTTP client: {}", e.getMessage());
+            }
+            this.httpClient = null;
+        }
+
+        HttpClientFactory factory = httpClientFactory;
+        if (factory == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
+            return;
+        }
+
+        HttpClient clientInstance = factory.createHttpClient(BINDING_ID);
+        try {
+            clientInstance.start();
+            this.httpClient = clientInstance;
+        } catch (Exception e) {
+            logger.error("Failed to start EyeOnWater HTTP client: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
             return;
         }
@@ -190,6 +214,16 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
         if (reg != null) {
             reg.unregister();
             discoveryServiceReg = null;
+        }
+
+        HttpClient clientInstance = httpClient;
+        if (clientInstance != null) {
+            try {
+                clientInstance.stop();
+            } catch (Exception e) {
+                logger.debug("Failed to stop EyeOnWater HTTP client: {}", e.getMessage());
+            }
+            this.httpClient = null;
         }
 
         super.dispose();

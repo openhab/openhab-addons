@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.eyeonwater.internal.handler.EyeOnWaterBridgeHandler;
 import org.openhab.binding.eyeonwater.internal.handler.EyeOnWaterMeterHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -59,37 +58,16 @@ public class EyeOnWaterHandlerFactory extends BaseThingHandlerFactory {
     @Reference
     private @Nullable HttpClientFactory httpClientFactory;
 
-    private @Nullable HttpClient httpClient;
-
     @Activate
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
         this.bundleContext = componentContext.getBundleContext();
-        HttpClientFactory factory = httpClientFactory;
-        if (factory != null) {
-            HttpClient client = factory.createHttpClient(BINDING_ID);
-            try {
-                client.start();
-                this.httpClient = client;
-            } catch (Exception e) {
-                logger.error("Failed to start EyeOnWater HTTP client: {}", e.getMessage(), e);
-            }
-        }
     }
 
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
         super.deactivate(componentContext);
         this.bundleContext = null;
-        HttpClient client = httpClient;
-        if (client != null) {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                logger.debug("Failed to stop EyeOnWater HTTP client: {}", e.getMessage());
-            }
-            this.httpClient = null;
-        }
     }
 
     @Override
@@ -104,7 +82,7 @@ public class EyeOnWaterHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             BundleContext bc = bundleContext;
             if (bc != null) {
-                return new EyeOnWaterBridgeHandler((Bridge) thing, bc, httpClient);
+                return new EyeOnWaterBridgeHandler((Bridge) thing, bc, httpClientFactory);
             }
         } else if (THING_TYPE_METER.equals(thingTypeUID)) {
             TimeZoneProvider tzp = timeZoneProvider;
@@ -116,3 +94,4 @@ public class EyeOnWaterHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 }
+
