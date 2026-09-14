@@ -23,6 +23,7 @@ import java.util.EnumMap;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.SerialNumber;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -64,10 +65,9 @@ public class EnergyMeter {
 
             ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0x14, 0x18));
             serialNumber = SerialNumber.fromRaw(buffer.getInt());
-            values.clear();
-            states.clear();
 
             int offset = HEADER_LENGTH;
+            boolean hasData = false;
             while (offset + Integer.BYTES <= bytes.length) {
                 int obis = readInt32(bytes, offset);
                 offset += Integer.BYTES;
@@ -87,6 +87,7 @@ public class EnergyMeter {
                     break;
                 }
 
+                hasData = true;
                 ObisId obisId = ObisId.fromCode(obis);
                 if (obisId == ObisId.VERSION) {
                     states.put(obisId, decodeVersion(bytes, offset));
@@ -97,6 +98,10 @@ public class EnergyMeter {
                 }
                 offset += valueLength;
             }
+
+            if (!hasData) {
+                throw new IOException("Empty SMA telegram with no OBIS data");
+            }
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -106,6 +111,7 @@ public class EnergyMeter {
         return serialNumber;
     }
 
+    @Nullable
     public State getState(ObisId obisId) {
         if (ObisId.VERSION == obisId) {
             return states.getOrDefault(obisId, StringType.EMPTY);

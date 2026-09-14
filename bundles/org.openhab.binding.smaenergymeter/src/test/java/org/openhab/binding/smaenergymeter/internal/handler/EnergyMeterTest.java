@@ -304,6 +304,73 @@ class EnergyMeterTest {
         assertEquals(new StringType("1.1.0.R"), meter.getState(ObisId.VERSION));
     }
 
+    @Test
+    void skipsEmptyTelegramWithoutObisData() throws IOException {
+        byte[] telegram = new byte[28];
+        telegram[0] = 'S';
+        telegram[1] = 'M';
+        telegram[2] = 'A';
+        telegram[16] = 0x60;
+        telegram[17] = 0x69;
+        ByteBuffer.wrap(telegram, 0x14, 4).putInt(0x12345678);
+
+        EnergyMeter meter = new EnergyMeter();
+        try {
+            meter.parse(telegram);
+            throw new AssertionError("Should have thrown IOException for empty telegram");
+        } catch (IOException e) {
+            assertTrue(e.getMessage().contains("Empty SMA telegram with no OBIS data"));
+        }
+    }
+
+    @Test
+    void doesNotResetUnrelatedObisValuesWhenProcessingPartialTelegram() throws IOException {
+        byte[] firstTelegram = new byte[96];
+        firstTelegram[0] = 'S';
+        firstTelegram[1] = 'M';
+        firstTelegram[2] = 'A';
+        firstTelegram[16] = 0x60;
+        firstTelegram[17] = 0x69;
+        ByteBuffer.wrap(firstTelegram, 0x14, 4).putInt(0x12345678);
+
+        int offset = 28;
+        offset = writeUint32(firstTelegram, offset, ObisId.POSITIVE_ACTIVE_POWER.getCode());
+        offset = writeUint32(firstTelegram, offset, 5000);
+        offset = writeUint32(firstTelegram, offset, ObisId.POSITIVE_ACTIVE_ENERGY.getCode());
+        offset = writeUint64(firstTelegram, offset, 7_200_000L);
+        offset = writeUint32(firstTelegram, offset, ObisId.NEGATIVE_ACTIVE_POWER.getCode());
+        writeUint32(firstTelegram, offset, 0);
+
+        EnergyMeter meter = new EnergyMeter();
+        meter.parse(firstTelegram);
+
+        // Verify first telegram values
+        assertQuantityTypeValue("500", Units.WATT, meter.getState(ObisId.POSITIVE_ACTIVE_POWER));
+        assertQuantityTypeValue("2", Units.KILOWATT_HOUR, meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY));
+        assertQuantityTypeValue("0", Units.WATT, meter.getState(ObisId.NEGATIVE_ACTIVE_POWER));
+
+        // Process partial second telegram with only POSITIVE_ACTIVE_POWER updated
+        byte[] secondTelegram = new byte[40];
+        secondTelegram[0] = 'S';
+        secondTelegram[1] = 'M';
+        secondTelegram[2] = 'A';
+        secondTelegram[16] = 0x60;
+        secondTelegram[17] = 0x69;
+        ByteBuffer.wrap(secondTelegram, 0x14, 4).putInt(0x12345678);
+
+        offset = 28;
+        offset = writeUint32(secondTelegram, offset, ObisId.POSITIVE_ACTIVE_POWER.getCode());
+        writeUint32(secondTelegram, offset, 6000);
+
+        meter.parse(secondTelegram);
+
+        // POSITIVE_ACTIVE_POWER should be updated
+        assertQuantityTypeValue("600", Units.WATT, meter.getState(ObisId.POSITIVE_ACTIVE_POWER));
+        // But POSITIVE_ACTIVE_ENERGY should NOT be reset, it should keep the old value
+        assertQuantityTypeValue("2", Units.KILOWATT_HOUR, meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY));
+        assertQuantityTypeValue("0", Units.WATT, meter.getState(ObisId.NEGATIVE_ACTIVE_POWER));
+    }
+
     private static int writeUint32(byte[] bytes, int offset, int value) {
         ByteBuffer.wrap(bytes, offset, 4).putInt(value);
         return offset + 4;
