@@ -159,7 +159,8 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
                 // If there is no active leak alert, we know the leak rate is 0.0
                 updateState(CHANNEL_LEAK_FLOW_RATE, new QuantityType<>(0.0 + " " + flowUnit));
             } else {
-                // If there is an active leak alert but no rate is reported, OR if leak alert is unknown (null), clear to UNDEF
+                // If there is an active leak alert but no rate is reported, OR if leak alert is unknown (null), clear
+                // to UNDEF
                 updateState(CHANNEL_LEAK_FLOW_RATE, UnDefType.UNDEF);
             }
 

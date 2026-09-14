@@ -94,4 +94,3 @@ public class EyeOnWaterHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 }
-

@@ -161,8 +161,8 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                 synchronized (EyeOnWaterBridgeHandler.this) {
                     if (activeClient.equals(client)) {
                         String msg = e.getMessage();
-                        logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
-                                msg, e);
+                        logger.debug("Communication error connecting to EyeOnWater API during initialization: {}", msg,
+                                e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 msg != null ? msg : "@text/offline.communication-error");
                         scheduleReconnect();
