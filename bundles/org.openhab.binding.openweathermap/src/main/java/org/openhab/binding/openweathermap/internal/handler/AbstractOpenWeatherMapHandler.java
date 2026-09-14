@@ -65,7 +65,8 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenWeatherMapHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_WEATHER_AND_FORECAST,
-            THING_TYPE_AIR_POLLUTION, THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY);
+            THING_TYPE_AIR_POLLUTION, THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY,
+            THING_TYPE_ONECALL_FORECAST);
 
     // keeps track of the parsed location
     protected @Nullable PointType location;

@@ -37,6 +37,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_1PM = "SHSW-PM";
     public static final String SHELLYDT_1L = "SHSW-L";
     public static final String SHELLYDT_PLUG = "SHPLG-1";
+    public static final String SHELLYDT_PLUG2 = "SHPLG2-1"; // Gen1 Plug variant
     public static final String SHELLYDT_PLUGS = "SHPLG-S";
     public static final String SHELLYDT_PLUGU1 = "SHPLG-U1";
     public static final String SHELLYDT_PLUGU1_2 = "SHPLG-US";
@@ -47,7 +48,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_3EM = "SHEM-3";
     public static final String SHELLYDT_HT = "SHHT-1";
     public static final String SHELLYDT_SMOKE = "SHSM-01";
-    public static final String SHELLYDT_FLOOD = "SH-FLOOD ";
+    public static final String SHELLYDT_FLOOD = "SHWT-1";
     public static final String SHELLYDT_DOORWINDOW = "SHDW-1";
     public static final String SHELLYDT_DOORWINDOW2 = "SHDW-2";
     public static final String SHELLYDT_UNI = "SHUNI-1";
@@ -55,7 +56,6 @@ public class ShellyDevices {
     public static final String SHELLYDT_MOTION2 = "SHMOS-02";
     public static final String SHELLYDT_SENSE = "SHSEN-1";
     public static final String SHELLYDT_GAS = "SHGS-1";
-    public static final String SHELLYDT_EYE = "SHEYE-1";
     public static final String SHELLYDT_DIMMER = "SHDM-1";
     public static final String SHELLYDT_DIMMER2 = "SHDM-2";
     public static final String SHELLYDT_IX3 = "SHIX3-1";
@@ -78,7 +78,9 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUS1UL = "SNSW-001X15UL";
     public static final String SHELLYDT_PLUS1PMUL = "SNSW-001P15UL";
     public static final String SHELLYDT_PLUS1L = "S3SW-0A1X1EUL";
+    public static final String SHELLYDT_PLUS1LG4 = "S4SW-0A1X1EUL";
     public static final String SHELLYDT_PLUS2L = "S3SW-0A2X4EUL";
+    public static final String SHELLYDT_PLUS2LG4 = "S4SW-0A2X4EUL";
     public static final String SHELLYDT_PLUS2PM = "SNSW-002P16EU";
     public static final String SHELLYDT_PLUS2PM_2 = "SNSW-102P16EU";
     public static final String SHELLYDT_PLUS2PMG3 = "S3SW-002P16EU";
@@ -101,14 +103,20 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSHT = "SNSN-0013A";
     public static final String SHELLYDT_PLUSHTG3 = "S3SN-0U12A";
     public static final String SHELLYDT_PLUSSMOKE = "SNSN-0031Z";
+    public static final String SHELLYDT_PLUSFLOODG4 = "S4SN-0071A"; // Shelly Flood Gen4
+    public static final String SHELLYDT_PLUSFLOODSG4 = "S4SN-0071Z"; // Shelly Flood S Gen4
+    public static final String SHELLYDT_PLUSPRESENCE = "S4SN-0U61X"; // Shelly Presence Gen4
     public static final String SHELLYDT_PLUSUNI = "SNSN-0043X";
+    public static final String SHELLYDT_PLUSDIMMEREU = "SNDM-0011EU";
     public static final String SHELLYDT_PLUSDIMMERUS = "SNDM-0013US";
     public static final String SHELLYDT_PLUSDIMMERG3 = "S3DM-0A101WWL";
+    public static final String SHELLYDT_PLUSDIMMERG4US = "S4DM-0A102US";
     public static final String SHELLYDT_PLUSDIMMER10V = "SNDM-00100WW";
     public static final String SHELLYDT_PLUSDIMMER0110VG3 = "S3DM-0010WW";
     public static final String SHELLYDT_PRODM2PM = "SPDM-002PE01EU";
     public static final String SHELLYDT_PLUSWALLDISPLAY = "SAWD-0A1XX10EU1";
     public static final String SHELLYDT_PLUSRGBWPM = "SNDC-0D4P10WW";
+    public static final String SHELLYDT_PRORGBWWPM = "SPDC-0D5PE16EU";
     public static final String SHELLYDT_PLUSSTRIP = "S4PL-00416EU";
     public static final String SHELLYDT_PLUSPLUGCPM = "S4PL-00116EU"; // Shelly Plus Plug CPM (Gen4)
     public static final String SHELLYDT_PLUSEM = "S3EM-002CXCEU";
@@ -153,6 +161,10 @@ public class ShellyDevices {
     public static final String SHELLYDT_MINI_PMG3 = "S3PM-001PCEU16";
     public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16"; // PM was renamed to EM in Gen4
 
+    // Shelly Gen3 Bulb Series
+    public static final String SHELLYDT_DUOBULBG3 = "S3BL-D010009AEU"; // Shelly Duo Bulb E27 Gen3
+    public static final String SHELLYDT_COLORBULBG3 = "S3BL-C010007AEU"; // Shelly Multicolor Bulb E27 Gen3
+
     // Shelly BLU Series
     public static final String SHELLYDT_BLUCLASS_BUTTON = "SBBT";
     public static final String SHELLYDT_BLUCLASS_HT = "SBHT";
@@ -160,6 +172,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_BLUCLASS_MOTION = "SBMO";
     public static final String SHELLYDT_BLUCLASS_DISTANCE = "SBDI";
     public static final String SHELLYDT_BLUCLASS_REMOTE = "SBRC";
+    public static final String SHELLYDT_BLUCLASS_WS = "SBWS";
 
     public static final String SHELLYDT_BLUBUTTON1 = "SBBT-002C";
     public static final String SHELLYDT_BLUTOUGHZB = "SBBT-102C";
@@ -175,6 +188,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_BLUMOTIONZB = "SBMO-103Z";
     public static final String SHELLYDT_BLUDISTANCE = "SBDI-003E";
     public static final String SHELLYDT_BLUREMOTE = "SBRC-005B";
+    public static final String SHELLYDT_BLUWS90 = "SBWS-90CM";
 
     // Thing Type ID prefixes
     public static final String THING_TYPE_SHELLYPLUS_PREFIX = "shellyplus";
@@ -223,7 +237,6 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYTRV = new ThingTypeUID(BINDING_ID, "shellytrv");
     public static final ThingTypeUID THING_TYPE_SHELLYBUTTON1 = new ThingTypeUID(BINDING_ID, "shellybutton1");
     public static final ThingTypeUID THING_TYPE_SHELLYBUTTON2 = new ThingTypeUID(BINDING_ID, "shellybutton2");
-    public static final ThingTypeUID THING_TYPE_SHELLYEYE = new ThingTypeUID(BINDING_ID, "shellyseye");
     public static final ThingTypeUID THING_TYPE_SHELLYMOTION = new ThingTypeUID(BINDING_ID, "shellymotion");
     public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_COLOR = new ThingTypeUID(BINDING_ID, "shellyrgbw2-color");
     public static final ThingTypeUID THING_TYPE_SHELLYRGBW2_WHITE = new ThingTypeUID(BINDING_ID, "shellyrgbw2-white");
@@ -247,6 +260,8 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSHT = new ThingTypeUID(BINDING_ID, "shellyplusht");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSUNI = new ThingTypeUID(BINDING_ID, "shellyplusuni");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSSMOKE = new ThingTypeUID(BINDING_ID, "shellyplussmoke");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSFLOOD = new ThingTypeUID(BINDING_ID, "shellyplusflood");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSPRESENCE = new ThingTypeUID(BINDING_ID, "shellypluspresence");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGS = new ThingTypeUID(BINDING_ID, "shellyplusplug");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGUS = new ThingTypeUID(BINDING_ID, "shellyplusplugus");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSPLUGCPM = new ThingTypeUID(BINDING_ID, "shellyplusplugcpm");
@@ -256,6 +271,7 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSDIMMER = new ThingTypeUID(BINDING_ID, "shellyplusdimmer");
     public static final ThingTypeUID THING_TYPE_SHELLYPRODM2PM = new ThingTypeUID(BINDING_ID, "shellyprodm2pm");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSRGBWPM = new ThingTypeUID(BINDING_ID, "shellyplusrgbwpm");
+    public static final ThingTypeUID THING_TYPE_SHELLYPRORGBWWPM = new ThingTypeUID(BINDING_ID, "shellyprorgbwwpm");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSSTRIP = new ThingTypeUID(BINDING_ID, "shellyplusstrip");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUSEM = new ThingTypeUID(BINDING_ID, "shellyplusem");
     public static final ThingTypeUID THING_TYPE_SHELLYPLUS3EM63 = new ThingTypeUID(BINDING_ID, "shellyplus3em63");
@@ -286,6 +302,11 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM63 = new ThingTypeUID(BINDING_ID, "shellypro3em63");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO3EM400 = new ThingTypeUID(BINDING_ID, "shellypro3em400");
 
+    // Shelly Gen3 Bulb Series
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSDUOBULB = new ThingTypeUID(BINDING_ID, "shellyplusduobulb");
+    public static final ThingTypeUID THING_TYPE_SHELLYPLUSCOLORBULB = new ThingTypeUID(BINDING_ID,
+            "shellypluscolorbulb");
+
     // Shelly Blu series
     public static final ThingTypeUID THING_TYPE_SHELLYBLUBUTTON1 = new ThingTypeUID(BINDING_ID, "shellyblubutton");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUWALLSWITCH4 = new ThingTypeUID(BINDING_ID,
@@ -296,6 +317,7 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYBLUMOTION = new ThingTypeUID(BINDING_ID, "shellyblumotion");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUDISTANCE = new ThingTypeUID(BINDING_ID, "shellybludistance");
     public static final ThingTypeUID THING_TYPE_SHELLYBLUREMOTE = new ThingTypeUID(BINDING_ID, "shellybluremote");
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUWS90 = new ThingTypeUID(BINDING_ID, "shellybluws90");
 
     /*
      * Thing type classes: Various logic is depending on device types/classes
@@ -308,13 +330,16 @@ public class ShellyDevices {
             THING_TYPE_SHELLYPLUSDIMMER, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMER10V, // Plus
             THING_TYPE_SHELLYPRODM2PM); // Pro
 
-    // Duo devices
+    // Duo devices (tunable white / RGBCCT bulbs: Gen1 Duo, Gen1 Color Bulb, Gen1 Vintage, Gen3 Duo Bulb, Gen3
+    // Multicolor Bulb)
     public static final Set<ThingTypeUID> GROUP_DUO_THING_TYPES = Set.of( //
-            THING_TYPE_SHELLYDUO, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYVINTAGE);
+            THING_TYPE_SHELLYDUO, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYVINTAGE, THING_TYPE_SHELLYPLUSDUOBULB,
+            THING_TYPE_SHELLYPLUSCOLORBULB);
 
-    // RGBW2 devices
+    // RGBW2 devices (LED strip controllers with separate R/G/B/W channels)
     public static final Set<ThingTypeUID> GROUP_RGBW2_THING_TYPES = Set.of( //
-            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM);
+            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYPLUSRGBWPM,
+            THING_TYPE_SHELLYPRORGBWWPM);
 
     // All Light Bulbs / RGBW devices
     public static final Set<ThingTypeUID> GROUP_LIGHT_THING_TYPES = Stream
@@ -350,8 +375,12 @@ public class ShellyDevices {
     public static final Set<ThingTypeUID> GROUP_SMOKE_THING_TYPES = Set.of(THING_TYPE_SHELLYSMOKE,
             THING_TYPE_SHELLYPLUSSMOKE);
 
+    // Presence Sensors (mmWave radar)
+    public static final Set<ThingTypeUID> GROUP_PRESENCE_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSPRESENCE);
+
     // Flood Sensors
-    public static final Set<ThingTypeUID> GROUP_FLOOD_THING_TYPES = Set.of(THING_TYPE_SHELLYFLOOD);
+    public static final Set<ThingTypeUID> GROUP_FLOOD_THING_TYPES = Set.of(THING_TYPE_SHELLYFLOOD,
+            THING_TYPE_SHELLYPLUSFLOOD);
 
     // Gas Sensors
     public static final Set<ThingTypeUID> GROUP_GAS_THING_TYPES = Set.of(THING_TYPE_SHELLYGAS);
@@ -365,6 +394,10 @@ public class ShellyDevices {
             THING_TYPE_SHELLY3EM, THING_TYPE_SHELLYPLUS3EM63, //
             THING_TYPE_SHELLYPRO3EM, THING_TYPE_SHELLYPRO3EM63, THING_TYPE_SHELLYPRO3EM400);
 
+    // em1-clamp meter devices, single or dual clamp; Pro EM-50 additionally exposes a dry-contact relay
+    public static final Set<ThingTypeUID> GROUP_EM1_THING_TYPES = Set.of( //
+            THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYMINI_EM, THING_TYPE_SHELLYPROEM50);
+
     // Mini Devices
     public static final Set<ThingTypeUID> GROUP_MINI_THING_TYPES = Set.of(THING_TYPE_SHELLYMINI_1,
             THING_TYPE_SHELLYMINI_PM, THING_TYPE_SHELLYMINI_1PM, THING_TYPE_SHELLYMINI_EM);
@@ -373,7 +406,7 @@ public class ShellyDevices {
     public static final Set<ThingTypeUID> GROUP_BLU_THING_TYPES = Set.of( //
             THING_TYPE_SHELLYBLUBUTTON1, THING_TYPE_SHELLYBLUWALLSWITCH4, THING_TYPE_SHELLYBLURCBUTTON4,
             THING_TYPE_SHELLYBLUHT, THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUDISTANCE,
-            THING_TYPE_SHELLYBLUREMOTE);
+            THING_TYPE_SHELLYBLUREMOTE, THING_TYPE_SHELLYBLUWS90);
 
     // Wall Displays
     public static final Set<ThingTypeUID> GROUP_WALLDISPLAY_THING_TYPES = Set.of(THING_TYPE_SHELLYPLUSWALLDISPLAY);
@@ -388,6 +421,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_1L, THING_TYPE_SHELLY1L), //
             Map.entry(SHELLYDT_1, THING_TYPE_SHELLY1), //
             Map.entry(SHELLYDT_PLUG, THING_TYPE_SHELLYPLUG), //
+            Map.entry(SHELLYDT_PLUG2, THING_TYPE_SHELLYPLUG), //
             Map.entry(SHELLYDT_PLUGS, THING_TYPE_SHELLYPLUGS), //
             Map.entry(SHELLYDT_PLUGU1, THING_TYPE_SHELLYPLUGU1), //
             Map.entry(SHELLYDT_PLUGU1_2, THING_TYPE_SHELLYPLUGU1), //
@@ -402,14 +436,14 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_3EM, THING_TYPE_SHELLY3EM), //
             Map.entry(SHELLYDT_EM, THING_TYPE_SHELLYEM), //
             Map.entry(SHELLYDT_HT, THING_TYPE_SHELLYHT), //
-            Map.entry(SHELLYDT_MOTION, THING_TYPE_SHELLYMOTION),
+            Map.entry(SHELLYDT_MOTION, THING_TYPE_SHELLYMOTION), //
+            Map.entry(SHELLYDT_MOTION2, THING_TYPE_SHELLYMOTION), //
             Map.entry(SHELLYDT_DOORWINDOW, THING_TYPE_SHELLYDOORWIN), //
             Map.entry(SHELLYDT_DOORWINDOW2, THING_TYPE_SHELLYDOORWIN2), //
             Map.entry(SHELLYDT_SMOKE, THING_TYPE_SHELLYSMOKE), //
             Map.entry(SHELLYDT_FLOOD, THING_TYPE_SHELLYFLOOD), //
             Map.entry(SHELLYDT_UNI, THING_TYPE_SHELLYUNI), //
             Map.entry(SHELLYDT_GAS, THING_TYPE_SHELLYGAS), //
-            Map.entry(SHELLYDT_EYE, THING_TYPE_SHELLYEYE), //
             Map.entry(SHELLYDT_SENSE, THING_TYPE_SHELLYSENSE), //
             Map.entry(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1),
             Map.entry(SHELLYDT_BUTTON2, THING_TYPE_SHELLYBUTTON2), //
@@ -425,7 +459,9 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUS1PMG4, THING_TYPE_SHELLYPLUS1PM),
             Map.entry(SHELLYDT_PLUS1PMUL, THING_TYPE_SHELLYPLUS1PM),
             Map.entry(SHELLYDT_PLUS1L, THING_TYPE_SHELLYPLUS1L), //
-            Map.entry(SHELLYDT_PLUS2L, THING_TYPE_SHELLYPLUS2L),
+            Map.entry(SHELLYDT_PLUS1LG4, THING_TYPE_SHELLYPLUS1L), //
+            Map.entry(SHELLYDT_PLUS2L, THING_TYPE_SHELLYPLUS2L), //
+            Map.entry(SHELLYDT_PLUS2LG4, THING_TYPE_SHELLYPLUS2L),
             Map.entry(SHELLYDT_PLUSSHUTTER, THING_TYPE_SHELLYPLUSSHUTTER),
             Map.entry(SHELLYDT_PLUSPLUGS, THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry(SHELLYDT_PLUSPLUGS_2, THING_TYPE_SHELLYPLUSPLUGS),
@@ -445,13 +481,18 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUSHT, THING_TYPE_SHELLYPLUSHT), //
             Map.entry(SHELLYDT_PLUSHTG3, THING_TYPE_SHELLYPLUSHT),
             Map.entry(SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE),
+            Map.entry(SHELLYDT_PLUSFLOODG4, THING_TYPE_SHELLYPLUSFLOOD),
+            Map.entry(SHELLYDT_PLUSFLOODSG4, THING_TYPE_SHELLYPLUSFLOOD),
             Map.entry(SHELLYDT_PLUSUNI, THING_TYPE_SHELLYPLUSUNI),
+            Map.entry(SHELLYDT_PLUSDIMMEREU, THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry(SHELLYDT_PLUSDIMMERUS, THING_TYPE_SHELLYPLUSDIMMERUS),
+            Map.entry(SHELLYDT_PLUSDIMMERG4US, THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry(SHELLYDT_PLUSDIMMER10V, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(SHELLYDT_PLUSDIMMER0110VG3, THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry(SHELLYDT_PLUSDIMMERG3, THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry(SHELLYDT_PRODM2PM, THING_TYPE_SHELLYPRODM2PM),
             Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM),
+            Map.entry(SHELLYDT_PRORGBWWPM, THING_TYPE_SHELLYPRORGBWWPM),
             Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM),
             Map.entry(SHELLYDT_PLUS3EM63, THING_TYPE_SHELLYPLUS3EM63),
             Map.entry(SHELLYDT_PLUSBLUGW, THING_TYPE_SHELLYPLUSBLUGW), //
@@ -491,6 +532,10 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3EM3CT63, THING_TYPE_SHELLYPRO3EM63), //
             Map.entry(SHELLYDT_PRO3EM400, THING_TYPE_SHELLYPRO3EM400), //
 
+            // Gen3 Bulb Series
+            Map.entry(SHELLYDT_DUOBULBG3, THING_TYPE_SHELLYPLUSDUOBULB), //
+            Map.entry(SHELLYDT_COLORBULBG3, THING_TYPE_SHELLYPLUSCOLORBULB), //
+
             // BLU Series
             Map.entry(SHELLYDT_BLUBUTTON1, THING_TYPE_SHELLYBLUBUTTON1),
             Map.entry(SHELLYDT_BLUTOUGHZB, THING_TYPE_SHELLYBLUBUTTON1),
@@ -506,6 +551,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUMOTIONZB, THING_TYPE_SHELLYBLUMOTION),
             Map.entry(SHELLYDT_BLUDISTANCE, THING_TYPE_SHELLYBLUDISTANCE),
             Map.entry(SHELLYDT_BLUREMOTE, THING_TYPE_SHELLYBLUREMOTE),
+            Map.entry(SHELLYDT_BLUWS90, THING_TYPE_SHELLYBLUWS90),
 
             Map.entry(SHELLYDT_BLUCLASS_BUTTON, THING_TYPE_SHELLYBLUBUTTON1), //
             Map.entry(SHELLYDT_BLUCLASS_HT, THING_TYPE_SHELLYBLUHT), //
@@ -513,9 +559,13 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_BLUCLASS_MOTION, THING_TYPE_SHELLYBLUMOTION),
             Map.entry(SHELLYDT_BLUCLASS_DISTANCE, THING_TYPE_SHELLYBLUDISTANCE),
             Map.entry(SHELLYDT_BLUCLASS_REMOTE, THING_TYPE_SHELLYBLUREMOTE),
+            Map.entry(SHELLYDT_BLUCLASS_WS, THING_TYPE_SHELLYBLUWS90),
 
             // Wall displays
-            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY));
+            Map.entry(SHELLYDT_PLUSWALLDISPLAY, THING_TYPE_SHELLYPLUSWALLDISPLAY),
+
+            // Presence sensor
+            Map.entry(SHELLYDT_PLUSPRESENCE, THING_TYPE_SHELLYPLUSPRESENCE));
 
     // Relay devices (mode="relay")
     public static final Map<String, ThingTypeUID> RELAY_THING_TYPE_BY_DEVICE_TYPE = Map.ofEntries(
@@ -592,14 +642,12 @@ public class ShellyDevices {
             Map.entry("shellydw", THING_TYPE_SHELLYDOORWIN), //
             Map.entry("shellydw2", THING_TYPE_SHELLYDOORWIN2), //
             Map.entry("shellysense", THING_TYPE_SHELLYSENSE), //
-            Map.entry("shellyseye", THING_TYPE_SHELLYEYE), //
             Map.entry("shellybutton1", THING_TYPE_SHELLYBUTTON1), //
             Map.entry("shellybutton2", THING_TYPE_SHELLYBUTTON2), //
             Map.entry("shellyuni", THING_TYPE_SHELLYUNI), //
             Map.entry("shellymotion", THING_TYPE_SHELLYMOTION),
             Map.entry("shellymotionsensor", THING_TYPE_SHELLYMOTION),
-            Map.entry("shellymotion2", THING_TYPE_SHELLYMOTION), //
-            Map.entry("shellyeye", THING_TYPE_SHELLYEYE),
+            Map.entry("shellymotion2", THING_TYPE_SHELLYMOTION),
 
             // Shelly Plus Series
             Map.entry("shellyplus1", THING_TYPE_SHELLYPLUS1), //
@@ -609,10 +657,13 @@ public class ShellyDevices {
             Map.entry("shelly1pmg3", THING_TYPE_SHELLYPLUS1PM), //
             Map.entry("shelly1pmg4", THING_TYPE_SHELLYPLUS1PM), //
             Map.entry("shellyplus1l", THING_TYPE_SHELLYPLUS1L), //
+            Map.entry("shelly1lg4", THING_TYPE_SHELLYPLUS1L), //
             Map.entry("shellyplus2pm-relay", THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry("shellyplus2pm-roller", THING_TYPE_SHELLYPLUS2PM_ROLLER),
+            Map.entry("shelly2pmg4", THING_TYPE_SHELLYPLUS2PM_RELAY),
             Map.entry("shellyplusshutter", THING_TYPE_SHELLYPLUSSHUTTER),
             Map.entry("shellyplus2l", THING_TYPE_SHELLYPLUS2L), //
+            Map.entry("shelly2lg4", THING_TYPE_SHELLYPLUS2L), //
             Map.entry("shellyplugu1", THING_TYPE_SHELLYPLUGU1), //
             Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS), //
@@ -627,13 +678,18 @@ public class ShellyDevices {
             Map.entry("shellyplusi4dc", THING_TYPE_SHELLYPLUSI4DC), //
             Map.entry("shellyplusht", THING_TYPE_SHELLYPLUSHT), //
             Map.entry("shellyplussmoke", THING_TYPE_SHELLYPLUSSMOKE),
+            Map.entry("shellyplusflood", THING_TYPE_SHELLYPLUSFLOOD), //
+            Map.entry("shellyfloodg4", THING_TYPE_SHELLYPLUSFLOOD),
+            Map.entry("shellyfloodsg4", THING_TYPE_SHELLYPLUSFLOOD),
             Map.entry("shellyplusuni", THING_TYPE_SHELLYPLUSUNI),
             Map.entry("shellypluswdus", THING_TYPE_SHELLYPLUSDIMMERUS),
+            Map.entry("shellydimmerg4us", THING_TYPE_SHELLYPLUSDIMMERUS),
             Map.entry("shellyplus10v", THING_TYPE_SHELLYPLUSDIMMER10V),
             Map.entry("shellyplusdimmer", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellydimmerg3", THING_TYPE_SHELLYPLUSDIMMER),
             Map.entry("shellyprodm2pm", THING_TYPE_SHELLYPRODM2PM),
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
+            Map.entry("shellyprorgbwwpm", THING_TYPE_SHELLYPRORGBWWPM),
             Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
             Map.entry("shellyblugw", THING_TYPE_SHELLYPLUSBLUGW), //
             Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW), //
@@ -672,6 +728,12 @@ public class ShellyDevices {
             Map.entry("shellypro3em3ct63", THING_TYPE_SHELLYPRO3EM63), //
             Map.entry("shellypro3em400", THING_TYPE_SHELLYPRO3EM400),
 
+            // Shelly Gen3 Bulb Series - firmware mDNS name and thing-type-id alias both map to the same UID
+            Map.entry("shellyduobulbg3", THING_TYPE_SHELLYPLUSDUOBULB), //
+            Map.entry("shellyplusduobulb", THING_TYPE_SHELLYPLUSDUOBULB), //
+            Map.entry("shellycolorblbg3", THING_TYPE_SHELLYPLUSCOLORBULB), //
+            Map.entry("shellypluscolorbulb", THING_TYPE_SHELLYPLUSCOLORBULB), //
+
             // Shelly BLU Series
             Map.entry("shellyblubutton", THING_TYPE_SHELLYBLUBUTTON1), //
             Map.entry("shellybluwallswitch4", THING_TYPE_SHELLYBLUWALLSWITCH4), //
@@ -681,6 +743,12 @@ public class ShellyDevices {
             Map.entry("shellyblumotion", THING_TYPE_SHELLYBLUMOTION), //
             Map.entry("shellybludistance", THING_TYPE_SHELLYBLUDISTANCE), //
             Map.entry("shellybluremote", THING_TYPE_SHELLYBLUREMOTE), //
+            Map.entry("shellybluws90", THING_TYPE_SHELLYBLUWS90), //
+
+            // Presence sensor
+            Map.entry("shellypluspresence", THING_TYPE_SHELLYPLUSPRESENCE), //
+            Map.entry("shellypresenceg4", THING_TYPE_SHELLYPLUSPRESENCE), //
+            Map.entry("shellypresence", THING_TYPE_SHELLYPLUSPRESENCE), // older firmware
 
             // Password protected device
             Map.entry(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED));
@@ -691,12 +759,22 @@ public class ShellyDevices {
 
     // Number of meters, if they can't be auto-detected
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_METERS = Map.ofEntries( //
+            // no power metering, verified against shelly-api-docs.shelly.cloud
+            Map.entry(THING_TYPE_SHELLY1, 0), //
+            Map.entry(THING_TYPE_SHELLY1L, 0), //
+            Map.entry(THING_TYPE_SHELLYPLUS1, 0), //
+            Map.entry(THING_TYPE_SHELLYPRO1, 0), //
+            Map.entry(THING_TYPE_SHELLYMINI_1, 0), //
             Map.entry(THING_TYPE_SHELLYPRO2, 0), //
             Map.entry(THING_TYPE_SHELLYPRO3, 0), //
+            Map.entry(THING_TYPE_SHELLYPLUS1L, 0), //
+            Map.entry(THING_TYPE_SHELLYPLUS2L, 0), //
             Map.entry(THING_TYPE_SHELLYPROEM50, 2), //
             Map.entry(THING_TYPE_SHELLY3EM, 3), //
             Map.entry(THING_TYPE_SHELLYPLUS3EM63, 3), //
-            Map.entry(THING_TYPE_SHELLYPRO3EM, 3));
+            Map.entry(THING_TYPE_SHELLYPRO3EM, 3), //
+            Map.entry(THING_TYPE_SHELLYPRO3EM63, 3), //
+            Map.entry(THING_TYPE_SHELLYPRO3EM400, 3));
 
     // Number of inputs
     public static final Map<ThingTypeUID, Integer> THING_TYPE_CAP_NUM_INPUTS = Map.ofEntries( //
@@ -707,5 +785,6 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
             Map.entry(THING_TYPE_SHELLYBLUMOTION, 0), // button is inside the housing
             Map.entry(THING_TYPE_SHELLYBLUDISTANCE, 0), // button is inside the housing
-            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2));
+            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2), //
+            Map.entry(THING_TYPE_SHELLYBLUWS90, 0)); // no physical button
 }

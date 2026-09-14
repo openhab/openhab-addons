@@ -58,6 +58,10 @@ Setting less than 10 minutes is only allowed when using the private API. (Defaul
 Interval (minutes) in which aggregate data values are retrieved from SolarEdge.
 Setting less than 60 minutes is only allowed when using the private API. (Default: 60)
 
+- **batteryCriticalLevel** (optional)<br>
+Only for use with private API.
+Battery charge level below which the battery is considered critical. (Default: 10)
+
 ## Channels
 
 Available channels depend on the specific setup, e.g., if a meter and/or a battery is present.

@@ -29,7 +29,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -173,11 +172,25 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
     @Override
     public void refreshFromDevice(Sensor sensor) {
         super.refreshFromDevice(sensor);
+        updateSensorChannels(sensor);
+        // A full payload without isOpened means the sensor no longer reports contact state
+        // (e.g. its mount type changed); a latched OPEN/CLOSED would be stale
+        if (sensor.isOpened == null) {
+            updateContactChannel(CHANNEL_CONTACT, UnDefType.UNDEF);
+        }
+    }
+
+    /**
+     * Channel updates shared by the full refresh and partial WebSocket deltas — a delta omits
+     * unchanged fields, so absent values must leave channels alone.
+     */
+    void updateSensorChannels(Sensor sensor) {
         if (sensor.batteryStatus != null && sensor.batteryStatus.percentage != null) {
             updateDecimalChannel(CHANNEL_BATTERY, sensor.batteryStatus.percentage);
         }
-        updateContactChannel(CHANNEL_CONTACT, sensor.isOpened == null ? UnDefType.UNDEF
-                : sensor.isOpened ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+        if (sensor.isOpened != null) {
+            updateContactChannel(CHANNEL_CONTACT, sensor.isOpened ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+        }
         if (sensor.stats != null) {
             if (sensor.stats.temperature != null) {
                 updateDecimalChannel(CHANNEL_TEMPERATURE, sensor.stats.temperature.value);
@@ -188,9 +201,6 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
             if (sensor.stats.light != null) {
                 updateDecimalChannel(CHANNEL_ILLUMINANCE, sensor.stats.light.value);
             }
-        }
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 }

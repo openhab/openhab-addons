@@ -124,12 +124,10 @@ public class PLCDigitalHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
-            } else if ((command instanceof OpenClosedType) || (command instanceof OnOffType)) {
+            } else if (command instanceof OnOffType) {
                 final var buffer = new byte[1];
                 final var type = channel.getAcceptedItemType();
-                if (DIGITAL_INPUT_ITEM.equalsIgnoreCase(type)) {
-                    S7.SetBitAt(buffer, 0, 0, OpenClosedType.CLOSED.equals(command));
-                } else if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
+                if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
                     S7.SetBitAt(buffer, 0, 0, OnOffType.ON.equals(command));
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);

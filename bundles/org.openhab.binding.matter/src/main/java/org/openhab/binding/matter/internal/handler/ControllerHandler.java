@@ -166,7 +166,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
             BigInteger nodeId = handler.getNodeId();
             linkedNodes.put(nodeId, handler);
             // A freshly linked handler has no node data yet. Drop any "already enumerated" marker so the full data is
-            // actually (re)requested for it. Otherwise requestAllNodeDataIfNeeded skips the request for sleepy nodes
+            // actually (re)requested for it. Otherwise the reconnect handling skips the request for sleepy nodes
             // that were enumerated before their Thing existed (e.g. discovered via a scan), leaving the Thing online
             // but without any channels.
             enumeratedNodes.remove(nodeId);
@@ -243,14 +243,26 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
                 if (props != null) {
                     handlePhysicalProperties(message.nodeId, props);
                 }
-                updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                        translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
-                requestAllNodeDataIfNeeded(message.nodeId);
+                // Skip the expensive requestAllNodeData re-enumeration for sleepy/ICD nodes that have
+                // already been fully enumerated once in this session. Subsequent attribute changes arrive via
+                // matter.js subscriptions, so re-reading every cluster on every reconnect wastes radio time
+                // and is what drove the 2-3 minute offline/online flap on Thread door locks.
+                NodeHandler nodeHandler = linkedNodes.get(message.nodeId);
+                boolean skip = enumeratedNodes.contains(message.nodeId) && nodeHandler != null
+                        && !nodeHandler.shouldRefreshOnReconnect();
+                if (skip) {
+                    logger.debug("Skipping requestAllNodeData for {} (already enumerated, sleepy)", message.nodeId);
+                    updateEndpointStatuses(message.nodeId, ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                } else {
+                    updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                            translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
+                    requestAllNodeData(message.nodeId);
+                }
                 break;
             case STRUCTURECHANGED:
                 // A structure change means the node's endpoints/clusters changed, so the channels must be rebuilt
                 // from fresh data. Drop the "already enumerated" marker first: otherwise the data request that the
-                // reconnect's Connected event triggers is skipped for sleepy nodes (see requestAllNodeDataIfNeeded),
+                // reconnect's Connected event triggers is skipped for sleepy nodes,
                 // leaving the Thing online but with stale channels. Same marker handling as removeNode/dispose.
                 enumeratedNodes.remove(message.nodeId);
                 updateNode(message.nodeId);
@@ -431,23 +443,6 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     }
 
     /**
-     * Skip the expensive {@code requestAllNodeData} re-enumeration for sleepy/ICD nodes that have
-     * already been fully enumerated once in this session. Subsequent attribute changes arrive via
-     * matter.js subscriptions, so re-reading every cluster on every reconnect wastes radio time
-     * and is what drove the 2-3 minute offline/online flap on Thread door locks.
-     */
-    private void requestAllNodeDataIfNeeded(BigInteger nodeId) {
-        NodeHandler handler = linkedNodes.get(nodeId);
-        boolean skip = enumeratedNodes.contains(nodeId) && handler != null && !handler.shouldRefreshOnReconnect();
-        if (skip) {
-            logger.debug("Skipping requestAllNodeData for {} (already enumerated, sleepy)", nodeId);
-            updateEndpointStatuses(nodeId, ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
-            return;
-        }
-        requestAllNodeData(nodeId);
-    }
-
-    /**
      * Schedule the OFFLINE update for a node on a grace timer rather than firing immediately,
      * giving sleepy devices time to re-establish their CASE session. Idempotent within a
      * down-cycle: subsequent Reconnecting/WaitingForDeviceDiscovery ticks are no-ops so retransmit
@@ -579,7 +574,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     }
 
     private void updateEndpointStatuses(BigInteger nodeId, ThingStatus status, ThingStatusDetail detail,
-            String details) {
+            @Nullable String details) {
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
             if (handler instanceof NodeHandler endpointHandler) {

@@ -226,16 +226,19 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
             updateData.locationStates.stream().filter(locationState -> locationState.locationId.equals(door.id))
                     .findFirst().ifPresent(this::handleLocationState);
         }
-        super.handleDeviceUpdateV2(updateData);
+        // A door's online status follows its hub only; these updates are routed by location, so
+        // another device at this door (e.g. a reader) must not flip the door's status
+        String hubDeviceId = door.hubDeviceId;
+        if (hubDeviceId != null && hubDeviceId.equals(updateData.id)) {
+            super.handleDeviceUpdateV2(updateData);
+        }
     }
 
     // Door specific update methods
     protected void updateFromDoor(Door door) {
         logger.debug("Updating door state from door: {}", door);
         this.door = door;
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        // No status change here: the bridge poll sets ONLINE/OFFLINE from the door's hub state
         // Enrich thing properties
         Map<String, String> properties = new HashMap<>(editProperties());
         if (door.fullName != null) {

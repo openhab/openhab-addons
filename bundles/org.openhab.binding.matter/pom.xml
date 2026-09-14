@@ -23,12 +23,6 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>2.0.1</version>
-        <configuration>
-          <nodeVersion>v24.11.1</nodeVersion>
-          <npmVersion>11.6.2</npmVersion>
-        </configuration>
-
         <executions>
           <!-- Matter server webpack commands -->
           <execution>
@@ -49,7 +43,7 @@
             </goals>
             <configuration>
               <workingDirectory>matter-server</workingDirectory>
-              <arguments>install</arguments>
+              <arguments>ci</arguments>
             </configuration>
           </execution>
 
@@ -99,11 +93,6 @@
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
-            <version>2.0.1</version>
-            <configuration>
-              <nodeVersion>v24.11.1</nodeVersion>
-              <npmVersion>11.6.2</npmVersion>
-            </configuration>
             <executions>
               <execution>
                 <id>Install node and npm for codegen</id>
@@ -124,7 +113,7 @@
                 <phase>generate-sources</phase>
                 <configuration>
                   <workingDirectory>code-gen</workingDirectory>
-                  <arguments>install</arguments>
+                  <arguments>ci</arguments>
                 </configuration>
               </execution>
 

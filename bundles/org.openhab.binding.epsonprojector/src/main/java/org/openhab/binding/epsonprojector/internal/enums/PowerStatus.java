@@ -50,8 +50,4 @@ public enum PowerStatus {
             return UNKNOWN;
         }
     }
-
-    public int toInt() {
-        return value;
-    }
 }

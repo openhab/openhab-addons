@@ -28,6 +28,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -63,8 +64,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      */
     public ShellyRelayHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
+            final LocationProvider locationProvider) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
+                locationProvider);
     }
 
     @Override
@@ -135,13 +138,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
-            case CHANNEL_EMETER_RESETTOTAL:
-                String id = substringAfter(groupName, CHANNEL_GROUP_METER);
-                int mIdx = id.isEmpty() ? 0 : Integer.parseInt(id) - 1;
-                logger.debug("{}: Reset Meter Totals for meter {}", thingName, mIdx + 1);
-                api.resetMeterTotal(mIdx); // currently there is only 1 emdata component
-                updateChannel(groupName, CHANNEL_EMETER_RESETTOTAL, OnOffType.OFF);
-                break;
+
         }
         return true;
     }
@@ -188,16 +185,20 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     }
 
     private void updateBrightnessChannel(int lightId, OnOffType power, int brightness) throws ShellyApiException {
-        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", power);
+        String group = profile.getControlGroup(lightId);
+        int actualBrightness = brightness;
         if (brightness > 0) {
             api.setBrightness(lightId, brightness, config.getBrightnessAutoOn());
         } else {
-            api.setLightTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
-            if (brightness >= 0) { // ignore -1
-                updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
-                        toQuantityType((double) (power == OnOffType.ON ? brightness : 0), DIGITS_NONE, Units.PERCENT));
+            ShellyShortLightStatus light = api.setLightTurn(lightId,
+                    power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
+            if (brightness < 0) { // blind Switch command, brightness unknown -> use the device-reported value
+                actualBrightness = getInteger(light.brightness);
             }
         }
+        // single Percent update only; a linked Switch item still gets a correct ON/OFF state via core's conversion
+        updateChannel(group, CHANNEL_BRIGHTNESS + "$Value",
+                toQuantityType((double) (power == OnOffType.ON ? actualBrightness : 0), DIGITS_NONE, Units.PERCENT));
     }
 
     @Override

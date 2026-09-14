@@ -42,6 +42,7 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
@@ -128,7 +129,7 @@ class TestMessages {
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             pool.distributeData(content);
-            assertEquals(10, callback.numberOfUpdates(), "Number of state updates");
+            assertEquals(11, callback.numberOfUpdates(), "Number of state updates");
 
             State heater = callback.getState(CHANNEL_HEATER);
             assertNotNull(heater, "Heater available");
@@ -184,6 +185,57 @@ class TestMessages {
             QuantityType<?> targetTempQuantity = (QuantityType<?>) targetTemp;
             assertEquals(SIUnits.CELSIUS, targetTempQuantity.getUnit(), "Target water temperature unit");
             assertEquals(40, targetTempQuantity.doubleValue(), 0.1, "Target water temperature unit");
+        } catch (IOException e) {
+            fail("Error reading file " + fileName);
+        }
+    }
+
+    @Test
+    void whenFaultReportedThenFaultChannelContainsCode() {
+        // Arrange
+        Thing thing = new ThingImpl(THING_TYPE_POOL, new ThingUID("mspa", "pool"));
+        MSpaPool pool = new MSpaPool(thing, mock(UnitProvider.class), mock(MSpaCommandOptionProvider.class));
+        CallbackMock callback = new CallbackMock();
+        pool.setCallback(callback);
+        String fileName = "src/test/resources/F1-FaultResponse.json";
+
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+
+            // Act
+            pool.distributeData(content);
+
+            // Assert
+            State faultState = callback.getState(CHANNEL_FAULT);
+            assertNotNull(faultState, "Fault channel updated");
+            assertTrue(faultState instanceof StringType, "Fault channel StringType");
+            assertEquals("F1", faultState.toString(), "Fault channel contains fault code only, warning is ignored");
+            assertNull(callback.getThingStatus(), "Thing status is not touched by fault reporting");
+        } catch (IOException e) {
+            fail("Error reading file " + fileName);
+        }
+    }
+
+    @Test
+    void whenNoFaultReportedThenFaultChannelShowsNone() {
+        // Arrange
+        Thing thing = new ThingImpl(THING_TYPE_POOL, new ThingUID("mspa", "pool"));
+        MSpaPool pool = new MSpaPool(thing, mock(UnitProvider.class), mock(MSpaCommandOptionProvider.class));
+        CallbackMock callback = new CallbackMock();
+        pool.setCallback(callback);
+        String fileName = "src/test/resources/DataResponse.json";
+
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+
+            // Act
+            pool.distributeData(content);
+
+            // Assert
+            State faultState = callback.getState(CHANNEL_FAULT);
+            assertNotNull(faultState, "Fault channel updated");
+            assertEquals(FAULT_STATE_NONE, faultState.toString(), "Fault channel reports NONE when fault is blank");
+            assertNull(callback.getThingStatus(), "Thing status is not touched when fault is blank");
         } catch (IOException e) {
             fail("Error reading file " + fileName);
         }

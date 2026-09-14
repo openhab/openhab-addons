@@ -16,7 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import io.github.givimad.libfvadjni.VoiceActivityDetector;
+import io.github.jvoiceproject.libfvadjni.VoiceActivityDetector;
 
 /**
  * The {@link WhisperSTTConfiguration} class contains fields mapping thing configuration parameters.

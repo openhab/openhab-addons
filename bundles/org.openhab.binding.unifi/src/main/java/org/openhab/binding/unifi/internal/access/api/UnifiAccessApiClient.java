@@ -159,6 +159,23 @@ public final class UnifiAccessApiClient implements Closeable {
     private static final long BOOTSTRAP_CACHE_TTL_MS = 30_000; // 30 seconds
 
     /**
+     * True when the topology contains the floors section the doors/devices lists derive from;
+     * an absent section is an incomplete response, not an empty site.
+     */
+    public boolean isTopologyAuthoritative() throws UnifiAccessApiException {
+        JsonElement floors = getBootstrap().get("floors");
+        return floors != null && floors.isJsonArray();
+    }
+
+    /**
+     * Drop the cached bootstrap so the next sync fetches fresh topology, e.g. after a WebSocket
+     * event reports a device was deleted.
+     */
+    public synchronized void invalidateBootstrapCache() {
+        this.cachedBootstrap = null;
+    }
+
+    /**
      * Fetches the bootstrap topology from the v2 API.
      * Caches the result for 30 seconds to avoid redundant calls during a sync cycle.
      *

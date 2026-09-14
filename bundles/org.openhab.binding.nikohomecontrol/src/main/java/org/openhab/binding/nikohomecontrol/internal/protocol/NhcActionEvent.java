@@ -30,5 +30,5 @@ public interface NhcActionEvent extends NhcBaseEvent {
      *
      * @param state
      */
-    void actionEvent(int state);
+    void actionEvent(long state);
 }

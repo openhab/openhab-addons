@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
@@ -45,6 +46,7 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
@@ -60,11 +62,15 @@ import com.google.gson.reflect.TypeToken;
  * The {@link HttpRequestBuilder} creates customized requests for Alexa API requests
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Martin Littkovsky - Fail fast on throttled requests
  */
 @NonNullByDefault
 public class HttpRequestBuilder {
     private static final String DEFAULT_USER_AGENT = "AmazonWebView/Amazon Alexa/" + API_VERSION + "/iOS/"
             + DI_OS_VERSION + "/iPhone";
+    private static final String AMZN_ERROR_TYPE_HEADER = "x-amzn-ErrorType";
+    private static final String THROTTLING_EXCEPTION = "ThrottlingException";
+    private static final String NO_REASON_GIVEN = "no reason given";
 
     private final Logger logger = LoggerFactory.getLogger(HttpRequestBuilder.class);
 
@@ -100,16 +106,21 @@ public class HttpRequestBuilder {
         return new Builder(httpMethod, uriString);
     }
 
+    private static Optional<String> customHeader(RequestParams params, HttpHeader header) {
+        return params.customHeaders().entrySet().stream().filter(entry -> header.is(entry.getKey()))
+                .map(Map.Entry::getValue).filter(value -> !value.isBlank()).findFirst();
+    }
+
     private void createRequest(URI uri, RequestParams params, HttpResponseListener responseListener) {
         Request request = httpClient.newRequest(uri).method(params.method());
-        request.header(ACCEPT_LANGUAGE, "en-US");
+        request.header(ACCEPT_LANGUAGE, customHeader(params, ACCEPT_LANGUAGE).orElse("en-US"));
         request.header("DNT", "1");
         request.header("Upgrade-Insecure-Requests", "1");
-        if (!params.customHeaders().containsKey(USER_AGENT.toString())) {
-            request.agent(DEFAULT_USER_AGENT);
-        }
-        params.customHeaders().entrySet().stream().filter(h -> !h.getValue().isBlank())
-                .forEach(h -> request.header(h.getKey(), h.getValue()));
+        request.agent(customHeader(params, USER_AGENT).orElse(DEFAULT_USER_AGENT));
+        params.customHeaders().entrySet().stream()
+                .filter(header -> !header.getValue().isBlank() && !USER_AGENT.is(header.getKey())
+                        && !ACCEPT_LANGUAGE.is(header.getKey()))
+                .forEach(header -> request.header(header.getKey(), header.getValue()));
 
         // handle re-directs in response listener manually
         request.followRedirects(false);
@@ -304,11 +315,27 @@ public class HttpRequestBuilder {
         }
     }
 
-    private class HttpResponseListener extends BufferingResponseListener {
+    static boolean isThrottled(int responseStatus, @Nullable String amznErrorType) {
+        return responseStatus == TOO_MANY_REQUESTS_429
+                || (amznErrorType != null && amznErrorType.startsWith(THROTTLING_EXCEPTION));
+    }
+
+    static String abortedMessage(URI requestUri, @Nullable Throwable failure) {
+        String message = "Request to " + requestUri + " aborted";
+        return failure == null ? message : message + ": " + failure;
+    }
+
+    static String buildFailureReason(@Nullable String reason, @Nullable String amznErrorType) {
+        String statusReason = reason == null || reason.isBlank() ? NO_REASON_GIVEN : reason;
+        return amznErrorType == null || amznErrorType.isBlank() ? statusReason
+                : statusReason + " (" + AMZN_ERROR_TYPE_HEADER + ": " + amznErrorType + ")";
+    }
+
+    /** Package-private so that HttpRequestBuilderTest can drive onComplete() directly. */
+    class HttpResponseListener extends BufferingResponseListener {
         private static final int MAX_REDIRECTS = 30;
         private static final int MAX_RETRIES = 3;
 
-        private final Logger logger = LoggerFactory.getLogger(HttpResponseListener.class);
         private final CompletableFuture<HttpResponse> httpResponse;
         private final RequestParams params;
         private final boolean autoRedirect;
@@ -367,9 +394,11 @@ public class HttpRequestBuilder {
                 logger.debug("Redirected to {}", location);
                 if (!autoRedirect) {
                     httpResponse.complete(new HttpResponse(responseStatus, headers, content));
+                    return;
                 }
                 if (redirectCounter == 0) {
                     httpResponse.completeExceptionally(new ConnectionException("Too many redirects"));
+                    return;
                 }
                 createRequest(URI.create(location), params,
                         new HttpResponseListener(this, retryCounter, redirectCounter - 1));
@@ -378,12 +407,24 @@ public class HttpRequestBuilder {
                 // handle queue expired
                 httpResponse.completeExceptionally(new ConnectionException("Queue expired"));
             } else {
-                if (failMode == EXCEPTION || retryCounter == 0) {
+                // Amazon reports the real failure cause in the x-amzn-ErrorType header, the status
+                // line only carries a generic reason like "Bad Request"
+                String amznErrorType = headers.get(AMZN_ERROR_TYPE_HEADER);
+                if (amznErrorType != null && !amznErrorType.isBlank() && !logger.isTraceEnabled()) {
+                    logger.debug("< {} to {} failed: {}, x-amzn-ErrorType = {}", params.method(), requestUri,
+                            responseStatus, amznErrorType);
+                }
+                boolean throttled = isThrottled(responseStatus, amznErrorType);
+                // a throttled request is not retried: every retry is itself a counted request
+                if (failMode == EXCEPTION || retryCounter == 0 || (throttled && failMode != NORMAL)) {
                     if (responseStatus == 0) {
-                        httpResponse.completeExceptionally(new ConnectionException("Request aborted."));
+                        Throwable failure = result.getFailure();
+                        httpResponse.completeExceptionally(
+                                new ConnectionException(abortedMessage(requestUri, failure), failure));
+                        return;
                     }
-                    httpResponse.completeExceptionally(new ConnectionException(
-                            requestUri + " failed with code " + responseStatus + ": " + response.getReason()));
+                    httpResponse.completeExceptionally(new ConnectionException(requestUri + " failed with code "
+                            + responseStatus + ": " + buildFailureReason(response.getReason(), amznErrorType)));
                 } else if (failMode == NORMAL) {
                     httpResponse.complete(new HttpResponse(responseStatus, headers, content));
                 } else {
@@ -400,7 +441,7 @@ public class HttpRequestBuilder {
         }
     }
 
-    private record RequestParams(HttpMethod method, @Nullable String requestContent, boolean json,
+    record RequestParams(HttpMethod method, @Nullable String requestContent, boolean json,
             Map<String, String> customHeaders) {
         public boolean equals(@Nullable Object o) {
             if (this == o) {

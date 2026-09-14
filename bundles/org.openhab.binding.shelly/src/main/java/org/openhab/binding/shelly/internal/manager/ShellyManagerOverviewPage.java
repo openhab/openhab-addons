@@ -34,7 +34,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingStatus;
@@ -184,7 +184,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                         for (int i = versions.size() - 1; i >= 0; i--) {
                             FwArchEntry e = versions.get(i);
                             String version = getString(e.version);
-                            ShellyVersionDTO v = new ShellyVersionDTO();
+                            ShellyVersionComparator v = new ShellyVersionComparator();
                             if (!version.equalsIgnoreCase(pVersion) && !version.equalsIgnoreCase(bVersion)
                                     && (v.compare(version, SHELLY_API_MIN_FWCOIOT) >= 0)
                                     || version.contains("master")) {
@@ -247,7 +247,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                 return false;
             case FILTER_UPDATE:
                 // return handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE) == OnOffType.ON;
-                return getBool(profile.status.hasUpdate);
+                return getBool(profile.status.update.hasUpdate);
             case FILTER_UNPROTECTED:
                 if (profile.device.auth != null) {
                     return !profile.device.auth;

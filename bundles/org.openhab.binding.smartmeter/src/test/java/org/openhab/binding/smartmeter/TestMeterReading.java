@@ -12,20 +12,25 @@
  */
 package org.openhab.binding.smartmeter;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openhab.binding.smartmeter.connectors.ConnectorBase;
 import org.openhab.binding.smartmeter.connectors.IMeterReaderConnector;
@@ -47,90 +52,154 @@ import io.reactivex.plugins.RxJavaPlugins;
 @NonNullByDefault
 public class TestMeterReading {
 
+    private static final Duration OUTER_RETRY_DELAY = Duration.ofSeconds(2);
+
+    private RetrySuppressingExecutor createRetrySuppressingExecutor(int threadCount) {
+        return new RetrySuppressingExecutor(threadCount, OUTER_RETRY_DELAY);
+    }
+
+    private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration READ_PERIOD = Duration.ofMillis(100);
+
+    @AfterEach
+    public void resetRxJavaPlugins() {
+        RxJavaPlugins.reset();
+    }
+
     @Test
-    public void testContinousReading() throws Exception {
-        final Duration period = Duration.ofSeconds(1);
+    public void testContinuousReading() {
         final int executionCount = 5;
         MockMeterReaderConnector connector = getMockedConnector(false, () -> new Object());
         MeterDevice<Object> meter = getMeterDevice(connector);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
+        CountDownLatch valuesChanged = new CountDownLatch(executionCount);
+        RetrySuppressingExecutor executorService = createRetrySuppressingExecutor(1);
+
+        doAnswer(invocation -> {
+            valuesChanged.countDown();
+            return null;
+        }).when(changeListener).valueChanged(any());
         meter.addValueChangeListener(changeListener);
-        long executionTime = period.toMillis() * executionCount;
-        Disposable disposable = meter.readValues(executionTime, Executors.newScheduledThreadPool(1), period);
+
+        Disposable disposable = meter.readValues(EVENT_TIMEOUT.toMillis(), executorService, READ_PERIOD);
+
         try {
-            verify(changeListener, after(executionTime + period.toMillis() / 2 + 50).never()).errorOccurred(any());
-            verify(changeListener, times(executionCount)).valueChanged(any());
+            await(valuesChanged, "Did not receive the expected meter values");
+            executorService.suppressNextRetry();
         } finally {
-            disposable.dispose();
+            dispose(disposable, executorService);
         }
+
+        verify(changeListener, atLeast(executionCount)).valueChanged(any());
+        verify(changeListener, never()).errorOccurred(any());
     }
 
     @Test
     public void testRetryHandling() {
-        final Duration period = Duration.ofSeconds(1);
         MockMeterReaderConnector connector = spy(getMockedConnector(true, () -> {
             throw new IllegalArgumentException();
         }));
         MeterDevice<Object> meter = getMeterDevice(connector);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
+        CountDownLatch readingError = new CountDownLatch(1);
+        RetrySuppressingExecutor executorService = createRetrySuppressingExecutor(1);
+
+        doAnswer(invocation -> {
+            executorService.suppressNextRetry();
+            readingError.countDown();
+            return null;
+        }).when(changeListener).errorOccurred(any());
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(5000, Executors.newScheduledThreadPool(1), period);
+
+        Disposable disposable = meter.readValues(EVENT_TIMEOUT.toMillis(), executorService, READ_PERIOD);
+
         try {
-            verify(changeListener, after(
-                    period.toMillis() + 2 * period.toMillis() * ConnectorBase.NUMBER_OF_RETRIES + period.toMillis() / 2)
-                    .times(1)).errorOccurred(any());
-            verify(connector, times(ConnectorBase.NUMBER_OF_RETRIES)).retryHook(ArgumentMatchers.anyInt());
+            await(readingError, "Did not receive the expected reading error");
+            executorService.awaitRetrySuppressed(EVENT_TIMEOUT);
         } finally {
-            disposable.dispose();
+            dispose(disposable, executorService);
         }
+
+        verify(changeListener, times(1)).errorOccurred(any());
+        verify(connector, times(ConnectorBase.NUMBER_OF_RETRIES)).retryHook(anyInt());
     }
 
     @Test
     public void testTimeoutHandling() {
-        final Duration period = Duration.ofSeconds(2);
-        final int timeout = 5000;
+        final int timeout = 1000;
+        CountDownLatch readStarted = new CountDownLatch(1);
+        CountDownLatch releaseRead = new CountDownLatch(1);
         MockMeterReaderConnector connector = spy(getMockedConnector(true, () -> {
-            try {
-                Thread.sleep(timeout);
-            } catch (InterruptedException e) {
-            }
+            readStarted.countDown();
+            awaitUninterruptibly(releaseRead);
             return new Object();
         }));
         MeterDevice<Object> meter = getMeterDevice(connector);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
+        CountDownLatch timeoutOccurred = new CountDownLatch(1);
+        RetrySuppressingExecutor executorService = createRetrySuppressingExecutor(2);
+
+        doAnswer(invocation -> {
+            executorService.suppressNextRetry();
+            timeoutOccurred.countDown();
+            return null;
+        }).when(changeListener).errorOccurred(any());
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(timeout / 2, Executors.newScheduledThreadPool(2), period);
+
+        Disposable disposable = meter.readValues(timeout, executorService, Duration.ZERO);
+
         try {
-            verify(changeListener, timeout(timeout)).errorOccurred(any(TimeoutException.class));
+            await(readStarted, "The meter read did not start");
+            await(timeoutOccurred, "The meter read did not time out");
+            executorService.awaitRetrySuppressed(EVENT_TIMEOUT);
         } finally {
-            disposable.dispose();
+            releaseRead.countDown();
+            dispose(disposable, executorService);
         }
+
+        verify(changeListener, times(1)).errorOccurred(any(TimeoutException.class));
     }
 
     @Test
     public void shouldNotReportToFallbackException() {
-        final Duration period = Duration.ofSeconds(2);
-        final int timeout = 5000;
+        final int timeout = 1000;
+        CountDownLatch readStarted = new CountDownLatch(1);
+        CountDownLatch releaseRead = new CountDownLatch(1);
+        RetrySuppressingExecutor executorService = createRetrySuppressingExecutor(2);
         MockMeterReaderConnector connector = spy(getMockedConnector(true, () -> {
-            try {
-                Thread.sleep(timeout);
-            } catch (InterruptedException e) {
-            }
-            throw new RuntimeException(new IOException("fucked up"));
+            executorService.markSourceTask();
+            readStarted.countDown();
+            awaitUninterruptibly(releaseRead);
+            throw new UncheckedIOException(new IOException("simulated read failure"));
         }));
         MeterDevice<Object> meter = getMeterDevice(connector);
         @SuppressWarnings("unchecked")
         Consumer<Throwable> errorHandler = mock(Consumer.class);
         RxJavaPlugins.setErrorHandler(errorHandler);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
+        CountDownLatch timeoutOccurred = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            executorService.suppressNextRetry();
+            timeoutOccurred.countDown();
+            return null;
+        }).when(changeListener).errorOccurred(any());
         meter.addValueChangeListener(changeListener);
-        Disposable disposable = meter.readValues(timeout / 2, Executors.newScheduledThreadPool(2), period);
+
+        Disposable disposable = meter.readValues(timeout, executorService, Duration.ZERO);
+
         try {
-            verify(changeListener, timeout(timeout)).errorOccurred(any(TimeoutException.class));
-            verifyNoMoreInteractions(errorHandler);
+            await(readStarted, "The meter read did not start");
+            await(timeoutOccurred, "The meter read did not time out");
+            executorService.awaitRetrySuppressed(EVENT_TIMEOUT);
+            releaseRead.countDown();
+            executorService.awaitSourceTaskFinished(EVENT_TIMEOUT);
         } finally {
-            disposable.dispose();
+            releaseRead.countDown();
+            dispose(disposable, executorService);
         }
+
+        verify(changeListener, times(1)).errorOccurred(any(TimeoutException.class));
+        verifyNoInteractions(errorHandler);
     }
 
     MockMeterReaderConnector getMockedConnector(boolean applyRetry, Supplier<Object> readNextSupplier) {
@@ -153,5 +222,41 @@ public class TestMeterReading {
                 addObisCache(new MeterValue("123", "333", null));
             }
         };
+    }
+
+    private void await(CountDownLatch latch, String failureMessage) {
+        try {
+            assertTrue(latch.await(EVENT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS), failureMessage);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new AssertionError("Interrupted while waiting for an asynchronous test event", e);
+        }
+    }
+
+    private void awaitUninterruptibly(CountDownLatch latch) {
+        boolean interrupted = false;
+        while (true) {
+            try {
+                latch.await();
+                break;
+            } catch (InterruptedException e) {
+                interrupted = true;
+            }
+        }
+        if (interrupted) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void dispose(Disposable disposable, ScheduledExecutorService executorService) {
+        disposable.dispose();
+        executorService.shutdownNow();
+        try {
+            assertTrue(executorService.awaitTermination(EVENT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS),
+                    "Executor did not terminate");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new AssertionError("Interrupted while terminating the executor", e);
+        }
     }
 }

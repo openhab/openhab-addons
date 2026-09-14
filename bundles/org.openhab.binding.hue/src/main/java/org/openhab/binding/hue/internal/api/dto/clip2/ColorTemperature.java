@@ -16,7 +16,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -30,20 +29,20 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ColorTemperature {
     private @Nullable Long mirek;
+    private @Nullable @SerializedName("mirek_valid") Boolean mirekValid;
     private @Nullable @SerializedName("mirek_schema") MirekSchema mirekSchema;
 
     /**
      * Get the color temperature as a QuantityType value.
      *
      * @return a QuantityType value
-     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
      */
-    public @Nullable QuantityType<?> getAbsolute() throws DTOPresentButEmptyException {
+    public @Nullable QuantityType<?> getAbsolute() {
         Long mirek = this.mirek;
         if (Objects.nonNull(mirek)) {
             return QuantityType.valueOf(mirek, Units.MIRED).toInvertibleUnit(Units.KELVIN);
         }
-        throw new DTOPresentButEmptyException("'color_temperature' DTO is present but empty");
+        return null;
     }
 
     public @Nullable Long getMirek() {
@@ -54,33 +53,23 @@ public class ColorTemperature {
         return mirekSchema;
     }
 
-    /**
-     * Get the color temperature as a percentage based on the MirekSchema. Note: this method is only to be used on
-     * cached state DTOs which already have a defined mirek schema.
-     *
-     * @return the percentage of the mirekSchema range.
-     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
-     */
-    public @Nullable Double getPercent() throws DTOPresentButEmptyException {
-        Long mirek = this.mirek;
-        if (Objects.nonNull(mirek)) {
-            MirekSchema mirekSchema = this.mirekSchema;
-            mirekSchema = Objects.nonNull(mirekSchema) ? mirekSchema : MirekSchema.DEFAULT_SCHEMA;
-            double min = mirekSchema.getMirekMinimum();
-            double max = mirekSchema.getMirekMaximum();
-            double percent = 100f * (mirek.doubleValue() - min) / (max - min);
-            return Math.max(0, Math.min(100, percent));
-        }
-        throw new DTOPresentButEmptyException("'mirek_schema' DTO is present but empty");
+    public boolean isMirekValid() {
+        Boolean mirekValid = this.mirekValid;
+        return mirekValid != null ? mirekValid && (mirek != null) : false;
     }
 
-    public ColorTemperature setMirek(double mirek) {
-        this.mirek = Math.round(mirek);
+    public ColorTemperature setMirek(@Nullable Long mirek) {
+        this.mirek = mirek;
         return this;
     }
 
     public ColorTemperature setMirekSchema(@Nullable MirekSchema mirekSchema) {
         this.mirekSchema = mirekSchema;
         return this;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return (obj instanceof ColorTemperature c && mirek instanceof Long m) ? m.equals(c.getMirek()) : false;
     }
 }

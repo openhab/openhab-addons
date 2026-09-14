@@ -221,12 +221,16 @@ public class UnifiAccessNotificationRouter {
                 dh.triggerLogInsight(payload);
             }
         }
-        // route to specific device if referenced
-        String deviceId = data.metadata != null && data.metadata.device != null ? data.metadata.device.id : null;
-        if (deviceId != null) {
-            UnifiAccessDeviceHandler d = bridgeHandler.getDeviceHandler(deviceId);
-            if (d != null) {
-                d.triggerLogInsight(payload);
+        // route to each referenced device (the event lists e.g. the hub and the reader)
+        if (data.metadata != null && data.metadata.device != null) {
+            for (Notification.BaseReference dev : data.metadata.device) {
+                String deviceId = dev != null ? dev.id : null;
+                if (deviceId != null) {
+                    UnifiAccessDeviceHandler d = bridgeHandler.getDeviceHandler(deviceId);
+                    if (d != null) {
+                        d.triggerLogInsight(payload);
+                    }
+                }
             }
         }
     }
@@ -294,10 +298,16 @@ public class UnifiAccessNotificationRouter {
     private void handleDeviceDeleteEvent(Notification notification) {
         String deviceId = notification.eventObjectId;
         if (deviceId != null) {
+            // The topology changed; a cached bootstrap would resurrect the deleted device on
+            // the next sync within the cache TTL
+            var apiClient = bridgeHandler.getApiClient();
+            if (apiClient != null) {
+                apiClient.invalidateBootstrapCache();
+            }
             UnifiAccessBaseHandler bh = bridgeHandler.getBaseHandler(deviceId);
             if (bh != null) {
                 bh.updateStatus(org.openhab.core.thing.ThingStatus.OFFLINE,
-                        org.openhab.core.thing.ThingStatusDetail.GONE, "Device removed from controller");
+                        org.openhab.core.thing.ThingStatusDetail.GONE, "@text/offline.access-gone");
             }
         }
     }

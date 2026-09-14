@@ -388,7 +388,7 @@ then
         if (userCodeTimer != null) {
             userCodeTime.cancel
         }
-        userCodeTimer = createTimer(now.plusMinutes(10)) [|
+        userCodeTimer = createTimer(now.plusMinutes(10)) [
             logInfo("Keypad", "Reverting user code")
             USER_CODE.sendCommand("")
         ]
@@ -403,7 +403,7 @@ then
     if (keypadTimer != null) {
         keypadTimer.cancel
     }
-    keypadTimer = createTimer(timeout) [|
+    keypadTimer = createTimer(timeout) [
         userCode = ""
         KEYPAD_CHAR.postUpdate("")
     ]

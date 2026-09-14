@@ -79,9 +79,6 @@ public class StatusResultDTO {
     @SerializedName("remote")
     public String remote;
 
-    @SerializedName("repeating_stream")
-    public Integer repeatingStream;
-
     @SerializedName("seq_no")
     public Integer sequenceNumber;
 

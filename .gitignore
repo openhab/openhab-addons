@@ -9,6 +9,7 @@
 
 .metadata/
 bin/
+generated/
 target/
 src-gen/
 xtend-gen/

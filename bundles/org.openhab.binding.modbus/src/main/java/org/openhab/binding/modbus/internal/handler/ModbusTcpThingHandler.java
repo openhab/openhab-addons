@@ -54,13 +54,14 @@ public class ModbusTcpThingHandler
         endpoint = new ModbusTCPSlaveEndpoint(host, config.getPort(), config.getRtuEncoded());
 
         EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
-        this.poolConfiguration = poolConfiguration;
         poolConfiguration.setConnectMaxTries(config.getConnectMaxTries());
         poolConfiguration.setAfterConnectionDelayMillis(config.getAfterConnectionDelayMillis());
         poolConfiguration.setConnectTimeoutMillis(config.getConnectTimeoutMillis());
         poolConfiguration.setInterConnectDelayMillis(config.getTimeBetweenReconnectMillis());
         poolConfiguration.setInterTransactionDelayMillis(config.getTimeBetweenTransactionsMillis());
         poolConfiguration.setReconnectAfterMillis(config.getReconnectAfterMillis());
+        poolConfiguration.setReceiveTimeoutMillis(config.getReceiveTimeoutMillis());
+        this.poolConfiguration = poolConfiguration;
     }
 
     @SuppressWarnings("null") // since Optional.map is always called with NonNull argument

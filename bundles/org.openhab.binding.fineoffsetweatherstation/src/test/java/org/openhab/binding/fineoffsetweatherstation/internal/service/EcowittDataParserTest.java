@@ -35,6 +35,7 @@ import org.openhab.core.library.types.DateTimeType;
  * Tests the {@link EcowittDataParser} against payloads captured from a real gateway (GW1200A, firmware V1.4.7).
  *
  * @author Andreas Berger - Initial contribution
+ * @author Giovanni Fabiani - Add support for WS85 sensor
  */
 @NonNullByDefault
 class EcowittDataParserTest {
@@ -136,11 +137,15 @@ class EcowittDataParserTest {
         // API reports it already as a 0-5 level (5 = full). It must therefore not be misread as 0.5 V and flagged low.
         Map<SensorGatewayBinding, SensorDevice> sensors = parser.parseSensors(List.of("[{\"img\":\"wh51\","
                 + "\"type\":\"14\",\"name\":\"Soil moisture CH1\",\"id\":\"FBF08\",\"batt\":\"5\",\"rssi\":\"-85\","
-                + "\"signal\":\"4\",\"idst\":\"1\"}]"), false);
+                + "\"signal\":\"4\",\"idst\":\"1\"}]",
+                "[{\"img\":\"wh85\","
+                        + "\"type\":\"49\",\"name\":\"Wind & Rain\",\"id\":\"2C75\",\"batt\":\"5\",\"rssi\":\"-85\","
+                        + "\"signal\":\"4\",\"idst\":\"1\"}]"),
+                false);
         Assertions.assertThat(sensors.values())
                 .extracting(device -> device.getSensorGatewayBinding().getSensor().name(),
                         device -> device.getBatteryStatus().isLow(), device -> device.getBatteryStatus().getLevel())
-                .containsExactly(new Tuple("WH51", false, 5));
+                .containsExactly(new Tuple("WH51", false, 5), new Tuple("WS85", false, 5));
     }
 
     @Test

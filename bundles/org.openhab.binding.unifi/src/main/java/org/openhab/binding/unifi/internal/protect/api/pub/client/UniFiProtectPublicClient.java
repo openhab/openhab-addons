@@ -46,8 +46,10 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.ApiValueEnum;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.AssetFileType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.Camera;
@@ -508,8 +510,9 @@ public class UniFiProtectPublicClient implements Closeable {
                 upgrade.setHeader(h.getKey(), h.getValue());
             }
 
-            future.complete(wsClient.connect(new WebSocketAdapter() {
+            class WsAdapter extends WebSocketAdapter implements WebSocketPingPongListener {
                 private @Nullable ScheduledFuture<?> heartbeatTask;
+                private volatile long lastActivityMs;
 
                 @Override
                 public void onWebSocketConnect(@Nullable Session session) {
@@ -518,17 +521,25 @@ public class UniFiProtectPublicClient implements Closeable {
                         return;
                     }
                     super.onWebSocketConnect(session);
-                    // Schedule periodic ping frames as heartbeat
+                    lastActivityMs = System.currentTimeMillis();
+                    // A write-only ping does not fail on a half-open socket, so liveness is
+                    // judged on frames *received*.
                     heartbeatTask = executorService.scheduleWithFixedDelay(() -> {
+                        Session s = getSession();
+                        if (s == null || !s.isOpen()) {
+                            return;
+                        }
+                        long silentMs = System.currentTimeMillis() - lastActivityMs;
+                        if (silentMs > UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS) {
+                            logger.debug("No WebSocket frames received in {} ms; closing to reconnect", silentMs);
+                            s.close(1001, "No data received");
+                            return;
+                        }
                         try {
-                            Session s = getSession();
-                            if (s != null && s.isOpen()) {
-                                s.getRemote().sendPing(ByteBuffer.allocate(0));
-                            }
+                            s.getRemote().sendPing(ByteBuffer.allocate(0));
                         } catch (IOException e) {
                             logger.debug("WebSocket heartbeat ping failed", e);
-                            session.close(1000, "WebSocket heartbeat ping failed");
-                            throw new IllegalStateException("WebSocket heartbeat ping failed", e);
+                            s.close(1000, "WebSocket heartbeat ping failed");
                         }
                     }, 30, 30, TimeUnit.SECONDS);
                     logger.debug("WebSocket connected: {}", wsUri);
@@ -538,6 +549,7 @@ public class UniFiProtectPublicClient implements Closeable {
 
                 @Override
                 public void onWebSocketText(@Nullable String message) {
+                    lastActivityMs = System.currentTimeMillis();
                     if (message != null) {
                         onText.accept(message);
                     }
@@ -562,7 +574,18 @@ public class UniFiProtectPublicClient implements Closeable {
                     onClosed.accept(statusCode, reason != null ? reason : "");
                     super.onWebSocketClose(statusCode, reason);
                 }
-            }, wsUri, upgrade).get());
+
+                @Override
+                public void onWebSocketPong(@Nullable ByteBuffer payload) {
+                    lastActivityMs = System.currentTimeMillis();
+                }
+
+                @Override
+                public void onWebSocketPing(@Nullable ByteBuffer payload) {
+                    lastActivityMs = System.currentTimeMillis();
+                }
+            }
+            future.complete(wsClient.connect(new WsAdapter(), wsUri, upgrade).get());
         } catch (Exception e) {
             future.completeExceptionally(e);
         }

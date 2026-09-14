@@ -76,7 +76,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     public void initialize() {
         super.initialize();
 
-        PlayerConfiguration configuration = thing.getConfiguration().as(PlayerConfiguration.class);
+        PlayerConfiguration configuration = getConfigAs(PlayerConfiguration.class);
         pid = configuration.pid;
 
         cancel(scheduledFuture);

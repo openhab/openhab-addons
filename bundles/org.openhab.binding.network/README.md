@@ -9,7 +9,7 @@ It is also capable to perform bandwidth speed tests.
 
 The binding has the following configuration options:
 
-- **allowSystemPings:** Use the external ICMP ping program of the operating system instead of the Java ping. Useful if the devices cannot be reached by Java ping. Default is true.
+- **allowSystemPings:** Allows or disallows using system pings instead of the Java integrated ping functionality. On Windows the system ping works more reliably most of the time. Default is true.
 - **allowDHCPlisten:**  If devices leave and reenter a network, they usually request their last IPv4 address by using DHCP requests. By listening for those messages, the status update can be more "real-time" without having to wait for the next refresh cycle. Default is true.
 - **arpPingToolPath:** If the ARP ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
 - **cacheDeviceStateTimeInMS:** The result of a device presence detection is cached for a small amount of time. Set this time here in milliseconds. Be aware that no new pings will be issued within this time frame, even if explicitly requested. Default is 2000.

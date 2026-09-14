@@ -267,7 +267,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private void startDiscoverJob() {
         ScheduledFuture<?> job = discoverJob;
         if (job == null || job.isCancelled()) {
-            int discoverInterval = thing.getConfiguration().as(FineOffsetGatewayConfiguration.class).discoverInterval;
+            int discoverInterval = getConfigAs(FineOffsetGatewayConfiguration.class).discoverInterval;
             discoverJob = scheduler.scheduleWithFixedDelay(this::fetchAndUpdateSensors, 0, discoverInterval,
                     TimeUnit.SECONDS);
         }
@@ -284,7 +284,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private void startPollingJob() {
         ScheduledFuture<?> job = pollingJob;
         if (job == null || job.isCancelled()) {
-            int pollingInterval = thing.getConfiguration().as(FineOffsetGatewayConfiguration.class).pollingInterval;
+            int pollingInterval = getConfigAs(FineOffsetGatewayConfiguration.class).pollingInterval;
             pollingJob = scheduler.scheduleWithFixedDelay(this::updateLiveData, 5, pollingInterval, TimeUnit.SECONDS);
         }
     }

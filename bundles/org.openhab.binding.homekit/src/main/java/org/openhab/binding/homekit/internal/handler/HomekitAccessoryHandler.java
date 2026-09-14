@@ -168,7 +168,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     /**
      * Converts an openHAB Command to a suitable object for writing to a HomeKit characteristic.
      * It handles various conversions including unit conversion, clamping to min/max values,
-     * and converting specific types like OnOffType and OpenClosedType to boolean.
+     * and converting specific types like OnOffType to boolean.
      *
      * @param command the command to convert
      * @param channel the channel for which the command is being converted
@@ -185,8 +185,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 object = new PercentType(100 - percent.intValue());
             } else if (object instanceof OnOffType onOff) {
                 object = onOff == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
-            } else if (object instanceof OpenClosedType openClosed) {
-                object = openClosed == OpenClosedType.OPEN ? PercentType.HUNDRED : PercentType.ZERO;
             } else if (object instanceof UpDownType upDown) {
                 object = upDown == UpDownType.UP ? PercentType.HUNDRED : PercentType.ZERO;
             }
@@ -251,11 +249,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         // convert on/off to boolean
         if (object instanceof OnOffType onOff) {
             object = Boolean.valueOf(onOff == OnOffType.ON);
-        }
-
-        // convert open/closed to boolean
-        if (object instanceof OpenClosedType openClosed) {
-            object = Boolean.valueOf(openClosed == OpenClosedType.OPEN);
         }
 
         // convert datetime to string

@@ -166,7 +166,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration().as(SmartthingsThingConfig.class);
+        config = getConfigAs(SmartthingsThingConfig.class);
         if (!validateConfig(config)) {
             return;
         }
@@ -208,9 +208,10 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         converterClassName.append(converterName.substring(1));
         converterClassName.append("Converter");
         try {
-            Constructor<?> constr = Class.forName(converterClassName.toString()).getDeclaredConstructor(Thing.class);
+            Constructor<?> constr = Class.forName(converterClassName.toString())
+                    .getDeclaredConstructor(SmartthingsThingConfig.class, String.class);
             constr.setAccessible(true);
-            return (SmartthingsConverter) constr.newInstance(thing);
+            return (SmartthingsConverter) constr.newInstance(config, thing.getThingTypeUID().getId());
         } catch (ClassNotFoundException e) {
             // Most of the time there is no channel specific converter, the default converter is all that is needed.
             logger.trace("No Custom converter exists for {} ({})", converterName, converterClassName);

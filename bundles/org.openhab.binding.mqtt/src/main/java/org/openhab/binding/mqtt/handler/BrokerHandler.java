@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.handler;
 
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -218,8 +219,8 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         final String topic = config.lwtTopic;
         if (topic != null) {
             final String msg = config.lwtMessage;
-            MqttWillAndTestament will = new MqttWillAndTestament(topic, msg != null ? msg.getBytes() : null,
-                    config.lwtQos, config.lwtRetain);
+            MqttWillAndTestament will = new MqttWillAndTestament(topic,
+                    msg != null ? msg.getBytes(StandardCharsets.UTF_8) : null, config.lwtQos, config.lwtRetain);
             connection.setLastWill(will);
         }
 
@@ -256,6 +257,6 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             return CompletableFuture.completedFuture(true);
         }
         String nonNullMessage = message != null ? message : "";
-        return connection.publish(topic, nonNullMessage.getBytes(), connection.getQos(), retain);
+        return connection.publish(topic, nonNullMessage.getBytes(StandardCharsets.UTF_8), connection.getQos(), retain);
     }
 }

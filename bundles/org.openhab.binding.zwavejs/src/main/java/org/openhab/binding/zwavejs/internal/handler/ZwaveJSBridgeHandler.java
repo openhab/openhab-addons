@@ -177,9 +177,13 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                     }
                     break;
                 case "value updated":
-                case "value notification":
                     if (nodeListener != null) {
                         nodeListener.onNodeStateChanged(eventMsg.event);
+                    }
+                    break;
+                case "value notification":
+                    if (nodeListener != null) {
+                        nodeListener.onNodeStateChanged(normalizeValueNotification(eventMsg.event));
                     }
                     break;
                 case "alive":
@@ -225,6 +229,21 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         normalizedEvent.args.newValue = new Gson().toJson(event.args);
         normalizedEvent.nodeId = event.nodeId;
         return normalizedEvent;
+    }
+
+    /**
+     * "value notification" events report stateless CC values (e.g. Central Scene or Scene Activation).
+     * Unlike "value updated" events they carry the datum in {@code args.value}; copy it to
+     * {@code args.newValue} so downstream handling is identical for both event types.
+     *
+     * @param event the incoming value notification event
+     * @return the same event with {@code args.newValue} populated
+     */
+    static Event normalizeValueNotification(Event event) {
+        if (event.args != null && event.args.newValue == null) {
+            event.args.newValue = event.args.value;
+        }
+        return event;
     }
 
     private @Nullable Event createEventFromMessageId(String messageId, @Nullable Object value) {
@@ -410,11 +429,21 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                 .toArray();
     }
 
-    private static Object convertValueType(String value) {
+    /**
+     * Converts a string value to a Boolean, Double or String, in that order of precedence.
+     * Package-private (rather than private) so it can be unit tested directly.
+     */
+    static Object convertValueType(String value) {
+        String trimmed = value.trim();
+
+        if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) {
+            return Boolean.parseBoolean(trimmed);
+        }
+
         try {
-            return Double.parseDouble(value.trim());
+            return Double.parseDouble(trimmed);
         } catch (NumberFormatException e) {
-            return value;
+            return trimmed;
         }
     }
 }

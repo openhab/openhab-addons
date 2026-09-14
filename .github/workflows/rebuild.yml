@@ -50,16 +50,9 @@ jobs:
         echo "$GITHUB"
 
     - name: Checkout
-      if: ${{ github.head_ref == '' && env.LABEL == 'rebuild' }}
+      if: ${{ env.LABEL == 'rebuild' }}
       uses: actions/checkout@v7
       with:
-        persist-credentials: false
-
-    - name: Checkout merge
-      if: ${{ github.head_ref != '' && env.LABEL == 'rebuild' }}
-      uses: actions/checkout@v7
-      with:
-        ref: refs/pull/${{github.event.pull_request.number}}/merge
         persist-credentials: false
 
     - name: List Jobs

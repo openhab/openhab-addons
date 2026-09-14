@@ -41,6 +41,10 @@
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>duid</representation-property>
 
 		<config-description>
@@ -158,6 +162,7 @@
 			<channel id="segment-status" typeId="segment-status"/>
 			<channel id="map-status" typeId="map-status"/>
 			<channel id="led-status" typeId="led-status"/>
+			<channel id="current-room" typeId="current-room"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -381,6 +386,17 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-room">
+		<item-type>String</item-type>
+		<label>Current Room</label>
+		<description>Name of the room the robot is currently in, resolved from the live map segment at the robot's position.
+			While the robot is docked, the channel reflects the room of the charging dock.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Dynamic Status Channels -->
@@ -682,10 +698,10 @@
 		<state>
 			<options>
 				<option value="none">Select Consumable</option>
-				<option value="main-brush-work-time">Reset Mainbrush</option>
-				<option value="side-brush-work-time">Reset Sidebrush</option>
-				<option value="filter-work-time">Reset Filter</option>
-				<option value="sensor-dirty-time">Reset Sensors</option>
+				<option value="main_brush_work_time">Reset Mainbrush</option>
+				<option value="side_brush_work_time">Reset Sidebrush</option>
+				<option value="filter_work_time">Reset Filter</option>
+				<option value="sensor_dirty_time">Reset Sensors</option>
 			</options>
 		</state>
 	</channel-type>

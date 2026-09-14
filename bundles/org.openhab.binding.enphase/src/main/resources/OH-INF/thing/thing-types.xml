@@ -84,6 +84,10 @@
 			<channel id="lastReportWatts" typeId="last-report-watts"/>
 			<channel id="maxReportWatts" typeId="max-report-watts"/>
 			<channel id="lastReportDate" typeId="last-report-date"/>
+			<channel id="wattHoursToday" typeId="watt-hours-today"/>
+			<channel id="wattHoursSevenDays" typeId="watt-hours-seven-days"/>
+			<channel id="wattHoursLifetime" typeId="watt-hours-lifetime"/>
+			<channel id="wattsNow" typeId="watts-now"/>
 			<channel id="status" typeId="status"/>
 			<channel id="producing" typeId="producing"/>
 			<channel id="communicating" typeId="communicating"/>

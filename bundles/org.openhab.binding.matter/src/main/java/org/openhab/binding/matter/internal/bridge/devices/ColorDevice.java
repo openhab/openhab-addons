@@ -46,6 +46,8 @@ import org.openhab.core.util.ColorUtil;
 public class ColorDevice extends BaseDevice {
     // how long to wait (max) for the device to turn on before updating the HSB values
     private static final int ONOFF_DELAY_MILLIS = 500;
+    // Level 0 is not permitted with the Lighting feature, so an off light reports the minimum instead
+    private static final int MIN_LEVEL = 1;
     // the onFuture is used to wait for the device to turn on before updating the HSB values
     private CompletableFuture<Void> onFuture = CompletableFuture.completedFuture(null);
     // the lastH, lastS are used to store the last HSB values as they come in from the device
@@ -74,15 +76,15 @@ public class ColorDevice extends BaseDevice {
             }
             Integer currentHue = toHue(hsbType.getHue());
             Integer currentSaturation = toSaturation(hsbType.getSaturation());
-            Integer currentLevel = toBrightness(hsbType.getBrightness());
             attributeMap.put(LevelControlCluster.CLUSTER_PREFIX + "." + LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL,
-                    Math.max(currentLevel, 1));
+                    toBrightness(hsbType.getBrightness()));
             attributeMap.put(ColorControlCluster.CLUSTER_PREFIX + "." + ColorControlCluster.ATTRIBUTE_CURRENT_HUE,
                     currentHue);
             attributeMap.put(
                     ColorControlCluster.CLUSTER_PREFIX + "." + ColorControlCluster.ATTRIBUTE_CURRENT_SATURATION,
                     currentSaturation);
-            attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF, currentLevel > 0);
+            attributeMap.put(OnOffCluster.CLUSTER_PREFIX + "." + OnOffCluster.ATTRIBUTE_ON_OFF,
+                    hsbType.getBrightness().intValue() > 0);
         }
 
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
@@ -104,7 +106,7 @@ public class ColorDevice extends BaseDevice {
                 updateOnOff(Boolean.valueOf(data.toString()));
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
-                updateBrightness(ValueUtils.levelToPercent(value.intValue()));
+                updateBrightness(ValueUtils.levelToPercentWhenOn(value.intValue()));
                 break;
             // currentHue and currentSaturation will always be updated together sequentially in the matter.js bridge
             // code
@@ -133,17 +135,16 @@ public class ColorDevice extends BaseDevice {
     @Override
     public void updateState(Item item, State state) {
         if (state instanceof HSBType hsb) {
-            List<AttributeState> states = new ArrayList<>();
-            if (hsb.getBrightness().intValue() == 0) {
-                states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, false));
-            } else {
+            boolean on = hsb.getBrightness().intValue() > 0;
+            if (on) {
                 // since we are on, complete the future
                 completeOnFuture();
                 lastB = null; // reset the cached brightness
-                states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, true));
-                states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
-                        LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, toBrightness(hsb.getBrightness())));
             }
+            List<AttributeState> states = new ArrayList<>();
+            states.add(new AttributeState(LevelControlCluster.CLUSTER_PREFIX,
+                    LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL, on ? toBrightness(hsb.getBrightness()) : MIN_LEVEL));
+            states.add(new AttributeState(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF, on));
             states.add(new AttributeState(ColorControlCluster.CLUSTER_PREFIX, ColorControlCluster.ATTRIBUTE_CURRENT_HUE,
                     toHue(hsb.getHue())));
             states.add(new AttributeState(ColorControlCluster.CLUSTER_PREFIX,
@@ -154,7 +155,7 @@ public class ColorDevice extends BaseDevice {
 
     private void updateBrightness(PercentType brightness) {
         if (primaryItem instanceof ColorItem colorItem) {
-            lastB = brightness;
+            lastB = brightness.intValue() > 0 ? brightness : null;
             colorItem.send(brightness, MATTER_SOURCE);
         }
     }

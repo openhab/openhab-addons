@@ -41,8 +41,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The MoonHandler is responsible for updating calculated moon data.
@@ -57,7 +55,6 @@ public class MoonHandler extends AstroThingHandler {
             CHANNEL_ID_POSITION_AZIMUTH, CHANNEL_ID_POSITION_ELEVATION, CHANNEL_ID_ZODIAC_SIGN);
 
     private final MoonCalc moonCalc;
-    private final Logger logger = LoggerFactory.getLogger(MoonHandler.class);
     private volatile @Nullable Moon moon;
 
     /**
@@ -159,13 +156,9 @@ public class MoonHandler extends AstroThingHandler {
                 return toState(moon.getPosition().getElevation(), channel);
             case CHANNEL_ID_MOON_POSITION_SHADE_LENGTH:
                 return toState(moon.getPosition().getShadeLength(), channel);
-            case CHANNEL_ID_ZODIAC_SIGN:
-                return toState(moon.getZodiac().getSign(), channel);
             default:
-                logger.warn("Unsupported channel: {}", channel.getUID());
+                return super.getState(channel, channel.getUID());
         }
-
-        return UnDefType.UNDEF;
     }
 
     @Override

@@ -815,35 +815,35 @@ Switch                  EQA_WashWater               {channel="mercedesme:bev:471
 Number                  EQA_TirePressureWarn        {channel="mercedesme:bev:4711:eqa:service#tires-rdk" }
 Number                  EQA_ServiceInDays           {channel="mercedesme:bev:4711:eqa:service#service-days" }
 
-Number:Length           EQA_Mileage                 {channel="mercedesme:bev:4711:eqa:range#mileage" }
-Number:Length           EQA_Range                   {channel="mercedesme:bev:4711:eqa:range#range-electric" }
-Number:Length           EQA_RangeRadius             {channel="mercedesme:bev:4711:eqa:range#radius-electric" }
-Number:Dimensionless    EQA_SoC                     {channel="mercedesme:bev:4711:eqa:range#soc" }
-Number:Energy           EQA_BatteryCharged          {channel="mercedesme:bev:4711:eqa:range#charged" }
-Number:Energy           EQA_BatteryUncharged        {channel="mercedesme:bev:4711:eqa:range#uncharged" }
+Number:Length           EQA_Mileage                 {channel="mercedesme:bev:4711:eqa:range#mileage", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}
+Number:Length           EQA_Range                   {channel="mercedesme:bev:4711:eqa:range#range-electric", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}
+Number:Length           EQA_RangeRadius             {channel="mercedesme:bev:4711:eqa:range#radius-electric", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}
+Number:Dimensionless    EQA_SoC                     {channel="mercedesme:bev:4711:eqa:range#soc", stateDescription=" " [pattern="%.0f %unit%", readOnly=true], unit="%"}
+Number:Energy           EQA_BatteryCharged          {channel="mercedesme:bev:4711:eqa:range#charged", stateDescription=" " [pattern="%.2f %unit%", readOnly=true], unit="kWh"}
+Number:Energy           EQA_BatteryUncharged        {channel="mercedesme:bev:4711:eqa:range#uncharged", stateDescription=" " [pattern="%.2f %unit%", readOnly=true], unit="kWh"}
 
 Number                  EQA_ChargeFlap              {channel="mercedesme:bev:4711:eqa:charge#charge-flap" }
 Number                  EQA_CouplerLock             {channel="mercedesme:bev:4711:eqa:charge#coupler-lock" }
 Switch                  EQA_ChargeActive            {channel="mercedesme:bev:4711:eqa:charge#active" }
-Number:Power            EQA_ChargePower             {channel="mercedesme:bev:4711:eqa:charge#power" }
+Number:Power            EQA_ChargePower             {channel="mercedesme:bev:4711:eqa:charge#power", stateDescription=" " [pattern="%.1f %unit%", readOnly=true], unit="kW"}
 DateTime                EQA_ChargeTimeEstimate      {channel="mercedesme:bev:4711:eqa:charge#end-time" }
 Number                  EQA_ChargeProgram           {channel="mercedesme:bev:4711:eqa:charge#program" }
-Number:Dimensionless    EQA_ProgramMaxSoc           {channel="mercedesme:bev:4711:eqa:charge#max-soc" }
+Number:Dimensionless    EQA_ProgramMaxSoc           {channel="mercedesme:bev:4711:eqa:charge#max-soc", stateDescription=" " [pattern="%.0f %unit%", readOnly=false], unit="%"}
 
-Number:Length           EQA_TripDistance            {channel="mercedesme:bev:4711:eqa:trip#distance" }
+Number:Length           EQA_TripDistance            {channel="mercedesme:bev:4711:eqa:trip#distance", stateDescription=" " [pattern="%.1f %unit%", readOnly=true], unit="km"}
 String                  EQA_TripDuration            {channel="mercedesme:bev:4711:eqa:trip#time" }
-Number:Speed            EQA_TripAvgSpeed            {channel="mercedesme:bev:4711:eqa:trip#avg-speed" }
+Number:Speed            EQA_TripAvgSpeed            {channel="mercedesme:bev:4711:eqa:trip#avg-speed", stateDescription=" " [pattern="%.1f %unit%", readOnly=true], unit="km/h"}
 Number                  EQA_TripAvgConsumption      {channel="mercedesme:bev:4711:eqa:trip#cons-ev" }
 String                  EQA_AvgConsumptionUnit      {channel="mercedesme:bev:4711:eqa:trip#cons-ev-unit" }
 
-Number:Angle            EQA_Heading                 {channel="mercedesme:bev:4711:eqa:position#heading" }
+Number:Angle            EQA_Heading                 {channel="mercedesme:bev:4711:eqa:position#heading", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="°"}
 Location                EQA_GPSLocation             {channel="mercedesme:bev:4711:eqa:position#gps" }
 Number                  EQA_Signal                  {channel="mercedesme:bev:4711:eqa:position#signal" }
 
-Number:Pressure         EQA_PressureFrontLeft       {channel="mercedesme:bev:4711:eqa:tires#pressure-front-left" }
-Number:Pressure         EQA_PressureFrontRight      {channel="mercedesme:bev:4711:eqa:tires#pressure-front-right" }
-Number:Pressure         EQA_PressureRearLeft        {channel="mercedesme:bev:4711:eqa:tires#pressure-rear-left" }
-Number:Pressure         EQA_PressureRearRight       {channel="mercedesme:bev:4711:eqa:tires#pressure-rear-right" }
+Number:Pressure         EQA_PressureFrontLeft       {channel="mercedesme:bev:4711:eqa:tires#pressure-front-left", stateDescription=" " [pattern="%.1f %unit%", readOnly=true], unit="bar"}
+Number:Pressure         EQA_PressureFrontRight      {channel="mercedesme:bev:4711:eqa:tires#pressure-front-right", stateDescription=" " [pattern="%.1f %unit%", readOnly=true], unit="bar"}
+Number:Pressure         EQA_PressureRearLeft        {channel="mercedesme:bev:4711:eqa:tires#pressure-rear-left", stateDescription=" " [pattern="%.1f %unit%", readOnly=true], unit="bar"}
+Number:Pressure         EQA_PressureRearRight       {channel="mercedesme:bev:4711:eqa:tires#pressure-rear-right", stateDescription=" " [pattern="%.1f %unit%", readOnly=true], unit="bar"}
 DateTime                EQA_MeasurementTime         {channel="mercedesme:bev:4711:eqa:tires#last-update" }
 
 Number                  EQA_CommandName             {channel="mercedesme:bev:4711:eqa:command#cmd-name" }

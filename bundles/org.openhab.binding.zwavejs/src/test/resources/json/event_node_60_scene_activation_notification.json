@@ -1,0 +1,17 @@
+{
+    "type": "event",
+    "event": {
+        "source": "node",
+        "event": "value notification",
+        "nodeId": 60,
+        "args": {
+            "commandClassName": "Scene Activation",
+            "commandClass": 43,
+            "property": "sceneId",
+            "endpoint": 0,
+            "value": 16,
+            "propertyName": "sceneId",
+            "ccVersion": 1
+        }
+    }
+}

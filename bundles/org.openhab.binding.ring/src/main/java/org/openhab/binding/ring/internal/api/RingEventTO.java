@@ -31,8 +31,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class RingEventTO {
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
     public long id = 0;
     @SerializedName("created_at")
     public String createdAt = "";

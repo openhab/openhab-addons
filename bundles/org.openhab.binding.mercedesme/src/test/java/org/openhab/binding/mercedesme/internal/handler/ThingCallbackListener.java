@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,11 +54,15 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     public Map<String, State> updatesReceived = new HashMap<>();
     public Map<String, Map<String, State>> updatesPerGroupMap = new HashMap<>();
     public boolean linked = false;
-    public Optional<ThingStatusInfo> status = Optional.empty();
+    private @Nullable ThingStatusInfo status;
     private Instant waitTime = Instant.MAX;
 
     public ThingStatusInfo getThingStatus() {
-        return status.get();
+        ThingStatusInfo localStatus = status;
+        if (localStatus == null) {
+            throw new IllegalStateException("No status update received yet");
+        }
+        return localStatus;
     }
 
     public int getUpdatesForGroup(String group) {
@@ -108,7 +111,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        status = Optional.of(thingStatus);
+        status = thingStatus;
     }
 
     @Override

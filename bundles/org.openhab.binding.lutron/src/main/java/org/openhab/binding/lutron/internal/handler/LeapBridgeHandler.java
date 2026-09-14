@@ -749,6 +749,10 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             action = DeviceCommand.ACTION_PRESS;
         } else if ("Release".equals(buttonStatus.buttonEvent.eventType)) {
             action = DeviceCommand.ACTION_RELEASE;
+        } else if ("LongHold".equals(buttonStatus.buttonEvent.eventType)) {
+            action = DeviceCommand.ACTION_HOLD;
+        } else if ("MultiTap".equals(buttonStatus.buttonEvent.eventType)) {
+            action = DeviceCommand.ACTION_DBLTAP;
         } else {
             logger.warn("Unrecognized button event {} for button {} on device {}", buttonStatus.buttonEvent.eventType,
                     index, integrationId);

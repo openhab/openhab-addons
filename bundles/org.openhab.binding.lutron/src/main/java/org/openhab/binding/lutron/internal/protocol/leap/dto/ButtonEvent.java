@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ButtonEvent extends AbstractMessageBody {
     @SerializedName("EventType")
-    public String eventType; // Press, Release
+    public String eventType; // Press, Release, LongHold, MultiTap
 
     public ButtonEvent() {
     }

@@ -15,57 +15,24 @@ package org.openhab.binding.astro.internal.model;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Holds the sign of the zodiac.
  *
  * @author Gerhard Riegler - Initial contribution
+ * @author Gaël L'hopital - Immutable & Instant
  */
 @NonNullByDefault
-public class Zodiac {
-    public static final Zodiac NONE = new Zodiac();
-
-    private final @Nullable ZodiacSign sign;
-    private final @Nullable Instant start;
-    private final @Nullable Instant end;
-
-    private Zodiac() {
-        this.sign = null;
-        this.start = null;
-        this.end = null;
+public record Zodiac(ZodiacSign sign, InstantRange range) {
+    public Zodiac(int index, Instant start, Instant end) {
+        this(ZodiacSign.values()[index], new InstantRange(start, end));
     }
 
-    public Zodiac(int index, @Nullable Instant start, @Nullable Instant end) {
-        if (index < 0 || index >= ZodiacSign.values().length) {
-            throw new IllegalArgumentException("Index value %d out of range".formatted(index));
-        }
-        this.sign = ZodiacSign.values()[index];
-        this.start = start;
-        this.end = end;
-    }
-
-    /**
-     * Returns the sign of the zodiac.
-     */
-    @Nullable
-    public ZodiacSign getSign() {
-        return sign;
-    }
-
-    /**
-     * Returns the start instant of the zodiac sign.
-     */
-    @Nullable
     public Instant getStart() {
-        return start;
+        return range.getStart();
     }
 
-    /**
-     * Returns the end instant of the zodiac sign.
-     */
-    @Nullable
     public Instant getEnd() {
-        return end;
+        return range.getEnd();
     }
 }

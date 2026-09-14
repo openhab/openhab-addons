@@ -61,7 +61,7 @@ public class BlindHandler extends LutronHandler {
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration().as(BlindConfig.class);
+        config = getConfigAs(BlindConfig.class);
         if (config.integrationId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;

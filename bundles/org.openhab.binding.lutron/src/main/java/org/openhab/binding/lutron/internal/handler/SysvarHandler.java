@@ -60,7 +60,7 @@ public class SysvarHandler extends LutronHandler {
 
     @Override
     public void initialize() {
-        SysvarConfig config = getThing().getConfiguration().as(SysvarConfig.class);
+        SysvarConfig config = getConfigAs(SysvarConfig.class);
         this.config = config;
         if (config.integrationId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");

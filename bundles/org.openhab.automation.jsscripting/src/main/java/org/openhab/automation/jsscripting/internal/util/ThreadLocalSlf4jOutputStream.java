@@ -13,6 +13,7 @@
 package org.openhab.automation.jsscripting.internal.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -34,5 +35,14 @@ public class ThreadLocalSlf4jOutputStream extends Slf4jOutputStream {
     @Override
     protected ByteArrayOutputStream getBuffer() {
         return buffer.get();
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            super.close();
+        } finally {
+            buffer.remove();
+        }
     }
 }

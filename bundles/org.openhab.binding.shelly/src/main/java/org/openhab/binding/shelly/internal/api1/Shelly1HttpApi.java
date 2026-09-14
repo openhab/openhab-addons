@@ -194,7 +194,15 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        callApi(SHELLY_URL_STATUS_EMETER + "/" + id + "?reset_totals=true", ShellyStatusRelay.class);
+        if (profile.is3EM) {
+            // 3EM exposes a single device-level reset switch, but the Gen1 API resets one phase per
+            // call, so iterate all phases
+            for (int phase = 0; phase < profile.numMeters; phase++) {
+                callApi(SHELLY_URL_STATUS_EMETER + "/" + phase + "?reset_totals=true", ShellyStatusRelay.class);
+            }
+        } else {
+            callApi(SHELLY_URL_STATUS_EMETER + "/" + id + "?reset_totals=true", ShellyStatusRelay.class);
+        }
     }
 
     @Override
@@ -278,12 +286,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void setValveMode(int valveId, boolean auto) throws ShellyApiException {
-        String uri = "/settings/thermostat/" + valveId + "?target_t_enabled=" + (auto ? "1" : "0");
-        List<ShellyThermnostat> thermostats = profile.settings.thermostats;
-        if (auto && thermostats != null) {
-            uri = uri + "&target_t=" + getDouble(thermostats.get(0).targetTemp.value);
-        }
-        httpRequest(uri); // percentage to open the valve
+        httpRequest("/settings/thermostat/" + valveId + "?schedule=" + (auto ? "1" : "0"));
     }
 
     @Override
@@ -519,6 +522,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         httpRequest(SHELLY_URL_SETTINGS + "?" + setting + "=" + value);
     }
 
+    @Override
+    public void loraSendData(int id, String data) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
+    }
+
     /**
      * Set event callback URLs. Depending on the device different event types are supported. In fact all of them will be
      * redirected to the binding's servlet and act as a trigger to schedule a status update
@@ -555,6 +563,16 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void muteSmokeAlarm(int id) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
+    }
+
+    @Override
+    public void setPresenceSensor(boolean enable) throws ShellyApiException {
+        throw new ShellyApiException("Request not supported");
+    }
+
+    @Override
+    public void setFloodConfig(int id, @Nullable String alarmMode, int reportHoldoff) throws ShellyApiException {
         throw new ShellyApiException("Request not supported");
     }
 

@@ -12,23 +12,18 @@
  */
 package org.openhab.io.yamlcomposer.internal.core;
 
-import java.util.AbstractMap;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.io.yamlcomposer.internal.placeholders.IfPlaceholder;
+import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.placeholders.InterpolablePlaceholder;
-import org.openhab.io.yamlcomposer.internal.placeholders.MergeKeyPlaceholder;
 import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
-import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
 import org.openhab.io.yamlcomposer.internal.processors.PlaceholderProcessor;
 
 /**
@@ -36,42 +31,32 @@ import org.openhab.io.yamlcomposer.internal.processors.PlaceholderProcessor;
  * and transforms placeholders into the final values by invoking registered handlers
  * for their respective types.
  *
- * It holds a variables map that can be overridden for nested transformations,
- * allowing for context-specific variable values during processing.
- *
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
 public class RecursiveTransformer {
 
     private final Map<Class<? extends Placeholder>, PlaceholderProcessor<?>> handlers = new LinkedHashMap<>();
-    private final Map<String, @Nullable Object> variables;
+    private final DirectiveProcessor directiveProcessor;
+    private final StructuralMerger structuralMerger;
+    private final Path absolutePath;
 
-    public RecursiveTransformer(Map<String, @Nullable Object> variables) {
-        this.variables = variables;
+    public RecursiveTransformer(Consumer<String> envVarCallback, Path absolutePath, BufferedLogger logger) {
+        this.absolutePath = absolutePath;
+        this.directiveProcessor = new DirectiveProcessor(logger, envVarCallback);
+        this.structuralMerger = new StructuralMerger(logger);
     }
 
-    public Map<String, @Nullable Object> getVariables() {
-        return variables;
+    StructuralMerger getStructuralMerger() {
+        return structuralMerger;
     }
 
-    /**
-     * Creates a new RecursiveTransformer with the same handlers but a new variables map that
-     * includes the given overrides.
-     *
-     * The new combined variables map will be used for all placeholder processing within
-     * the nested structure, allowing for isolated modifications without impacting the original context.
-     *
-     * @param overrideVariables additional variables to include in the new transformer's context,
-     *            which will override any existing variables with the same keys
-     * @return a new RecursiveTransformer instance with the combined variables and the same handlers
-     */
-    public RecursiveTransformer withOverrideVariables(Map<String, @Nullable Object> overrideVariables) {
-        Map<String, @Nullable Object> combinedVariables = new HashMap<>(variables);
-        combinedVariables.putAll(overrideVariables);
-        RecursiveTransformer copy = new RecursiveTransformer(combinedVariables);
-        copy.handlers.putAll(this.handlers);
-        return copy;
+    DirectiveProcessor getDirectiveProcessor() {
+        return directiveProcessor;
+    }
+
+    public Path getAbsolutePath() {
+        return absolutePath;
     }
 
     /**
@@ -84,65 +69,31 @@ public class RecursiveTransformer {
     }
 
     /**
-     * Default: transforms the entire tree using all registered handlers.
-     * Placeholders are transformed if their class matches any registered handler.
+     * Transform any object, including scalars, maps, and lists, using the supplied evaluation context.
      *
-     * This is the most common usage, but the other overloads allow for more control
-     * and optimization by restricting which handlers are applied.
-     *
-     * @param data the YAML data tree to transform
-     * @return the transformed data tree with placeholders transformed
+     * @param data the object to transform
+     * @param context the evaluation context
+     * @return the transformed object
      */
-    public @Nullable Object transform(@Nullable Object data) {
-        return transformWithVisited(data, handlers.keySet());
+    public @Nullable Object transform(@Nullable Object data, EvaluationContext context) {
+        return transformInternal(data, context);
     }
 
     /**
-     * Transforms the data tree but only applies handlers for the specified placeholder classes.
-     *
-     * <p>
-     * Use this when you want to restrict transformation to a subset of placeholder
-     * classes.
-     *
-     * @param data the YAML data tree to transform
-     * @param allowedTypes the set of placeholder classes to transform
-     * @return the transformed data tree with the given placeholders transformed
-     */
-    public @Nullable Object transform(@Nullable Object data, Set<Class<? extends Placeholder>> allowedTypes) {
-        return transformWithVisited(data, allowedTypes);
-    }
-
-    /**
-     * Convenience overload for transforming a Map container.
-     *
-     * <p>
-     * Transforms the given map and transforms any placeholders found within keys and values.
-     * This is equivalent to calling {@link #transform(Object, Set)} with the full set of
-     * registered placeholder handler types.
-     *
-     * @param data the map to transform
-     * @return the transformed map
-     */
-    public Map<Object, @Nullable Object> transform(Map<?, ?> data) {
-        return transform(data, handlers.keySet());
-    }
-
-    /**
-     * Transforms the given map but only applies handlers for the specified placeholder classes.
-     *
+     * Transforms the given map using the supplied evaluation context.
      * <p>
      * Keys and values are transformed recursively. If the overall transformed result is not a
      * {@link Map} (for example, if a placeholder handler returned a non-container), an
      * {@link IllegalStateException} is thrown.
      *
      * @param data the map to transform
-     * @param allowedTypes the set of placeholder classes to transform
+     * @param context the evaluation context
      * @return the transformed map
      * @throws IllegalStateException if the transformed result is not a Map
      */
     @SuppressWarnings("unchecked")
-    public Map<Object, @Nullable Object> transform(Map<?, ?> data, Set<Class<? extends Placeholder>> allowedTypes) {
-        Object transformed = transformWithVisited(data, allowedTypes);
+    public Map<Object, @Nullable Object> transform(Map<?, ?> data, EvaluationContext context) {
+        Object transformed = transform((Object) data, context);
         if (transformed instanceof Map<?, ?> map) {
             return (Map<Object, @Nullable Object>) map;
         }
@@ -151,208 +102,120 @@ public class RecursiveTransformer {
     }
 
     /**
-     * Central helper to start transformation with a fresh visited map.
+     * The actual recursive tree traversal and directive evaluation engine.
      */
-    private @Nullable Object transformWithVisited(@Nullable Object data,
-            Set<Class<? extends Placeholder>> allowedTypes) {
-        return transformInternal(data, allowedTypes, new IdentityHashMap<>());
-    }
-
-    /**
-     * The actual tree traversal.
-     */
-    private @Nullable Object transformInternal(@Nullable Object data, Set<Class<? extends Placeholder>> allowedTypes,
-            IdentityHashMap<Object, Object> visited) {
+    private @Nullable Object transformInternal(@Nullable Object data, EvaluationContext context) {
 
         if (data == null) {
             return null;
         }
 
-        Class<?> clazz = data.getClass();
-
         // Handle cyclic references for containers: if we've already started transforming
         // this container, return the placeholder/result to avoid infinite recursion.
         if ((data instanceof Map<?, ?> || data instanceof List<?>)) {
-            if (visited.containsKey(data)) {
-                return visited.get(data);
+            if (context.visited().containsKey(data)) {
+                return context.visited().get(data);
             }
         }
 
         // Resolve placeholder value (arguments) first before transforming the placeholder itself
         // So that e.g. !include ${filename} gets the real argument value to transform
         if (data instanceof InterpolablePlaceholder interpolable) {
-            Object transformedValue;
-
-            if (interpolable.eagerArgumentProcessing()) {
-                // Eagerly transform arguments using all registered handlers
-                transformedValue = transform(interpolable.value());
-            } else {
-                // Only perform substitutions in arguments
-                // for !if conditions, don't transform placeholders (e.g. !include) in the unselected branch
-                transformedValue = transform(interpolable.value(), ProcessingPhase.SUBSTITUTION);
-            }
+            ProcessingPhase valuePhase = interpolable.eagerArgumentProcessing() ? ProcessingPhase.ALL
+                    : ProcessingPhase.SUBSTITUTION;
+            Object transformedValue = transformInternal(interpolable.value(), context.withProcessingPhase(valuePhase));
             data = interpolable.withValue(transformedValue);
         }
 
-        if (data instanceof Placeholder placeholder && allowedTypes.contains(clazz)) {
-            // Use the override callback if provided, otherwise look up in registry
-            PlaceholderProcessor<?> handler = handlers.get(clazz);
-
-            if (handler != null) {
-                // Execute and recurse
-                Object result = invokeHandler(handler, placeholder);
-                return transformInternal(result, allowedTypes, visited);
-            }
+        if (data instanceof Placeholder placeholder && context.activePhase().includes(placeholder)) {
+            Object result = processPlaceholder(placeholder, context);
+            return transformInternal(result, context);
         }
 
         if (data instanceof Map<?, ?> map) {
-            return resolveMap(map, allowedTypes, visited);
+            return resolveMap(map, context);
         }
 
         if (data instanceof List<?> list) {
-            return resolveList(list, allowedTypes, visited);
+            return resolveList(list, context);
         }
 
         return data;
     }
 
     @SuppressWarnings("unchecked")
-    private @Nullable <T extends Placeholder> Object invokeHandler(PlaceholderProcessor<?> handler,
-            Placeholder placeholder) {
-        return ((PlaceholderProcessor<T>) handler).process((T) placeholder, this);
+    private @Nullable Object processPlaceholder(Placeholder placeholder, EvaluationContext context) {
+        PlaceholderProcessor<Placeholder> handler = (PlaceholderProcessor<Placeholder>) handlers
+                .get(placeholder.getClass());
+
+        if (handler == null) {
+            return null;
+        }
+        return handler.process(placeholder, this, context);
     }
 
     /**
      * Resolves a map by transforming its keys and values, applying placeholder handlers as needed,
-     * and handling special cases like merge keys and removal signals.
+     * and handling special cases like merge keys, structural directives, and removal signals.
      *
      * @param rawMap the original map to transform
      * @param allowedTypes the set of placeholder classes to transform
      * @return the transformed map with placeholders transformed, or the original map if no changes were made
      */
-    private Object resolveMap(Map<?, ?> rawMap, Set<Class<? extends Placeholder>> allowedTypes,
-            IdentityHashMap<Object, Object> visited) {
-        // Always create a new map for transformed results to simplify cycle handling
+    private Object resolveMap(Map<?, ?> rawMap, EvaluationContext context) {
         @SuppressWarnings("unchecked")
         Map<Object, @Nullable Object> map = (Map<Object, @Nullable Object>) rawMap;
-
         Map<Object, @Nullable Object> result = new LinkedHashMap<>(map.size());
         // Register in visited before transforming entries to handle self-references
-        visited.put(rawMap, result);
-
-        List<Map.Entry<Object, @Nullable Object>> mergeEntries = new ArrayList<>();
-
-        for (Map.Entry<Object, @Nullable Object> entry : map.entrySet()) {
-            Object oldKey = entry.getKey();
-            Object oldVal = entry.getValue();
-
-            Object newKey = transformInternal(oldKey, allowedTypes, visited);
-            Object newVal = transformInternal(oldVal, allowedTypes, visited);
-
-            // Dropping null keys or removal signals
-            if (shouldRemoveEntry(newKey, newVal, oldVal)) {
-                continue;
-            }
-
-            newKey = Objects.requireNonNull(newKey); // null keys should have been filtered out in shouldRemoveEntry
-
-            if (newKey instanceof MergeKeyPlaceholder mkp) {
-                mergeEntries.add(new AbstractMap.SimpleEntry<>(mkp, newVal));
-                continue;
-            }
-
-            if ("<<".equals(newKey)) {
-                mergeEntries.add(new AbstractMap.SimpleEntry<>(newKey, newVal));
-                continue;
-            }
-
-            result.put(newKey, newVal);
-        }
-
-        resolveMergeKeys(result, allowedTypes, mergeEntries, visited);
-
+        context.visited().put(rawMap, result);
+        structuralMerger.composeMap(map, result, this, context);
         return result;
     }
 
-    private boolean shouldRemoveEntry(@Nullable Object newKey, @Nullable Object newVal, @Nullable Object oldVal) {
-        return newKey == null //
-                || newKey == RemovalSignal.REMOVE //
-                || newVal == RemovalSignal.REMOVE //
-                || (newVal == null && oldVal != null);
-    }
-
-    public void resolveMergeKeys(Map<?, ?> rawMap) {
-        resolveMergeKeys(rawMap, Set.of());
-    }
-
-    public void resolveMergeKeys(Map<?, ?> rawMap, Set<Class<? extends Placeholder>> allowedTypes) {
-        @SuppressWarnings("unchecked")
-        Map<Object, @Nullable Object> map = (Map<Object, @Nullable Object>) rawMap;
-
-        // First: handle YAML merge keys (<<: ...). We collect merge-key entries, transform their
-        // values fully, merge into this container, and remove the merge-key entries before
-        // performing the normal per-entry transformation below.
-        List<Map.Entry<Object, @Nullable Object>> mergeEntries = new ArrayList<>();
-        for (Map.Entry<Object, @Nullable Object> entry : map.entrySet()) {
-            if (entry.getKey() instanceof MergeKeyPlaceholder || "<<".equals(entry.getKey())) {
-                mergeEntries.add(new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue()));
-            }
-        }
-
-        resolveMergeKeys(map, allowedTypes, mergeEntries, new IdentityHashMap<>());
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    private void resolveMergeKeys(Map<?, ?> rawMap, Set<Class<? extends Placeholder>> allowedTypes,
-            List<Map.Entry<Object, @Nullable Object>> mergeEntries, IdentityHashMap<Object, Object> visited) {
-
-        Map<Object, @Nullable Object> map = (Map<Object, @Nullable Object>) rawMap;
-
-        if (!mergeEntries.isEmpty()) {
-            for (var mergeEntry : mergeEntries) {
-                @Nullable
-                Object rawVal = mergeEntry.getValue();
-                @Nullable
-                Object transformedVal = transformInternal(rawVal, allowedTypes, visited);
-
-                if (transformedVal instanceof Map<?, ?> fromMap) {
-                    mergeMap((Map<Object, @Nullable Object>) fromMap, map);
-                } else if (transformedVal instanceof List<?> list) {
-                    for (Object item : list) {
-                        if (item instanceof Map<?, ?> m) {
-                            mergeMap((Map<Object, @Nullable Object>) m, map);
-                        }
-                    }
-                } else if (transformedVal == null) {
-                    if (rawVal instanceof SubstitutionPlaceholder || rawVal instanceof IfPlaceholder) {
-                        // nothing to merge
-                    }
-                }
-
-                map.remove(mergeEntry.getKey());
-            }
-        }
-    }
-
-    private void mergeMap(Map<Object, @Nullable Object> from, Map<Object, @Nullable Object> to) {
-        for (Map.Entry<Object, @Nullable Object> entry : from.entrySet()) {
-            Object key = entry.getKey();
-            if (!to.containsKey(key)) {
-                to.put(key, entry.getValue());
-            }
-        }
-    }
-
-    private Object resolveList(List<?> list, Set<Class<? extends Placeholder>> allowedTypes,
-            IdentityHashMap<Object, Object> visited) {
-        // Always produce a new list and register it to handle cycles
+    private Object resolveList(List<?> list, EvaluationContext context) {
         List<@Nullable Object> result = new ArrayList<>(list.size());
-        visited.put(list, result);
+        context.visited().put(list, result);
+
+        DirectiveProcessor.IfChainState ifChainState = new DirectiveProcessor.IfChainState();
 
         for (Object oldItem : list) {
-            Object newItem = transformInternal(oldItem, allowedTypes, visited);
-            if (newItem != RemovalSignal.REMOVE && newItem != null) {
-                result.add(newItem);
+            Object processedItem = oldItem;
+            boolean isDirectiveMap = false;
+            boolean handled = false;
+
+            if (oldItem instanceof Map<?, ?> map) {
+                Object directiveResult = directiveProcessor.processListMap(map, ifChainState, this, context);
+                if (directiveResult != null) {
+                    processedItem = directiveResult;
+                    isDirectiveMap = true;
+                    handled = true;
+                }
+            }
+
+            // Standard scalars, plain maps, or maps without control directives
+            if (!handled) {
+                ifChainState.breakChain();
+                processedItem = transformInternal(oldItem, context);
+            }
+
+            if (processedItem == null) {
+                continue;
+            }
+
+            if (processedItem instanceof List<?> unrolledList) {
+                // If it's a directive map (like key-level !if returning a list), flatten it inline.
+                // Otherwise, preserve it as a nested list node.
+                if (isDirectiveMap) {
+                    for (Object item : unrolledList) {
+                        if (item != null) {
+                            result.add(item);
+                        }
+                    }
+                } else {
+                    result.add(unrolledList);
+                }
+            } else {
+                result.add(processedItem);
             }
         }
 

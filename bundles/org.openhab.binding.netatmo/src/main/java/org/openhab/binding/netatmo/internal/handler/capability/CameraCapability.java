@@ -183,28 +183,32 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
     public @Nullable String ping(String vpnUrl) {
         return getSecurityCapability().map(cap -> {
-            URI apiLocalUrl = null;
-            try {
-                UriBuilder builder = UriBuilder.fromPath(cap.ping(vpnUrl));
-                apiLocalUrl = builder.build();
-                if (apiLocalUrl.getHost().startsWith("169.254.")) {
-                    logger.warn("Suspicious local IP address received: {}", apiLocalUrl);
-                    Configuration config = handler.getThing().getConfiguration();
-                    if (config.containsKey(IP_ADDRESS)) {
-                        String provided = (String) config.get(IP_ADDRESS);
-                        apiLocalUrl = builder.host(provided).build();
-                        logger.info("Using {} as local url for '{}'", apiLocalUrl, thingUID);
-                    } else {
-                        logger.debug("No alternative ip Address provided, keeping API answer");
+            URI apiLocalUri = null;
+            String localUrl = cap.ping(vpnUrl);
+            if (localUrl != null) {
+                try {
+                    UriBuilder builder = UriBuilder.fromPath(localUrl);
+                    apiLocalUri = builder.build();
+                    if (apiLocalUri.getHost().startsWith("169.254.")) {
+                        logger.warn("Suspicious local IP address received: {}", apiLocalUri);
+                        Configuration config = handler.getThing().getConfiguration();
+                        if (config.containsKey(IP_ADDRESS)) {
+                            String provided = (String) config.get(IP_ADDRESS);
+                            apiLocalUri = builder.host(provided).build();
+                            logger.info("Using {} as local url for '{}'", apiLocalUri, thingUID);
+                        } else {
+                            logger.debug("No alternative ip Address provided, keeping API answer");
+                        }
                     }
+                } catch (UriBuilderException e) { // Crashed at first URI build
+                    logger.warn("API returned a badly formatted local url address for '{}': {}", thingUID,
+                            e.getMessage());
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Invalid fallback address provided in configuration for '{}' keeping API answer: {}",
+                            thingUID, e.getMessage());
                 }
-            } catch (UriBuilderException e) { // Crashed at first URI build
-                logger.warn("API returned a badly formatted local url address for '{}': {}", thingUID, e.getMessage());
-            } catch (IllegalArgumentException e) {
-                logger.warn("Invalid fallback address provided in configuration for '{}' keeping API answer: {}",
-                        thingUID, e.getMessage());
             }
-            return apiLocalUrl != null ? apiLocalUrl.toString() : null;
+            return apiLocalUri != null ? apiLocalUri.toString() : null;
         }).orElse(null);
     }
 }

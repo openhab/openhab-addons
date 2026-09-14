@@ -140,6 +140,10 @@ public class Constants {
     public static final String MB_KEY_TEMPERATURE_POINTS = "temperaturePoints";
     public static final String MB_KEY_SELECTED_CHARGE_PROGRAM = "selectedChargeProgram";
     public static final String MB_KEY_CHARGE_PROGRAMS = "chargePrograms";
+    // Fallback attributes for vehicles reporting max-soc as flat values without a chargePrograms list
+    public static final String MB_KEY_MAX_SOC = "maxSoc";
+    public static final String MB_KEY_MAX_SOC_LOWER_LIMIT = "maxSocLowerLimit";
+    public static final String MB_KEY_MAX_SOC_UPPER_LIMIT = "maxSocUpperLimit";
     public static final String MB_KEY_COMMAND_CAPABILITIES = "command-capabilities";
     public static final String MB_KEY_FEATURE_CAPABILITIES = "feature-capabilities";
     public static final String MB_KEY_COMMAND_ZEV_PRECONDITION_CONFIGURE_SEATS = "commandZevPreconditionConfigureSeats";

@@ -37,7 +37,7 @@ Device specifications, parameters, wiring diagrams, and firmware changelogs for 
 | Gen1 extended features | `v1.10`         | Enables input events, auto-timer; `profile.extFeatures` |
 | Gen2 / Gen3 / Gen4     | `v0.10.1`       | Constant `SHELLY2_API_MIN_FWVERSION`                    |
 
-Firmware version comparisons use `ShellyVersionDTO.compare(a, b)`.
+Firmware version comparisons use `ShellyVersionComparator.compare(a, b)`.
 The `extFeatures` flag on the profile is set to `true` when the Gen1 firmware is `>= v1.10`, and guards channels and API calls that are not available on older firmware.
 
 ## Community

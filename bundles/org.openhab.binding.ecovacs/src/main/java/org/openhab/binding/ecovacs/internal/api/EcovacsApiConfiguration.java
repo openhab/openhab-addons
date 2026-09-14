@@ -77,10 +77,6 @@ public final class EcovacsApiConfiguration {
         return language;
     }
 
-    public String getResource() {
-        return deviceId.substring(0, 8);
-    }
-
     public String getAuthOpenId() {
         return "global";
     }
@@ -121,12 +117,20 @@ public final class EcovacsApiConfiguration {
         return "android";
     }
 
+    public String getAppModel() {
+        return "Pixel 7";
+    }
+
+    public String getAppSystem() {
+        return "Android 14";
+    }
+
     public String getAppCode() {
         return "global_e";
     }
 
     public String getAppVersion() {
-        return "2.3.7";
+        return "3.14.0";
     }
 
     public String getAppKey() {
@@ -134,7 +138,7 @@ public final class EcovacsApiConfiguration {
     }
 
     public String getAppUserAgent() {
-        return "EcovacsHome/2.3.7 (Linux; U; Android 5.1.1; A5010 Build/LMY48Z)";
+        return "EcovacsHome/3.14.0 (Linux; U; Android 5.1.1; A5010 Build/LMY48Z)";
     }
 
     public String getDeviceType() {

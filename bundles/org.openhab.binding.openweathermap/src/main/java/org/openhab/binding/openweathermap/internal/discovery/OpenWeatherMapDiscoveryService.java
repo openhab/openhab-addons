@@ -132,6 +132,7 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
         createAirPollutionResult(locationString, bridgeUID);
         createOneCallResult(locationString, bridgeUID);
         createOneCallHistoryResult(locationString, bridgeUID);
+        createOneCallForecastResult(locationString, bridgeUID);
     }
 
     private void createWeatherAndForecastResult(String location, ThingUID bridgeUID) {
@@ -156,6 +157,12 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
     private void createOneCallHistoryResult(String location, ThingUID bridgeUID) {
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ONECALL_HISTORY, bridgeUID, LOCAL))
                 .withLabel("@text/discovery.onecall-history.local.label").withProperty(CONFIG_LOCATION, location)
+                .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
+    }
+
+    private void createOneCallForecastResult(String location, ThingUID bridgeUID) {
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ONECALL_FORECAST, bridgeUID, LOCAL))
+                .withLabel("@text/discovery.onecall-forecast.local.label").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 }

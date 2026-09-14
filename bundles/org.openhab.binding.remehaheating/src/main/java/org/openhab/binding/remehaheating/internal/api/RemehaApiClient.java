@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.remehaheating.internal.api;
 
+import java.net.CookieStore;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -58,19 +59,28 @@ public class RemehaApiClient {
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
     private @Nullable String accessToken;
+    private @Nullable String refreshToken;
+    private @Nullable String email;
+    private @Nullable String password;
     private String codeVerifier = "";
+    private long lastAuthFailureTime;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final String API_BASE_URL = "https://api.bdrthermea.net/Mobile/api";
     private static final String SUBSCRIPTION_KEY = "df605c5470d846fc91e848b1cc653ddf";
+    private static final String CLIENT_ID = "6ce007c6-0628-419e-88f4-bee2e6418eec";
+    private static final String REDIRECT_URI = "com.b2c.remehaapp://login-callback";
+    private static final String TOKEN_ENDPOINT = "https://remehalogin.bdrthermea.net/bdrb2cprod.onmicrosoft.com/oauth2/v2.0/token?p=B2C_1A_RPSignUpSignInNewRoomV3.1";
     private static final long REQUEST_TIMEOUT_MS = 30000;
+    private static final long AUTH_RETRY_BACKOFF_MS = 300000; // 5 minutes
     private static final Pattern CSRF_PATTERN = Pattern.compile("x-ms-cpim-csrf=([^;]+)");
 
     /**
      * Creates a new RemehaApiClient with the provided HttpClient.
      *
      * Note: This client requires custom buffer sizes (16384 bytes) to handle large OAuth2 responses
-     * from Azure B2C authentication. The HttpClient should be created via HttpClientFactory.createHttpClient()
-     * with buffer sizes configured in the factory, not using the common HTTP client.
+     * from Azure B2C authentication. The HttpClient should be created via
+     * {@code HttpClientFactory.createHttpClient("remehaheating")} with buffer sizes configured
+     * in the handler factory, not using the common HTTP client.
      *
      * @param httpClient HttpClient instance with appropriate buffer sizes configured
      */
@@ -87,13 +97,24 @@ public class RemehaApiClient {
      * 3. Extracts CSRF token from response cookies
      * 4. Submits user credentials
      * 5. Retrieves authorization code from redirect
-     * 6. Exchanges authorization code for access token
+     * 6. Exchanges authorization code for access token and refresh token
+     *
+     * Credentials are stored internally to enable automatic re-authentication when the token expires.
      *
      * @param email Remeha Home account email
      * @param password Remeha Home account password
      * @return true if authentication successful, false otherwise
      */
     public boolean authenticate(String email, String password) {
+        this.email = email;
+        this.password = password;
+
+        // Clear cookies from any previous session to ensure a clean authentication flow
+        CookieStore cookieStore = httpClient.getCookieStore();
+        if (cookieStore != null) {
+            cookieStore.removeAll();
+        }
+
         try {
             codeVerifier = generateRandomString();
             String codeChallenge = generateCodeChallenge(codeVerifier);
@@ -134,6 +155,55 @@ public class RemehaApiClient {
     }
 
     /**
+     * Checks if the client is currently authenticated with a valid token.
+     *
+     * @return true if an access token is available
+     */
+    public boolean isAuthenticated() {
+        return accessToken != null;
+    }
+
+    /**
+     * Attempts to re-authenticate using stored credentials or refresh token.
+     *
+     * First tries to use the refresh token (faster, no full login flow needed).
+     * Falls back to full re-authentication with stored credentials if refresh fails.
+     *
+     * @return true if re-authentication successful, false otherwise
+     */
+    public boolean reAuthenticate() {
+        long now = System.currentTimeMillis();
+        if (now - lastAuthFailureTime < AUTH_RETRY_BACKOFF_MS) {
+            logger.debug("Skipping re-authentication, last failure was less than 5 minutes ago");
+            return false;
+        }
+
+        String currentRefreshToken = refreshToken;
+        if (currentRefreshToken != null) {
+            logger.debug("Attempting token refresh");
+            if (refreshAccessToken(currentRefreshToken)) {
+                return true;
+            }
+            logger.debug("Token refresh failed, attempting full re-authentication");
+        }
+
+        String storedEmail = email;
+        String storedPassword = password;
+        if (storedEmail != null && storedPassword != null) {
+            logger.debug("Attempting full re-authentication");
+            boolean success = authenticate(storedEmail, storedPassword);
+            if (!success) {
+                lastAuthFailureTime = System.currentTimeMillis();
+            }
+            return success;
+        }
+
+        logger.debug("No credentials available for re-authentication");
+        lastAuthFailureTime = System.currentTimeMillis();
+        return false;
+    }
+
+    /**
      * Retrieves the dashboard data containing all heating system information.
      *
      * The dashboard includes:
@@ -142,20 +212,29 @@ public class RemehaApiClient {
      * - Hot water zones (DHW temperature, mode, status)
      * - Outdoor temperature information
      *
+     * If no access token is available or the token has expired (HTTP 401), this method
+     * automatically attempts re-authentication and retries the request once.
+     *
      * @return Dashboard JSON object or null if request fails
      */
     public @Nullable JsonObject getDashboard() {
         if (accessToken == null) {
-            return null;
+            logger.debug("No access token available, attempting re-authentication");
+            if (!reAuthenticate()) {
+                return null;
+            }
         }
         try {
             ContentResponse response = httpClient.newRequest(API_BASE_URL + "/homes/dashboard").method(HttpMethod.GET)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
                     .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
             if (response.getStatus() == 401) {
-                logger.debug("Received 401 Unauthorized, token expired");
+                logger.debug("Received 401 Unauthorized, attempting re-authentication");
                 accessToken = null;
-                return null;
+                if (!reAuthenticate()) {
+                    return null;
+                }
+                return getDashboardInternal();
             }
             return gson.fromJson(response.getContentAsString(), JsonObject.class);
         } catch (InterruptedException e) {
@@ -163,7 +242,7 @@ public class RemehaApiClient {
             logger.debug("Dashboard request interrupted", e);
             return null;
         } catch (Exception e) {
-            logger.debug("Failed to get dashboard", e);
+            logger.warn("Failed to get dashboard: {} - {}", e.getClass().getSimpleName(), e.getMessage());
             return null;
         }
     }
@@ -177,7 +256,7 @@ public class RemehaApiClient {
      */
     public boolean setTemperature(String climateZoneId, double temperature) {
         return apiRequest("/climate-zones/" + climateZoneId + "/modes/manual",
-                "{\"roomTemperatureSetPoint\":" + temperature + "}");
+                "{\"roomTemperatureSetPoint\":\"" + temperature + "\"}");
     }
 
     /**
@@ -189,6 +268,87 @@ public class RemehaApiClient {
      */
     public boolean setDhwMode(String hotWaterZoneId, String mode) {
         return apiRequest("/hot-water-zones/" + hotWaterZoneId + "/modes/" + mode, null);
+    }
+
+    /**
+     * Internal dashboard request without 401 retry logic (to prevent recursion).
+     */
+    private @Nullable JsonObject getDashboardInternal() {
+        if (accessToken == null) {
+            return null;
+        }
+        try {
+            ContentResponse response = httpClient.newRequest(API_BASE_URL + "/homes/dashboard").method(HttpMethod.GET)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
+                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
+            if (response.getStatus() == 200) {
+                return gson.fromJson(response.getContentAsString(), JsonObject.class);
+            }
+            logger.debug("Dashboard retry failed with status: {}", response.getStatus());
+            return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Dashboard retry interrupted", e);
+            return null;
+        } catch (Exception e) {
+            logger.debug("Dashboard retry failed", e);
+            return null;
+        }
+    }
+
+    /**
+     * Refreshes the access token using the refresh token.
+     *
+     * @param currentRefreshToken the refresh token to use
+     * @return true if token refresh successful, false otherwise
+     */
+    private boolean refreshAccessToken(String currentRefreshToken) {
+        try {
+            String formData = "grant_type=refresh_token" + "&refresh_token="
+                    + URLEncoder.encode(currentRefreshToken, StandardCharsets.UTF_8) + "&client_id=" + CLIENT_ID
+                    + "&scope="
+                    + URLEncoder.encode(
+                            "openid https://bdrb2cprod.onmicrosoft.com/iotdevice/user_impersonation offline_access",
+                            StandardCharsets.UTF_8);
+
+            Request request = httpClient.newRequest(TOKEN_ENDPOINT).method(HttpMethod.POST)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .content(new StringContentProvider(formData));
+
+            ContentResponse response = request.send();
+            if (response.getStatus() == 200) {
+                return parseTokenResponse(response.getContentAsString());
+            }
+            logger.debug("Token refresh failed with status: {}", response.getStatus());
+            refreshToken = null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Token refresh interrupted", e);
+        } catch (Exception e) {
+            logger.debug("Token refresh failed: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Parses the token response JSON and stores access and refresh tokens.
+     *
+     * @param responseBody the JSON response body
+     * @return true if tokens were extracted successfully
+     */
+    private boolean parseTokenResponse(String responseBody) {
+        JsonObject tokenResponse = gson.fromJson(responseBody, JsonObject.class);
+        if (tokenResponse != null && tokenResponse.has("access_token")) {
+            accessToken = tokenResponse.get("access_token").getAsString();
+            if (tokenResponse.has("refresh_token")) {
+                refreshToken = tokenResponse.get("refresh_token").getAsString();
+            }
+            logger.debug("Successfully obtained access token");
+            return true;
+        }
+        logger.debug("Token response missing access_token field");
+        return false;
     }
 
     private String generateCodeChallenge(String verifier) throws Exception {
@@ -205,8 +365,8 @@ public class RemehaApiClient {
 
     private String buildAuthUrl(String codeChallenge, String state) {
         return "https://remehalogin.bdrthermea.net/bdrb2cprod.onmicrosoft.com/oauth2/v2.0/authorize"
-                + "?response_type=code" + "&client_id=6ce007c6-0628-419e-88f4-bee2e6418eec" + "&redirect_uri="
-                + URLEncoder.encode("com.b2c.remehaapp://login-callback", StandardCharsets.UTF_8) + "&scope="
+                + "?response_type=code" + "&client_id=" + CLIENT_ID + "&redirect_uri="
+                + URLEncoder.encode(REDIRECT_URI, StandardCharsets.UTF_8) + "&scope="
                 + URLEncoder.encode(
                         "openid https://bdrb2cprod.onmicrosoft.com/iotdevice/user_impersonation offline_access",
                         StandardCharsets.UTF_8)
@@ -284,19 +444,21 @@ public class RemehaApiClient {
 
             if (response.getStatus() == 302) {
                 String location = response.getHeaders().get("Location");
-                logger.debug("Redirect location: {}", location);
+                logger.debug("Redirect location received");
                 if (location != null) {
                     Pattern pattern = Pattern.compile("code=([^&]+)");
                     Matcher matcher = pattern.matcher(location);
                     if (matcher.find()) {
-                        String authCode = matcher.group(1);
-                        logger.debug("Authorization code successfully extracted.");
-                        return authCode;
+                        logger.debug("Authorization code successfully extracted");
+                        return matcher.group(1);
                     }
                 }
             } else {
                 logger.debug("Expected 302 redirect, got {}", response.getStatus());
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Authorization code request interrupted", e);
         } catch (Exception e) {
             logger.debug("Failed to get authorization code: {}", e.getMessage());
         }
@@ -305,35 +467,26 @@ public class RemehaApiClient {
 
     private boolean exchangeCodeForToken(String authCode) {
         try {
-            String url = "https://remehalogin.bdrthermea.net/bdrb2cprod.onmicrosoft.com/oauth2/v2.0/token?p=B2C_1A_RPSignUpSignInNewRoomV3.1";
-            String formData = "grant_type=authorization_code&code=" + authCode + "&redirect_uri="
-                    + URLEncoder.encode("com.b2c.remehaapp://login-callback", StandardCharsets.UTF_8)
-                    + "&code_verifier=" + codeVerifier + "&client_id=6ce007c6-0628-419e-88f4-bee2e6418eec";
+            String formData = "grant_type=authorization_code&code="
+                    + URLEncoder.encode(authCode, StandardCharsets.UTF_8) + "&redirect_uri="
+                    + URLEncoder.encode(REDIRECT_URI, StandardCharsets.UTF_8) + "&code_verifier=" + codeVerifier
+                    + "&client_id=" + CLIENT_ID;
 
-            Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+            Request request = httpClient.newRequest(TOKEN_ENDPOINT).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .header("Content-Type", "application/x-www-form-urlencoded")
                     .content(new StringContentProvider(formData));
 
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
-                String json = response.getContentAsString();
-                JsonObject tokenResponse = gson.fromJson(json, JsonObject.class);
-                if (tokenResponse != null && tokenResponse.has("access_token")) {
-                    accessToken = tokenResponse.get("access_token").getAsString();
-                    logger.debug("Successfully obtained access token");
-                    return true;
-                } else {
-                    logger.debug("Token response missing access_token field");
-                }
-            } else {
-                logger.debug("Token exchange failed with status: {}", response.getStatus());
+                return parseTokenResponse(response.getContentAsString());
             }
+            logger.debug("Token exchange failed with status: {}", response.getStatus());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Token exchange interrupted", e);
         } catch (java.util.concurrent.TimeoutException e) {
-            logger.debug("Token exchange timed out after {}ms", REQUEST_TIMEOUT_MS, e);
+            logger.debug("Token exchange timed out after {}ms", REQUEST_TIMEOUT_MS);
         } catch (Exception e) {
             logger.debug("Failed to exchange code for token: {}", e.getMessage());
         }
@@ -342,7 +495,10 @@ public class RemehaApiClient {
 
     private boolean apiRequest(String path, @Nullable String jsonData) {
         if (accessToken == null) {
-            return false;
+            logger.debug("No access token for API request, attempting re-authentication");
+            if (!reAuthenticate()) {
+                return false;
+            }
         }
         try {
             Request request = httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.POST)
@@ -353,13 +509,45 @@ public class RemehaApiClient {
             }
             int status = request.send().getStatus();
             if (status == 401) {
-                logger.debug("Received 401 Unauthorized, token expired");
+                logger.debug("API request received 401, attempting re-authentication");
                 accessToken = null;
-                return false;
+                if (!reAuthenticate()) {
+                    return false;
+                }
+                return apiRequestInternal(path, jsonData);
             }
             return status == 200;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("API request interrupted for {}", path);
+            return false;
         } catch (Exception e) {
             logger.debug("API request failed for {}: {}", path, e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Internal API request without 401 retry logic (to prevent recursion).
+     */
+    private boolean apiRequestInternal(String path, @Nullable String jsonData) {
+        if (accessToken == null) {
+            return false;
+        }
+        try {
+            Request request = httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.POST)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
+                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).header("Content-Type", "application/json");
+            if (jsonData != null) {
+                request.content(new StringContentProvider(jsonData));
+            }
+            return request.send().getStatus() == 200;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("API request retry interrupted for {}", path);
+            return false;
+        } catch (Exception e) {
+            logger.debug("API request retry failed for {}: {}", path, e.getMessage());
             return false;
         }
     }

@@ -45,7 +45,7 @@
 					The Google Gemini model to use (<a href="https://ai.google.dev/gemini-api/docs/models">Models</a>, <a href="https://ai.google.dev/gemini-api/docs/pricing">Pricing</a>).
 					]]>
 				</description>
-				<default>gemini-2.5-flash</default>
+				<default>gemini-3.1-flash-lite</default>
 			</parameter>
 			<parameter name="temperature" type="decimal" groupName="hli" min="0.0" max="1.0">
 				<label>Temperature</label>
@@ -63,6 +63,13 @@
 				<label>Max Output Tokens</label>
 				<description>The maximum number of tokens to generate in the response.</description>
 				<default>2048</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxModelTurns" type="integer" groupName="hli" min="1">
+				<label>Maximum Model Turns</label>
+				<description>The maximum number of interaction turns with the model allowed in a single request to prevent infinite
+					loops and excess resource usage.</description>
+				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
 			<!-- Connection Settings -->

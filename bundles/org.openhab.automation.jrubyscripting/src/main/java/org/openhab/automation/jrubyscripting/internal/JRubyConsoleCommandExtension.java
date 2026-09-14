@@ -505,13 +505,40 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
      * Configure the engine to redirect output to the provided console.
      */
     private void configureEngineConsoleOutput(ScriptEngine engine, @Nullable Console console) {
-        if (console != null) {
-            ScriptContext context = engine.getContext();
-            Writer errorWriter = context.getErrorWriter();
-            if (errorWriter != null) {
-                context.setErrorWriter(new ConsoleWriter(errorWriter));
-            }
+        if (console == null) {
+            return;
         }
+
+        ScriptContext context = engine.getContext();
+
+        // Adapter that forwards characters to the openHAB Console
+        Writer consoleAdapter = new Writer() {
+            @Override
+            public void write(char @Nullable [] cbuf, int off, int len) {
+                if (cbuf != null && len > 0) {
+                    char[] buf = cbuf;
+                    console.print(new String(buf, off, len));
+                }
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+
+        // Fall back to consoleAdapter if JSR-223 writers are null
+        Writer baseWriter = context.getWriter();
+        Writer effectiveWriter = (baseWriter != null) ? baseWriter : consoleAdapter;
+
+        Writer baseErrorWriter = context.getErrorWriter();
+        Writer effectiveErrorWriter = (baseErrorWriter != null) ? baseErrorWriter : effectiveWriter;
+
+        context.setWriter(new ConsoleWriter(effectiveWriter));
+        context.setErrorWriter(new ConsoleWriter(effectiveErrorWriter));
     }
 
     /*
@@ -576,54 +603,60 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         private boolean closed = false;
 
         ConsoleWriter(Writer delegate) {
+            super(delegate);
             this.delegate = delegate;
         }
 
         @Override
         public void write(char @Nullable [] c, int off, int len) throws IOException {
-            if (closed) {
-                throw new IOException("Writer is closed");
-            }
-            if (c != null) {
-                for (int index = off; index < off + len; index++) {
-                    char ch = c[index];
-                    if (previousWasCarriageReturn) {
-                        if (ch == '\n') {
-                            delegate.write('\r');
-                            delegate.write('\n');
-                            previousWasCarriageReturn = false;
-                            continue;
-                        }
-                        delegate.write('\r');
-                        previousWasCarriageReturn = false;
-                    }
+            synchronized (lock) {
+                if (closed) {
+                    throw new IOException("Writer is closed");
+                }
+                if (c == null || len <= 0) {
+                    return;
+                }
 
+                StringBuilder buffer = new StringBuilder(len + 16);
+
+                for (int i = off; i < off + len; i++) {
+                    char ch = c[i];
                     if (ch == '\r') {
+                        buffer.append('\r');
                         previousWasCarriageReturn = true;
                     } else if (ch == '\n') {
-                        delegate.write('\r');
-                        delegate.write('\n');
+                        if (!previousWasCarriageReturn) {
+                            buffer.append('\r');
+                        }
+                        buffer.append('\n');
+                        previousWasCarriageReturn = false;
                     } else {
-                        delegate.write(ch);
+                        buffer.append(ch);
+                        previousWasCarriageReturn = false;
                     }
                 }
+
+                char[] output = new char[buffer.length()];
+                buffer.getChars(0, buffer.length(), output, 0);
+                delegate.write(output, 0, output.length);
             }
         }
 
         @Override
         public void flush() throws IOException {
-            if (previousWasCarriageReturn) {
-                delegate.write('\r');
-                previousWasCarriageReturn = false;
+            synchronized (lock) {
+                delegate.flush();
             }
-            delegate.flush();
         }
 
         @Override
         public void close() throws IOException {
-            flush();
-            closed = true;
-            delegate.close();
+            synchronized (lock) {
+                if (!closed) {
+                    closed = true;
+                    delegate.close();
+                }
+            }
         }
     }
 

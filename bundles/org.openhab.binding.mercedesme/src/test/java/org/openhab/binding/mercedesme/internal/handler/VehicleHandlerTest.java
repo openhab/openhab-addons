@@ -715,4 +715,38 @@ class VehicleHandlerTest {
         assertEquals("90 %", updateListener.getResponse("test::bev:charge#max-soc").toFullString(), "Max SoC update");
         assertEquals(10.640, energy.doubleValue(), 0.001, "Energy to max SoC Update");
     }
+
+    /**
+     * ADR-001: MB-BEV-CLA reports maxSoc/maxSocLowerLimit/maxSocUpperLimit as flat attributes with no
+     * chargePrograms list at all. charge#max-soc must still be populated on update, and commanding it must
+     * send ChargingConfigure instead of ChargeProgramConfigure.
+     */
+    @Test
+    public void testMaxSocFallbackWithoutChargePrograms() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE, "true"));
+        AccountHandlerMock ahm = new AccountHandlerMock();
+        VehicleHandler vHandler = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        vHandler.accountHandler = ahm;
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vHandler.config = vehicleConfig;
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vHandler.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-CLA.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
+        assertEquals("100 %", updateListener.getResponse("test::bev:charge#max-soc").toFullString(),
+                "Max SoC from flat attribute fallback");
+
+        ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "max-soc");
+        vHandler.handleCommand(cuid, QuantityType.valueOf("70 %"));
+        assertEquals(70, ahm.getCommand().getInt("max_soc"),
+                "ChargingConfigure command sent instead of ChargeProgramConfigure");
+    }
 }

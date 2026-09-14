@@ -28,6 +28,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -43,7 +44,7 @@ import org.openhab.core.types.State;
  * @author Bernd Weymann - Initial Contribution
  */
 @NonNullByDefault
-class TestSmartPlug {
+class TestSmartPlug extends JavaTest {
     String deviceId = "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1";
     ThingTypeUID thingTypeUID = THING_TYPE_SMART_PLUG;
 
@@ -83,7 +84,9 @@ class TestSmartPlug {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_TOTAL), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET), RefreshType.REFRESH);
-        checkSmartPlugStates(callback);
+        waitForAssert(() -> {
+            checkSmartPlugStates(callback);
+        });
     }
 
     @Test

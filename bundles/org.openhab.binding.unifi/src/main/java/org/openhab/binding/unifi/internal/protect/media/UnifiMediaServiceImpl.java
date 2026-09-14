@@ -277,15 +277,13 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
 
     @Nullable
     private ThingUID extractThingUID(String streamId) {
+        // A stream id is always the camera's full ThingUID with the quality suffix appended
+        int lastColon = streamId.lastIndexOf(':');
+        if (lastColon < 0) {
+            return null;
+        }
         try {
-            String[] parts = streamId.split(":");
-            // Expect 4 segments for a handler UID; if 5, the last is quality
-            if (parts.length == 5) {
-                String candidate = String.join(":", parts[0], parts[1], parts[2], parts[3]);
-                return new ThingUID(candidate);
-            } else {
-                return new ThingUID(streamId);
-            }
+            return new ThingUID(streamId.substring(0, lastColon));
         } catch (IllegalArgumentException e) {
             return null;
         }

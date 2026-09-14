@@ -16,6 +16,10 @@
 			<label>General</label>
 			<description>General settings.</description>
 		</parameter-group>
+		<parameter-group name="storage">
+			<label>Storage</label>
+			<description>Storage settings. (Private API)</description>
+		</parameter-group>
 
 		<parameter name="tokenOrApiKey" type="text" required="true" groupName="authentication">
 			<label>Token or API Key</label>
@@ -52,6 +56,12 @@
 			<description>Interval in which aggregate data is polled from SolarEdge (in minutes). If not using the private API
 				this must not be less than 60 minutes.</description>
 			<default>60</default>
+		</parameter>
+		<parameter name="batteryCriticalLevel" type="integer" required="false" min="0" max="100" unit="%"
+			groupName="storage">
+			<label>Critical Battery Level (Private API)</label>
+			<description>Battery charge level below which the battery is considered critical.</description>
+			<default>10</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

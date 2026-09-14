@@ -57,8 +57,7 @@ public class AirGradientAPIHandlerTest {
              {"locationId":4321,"locationName":"Some other name","pm01":1,"pm02":2,"pm10":2,"pm003Count":536,"atmp":20.45,"rhum":16.61,"rco2":null,"tvoc":null,"wifi":-54,"timestamp":"2024-01-07T13:00:20.000Z","ledMode":"co2","ledCo2Threshold1":1000,"ledCo2Threshold2":2000,"ledCo2ThresholdEnd":4000,"serialno":"serial","firmwareVersion":null,"tvocIndex":null,"noxIndex":null}
             ]""";
 
-    @Nullable
-    private AirGradientAPIHandler sut;
+    public @Nullable AirGradientAPIHandler sut;
 
     @Nullable
     Bridge bridge;

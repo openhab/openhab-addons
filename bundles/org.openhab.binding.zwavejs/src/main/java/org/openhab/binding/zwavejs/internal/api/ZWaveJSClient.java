@@ -43,6 +43,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.VersionMessage;
 import org.openhab.binding.zwavejs.internal.api.exception.CommunicationException;
+import org.openhab.binding.zwavejs.internal.config.ZwaveJSBridgeConfiguration;
 import org.openhab.binding.zwavejs.internal.handler.ZwaveEventListener;
 import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -91,7 +92,7 @@ public class ZWaveJSClient implements WebSocketListener {
     private final Object lifecycleLock = new Object();
     private final Object sendLock = new Object();
 
-    private volatile int bufferSize = 1048576 * 2; // 2 MiB
+    private volatile int bufferSize = ZwaveJSBridgeConfiguration.DEFAULT_MAX_MESSAGE_SIZE;
     private volatile @Nullable Session session;
     private @Nullable Future<?> sessionFuture;
     private @Nullable ScheduledFuture<?> keepAliveFuture;
@@ -299,14 +300,12 @@ public class ZWaveJSClient implements WebSocketListener {
         } catch (JsonParseException ex) {
             logger.warn("Failed to parse incoming WebSocket message: {}", ex.getMessage());
             logger.trace("RECV | {}", message);
-            notifyListenersOnError("Failed to parse message: " + ex.getMessage());
             return;
         }
 
         if (baseEvent == null || baseEvent.type == null) {
             logger.warn("Received event with unknown or null type.");
             logger.trace("RECV | {}", message);
-            notifyListenersOnError("Received event with unknown or null type.");
             return;
         }
 

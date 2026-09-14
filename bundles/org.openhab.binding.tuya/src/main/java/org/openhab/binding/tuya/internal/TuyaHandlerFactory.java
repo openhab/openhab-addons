@@ -14,6 +14,8 @@ package org.openhab.binding.tuya.internal;
 
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_PROJECT;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_DEVICE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_GATEWAY;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_SUB_DEVICE;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -24,10 +26,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tuya.internal.handler.ProjectHandler;
 import org.openhab.binding.tuya.internal.handler.TuyaDeviceHandler;
+import org.openhab.binding.tuya.internal.handler.TuyaGatewayHandler;
+import org.openhab.binding.tuya.internal.handler.TuyaSubDeviceHandler;
 import org.openhab.binding.tuya.internal.local.UdpDiscoveryListener;
 import org.openhab.binding.tuya.internal.util.SchemaDp;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -37,6 +42,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -49,16 +56,19 @@ import io.netty.channel.nio.NioEventLoopGroup;
  * handlers.
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add gateway and sub-device handlers
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.tuya", service = ThingHandlerFactory.class)
 @SuppressWarnings("unused")
 public class TuyaHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PROJECT,
-            THING_TYPE_TUYA_DEVICE);
+            THING_TYPE_TUYA_DEVICE, THING_TYPE_TUYA_GATEWAY, THING_TYPE_TUYA_SUB_DEVICE);
     private static final Type STORAGE_TYPE = TypeToken.getParameterized(List.class, SchemaDp.class).getType();
 
     public static final TuyaSchemaDB SCHEMAS = new TuyaSchemaDB();
+
+    private final Logger logger = LoggerFactory.getLogger(TuyaHandlerFactory.class);
 
     private final TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
     private final TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
@@ -101,6 +111,18 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_TUYA_DEVICE.equals(thingTypeUID)) {
             return new TuyaDeviceHandler(thing, gson, dynamicCommandDescriptionProvider,
                     dynamicStateDescriptionProvider, eventLoopGroup, udpDiscoveryListener);
+        } else if (THING_TYPE_TUYA_GATEWAY.equals(thingTypeUID)) {
+            if (thing instanceof Bridge bridge) {
+                return new TuyaGatewayHandler(bridge, gson, dynamicCommandDescriptionProvider,
+                        dynamicStateDescriptionProvider, eventLoopGroup, udpDiscoveryListener);
+            }
+            // A thing is created as a bridge only if the bridge type was known at the time, and whether it is one is
+            // persisted with the thing. A gateway created before this binding was fully started stays a plain thing.
+            logger.warn("Thing '{}' was not created as a bridge and cannot serve sub-devices. Remove and re-add it.",
+                    thing.getUID());
+        } else if (THING_TYPE_TUYA_SUB_DEVICE.equals(thingTypeUID)) {
+            return new TuyaSubDeviceHandler(thing, gson, dynamicCommandDescriptionProvider,
+                    dynamicStateDescriptionProvider);
         }
 
         return null;

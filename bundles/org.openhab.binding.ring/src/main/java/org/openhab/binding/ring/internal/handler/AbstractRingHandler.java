@@ -48,7 +48,7 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing AbstractRingHandler");
+        logger.debug("Initializing AbstractRingHandler for {}", getThing().getUID());
     }
 
     /**
@@ -74,6 +74,10 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
      * Check every 60 seconds if one of the alarm times is reached.
      */
     protected void startAutomaticRefresh(final int refreshInterval) {
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+        }
+
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
         refreshState();
     }
@@ -92,5 +96,6 @@ public abstract class AbstractRingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         stopAutomaticRefresh();
+        super.dispose();
     }
 }

@@ -426,7 +426,7 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
             return;
         }
 
-        final RioZoneConfig config = getThing().getConfiguration().as(RioZoneConfig.class);
+        final RioZoneConfig config = getConfigAs(RioZoneConfig.class);
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
             return;

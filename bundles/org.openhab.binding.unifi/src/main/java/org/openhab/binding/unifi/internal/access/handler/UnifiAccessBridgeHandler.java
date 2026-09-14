@@ -13,8 +13,11 @@
 package org.openhab.binding.unifi.internal.access.handler;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
@@ -363,11 +366,21 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                 discoveryService.discoverDevices(discoveryDevices);
             }
             logger.trace("Polled UniFi Access: {} doors, {} devices", doors.size(), devices.size());
+            Map<String, Device> devicesById = new HashMap<>();
+            for (Device device : devices) {
+                String id = device.id;
+                if (id != null) {
+                    devicesById.put(id, device);
+                }
+            }
             for (Door door : doors) {
                 logger.trace("Checking door: {}", door.id);
                 UnifiAccessDoorHandler dh = getDoorHandler(door.id);
                 if (dh != null) {
                     logger.trace("Updating door: {}", dh.deviceId);
+                    // Presence in the topology clears GONE; connectivity is judged separately
+                    dh.clearGone();
+                    setDoorStatus(dh, door, devices, devicesById);
                     dh.updateFromDoor(door);
                 }
             }
@@ -380,15 +393,20 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                 if (dh != null) {
                     logger.debug("Syncing device {} (type={}, online={}, locationId={})", device.id, device.type,
                             device.isOnline, device.locationId);
-                    // Set online/offline based on device status, independent of settings
-                    boolean online = !Boolean.FALSE.equals(device.isOnline);
-                    dh.updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
-                            online ? OnOffType.ON : OnOffType.OFF);
-                    if (!online) {
-                        dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "@text/offline.device-offline");
-                    } else if (dh.getThing().getStatus() != ThingStatus.ONLINE) {
-                        dh.setOnline();
+                    // Presence in the topology clears GONE; connectivity is judged separately
+                    dh.clearGone();
+                    // Set online/offline based on device status, independent of settings;
+                    // null means the API reported nothing, so the status is left unchanged
+                    Boolean online = device.isOnline;
+                    if (online != null) {
+                        dh.updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
+                                online ? OnOffType.ON : OnOffType.OFF);
+                        if (!online) {
+                            dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                    "@text/offline.device-offline");
+                        } else if (dh.getThing().getStatus() != ThingStatus.ONLINE) {
+                            dh.setOnline();
+                        }
                     }
                     // Update thing properties from device metadata
                     dh.updateDeviceProperties(device);
@@ -405,6 +423,12 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             }
+            // An incomplete topology response must not mark things GONE
+            if (client.isTopologyAuthoritative()) {
+                markMissingChildrenGone(doors, devices);
+            } else {
+                logger.debug("Topology response incomplete, skipping gone reconciliation");
+            }
         } catch (UnifiAccessApiException e) {
             logger.debug("Polling error: {}", e.getMessage());
             if (e.getAuthState() == AuthState.REJECTED) {
@@ -413,6 +437,82 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
             } else if (e.getAuthState() == AuthState.THROTTLED) {
                 setOfflineAndReconnect("@text/offline.login-throttled", true);
             }
+        }
+    }
+
+    /**
+     * A door is only readable and commandable through its hub, so its status follows the hub:
+     * hub offline -> door offline, no hub bound at all -> the door can neither report state nor
+     * take commands, and a hub we cannot resolve -> leave the status alone.
+     */
+    private void setDoorStatus(UnifiAccessDoorHandler dh, Door door, List<Device> devices,
+            Map<String, Device> devicesById) {
+        Device hub = door.hubDeviceId != null ? devicesById.get(door.hubDeviceId) : null;
+        if (hub == null) {
+            hub = devices.stream().filter(d -> d.isHub() && door.id != null && door.id.equals(d.locationId)).findFirst()
+                    .orElse(null);
+        }
+        var info = dh.getThing().getStatusInfo();
+        if (hub != null) {
+            if (Boolean.FALSE.equals(hub.isOnline)) {
+                // Compare detail too, so a stale GONE or no hub message is corrected
+                if (info.getStatus() != ThingStatus.OFFLINE
+                        || info.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+                    dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.hub-offline");
+                }
+            } else if (Boolean.TRUE.equals(hub.isOnline)) {
+                if (info.getStatus() != ThingStatus.ONLINE) {
+                    dh.setOnline();
+                }
+            }
+            // isOnline == null: the topology omitted the hub's connectivity, say nothing
+        } else if (door.doorLockRelayStatus != null || door.doorPositionStatus != null) {
+            // No resolvable hub, but lock/position state is populated so something serves the
+            // door (e.g. a building level hub extension we can't link to a device)
+            if (info.getStatus() != ThingStatus.ONLINE) {
+                dh.setOnline();
+            }
+        } else if (Boolean.TRUE.equals(door.isBindHub)) {
+            // Devices exist (isBindHub is derived from a non-empty device group) but none
+            // resolve as the hub and no state is reported; don't guess either way
+            logger.debug("Door {} has devices but no resolvable hub; leaving status unchanged", door.id);
+        } else if (info.getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+            // No devices and no state at all so the door can't report anything or take commands
+            dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.no-hub");
+        }
+    }
+
+    /**
+     * Mark child things GONE when their door/device is absent from the topology — removed from
+     * Access, so no update will ever arrive for it again.
+     */
+    private void markMissingChildrenGone(List<Door> doors, List<Device> devices) {
+        Set<String> doorIds = new HashSet<>();
+        doors.forEach(d -> {
+            String id = d.id;
+            if (id != null) {
+                doorIds.add(id);
+            }
+        });
+        Set<String> deviceIds = new HashSet<>();
+        devices.forEach(d -> {
+            String id = d.id;
+            if (id != null) {
+                deviceIds.add(id);
+            }
+        });
+        for (Thing child : getThing().getThings()) {
+            if (!(child.getHandler() instanceof UnifiAccessBaseHandler handler) || handler.deviceId.isEmpty()) {
+                continue;
+            }
+            Set<String> knownIds = handler instanceof UnifiAccessDoorHandler ? doorIds : deviceIds;
+            if (knownIds.contains(handler.deviceId)
+                    || child.getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+                continue;
+            }
+            logger.debug("Device {} not present on controller, marking {} gone", handler.deviceId, child.getUID());
+            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.access-gone");
         }
     }
 

@@ -33,6 +33,7 @@ import org.openhab.core.automation.module.script.ScriptEngineContainer;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.io.mcp.internal.McpTestHelper;
+import org.osgi.framework.BundleContext;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
@@ -58,14 +59,18 @@ class ScriptToolsTest {
     @Nullable
     ScriptEngineFactory scriptEngineFactory;
 
+    @Mock
+    @Nullable
+    BundleContext bundleContext;
+
     private final McpJsonMapper jsonMapper = McpTestHelper.newJsonMapper();
 
     private ScriptTools enabled() {
-        return new ScriptTools(requireNonNull(scriptEngineManager), jsonMapper, true);
+        return new ScriptTools(requireNonNull(scriptEngineManager), jsonMapper, true, requireNonNull(bundleContext));
     }
 
     private ScriptTools disabled() {
-        return new ScriptTools(requireNonNull(scriptEngineManager), jsonMapper, false);
+        return new ScriptTools(requireNonNull(scriptEngineManager), jsonMapper, false, requireNonNull(bundleContext));
     }
 
     private static <T> T requireNonNull(@Nullable T value) {
@@ -159,5 +164,57 @@ class ScriptToolsTest {
         Map<String, Object> parsed = parseResult(result);
         assertEquals(false, parsed.get("success"));
         assertEquals("EngineUnavailable", parsed.get("errorType"));
+    }
+
+    @Test
+    void getOpenhabJsTypesWhenDisabledReturnsScriptingDisabled() throws Exception {
+        CallToolResult result = disabled().handleGetOpenhabJsTypes(createRequest(Map.of()));
+        assertSuccess(result);
+        Map<String, Object> parsed = parseResult(result);
+        assertEquals(false, parsed.get("success"));
+        assertEquals("ScriptingDisabled", parsed.get("errorType"));
+    }
+
+    @Test
+    void getOpenhabJsTypesAddOnNotFoundReturnsError() throws Exception {
+        when(requireNonNull(bundleContext).getBundles()).thenReturn(new org.osgi.framework.Bundle[0]);
+
+        CallToolResult result = enabled().handleGetOpenhabJsTypes(createRequest(Map.of()));
+        assertSuccess(result);
+        Map<String, Object> parsed = parseResult(result);
+        assertEquals(false, parsed.get("success"));
+        assertEquals("AddOnNotFound", parsed.get("errorType"));
+    }
+
+    @Test
+    void getOpenhabJsTypesFileNotFoundReturnsError() throws Exception {
+        org.osgi.framework.Bundle mockBundle = mock(org.osgi.framework.Bundle.class);
+        when(mockBundle.getSymbolicName()).thenReturn("org.openhab.automation.jsscripting");
+        when(requireNonNull(bundleContext).getBundles()).thenReturn(new org.osgi.framework.Bundle[] { mockBundle });
+        when(mockBundle.getEntry("node_modules/openhab.d.ts")).thenReturn(null);
+
+        CallToolResult result = enabled().handleGetOpenhabJsTypes(createRequest(Map.of()));
+        assertSuccess(result);
+        Map<String, Object> parsed = parseResult(result);
+        assertEquals(false, parsed.get("success"));
+        assertEquals("FileNotFound", parsed.get("errorType"));
+    }
+
+    @Test
+    void getOpenhabJsTypesSuccessReturnsTypes() throws Exception {
+        org.osgi.framework.Bundle mockBundle = mock(org.osgi.framework.Bundle.class);
+        when(mockBundle.getSymbolicName()).thenReturn("org.openhab.automation.jsscripting");
+        when(requireNonNull(bundleContext).getBundles()).thenReturn(new org.osgi.framework.Bundle[] { mockBundle });
+
+        java.io.File tempFile = java.io.File.createTempFile("openhab", ".d.ts");
+        tempFile.deleteOnExit();
+        java.nio.file.Files.writeString(tempFile.toPath(), "declare module 'openhab';");
+        when(mockBundle.getEntry("node_modules/openhab.d.ts")).thenReturn(tempFile.toURI().toURL());
+
+        CallToolResult result = enabled().handleGetOpenhabJsTypes(createRequest(Map.of()));
+        assertSuccess(result);
+        Map<String, Object> parsed = parseResult(result);
+        assertEquals(true, parsed.get("success"));
+        assertEquals("declare module 'openhab';", parsed.get("types"));
     }
 }

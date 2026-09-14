@@ -101,6 +101,11 @@
 				<type>miele:laundry-weight</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="4">
+			<update-channel id="spinningspeed">
+				<type>miele:spinning-speed</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

@@ -46,6 +46,11 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
     }
 
     @Override
+    public <T> T getConfigAs(Class<T> configurationClass) {
+        return super.getConfigAs(configurationClass);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 

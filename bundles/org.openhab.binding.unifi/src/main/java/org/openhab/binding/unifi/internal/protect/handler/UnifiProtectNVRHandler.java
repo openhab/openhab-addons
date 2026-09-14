@@ -20,11 +20,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,10 +52,16 @@ import org.openhab.binding.unifi.internal.protect.api.priv.dto.system.Bootstrap;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.system.Event;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.system.Nvr;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.ModelType;
+import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.SmartDetectObjectType;
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.AuthenticationException;
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.ThrottledException;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.DeviceState;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.ObjectType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.BaseEvent;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraMotionEvent;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraSmartDetectLineEvent;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraSmartDetectLoiterEvent;
+import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.CameraSmartDetectZoneEvent;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.EventType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.gson.DeviceTypeAdapterFactory;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.gson.EventTypeAdapterFactory;
@@ -81,6 +92,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 /**
  * Bridge handler for the UniFi Protect NVR.
@@ -111,10 +123,38 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
 
     private int reconnectAttempt = 0;
     private int throttledReconnectAttempt = 0;
-    private final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
+    final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> childRefreshRetryTasks = new ConcurrentHashMap<>();
+    private final Object syncDevicesLock = new Object();
+    // Events can arrive on both WebSockets. Only ADDs are de-duplicated; UPDATEs pass through.
+    private final Map<String, Long> dispatchedEventKeys = new ConcurrentHashMap<>();
+    private static final long EVENT_DEDUP_TTL_MS = 120_000;
+    // Last full payload per private event id, so incremental UPDATE deltas can be merged into it.
+    private final Map<String, TimestampedPayload> privateEventPayloads = new ConcurrentHashMap<>();
+    private static final long EVENT_PAYLOAD_TTL_MS = 600_000;
 
-    private static final class PendingUpdate {
+    private record TimestampedPayload(JsonObject payload, long timestamp) {
+    }
+
+    // Already-fetched ids, so a merged payload carrying them does not re-fetch the same image.
+    private final Map<String, TimestampedMedia> fetchedEventMedia = new ConcurrentHashMap<>();
+
+    private record TimestampedMedia(String ids, long timestamp) {
+    }
+
+    // Stamped on the WebSocket thread, so a superseded snapshot can be skipped on dispatch.
+    private final AtomicLong eventSequence = new AtomicLong();
+    // Single thread so an event's ADD is always processed before the UPDATEs that follow it.
+    private volatile @Nullable ExecutorService privateEventExecutor;
+    // Survives PendingUpdate, which is discarded on delivery, so a straggler cannot look new.
+    private final Map<String, TimestampedSequence> deliveredEventSequences = new ConcurrentHashMap<>();
+    private static final long EVENT_SEQUENCE_TTL_MS = 600_000;
+
+    private record TimestampedSequence(long sequence, long timestamp) {
+    }
+
+    static final class PendingUpdate {
+        long lastSequence = Long.MIN_VALUE;
         @Nullable
         BaseEvent lastEvent;
         @Nullable
@@ -173,6 +213,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing NVR");
         shuttingDown = false;
+        privateEventExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "OH-unifi-protect-events"));
         ensureStaticChannels();
 
         UniFiControllerBridgeHandler parentHandler = getParentHandler();
@@ -271,10 +312,22 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             connectDeviceWebSocket(apiClient);
             logger.debug("Enabling Private API WebSocket for real-time updates");
             apiClient.getPrivateClient().enableWebSocket(update -> {
-                scheduler.execute(() -> {
+                // Merged here, on the WebSocket thread, where frames are still in NVR order.
+                long sequence = eventSequence.incrementAndGet();
+                if (update.modelType == ModelType.EVENT) {
+                    update.data = trackPrivateEventPayload(update.action, update.id, update.data);
+                }
+                ExecutorService eventExecutor = privateEventExecutor;
+                Executor dispatcher = update.modelType == ModelType.EVENT && eventExecutor != null
+                        && !eventExecutor.isShutdown() ? eventExecutor : scheduler;
+                dispatcher.execute(() -> {
                     logger.trace("Private API WebSocket update: action={}, model={}", update.action, update.modelType);
-                    routePrivateApiUpdate(update);
+                    routePrivateApiUpdate(update, sequence);
                 });
+            }, () -> {
+                // The socket must not reopen until the sync has finished writing.
+                logger.debug("Private API WebSocket reconnected, syncing devices from refreshed bootstrap");
+                syncDevices();
             }).whenComplete((result, ex) -> {
                 if (ex != null) {
                     logger.debug("Failed to enable Private API WebSocket", ex);
@@ -343,6 +396,11 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         shuttingDown = true;
         stopTasks();
         stopApiClient();
+        ExecutorService eventExecutor = privateEventExecutor;
+        if (eventExecutor != null) {
+            eventExecutor.shutdownNow();
+            privateEventExecutor = null;
+        }
         super.dispose();
     }
 
@@ -380,15 +438,14 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     }
 
     private void setChildStatus(String deviceId, DeviceState state) {
-        ThingStatus status = switch (state) {
-            case CONNECTED -> ThingStatus.ONLINE;
-            case CONNECTING -> ThingStatus.UNKNOWN;
-            default -> ThingStatus.OFFLINE;
-        };
         UnifiProtectAbstractDeviceHandler<?> handler = findChildHandler(deviceId,
                 UnifiProtectAbstractDeviceHandler.class);
-        if (handler != null && handler.getThing().getStatus() != status) {
-            handler.updateStatus(status);
+        if (handler != null) {
+            handler.applyConnectionStatus(switch (state) {
+                case CONNECTED -> ThingStatus.ONLINE;
+                case CONNECTING -> ThingStatus.UNKNOWN;
+                default -> ThingStatus.OFFLINE;
+            });
         }
     }
 
@@ -469,6 +526,15 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         if (apiClient == null) {
             return;
         }
+        // Dedicated lock: two interleaved syncs must not race each other, but the handler
+        // monitor is used by WS-inline paths (handleUpdateEvent) that must not block on the
+        // bootstrap fetch below
+        synchronized (syncDevicesLock) {
+            doSyncDevices(apiClient);
+        }
+    }
+
+    private void doSyncDevices(UniFiProtectHybridClient apiClient) {
         try {
             UnifiProtectDiscoveryService discoveryService = Objects.requireNonNull(this.discoveryService,
                     "Discovery service not set");
@@ -523,9 +589,44 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     ch.refreshFromDevice(privChime);
                 }
             });
+            markMissingChildrenGone(bootstrap);
         } catch (InterruptedException | ExecutionException e) {
             logger.debug("Initial sync failed", e);
         }
+    }
+
+    /**
+     * Mark child things GONE when their device is absent from the bootstrap's source ids —
+     * removed while we weren't connected, so no WebSocket remove was seen for it.
+     */
+    private void markMissingChildrenGone(Bootstrap bootstrap) {
+        for (Thing child : getThing().getThings()) {
+            if (!(child.getHandler() instanceof UnifiProtectAbstractDeviceHandler<?> handler)
+                    || handler.getDeviceId().isEmpty()) {
+                continue;
+            }
+            Set<String> sourceIds = bootstrap.sourceIdsFor(sourceCollectionFor(handler));
+            if (sourceIds == null || sourceIds.contains(handler.getDeviceId())) {
+                continue;
+            }
+            logger.debug("Device {} not present in bootstrap, marking {} gone", handler.getDeviceId(), child.getUID());
+            handler.markGone();
+        }
+    }
+
+    private String sourceCollectionFor(UnifiProtectAbstractDeviceHandler<?> handler) {
+        if (handler instanceof UnifiProtectCameraHandler) {
+            return "cameras";
+        } else if (handler instanceof UnifiProtectLightHandler) {
+            return "lights";
+        } else if (handler instanceof UnifiProtectSensorHandler) {
+            return "sensors";
+        } else if (handler instanceof UnifiProtectDoorlockHandler) {
+            return "doorlocks";
+        } else if (handler instanceof UnifiProtectChimeHandler) {
+            return "chimes";
+        }
+        return "";
     }
 
     private synchronized void setOfflineAndReconnect(boolean throttled, @Nullable String message) {
@@ -571,6 +672,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         for (int attempt = 1; attempt <= WS_CONNECT_MAX_RETRIES; attempt++) {
             try {
                 apiClient.getPublicClient().subscribeEvents(add -> {
+                    logger.debug("Public events WS event add, id={}, type={}", add.item.id, add.item.type);
                     routePublicApiEvent(add.item, WSEventType.ADD);
                 }, update -> {
                     handleUpdateEvent(update.item);
@@ -635,6 +737,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (remove.item == null || remove.item.id == null) {
                             return;
                         }
+                        // The cached private bootstrap still contains the device; a sync or child
+                        // refresh within its TTL would resurrect the GONE thing from it
+                        UniFiProtectHybridClient client = this.apiClient;
+                        if (client != null) {
+                            client.getPrivateClient().invalidateBootstrap();
+                        }
                         markChildGone(remove.item.id);
                     });
                 }, () -> {
@@ -658,6 +766,13 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
 
     private void routePublicApiEvent(BaseEvent event, WSEventType eventType) {
         if (event.device == null) {
+            return;
+        }
+        // ADD can arrive on both the public integration WS and fallback private updates WS,
+        // so de-dupe it. UPDATEs repeat over an event's lifetime and are debounced by
+        // handleUpdateEvent; de-duping them would drop public-WS sensor/ring updates for the dedup TTL.
+        String dedupId = event.id;
+        if (eventType == WSEventType.ADD && dedupId != null && !markEventDispatched(dedupId)) {
             return;
         }
         String deviceId = event.device;
@@ -701,7 +816,141 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         }
     }
 
-    private void routePrivateApiUpdate(WebSocketUpdate update) {
+    private boolean markEventDispatched(String key) {
+        long now = System.currentTimeMillis();
+        dispatchedEventKeys.values().removeIf(ts -> now - ts > EVENT_DEDUP_TTL_MS);
+        return dispatchedEventKeys.putIfAbsent(key, now) == null;
+    }
+
+    /**
+     * Whether this frame carries a thumbnail or heatmap id not already fetched for this event.
+     *
+     * The NVR generates those asynchronously and announces each once, but the merged payload keeps
+     * them from then on, so the id has to be compared against what was last seen rather than merely
+     * being present. Returns false when neither id is set.
+     */
+    private boolean isNewEventMedia(@Nullable String eventId, @Nullable String thumbnailId,
+            @Nullable String heatmapId) {
+        if (eventId == null || (thumbnailId == null && heatmapId == null)) {
+            return false;
+        }
+        String seen = thumbnailId + "|" + heatmapId;
+        long now = System.currentTimeMillis();
+        fetchedEventMedia.values().removeIf(p -> now - p.timestamp() > EVENT_PAYLOAD_TTL_MS);
+        TimestampedMedia previous = fetchedEventMedia.put(eventId, new TimestampedMedia(seen, now));
+        return previous == null || !seen.equals(previous.ids());
+    }
+
+    /**
+     * Keep the last full payload per event id and merge incremental UPDATE frames into it.
+     *
+     * Protect's private updates WebSocket sends an "add" with the complete event and subsequent
+     * "update" frames containing only the changed fields. Converting such a delta on its own fails,
+     * because the mapping needs the type and camera that only the "add" carried, which would drop
+     * the *_UPDATE dispatch and stop the contact latch from being refreshed.
+     *
+     * @return the full payload to work with. An update for an event whose add was never seen -- one
+     *         that started before openHAB did, say -- yields the delta unchanged; it cannot be
+     *         converted into a camera event without the type and camera the add carried, so it is
+     *         effectively dropped. Only a {@code null} input gives {@code null} back.
+     */
+    @Nullable
+    JsonObject trackPrivateEventPayload(@Nullable String action, @Nullable String id, @Nullable JsonObject data) {
+        if (id == null || data == null) {
+            return data;
+        }
+        long now = System.currentTimeMillis();
+        privateEventPayloads.values().removeIf(p -> now - p.timestamp > EVENT_PAYLOAD_TTL_MS);
+
+        if ("remove".equals(action)) {
+            privateEventPayloads.remove(id);
+            return data;
+        }
+        if ("add".equals(action)) {
+            privateEventPayloads.put(id, new TimestampedPayload(data.deepCopy(), now));
+            return data;
+        }
+        if (!"update".equals(action)) {
+            return data;
+        }
+        // One atomic step, so overlapping calls cannot merge from the same snapshot.
+        TimestampedPayload result = privateEventPayloads.computeIfPresent(id, (key, cached) -> {
+            JsonObject merged = cached.payload().deepCopy();
+            data.entrySet().forEach(e -> merged.add(e.getKey(), e.getValue()));
+            return new TimestampedPayload(merged, now);
+        });
+        if (result == null) {
+            return data;
+        }
+        return result.payload().deepCopy();
+    }
+
+    /**
+     * Convert a private-API {@link Event} into the matching public camera event so the
+     * standard {@link #routePublicApiEvent} dispatch (channels + contacts) can be reused.
+     * Returns {@code null} for events that are not camera motion / smart-detect zone, line or
+     * loiter zone (audio and ring stay on the public integration path only).
+     */
+    static @Nullable BaseEvent toPublicCameraEvent(Event event) {
+        var type = event.type;
+        String cameraId = event.cameraId;
+        if (type == null || cameraId == null) {
+            return null;
+        }
+        BaseEvent pub;
+        switch (type) {
+            case MOTION:
+                pub = new CameraMotionEvent();
+                pub.type = EventType.CAMERA_MOTION;
+                break;
+            case SMART_DETECT:
+                CameraSmartDetectZoneEvent zone = new CameraSmartDetectZoneEvent();
+                zone.smartDetectTypes = toObjectTypes(event.smartDetectTypes);
+                pub = zone;
+                pub.type = EventType.SMART_DETECT_ZONE;
+                break;
+            case SMART_DETECT_LINE:
+                CameraSmartDetectLineEvent line = new CameraSmartDetectLineEvent();
+                line.smartDetectTypes = toObjectTypes(event.smartDetectTypes);
+                pub = line;
+                pub.type = EventType.SMART_DETECT_LINE;
+                break;
+            case SMART_DETECT_LOITER_ZONE:
+                CameraSmartDetectLoiterEvent loiter = new CameraSmartDetectLoiterEvent();
+                loiter.smartDetectTypes = toObjectTypes(event.smartDetectTypes);
+                pub = loiter;
+                pub.type = EventType.SMART_DETECT_LOITER_ZONE;
+                break;
+            default:
+                return null;
+        }
+        pub.device = cameraId;
+        pub.start = event.start != null ? event.start.toEpochMilli() : null;
+        pub.end = event.end != null ? event.end.toEpochMilli() : null;
+        return pub;
+    }
+
+    private static List<ObjectType> toObjectTypes(@Nullable List<SmartDetectObjectType> types) {
+        List<ObjectType> out = new ArrayList<>();
+        if (types == null) {
+            return out;
+        }
+        for (SmartDetectObjectType type : types) {
+            if (type == null) {
+                // Gson yields null for a value this enum does not know, so a smart-detect type
+                // added by a later Protect release would otherwise take the whole event down here.
+                continue;
+            }
+            try {
+                out.add(ObjectType.valueOf(type.name()));
+            } catch (IllegalArgumentException ignored) {
+                // an audio object type in a smart-detect list — not a camera object type
+            }
+        }
+        return out;
+    }
+
+    private void routePrivateApiUpdate(WebSocketUpdate update, long sequence) {
         if (update.data == null) {
             return;
         }
@@ -727,6 +976,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                 return;
             }
 
+            // Only add/update carry usable device data; a remove for a deleted device must not
+            // refresh its handler (and thereby resurrect a GONE thing)
+            if (!"add".equals(update.action) && !"update".equals(update.action)) {
+                return;
+            }
+
             // Route to appropriate handler based on model type
             String deviceId = update.id;
             switch (update.modelType) {
@@ -737,7 +992,13 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (camera != null) {
                             logger.trace("Private API camera real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            ch.updateFromPrivateDevice(camera);
+                            if ("add".equals(update.action)) {
+                                // An add is a full payload proving the device exists, so it may clear GONE
+                                ch.refreshFromDevice(camera);
+                            } else {
+                                ch.applyDeviceState(camera);
+                                ch.updateFromPrivateDevice(camera);
+                            }
                         }
                     }
                     break;
@@ -748,7 +1009,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (doorlock != null) {
                             logger.trace("Private API doorlock real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            dlh.updateDoorlockChannels(doorlock);
+                            if ("add".equals(update.action)) {
+                                dlh.refreshFromDevice(doorlock);
+                            } else {
+                                dlh.applyDeviceState(doorlock);
+                                dlh.updateDoorlockChannels(doorlock);
+                            }
                         }
                     }
                     break;
@@ -759,7 +1025,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (chime != null) {
                             logger.trace("Private API chime real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            chimeHandler.updateChimeChannels(chime);
+                            if ("add".equals(update.action)) {
+                                chimeHandler.refreshFromDevice(chime);
+                            } else {
+                                chimeHandler.applyDeviceState(chime);
+                                chimeHandler.updateChimeChannels(chime);
+                            }
                         }
                     }
                     break;
@@ -770,7 +1041,12 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (light != null) {
                             logger.trace("Private API light real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            lightHandler.updateLightChannels(light);
+                            if ("add".equals(update.action)) {
+                                lightHandler.refreshFromDevice(light);
+                            } else {
+                                lightHandler.applyDeviceState(light);
+                                lightHandler.updateLightChannels(light);
+                            }
                         }
                     }
                     break;
@@ -782,17 +1058,37 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         if (sensor != null) {
                             logger.trace("Private API sensor real-time update for device {} (action: {})", deviceId,
                                     update.action);
-                            sensorHandler.refreshFromDevice(sensor);
+                            // Like the other device types: a partial delta must not replace the
+                            // handler's cached full device via refreshFromDevice
+                            if ("add".equals(update.action)) {
+                                sensorHandler.refreshFromDevice(sensor);
+                            } else {
+                                sensorHandler.applyDeviceState(sensor);
+                                sensorHandler.updateSensorChannels(sensor);
+                            }
                         }
                     }
                     break;
                 case EVENT:
-                    // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
-                    // generates them asynchronously after the event starts.
-                    if ("update".equals(update.action)) {
-                        Event event = gson.fromJson(update.data, Event.class);
-                        if (event != null && event.cameraId != null
-                                && (event.thumbnailId != null || event.heatmapId != null)) {
+                    // update.data has already been merged with the last full payload for this event
+                    // id, on the WebSocket thread -- see where the update handler is registered.
+                    Event event = update.data == null ? null : gson.fromJson(update.data, Event.class);
+                    if (event != null) {
+                        logger.debug("Private updates WS event {}, id={}, type={}", update.action, update.id,
+                                event.type);
+                        BaseEvent pubEvent = toPublicCameraEvent(event);
+                        if (pubEvent != null) {
+                            pubEvent.id = update.id;
+                            // "remove" must not fire a detection.
+                            if ("add".equals(update.action)) {
+                                routePublicApiEvent(pubEvent, WSEventType.ADD);
+                            } else if ("update".equals(update.action)) {
+                                handleUpdateEvent(pubEvent, sequence);
+                            }
+                        }
+                        // Merging makes the ids sticky, so only act on an id not already fetched.
+                        if ("update".equals(update.action) && event.cameraId != null
+                                && isNewEventMedia(update.id, event.thumbnailId, event.heatmapId)) {
                             UnifiProtectCameraHandler camHandler = findChildHandler(event.cameraId,
                                     UnifiProtectCameraHandler.class);
                             if (camHandler != null) {
@@ -862,13 +1158,35 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         pendingEventUpdates.clear();
     }
 
-    private synchronized void handleUpdateEvent(@Nullable BaseEvent event) {
+    private void handleUpdateEvent(@Nullable BaseEvent event) {
+        handleUpdateEvent(event, eventSequence.incrementAndGet());
+    }
+
+    /**
+     * @param sequence arrival order of this snapshot, taken on the WebSocket thread. Dispatch tasks
+     *            are submitted independently to the shared multi-threaded scheduler, so without it
+     *            a task carrying an older snapshot could run last and overwrite a newer one.
+     */
+    synchronized void handleUpdateEvent(@Nullable BaseEvent event, long sequence) {
         if (event == null || event.id == null) {
             return;
         }
         final String eventId = event.id;
+        // PendingUpdate is gone after delivery, so check the delivered mark too.
+        TimestampedSequence delivered = deliveredEventSequences.get(eventId);
+        if (delivered != null && sequence <= delivered.sequence()) {
+            logger.trace("Skipping event {} snapshot {}, {} was already delivered", eventId, sequence,
+                    delivered.sequence());
+            return;
+        }
         PendingUpdate state = Objects
                 .requireNonNull(pendingEventUpdates.computeIfAbsent(eventId, k -> new PendingUpdate()));
+        if (sequence < state.lastSequence) {
+            logger.trace("Skipping event {} snapshot {}, a newer one ({}) already arrived", eventId, sequence,
+                    state.lastSequence);
+            return;
+        }
+        state.lastSequence = sequence;
         // Schedule max wait once per burst (only if not already scheduled)
         if (state.maxFuture == null) {
             final PendingUpdate stateFinalForMax = state;
@@ -889,11 +1207,17 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                 WS_UPDATE_DEBOUNCE_MS, TimeUnit.MILLISECONDS);
     }
 
-    private synchronized void deliverDebouncedUpdate(String eventId, PendingUpdate state) {
+    synchronized void deliverDebouncedUpdate(String eventId, PendingUpdate state) {
         // Guard against races if another task already delivered and cleared state
         PendingUpdate current = pendingEventUpdates.get(eventId);
         if (!state.equals(current)) {
             return;
+        }
+        // Remember how far this event got before the pending state is dropped.
+        long now = System.currentTimeMillis();
+        deliveredEventSequences.values().removeIf(s -> now - s.timestamp() > EVENT_SEQUENCE_TTL_MS);
+        if (state.lastSequence != Long.MIN_VALUE) {
+            deliveredEventSequences.put(eventId, new TimestampedSequence(state.lastSequence, now));
         }
         // Cancel all update timers
         ScheduledFuture<?> f1 = state.debounceFuture;

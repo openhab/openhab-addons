@@ -76,7 +76,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.givimad.libfvadjni.VoiceActivityDetector;
 import io.github.givimad.whisperjni.WhisperContext;
 import io.github.givimad.whisperjni.WhisperContextParams;
 import io.github.givimad.whisperjni.WhisperFullParams;
@@ -84,6 +83,7 @@ import io.github.givimad.whisperjni.WhisperGrammar;
 import io.github.givimad.whisperjni.WhisperJNI;
 import io.github.givimad.whisperjni.WhisperSamplingStrategy;
 import io.github.givimad.whisperjni.WhisperState;
+import io.github.jvoiceproject.libfvadjni.VoiceActivityDetector;
 
 /**
  * The {@link WhisperSTTService} class is a service implementation to use whisper.cpp for Speech-to-Text.
@@ -422,6 +422,7 @@ public class WhisperSTTService implements STTService {
                         // run vad
                         if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
                             logger.debug("VAD: Skipping, max length reached");
+                            break;
                         } else {
                             VAD.@Nullable VADResult lastVADResult = vad.analyze(stepAudioSamples);
                             if (lastVADResult.isVoice()) {

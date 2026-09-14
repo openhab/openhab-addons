@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.core.thing.CommonTriggerEvents;
@@ -136,12 +137,14 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_BTNT_TOGGLE = "toggle";
     public static final String SHELLY_BTNT_EDGE = "edge";
     public static final String SHELLY_BTNT_DETACHED = "detached";
+    public static final String SHELLY_BTNT_ACTIVATE = "activate"; // Gen2+ input: one-shot trigger, no local state
 
     public static final String SHELLY_STATE_LAST = "last";
     public static final String SHELLY_STATE_STOP = "stop";
 
     public static final String SHELLY_INP_MODE_OPENCLOSE = "openclose";
     public static final String SHELLY_INP_MODE_ONEBUTTON = "onebutton";
+    public static final String SHELLY_INP_MODE_DETACHED = "detached"; // Gen2+ Cover in_mode only, no Gen1 equivalent
 
     public static final String SHELLY_OBSTMODE_DISABLED = "disabled";
     public static final String SHELLY_SAFETYM_WHILEOPENING = "while_opening";
@@ -272,6 +275,8 @@ public class Shelly1ApiJsonDTO {
         public String mac;
         public String hostname;
         public String fw;
+        public String ver; // Gen2+: human-readable app version, e.g. "1.7.99-powerstripg4prod1";
+                           // fallback when fw (fw_id) has no embedded semver (newer Gen4 app builds)
         public Boolean auth;
         public Integer gen;
         public String coiot;
@@ -519,6 +524,14 @@ public class Shelly1ApiJsonDTO {
         public String outOnUrl; // output is activated
         @SerializedName("out_off_url")
         public String outOffUrl; // output is deactivated
+
+        // Gen2 (Pro RGBWW PM) only: which RPC component this entry maps to, see ShellyApiLightUtil
+        public transient ShellyLightApiComponent apiComponent = ShellyLightApiComponent.NONE;
+
+        // Gen2 CCT component only: per-component color-temperature range from ct_range; null falls back to the
+        // profile-wide default (see ShellyDeviceProfile.getMinTemp()/getMaxTemp())
+        public transient @Nullable Integer minTemp;
+        public transient @Nullable Integer maxTemp;
     }
 
     public static class ShellyFavPos { // FW 1.9.2+ in roller mode
@@ -557,15 +570,19 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("is_valid")
         public Boolean isValid; // Whether the associated meter is functioning properly
         public Double power; // Instantaneous power, Watts
-        public Double reactive; // Instantaneous reactive power, Watts
+        public Double reactive; // Instantaneous reactive power, VAR
         public Double voltage; // RMS voltage, Volts
         public Double total; // Total consumed energy, Wh
         @SerializedName("total_returned")
         public Double totalReturned; // Total returned energy, Wh
 
+        public Double apparentPower; // Instantaneous apparent power, VA (Gen2 only)
         public Double pf; // 3EM
         public Double current; // 3EM
         public Double frequency; // Gen4
+        // Energy per complete minute in Wh, slot 0 = previous minute (Gen2 relay+PM only);
+        // converted from aenergy.by_minute (mWh) in Shelly2ApiClient
+        public @Nullable Double @Nullable [] energyByMinute;
     }
 
     public static class ShellyEMNCurrentSettings {
@@ -586,15 +603,15 @@ public class Shelly1ApiJsonDTO {
     }
 
     public static class ShellySettingsUpdate {
-        public String status;
+        public @Nullable String status;
         @SerializedName("has_update")
-        public Boolean hasUpdate;
+        public @Nullable Boolean hasUpdate;
         @SerializedName("new_version")
-        public String newVersion;
+        public @Nullable String newVersion;
         @SerializedName("old_version")
-        public String oldVersion;
+        public @Nullable String oldVersion;
         @SerializedName("beta_version")
-        public String betaVersion;
+        public @Nullable String betaVersion;
     }
 
     public static class ShellySettingsGlobal {
@@ -731,6 +748,10 @@ public class Shelly1ApiJsonDTO {
         // Gen2
         public Boolean ethernet;
         public Boolean bluetooth;
+
+        public boolean loraDetected;
+        public boolean loraRxEnabled;
+        public Integer[] loraComponentIds; // so far only 1 add-on is supported
     }
 
     public static class ShellySettingsAttributes {
@@ -789,6 +810,7 @@ public class Shelly1ApiJsonDTO {
 
         public Double totalCurrent;
         public Double totalPower;
+        public Double totalApparent; // Total instantaneous apparent power across all meters, VA (Gen2 only)
         public Double totalKWH;
         public Double totalReturned;
 
@@ -1171,6 +1193,9 @@ public class Shelly1ApiJsonDTO {
         public ShellySensorState sensor;
         public Boolean smoke; // SHelly Smoke
         public Boolean flood; // Shelly Flood: true = flood condition detected
+        public @Nullable Boolean presence; // Shelly Presence: true = presence detected in zone
+        public @Nullable Integer objectCount; // Shelly Presence: number of objects currently in zone
+        public @Nullable Boolean sensorEnable; // Shelly Presence: radar sensor enabled
         public Boolean mute; // mute enabled/disabled
         @SerializedName("rain_sensor")
         public Boolean rainSensor; // Shelly Flood: true=in rain mode
@@ -1211,6 +1236,19 @@ public class Shelly1ApiJsonDTO {
         public Double rotationY;
         public Double rotationZ;
         public Double distance;
+
+        // WS90 (powered by Shelly)
+        public @Nullable Boolean rain;
+        public @Nullable Double windSpeed;
+        public @Nullable Double windDirection;
+        public @Nullable Double gustSpeed;
+        public @Nullable Double uvIndex;
+        public @Nullable Double pressure;
+        public @Nullable Double dewPoint;
+        public @Nullable Double precipitation;
+        public @Nullable String windDirectionStr;
+        public @Nullable Double apparentTemp;
+        public @Nullable Double seaLevelPressure;
     }
 
     public static class ShellySettingsSmoke {

@@ -32,6 +32,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -42,6 +45,7 @@ import org.openhab.binding.enphase.internal.discovery.EnphaseDevicesDiscoverySer
 import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO.DeviceDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
+import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
 import org.openhab.binding.enphase.internal.exception.EntrezConnectionException;
 import org.openhab.binding.enphase.internal.exception.EntrezJwtInvalidException;
@@ -64,6 +68,7 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +78,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Thomas Hentschel - Initial contribution
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Cedric Boon - Added support for detailed inverter stats
  */
 @NonNullByDefault
 public class EnvoyBridgeHandler extends BaseBridgeHandler {
@@ -84,6 +90,9 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     private static final long RETRY_RECONNECT_SECONDS = 10;
+    // Number of consecutive connection failures tolerated before the bridge is taken offline. The Envoy local API can
+    // be briefly unresponsive (e.g. during nightly firmware maintenance); a single timeout should not flap the bridge.
+    private static final int MAX_TRANSIENT_CONNECTION_ERRORS = 3;
 
     private final Logger logger = LoggerFactory.getLogger(EnvoyBridgeHandler.class);
     private final EnvoyHostAddressCache envoyHostnameCache;
@@ -93,12 +102,15 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> updataDataFuture;
     private @Nullable ScheduledFuture<?> updateHostnameFuture;
+    private int consecutiveConnectionErrors;
     private @Nullable ExpiringCache<Map<String, @Nullable InverterDTO>> invertersCache;
     private @Nullable ExpiringCache<Map<String, @Nullable DeviceDTO>> devicesCache;
+    private @Nullable ExpiringCache<Map<String, PdmDeviceDataDTO>> deviceDataCache;
     private @Nullable EnvoyEnergyDTO productionDTO;
     private @Nullable EnvoyEnergyDTO consumptionDTO;
     private FeatureStatus consumptionSupported = FeatureStatus.UNKNOWN;
     private FeatureStatus jsonSupported = FeatureStatus.UNKNOWN;
+    private FeatureStatus deviceDataSupported = FeatureStatus.UNKNOWN;
 
     public EnvoyBridgeHandler(final Bridge thing, final HttpClient httpClient,
             final EnvoyHostAddressCache envoyHostAddressCache) {
@@ -123,19 +135,27 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
         } else {
             switch (channelUID.getIdWithoutGroup()) {
                 case ENVOY_WATT_HOURS_TODAY:
-                    updateState(channelUID, new QuantityType<>(data.wattHoursToday, Units.WATT_HOUR));
+                    updateState(channelUID, toState(data.wattHoursToday, Units.WATT_HOUR));
                     break;
                 case ENVOY_WATT_HOURS_SEVEN_DAYS:
-                    updateState(channelUID, new QuantityType<>(data.wattHoursSevenDays, Units.WATT_HOUR));
+                    updateState(channelUID, toState(data.wattHoursSevenDays, Units.WATT_HOUR));
                     break;
                 case ENVOY_WATT_HOURS_LIFETIME:
-                    updateState(channelUID, new QuantityType<>(data.wattHoursLifetime, Units.WATT_HOUR));
+                    updateState(channelUID, toState(data.wattHoursLifetime, Units.WATT_HOUR));
                     break;
                 case ENVOY_WATTS_NOW:
-                    updateState(channelUID, new QuantityType<>(data.wattsNow, Units.WATT));
+                    updateState(channelUID, toState(data.wattsNow, Units.WATT));
                     break;
             }
         }
+    }
+
+    /**
+     * Converts a possibly {@code null} measured value to a {@link QuantityType} state, or {@link UnDefType#UNDEF} when
+     * the value is not available (e.g. energy buckets that the meter readings endpoint does not provide).
+     */
+    private <Q extends Quantity<Q>> State toState(final @Nullable Integer value, final Unit<Q> unit) {
+        return value == null ? UnDefType.UNDEF : new QuantityType<>(value, unit);
     }
 
     @Override
@@ -153,10 +173,13 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         consumptionSupported = FeatureStatus.UNKNOWN;
         jsonSupported = FeatureStatus.UNKNOWN;
+        deviceDataSupported = FeatureStatus.UNKNOWN;
         invertersCache = new ExpiringCache<>(Duration.of(configuration.refresh, ChronoUnit.MINUTES),
                 this::refreshInverters);
         devicesCache = new ExpiringCache<>(Duration.of(configuration.refresh, ChronoUnit.MINUTES),
                 this::refreshDevices);
+        deviceDataCache = new ExpiringCache<>(Duration.of(configuration.refresh, ChronoUnit.MINUTES),
+                this::refreshDeviceData);
         connectorWrapper.setVersion(getVersion());
         updataDataFuture = scheduler.scheduleWithFixedDelay(() -> updateData(false), 0, configuration.refresh,
                 TimeUnit.MINUTES);
@@ -202,8 +225,43 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                         "This Ephase Envoy device ({}) doesn't seem to support json data. So not all channels are set.",
                         getThing().getUID());
                 jsonSupported = FeatureStatus.UNSUPPORTED;
-            } else if (consumptionSupported == FeatureStatus.SUPPORTED) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } else {
+                // Inventory/device data is optional and the endpoint can be intermittently unavailable. Don't take the
+                // bridge offline (which would also gate production/consumption updates); keep the last known data. A
+                // genuinely unreachable gateway is detected by the production call in the main update path.
+                logger.trace("refreshDevices connection problem", e);
+            }
+        } catch (final EnphaseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Method called by the ExpiringCache when no per-device energy data is present to get the data from the Envoy
+     * gateway. This data is not available on all envoy devices.
+     *
+     * @return the per-device energy data from the Envoy gateway, keyed by serial number, or null if no data is
+     *         available.
+     */
+    private @Nullable Map<String, PdmDeviceDataDTO> refreshDeviceData() {
+        try {
+            if (deviceDataSupported != FeatureStatus.UNSUPPORTED) {
+                final Map<String, PdmDeviceDataDTO> data = connectorWrapper.getConnector().getDeviceData();
+
+                deviceDataSupported = FeatureStatus.SUPPORTED;
+                return data;
+            }
+        } catch (final EnvoyNoHostnameException e) {
+            // ignore hostname exception here. It's already handled by others.
+        } catch (final EnvoyConnectionException e) {
+            if (deviceDataSupported == FeatureStatus.UNKNOWN) {
+                logger.debug(
+                        "This Enphase Envoy device ({}) doesn't seem to support per-device energy data. So no inverter energy channels are set.",
+                        getThing().getUID());
+                deviceDataSupported = FeatureStatus.UNSUPPORTED;
+            } else {
+                logger.trace("refreshDeviceData connection problem", e);
             }
         } catch (final EnphaseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -252,6 +310,26 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Returns the per-device energy data. It get the data from cache or updates the cache if possible in case no
+     * data is available.
+     *
+     * @param force force a cache refresh
+     * @return data if present or null
+     */
+    public @Nullable Map<String, PdmDeviceDataDTO> getDeviceData(final boolean force) {
+        final ExpiringCache<Map<String, PdmDeviceDataDTO>> deviceDataCache = this.deviceDataCache;
+
+        if (deviceDataCache == null || !isOnline()) {
+            return null;
+        } else {
+            if (force) {
+                deviceDataCache.invalidateValue();
+            }
+            return deviceDataCache.getValue();
+        }
+    }
+
+    /**
      * Method called by the refresh thread.
      */
     public synchronized void updateData(final boolean forceUpdate) {
@@ -264,12 +342,22 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                 updateEnvoy();
                 updateInverters(forceUpdate);
                 updateDevices(forceUpdate);
+                consecutiveConnectionErrors = 0;
             }
         } catch (final EnvoyNoHostnameException e) {
             scheduleHostnameUpdate(false);
         } catch (final EnvoyConnectionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            scheduleHostnameUpdate(false);
+            // The Envoy local API is intermittently unresponsive on some firmware. Tolerate a few consecutive
+            // timeouts (keeping the last known values and the bridge online) before treating it as a real outage, so a
+            // brief blip doesn't flap the bridge - and its child things - offline or trigger a hostname rediscovery.
+            if (++consecutiveConnectionErrors < MAX_TRANSIENT_CONNECTION_ERRORS) {
+                logger.debug("Transient connection problem ({}/{}) for Enphase thing {}, keeping bridge online: {}",
+                        consecutiveConnectionErrors, MAX_TRANSIENT_CONNECTION_ERRORS, getThing().getUID(),
+                        e.getMessage());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                scheduleHostnameUpdate(false);
+            }
         } catch (final EntrezConnectionException e) {
             logger.debug("EntrezConnectionException in Enphase thing {}: ", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -367,22 +455,26 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
      */
     private void updateInverters(final boolean forceUpdate) {
         final Map<String, @Nullable InverterDTO> inverters = getInvertersData(forceUpdate);
+        final Map<String, PdmDeviceDataDTO> deviceData = getDeviceData(forceUpdate);
 
         if (inverters != null) {
             getThing().getThings().stream().map(Thing::getHandler).filter(h -> h instanceof EnphaseInverterHandler)
                     .map(EnphaseInverterHandler.class::cast)
-                    .forEach(invHandler -> updateInverter(inverters, invHandler));
+                    .forEach(invHandler -> updateInverter(inverters, deviceData, invHandler));
         }
     }
 
     private void updateInverter(final @Nullable Map<String, @Nullable InverterDTO> inverters,
-            final EnphaseInverterHandler invHandler) {
+            final @Nullable Map<String, PdmDeviceDataDTO> deviceData, final EnphaseInverterHandler invHandler) {
         if (inverters == null) {
             return;
         }
         final InverterDTO inverterDTO = inverters.get(invHandler.getSerialNumber());
 
         invHandler.refreshInverterChannels(inverterDTO);
+        if (deviceData != null) {
+            invHandler.refreshInverterEnergyChannels(deviceData.get(invHandler.getSerialNumber()));
+        }
         if (jsonSupported == FeatureStatus.UNSUPPORTED) {
             // if inventory json is supported device status is set in #updateDevices
             invHandler.refreshDeviceStatus(inverterDTO != null);
@@ -420,7 +512,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(final ThingHandler childHandler, final Thing childThing) {
         if (childHandler instanceof EnphaseInverterHandler handler) {
-            updateInverter(getInvertersData(false), handler);
+            updateInverter(getInvertersData(false), getDeviceData(false), handler);
         }
         if (childHandler instanceof EnphaseDeviceHandler handler) {
             final Map<String, @Nullable DeviceDTO> devices = getDevices(false);
@@ -437,13 +529,22 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     private void updateHostname() {
         final String lastKnownHostname = envoyHostnameCache.getLastKnownHostAddress(configuration.serialNumber);
 
-        if (lastKnownHostname.isEmpty()) {
+        if (!lastKnownHostname.isEmpty()) {
+            updateConfigurationOnHostnameUpdate(lastKnownHostname);
+            updateData(true);
+        } else if (!configuration.hostname.isEmpty()) {
+            // No address from mDNS discovery, but a hostname is configured. Retry with the configured hostname rather
+            // than flapping the bridge OFFLINE with "No ip address known"; the gateway is most likely just temporarily
+            // unreachable (e.g. firmware maintenance) and will respond again shortly. updateData reschedules another
+            // attempt if it still fails.
+            logger.debug("No mDNS address for {}, retrying the configured hostname '{}'.", getThing().getUID(),
+                    configuration.hostname);
+            updateHostnameFuture = null;
+            updateData(true);
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "No ip address known of the Envoy gateway. If this isn't updated in a few minutes run discovery scan or check your connection.");
             scheduleHostnameUpdate(true);
-        } else {
-            updateConfigurationOnHostnameUpdate(lastKnownHostname);
-            updateData(true);
         }
     }
 

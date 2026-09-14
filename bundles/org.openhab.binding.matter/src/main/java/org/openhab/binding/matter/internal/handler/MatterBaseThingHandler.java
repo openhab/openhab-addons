@@ -269,7 +269,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      * @param detail The detail of the status.
      * @param description The description of the status.
      */
-    public void setEndpointStatus(ThingStatus status, ThingStatusDetail detail, String description) {
+    public void setEndpointStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
         logger.debug("setEndpointStatus {} {} {} {}", status, detail, description, getNodeId());
         updateStatus(status, detail, description);
     }

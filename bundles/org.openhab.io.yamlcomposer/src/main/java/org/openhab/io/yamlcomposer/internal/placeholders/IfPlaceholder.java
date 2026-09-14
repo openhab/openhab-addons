@@ -12,7 +12,6 @@
  */
 package org.openhab.io.yamlcomposer.internal.placeholders;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -28,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @SuppressWarnings("null")
 @NonNullByDefault
 public record IfPlaceholder(@Nullable Object value,
-        @NonNull String sourceLocation) implements InterpolablePlaceholder<IfPlaceholder> {
+        String sourceLocation) implements InterpolablePlaceholder<IfPlaceholder> {
 
     @Override
     public IfPlaceholder recreate(@Nullable Object newValue, String location) {

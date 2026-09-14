@@ -126,8 +126,9 @@ public class MoonPhaseSet {
      * Returns the phase name.
      */
     public State getName() {
-        if (name != null) {
-            return new StringType(name.toString());
+        MoonPhase local = name;
+        if (local != null) {
+            return new StringType(local.toString());
         }
         return UnDefType.UNDEF;
     }

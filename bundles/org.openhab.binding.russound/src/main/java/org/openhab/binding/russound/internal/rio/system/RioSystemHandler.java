@@ -420,7 +420,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
     public RioSystemConfig getRioConfig() {
         configLock.lock();
         try {
-            final RioSystemConfig sysConfig = getThing().getConfiguration().as(RioSystemConfig.class);
+            final RioSystemConfig sysConfig = getConfigAs(RioSystemConfig.class);
 
             if (sysConfig == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");

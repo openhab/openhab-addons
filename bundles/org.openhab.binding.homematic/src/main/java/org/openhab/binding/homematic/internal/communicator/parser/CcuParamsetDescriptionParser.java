@@ -47,8 +47,8 @@ public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataL
         if (entries != null) {
             for (TclScriptDataEntry entry : entries) {
                 HmDatapoint dp = assembleDatapoint(entry.name, entry.unit, entry.valueType,
-                        this.toOptionList(entry.options), convertToType(entry.minValue), convertToType(entry.maxValue),
-                        toInteger(entry.operations), convertToType(entry.value), null, paramsetType, isHmIpDevice);
+                        this.toOptionList(entry.options), entry.minValue, entry.maxValue, toInteger(entry.operations),
+                        entry.value, null, paramsetType, isHmIpDevice);
                 channel.addDatapoint(dp);
             }
         }

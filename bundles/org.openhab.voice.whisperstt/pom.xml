@@ -13,17 +13,17 @@
   <artifactId>org.openhab.voice.whisperstt</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Voice :: Whisper Speech-to-Text</name>
+
   <dependencies>
-    <!--Deps -->
     <dependency>
       <groupId>io.github.givimad</groupId>
       <artifactId>whisper-jni</artifactId>
       <version>1.6.1</version>
     </dependency>
     <dependency>
-      <groupId>io.github.givimad</groupId>
+      <groupId>io.github.jvoice-project</groupId>
       <artifactId>libfvad-jni</artifactId>
-      <version>1.0.0-1</version>
+      <version>1.0.0-997e9dc</version>
     </dependency>
   </dependencies>
 </project>

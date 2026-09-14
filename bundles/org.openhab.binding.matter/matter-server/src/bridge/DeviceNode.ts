@@ -92,7 +92,7 @@ export class DeviceNode {
             await this.server?.erase();
             await this.close();
             const ohStorage = await this.#ohBridgeStorage();
-            await ohStorage.clear();
+            await ohStorage.clearAll();
             logger.info(`Initializing bridge again`);
             await this.#init();
         }

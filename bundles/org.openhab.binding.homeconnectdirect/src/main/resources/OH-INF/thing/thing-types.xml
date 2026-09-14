@@ -217,13 +217,16 @@
 			<channel id="empty-milk-tank" typeId="empty-milk-tank-channel"/>
 			<channel id="bean-container-empty" typeId="bean-container-empty-channel"/>
 			<channel id="process-phase" typeId="coffee-maker-process-phase-channel"/>
-			<channel id="coffeemaker-program-command" typeId="coffeemaker-program-command-channel"/>
 
 			<!-- program -->
 			<channel id="active-program" typeId="active-program-channel"/>
 			<channel id="selected-program" typeId="selected-program-channel"/>
+			<channel id="program-command" typeId="program-command-channel"/>
 			<channel id="program-progress" typeId="program-progress-channel"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description-ref uri="thing-type:homeconnectdirect:appliance"/>
 	</thing-type>
@@ -242,12 +245,10 @@
 			<channel id="command" typeId="command-channel"/>
 			<channel id="raw-message" typeId="raw-message-channel"/>
 
-			<!-- oven specific -->
-			<channel id="oven-program-command" typeId="oven-program-command-channel"/>
-
 			<!-- program -->
 			<channel id="active-program" typeId="active-program-channel"/>
 			<channel id="selected-program" typeId="selected-program-channel"/>
+			<channel id="program-command" typeId="program-command-channel"/>
 			<channel id="program-progress" typeId="program-progress-channel"/>
 			<channel id="remaining-program-time" typeId="remaining-program-time-channel"/>
 
@@ -256,6 +257,9 @@
 			<channel id="setpoint-temperature" typeId="oven-setpoint-temperature-channel"/>
 
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description-ref uri="thing-type:homeconnectdirect:appliance"/>
 	</thing-type>
@@ -273,12 +277,10 @@
 			<channel id="command" typeId="command-channel"/>
 			<channel id="raw-message" typeId="raw-message-channel"/>
 
-			<!-- warming drawer specific -->
-			<channel id="oven-program-command" typeId="oven-program-command-channel"/>
-
 			<!-- program -->
 			<channel id="active-program" typeId="active-program-channel"/>
 			<channel id="selected-program" typeId="selected-program-channel"/>
+			<channel id="program-command" typeId="program-command-channel"/>
 			<channel id="program-progress" typeId="program-progress-channel"/>
 			<channel id="remaining-program-time" typeId="remaining-program-time-channel"/>
 
@@ -286,6 +288,9 @@
 			<channel id="setpoint-temperature" typeId="oven-setpoint-temperature-channel"/>
 
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>haId</representation-property>
 		<config-description-ref uri="thing-type:homeconnectdirect:appliance"/>
 	</thing-type>
@@ -481,39 +486,6 @@
 				<option value="start">Start Program</option>
 				<option value="pause">Pause Program</option>
 				<option value="resume">Resume Program</option>
-			</options>
-		</command>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-
-	<channel-type id="oven-program-command-channel">
-		<item-type>String</item-type>
-		<label>Program Command</label>
-		<description>Controls the program execution.</description>
-		<tags>
-			<tag>Control</tag>
-		</tags>
-		<command>
-			<options>
-				<option value="start">Start Program</option>
-				<option value="pause">Pause Program</option>
-				<option value="resume">Resume Program</option>
-				<option value="stop">Stop Program</option>
-			</options>
-		</command>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-
-	<channel-type id="coffeemaker-program-command-channel">
-		<item-type>String</item-type>
-		<label>Program Command</label>
-		<description>Controls the program execution.</description>
-		<tags>
-			<tag>Control</tag>
-		</tags>
-		<command>
-			<options>
-				<option value="start">Start Program</option>
 				<option value="stop">Stop Program</option>
 			</options>
 		</command>

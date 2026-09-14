@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +46,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.Gamut2;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
+import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
@@ -56,6 +58,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ChimeType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ErrorType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
@@ -63,10 +66,12 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallActi
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
+import org.openhab.binding.hue.internal.api.dto.clip2.helper.LegacyLightState;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -87,6 +92,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -102,6 +108,8 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
+import org.openhab.core.util.ColorUtil.Gamut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +131,27 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private static final Duration DYNAMICS_ACTIVE_WINDOW = Duration.ofSeconds(10);
 
-    private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
+    /*
+     * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having
+     * the issue where they do not correctly handle a PUT command for the 'off' state.
+     */
+    private static final Set<String> OFF_TRANSITION_WORK_AROUND_MODELS = Set.of( //
+            "LK Dimmer", // LK Wiser Dimmer -- see https://techblog.vindvejr.dk/?p=455
+            "^TRADFRI.*1055l$" // IKEA Tradfri 1055l bulb
+    );
+    static final Pattern OFF_TRANSITION_WORK_AROUND_PATTERN = Pattern.compile(
+            OFF_TRANSITION_WORK_AROUND_MODELS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
+
+    /*
+     * Pre-compiled pattern matcher based on the following set of Model Id regular expressions for devices having
+     * the (legacy) issue where the light operates bi-stable in either 'FULL_COLOR' or 'COLOR_TEMP' mode.
+     */
+    private static final Set<String> OPERATING_MODE_WORK_AROUND_MODELS = Set.of( //
+            "RGB-CCT", // Müller Licht extended color light
+            "TS0505B" // No Brand extended color light
+    );
+    private static final Pattern OPERATING_MODE_WORK_AROUND_PATTERN = Pattern.compile(
+            OPERATING_MODE_WORK_AROUND_MODELS.stream().collect(Collectors.joining("|")), Pattern.CASE_INSENSITIVE);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
@@ -212,9 +240,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private boolean hasConnectivityIssue;
     private boolean updateSceneContributorsDone;
     private boolean updateLightPropertiesDone;
+    private boolean updateLightCacheRequiredFieldsDone;
     private boolean updatePropertiesDone;
     private boolean updateDependenciesDone;
-    private boolean applyOffTransitionWorkaround;
+
+    private @Nullable LegacyLightState legacyLightState;
 
     private @Nullable Future<?> alertResetTask;
     private @Nullable Future<?> dynamicsResetTask;
@@ -382,6 +412,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
 
+        try {
+            handleCommandInner(channelUID, commandParam);
+        } catch (CriticalFieldMissingException e) {
+            logger.warn("{} -> handleCommand() channelUID:{} command:{} error: {}", resourceId, channelUID,
+                    commandParam, e.getMessage(), e);
+        }
+    }
+
+    public void handleCommandInner(ChannelUID channelUID, Command commandParam) throws CriticalFieldMissingException {
         ResourceType lightResourceType = thisResource.getType() == ResourceType.DEVICE ? ResourceType.LIGHT
                 : ResourceType.GROUPED_LIGHT;
 
@@ -435,17 +474,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, cache.getBrightnessState());
                 }
                 if (command instanceof PercentType brightnessCommand) {
-                    putResource = Setters.setDimming(putResource, brightnessCommand, cache);
-                    Double minDimLevel = Objects.nonNull(cache) ? cache.getMinimumDimmingLevel() : null;
-                    minDimLevel = Objects.nonNull(minDimLevel) ? minDimLevel : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-                    command = OnOffType.from(brightnessCommand.doubleValue() >= minDimLevel);
+                    putResource = putResource.setBrightness(brightnessCommand);
+                    double brightnessAbsolute = brightnessCommand.doubleValue();
+                    command = Setters.getHardOnOff(putResource, brightnessAbsolute, true, cache); // avoid "soft off"
                 }
                 // NB fall through for handling of switch related commands !!
 
             case CHANNEL_2_SWITCH:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 putResource.setOnOff(command);
-                applyDeviceSpecificWorkArounds(command, putResource);
+                applyOffTransitionWorkAround(command, putResource);
+                applyColorTemperatureWorkAround(command, putResource);
                 break;
 
             case CHANNEL_2_COLOR_XY_ONLY:
@@ -453,12 +492,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_DIMMING_ONLY:
-                putResource = Setters.setDimming(new Resource(lightResourceType), command, cache);
+                putResource = new Resource(lightResourceType).setBrightness(command);
                 break;
 
             case CHANNEL_2_ON_OFF_ONLY:
                 putResource = new Resource(lightResourceType).setOnOff(command);
-                applyDeviceSpecificWorkArounds(command, putResource);
+                applyOffTransitionWorkAround(command, putResource);
                 break;
 
             case CHANNEL_2_TEMPERATURE_ENABLED:
@@ -611,8 +650,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
-                logger.info("Command '{}' for thing '{}', channel '{}' succeeded with errors: {}", command,
-                        thing.getUID(), channelUID, String.join("; ", resources.getErrors()));
+                logger.debug("{} command '{}' for channel '{}' succeeded with error(s): {}", resourceId, command,
+                        channelUID,
+                        resources.getErrors().stream().map(e -> e.getDescription()).collect(Collectors.joining("; ")));
+                if (resources.getErrors().stream()
+                        .allMatch(e -> ErrorType.ATTRIBUTE_MAY_HAVE_NO_EFFECT == e.getErrorType())) {
+                    loopBackNotify(putResource);
+                }
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
@@ -624,6 +668,38 @@ public class Clip2ThingHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /*
+     * Many channels have 'autoUpdatePolicy == veto' since we normally expect the bridge to immediately send a
+     * state update event after a PUT command. However if the bridge returned a "succeeded with error" message
+     * (HTTP status code 207) then, depending on the manufacturer, it may not send a state update, so we send
+     * ourself a mock event via loop-back in order to update the channel faster. We also add ColorTemperature
+     * or ColorXy DTO fields for commands to the counterpart channel in order to synch both channel sets.
+     */
+    private void loopBackNotify(Resource resource) {
+        scheduler.submit(() -> {
+            logger.debug("{} -> loopBackNotify() with resource {}", resourceId, resource);
+
+            // add DTO fields to synch ColorXy and ColorTemperature for commands to the counterpart channel
+            if (ResourceType.LIGHT == resource.getType()) {
+                ColorXy colorXy = resource.getColorXy();
+                ColorTemperature colorTemp = resource.getColorTemperature();
+
+                // ColorXy: add a ColorTemperature field with null (i.e. unknown) mirek value
+                if (colorXy != null && colorTemp == null && thing.getChannel(CHANNEL_2_COLOR_TEMP_PERCENT) != null) {
+                    resource.setColorTemperature(new ColorTemperature().setMirek(null));
+                }
+
+                // ColorTemperature: add a ColorXy field with the XY of the ColorTemperature on the Planckian locus
+                if (colorTemp != null && colorXy == null && thing.getChannel(CHANNEL_2_COLOR) != null
+                        && colorTemp.getMirek() instanceof Long mirek) {
+                    resource.setColorXy(new ColorXy().setXY(ColorUtil.kelvinToXY(1000000.0 / mirek)));
+                }
+            }
+
+            onResource(resource.setContentType(ContentType.UPDATE));
+        });
     }
 
     /**
@@ -672,14 +748,42 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Apply device specific work-arounds needed for given command.
+     * Apply the off transition work-around for the given command to the given resource.
      *
      * @param command the handled command.
      * @param putResource the resource that will be adjusted if needed.
      */
-    private void applyDeviceSpecificWorkArounds(Command command, Resource putResource) {
-        if (command == OnOffType.OFF && applyOffTransitionWorkaround) {
-            putResource.setDynamicsDuration(dynamicsDuration);
+    private void applyOffTransitionWorkAround(Command command, Resource putResource) {
+        try {
+            if (command == OnOffType.OFF && getBridgeHandler().requiresOffTransitionWorkAround(resourceId)) {
+                putResource.setDynamicsDuration(dynamicsDuration);
+                logger.debug("{} -> applyOffTransitionWorkAround() command={} dynamics.duration={}", resourceId,
+                        command, dynamicsDuration);
+            }
+        } catch (AssetNotLoadedException e) {
+            logger.debug("{} -> applyOffTransitionWorkAround() error {}", resourceId, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Some legacy lights have a bi-stable operating mode which makes them forget color temperature
+     * commands when they are in soft-off state. This method re-applies the lost color temperature.
+     *
+     * @param command the handled command.
+     * @param putResource the resource that will be adjusted if needed.
+     */
+    private void applyColorTemperatureWorkAround(Command command, Resource putResource) {
+        LegacyLightState legacyState = legacyLightState;
+        if (legacyState == null || legacyState.getMode() != LegacyLightState.Mode.COLOR_TEMP) {
+            return;
+        }
+        if (command != OnOffType.ON || putResource.getColorXy() != null || putResource.getColorTemperature() != null) {
+            return;
+        }
+        Long mirek = legacyState.getMirek();
+        if (mirek != null) {
+            putResource.setColorTemperature(new ColorTemperature().setMirek(mirek));
+            logger.debug("{} -> applyColorTemperatureWorkAround() mirek={}", resourceId, mirek);
         }
     }
 
@@ -731,7 +835,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
         updatePropertiesDone = false;
         updateDependenciesDone = false;
         updateLightPropertiesDone = false;
+        updateLightCacheRequiredFieldsDone = false;
         updateSceneContributorsDone = false;
+        legacyLightState = null;
 
         Bridge bridge = getBridge();
         if (Objects.nonNull(bridge)) {
@@ -810,11 +916,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 switch (resource.getType()) {
                     case DEVICE_SOFTWARE_UPDATE:
                         refreshSoftwareStatusUI(resource);
-                        break;
-                    case LIGHT:
-                        if (!updateLightPropertiesDone) {
-                            updateLightProperties(resource);
-                        }
                         break;
                     default:
                 }
@@ -1025,7 +1126,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource the Resource containing the new channel state.
      * @return true if the channel was found and updated.
      */
-    private boolean updateChannels(Resource resource) {
+    boolean updateChannels(Resource resource) {
+        try {
+            return updateChannelsInner(resource);
+        } catch (CriticalFieldMissingException e) {
+            // this should never happen but log it just in case
+            logger.warn("{} -> updateChannels() error {}", resourceId, e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private boolean updateChannelsInner(Resource resource) throws CriticalFieldMissingException {
         logger.debug("{} -> updateChannels() from resource {}", resourceId, resource);
         boolean fullUpdate = resource.hasFullState();
         switch (resource.getType()) {
@@ -1063,24 +1174,58 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case LIGHT:
+                ColorXy color = resource.getColorXy();
+                ColorTemperature colorTemp = resource.getColorTemperature();
+                LegacyLightState legacyState = legacyLightState;
+                PairXy legacyColor = (legacyState != null && colorTemp != null && color != null) ? color.getXY() : null;
+
                 if (fullUpdate) {
+                    updateLightProperties(resource);
+                    updateLightCacheRequiredFields(resource);
                     updateEffectChannel(resource);
                     updateColorTemperatureAbsoluteChannel(resource);
+                    if (legacyState != null && legacyColor != null && colorTemp != null) {
+                        legacyState.setParameters(legacyColor, colorTemp.getMirek());
+                        logger.debug("{} -> updateChannels() initialised operating mode work-around legacy state {}",
+                                resourceId, legacyState);
+                    }
                 }
-                updateState(CHANNEL_2_COLOR_TEMP_PERCENT, resource.getColorTemperaturePercentState(), fullUpdate);
-                updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, resource.getColorTemperatureAbsoluteState(), fullUpdate);
-                updateState(CHANNEL_2_COLOR, resource.getColorState(), fullUpdate);
-                updateState(CHANNEL_2_COLOR_XY_ONLY, resource.getColorXyState(), fullUpdate);
+
+                State colorState = resource.getColorState();
+                State colorXyState = resource.getColorXyState();
+                State colorTempState = resource.getColorTemperaturePercentState();
+                State colorTempAbsState = resource.getColorTemperatureAbsoluteState();
+
+                if (legacyState != null && legacyColor != null && colorTemp != null && color != null) {
+                    State colorPrior = colorState;
+                    State colorTempPrior = colorTempState;
+                    legacyState.setParameters(legacyColor, colorTemp.getMirek());
+                    color.setXY(legacyState.getXY());
+                    colorTemp.setMirek(legacyState.getMirek());
+                    colorState = resource.getColorState();
+                    colorXyState = resource.getColorXyState();
+                    colorTempState = resource.getColorTemperaturePercentState();
+                    colorTempAbsState = resource.getColorTemperatureAbsoluteState();
+                    logger.debug(
+                            "{} -> updateChannels() operating mode work-around legacy state '{}' transformed [{}]->[{}] and {}->{}",
+                            resourceId, legacyState, colorPrior, colorState, colorTempPrior, colorTempState);
+                }
+
+                updateState(CHANNEL_2_COLOR, colorState, fullUpdate);
+                updateState(CHANNEL_2_COLOR_XY_ONLY, colorXyState, fullUpdate);
+                updateState(CHANNEL_2_COLOR_TEMP_PERCENT, colorTempState, fullUpdate);
+                updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, colorTempAbsState, fullUpdate);
                 updateState(CHANNEL_2_EFFECT, resource.getEffectState(), fullUpdate);
                 // fall through for dimming and on/off related channels
 
             case GROUPED_LIGHT:
                 if (fullUpdate) {
                     updateAlertChannel(resource);
+                    updateLightCacheRequiredFields(resource);
                 }
                 updateState(CHANNEL_2_BRIGHTNESS, resource.getBrightnessState(), fullUpdate);
                 updateState(CHANNEL_2_DIMMING_ONLY, resource.getDimmingState(), fullUpdate);
-                updateState(CHANNEL_2_SWITCH, resource.getOnOffState(), fullUpdate);
+                updateState(CHANNEL_2_SWITCH, resource.getSwitchState(), fullUpdate);
                 updateState(CHANNEL_2_ON_OFF_ONLY, resource.getOnOffState(), fullUpdate);
                 updateState(CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
                 break;
@@ -1180,6 +1325,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             default:
                 return false;
         }
+
         if (thisResource.getType() == ResourceType.DEVICE) {
             updateState(CHANNEL_2_LAST_UPDATED, new DateTimeType(), fullUpdate);
         }
@@ -1200,9 +1346,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     thing.getStatus(), zigbeeStatus);
             hasConnectivityIssue = zigbeeStatus.isConnectivityIssue();
             if (hasConnectivityIssue) {
-                if (thing.getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/offline.api2.comm-error.zigbee-connectivity-issue");
+                // unknown values also parse to DISCONNECTED, so only a literal 'disconnected' gets its own text
+                String description = ZigbeeStatus.DISCONNECTED.name().equalsIgnoreCase(resource.getZigbeeStatusValue())
+                        ? TEXT_OFFLINE_ZIGBEE_DISCONNECTED
+                        : TEXT_OFFLINE_ZIGBEE_CONNECTIVITY_ISSUE;
+                // publish unless the thing already shows exactly this, so that a status set by anybody else heals
+                ThingStatusInfo statusInfo = thing.getStatusInfo();
+                if (statusInfo.getStatus() != ThingStatus.OFFLINE
+                        || statusInfo.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR
+                        || !description.equals(statusInfo.getDescription())) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
                     supportedChannelIdSet.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
                 return;
@@ -1293,7 +1446,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (mirekSchema != null) {
                 stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
                         1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
-                logger.debug("{} -> updateColorTempAbsChannel() done", resource.getId());
             }
         }
     }
@@ -1304,7 +1456,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resource a Resource object containing the property data.
      */
     private synchronized void updateLightProperties(Resource resource) {
-        if (!disposing && !updateLightPropertiesDone) {
+        if (!disposing && !updateLightPropertiesDone && (ResourceType.LIGHT == resource.getType())) {
             logger.debug("{} -> updateLightProperties()", resourceId);
 
             Dimming dimming = resource.getDimming();
@@ -1351,59 +1503,49 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private synchronized void updateProperties(Resource resource) {
         if (!disposing && !updatePropertiesDone) {
             logger.debug("{} -> updateProperties()", resourceId);
-            Map<String, String> properties = new HashMap<>(thing.getProperties());
+            Map<String, String> props = new HashMap<>(thing.getProperties());
 
             // resource data
-            properties.put(PROPERTY_RESOURCE_ID, resourceId);
-            properties.put(PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
-            properties.put(PROPERTY_RESOURCE_NAME, thisResource.getName());
+            Setters.putIfExists(props, PROPERTY_RESOURCE_ID, resourceId);
+            Setters.putIfExists(props, PROPERTY_RESOURCE_TYPE, thisResource.getTypeAsString());
+            Setters.putIfExists(props, PROPERTY_RESOURCE_NAME, thisResource.getName());
 
             // owner information
             ResourceReference owner = thisResource.getOwner();
             if (Objects.nonNull(owner)) {
-                String ownerId = owner.getId();
-                if (Objects.nonNull(ownerId)) {
-                    properties.put(PROPERTY_OWNER, ownerId);
-                }
-                ResourceType ownerType = owner.getType();
-                properties.put(PROPERTY_OWNER_TYPE, ownerType.toString());
+                Setters.putIfExists(props, PROPERTY_OWNER, owner.getId());
+                Setters.putIfExists(props, PROPERTY_OWNER_TYPE, owner.getTypeAsString());
             }
 
             // metadata
             MetaData metaData = thisResource.getMetaData();
             if (Objects.nonNull(metaData)) {
-                properties.put(PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetypeAsString());
             }
 
             // product data
-            ProductData productData = thisResource.getProductData();
-            if (Objects.nonNull(productData)) {
-                String modelId = productData.getModelId();
+            ProductData prodData = thisResource.getProductData();
+            if (Objects.nonNull(prodData)) {
+                String modelId = prodData.getModelId();
 
                 // standard properties
-                properties.put(Thing.PROPERTY_MODEL_ID, modelId);
-                properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
-                String hardwarePlatformType = productData.getHardwarePlatformType();
-                if (Objects.nonNull(hardwarePlatformType)) {
-                    properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwarePlatformType);
-                }
+                Setters.putIfExists(props, Thing.PROPERTY_MODEL_ID, modelId);
+                Setters.putIfExists(props, Thing.PROPERTY_VENDOR, prodData.getManufacturerName());
+                Setters.putIfExists(props, Thing.PROPERTY_FIRMWARE_VERSION, prodData.getSoftwareVersion());
+                Setters.putIfExists(props, Thing.PROPERTY_HARDWARE_VERSION, prodData.getHardwarePlatformType());
 
                 // hue specific properties
-                properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
-                properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
-                properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+                Setters.putIfExists(props, PROPERTY_PRODUCT_NAME, prodData.getProductName());
+                Setters.putIfExists(props, PROPERTY_PRODUCT_ARCHETYPE, prodData.getProductArchetypeAsString());
+                Setters.putIfExists(props, PROPERTY_PRODUCT_CERTIFIED, prodData.getCertifiedAsString());
 
-                // Check device for needed work-arounds.
-                if (LK_WISER_DIMMER_MODEL_ID.equals(modelId)) {
-                    // Apply transition time as a workaround for LK Wiser Dimmer firmware bug.
-                    // Additional details here: https://techblog.vindvejr.dk/?p=455
-                    applyOffTransitionWorkaround = true;
-                    logger.debug("{} -> enabling work-around for turning off LK Wiser Dimmer", resourceId);
+                if (OPERATING_MODE_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
+                    legacyLightState = new LegacyLightState();
+                    logger.debug("{} -> enabled operating mode work-around for {}", resourceId, modelId);
                 }
             }
 
-            thing.setProperties(properties);
+            thing.setProperties(props);
             updatePropertiesDone = true;
         }
     }
@@ -1708,5 +1850,45 @@ public class Clip2ThingHandler extends BaseThingHandler {
             // if there is no software update status preserve the caller-provided status information
         }
         super.updateStatus(thingStatus, detail, description);
+    }
+
+    /**
+     * Ensure that the light service resource in the serviceContributorsCache has a complete DTO for it to
+     * yield valid channel state values. Check if the given (cached) light service has a {@link MirekSchema}
+     * field, and a {@link Gamut} field. If any is missing, use the binding default values. This ensures that
+     * the light's channels always have a valid color temperature range, and gamut, to use.
+     */
+    private synchronized void updateLightCacheRequiredFields(Resource resource) {
+        ResourceType type = resource.getType();
+        if (!disposing && !updateLightCacheRequiredFieldsDone && LIGHT_TYPES.contains(type)) {
+            logger.debug("{} -> updateLightCacheRequiredFields()", resourceId);
+
+            if (resource.getColorTemperature() instanceof ColorTemperature ct) {
+                MirekSchema mirekSchema = ct.getMirekSchema();
+                if (mirekSchema == null) {
+                    ct.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
+                } else if (mirekSchema.invalid()) {
+                    logger.warn("{} -> light MirekSchema {} invalid -> using default", resourceId,
+                            mirekSchema.toPropertyValue());
+                    ct.setMirekSchema(MirekSchema.DEFAULT_SCHEMA);
+                }
+            }
+
+            if (resource.getColorXy() instanceof ColorXy xy) {
+                Gamut gamut = xy.getGamut();
+                if (gamut == null) {
+                    xy.setGamut(ColorUtil.DEFAULT_GAMUT);
+                }
+            }
+
+            Resource cacheEntry = getCachedResource(type);
+            if (cacheEntry != null) {
+                Setters.setResource(cacheEntry, resource);
+            } else {
+                // should never happen, but just in case
+                logger.warn("{} -> updateLightCacheRequiredFields() -> missing cache light resource", resourceId);
+            }
+            updateLightCacheRequiredFieldsDone = true;
+        }
     }
 }

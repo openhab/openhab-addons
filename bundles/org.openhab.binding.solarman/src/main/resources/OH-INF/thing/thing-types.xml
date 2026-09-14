@@ -52,7 +52,7 @@
 				<description>Serial number of the Solarman logger.</description>
 				<advanced>false</advanced>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="30">
+			<parameter name="refreshInterval" type="integer" required="false" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval to query the logger (default 60).</description>
 				<default>60</default>

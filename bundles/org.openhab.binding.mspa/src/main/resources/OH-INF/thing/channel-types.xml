@@ -53,4 +53,31 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
+	<channel-type id="fault">
+		<item-type>String</item-type>
+		<label>Fault</label>
+		<description>Fault code reported by the device</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="F0">Low ambient temperature</option>
+				<option value="E0">Low ambient temperature</option>
+				<option value="F1">Water flow failure</option>
+				<option value="E1">Water flow failure</option>
+				<option value="F2">Water level too low</option>
+				<option value="E2">Water level too low</option>
+				<option value="F3">Heater system failure</option>
+				<option value="E3">Heater system failure</option>
+				<option value="F4">Temperature sensor fault</option>
+				<option value="E4">Temperature sensor fault</option>
+				<option value="F5">High limit overheating</option>
+				<option value="E5">High limit overheating</option>
+				<option value="CEF">Control panel signal error</option>
+				<option value="BBF">Bubble blower failure</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

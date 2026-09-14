@@ -1,3 +1,17 @@
+---
+children:
+  - ["doc/basics", "YAML Basics"]
+  - ["doc/variables", "Variables"]
+  - ["doc/conditionals", "Conditionals"]
+  - ["doc/loops", "Loops"]
+  - ["doc/include", "Include"]
+  - ["doc/templates", "Templates"]
+  - ["doc/packages", "Packages"]
+  - ["doc/anchors", "Anchors and Aliases"]
+  - ["doc/merge-keys", "Merge Keys"]
+  - ["doc/deep-merge", "Deep Merge"]
+---
+
 # YAML Composer
 
 YAML Composer introduces extended YAML features that make openHAB configuration more modular, reusable, and maintainable. These features let you structure configuration as composable building blocks rather than large, repetitive files.
@@ -15,21 +29,25 @@ Each feature addresses a different kind of reuse, composition, or abstraction to
 |--------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | **Variables and Substitution (`${..}`)**   | Insert dynamic values or evaluate expressions             | Build labels, topics, IDs, or computed values                                                                  |
 | **Conditionals (`!if`)**                   | Conditionally include or exclude YAML blocks              | Enable or disable features when using packages or template flags                                               |
+| **Loops (`!for`)**                         | Generate repeated YAML blocks from a list or map          | Create multiple items, channels, or thing definitions from structured data                                     |
 | **Include (`!include`)**                   | Insert the contents of another file                       | Reuse YAML across files; parameterize reusable blocks                                                          |
 | **Templates (`!insert`)**                  | Reuse YAML defined within the same file                   | Local parameterized blocks; reusable channel or item fragments                                                 |
 | **Packages**                               | Bundle multiple top-level sections into one reusable unit | Define reusable device structures containing things, items, metadata; sourced from external files or templates |
 | **Anchors and Aliases (`&name`, `*name`)** | Define small, reusable YAML fragments                     | Static defaults, shared fields                                                                                 |
-| **Merge Keys (`<<:`)**                     | Combine mappings from multiple sources                    | Layer defaults, override fields, compose structures                                                            |
+| **Merge Keys (`<<:`)**                     | Combine mappings from multiple sources                    | Layer top-level defaults, override flat fields, compose shallow structures                                     |
+| **Deep Merge (`!deep <<:`)**               | Recursively merge nested mappings and list items          | Preserve nested configuration; append tags or lists; apply nested override layers                              |
 
 Each feature has a dedicated documentation page:
 
 - [Variables and Substitution](doc/variables.md)
 - [Conditionals](doc/conditionals.md)
+- [Loops](doc/loops.md)
 - [Include](doc/include.md)
 - [Templates](doc/templates.md)
 - [Packages](doc/packages.md)
 - [Anchors and Aliases](doc/anchors.md)
 - [Merge Keys](doc/merge-keys.md)
+- [Deep Merge](doc/deep-merge.md)
 
 These features can be used independently, but they become especially powerful when combined.
 

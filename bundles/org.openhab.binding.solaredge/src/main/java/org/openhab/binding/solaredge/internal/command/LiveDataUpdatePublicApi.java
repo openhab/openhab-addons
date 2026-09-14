@@ -24,8 +24,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
-import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
-import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformer;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponsePublicApi;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformerPublicApi;
 
 /**
  * command that retrieves status values for live data channels via public API
@@ -36,13 +36,13 @@ import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformer;
 public class LiveDataUpdatePublicApi extends AbstractCommand implements SolarEdgeCommand {
 
     private final SolarEdgeHandler handler;
-    private final LiveDataResponseTransformer transformer;
+    private final LiveDataResponseTransformerPublicApi transformer;
     private int retries = 0;
 
     public LiveDataUpdatePublicApi(SolarEdgeHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener);
         this.handler = handler;
-        this.transformer = new LiveDataResponseTransformer(handler);
+        this.transformer = new LiveDataResponseTransformerPublicApi(handler);
     }
 
     @Override
@@ -60,7 +60,9 @@ public class LiveDataUpdatePublicApi extends AbstractCommand implements SolarEdg
 
     @Override
     public void onComplete(@Nullable Result result) {
-        logger.debug("onComplete()");
+        logger.debug("[LiveDataUpdatePublicApi] onComplete()");
+        logger.trace("URL: {}", getURL());
+
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
@@ -70,7 +72,7 @@ public class LiveDataUpdatePublicApi extends AbstractCommand implements SolarEdg
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
-                LiveDataResponse jsonObject = fromJson(json, LiveDataResponse.class);
+                LiveDataResponsePublicApi jsonObject = fromJson(json, LiveDataResponsePublicApi.class);
                 if (jsonObject != null) {
                     handler.updateChannelStatus(transformer.transform(jsonObject));
                 }

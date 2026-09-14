@@ -37,10 +37,10 @@
 		<parameter name="enableScripting" type="boolean" required="false">
 			<label>Enable JavaScript Scripting</label>
 			<description><![CDATA[When enabled, the agent can include JavaScript snippets as rule actions or conditions
-				(<code>type: "script"</code>) and gains an <code>execute_script</code> tool that runs JS immediately
-				against openHAB's script engine - useful for dry-running a script before adding it to a scheduled rule.
-				Scripts have the same full system access as any openHAB script (every item, HTTP requests, Exec, OSGi
-				services, rule creation). Requires the <code>openhab-automation-jsscripting</code> add-on.]]></description>
+				(<code>type: "script"</code>) and gains <code>execute_script</code> (to run JS immediately against openHAB's
+				script engine) and <code>get_openhabjs_types</code> (to fetch openhab-js type definitions) tools. Scripts
+				have the same full system access as any openHAB script (every item, HTTP requests, Exec, OSGi services,
+				rule creation). Requires the <code>openhab-automation-jsscripting</code> add-on.]]></description>
 			<default>false</default>
 		</parameter>
 		<parameter name="enableLoggingAccess" type="boolean" required="false">

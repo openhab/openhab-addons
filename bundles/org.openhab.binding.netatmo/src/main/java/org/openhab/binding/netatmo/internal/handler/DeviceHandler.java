@@ -118,4 +118,9 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     public ScheduledExecutorService getScheduler() {
         return scheduler;
     }
+
+    @Override
+    public <T> T getThingConfigAs(Class<T> configurationClass) {
+        return getConfigAs(configurationClass);
+    }
 }

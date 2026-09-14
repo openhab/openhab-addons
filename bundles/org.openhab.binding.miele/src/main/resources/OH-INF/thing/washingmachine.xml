@@ -35,14 +35,14 @@
 				<label>Temperature</label>
 				<description>Temperature of the selected program (10 °C = cold)</description>
 			</channel>
-			<channel id="spinningspeed" typeId="spinningspeed"/>
+			<channel id="spinningspeed" typeId="spinning-speed"/>
 			<channel id="energyConsumption" typeId="energy-consumption"/>
 			<channel id="waterConsumption" typeId="water-consumption"/>
 			<channel id="laundryWeight" typeId="laundry-weight"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<representation-property>uid</representation-property>

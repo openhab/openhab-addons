@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.BINDING_ID;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
@@ -59,6 +61,8 @@ public class YamahaReceiverHandlerTest extends AbstractXMLProtocolTest {
         ctx.prepareForModel(TestModels.RX_S601D);
         ctx.respondWith("<Main_Zone><Input><Input_Sel_Item>GetParam</Input_Sel_Item></Input></Main_Zone>",
                 "Main_Zone_Input_Input_Sel.xml");
+
+        when(bridge.getUID()).thenReturn(new ThingUID(BINDING_ID, "yamahaAV", "bridge"));
 
         Configuration configuration = new Configuration(new HashMap<>());
         configuration.put("host", "localhost");

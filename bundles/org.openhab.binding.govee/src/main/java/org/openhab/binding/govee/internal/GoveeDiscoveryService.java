@@ -131,7 +131,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
 
         final String ipAddress = data.ip();
         if (ipAddress == null || ipAddress.isEmpty()) {
-            logger.warn("Missing IP address received during discovery - ignoring {}", response);
+            logger.debug("Ignoring scan response without IP address (device not reachable over LAN) - {}", response);
             return null;
         }
 

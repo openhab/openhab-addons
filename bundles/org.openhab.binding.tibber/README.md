@@ -349,7 +349,7 @@ then
     var secondsTillStart = Duration.between(Instant.now(), Instant.parse(startsAt)).getSeconds()
     // if the start should happen immediately, avoid negative values
     secondsTillStart = Math::max(0,secondsTillStart) 
-    bestPriceTimer = createTimer(now.plusSeconds(secondsTillStart), [|           
+    bestPriceTimer = createTimer(now.plusSeconds(secondsTillStart), [
         logInfo("TibberBestPrice","Start your device")
     ])
 end

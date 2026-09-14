@@ -132,6 +132,10 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
         }
     }
 
+    public NeeoRoomConfig getBridgeConfig() {
+        return getConfigAs(NeeoRoomConfig.class);
+    }
+
     /**
      * Refresh the specified channel section, key and id using the specified protocol
      *

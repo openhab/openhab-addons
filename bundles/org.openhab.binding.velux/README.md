@@ -1,3 +1,11 @@
+---
+children:
+  - ["doc/things", "Examples for Things"]
+  - ["items", "Examples for Items"]
+  - ["sitemaps", "Examples for Sitemaps"]
+  - ["rules", "Examples for Rules"]
+---
+
 # Velux Binding
 
 This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>Velux Bridge KLF200</B>, which is able to control 200 actuators.
@@ -351,7 +359,7 @@ then
         if (windowState == 0) {
             logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
             var int interval = 1
-            createTimer(now.plusMinutes(interval)) [ |
+            createTimer(now.plusMinutes(interval)) [
                     logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
                     sendCommand(V_WINDOW, 100)
                     V_WINDOW.postUpdate(100)

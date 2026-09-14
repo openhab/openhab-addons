@@ -25,7 +25,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless;
-import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformer;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformerPublicApi;
 
 /**
  * command that retrieves status values for live data channels via public API
@@ -36,13 +36,13 @@ import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformer;
 public class LiveDataUpdateMeterless extends AbstractCommand implements SolarEdgeCommand {
 
     private final SolarEdgeHandler handler;
-    private final LiveDataResponseTransformer transformer;
+    private final LiveDataResponseTransformerPublicApi transformer;
     private int retries = 0;
 
     public LiveDataUpdateMeterless(SolarEdgeHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener);
         this.handler = handler;
-        this.transformer = new LiveDataResponseTransformer(handler);
+        this.transformer = new LiveDataResponseTransformerPublicApi(handler);
     }
 
     @Override
@@ -60,7 +60,8 @@ public class LiveDataUpdateMeterless extends AbstractCommand implements SolarEdg
 
     @Override
     public void onComplete(@Nullable Result result) {
-        logger.debug("onComplete()");
+        logger.debug("[LiveDataUpdateMeterless] onComplete()");
+        logger.trace("URL: {}", getURL());
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (retries++ < MAX_RETRIES) {

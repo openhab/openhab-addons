@@ -39,7 +39,7 @@ public interface NhcCarChargerEvent extends NhcBaseEvent {
      * @param electricalPower the electrical power being delivered (in watts), or null if unavailable.
      */
     void chargingStatusEvent(boolean status, @Nullable String chargingStatus, @Nullable String evStatus,
-            @Nullable String couplingStatus, @Nullable Integer electricalPower);
+            @Nullable String couplingStatus, @Nullable Long electricalPower);
 
     /**
      * Handles an update event related to the car charger's charging mode.
@@ -52,8 +52,8 @@ public interface NhcCarChargerEvent extends NhcBaseEvent {
      * @param reachableDistance the currently reachable distance with the SMART charging mode (in kilometers)
      * @param nextChargingTime the next scheduled charging time, or {@code null} if not set
      */
-    void chargingModeEvent(@Nullable String chargingMode, float targetDistance, @Nullable String targetTime,
-            boolean boost, float reachableDistance, @Nullable String nextChargingTime);
+    void chargingModeEvent(@Nullable String chargingMode, double targetDistance, @Nullable String targetTime,
+            boolean boost, double reachableDistance, @Nullable String nextChargingTime);
 
     /**
      * This method is called when a meter reading is received from the Niko Home Control controller.

@@ -171,6 +171,20 @@ class DDWRTNetworkCacheTest {
     }
 
     @Test
+    void testMergeRandomizedMacDoesNotMergeGloballyAssignedMacs() {
+        DDWRTClient oldClient = new DDWRTClient("10:11:22:33:44:55");
+        oldClient.setHostname("KP115");
+        cache.putWirelessClient(oldClient.getMac(), oldClient);
+
+        DDWRTClient newClient = new DDWRTClient("20:11:22:33:44:55");
+        cache.putWirelessClient(newClient.getMac(), newClient);
+
+        assertThat(cache.mergeRandomizedMac(newClient.getMac(), "KP115"), is(nullValue()));
+        assertThat(cache.getWirelessClient(oldClient.getMac()), is(oldClient));
+        assertThat(cache.getWirelessClient(newClient.getMac()), is(newClient));
+    }
+
+    @Test
     void testMergeRandomizedMacEmptyHostname() {
         assertThat(cache.mergeRandomizedMac("aa:bb:cc:dd:ee:ff", ""), is(nullValue()));
     }

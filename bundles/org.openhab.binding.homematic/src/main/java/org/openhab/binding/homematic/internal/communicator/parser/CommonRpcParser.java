@@ -51,6 +51,14 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
+     * Converts the object to a string value without removing significant whitespace.
+     */
+    protected @Nullable String toStringValue(@Nullable Object object) {
+        String value = MiscUtils.toStringOrEmptyIfNull(object);
+        return value.trim().isEmpty() ? null : value;
+    }
+
+    /**
      * Converts the object to an integer.
      */
     protected @Nullable Integer toInteger(@Nullable Object object) {
@@ -155,20 +163,17 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Converts the value to the correct type if necessary.
      */
-    protected @Nullable Object convertToType(HmDatapoint dp, @Nullable Object value) {
+    protected @Nullable Object convertToType(HmValueType type, @Nullable Object value) {
         if (value == null) {
             return null;
-        } else if (dp.isBooleanType()) {
-            return toBoolean(value);
-        } else if (dp.isIntegerType()) {
-            return toInteger(value);
-        } else if (dp.isFloatType()) {
-            return toNumber(value);
-        } else if (dp.isStringType()) {
-            return toString(value);
-        } else {
-            return value;
         }
+        return switch (type) {
+            case BOOL, ACTION -> toBoolean(value);
+            case INTEGER, ENUM -> toInteger(value);
+            case FLOAT -> toNumber(value);
+            case STRING -> toStringValue(value);
+            default -> value;
+        };
     }
 
     /**
@@ -228,32 +233,12 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (isHmIpDevice && dp.isEnumType()) {
             dp.setDefaultValue(dp.getOptionIndex(toString(defaultValue)));
         } else {
-            dp.setDefaultValue(convertToType(dp, defaultValue));
+            dp.setDefaultValue(convertToType(valueType, defaultValue));
         }
         if (dp.isNumberType() && specialValues != null) {
             dp.setSpecialValues(specialValues);
         }
         dp.setValue(dp.getDefaultValue());
         return dp;
-    }
-
-    /**
-     * Converts a string value to the type.
-     */
-    protected @Nullable Object convertToType(@Nullable String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        if ("true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value)) {
-            return (Boolean.TRUE);
-        } else if ("false".equalsIgnoreCase(value) || "off".equalsIgnoreCase(value)) {
-            return (Boolean.FALSE);
-        } else if (value.matches("(-|\\+)?[0-9]+")) {
-            return (Integer.valueOf(value));
-        } else if (value.matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
-            return (Double.valueOf(value));
-        } else {
-            return value;
-        }
     }
 }

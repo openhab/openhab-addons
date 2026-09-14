@@ -198,7 +198,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
         }
 
         // Second pass: publish discovery results for deduplicated clients
-        Configuration config = thingHandler.getThing().getConfiguration().as(Configuration.class);
+        Configuration config = thingHandler.getBridgeConfig();
         for (Map.Entry<String, SessionInfoDto> entry : deduped.entrySet()) {
             SessionInfoDto session = entry.getValue();
             String deviceId = entry.getKey();

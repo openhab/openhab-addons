@@ -34,6 +34,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class SchemaDp {
     private static final Map<String, String> REMOTE_LOCAL_TYPE_MAP = Map.of( //
+            "Bitmap", "bitmap", //
             "Boolean", "bool", //
             "Enum", "enum", //
             "Integer", "value", //

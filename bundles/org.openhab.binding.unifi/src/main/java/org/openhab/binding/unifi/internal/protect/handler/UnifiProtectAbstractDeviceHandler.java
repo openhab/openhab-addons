@@ -27,7 +27,9 @@ import javax.measure.quantity.Time;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.protect.api.hybrid.UniFiProtectHybridClient;
+import org.openhab.binding.unifi.internal.protect.api.priv.dto.base.UniFiProtectAdoptableDevice;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.base.UniFiProtectModel;
+import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.StateType;
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectContactConfiguration;
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectDeviceConfiguration;
@@ -46,6 +48,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.State;
@@ -81,9 +84,68 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends UniFiProtectMo
 
     public void refreshFromDevice(T device) {
         this.device = device;
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
+        // A full bootstrap object proves the device exists again, so this path may clear GONE
+        applyDeviceState(device, true);
+    }
+
+    /**
+     * Derive the thing status from the device's own reported connection state, so a device the
+     * NVR reports as disconnected is not shown ONLINE just because its data was received. A null
+     * state (partial WebSocket delta) leaves the status unchanged.
+     */
+    public void applyDeviceState(UniFiProtectModel device) {
+        applyDeviceState(device, false);
+    }
+
+    private void applyDeviceState(UniFiProtectModel device, boolean clearGone) {
+        if (!(device instanceof UniFiProtectAdoptableDevice adoptable)) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+            return;
         }
+        StateType state = adoptable.state;
+        if (state == null) {
+            return;
+        }
+        applyConnectionStatus(switch (state) {
+            case CONNECTED -> ThingStatus.ONLINE;
+            case DISCONNECTED -> ThingStatus.OFFLINE;
+            // connecting, adopting, provisioning, rebooting, updating firmware, unknown
+            default -> ThingStatus.UNKNOWN;
+        }, clearGone);
+    }
+
+    /**
+     * Shared status update for both the private (bootstrap/WS) and public WS paths, so both map
+     * connectivity identically. Compares detail too, so a stale detail is corrected.
+     */
+    public void applyConnectionStatus(ThingStatus status) {
+        applyConnectionStatus(status, false);
+    }
+
+    private void applyConnectionStatus(ThingStatus status, boolean clearGone) {
+        ThingStatusDetail detail = status == ThingStatus.OFFLINE ? ThingStatusDetail.COMMUNICATION_ERROR
+                : ThingStatusDetail.NONE;
+        ThingStatusInfo current = getThing().getStatusInfo();
+        if (current.getStatus() == status && current.getStatusDetail() == detail) {
+            return;
+        }
+        // GONE means "not in the bootstrap"; only the full-bootstrap path may clear it. A late
+        // WebSocket frame for a removed device (any state, including connected) must not
+        // resurrect the thing.
+        if (!clearGone && current.getStatusDetail() == ThingStatusDetail.GONE) {
+            return;
+        }
+        if (status == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, detail, "@text/offline.device-disconnected");
+        } else {
+            updateStatus(status);
+        }
+    }
+
+    public String getDeviceId() {
+        return deviceId;
     }
 
     public abstract void handleEvent(BaseEvent event, WSEventType eventType);

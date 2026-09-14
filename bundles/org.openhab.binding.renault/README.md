@@ -34,25 +34,28 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 
 ## Channels
 
-| Channel ID             | Type               | Description                                         | Read Only |
-|------------------------|--------------------|-----------------------------------------------------|-----------|
-| batteryavailableenergy | Number:Energy      | Battery Energy Available                            | Yes       |
-| batterylevel           | Number             | State of the battery in %                           | Yes       |
-| batterystatusupdated   | DateTime           | Timestamp of the last battery status update         | Yes       |
-| chargingmode           | String             | Charging mode. `ALWAYS_CHARGING` or `SCHEDULE_MODE` | No        |
-| pause                  | Switch             | Pause the charge                                    | No        |
-| chargingstatus         | String             | Charging status                                     | Yes       |
-| chargingremainingtime  | Number:Time        | Charging time remaining                             | Yes       |
-| plugstatus             | String             | Status of charging plug                             | Yes       |
-| estimatedrange         | Number:Length      | Estimated range of the car                          | Yes       |
-| odometer               | Number:Length      | Total distance travelled                            | Yes       |
-| hvacstatus             | String             | HVAC status HVAC Status (ON, OFF, PENDING)          | No        |
-| hvactargettemperature  | Number:Temperature | HVAC target temperature (19 to 21)                  | No        |
-| externaltemperature    | Number:Temperature | Temperature outside of the car                      | Yes       |
-| image                  | String             | Image URL of MyRenault                              | Yes       |
-| location               | Location           | The GPS position of the vehicle                     | Yes       |
-| locationupdated        | DateTime           | Timestamp of the last location update               | Yes       |
-| locked                 | Switch             | Locked status of the car                            | Yes       |
+| Channel ID             | Type                 | Description                                         | Read Only |
+|------------------------|----------------------|-----------------------------------------------------|-----------|
+| batteryavailableenergy | Number:Energy        | Battery Energy Available                            | Yes       |
+| batterylevel           | Number               | State of the battery in %                           | Yes       |
+| batterystatusupdated   | DateTime             | Timestamp of the last battery status update         | Yes       |
+| chargingmode           | String               | Charging mode. `ALWAYS_CHARGING` or `SCHEDULE_MODE` | No        |
+| pause                  | Switch               | Pause the charge                                    | No        |
+| chargingstatus         | String               | Charging status                                     | Yes       |
+| chargingremainingtime  | Number:Time          | Charging time remaining                             | Yes       |
+| plugstatus             | String               | Status of charging plug                             | Yes       |
+| estimatedrange         | Number:Length        | Estimated range of the car                          | Yes       |
+| odometer               | Number:Length        | Total distance travelled                            | Yes       |
+| hvacstatus             | String               | HVAC status HVAC Status (ON, OFF, PENDING)          | No        |
+| hvactargettemperature  | Number:Temperature   | HVAC target temperature (19 to 21)                  | No        |
+| externaltemperature    | Number:Temperature   | Temperature outside of the car                      | Yes       |
+| image                  | String               | Image URL of MyRenault                              | Yes       |
+| location               | Location             | The GPS position of the vehicle                     | Yes       |
+| locationupdated        | DateTime             | Timestamp of the last location update               | Yes       |
+| locked                 | Switch               | Locked status of the car                            | Yes       |
+| soclevelmin            | Number:Dimensionless | Minimum Charge Level                                | No        |
+| soclevelmax            | Number:Dimensionless | Maximum Charge Level                                | No        |
+| soclevelupdated        | DateTime             | Timestamp of the last location update               | Yes       |
 
 ## Limitations
 
@@ -113,6 +116,11 @@ String          RenaultCar_ImageURL                  "Car Image URL [%s]"       
 Location        RenaultCar_Location                  "Location Car"                           <zoom>          { channel="renault:car:renault:location" }
 DateTime        RenaultCar_LocationUpdate            "Location Updated [%1$tH:%1$tM]"         <time>          { channel="renault:car:renault:locationupdated" }
 Switch          RenaultCar_Locked                    "Locked [%s]"                            <lock>          { channel="renault:car:renault:locked" }
+
+Number:Dimensionless RenaultCar_SocLevelMin          "Minimum Soc Level [%d %%]"                              { channel="renault:car:renault:soclevelmin" }
+Number:Dimensionless RenaultCar_SocLevelMax          "Maximum Soc Level [%d %%]"                              { channel="renault:car:renault:soclevelmax" }
+DateTime             RenaultCar_SocLevelUpdated      "Soc Level Last Updated [%1$tH:%1$tM]"                   { channel="renault:car:renault:soclevelupdated" }
+
 
 // ------------------------------------------------------------
 // Additional – Charge limit via Dimmer-item

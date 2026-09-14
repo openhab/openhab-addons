@@ -22,6 +22,7 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -49,7 +50,7 @@ public class FireTVStickMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
     private static final String MDNS_PROPERTY_NAME = "n";
     private static final String MDNS_PROPERTY_MAC_ADDRESS = "c";
 
-    private boolean isAutoDiscoveryEnabled = true;
+    private volatile boolean isAutoDiscoveryEnabled = true;
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -63,11 +64,9 @@ public class FireTVStickMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
 
     private void activateOrModifyService(ComponentContext componentContext) {
         Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String autoDiscoveryPropertyValue = (String) properties
-                .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
-        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
-            isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
-        }
+        isAutoDiscoveryEnabled = ConfigParser.valueAsOrElse(
+                properties.get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY), Boolean.class,
+                isAutoDiscoveryEnabled);
     }
 
     @Override

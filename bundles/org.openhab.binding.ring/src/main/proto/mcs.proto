@@ -1,0 +1,124 @@
+syntax = "proto2";
+
+package org.openhab.binding.ring.internal.fcm;
+
+option java_outer_classname = "McsProto";
+option java_multiple_files = true;
+
+message HeartbeatPing {
+  optional int32 stream_id = 1;
+  optional int32 last_stream_id_received = 2;
+  optional int64 status = 3;
+}
+
+message HeartbeatAck {
+  optional int32 stream_id = 1;
+  optional int32 last_stream_id_received = 2;
+  optional int64 status = 3;
+}
+
+message Setting {
+  required string name = 1;
+  required string value = 2;
+}
+
+message HeartbeatStat {
+  required string ip = 1;
+  required bool timeout = 2;
+  required int32 interval_ms = 3;
+}
+
+message LoginRequest {
+  enum AuthService {
+    ANDROID_ID = 2;
+  }
+  required string id = 1;
+  required string domain = 2;
+  required string user = 3;
+  required string resource = 4;
+  required string auth_token = 5;
+  optional string device_id = 6;
+  optional int64 last_rmq_id = 7;
+  repeated Setting setting = 8;
+  repeated string received_persistent_id = 9;
+  optional bool adaptive_heartbeat = 12;
+  optional HeartbeatStat heartbeat_stat = 13;
+  optional bool use_rmq2 = 14;
+  optional int64 account_id = 15;
+  optional AuthService auth_service = 16;
+  optional int32 network_type = 17;
+  optional int64 status = 18;
+}
+
+message ErrorInfo {
+  required int32 code = 1;
+  optional string message = 2;
+  optional string type = 3;
+  optional Extension extension = 4;
+}
+
+message LoginResponse {
+  required string id = 1;
+  optional string jid = 2;
+  optional ErrorInfo error = 3;
+  repeated Setting setting = 4;
+  optional int32 stream_id = 5;
+  optional int32 last_stream_id_received = 6;
+  optional Extension notice = 7;
+  optional int64 server_timestamp = 8;
+}
+
+message Close { }
+
+message Extension {
+  required int32 id = 1;
+  required bytes data = 2;
+}
+
+message IqStanza {
+  enum IqType {
+    GET = 0;
+    SET = 1;
+    RESULT = 2;
+    IQ_ERROR = 3;
+  }
+  optional string rmq_id = 1;
+  required IqType type = 2;
+  required string id = 3;
+  optional string from = 4;
+  optional string to = 5;
+  optional ErrorInfo error = 6;
+  optional Extension extension = 7;
+  optional string account_id = 8;
+  optional int64 status = 9;
+}
+
+message AppData {
+  required string key = 1;
+  required string value = 2;
+}
+
+message DataMessageStanza {
+  optional string rmq_id = 1;
+  optional string id = 2;
+  optional string from = 3;
+  optional string to = 4;
+  optional string category = 5;
+  optional string token = 6;
+  repeated AppData app_data = 7;
+  optional int64 queued = 8;
+  optional int64 status = 9;
+  optional string cb_path = 10;
+  optional string reg_id = 11;
+  optional string persistent_id = 12;
+  optional bytes raw_data = 13;
+}
+
+message SelectiveAck {
+  repeated string id = 1;
+}
+
+message StreamErrorStanza {
+  required string type = 1;
+  optional string text = 2;
+}

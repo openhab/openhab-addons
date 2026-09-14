@@ -14,7 +14,10 @@ package org.openhab.binding.unifi.internal.protect.api.priv.dto.gson;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.AiPort;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Bridge;
@@ -69,6 +72,14 @@ public class BootstrapDeserializer implements JsonDeserializer<Bootstrap> {
             logger.debug("Deserialized NVR: {}", bootstrap.nvr != null ? "success" : "null");
         }
 
+        // Record which device ids the payload actually listed, for lifecycle decisions
+        for (String collection : List.of("cameras", "lights", "sensors", "doorlocks", "chimes")) {
+            Set<String> ids = extractIds(obj, collection);
+            if (ids != null) {
+                bootstrap.sourceIds.put(collection, ids);
+            }
+        }
+
         // Convert device arrays to maps
         bootstrap.cameras = arrayToMap(obj, "cameras", Camera.class, context);
         logger.debug("Deserialized {} cameras", bootstrap.cameras.size());
@@ -93,6 +104,27 @@ public class BootstrapDeserializer implements JsonDeserializer<Bootstrap> {
 
     private String getAsString(JsonObject obj, String field) {
         return obj.has(field) && !obj.get(field).isJsonNull() ? obj.get(field).getAsString() : null;
+    }
+
+    /**
+     * Raw ids of an array field's elements, or null when the field is absent.
+     */
+    private Set<String> extractIds(JsonObject obj, String field) {
+        if (!obj.has(field) || !obj.get(field).isJsonArray()) {
+            return null;
+        }
+        Set<String> ids = new HashSet<>();
+        for (JsonElement element : obj.getAsJsonArray(field)) {
+            try {
+                JsonObject item = element.getAsJsonObject();
+                if (item.has("id") && !item.get("id").isJsonNull()) {
+                    ids.add(item.get("id").getAsString());
+                }
+            } catch (RuntimeException e) {
+                logger.debug("Skipping malformed element in '{}' while extracting ids", field);
+            }
+        }
+        return ids;
     }
 
     private <T> Map<String, T> arrayToMap(JsonObject obj, String field, Class<T> clazz,

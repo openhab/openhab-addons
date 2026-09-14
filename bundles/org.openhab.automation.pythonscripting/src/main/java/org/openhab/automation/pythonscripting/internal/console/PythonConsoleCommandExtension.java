@@ -229,7 +229,7 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
                     + PythonScriptEngineConfiguration.PYTHON_TYPINGS_PATH + "'.")) {
                 return;
             }
-            new TypingCmd(new TypingCmd.Logger(console)).build();
+            new TypingCmd(new TypingCmd.Logger(console), scriptEngineManager).build();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
@@ -286,7 +286,7 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
      * including any injected required modules.
      */
     private @Nullable Object executePython(Console console, EngineEvalFunction process, boolean withFullContext) {
-        String scriptIdentifier = "python-console-" + UUID.randomUUID().toString();
+        String scriptIdentifier = "pythonscripting-cli-" + UUID.randomUUID().toString();
         ScriptEngine engine = null;
 
         try {
