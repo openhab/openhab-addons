@@ -42,7 +42,6 @@ import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
 import org.snakeyaml.engine.v2.api.Load;
 import org.snakeyaml.engine.v2.api.LoadSettings;
-import org.snakeyaml.engine.v2.common.FlowStyle;
 import org.snakeyaml.engine.v2.resolver.ScalarResolver;
 import org.snakeyaml.engine.v2.schema.CoreSchema;
 import org.snakeyaml.engine.v2.schema.Schema;
@@ -90,7 +89,18 @@ final class ComposerUtils {
      */
     static void writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars)
             throws IOException {
-        writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, System.getenv());
+        writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, System.getenv(),
+                YamlOutputConfig.defaultConfig());
+    }
+
+    static void writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
+            YamlOutputConfig outputConfig) throws IOException {
+        writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, System.getenv(), outputConfig);
+    }
+
+    static void writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
+            Map<String, String> envMap) throws IOException {
+        writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, envMap, YamlOutputConfig.defaultConfig());
     }
 
     /**
@@ -104,25 +114,36 @@ final class ComposerUtils {
      * @param outputPath the absolute path of the compiled output file
      * @param trackedEnvVars the set of environment variables referenced during composition
      * @param envMap the environment variable map to compute the initial hash against
+     * @param outputConfig the YAML output configuration to use for dumping
      * @throws IOException if writing to the file fails
      */
     static void writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
-            Map<String, String> envMap) throws IOException {
+            Map<String, String> envMap, YamlOutputConfig outputConfig) throws IOException {
         Path outputDir = outputPath.getParent();
         if (outputDir != null) {
             Files.createDirectories(outputDir);
         }
 
         DumpSettings dumpSettings = DumpSettings.builder() //
-                .setDefaultFlowStyle(FlowStyle.BLOCK) //
-                .setIndentWithIndicator(true) //
-                .setIndicatorIndent(2) //
+                .setDefaultFlowStyle(YamlOutputConfig.DEFAULT_FLOW_STYLE) //
+                .setDefaultScalarStyle(YamlOutputConfig.DEFAULT_SCALAR_STYLE) //
+                .setIndent(YamlOutputConfig.DEFAULT_INDENT) //
+                .setIndicatorIndent(YamlOutputConfig.DEFAULT_INDICATOR_INDENT) //
+                .setIndentWithIndicator(YamlOutputConfig.DEFAULT_INDENT_WITH_INDICATOR) //
+                .setWidth(outputConfig.maxLineWidth()) //
+                .setSplitLines(outputConfig.splitLines()) //
+                .setExplicitStart(false) //
+                .setExplicitEnd(false) //
                 .setMultiLineFlow(true) //
                 .build();
+
         Dump yaml = new Dump(dumpSettings);
         Object unaliasedData = breakAliases(dataMap);
         String compiledYaml = yaml.dumpToString(unaliasedData);
-        compiledYaml = formatYamlSpacing(compiledYaml);
+
+        if (outputConfig.sectionSpacing() > 0) {
+            compiledYaml = formatYamlSpacing(compiledYaml, outputConfig.sectionSpacing());
+        }
 
         List<String> sortedEnvVars = new ArrayList<>(trackedEnvVars);
         Collections.sort(sortedEnvVars);
@@ -367,13 +388,15 @@ final class ComposerUtils {
      * and it safely handles both Map keys (e.g., {@code   Key:}) and List items (e.g., {@code   - Item}).
      *
      * @param yaml The raw YAML string to be formatted.
+     * @param spacingLines The number of blank lines to insert between sections or sibling nodes.
      * @return A formatted YAML string with injected "breathing room."
      */
-    private static @Nullable String formatYamlSpacing(@Nullable String yaml) {
+    private static @Nullable String formatYamlSpacing(@Nullable String yaml, int spacingLines) {
         if (yaml == null || yaml.isEmpty()) {
             return yaml;
         }
 
+        String padding = "\n".repeat(spacingLines);
         String[] lines = yaml.split("\n");
         StringBuilder sb = new StringBuilder();
 
@@ -385,7 +408,7 @@ final class ComposerUtils {
             // Matches lines starting with a character (not space, not comment)
             if (!line.startsWith(" ") && !line.startsWith("#")) {
                 if (hasSeenLevel0) {
-                    sb.append("\n");
+                    sb.append(padding);
                 }
                 hasSeenLevel0 = true;
                 hasSeenLevel2 = false; // Reset level 2 tracker for the new section
@@ -396,7 +419,7 @@ final class ComposerUtils {
             // This targets siblings within a top-level section.
             else if (line.matches("^ {2}[^ \\t\\-].*")) {
                 if (hasSeenLevel2) {
-                    sb.append("\n");
+                    sb.append(padding);
                 }
                 hasSeenLevel2 = true;
             }
