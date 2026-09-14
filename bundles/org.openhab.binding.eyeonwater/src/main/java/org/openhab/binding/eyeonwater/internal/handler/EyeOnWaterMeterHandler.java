@@ -79,9 +79,9 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
         }
 
         ThingHandler bridgeHandler = bridge.getHandler();
-        if (bridgeHandler instanceof EyeOnWaterBridgeHandler) {
+        if (bridgeHandler instanceof EyeOnWaterBridgeHandler eoHandler) {
             updateStatus(ThingStatus.UNKNOWN);
-            ((EyeOnWaterBridgeHandler) bridgeHandler).registerMeterHandler(this);
+            eoHandler.registerMeterHandler(this);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-not-initialized");
@@ -95,8 +95,8 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof EyeOnWaterBridgeHandler) {
-                ((EyeOnWaterBridgeHandler) bridgeHandler).unregisterMeterHandler(this);
+            if (bridgeHandler instanceof EyeOnWaterBridgeHandler eoHandler) {
+                eoHandler.unregisterMeterHandler(this);
             }
         }
 
@@ -110,8 +110,8 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
             Bridge bridge = getBridge();
             if (bridge != null) {
                 ThingHandler bridgeHandler = bridge.getHandler();
-                if (bridgeHandler instanceof EyeOnWaterBridgeHandler) {
-                    ((EyeOnWaterBridgeHandler) bridgeHandler).registerMeterHandler(this);
+                if (bridgeHandler instanceof EyeOnWaterBridgeHandler eoHandler) {
+                    eoHandler.registerMeterHandler(this);
                 }
             }
         }
