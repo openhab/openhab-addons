@@ -59,11 +59,8 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
     private volatile @Nullable EyeOnWaterClient client;
 
     private @Nullable ScheduledFuture<?> pollingJob;
-
     private @Nullable ScheduledFuture<?> reconnectJob;
-
     private @Nullable EyeOnWaterDiscoveryService discoveryService;
-
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     private final @Nullable HttpClientFactory httpClientFactory;
