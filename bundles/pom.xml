@@ -248,6 +248,7 @@
     <module>org.openhab.binding.lcn</module>
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lghombot</module>
+    <module>org.openhab.binding.lghorizon</module>
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgthinq</module>
     <module>org.openhab.binding.lgwebos</module>
