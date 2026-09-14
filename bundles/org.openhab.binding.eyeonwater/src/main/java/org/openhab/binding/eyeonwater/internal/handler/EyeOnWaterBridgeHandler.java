@@ -62,6 +62,8 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> reconnectJob;
 
+    private @Nullable EyeOnWaterDiscoveryService discoveryService;
+
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
 
     private final @Nullable HttpClientFactory httpClientFactory;
@@ -122,8 +124,9 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
         initializeAsync();
 
         // Register the Discovery Service dynamically for this bridge instance
-        EyeOnWaterDiscoveryService discoveryService = new EyeOnWaterDiscoveryService(this);
-        discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+        EyeOnWaterDiscoveryService service = new EyeOnWaterDiscoveryService(this);
+        this.discoveryService = service;
+        discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(), service,
                 new Hashtable<>());
     }
 
@@ -143,6 +146,12 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                     if (activeClient.equals(client)) {
                         updateStatus(ThingStatus.ONLINE);
                         startPolling();
+
+                        // Automatically trigger an initial scan when the bridge becomes ONLINE
+                        EyeOnWaterDiscoveryService discovery = discoveryService;
+                        if (discovery != null) {
+                            pollingScheduler.execute(() -> discovery.triggerScan());
+                        }
                     }
                 }
             } catch (EyeOnWaterClient.EyeOnWaterAuthenticationException e) {
@@ -217,6 +226,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             reg.unregister();
             discoveryServiceReg = null;
         }
+        this.discoveryService = null;
 
         HttpClient clientInstance = httpClient;
         if (clientInstance != null) {

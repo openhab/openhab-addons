@@ -74,4 +74,11 @@ public class EyeOnWaterDiscoveryService extends AbstractDiscoveryService {
             Thread.currentThread().interrupt();
         }
     }
+
+    /**
+     * Triggers an on-demand discovery scan.
+     */
+    public void triggerScan() {
+        startScan();
+    }
 }
