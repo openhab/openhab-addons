@@ -70,6 +70,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     // MIN / MAX)
     protected static final int MAX_DEFAULT_MIREDS = 667; // 1500K
     protected static final int MIN_DEFAULT_MIREDS = 153;
+    private static ColorControlCluster.OptionsBitmap EXECUTE_IF_OFF = new ColorControlCluster.OptionsBitmap(true);
     protected boolean supportsHue = false;
     protected boolean supportsColorTemperature = false;
     protected int colorTempPhysicalMinMireds = 0;
@@ -155,8 +156,8 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 if (!lastOnOff) {
                     handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
                 }
-                ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(
-                        percentTypeToMireds(percentType), 0, initializingCluster.options, initializingCluster.options);
+                ClusterCommand tempCommand = ColorControlCluster
+                        .moveToColorTemperature(percentTypeToMireds(percentType), 0, EXECUTE_IF_OFF, EXECUTE_IF_OFF);
                 handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
             } else {
                 if (percentType.equals(PercentType.ZERO)) {
@@ -170,15 +171,21 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
             }
         } else if (channelUID.getIdWithoutGroup().equals(CHANNEL_ID_COLOR_TEMPERATURE_ABS)
                 && command instanceof DecimalType decimal) {
+            if (!lastOnOff) {
+                handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
+            }
             ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(decimal.intValue(), 0,
-                    initializingCluster.options, initializingCluster.options);
+                    EXECUTE_IF_OFF, EXECUTE_IF_OFF);
             handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
         } else if (channelUID.getIdWithoutGroup().equals(CHANNEL_ID_COLOR_TEMPERATURE_ABS)
                 && command instanceof QuantityType<?> quantity) {
             quantity = quantity.toInvertibleUnit(Units.MIRED);
             if (quantity != null) {
+                if (!lastOnOff) {
+                    handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
+                }
                 ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(quantity.intValue(), 0,
-                        initializingCluster.options, initializingCluster.options);
+                        EXECUTE_IF_OFF, EXECUTE_IF_OFF);
                 handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
             }
         }
@@ -420,11 +427,9 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     }
 
     private void updateColorTemperature() {
-        if (lastOnOff) {
-            updateState(CHANNEL_ID_COLOR_TEMPERATURE, miredsToPercentType(lastColorTemperatureMireds));
-            updateState(CHANNEL_ID_COLOR_TEMPERATURE_ABS,
-                    QuantityType.valueOf(Double.valueOf(lastColorTemperatureMireds), Units.MIRED));
-        }
+        updateState(CHANNEL_ID_COLOR_TEMPERATURE, miredsToPercentType(lastColorTemperatureMireds));
+        updateState(CHANNEL_ID_COLOR_TEMPERATURE_ABS,
+                QuantityType.valueOf(Double.valueOf(lastColorTemperatureMireds), Units.MIRED));
         colorTemperatureState = ColorUpdateState.READY;
         colorModeToTemperature();
     }
