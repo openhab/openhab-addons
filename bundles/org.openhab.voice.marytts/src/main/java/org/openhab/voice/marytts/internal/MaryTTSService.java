@@ -21,10 +21,10 @@ import java.util.Set;
 
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.voice.AbstractCachedTTSService;
-import org.openhab.core.voice.TTSCache;
-import org.openhab.core.voice.TTSException;
-import org.openhab.core.voice.TTSService;
+import org.openhab.core.voice.tts.AbstractCachedTTSService;
+import org.openhab.core.voice.tts.TTSCache;
+import org.openhab.core.voice.tts.TTSException;
+import org.openhab.core.voice.tts.TTSService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -53,7 +53,7 @@ public class MaryTTSService extends AbstractCachedTTSService {
     /**
      * Set of supported voices
      */
-    private Set<org.openhab.core.voice.Voice> voices;
+    private Set<org.openhab.core.voice.tts.Voice> voices;
 
     /**
      * Set of supported audio formats
@@ -73,7 +73,7 @@ public class MaryTTSService extends AbstractCachedTTSService {
     }
 
     @Override
-    public Set<org.openhab.core.voice.Voice> getAvailableVoices() {
+    public Set<org.openhab.core.voice.tts.Voice> getAvailableVoices() {
         return voices;
     }
 
@@ -83,8 +83,8 @@ public class MaryTTSService extends AbstractCachedTTSService {
     }
 
     @Override
-    public AudioStream synthesizeForCache(String text, org.openhab.core.voice.Voice voice, AudioFormat requestedFormat)
-            throws TTSException {
+    public AudioStream synthesizeForCache(String text, org.openhab.core.voice.tts.Voice voice,
+            AudioFormat requestedFormat) throws TTSException {
         // Validate arguments
         if (text == null || text.isEmpty()) {
             throw new TTSException("The passed text is null or empty");
@@ -139,8 +139,8 @@ public class MaryTTSService extends AbstractCachedTTSService {
      *
      * @return The voices of this instance
      */
-    private Set<org.openhab.core.voice.Voice> initVoices() {
-        Set<org.openhab.core.voice.Voice> voices = new HashSet<>();
+    private Set<org.openhab.core.voice.tts.Voice> initVoices() {
+        Set<org.openhab.core.voice.tts.Voice> voices = new HashSet<>();
         for (Locale locale : marytts.getAvailableLocales()) {
             for (String voiceLabel : marytts.getAvailableVoices(locale)) {
                 voices.add(new MaryTTSVoice(locale, voiceLabel));
