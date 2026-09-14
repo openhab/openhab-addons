@@ -221,6 +221,9 @@ Not implemented:
 - Ad-break detection/skipping
 - localDVR (locally-recorded content) title/image resolution
 
+This binding has been tested with a Telenet IP TV-box.
+Other set-top boxes and providers may have behaviour not covered by these tests.
+
 ## Credits
 
 The Liberty Global Horizon cloud protocol used by this binding (REST auth flow, service discovery, MQTT-over-WebSockets status/control channel) was reverse engineered and documented by:
