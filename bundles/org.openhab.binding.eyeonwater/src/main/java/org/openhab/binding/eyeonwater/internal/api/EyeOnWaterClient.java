@@ -199,75 +199,84 @@ public class EyeOnWaterClient {
         String responseBody = sendRequestWithReauth(searchUrl, POST, "application/json", jsonPayload);
 
         List<EyeOnWaterMeterData> meters = new ArrayList<>();
-        @Nullable
-        JsonElement parsedElement = JsonParser.parseString(responseBody);
-        if (parsedElement == null || !parsedElement.isJsonObject()) {
-            throw new IOException("Invalid JSON response received.");
-        }
-        JsonObject payload = parsedElement.getAsJsonObject();
-        @Nullable
-        JsonElement elasticResultsElement = payload.get("elastic_results");
-        if (elasticResultsElement != null && elasticResultsElement.isJsonObject()) {
+        try {
+            @Nullable
+            JsonElement parsedElement = JsonParser.parseString(responseBody);
+            if (parsedElement == null || !parsedElement.isJsonObject()) {
+                throw new IOException("Invalid JSON response received.");
+            }
+            JsonObject payload = parsedElement.getAsJsonObject();
+            @Nullable
+            JsonElement elasticResultsElement = payload.get("elastic_results");
+            if (elasticResultsElement == null || !elasticResultsElement.isJsonObject()) {
+                throw new IOException("Missing expected 'elastic_results' element.");
+            }
             JsonObject elasticResults = elasticResultsElement.getAsJsonObject();
             @Nullable
             JsonElement hitsWrapperElement = elasticResults.get("hits");
-            if (hitsWrapperElement != null && hitsWrapperElement.isJsonObject()) {
-                JsonObject hitsWrapper = hitsWrapperElement.getAsJsonObject();
-                @Nullable
-                JsonElement hitsElement = hitsWrapper.get("hits");
-                if (hitsElement != null && hitsElement.isJsonArray()) {
-                    JsonArray hits = hitsElement.getAsJsonArray();
-                    for (JsonElement hitElement : hits) {
-                        if (hitElement != null && hitElement.isJsonObject()) {
-                            JsonObject hit = hitElement.getAsJsonObject();
-                            @Nullable
-                            JsonElement sourceElement = hit.get("_source");
-                            if (sourceElement != null && sourceElement.isJsonObject()) {
-                                JsonObject source = sourceElement.getAsJsonObject();
+            if (hitsWrapperElement == null || !hitsWrapperElement.isJsonObject()) {
+                throw new IOException("Missing expected 'hits' element.");
+            }
+            JsonObject hitsWrapper = hitsWrapperElement.getAsJsonObject();
+            @Nullable
+            JsonElement hitsElement = hitsWrapper.get("hits");
+            if (hitsElement == null || !hitsElement.isJsonArray()) {
+                throw new IOException("Missing expected 'hits' array.");
+            }
+            JsonArray hits = hitsElement.getAsJsonArray();
+            for (JsonElement hitElement : hits) {
+                if (hitElement != null && hitElement.isJsonObject()) {
+                    JsonObject hit = hitElement.getAsJsonObject();
+                    @Nullable
+                    JsonElement sourceElement = hit.get("_source");
+                    if (sourceElement != null && sourceElement.isJsonObject()) {
+                        JsonObject source = sourceElement.getAsJsonObject();
+                        @Nullable
+                        JsonElement meterElement = source.get("meter");
+                        String meterUuid = null;
+                        String meterId = null;
+                        if (meterElement != null && meterElement.isJsonObject()) {
+                            JsonObject meterObj = meterElement.getAsJsonObject();
+                            if (meterObj.has("meter_uuid")) {
                                 @Nullable
-                                JsonElement meterElement = source.get("meter");
-                                String meterUuid = null;
-                                String meterId = null;
-                                if (meterElement != null && meterElement.isJsonObject()) {
-                                    JsonObject meterObj = meterElement.getAsJsonObject();
-                                    if (meterObj.has("meter_uuid")) {
-                                        @Nullable
-                                        JsonElement uuidEl = meterObj.get("meter_uuid");
-                                        if (uuidEl != null && !uuidEl.isJsonNull()) {
-                                            meterUuid = uuidEl.getAsString();
-                                        }
-                                    }
-                                    if (meterObj.has("meter_id")) {
-                                        @Nullable
-                                        JsonElement idEl = meterObj.get("meter_id");
-                                        if (idEl != null && !idEl.isJsonNull()) {
-                                            meterId = idEl.getAsString();
-                                        }
-                                    }
-                                }
-                                if (meterUuid == null && source.has("meter_uuid")) {
-                                    @Nullable
-                                    JsonElement uuidEl = source.get("meter_uuid");
-                                    if (uuidEl != null && !uuidEl.isJsonNull()) {
-                                        meterUuid = uuidEl.getAsString();
-                                    }
-                                }
-                                if (meterId == null && source.has("meter_id")) {
-                                    @Nullable
-                                    JsonElement idEl = source.get("meter_id");
-                                    if (idEl != null && !idEl.isJsonNull()) {
-                                        meterId = idEl.getAsString();
-                                    }
-                                }
-
-                                if (meterUuid != null && meterId != null) {
-                                    meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
+                                JsonElement uuidEl = meterObj.get("meter_uuid");
+                                if (uuidEl != null && !uuidEl.isJsonNull()) {
+                                    meterUuid = uuidEl.getAsString();
                                 }
                             }
+                            if (meterObj.has("meter_id")) {
+                                @Nullable
+                                JsonElement idEl = meterObj.get("meter_id");
+                                if (idEl != null && !idEl.isJsonNull()) {
+                                    meterId = idEl.getAsString();
+                                }
+                            }
+                        }
+                        if (meterUuid == null && source.has("meter_uuid")) {
+                            @Nullable
+                            JsonElement uuidEl = source.get("meter_uuid");
+                            if (uuidEl != null && !uuidEl.isJsonNull()) {
+                                meterUuid = uuidEl.getAsString();
+                            }
+                        }
+                        if (meterId == null && source.has("meter_id")) {
+                            @Nullable
+                            JsonElement idEl = source.get("meter_id");
+                            if (idEl != null && !idEl.isJsonNull()) {
+                                meterId = idEl.getAsString();
+                            }
+                        }
+
+                        if (meterUuid != null && meterId != null) {
+                            meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
                         }
                     }
                 }
             }
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Failed to parse or validate new_search response: " + e.getMessage(), e);
         }
         return meters;
     }
@@ -280,34 +289,44 @@ public class EyeOnWaterClient {
         return parseMetersFromDashboard(responseBody);
     }
 
-    List<EyeOnWaterMeterData> parseMetersFromDashboard(String htmlBody) {
+    List<EyeOnWaterMeterData> parseMetersFromDashboard(String htmlBody) throws IOException {
         List<EyeOnWaterMeterData> meters = new ArrayList<>();
         Pattern pattern = Pattern.compile("AQ\\.Views\\.MeterPicker\\.meters\\s*=\\s*(\\[.*?\\])\\s*;", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(htmlBody);
 
-        if (matcher.find()) {
+        if (!matcher.find()) {
+            throw new IOException(
+                    "Failed to scrape meters: 'AQ.Views.MeterPicker.meters' script assignment not found in dashboard HTML.");
+        }
+
+        try {
             String jsonPart = matcher.group(1);
             @Nullable
             JsonElement parsedElement = JsonParser.parseString(jsonPart);
-            if (parsedElement != null && parsedElement.isJsonArray()) {
-                JsonArray meterInfos = parsedElement.getAsJsonArray();
-                for (JsonElement element : meterInfos) {
-                    if (element != null && element.isJsonObject()) {
-                        JsonObject meterInfo = element.getAsJsonObject();
-                        if (meterInfo.has("meter_uuid") && meterInfo.has("meter_id")) {
-                            @Nullable
-                            JsonElement uuidEl = meterInfo.get("meter_uuid");
-                            @Nullable
-                            JsonElement idEl = meterInfo.get("meter_id");
-                            if (uuidEl != null && !uuidEl.isJsonNull() && idEl != null && !idEl.isJsonNull()) {
-                                String uuid = uuidEl.getAsString();
-                                String id = idEl.getAsString();
-                                meters.add(new EyeOnWaterMeterData(uuid, id));
-                            }
+            if (parsedElement == null || !parsedElement.isJsonArray()) {
+                throw new IOException("Invalid or non-array JSON for MeterPicker.meters.");
+            }
+            JsonArray meterInfos = parsedElement.getAsJsonArray();
+            for (JsonElement element : meterInfos) {
+                if (element != null && element.isJsonObject()) {
+                    JsonObject meterInfo = element.getAsJsonObject();
+                    if (meterInfo.has("meter_uuid") && meterInfo.has("meter_id")) {
+                        @Nullable
+                        JsonElement uuidEl = meterInfo.get("meter_uuid");
+                        @Nullable
+                        JsonElement idEl = meterInfo.get("meter_id");
+                        if (uuidEl != null && !uuidEl.isJsonNull() && idEl != null && !idEl.isJsonNull()) {
+                            String uuid = uuidEl.getAsString();
+                            String id = idEl.getAsString();
+                            meters.add(new EyeOnWaterMeterData(uuid, id));
                         }
                     }
                 }
             }
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException("Failed to parse scraped meters JSON: " + e.getMessage(), e);
         }
         return meters;
     }
