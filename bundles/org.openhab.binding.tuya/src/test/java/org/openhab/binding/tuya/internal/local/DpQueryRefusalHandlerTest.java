@@ -130,36 +130,35 @@ public class DpQueryRefusalHandlerTest {
     }
 
     @Test
-    public void reportedStatusStartsRetriesOver() {
+    public void reportedStatusStopsRetries() {
         EmbeddedChannel channel = channel(refusalHandler());
         channel.writeInbound(refusal(CommandType.DP_QUERY));
-        pass(channel, 1000);
-        channel.writeInbound(refusal(CommandType.DP_QUERY));
-        channel.releaseOutbound();
+        assertHeartbeatSent(channel);
 
         channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY, new TcpStatusPayload()));
-        pass(channel, 2000);
+        pass(channel, 1000);
         assertNull(channel.readOutbound());
 
+        // The device answers queries, so a later refusal is its answer for data points it does not report
         channel.writeInbound(refusal(CommandType.DP_QUERY));
-        assertHeartbeatSent(channel);
         pass(channel, 1000);
-        assertStatusQuerySent(channel);
+        assertNull(channel.readOutbound());
         channel.finishAndReleaseAll();
     }
 
     @Test
-    public void subDeviceStatusDoesNotStopRetries() {
+    public void reportedSubDeviceStatusStopsRetries() {
         EmbeddedChannel channel = channel(refusalHandler());
         TcpStatusPayload subDeviceStatus = new TcpStatusPayload();
         subDeviceStatus.cid = "e0f6bf69791fc50c";
 
         channel.writeInbound(refusal(CommandType.DP_QUERY));
         assertHeartbeatSent(channel);
-        channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY, subDeviceStatus));
+        // A gateway serving its sub-devices is answering queries even if it never reports itself
+        channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY_NEW, subDeviceStatus));
         pass(channel, 1000);
 
-        assertStatusQuerySent(channel);
+        assertNull(channel.readOutbound());
         channel.finishAndReleaseAll();
     }
 

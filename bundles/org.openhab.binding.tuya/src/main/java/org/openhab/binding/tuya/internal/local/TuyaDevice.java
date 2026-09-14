@@ -302,12 +302,17 @@ public class TuyaDevice implements ChannelFutureListener {
      * and the refusal does not tell them apart. Asking with a CONTROL that sets the data points to null instead is no
      * option: devices that handle DP_QUERY take the nulls as values. So a refusal is answered with a heartbeat, whose
      * reply the {@link ResponseTimeoutHandler} waits for, and the status is queried again later. The interval doubles
-     * with every refusal and starts over once the device reports its status.
+     * with every refusal.
+     *
+     * A device that reports a status, its own or that of one of its sub-devices, is answering queries and is left
+     * alone for the rest of the connection. Gateways in particular refuse to report themselves while they serve their
+     * sub-devices, and querying them over and over only costs connections.
      */
     static class DpQueryRefusalHandler extends ChannelDuplexHandler {
         private final List<MessageWrapper<?>> statusQuery;
         private final MessageWrapper<?> probe;
         private long retryDelay = TCP_CONNECTION_QUERY_RETRY_INITIAL;
+        private boolean statusReported = false;
         private @Nullable Future<?> retry = null;
 
         /**
@@ -331,7 +336,10 @@ public class TuyaDevice implements ChannelFutureListener {
             if (ctx != null) {
                 if (msg instanceof MessageWrapper<?> m
                         && (m.commandType == DP_QUERY || m.commandType == DP_QUERY_NEW)) {
-                    if (m.content instanceof RequestRefusal) {
+                    if (m.content instanceof TcpStatusPayload) {
+                        statusReported = true;
+                        cancelRetry();
+                    } else if (m.content instanceof RequestRefusal && !statusReported) {
                         Channel channel = ctx.channel();
                         channel.writeAndFlush(probe);
                         if (retry == null) {
@@ -341,12 +349,6 @@ public class TuyaDevice implements ChannelFutureListener {
                             }, retryDelay, TimeUnit.MILLISECONDS);
                             retryDelay = Math.min(retryDelay * 2, TCP_CONNECTION_QUERY_RETRY_MAX);
                         }
-                    } else if (m.content instanceof TcpStatusPayload payload
-                            && (payload.protocol == 4 ? payload.data.cid : payload.cid).isEmpty()) {
-                        // Only the device's own status counts: a gateway reports its sub-devices even if it refuses
-                        // to report itself.
-                        cancelRetry();
-                        retryDelay = TCP_CONNECTION_QUERY_RETRY_INITIAL;
                     }
                 }
 
