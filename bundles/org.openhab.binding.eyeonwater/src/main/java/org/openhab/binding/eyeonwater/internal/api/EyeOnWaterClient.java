@@ -105,7 +105,7 @@ public class EyeOnWaterClient {
         if (response.getStatus() == FOUND_302 || response.getStatus() == SEE_OTHER_303) {
             authenticated = true;
         } else if (response.getStatus() == OK_200) {
-            throw new IOException("Authentication rejected: Invalid username or password.");
+            throw new EyeOnWaterAuthenticationException("Authentication rejected: Invalid username or password.");
         } else {
             throw new IOException("Failed to authenticate: HTTP " + response.getStatus());
         }
@@ -526,6 +526,18 @@ public class EyeOnWaterClient {
 
         public void setReverseFlowAlert(boolean reverseFlowAlert) {
             this.reverseFlowAlert = reverseFlowAlert;
+        }
+    }
+
+    public static class EyeOnWaterAuthenticationException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        public EyeOnWaterAuthenticationException(String message) {
+            super(message);
+        }
+
+        public EyeOnWaterAuthenticationException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }

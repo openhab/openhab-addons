@@ -145,21 +145,23 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                         startPolling();
                     }
                 }
+            } catch (EyeOnWaterClient.EyeOnWaterAuthenticationException e) {
+                synchronized (EyeOnWaterBridgeHandler.this) {
+                    if (activeClient.equals(client)) {
+                        logger.debug("Authentication rejected for EyeOnWater API: {}", e.getMessage(), e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "@text/offline.bridge-config-rejected");
+                    }
+                }
             } catch (IOException e) {
                 synchronized (EyeOnWaterBridgeHandler.this) {
                     if (activeClient.equals(client)) {
                         String msg = e.getMessage();
-                        if (msg != null && msg.contains("Authentication rejected")) {
-                            logger.debug("Authentication rejected for EyeOnWater API: {}", msg, e);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "@text/offline.bridge-config-rejected");
-                        } else {
-                            logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
-                                    msg, e);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    msg != null ? msg : "@text/offline.communication-error");
-                            scheduleReconnect();
-                        }
+                        logger.debug("Communication error connecting to EyeOnWater API during initialization: {}",
+                                msg, e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                msg != null ? msg : "@text/offline.communication-error");
+                        scheduleReconnect();
                     }
                 }
             } catch (InterruptedException e) {

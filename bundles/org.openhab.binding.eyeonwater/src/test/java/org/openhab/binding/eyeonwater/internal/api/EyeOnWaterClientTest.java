@@ -59,6 +59,20 @@ class EyeOnWaterClientTest {
     }
 
     @Test
+    void testAuthenticateRejectionThrows() throws Exception {
+        HttpClient httpClient = mock(HttpClient.class);
+        EyeOnWaterClient testClient = new EyeOnWaterClient("eyeonwater.com", "testuser", "testpassword", httpClient);
+
+        // Mock Sign-in response as OK_200 (rejected)
+        Request signinRequest = mockRequest();
+        ContentResponse signinResponse = mockResponse(HttpStatus.OK_200, "Invalid credentials");
+        when(signinRequest.send()).thenReturn(signinResponse);
+        when(httpClient.newRequest(contains("signin"))).thenReturn(signinRequest);
+
+        assertThrows(EyeOnWaterClient.EyeOnWaterAuthenticationException.class, () -> testClient.authenticate());
+    }
+
+    @Test
     void testDiscoverMetersNewSearchSuccess() throws Exception {
         HttpClient httpClient = mock(HttpClient.class);
         EyeOnWaterClient testClient = new EyeOnWaterClient("eyeonwater.com", "testuser", "testpassword", httpClient);
@@ -116,9 +130,9 @@ class EyeOnWaterClientTest {
         assertEquals(125.5, data.getReadingValue());
         assertEquals("GAL", data.getReadingUnit());
         assertEquals("2026-09-10T12:00:00Z", data.getReadTime());
-        assertTrue(data.isLeakAlert());
-        assertFalse(data.isLowBatteryAlert());
-        assertTrue(data.isReverseFlowAlert());
+        assertEquals(Boolean.TRUE, data.getLeakAlert());
+        assertEquals(Boolean.FALSE, data.getLowBatteryAlert());
+        assertEquals(Boolean.TRUE, data.getReverseFlowAlert());
         assertEquals(0.25, data.getLeakRate());
     }
 
@@ -177,7 +191,7 @@ class EyeOnWaterClientTest {
     }
 
     @Test
-    void testParseMetersFromDashboardStandard() {
+    void testParseMetersFromDashboardStandard() throws Exception {
         String html = "<html><head><script>\n" + "AQ.Views.MeterPicker.meters = [\n" + "  {\n"
                 + "    \"meter_uuid\": \"12345678-abcd-1234-abcd-123456789012\",\n"
                 + "    \"meter_id\": \"METER-123\"\n" + "  }\n" + "];\n" + "</script></head><body></body></html>";
@@ -189,7 +203,7 @@ class EyeOnWaterClientTest {
     }
 
     @Test
-    void testParseMetersFromDashboardMinified() {
+    void testParseMetersFromDashboardMinified() throws Exception {
         String html = "<html><body><script>AQ.Views.MeterPicker.meters=[{\"meter_uuid\":\"uuid-999\",\"meter_id\":\"id-999\"}];var x=10;</script></body></html>";
 
         List<EyeOnWaterMeterData> meters = client.parseMetersFromDashboard(html);
@@ -202,12 +216,11 @@ class EyeOnWaterClientTest {
     void testParseMetersFromDashboardNoMatch() {
         String html = "<html><body>No meters here!</body></html>";
 
-        List<EyeOnWaterMeterData> meters = client.parseMetersFromDashboard(html);
-        assertTrue(meters.isEmpty());
+        assertThrows(IOException.class, () -> client.parseMetersFromDashboard(html));
     }
 
     @Test
-    void testParseMetersFromDashboardIncompleteData() {
+    void testParseMetersFromDashboardIncompleteData() throws Exception {
         String html = "<html><body><script>AQ.Views.MeterPicker.meters=[{\"meter_id\":\"missing-uuid\"}];</script></body></html>";
 
         List<EyeOnWaterMeterData> meters = client.parseMetersFromDashboard(html);
