@@ -75,6 +75,11 @@ public class TuyaBindingConstants {
     // How long to wait before querying the status again after a device refused DP_QUERY. Devices that are not
     // ready yet refuse DP_QUERY although they handle it, others never handle it. The interval doubles with every
     // refusal up to TCP_CONNECTION_QUERY_RETRY_MAX and starts over once the device reports its status.
+    // How long a device has to answer the heartbeat sent after it refused DP_QUERY. A gateway busy relaying the
+    // traffic of its sub-devices can take considerably longer than TCP_CONNECTION_MESSAGE_RESPONSE to answer, and
+    // dropping the connection of a device that did reply, only slowly, costs more than waiting.
+    public static final int TCP_CONNECTION_PROBE_RESPONSE = 2000; // Milliseconds
+
     public static final int TCP_CONNECTION_QUERY_RETRY_INITIAL = 1000; // Milliseconds
     public static final int TCP_CONNECTION_QUERY_RETRY_MAX = 60000; // Milliseconds
 

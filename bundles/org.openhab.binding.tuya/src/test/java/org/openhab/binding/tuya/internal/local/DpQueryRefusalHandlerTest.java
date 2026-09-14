@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.tuya.internal.local;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_MESSAGE_RESPONSE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_PROBE_RESPONSE;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +42,7 @@ public class DpQueryRefusalHandlerTest {
             Map.of("dps", List.of(1)));
     private static final MessageWrapper<?> STATUS_QUERY = new MessageWrapper<>(CommandType.CONTROL,
             Map.of("dps", Map.of()));
+    private static final MessageWrapper<?> PROBE = new MessageWrapper<>(CommandType.HEART_BEAT, Map.of());
 
     private EmbeddedChannel channel(ChannelHandler... handlers) {
         EmbeddedChannel channel = new EmbeddedChannel(handlers);
@@ -50,7 +51,7 @@ public class DpQueryRefusalHandlerTest {
     }
 
     private TuyaDevice.DpQueryRefusalHandler refusalHandler() {
-        return new TuyaDevice.DpQueryRefusalHandler(List.of(DP_QUERY, STATUS_QUERY));
+        return new TuyaDevice.DpQueryRefusalHandler(List.of(DP_QUERY, STATUS_QUERY), PROBE);
     }
 
     private static MessageWrapper<?> refusal(CommandType commandType) {
@@ -63,8 +64,7 @@ public class DpQueryRefusalHandlerTest {
     }
 
     private static void assertHeartbeatSent(EmbeddedChannel channel) {
-        MessageWrapper<?> sent = channel.readOutbound();
-        assertEquals(CommandType.HEART_BEAT, sent.commandType);
+        assertSame(PROBE, channel.readOutbound());
         assertNull(channel.readOutbound());
     }
 
@@ -88,8 +88,8 @@ public class DpQueryRefusalHandlerTest {
 
     @Test
     public void deviceAnsweringHeartbeatKeepsTheConnection() {
-        EmbeddedChannel channel = channel(new TuyaDevice.ResponseTimeoutHandler("device", "address", STATUS_QUERY),
-                refusalHandler());
+        EmbeddedChannel channel = channel(
+                new TuyaDevice.ResponseTimeoutHandler("device", "address", STATUS_QUERY, PROBE), refusalHandler());
 
         channel.writeOutbound(DP_QUERY, STATUS_QUERY);
         channel.writeInbound(refusal(CommandType.DP_QUERY));
@@ -102,12 +102,12 @@ public class DpQueryRefusalHandlerTest {
 
     @Test
     public void deviceNotAnsweringHeartbeatIsReconnected() {
-        EmbeddedChannel channel = channel(new TuyaDevice.ResponseTimeoutHandler("device", "address", STATUS_QUERY),
-                refusalHandler());
+        EmbeddedChannel channel = channel(
+                new TuyaDevice.ResponseTimeoutHandler("device", "address", STATUS_QUERY, PROBE), refusalHandler());
 
         channel.writeOutbound(DP_QUERY, STATUS_QUERY);
         channel.writeInbound(refusal(CommandType.DP_QUERY));
-        pass(channel, TCP_CONNECTION_MESSAGE_RESPONSE + 1);
+        pass(channel, TCP_CONNECTION_PROBE_RESPONSE + 1);
 
         assertFalse(channel.isOpen());
     }

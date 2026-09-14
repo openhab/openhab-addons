@@ -15,6 +15,7 @@ package org.openhab.binding.tuya.internal.local;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_HEARTBEAT_INTERVAL;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_MAX_LIFETIME;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_MESSAGE_RESPONSE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_PROBE_RESPONSE;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_QUERY_RETRY_INITIAL;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_QUERY_RETRY_MAX;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECT_INITIAL_DELAY;
@@ -101,6 +102,9 @@ public class TuyaDevice implements ChannelFutureListener {
     private final MessageWrapper<?> msgRequestAllControl;
     private final MessageWrapper<?> msgRequestAllDpQuery;
     private static final MessageWrapper<?> msgRefreshAll = new MessageWrapper<>(DP_REFRESH, Map.of("dpId", List.of()));
+    // A heartbeat of its own, so that the response timeout can tell the probe sent after a refusal from the
+    // heartbeats that keep an idle connection alive
+    private static final MessageWrapper<?> msgProbe = new MessageWrapper<>(HEART_BEAT, Map.of());
 
     private boolean firstRefusal = true;
 
@@ -176,6 +180,7 @@ public class TuyaDevice implements ChannelFutureListener {
         private final String deviceId;
         private final String address;
         private final MessageWrapper<?> statusQuery;
+        private final MessageWrapper<?> probe;
         private @Nullable Future<?> responseTimeout = null;
         private boolean awaitingCommandAck = false;
         private @Nullable ChannelHandlerContext context = null;
@@ -183,11 +188,15 @@ public class TuyaDevice implements ChannelFutureListener {
 
         /**
          * @param statusQuery the CONTROL message sent when connecting to ask the device for its status
+         * @param probe the heartbeat sent to check a device that refused a request is alive, which is given more
+         *            time to be answered
          */
-        ResponseTimeoutHandler(String deviceId, String address, MessageWrapper<?> statusQuery) {
+        ResponseTimeoutHandler(String deviceId, String address, MessageWrapper<?> statusQuery,
+                MessageWrapper<?> probe) {
             this.deviceId = deviceId;
             this.address = address;
             this.statusQuery = statusQuery;
+            this.probe = probe;
         }
 
         @Override
@@ -241,7 +250,8 @@ public class TuyaDevice implements ChannelFutureListener {
                             && !statusQuery.equals(m);
 
                     responseTimeout = ctx.executor().schedule(timeoutTask, //
-                            TCP_CONNECTION_MESSAGE_RESPONSE, TimeUnit.MILLISECONDS);
+                            probe.equals(m) ? TCP_CONNECTION_PROBE_RESPONSE : TCP_CONNECTION_MESSAGE_RESPONSE, //
+                            TimeUnit.MILLISECONDS);
                 }
             }
         }
@@ -295,17 +305,18 @@ public class TuyaDevice implements ChannelFutureListener {
      * with every refusal and starts over once the device reports its status.
      */
     static class DpQueryRefusalHandler extends ChannelDuplexHandler {
-        private static final MessageWrapper<?> msgHeartbeat = new MessageWrapper<>(HEART_BEAT, Map.of());
-
         private final List<MessageWrapper<?>> statusQuery;
+        private final MessageWrapper<?> probe;
         private long retryDelay = TCP_CONNECTION_QUERY_RETRY_INITIAL;
         private @Nullable Future<?> retry = null;
 
         /**
          * @param statusQuery the messages sent to ask the device for its status
+         * @param probe the heartbeat sent to check the device is alive
          */
-        DpQueryRefusalHandler(List<MessageWrapper<?>> statusQuery) {
+        DpQueryRefusalHandler(List<MessageWrapper<?>> statusQuery, MessageWrapper<?> probe) {
             this.statusQuery = statusQuery;
+            this.probe = probe;
         }
 
         @Override
@@ -322,7 +333,7 @@ public class TuyaDevice implements ChannelFutureListener {
                         && (m.commandType == DP_QUERY || m.commandType == DP_QUERY_NEW)) {
                     if (m.content instanceof RequestRefusal) {
                         Channel channel = ctx.channel();
-                        channel.writeAndFlush(msgHeartbeat);
+                        channel.writeAndFlush(probe);
                         if (retry == null) {
                             retry = ctx.executor().schedule(() -> {
                                 retry = null;
@@ -404,9 +415,9 @@ public class TuyaDevice implements ChannelFutureListener {
                 pipeline.addLast("messageDecoder", new TuyaDecoder(gson));
                 pipeline.addLast("heartbeatSender", new HeartbeatSender());
                 pipeline.addLast("responseTimeoutHandler",
-                        new ResponseTimeoutHandler(deviceId, address, msgRequestAllControl));
+                        new ResponseTimeoutHandler(deviceId, address, msgRequestAllControl, msgProbe));
                 pipeline.addLast("dpQueryRefusalHandler",
-                        new DpQueryRefusalHandler(List.of(msgRequestAllDpQuery, msgRequestAllControl)));
+                        new DpQueryRefusalHandler(List.of(msgRequestAllDpQuery, msgRequestAllControl), msgProbe));
                 pipeline.addLast("maxLifetimeHandler", new MaxLifetimeHandler());
                 pipeline.addLast("deviceHandler", new TuyaMessageHandler(deviceStatusListener));
                 pipeline.addLast("userEventHandler", new UserEventHandler());

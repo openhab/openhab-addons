@@ -15,6 +15,7 @@ package org.openhab.binding.tuya.internal.local;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_MESSAGE_RESPONSE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_PROBE_RESPONSE;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -34,10 +35,11 @@ import io.netty.channel.embedded.EmbeddedChannel;
 public class ResponseTimeoutHandlerTest {
     private static final MessageWrapper<?> STATUS_QUERY = new MessageWrapper<>(CommandType.CONTROL,
             Map.of("dps", Map.of()));
+    private static final MessageWrapper<?> PROBE = new MessageWrapper<>(CommandType.HEART_BEAT, Map.of());
 
     private EmbeddedChannel channel() {
         EmbeddedChannel channel = new EmbeddedChannel(
-                new TuyaDevice.ResponseTimeoutHandler("device", "address", STATUS_QUERY));
+                new TuyaDevice.ResponseTimeoutHandler("device", "address", STATUS_QUERY, PROBE));
         channel.freezeTime();
         return channel;
     }
@@ -105,5 +107,34 @@ public class ResponseTimeoutHandlerTest {
         letResponseTimeoutPass(channel);
 
         assertFalse(channel.isOpen());
+    }
+
+    @Test
+    public void probeIsGivenMoreTimeToBeAnswered() {
+        EmbeddedChannel channel = channel();
+
+        channel.writeOutbound(PROBE);
+        letResponseTimeoutPass(channel);
+
+        // A gateway relaying the traffic of its sub-devices may take longer than the usual response timeout
+        assertTrue(channel.isOpen());
+
+        channel.advanceTimeBy(TCP_CONNECTION_PROBE_RESPONSE - TCP_CONNECTION_MESSAGE_RESPONSE, TimeUnit.MILLISECONDS);
+        channel.runScheduledPendingTasks();
+
+        assertFalse(channel.isOpen());
+    }
+
+    @Test
+    public void answeredProbeKeepsTheConnection() {
+        EmbeddedChannel channel = channel();
+
+        channel.writeOutbound(PROBE);
+        channel.writeInbound(new MessageWrapper<>(CommandType.HEART_BEAT, ""));
+        channel.advanceTimeBy(TCP_CONNECTION_PROBE_RESPONSE + 1, TimeUnit.MILLISECONDS);
+        channel.runScheduledPendingTasks();
+
+        assertTrue(channel.isOpen());
+        channel.finishAndReleaseAll();
     }
 }
