@@ -231,12 +231,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void initialize() {
         logger.debug("initializing handler for thing {}", getThing().getUID());
 
+        configuration = getConfigAs(ZonePlayerConfiguration.class);
+
         if (migrateThingType()) {
             // we change the type, so we might need a different handler -> let's finish
             return;
         }
 
-        configuration = getConfigAs(ZonePlayerConfiguration.class);
         String udn = configuration.udn;
         if (udn != null && !udn.isEmpty()) {
             service.registerParticipant(this);
@@ -3323,25 +3324,18 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private boolean migrateThingType() {
         if (getThing().getThingTypeUID().equals(ZONEPLAYER_THING_TYPE_UID)) {
             String modelName = getModelNameFromDescriptor();
-            if (modelName != null && isSupportedModel(modelName)) {
-                updateSonosThingType(modelName);
+            ThingTypeUID modelThingTypeUID = modelName == null ? null : findSupportedThingType(modelName);
+            if (modelThingTypeUID != null) {
+                changeThingType(modelThingTypeUID, getConfig());
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isSupportedModel(String modelName) {
-        for (ThingTypeUID thingTypeUID : SUPPORTED_KNOWN_THING_TYPES_UIDS) {
-            if (thingTypeUID.getId().equalsIgnoreCase(modelName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void updateSonosThingType(String newThingTypeID) {
-        changeThingType(new ThingTypeUID(SonosBindingConstants.BINDING_ID, newThingTypeID), getConfig());
+    private @Nullable ThingTypeUID findSupportedThingType(String modelName) {
+        return SUPPORTED_KNOWN_THING_TYPES_UIDS.stream().filter(uid -> uid.getId().equalsIgnoreCase(modelName))
+                .findFirst().orElse(null);
     }
 
     /*
