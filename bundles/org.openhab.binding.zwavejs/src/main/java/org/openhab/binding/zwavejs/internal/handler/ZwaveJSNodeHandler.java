@@ -55,7 +55,6 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.PointType;
@@ -311,9 +310,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             throw new UnsupportedOperationException(increaseDecreaseCommand.toString() + " is currently not supported");
         } else if (command instanceof NextPreviousType nextPreviousCommand) {
             throw new UnsupportedOperationException(nextPreviousCommand.toString() + " is currently not supported");
-        } else if (command instanceof OpenClosedType openClosedCommand) {
-            zwaveCommand.value = openClosedCommand == (channelConfig.inverted ? OpenClosedType.CLOSED
-                    : OpenClosedType.OPEN);
         } else if (command instanceof PlayPauseType playPauseCommand) {
             throw new UnsupportedOperationException(playPauseCommand.toString() + " is currently not supported");
         } else if (command instanceof PointType pointCommand) {
