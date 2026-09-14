@@ -754,12 +754,15 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, hasMinute2, group, CHANNEL_METER_ENERGYHISTMIN2);
         addChannel(thing, newChannels, hasMinute3, group, CHANNEL_METER_ENERGYHISTMIN3);
         addChannel(thing, newChannels, hasMinute1 && hasMinute2 && hasMinute3, group, CHANNEL_METER_ENERGYAVGLAST3MIN);
+        // Non-PM Gen2 relays (e.g. Plus 1) report isEMeter=true but every emeter field stays permanently
+        // null, so a device actually has a power meter iff at least one of these fields is populated.
+        boolean hasMeterData = always || emeter.power != null || emeter.total != null || emeter.totalReturned != null
+                || hasReactive || emeter.voltage != null || emeter.current != null || emeter.apparentPower != null
+                || emeter.frequency != null || emeter.pf != null || hasMinute1 || hasMinute2 || hasMinute3;
         // Per-meter reset is only meaningful when each meter has its own resettable counter component
         // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
-        addChannel(thing, newChannels, !profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL);
-        // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
-        // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
-        addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
+        addChannel(thing, newChannels, !profile.is3EM && hasMeterData, group, CHANNEL_EMETER_RESETTOTAL);
+        addChannel(thing, newChannels, hasMeterData, group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
 
