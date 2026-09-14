@@ -80,6 +80,20 @@
       "extend_duration": 0,
       "fireplace_duration": 3600
     },
+    "schedules": {
+      "ch_schedule": {
+        "base_temp": 22.5,
+        "entries": [
+          [[0, 240, 20.5], [1230, 1440, 20.5]]
+        ]
+      },
+      "dhw_schedule": {
+        "base_temp": 55.0,
+        "entries": [
+          [[0, 360, 45.0], [360, 1260, 50.0], [1260, 1440, 45.0]]
+        ]
+      }
+    },
     "configuration": {
       "ch_min_set": 20.0,
       "ch_max_set": 85.0,

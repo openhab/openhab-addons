@@ -18,14 +18,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Gson DTO for the {@code control} block in a {@code retrieve_reply}.
  * <p>
  * CH mode values: 1=manual, 2=auto, 3=holiday/vacation, 4=extend, 5=fireplace.
- * CH control mode: 0=room (room-sensor setpoint control), 1=weather (weather-compensated heating
- * curve, no room setpoint) — independent of ch_mode.
+ * CH control mode: 0=thermostat (room-sensor setpoint control), 1=weather-dependent
+ * (weather-compensated heating curve, no room setpoint) — independent of ch_mode.
  *
  * @author Florian Lettner - Initial contribution
  */
 @NonNullByDefault({})
 public class ControlDTO {
-    /** Room vs. weather-compensated control (0=room, 1=weather) — independent of ch_mode. */
+    /** CH circuit status bitmask (firmware-internal). */
+    public int ch_status;
+    /** Thermostat vs. weather-compensated control (0=thermostat, 1=weather-dependent) — independent of ch_mode. */
     public int ch_control_mode;
     /** Current preset mode (1=manual, 2=auto, 3=vacation, 4=extend, 5=fireplace, 6=standby). */
     public int ch_mode;
@@ -35,8 +37,12 @@ public class ControlDTO {
     public double ch_mode_temp;
     /** DHW temperature setpoint (°C). */
     public double dhw_temp_setp;
+    /** DHW status bitmask (firmware-internal). */
+    public int dhw_status;
     /** DHW operating mode. */
     public int dhw_mode;
+    /** DHW mode temperature (°C). */
+    public double dhw_mode_temp;
     /** Current weather temperature (°C) — reported in the control block, not report. */
     public double weather_temp;
     /** Weather status code (firmware-defined integer). */

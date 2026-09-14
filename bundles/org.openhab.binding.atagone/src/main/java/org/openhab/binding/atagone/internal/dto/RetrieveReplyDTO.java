@@ -27,5 +27,6 @@ public class RetrieveReplyDTO {
     public StatusDTO status;
     public ReportDTO report;
     public ControlDTO control;
+    public SchedulesDTO schedules;
     public DeviceConfigDTO configuration;
 }

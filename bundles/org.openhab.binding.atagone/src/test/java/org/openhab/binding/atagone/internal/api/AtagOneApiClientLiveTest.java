@@ -26,6 +26,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.RetrieveReplyDTO;
+import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +70,8 @@ class AtagOneApiClientLiveTest {
         }
     }
 
+    // ── Test 1: pairing ───────────────────────────────────────────────────────
+
     /**
      * pair() returns 1 (pending) if the user must press Accept, 2 (granted) if the device
      * auto-accepts. Some firmware versions return 0 for an open-LAN client — the raw JSON is
@@ -87,6 +90,8 @@ class AtagOneApiClientLiveTest {
         }
         assertTrue(accStatus >= 0, "acc_status must be non-negative, got: " + accStatus);
     }
+
+    // ── Test 2: retrieve ──────────────────────────────────────────────────────
 
     @Test
     @Order(2)
@@ -162,6 +167,8 @@ class AtagOneApiClientLiveTest {
         LOGGER.info("  ch_mode_vacation : {} s", r.configuration.ch_mode_vacation);
         LOGGER.info("  boiler_id        : {}", r.configuration.boiler_id);
 
+        // ── Structural assertions ──────────────────────────────────────────────
+
         assertFalse(r.status.device_id.isEmpty(), "device_id must not be empty");
 
         assertTrue(r.report.room_temp >= 5 && r.report.room_temp <= 35,
@@ -190,11 +197,16 @@ class AtagOneApiClientLiveTest {
                         + r.configuration.dhw_max_set);
     }
 
+    // ── Test 3: safe write ────────────────────────────────────────────────────
+
     @Test
     @Order(3)
     void updateControlRoundTrip() throws AtagOneCommunicationException {
         // Read the current room setpoint, then write it back — no change to the boiler. Uses
-        // ch_mode_temp: dhw_temp_setp is read-only/derived, so writing it wouldn't prove a round-trip.
+        // ch_mode_temp (the target-temperature channel's field), confirmed live to be a genuinely
+        // writable control field. dhw_temp_setp was used here previously, but is confirmed
+        // read-only/derived — writing it is silently accepted and has no effect, which would make
+        // this test unable to distinguish a working round-trip from a no-op write.
         RetrieveReplyDTO before = apiClient.retrieve();
         double currentSetpoint = before.control.ch_mode_temp;
         LOGGER.info("updateControl round-trip: ch_mode_temp = {}", currentSetpoint);
@@ -211,5 +223,49 @@ class AtagOneApiClientLiveTest {
                 "Room setpoint changed unexpectedly after no-op write");
 
         LOGGER.info("updateControl round-trip: OK (ch_mode_temp still {})", after.control.ch_mode_temp);
+    }
+
+    // ── Test 4: DHW schedule write ───────────────────────────────────────────
+
+    @Test
+    @Order(4)
+    void updateDhwScheduleRoundTrip() throws AtagOneCommunicationException {
+        RetrieveReplyDTO before = apiClient.retrieve();
+        double currentBaseTemp = before.schedules.dhw_schedule.base_temp;
+        LOGGER.info("updateDhwSchedule round-trip: base_temp = {}", currentBaseTemp);
+
+        ScheduleDTO update = new ScheduleDTO();
+        update.base_temp = currentBaseTemp;
+        update.entries = before.schedules.dhw_schedule.entries;
+
+        assertDoesNotThrow(() -> apiClient.updateDhwSchedule(update));
+
+        RetrieveReplyDTO after = apiClient.retrieve();
+        assertEquals(currentBaseTemp, after.schedules.dhw_schedule.base_temp, 0.001,
+                "dhw_schedule.base_temp changed unexpectedly after a no-op write");
+
+        LOGGER.info("updateDhwSchedule round-trip: OK (base_temp still {})", after.schedules.dhw_schedule.base_temp);
+    }
+
+    // ── Test 5: CH schedule write ────────────────────────────────────────────
+
+    @Test
+    @Order(5)
+    void updateChScheduleRoundTrip() throws AtagOneCommunicationException {
+        RetrieveReplyDTO before = apiClient.retrieve();
+        double currentBaseTemp = before.schedules.ch_schedule.base_temp;
+        LOGGER.info("updateChSchedule round-trip: base_temp = {}", currentBaseTemp);
+
+        ScheduleDTO update = new ScheduleDTO();
+        update.base_temp = currentBaseTemp;
+        update.entries = before.schedules.ch_schedule.entries;
+
+        assertDoesNotThrow(() -> apiClient.updateChSchedule(update));
+
+        RetrieveReplyDTO after = apiClient.retrieve();
+        assertEquals(currentBaseTemp, after.schedules.ch_schedule.base_temp, 0.001,
+                "ch_schedule.base_temp changed unexpectedly after a no-op write");
+
+        LOGGER.info("updateChSchedule round-trip: OK (base_temp still {})", after.schedules.ch_schedule.base_temp);
     }
 }

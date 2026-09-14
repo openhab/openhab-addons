@@ -22,6 +22,8 @@ import org.openhab.binding.atagone.internal.dto.DeviceConfigDTO;
 import org.openhab.binding.atagone.internal.dto.ReportDTO;
 import org.openhab.binding.atagone.internal.dto.ReportDetailsDTO;
 import org.openhab.binding.atagone.internal.dto.RetrieveReplyDTO;
+import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
+import org.openhab.binding.atagone.internal.dto.SchedulesDTO;
 
 import com.google.gson.JsonObject;
 
@@ -48,6 +50,9 @@ class AtagOneApiClientValidationTest {
         dto.report = new ReportDTO();
         dto.report.details = new ReportDetailsDTO();
         dto.control = new ControlDTO();
+        dto.schedules = new SchedulesDTO();
+        dto.schedules.ch_schedule = new ScheduleDTO();
+        dto.schedules.dhw_schedule = new ScheduleDTO();
         dto.configuration = new DeviceConfigDTO();
         return dto;
     }
@@ -82,6 +87,27 @@ class AtagOneApiClientValidationTest {
     void rejectsMissingReportDetails() {
         RetrieveReplyDTO dto = completeReply();
         dto.report.details = null;
+        assertThrows(AtagOneCommunicationException.class, () -> AtagOneApiClient.validateComplete(dto));
+    }
+
+    @Test
+    void rejectsMissingSchedules() {
+        RetrieveReplyDTO dto = completeReply();
+        dto.schedules = null;
+        assertThrows(AtagOneCommunicationException.class, () -> AtagOneApiClient.validateComplete(dto));
+    }
+
+    @Test
+    void rejectsMissingChSchedule() {
+        RetrieveReplyDTO dto = completeReply();
+        dto.schedules.ch_schedule = null;
+        assertThrows(AtagOneCommunicationException.class, () -> AtagOneApiClient.validateComplete(dto));
+    }
+
+    @Test
+    void rejectsMissingDhwSchedule() {
+        RetrieveReplyDTO dto = completeReply();
+        dto.schedules.dhw_schedule = null;
         assertThrows(AtagOneCommunicationException.class, () -> AtagOneApiClient.validateComplete(dto));
     }
 

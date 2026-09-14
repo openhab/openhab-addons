@@ -15,17 +15,14 @@ package org.openhab.binding.atagone.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Gson DTO for the {@code status} block in a {@code retrieve_reply}.
+ * Gson DTO for the {@code schedules} block in a {@code retrieve_reply}.
  *
  * @author Florian Lettner - Initial contribution
  */
 @NonNullByDefault({})
-public class StatusDTO {
-    /** Device timestamp (ATAG epoch: seconds since 2000-01-01 UTC). */
-    public long date_time;
-    public String device_id = "";
-    /** Device status bitmask (firmware-internal). */
-    public int device_status;
-    /** Connection status bitmask. */
-    public int connection_status;
+public class SchedulesDTO {
+    /** Central heating schedule. */
+    public ScheduleDTO ch_schedule;
+    /** Domestic hot water schedule. */
+    public ScheduleDTO dhw_schedule;
 }

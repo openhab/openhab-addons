@@ -31,6 +31,7 @@ import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.PairReplyDTO;
 import org.openhab.binding.atagone.internal.dto.RetrieveReplyDTO;
+import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,10 +61,17 @@ public class AtagOneApiClient {
      * seconds. The wifi-signal channel is unaffected: rssi is reported in the report(8) section.
      */
     private static final int INFO_BITMASK = 95;
-    // Values informed by pyatag (https://github.com/MatsNl/pyatag), the reference client for this
-    // device, which uses a 1000ms rate-limit gap and no timeout ceiling. Not copied outright: an
-    // unbounded timeout is unsafe here, and MAX_RETRIES stays below pyatag's 10 since retries and
-    // timeout compound — 10×15s could block a single poll() longer than the binding's refreshInterval.
+    /*
+     * Timeout, rate-limit gap, and retry count were originally tuned defensively without a reference
+     * point. pyatag (https://github.com/MatsNl/pyatag), the reference client this and other ATAG ONE
+     * integrations are built on, uses a 1000ms rate-limit gap and no per-attempt timeout ceiling at
+     * all (relying on aiohttp's ~300s session default) — evidence this device's brief unresponsive
+     * windows are longer than 5s, not just occasional network noise. Loosened accordingly, though not
+     * copied outright: an unbounded timeout is unsafe for a polling binding's Thing status, and
+     * MAX_RETRIES stays well short of pyatag's 10 since retries and timeout compound — 10 attempts at
+     * 15s each could block a single poll() call for 150s, longer than even this binding's own
+     * refreshInterval.
+     */
     private static final int REQUEST_TIMEOUT_S = 15;
     private static final long MIN_INTERVAL_MS = 1_000L;
     private static final int MAX_RETRIES = 7;
@@ -153,11 +161,17 @@ public class AtagOneApiClient {
 
     /**
      * Parses {@code responseJson} and extracts the named top-level reply object (e.g.
-     * {@code pair_reply}, {@code retrieve_reply}, {@code update_reply}). Translates a malformed, empty,
-     * or non-object body into the checked {@link AtagOneCommunicationException} every caller already
-     * handles, instead of letting an unchecked {@link JsonParseException}/{@link IllegalStateException}
-     * break a caller's retry path. Package-private so {@code AtagOneApiClientValidationTest} can
-     * exercise it directly with hand-crafted malformed input.
+     * {@code pair_reply}, {@code retrieve_reply}, {@code update_reply}).
+     * <p>
+     * A malformed, empty, or non-object HTTP body — a realistic failure mode given this device's
+     * documented HTTP/1.0 flakiness — would otherwise throw an unchecked {@link JsonParseException} or
+     * {@link IllegalStateException} straight out of the caller. Both are translated here into the
+     * checked {@link AtagOneCommunicationException} every caller already handles, so a bad response
+     * can never silently break a caller's retry/recovery path (e.g. {@code doPair()}'s pairing retry,
+     * or the poll job restart in {@code AtagOneHandler}).
+     * <p>
+     * Package-private (not private) so {@code AtagOneApiClientValidationTest} can exercise it
+     * directly with hand-crafted malformed input, without standing up the HTTP layer.
      *
      * @throws AtagOneCommunicationException if the response cannot be parsed or the named reply object
      *             is missing
@@ -176,17 +190,22 @@ public class AtagOneApiClient {
     }
 
     /**
-     * Verifies every section {@link org.openhab.binding.atagone.internal.AtagOneHandler#updateChannels}
-     * unconditionally dereferences is present, so a firmware reply missing one (e.g. during the
-     * boiler's post-write reinitialization) can't NPE a {@code scheduleWithFixedDelay} poll task and
-     * silently stop all future polls.
+     * Verifies that every section {@link org.openhab.binding.atagone.internal.AtagOneHandler#updateChannels}
+     * unconditionally dereferences is present. A firmware reply missing a section (e.g. during the boiler's
+     * post-write API reinitialization window) would otherwise reach the handler as a DTO with null fields and
+     * crash it with an NPE — which, thrown from a {@code scheduleWithFixedDelay} task, would silently and
+     * permanently stop all future polls.
      */
     static void validateComplete(RetrieveReplyDTO result) throws AtagOneCommunicationException {
-        if (result.report == null || result.control == null || result.configuration == null) {
+        if (result.report == null || result.control == null || result.schedules == null
+                || result.configuration == null) {
             throw new AtagOneCommunicationException("retrieve_reply missing required section(s)");
         }
         if (result.report.details == null) {
             throw new AtagOneCommunicationException("retrieve_reply.report missing details section");
+        }
+        if (result.schedules.ch_schedule == null || result.schedules.dhw_schedule == null) {
+            throw new AtagOneCommunicationException("retrieve_reply.schedules missing ch_schedule/dhw_schedule");
         }
     }
 
@@ -232,6 +251,51 @@ public class AtagOneApiClient {
             throw new AtagOneCommunicationException("update denied: acc_status=" + accStatus);
         }
         logger.debug("updateControl() succeeded");
+    }
+
+    /**
+     * Writes the CH schedule's fallback temperature. See {@link ScheduleDTO} for the required shape.
+     *
+     * @param chSchedule the complete schedule to send
+     * @throws AtagOneCommunicationException on transport or protocol failure
+     */
+    public void updateChSchedule(ScheduleDTO chSchedule) throws AtagOneCommunicationException {
+        updateSchedule("ch_schedule", chSchedule);
+    }
+
+    /**
+     * Writes the DHW schedule's fallback temperature. See {@link ScheduleDTO} for the required shape.
+     *
+     * @param dhwSchedule the complete schedule to send
+     * @throws AtagOneCommunicationException on transport or protocol failure
+     */
+    public void updateDhwSchedule(ScheduleDTO dhwSchedule) throws AtagOneCommunicationException {
+        updateSchedule("dhw_schedule", dhwSchedule);
+    }
+
+    private void updateSchedule(String key, ScheduleDTO schedule) throws AtagOneCommunicationException {
+        JsonObject auth = new JsonObject();
+        auth.addProperty("user_account", "");
+        auth.addProperty("mac_address", clientId);
+
+        JsonObject schedules = new JsonObject();
+        schedules.add(key, gson.toJsonTree(schedule));
+
+        JsonObject updateMsg = new JsonObject();
+        updateMsg.addProperty("seqnr", 0);
+        updateMsg.add("account_auth", auth);
+        updateMsg.add("schedules", schedules);
+
+        JsonObject root = new JsonObject();
+        root.add("update_message", updateMsg);
+
+        String responseJson = sendRequest("/update", gson.toJson(root));
+        JsonObject reply = parseReplyObject(responseJson, "update_reply");
+        int accStatus = reply.has("acc_status") ? reply.get("acc_status").getAsInt() : 0;
+        if (accStatus != 2) {
+            throw new AtagOneCommunicationException("schedule update denied: acc_status=" + accStatus);
+        }
+        logger.debug("updateSchedule({}) succeeded", key);
     }
 
     /**

@@ -30,9 +30,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.atagone.internal.AtagOneHandler;
+import org.openhab.binding.atagone.internal.AtagOneStateDescriptionProvider;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
+import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.State;
@@ -56,10 +60,26 @@ class AtagOneActionsTest {
 
     @BeforeEach
     void setUp() {
-        handler = spy(new AtagOneHandler(thing, httpClient));
+        handler = spy(new AtagOneHandler(thing, httpClient, new AtagOneStateDescriptionProvider()));
         lenient().doNothing().when(handler).sendComposedUpdate(anyString(), any(), any());
+        lenient().doNothing().when(handler).sendComposedChSchedule(anyString(), any());
+        lenient().doNothing().when(handler).sendComposedDhwSchedule(anyString(), any());
         actions = new AtagOneActions();
         actions.setThingHandler(handler);
+    }
+
+    /** Directly sets the handler's last-polled ch_schedule.entries, simulating a prior poll. */
+    private void seedLastChScheduleEntries(double[][][] entries) throws ReflectiveOperationException {
+        Field field = AtagOneHandler.class.getDeclaredField("lastChScheduleEntries");
+        field.setAccessible(true);
+        field.set(handler, entries);
+    }
+
+    /** Directly sets the handler's last-polled dhw_schedule.entries, simulating a prior poll. */
+    private void seedLastDhwScheduleEntries(double[][][] entries) throws ReflectiveOperationException {
+        Field field = AtagOneHandler.class.getDeclaredField("lastDhwScheduleEntries");
+        field.setAccessible(true);
+        field.set(handler, entries);
     }
 
     /** Directly seeds the handler's private stateMap, simulating a previously-polled channel value. */
@@ -150,8 +170,15 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void activateExtendRejectsNonWholeHour() {
-        actions.activateExtend(1800); // 30 minutes — not a whole hour
+    void activateExtendAcceptsFifteenMinuteIncrement() {
+        actions.activateExtend(1800); // 30 minutes — a whole 15-minute increment
+
+        verify(handler).sendComposedUpdate(anyString(), any(), any());
+    }
+
+    @Test
+    void activateExtendRejectsNonFifteenMinuteIncrement() {
+        actions.activateExtend(1000); // not a whole 15-minute increment
 
         verify(handler, never()).sendComposedUpdate(anyString(), any(), any());
     }
@@ -241,5 +268,101 @@ class AtagOneActionsTest {
         AtagOneActions.activateFireplace(actions, 3600);
 
         verify(handler).sendComposedUpdate(eq("action:activateFireplace"), any(), any());
+    }
+
+    @Test
+    void setChSchedulePeriodComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 1440, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedulePeriod("monday", 1, 600, 1200, 20.0);
+
+        assertTrue(accepted);
+        ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
+        verify(handler).sendComposedChSchedule(eq("action:setChSchedulePeriod"), schedule.capture());
+        assertEquals(2, schedule.getValue().entries[0].length);
+    }
+
+    @Test
+    void setChSchedulePeriodRejectsInvalidWeekdayWithoutSending() throws ReflectiveOperationException {
+        seedLastChScheduleEntries(new double[7][][]);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedulePeriod("someday", 0, 0, 1440, 18.0);
+
+        assertFalse(accepted);
+        verify(handler, never()).sendComposedChSchedule(anyString(), any());
+    }
+
+    @Test
+    void setChSchedulePeriodWithNoBoundHandlerDoesNotThrow() {
+        AtagOneActions freshActions = new AtagOneActions();
+
+        assertDoesNotThrow(() -> freshActions.setChSchedulePeriod("monday", 0, 0, 1440, 18.0));
+    }
+
+    @Test
+    void clearChSchedulePeriodComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[2] = new double[][] { { 0, 720, 18.0 }, { 720, 1440, 20.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.clearChSchedulePeriod("wednesday", 0);
+
+        assertTrue(accepted);
+        ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
+        verify(handler).sendComposedChSchedule(eq("action:clearChSchedulePeriod"), schedule.capture());
+        assertEquals(1, schedule.getValue().entries[2].length);
+    }
+
+    @Test
+    void clearChSchedulePeriodRejectsOutOfRangeIndexWithoutSending() throws ReflectiveOperationException {
+        seedLastChScheduleEntries(new double[7][][]);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.clearChSchedulePeriod("monday", 0);
+
+        assertFalse(accepted);
+        verify(handler, never()).sendComposedChSchedule(anyString(), any());
+    }
+
+    @Test
+    void setDhwSchedulePeriodComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[5] = new double[][] { { 0, 1440, 45.0 } };
+        seedLastDhwScheduleEntries(entries);
+        seedState(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(48.0, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setDhwSchedulePeriod("saturday", 1, 600, 1200, 55.0);
+
+        assertTrue(accepted);
+        verify(handler).sendComposedDhwSchedule(eq("action:setDhwSchedulePeriod"), any());
+    }
+
+    @Test
+    void clearDhwSchedulePeriodRejectsInvalidWeekdayWithoutSending() throws ReflectiveOperationException {
+        seedLastDhwScheduleEntries(new double[7][][]);
+        seedState(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(48.0, SIUnits.CELSIUS));
+
+        boolean accepted = actions.clearDhwSchedulePeriod("someday", 0);
+
+        assertFalse(accepted);
+        verify(handler, never()).sendComposedDhwSchedule(anyString(), any());
+    }
+
+    @Test
+    void staticScheduleDelegatesCallThroughToInstanceMethods() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 1440, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = AtagOneActions.clearChSchedulePeriod(actions, "monday", 0);
+
+        assertTrue(accepted);
+        verify(handler).sendComposedChSchedule(eq("action:clearChSchedulePeriod"), any());
     }
 }

@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.atagone")
 public class AtagOneDiscoveryService extends AbstractDiscoveryService {
 
-    private static final String REPRESENTATION_PROPERTY = "deviceId";
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_THERMOSTAT);
 
     private static final int DISCOVERY_PORT = 11000;
@@ -118,8 +117,13 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Manual-scan variant of {@link #listenOnce()}: keeps receiving until {@code deadlineMs} instead of
-     * returning after the first datagram, so a second device or a noisy first packet isn't missed.
+     * Manual-scan variant of {@link #listenOnce()}: keeps receiving on a single bound socket until
+     * {@code deadlineMs}, announcing every valid datagram, instead of returning after the first one.
+     * The framework advertises a {@value #MANUAL_DISCOVERY_TIME_S}s manual scan window to the user —
+     * without this loop, a scan would silently end after the first datagram (or after one
+     * {@value #SOCKET_TIMEOUT_MS}ms timeout with none), missing any second device on the LAN or
+     * recovering from a first packet that turned out to be noise. Background discovery doesn't need
+     * this: it already gets repeated coverage over time via its own recurring schedule.
      */
     private void listenUntilDeadline(long deadlineMs) {
         byte[] buf = new byte[64];
@@ -185,11 +189,11 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
         ThingUID uid = new ThingUID(THING_TYPE_THERMOSTAT, thingId);
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put(REPRESENTATION_PROPERTY, deviceId);
+        properties.put(PROPERTY_DEVICE_ID, deviceId);
         // Pre-populate hostname so the user doesn't have to type it when accepting from Inbox.
         properties.put("hostname", host);
 
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withRepresentationProperty(REPRESENTATION_PROPERTY)
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withRepresentationProperty(PROPERTY_DEVICE_ID)
                 .withProperties(properties).withLabel("ATAG ONE Thermostat (" + host + ")").build();
 
         thingDiscovered(result);

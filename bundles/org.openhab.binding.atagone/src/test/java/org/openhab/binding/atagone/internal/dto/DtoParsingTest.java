@@ -116,6 +116,20 @@ class DtoParsingTest {
     }
 
     @Test
+    void schedulesBlockParsedCorrectly() throws IOException {
+        RetrieveReplyDTO reply = loadRetrieveReply();
+        assertEquals(22.5, reply.schedules.ch_schedule.base_temp, 0.001);
+        assertEquals(55.0, reply.schedules.dhw_schedule.base_temp, 0.001);
+        // ch_schedule: one day, two [start, end, temp] triples
+        assertEquals(1, reply.schedules.ch_schedule.entries.length);
+        assertEquals(2, reply.schedules.ch_schedule.entries[0].length);
+        assertEquals(1230.0, reply.schedules.ch_schedule.entries[0][1][0], 0.001);
+        // dhw_schedule: variable entry count per day (3, vs. ch_schedule's 2)
+        assertEquals(3, reply.schedules.dhw_schedule.entries[0].length);
+        assertEquals(50.0, reply.schedules.dhw_schedule.entries[0][1][2], 0.001);
+    }
+
+    @Test
     void configurationBlockParsedCorrectly() throws IOException {
         RetrieveReplyDTO reply = loadRetrieveReply();
         // Setpoints are double, not int
