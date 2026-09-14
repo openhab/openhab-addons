@@ -50,14 +50,17 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
         }
         for (int i = 0; i < loadpoints.size(); i++) {
             JsonObject lp = loadpoints.get(i).getAsJsonObject();
-            String title = lp.has(JSON_KEY_TITLE) ? lp.get(JSON_KEY_TITLE).getAsString() : "loadpoint" + i;
+            boolean heating = lp.has(JSON_KEY_CHARGER_FEATURE_HEATING)
+                    && lp.get(JSON_KEY_CHARGER_FEATURE_HEATING).getAsBoolean();
+            String title = lp.has(JSON_KEY_TITLE) ? lp.get(JSON_KEY_TITLE).getAsString()
+                    : heating ? "Heating " + (i + 1) : "Loadpoint " + (i + 1);
 
             ThingUID uid = new ThingUID("DUMMY:DUMMY:DUMMY");
             Map<String, Object> properties = new HashMap<>();
             properties.put(PROPERTY_INDEX, i);
             properties.put(PROPERTY_TITLE, title);
 
-            if (lp.has(JSON_KEY_CHARGER_FEATURE_HEATING) && lp.get(JSON_KEY_CHARGER_FEATURE_HEATING).getAsBoolean()) {
+            if (heating) {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_HEATING, bridgeHandler.getThing().getUID(),
                         Utils.sanitizeName(title));
             } else {
