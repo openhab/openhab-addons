@@ -24,11 +24,15 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 class SourceDTO {
-    @Nullable MeterDTO meter;
+    @Nullable
+    MeterDTO meter;
     @SerializedName("meter_uuid")
-    @Nullable String meterUuid;
+    @Nullable
+    String meterUuid;
     @SerializedName("meter_id")
-    @Nullable String meterId;
+    @Nullable
+    String meterId;
     @SerializedName("register_0")
-    @Nullable RegisterDTO register;
+    @Nullable
+    RegisterDTO register;
 }

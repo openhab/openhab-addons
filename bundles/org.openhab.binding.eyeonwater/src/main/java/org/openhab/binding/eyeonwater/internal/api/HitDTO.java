@@ -25,5 +25,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 class HitDTO {
     @SerializedName("_source")
-    @Nullable SourceDTO source;
+    @Nullable
+    SourceDTO source;
 }

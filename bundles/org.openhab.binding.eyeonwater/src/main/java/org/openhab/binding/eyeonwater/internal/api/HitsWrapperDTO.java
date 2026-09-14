@@ -24,5 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 class HitsWrapperDTO {
-    @Nullable List<HitDTO> hits;
+    @Nullable
+    List<HitDTO> hits;
 }

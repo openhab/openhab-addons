@@ -15,7 +15,6 @@ package org.openhab.binding.eyeonwater.internal.handler;
 import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.eyeonwater.internal.api.EyeOnWaterClient.EyeOnWaterMeterData;
 import org.openhab.binding.eyeonwater.internal.config.EyeOnWaterMeterConfiguration;
 import org.openhab.binding.eyeonwater.internal.util.EyeOnWaterUnitConverter;

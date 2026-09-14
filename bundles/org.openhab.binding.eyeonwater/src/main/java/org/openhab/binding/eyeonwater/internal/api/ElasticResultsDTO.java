@@ -22,5 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 class ElasticResultsDTO {
-    @Nullable HitsWrapperDTO hits;
+    @Nullable
+    HitsWrapperDTO hits;
 }

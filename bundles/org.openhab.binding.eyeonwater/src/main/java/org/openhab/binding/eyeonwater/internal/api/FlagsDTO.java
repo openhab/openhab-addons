@@ -25,9 +25,12 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 class FlagsDTO {
     @SerializedName("Leak")
-    @Nullable Boolean leak;
+    @Nullable
+    Boolean leak;
     @SerializedName("LowBattery")
-    @Nullable Boolean lowBattery;
+    @Nullable
+    Boolean lowBattery;
     @SerializedName("ReverseFlow")
-    @Nullable Boolean reverseFlow;
+    @Nullable
+    Boolean reverseFlow;
 }

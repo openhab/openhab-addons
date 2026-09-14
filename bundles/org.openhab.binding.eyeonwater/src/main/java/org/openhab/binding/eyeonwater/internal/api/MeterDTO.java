@@ -25,7 +25,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 class MeterDTO {
     @SerializedName("meter_uuid")
-    @Nullable String meterUuid;
+    @Nullable
+    String meterUuid;
     @SerializedName("meter_id")
-    @Nullable String meterId;
+    @Nullable
+    String meterId;
 }

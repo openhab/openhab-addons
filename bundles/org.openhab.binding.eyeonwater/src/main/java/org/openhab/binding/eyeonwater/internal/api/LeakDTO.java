@@ -22,5 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 class LeakDTO {
-    @Nullable Double rate;
+    @Nullable
+    Double rate;
 }

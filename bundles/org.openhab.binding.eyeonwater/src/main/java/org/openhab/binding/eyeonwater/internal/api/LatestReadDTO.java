@@ -25,8 +25,11 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 class LatestReadDTO {
     @SerializedName("full_read")
-    @Nullable Double fullRead;
-    @Nullable String units;
+    @Nullable
+    Double fullRead;
+    @Nullable
+    String units;
     @SerializedName("read_time")
-    @Nullable String readTime;
+    @Nullable
+    String readTime;
 }

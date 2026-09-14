@@ -112,8 +112,8 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        EyeOnWaterClient activeClient = new EyeOnWaterClient(config.getNormalizedHostname(), config.username, config.password,
-                clientInstance);
+        EyeOnWaterClient activeClient = new EyeOnWaterClient(config.getNormalizedHostname(), config.username,
+                config.password, clientInstance);
         client = activeClient;
 
         initializeAsync();

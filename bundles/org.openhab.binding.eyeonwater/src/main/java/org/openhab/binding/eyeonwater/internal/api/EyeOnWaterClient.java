@@ -44,7 +44,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.annotations.SerializedName;
 
 /**
  * Service to interact with the EyeOnWater REST API.
@@ -96,10 +95,9 @@ public class EyeOnWaterClient {
         String formDataString = ofFormData(formData);
 
         Request request = httpClient.newRequest(loginUrl).method(POST).timeout(15, TimeUnit.SECONDS)
-                .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
-                .header(USER_AGENT, USER_AGENT_VALUE).followRedirects(false)
-                .content(new StringContentProvider("application/x-www-form-urlencoded", formDataString,
-                        StandardCharsets.UTF_8));
+                .header(CONTENT_TYPE, "application/x-www-form-urlencoded").header(USER_AGENT, USER_AGENT_VALUE)
+                .followRedirects(false).content(new StringContentProvider("application/x-www-form-urlencoded",
+                        formDataString, StandardCharsets.UTF_8));
 
         ContentResponse response;
         try {
@@ -339,18 +337,25 @@ public class EyeOnWaterClient {
         }
         LatestReadDTO latestRead = register.latestRead;
 
-        if (latestRead.fullRead == null || latestRead.units == null || latestRead.readTime == null) {
+        @Nullable
+        Double fullRead = latestRead.fullRead;
+        @Nullable
+        String units = latestRead.units;
+        @Nullable
+        String readTimeStr = latestRead.readTime;
+
+        if (fullRead == null || units == null || readTimeStr == null) {
             throw new IOException("Meter register_0 latest_read has incomplete data");
         }
 
-        double readingValue = latestRead.fullRead;
-        String readingUnit = latestRead.units;
-        String readTimeStr = latestRead.readTime;
+        double readingValue = fullRead;
+        String readingUnit = units;
+        String readTime = readTimeStr;
 
         EyeOnWaterMeterData meterData = new EyeOnWaterMeterData(meterUuid, meterId);
         meterData.setReadingValue(readingValue);
         meterData.setReadingUnit(readingUnit);
-        meterData.setReadTime(readTimeStr);
+        meterData.setReadTime(readTime);
 
         // Fetch Alert Flags
         if (register.flags != null) {

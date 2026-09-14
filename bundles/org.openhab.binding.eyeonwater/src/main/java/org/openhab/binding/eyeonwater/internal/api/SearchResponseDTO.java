@@ -25,5 +25,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 class SearchResponseDTO {
     @SerializedName("elastic_results")
-    @Nullable ElasticResultsDTO elasticResults;
+    @Nullable
+    ElasticResultsDTO elasticResults;
 }

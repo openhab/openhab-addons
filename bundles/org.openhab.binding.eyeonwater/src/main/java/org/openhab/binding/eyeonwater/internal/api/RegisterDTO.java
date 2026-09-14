@@ -25,7 +25,10 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 class RegisterDTO {
     @SerializedName("latest_read")
-    @Nullable LatestReadDTO latestRead;
-    @Nullable FlagsDTO flags;
-    @Nullable LeakDTO leak;
+    @Nullable
+    LatestReadDTO latestRead;
+    @Nullable
+    FlagsDTO flags;
+    @Nullable
+    LeakDTO leak;
 }
