@@ -21,7 +21,6 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
 import com.google.gson.JsonObject;
@@ -46,20 +45,8 @@ public class EvccPvHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
             endpoint = handler.getBaseURL();
             handler.register(this);
-            // Go ONLINE when bridge is connected, even if data hasn't arrived yet
-            // Data will populate via handleUpdate() when available
-            updateStatus(ThingStatus.ONLINE);
-            JsonObject state = getStateFromCachedState(stateOpt);
-            if (!state.isEmpty()) {
-                createChannelsAndSetStatesFromApiResponse(state);
-            }
         });
     }
 
@@ -75,8 +62,16 @@ public class EvccPvHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        state = state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
+        logger.debug("PV handler initializing from state");
+        state = getStateFromCachedState(state);
+        if (state.isEmpty()) {
+            logger.debug("No PV state found for index {}", index);
+            return;
+        }
         createChannelsAndSetStatesFromApiResponse(state);
+        logger.debug("PV handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

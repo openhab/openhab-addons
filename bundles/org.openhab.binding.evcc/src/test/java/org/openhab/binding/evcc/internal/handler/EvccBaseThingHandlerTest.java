@@ -173,7 +173,7 @@ public class EvccBaseThingHandlerTest {
             when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
 
             doReturn(cachedState).when(handler).getStateFromCachedState(any());
-            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
+            handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
             handler.handleCommand(channelUID, command);
         }
@@ -192,7 +192,7 @@ public class EvccBaseThingHandlerTest {
             when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
 
             doReturn(cachedState).when(handler).getStateFromCachedState(any());
-            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
+            handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
             handler.handleCommand(channelUID, command);
         }

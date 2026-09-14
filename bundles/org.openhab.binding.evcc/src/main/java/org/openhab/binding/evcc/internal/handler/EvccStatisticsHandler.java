@@ -25,7 +25,6 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +51,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
             handler.register(this);
-            initializeThingFromLatestState(stateOpt);
-            updateStatus(ThingStatus.ONLINE);
         });
     }
 
@@ -80,8 +72,10 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Statistics handler initializing from state");
         state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
         if (state.isEmpty()) {
+            logger.debug("No statistics state available");
             return;
         }
         for (String statisticsKey : state.keySet()) {
@@ -101,5 +95,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
                 }
             }
         }
+        logger.debug("Statistics handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
     }
 }

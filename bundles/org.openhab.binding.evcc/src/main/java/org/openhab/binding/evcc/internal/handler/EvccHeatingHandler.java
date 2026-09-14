@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -76,8 +77,11 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Heating handler initializing from state");
         updateJSON(state);
         createChannelsAndSetStatesFromApiResponse(state);
+        logger.debug("Heating handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
     }
 
     protected void updateJSON(JsonObject state) {

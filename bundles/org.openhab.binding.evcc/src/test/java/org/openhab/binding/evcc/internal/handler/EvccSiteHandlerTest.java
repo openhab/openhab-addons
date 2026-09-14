@@ -116,11 +116,12 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
         handler.initialize();
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
@@ -130,7 +131,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
         @Test
         public void handlerIsInitialized() {
-            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
@@ -141,15 +142,15 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
         @Test
         public void handlerIsNotInitialized() {
-            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
+            handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
             handler.initializeThingFromLatestState(exampleResponse);
-            assertSame(ThingStatus.UNKNOWN, lastThingStatus);
+            assertSame(ThingStatus.ONLINE, lastThingStatus);
         }
 
         @Test
         public void stateContainsGridConfigured() {
-            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
+            handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
             exampleResponse.addProperty("gridConfigured", true);
             exampleResponse.add("grid", gridConfigured);

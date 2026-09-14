@@ -123,7 +123,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         LocaleProvider lp = mock(LocaleProvider.class);
         TranslationProvider tp = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
@@ -169,7 +169,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         LocaleProvider lp = mock(LocaleProvider.class);
         TranslationProvider tp = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);

@@ -100,12 +100,13 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
 
         handler.initialize();
+        handler.initializeThingFromLatestState(exampleResponse);
 
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
@@ -126,12 +127,13 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     public void testInitializeWithBridgeHandlerWithMissingVehicleData() {
         // Test when state is available but doesn't contain data for this vehicle
         // Should still go ONLINE and wait for data via handleUpdate()
-        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
 
         handler.initialize();
+        handler.initializeThingFromLatestState(exampleResponse);
 
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
@@ -146,13 +148,14 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
         when(thing.getProperties()).thenReturn(Map.of("type", "vehicle"));
 
         handler = spy(createHandler());
-        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
 
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
 
         handler.initialize();
+        handler.initializeThingFromLatestState(exampleResponse);
 
         assertEquals("vehicle_1", config.get(PROPERTY_VEHICLE_ID));
         assertNull(config.get(PROPERTY_ID));

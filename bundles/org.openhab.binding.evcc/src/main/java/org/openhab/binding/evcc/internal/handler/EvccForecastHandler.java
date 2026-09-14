@@ -29,7 +29,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -65,14 +64,8 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
             endpoint = handler.getBaseURL();
             handler.register(this);
-            updateStatus(ThingStatus.ONLINE);
         });
     }
 
@@ -81,41 +74,15 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         return List.of(JSON_KEY_FORECAST);
     }
 
-    public void odlInitialize() {
-        // super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            if (!SUPPORTED_FORECAST_TYPES.contains(subType)) {
-                logger.warn("Unsupported forecast type: {}", subType);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unsupported forecast type: " + subType);
-                return;
-            }
-            JsonObject stateOpt = handler.getCachedEvccState();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-            if (stateOpt.has(JSON_KEY_FORECAST) && stateOpt.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
-                JsonObject state = new JsonObject();
-                if (JSON_KEY_SOLAR.equals(subType)) {
-                    state = stateOpt.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType).deepCopy();
-                    modifyJSON(state);
-                    state.addProperty("scaled", 0);
-                }
-                state.addProperty(subType, 0);
-                handler.register(this);
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                logger.warn("Forecast data for type {} is not available in the evcc state.", subType);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unavailable forecast type: " + subType);
-            }
-        });
-    }
-
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        if (state.isJsonNull() || state.isEmpty()) {
+        logger.debug("Forecast handler {} initializing from state", subType);
+        if (state.isJsonNull() || state.isEmpty() || !state.has(JSON_KEY_FORECAST)) {
+            logger.debug("No forecast state available for type {}", subType);
+            return;
+        }
+        if (!SUPPORTED_FORECAST_TYPES.contains(subType)) {
+            logger.warn("Unsupported forecast type: {}", subType);
             return;
         }
         JsonArray forecastArray = new JsonArray();
@@ -136,9 +103,12 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             }
             default -> {
                 logger.warn("Unknown forecast type: {}", subType);
+                return;
             }
         }
         propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
+        logger.debug("Forecast handler {} initialized successfully", subType);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void createForecastChannel(String thingKey) {
@@ -168,15 +138,14 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     }
 
     private JsonArray extractCorrespondingForecast(JsonObject state) {
-        if (state.has(JSON_KEY_FORECAST) && state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
-            if (JSON_KEY_SOLAR.equals(subType)) {
-                JsonObject solarObject = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
-                return solarObject.has("timeseries") ? solarObject.getAsJsonArray("timeseries") : new JsonArray();
-            } else {
-                return state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonArray(subType);
-            }
-        } else {
+        if (!state.has(JSON_KEY_FORECAST) || !state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
             return new JsonArray();
+        }
+        if (JSON_KEY_SOLAR.equals(subType)) {
+            JsonObject solarObject = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
+            return solarObject.has("timeseries") ? solarObject.getAsJsonArray("timeseries") : new JsonArray();
+        } else {
+            return state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonArray(subType);
         }
     }
 

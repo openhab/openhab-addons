@@ -12,14 +12,9 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,19 +41,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccWsBridgeHandler} is responsible for creating the bridge and dispatch ws messages to the thing
+ * The {@link EvccBridgeHandler} is responsible for creating the bridge and dispatch ws messages to the thing
  * handlers.
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccWsBridgeHandler extends BaseBridgeHandler {
+public class EvccBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(EvccWsBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EvccBridgeHandler.class);
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("evcc-bridge-handler");
 
     private final Map<String, EvccThingLifecycleAware> listeners = new ConcurrentHashMap<>();
+    private final Map<String, EvccThingLifecycleAware> pendingHandlers = new ConcurrentHashMap<>();
     private final Map<String, String> propertyByRoot = new ConcurrentHashMap<>();
 
     final EvccRequestQueue requestQueue;
@@ -73,7 +69,7 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
 
     private String endpoint = "";
 
-    public EvccWsBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, TranslationProvider i18nProvider,
+    public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, TranslationProvider i18nProvider,
             LocaleProvider localeProvider) {
         super(bridge);
         this.i18nProvider = i18nProvider;
@@ -106,6 +102,7 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         Optional.ofNullable(wsClient).ifPresent(EvccWebSocketClient::stop);
         listeners.clear();
+        pendingHandlers.clear();
         requestQueue.stop();
     }
 
@@ -141,8 +138,13 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     }
 
     private void onFullState(JsonObject state) {
+        logger.debug("Received full state from WebSocket");
         cachedState.updateFull(state);
-        initialStateReceived = true;
+        if (!initialStateReceived) {
+            initialStateReceived = true;
+            logger.info("Initial state received, activating all pending handlers");
+        }
+        processPendingHandlers();
         JsonObject stateCopy = cachedState.getCopy();
         for (EvccThingLifecycleAware listener : new ArrayList<>(listeners.values())) {
             try {
@@ -154,7 +156,9 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     }
 
     private void onPartialUpdate(String key, JsonElement value) {
+        logger.trace("Received partial update: {}", key);
         cachedState.updatePartial(key, value);
+        processPendingHandlers();
         dispatchUpdate(key, value);
     }
 
@@ -163,18 +167,50 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
     // --------------------------------------------------------------------
 
     public void register(EvccThingLifecycleAware handler) {
+        String handlerKey = handler.getType() + "$" + handler.getIdentifier();
         if (initialStateReceived) {
-            listeners.put(handler.getType() + "$" + handler.getIdentifier(), handler);
-            for (String root : handler.getRootTypes()) {
-                propertyByRoot.put(root, handler.getType());
-            }
-            try {
-                handler.initializeThingFromLatestState(cachedState.getCopy());
-            } catch (Exception e) {
-                logListenerError(handler, e);
-            }
+            logger.debug("Initial state received, activating handler immediately: {}", handlerKey);
+            activateHandler(handlerKey, handler);
         } else {
-            scheduler.schedule(() -> register(handler), 5, TimeUnit.SECONDS);
+            logger.debug("Initial state not yet received, queuing handler for later activation: {}", handlerKey);
+            pendingHandlers.put(handlerKey, handler);
+        }
+    }
+
+    private void activateHandler(String handlerKey, EvccThingLifecycleAware handler) {
+        listeners.put(handlerKey, handler);
+        for (String root : handler.getRootTypes()) {
+            propertyByRoot.put(root, handler.getType());
+        }
+        try {
+            logger.debug("Initializing handler from latest state: {}", handlerKey);
+            handler.initializeThingFromLatestState(cachedState.getCopy());
+            logger.debug("Successfully activated handler: {}", handlerKey);
+        } catch (Exception e) {
+            logListenerError(handler, e);
+        }
+    }
+
+    private void processPendingHandlers() {
+        if (pendingHandlers.isEmpty()) {
+            return;
+        }
+        logger.debug("Processing {} pending handler(s)", pendingHandlers.size());
+        List<String> keysToRemove = new ArrayList<>();
+        for (Map.Entry<String, EvccThingLifecycleAware> entry : pendingHandlers.entrySet()) {
+            try {
+                activateHandler(entry.getKey(), entry.getValue());
+                keysToRemove.add(entry.getKey());
+            } catch (Exception e) {
+                logger.debug("Failed to activate pending handler {}, will retry on next update", entry.getKey(), e);
+            }
+        }
+        keysToRemove.forEach(key -> {
+            pendingHandlers.remove(key);
+            logger.debug("Removed handler from pending queue: {}", key);
+        });
+        if (!pendingHandlers.isEmpty()) {
+            logger.debug("Still {} handler(s) pending after processing", pendingHandlers.size());
         }
     }
 
@@ -221,9 +257,5 @@ public class EvccWsBridgeHandler extends BaseBridgeHandler {
 
     public JsonObject getCachedEvccState() {
         return cachedState.getCopy();
-    }
-
-    public boolean isInitialStateReceived() {
-        return initialStateReceived;
     }
 }

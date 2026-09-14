@@ -108,7 +108,7 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
 
         @Test
         public void initializeWithBridgeHandlerWithoutCachedState() {
-            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState()).thenReturn(new JsonObject());
             LocaleProvider lp = mock(LocaleProvider.class);
@@ -122,7 +122,7 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
 
             handler.initialize();
             assertEquals(ThingStatus.OFFLINE, lastThingStatus);
-            assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, lastThingStatusDetail);
+            assertEquals(ThingStatusDetail.BRIDGE_UNINITIALIZED, lastThingStatusDetail);
         }
     }
 }

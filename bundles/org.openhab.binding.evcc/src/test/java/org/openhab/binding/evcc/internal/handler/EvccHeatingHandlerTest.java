@@ -91,7 +91,7 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
         when(configuration.get("id")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
@@ -113,6 +113,7 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
         handler.initialize();
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
@@ -128,7 +129,7 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
         handler.initializeThingFromLatestState(exampleResponse);
-        assertSame(ThingStatus.UNKNOWN, lastThingStatus);
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
     @SuppressWarnings("null")

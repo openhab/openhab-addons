@@ -80,11 +80,15 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Vehicle handler {} initializing from state", getIdentifier());
         JsonObject vehicleState = getStateFromCachedState(state);
         if (vehicleState.isEmpty()) {
+            logger.debug("No vehicle state found for {}", getIdentifier());
             return;
         }
         createChannelsAndSetStatesFromApiResponse(vehicleState);
+        logger.debug("Vehicle handler {} initialized successfully", getIdentifier());
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -115,20 +119,13 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
+                logger.warn("No vehicle ID given");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
             handler.register(this);
-            // Go ONLINE when bridge is connected, even if data hasn't arrived yet
-            // Data will populate via handleUpdate() when available
-            updateStatus(ThingStatus.ONLINE);
-            JsonObject state = getStateFromCachedState(stateOpt);
-            if (!state.isEmpty()) {
-                createChannelsAndSetStatesFromApiResponse(state);
-            }
         }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED));
     }
 

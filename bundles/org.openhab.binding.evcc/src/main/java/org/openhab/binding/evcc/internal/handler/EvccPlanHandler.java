@@ -39,7 +39,6 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -76,7 +75,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         type = PROPERTY_TYPE_PLAN;
     }
 
-    private void buildLocalizedMaps(EvccWsBridgeHandler bridgeHandler) {
+    private void buildLocalizedMaps(EvccBridgeHandler bridgeHandler) {
         LocaleProvider localeProvider = bridgeHandler.getLocaleProvider();
         Locale locale = localeProvider.getLocale();
         localizedDayOfWeekMap.putAll(IntStream.rangeClosed(0, 6).boxed().collect(Collectors.toUnmodifiableMap(d -> d,
@@ -89,11 +88,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
             buildLocalizedMaps(handler);
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES, vehicleID);
             if (index == 0) {
@@ -102,7 +96,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 endpoint = String.join("/", endpoint, API_PATH_PLAN_REPEATING);
             }
             handler.register(this);
-            updateStatus(ThingStatus.ONLINE);
         });
     }
 
@@ -118,9 +111,11 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Plan handler vehicle {} index {} initializing from state", vehicleID, index);
         if (state.has(JSON_KEY_VEHICLES)) {
             state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleID);
             if (state.isEmpty()) {
+                logger.debug("No vehicle state found for {}", vehicleID);
                 return;
             }
             if (index == 0) {
@@ -141,6 +136,8 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
                 // Check the bounds
                 if (cachedRepeatingPlans.size() < index) {
+                    logger.debug("Plan index {} out of bounds for repeating plans (size {})", index,
+                            cachedRepeatingPlans.size());
                     return;
                 }
                 // Get the corresponding repeating plan
@@ -159,6 +156,8 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedRepeatingPlans.set(index - 1, state);
             }
             createChannelsAndSetStatesFromApiResponse(state);
+            logger.debug("Plan handler vehicle {} index {} initialized successfully", vehicleID, index);
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
