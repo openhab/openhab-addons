@@ -455,9 +455,9 @@ public class EyeOnWaterClient {
         private String readingUnit = "GAL";
         private String readTime = "";
         private double leakRate = -1.0;
-        private boolean leakAlert = false;
-        private boolean lowBatteryAlert = false;
-        private boolean reverseFlowAlert = false;
+        private @Nullable Boolean leakAlert;
+        private @Nullable Boolean lowBatteryAlert;
+        private @Nullable Boolean reverseFlowAlert;
 
         public EyeOnWaterMeterData(String meterUuid, String meterId) {
             this.meterUuid = meterUuid;
@@ -504,7 +504,7 @@ public class EyeOnWaterClient {
             this.leakRate = leakRate;
         }
 
-        public boolean isLeakAlert() {
+        public @Nullable Boolean getLeakAlert() {
             return leakAlert;
         }
 
@@ -512,7 +512,7 @@ public class EyeOnWaterClient {
             this.leakAlert = leakAlert;
         }
 
-        public boolean isLowBatteryAlert() {
+        public @Nullable Boolean getLowBatteryAlert() {
             return lowBatteryAlert;
         }
 
@@ -520,7 +520,7 @@ public class EyeOnWaterClient {
             this.lowBatteryAlert = lowBatteryAlert;
         }
 
-        public boolean isReverseFlowAlert() {
+        public @Nullable Boolean getReverseFlowAlert() {
             return reverseFlowAlert;
         }
 

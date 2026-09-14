@@ -162,18 +162,35 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
             double leakRate = data.getLeakRate();
             if (leakRate >= 0) {
                 updateState(CHANNEL_LEAK_FLOW_RATE, new QuantityType<>(leakRate + " " + flowUnit));
-            } else if (!data.isLeakAlert()) {
+            } else if (Boolean.FALSE.equals(data.getLeakAlert())) {
                 // If there is no active leak alert, we know the leak rate is 0.0
                 updateState(CHANNEL_LEAK_FLOW_RATE, new QuantityType<>(0.0 + " " + flowUnit));
             } else {
-                // If there is an active leak alert but no rate is reported, clear to UNDEF
+                // If there is an active leak alert but no rate is reported, OR if leak alert is unknown (null), clear to UNDEF
                 updateState(CHANNEL_LEAK_FLOW_RATE, UnDefType.UNDEF);
             }
 
             // Update alerts
-            updateState(CHANNEL_LEAK_ALERT, data.isLeakAlert() ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_LOW_BATTERY, data.isLowBatteryAlert() ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_REVERSE_FLOW, data.isReverseFlowAlert() ? OnOffType.ON : OnOffType.OFF);
+            Boolean leakAlert = data.getLeakAlert();
+            if (leakAlert != null) {
+                updateState(CHANNEL_LEAK_ALERT, leakAlert ? OnOffType.ON : OnOffType.OFF);
+            } else {
+                updateState(CHANNEL_LEAK_ALERT, UnDefType.UNDEF);
+            }
+
+            Boolean lowBattery = data.getLowBatteryAlert();
+            if (lowBattery != null) {
+                updateState(CHANNEL_LOW_BATTERY, lowBattery ? OnOffType.ON : OnOffType.OFF);
+            } else {
+                updateState(CHANNEL_LOW_BATTERY, UnDefType.UNDEF);
+            }
+
+            Boolean reverseFlow = data.getReverseFlowAlert();
+            if (reverseFlow != null) {
+                updateState(CHANNEL_REVERSE_FLOW, reverseFlow ? OnOffType.ON : OnOffType.OFF);
+            } else {
+                updateState(CHANNEL_REVERSE_FLOW, UnDefType.UNDEF);
+            }
 
             // Update Read Time
             String readTime = data.getReadTime();

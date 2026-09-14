@@ -177,7 +177,7 @@ class EyeOnWaterClientTest {
     }
 
     @Test
-    void testParseMetersFromDashboardStandard() throws Exception {
+    void testParseMetersFromDashboardStandard() {
         String html = "<html><head><script>\n" + "AQ.Views.MeterPicker.meters = [\n" + "  {\n"
                 + "    \"meter_uuid\": \"12345678-abcd-1234-abcd-123456789012\",\n"
                 + "    \"meter_id\": \"METER-123\"\n" + "  }\n" + "];\n" + "</script></head><body></body></html>";
@@ -189,7 +189,7 @@ class EyeOnWaterClientTest {
     }
 
     @Test
-    void testParseMetersFromDashboardMinified() throws Exception {
+    void testParseMetersFromDashboardMinified() {
         String html = "<html><body><script>AQ.Views.MeterPicker.meters=[{\"meter_uuid\":\"uuid-999\",\"meter_id\":\"id-999\"}];var x=10;</script></body></html>";
 
         List<EyeOnWaterMeterData> meters = client.parseMetersFromDashboard(html);
@@ -202,11 +202,12 @@ class EyeOnWaterClientTest {
     void testParseMetersFromDashboardNoMatch() {
         String html = "<html><body>No meters here!</body></html>";
 
-        assertThrows(IOException.class, () -> client.parseMetersFromDashboard(html));
+        List<EyeOnWaterMeterData> meters = client.parseMetersFromDashboard(html);
+        assertTrue(meters.isEmpty());
     }
 
     @Test
-    void testParseMetersFromDashboardIncompleteData() throws Exception {
+    void testParseMetersFromDashboardIncompleteData() {
         String html = "<html><body><script>AQ.Views.MeterPicker.meters=[{\"meter_id\":\"missing-uuid\"}];</script></body></html>";
 
         List<EyeOnWaterMeterData> meters = client.parseMetersFromDashboard(html);
