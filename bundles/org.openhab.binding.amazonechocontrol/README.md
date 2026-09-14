@@ -634,7 +634,7 @@ then
     Echo_Living_Room_PlayAlarmSound.sendCommand('ECHO:system_alerts_repetitive01')
     if (stopAlarmTimer === null)
     {
-        stopAlarmTimer = createTimer(now.plusSeconds(15)) [|
+        stopAlarmTimer = createTimer(now.plusSeconds(15)) [
             stopAlarmTimer.cancel()
             stopAlarmTimer = null
             Echo_Living_Room_PlayAlarmSound.sendCommand('')
