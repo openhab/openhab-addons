@@ -14,6 +14,7 @@ package org.openhab.binding.zwavejs.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -291,6 +292,33 @@ public class ZwaveJSBridgeHandlerTest {
 
         try {
             verify(discoveryService).addNodeDiscovery(node);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNodeRemovedClearsCachedNode() {
+        final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSBridgeHandlerMock handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
+        final ZwaveNodeListener nodeListener = mock(ZwaveNodeListener.class);
+        when(nodeListener.getId()).thenReturn(5);
+        handler.registerNodeListener(nodeListener);
+
+        Node node = createReadyNode(createValue());
+        handler.onEvent(createReadyEvent(node));
+        clearInvocations(nodeListener);
+
+        EventMessage removedMessage = new EventMessage();
+        removedMessage.event = new Event();
+        removedMessage.event.event = "node removed";
+        removedMessage.event.nodeId = node.nodeId;
+        handler.onEvent(removedMessage);
+
+        try {
+            assertNull(handler.requestNodeDetails(node.nodeId));
+            verify(nodeListener).onNodeRemoved(removedMessage.event);
         } finally {
             handler.dispose();
         }

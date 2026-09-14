@@ -208,6 +208,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                     }
                     break;
                 case "node removed":
+                    lastNodeStates.remove(eventMsg.event.nodeId);
                     pendingNodeValues.remove(eventMsg.event.nodeId);
                     if (nodeListener != null) {
                         nodeListener.onNodeRemoved(eventMsg.event);

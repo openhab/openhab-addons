@@ -19,7 +19,10 @@ import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -226,6 +229,70 @@ public class ZwaveJSNodeHandlerTest {
             if (!disposed) {
                 handler.dispose();
             }
+        }
+    }
+
+    @Test
+    public void testDefinitionPublicationCompletesBeforeNewGenerationIsAccepted() throws Exception {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        doReturn(mock(ScheduledFuture.class), mock(ScheduledFuture.class)).when(executor).schedule(any(Runnable.class),
+                eq(250L), eq(TimeUnit.MILLISECONDS));
+        handler.setExecutorService(executor);
+        CountDownLatch publicationStarted = new CountDownLatch(1);
+        CountDownLatch releasePublication = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            publicationStarted.countDown();
+            assertTrue(releasePublication.await(5, TimeUnit.SECONDS));
+            return invocation.callRealMethod();
+        }).when(handler).updateThing(any());
+        Thread reconciliationThread = null;
+        Thread eventThread = null;
+
+        try {
+            Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+            Value targetValue = node.values.stream()
+                    .filter(value -> handler.getThing().getChannel(new ChannelMetadata(node.nodeId, value).id) != null)
+                    .findFirst().orElseThrow();
+            targetValue.metadata.label = "first serialized label";
+            handler.onNodeDefinitionChanged(node);
+
+            ArgumentCaptor<Runnable> firstTask = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor).schedule(firstTask.capture(), eq(250L), eq(TimeUnit.MILLISECONDS));
+            FutureTask<Boolean> reconciliation = new FutureTask<>(firstTask.getValue(), Boolean.TRUE);
+            reconciliationThread = Thread.ofPlatform().daemon().start(reconciliation);
+            assertTrue(publicationStarted.await(5, TimeUnit.SECONDS));
+
+            targetValue.metadata.label = "second serialized label";
+            FutureTask<Boolean> definitionEvent = new FutureTask<>(() -> handler.onNodeDefinitionChanged(node),
+                    Boolean.TRUE);
+            eventThread = Thread.ofPlatform().daemon().start(definitionEvent);
+            assertTrue(waitForThreadState(eventThread, Thread.State.BLOCKED));
+
+            releasePublication.countDown();
+            reconciliation.get(5, TimeUnit.SECONDS);
+            definitionEvent.get(5, TimeUnit.SECONDS);
+
+            ArgumentCaptor<Runnable> tasks = ArgumentCaptor.forClass(Runnable.class);
+            verify(executor, times(2)).schedule(tasks.capture(), eq(250L), eq(TimeUnit.MILLISECONDS));
+            tasks.getAllValues().get(1).run();
+
+            String channelId = new ChannelMetadata(node.nodeId, targetValue).id;
+            Channel updatedChannel = handler.getThing().getChannel(channelId);
+            assertNotNull(updatedChannel);
+            assertEquals("Second Serialized Label", updatedChannel.getLabel());
+        } finally {
+            releasePublication.countDown();
+            if (reconciliationThread != null) {
+                reconciliationThread.join(Duration.ofSeconds(5));
+            }
+            if (eventThread != null) {
+                eventThread.join(Duration.ofSeconds(5));
+            }
+            handler.dispose();
         }
     }
 
@@ -936,5 +1003,16 @@ public class ZwaveJSNodeHandlerTest {
         } finally {
             nodeHandler.dispose();
         }
+    }
+
+    private static boolean waitForThreadState(Thread thread, Thread.State expectedState) {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (thread.isAlive() && System.nanoTime() < deadline) {
+            if (thread.getState() == expectedState) {
+                return true;
+            }
+            Thread.onSpinWait();
+        }
+        return thread.getState() == expectedState;
     }
 }
