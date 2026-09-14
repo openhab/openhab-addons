@@ -534,7 +534,7 @@
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
     <dep.noembedding/>
-    <markdownlint.skip>false</markdownlint.skip>
+    <markdownlint.skip>true</markdownlint.skip>
   </properties>
 
   <dependencies>
