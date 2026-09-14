@@ -13,8 +13,8 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYRGBW2_WHITE;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -275,7 +275,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_BLUE, "colorBlue", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_WHITE, "colorWhite", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_EFFECT, "colorEffectBulb", ITEMT_NUMBER))
-                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_GAIN, "whiteGain", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_COLOR, CHANNEL_COLOR_GAIN, "colorGain", ITEMT_DIMMER))
 
                 // Power Meter
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEMT_POWER))
