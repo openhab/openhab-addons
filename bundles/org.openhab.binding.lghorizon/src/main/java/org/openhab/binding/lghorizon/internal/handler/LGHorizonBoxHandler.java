@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants;
 import org.openhab.binding.lghorizon.internal.action.LGHorizonActions;
 import org.openhab.binding.lghorizon.internal.api.LGHorizonKeys;
 import org.openhab.binding.lghorizon.internal.api.dto.ChannelDto;
@@ -326,8 +325,9 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     }
 
     /**
-     * Displays an on-screen message. Called by {@link LGHorizonActions}. {@code duration} falls
-     * back to {@link LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS} when not supplied.
+     * Displays an on-screen message. Called by {@link LGHorizonActions}. {@code duration} falls back to
+     * {@link org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS}
+     * when not supplied.
      */
     public void displayMessage(String message, @Nullable Integer duration) {
         LGHorizonAccountHandler account = getAccountHandler();
