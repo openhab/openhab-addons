@@ -75,11 +75,11 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public abstract class EvccBaseThingHandler extends BaseThingHandler implements EvccThingLifecycleAware {
 
-    private final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final Gson gson = new Gson();
     protected String type = "";
-    protected @Nullable EvccWsBridgeHandler bridgeHandler;
+    protected @Nullable EvccBridgeHandler bridgeHandler;
     protected String endpoint = "";
     protected String smartCostType = "";
 
@@ -106,11 +106,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof EvccWsBridgeHandler handler) {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof EvccBridgeHandler handler) {
             bridgeHandler = handler;
-            if (!handler.isInitialStateReceived()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
@@ -206,7 +203,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         String tmp = Optional.ofNullable(bridgeHandler).map(handler -> {
             String labelKey = "channel-type.evcc." + thingKey + ".label";
             @Nullable
-            Bundle bundle = FrameworkUtil.getBundle(EvccWsBridgeHandler.class);
+            Bundle bundle = FrameworkUtil.getBundle(EvccBridgeHandler.class);
             if (bundle == null || bundle.getBundleContext() == null) {
                 return thingKey;
             }

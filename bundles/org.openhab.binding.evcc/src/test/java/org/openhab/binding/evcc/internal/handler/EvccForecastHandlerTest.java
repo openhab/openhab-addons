@@ -93,6 +93,21 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             protected boolean isLinked(ChannelUID channelUID) {
                 return true;
             }
+
+            @Override
+            protected void updateThing(org.openhab.core.thing.Thing thing) {
+                // Mock updateThing to avoid framework calls
+            }
+
+            @Override
+            @SuppressWarnings("null")
+            protected org.openhab.core.thing.binding.builder.ThingBuilder editThing() {
+                // Return a mock that chains properly for withChannels().build()
+                org.openhab.core.thing.binding.builder.ThingBuilder mockBuilder = mock(
+                        org.openhab.core.thing.binding.builder.ThingBuilder.class, RETURNS_SELF);
+                when(mockBuilder.build()).thenReturn(mock(org.openhab.core.thing.Thing.class));
+                return mockBuilder;
+            }
         };
     }
 
@@ -110,7 +125,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             when(thing.getConfiguration()).thenReturn(configuration);
             when(thing.getChannels()).thenReturn(new ArrayList<>());
             handler = spy(createHandler());
-            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         }
@@ -158,7 +173,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
                 when(thing.getChannel(uid)).thenReturn(forecastChannel);
             }
             handler = spy(createHandler());
-            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse.deepCopy());
         }
@@ -216,6 +231,12 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
     @Nested
     public class TestWsMessages {
 
+        @BeforeEach
+        void setUp() {
+            // Reset mocks before each test
+            reset(thing);
+        }
+
         private JsonObject readResponse(String resourceName) {
             try (var is = EvccForecastHandlerTest.class.getClassLoader().getResourceAsStream(resourceName)) {
                 assertNotNull(is, "Couldn't find response file: " + resourceName);
@@ -239,7 +260,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             List<Channel> channels = new ArrayList<>(List.of(forecastChannel));
             when(thing.getChannels()).thenReturn(channels);
             handler = spy(createHandler());
-            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState())
                     .thenReturn(readResponse("responses/ws_initial_response_message.json"));
@@ -271,6 +292,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         public void wsCo2ForecastUpdate() {
             setup("co2");
             handler.initialize();
+            handler.initializeThingFromLatestState(exampleResponse);
             JsonObject ws = readResponse("responses/ws_forecast_co2.json");
             handler.handleUpdate("co2", ws.get("forecast.co2"));
             assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -283,6 +305,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         public void wsFeedInForecastUpdate() {
             setup("feedin");
             handler.initialize();
+            handler.initializeThingFromLatestState(exampleResponse);
             JsonObject ws = readResponse("responses/ws_forecast_feed_in.json");
             handler.handleUpdate("feedin", ws.get("forecast.feedin"));
             assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -295,6 +318,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         public void wsGridForecastUpdate() {
             setup("grid");
             handler.initialize();
+            handler.initializeThingFromLatestState(exampleResponse);
             JsonObject ws = readResponse("responses/ws_forecast_grid.json");
             handler.handleUpdate("grid", ws.get("forecast.grid"));
             assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -309,6 +333,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             Collection<Channel> solarChannels = channelsForSolarSubtype();
             when(thing.getChannels()).thenReturn(new ArrayList<>(solarChannels));
             handler.initialize();
+            handler.initializeThingFromLatestState(exampleResponse);
             JsonObject ws = readResponse("responses/ws_forecast_solar.json");
             handler.handleUpdate("solar", ws.get("forecast.solar"));
             assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -321,6 +346,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         public void invalidWsPayloadTypeDoesNotCrash() {
             setup("co2");
             handler.initialize();
+            handler.initializeThingFromLatestState(exampleResponse);
             handler.handleUpdate("co2", com.google.gson.JsonParser.parseString("\"invalid-string\""));
             assertSame(ThingStatus.ONLINE, lastThingStatus);
         }
@@ -329,6 +355,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         public void nullWsPayloadDoesNotCrash() {
             setup("co2");
             handler.initialize();
+            handler.initializeThingFromLatestState(exampleResponse);
             com.google.gson.JsonElement nullValue = com.google.gson.JsonNull.INSTANCE;
             handler.handleUpdate("co2", nullValue);
             assertSame(ThingStatus.ONLINE, lastThingStatus);

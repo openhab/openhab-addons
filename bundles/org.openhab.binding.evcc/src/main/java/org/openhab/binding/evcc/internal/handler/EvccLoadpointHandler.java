@@ -25,7 +25,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -65,20 +64,8 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_LOADPOINTS, String.valueOf(index + 1));
             handler.register(this);
-            // Go ONLINE when bridge is connected, even if data hasn't arrived yet
-            // Data will populate via handleUpdate() when available
-            updateStatus(ThingStatus.ONLINE);
-            JsonObject state = getStateFromCachedState(stateOpt);
-            if (!state.isEmpty()) {
-                createChannelsAndSetStatesFromApiResponse(state);
-            }
         });
     }
 
@@ -128,13 +115,18 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Loadpoint handler {} initializing from state", index);
         JsonArray loadpoints = state.getAsJsonArray(JSON_KEY_LOADPOINTS);
         if (loadpoints == null || index >= loadpoints.size() || !loadpoints.get(index).isJsonObject()) {
+            logger.debug("Loadpoint index {} out of bounds or invalid (size {})", index,
+                    loadpoints != null ? loadpoints.size() : 0);
             return;
         }
         state = loadpoints.get(index).getAsJsonObject();
         modifyJSON(state);
         createChannelsAndSetStatesFromApiResponse(state);
+        logger.debug("Loadpoint handler {} initialized successfully", index);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void modifyJSON(JsonObject state) {

@@ -21,7 +21,6 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
 import com.google.gson.JsonArray;
@@ -47,16 +46,10 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
-            JsonObject state = handler.getCachedEvccState();
-            if (state.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL();
             handler.register(this);
-            updateStatus(ThingStatus.ONLINE);
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED));
+        });
     }
 
     @Override
@@ -71,23 +64,35 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        state = state.has(JSON_KEY_BATTERY)
-                ? state.getAsJsonObject(JSON_KEY_BATTERY).getAsJsonArray("devices").get(index).getAsJsonObject()
-                : new JsonObject();
+        logger.debug("Battery handler initializing from state");
+        state = getBatteryState(state);
+        if (state.isEmpty()) {
+            logger.debug("No battery state found for index {}", index);
+            return;
+        }
         createChannelsAndSetStatesFromApiResponse(state);
+        logger.debug("Battery handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        JsonElement battElement = state.get(JSON_KEY_BATTERY);
-        if (battElement.isJsonNull()) {
+        return getBatteryState(state);
+    }
+
+    private JsonObject getBatteryState(JsonObject state) {
+        return state.has(JSON_KEY_BATTERY) ? extractBatteryState(state.get(JSON_KEY_BATTERY)) : new JsonObject();
+    }
+
+    private JsonObject extractBatteryState(JsonElement battery) {
+        if (battery.isJsonNull()) {
             return new JsonObject();
         }
-        JsonArray battArray = battElement.isJsonArray()
-                // for up to version 0.300.0
-                ? (JsonArray) battElement
-                // for version 0.300.0+
-                : ((JsonObject) battElement).getAsJsonArray(JSON_KEY_DEVICES);
-        return battArray.get(index).getAsJsonObject();
+        JsonArray devices = battery.isJsonArray() ? battery.getAsJsonArray()
+                : battery.getAsJsonObject().getAsJsonArray(JSON_KEY_DEVICES);
+        return devices != null && index < devices.size() && devices.get(index).isJsonObject()
+                ? devices.get(index).getAsJsonObject()
+                : new JsonObject();
     }
 }

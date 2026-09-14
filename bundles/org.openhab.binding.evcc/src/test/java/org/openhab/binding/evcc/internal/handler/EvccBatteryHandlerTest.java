@@ -31,6 +31,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
@@ -89,7 +90,7 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
 
-        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         batteryState = exampleResponse.getAsJsonObject("battery").getAsJsonArray("devices").get(0).getAsJsonObject();
@@ -98,17 +99,16 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
     @SuppressWarnings("null")
     @Test
     public void testInitializeThingFromLatestStateWithoutInitialize() {
-        // When initializeThingFromLatestState is called without first calling initialize(),
-        // the status should remain UNKNOWN because initialize() is responsible for setting
-        // the status based on the bridge handler and cached state availability.
+        // initializeThingFromLatestState now sets ONLINE if it successfully processes state
         handler.initializeThingFromLatestState(exampleResponse);
-        assertSame(ThingStatus.UNKNOWN, lastThingStatus);
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
         handler.initialize();
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
@@ -117,5 +117,18 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
     public void testGetStateFromCachedState() {
         JsonObject result = handler.getStateFromCachedState(exampleResponse);
         assertSame(batteryState, result);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testInitializeThingFromLatestStateSupportsLegacyArrayBatteryShape() {
+        JsonObject legacyState = new JsonObject();
+        JsonArray battery = new JsonArray();
+        battery.add(batteryState);
+        legacyState.add("battery", battery);
+
+        handler.initializeThingFromLatestState(legacyState);
+
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 }

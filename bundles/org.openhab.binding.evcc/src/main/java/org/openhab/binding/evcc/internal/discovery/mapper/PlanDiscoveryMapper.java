@@ -23,7 +23,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
 import org.openhab.binding.evcc.internal.discovery.Utils;
-import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocaleProvider;
@@ -61,7 +61,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
     }
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject state, EvccWsBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
         JsonObject vehicles = state.getAsJsonObject(JSON_KEY_VEHICLES);
         if (vehicles == null) {
@@ -84,7 +84,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
     }
 
     public Collection<DiscoveryResult> discoverFromVehicle(JsonObject vehicle, String id, String title,
-            EvccWsBridgeHandler bridgeHandler) throws NoSuchAlgorithmException {
+            EvccBridgeHandler bridgeHandler) throws NoSuchAlgorithmException {
         List<DiscoveryResult> results = new ArrayList<>();
         JsonObject plan = vehicle.getAsJsonObject(JSON_KEY_PLAN);
 
@@ -108,7 +108,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
     }
 
     private DiscoveryResult createPlanDiscoveryResult(String label, String planID, int index, String vehicleID,
-            EvccWsBridgeHandler bridgeHandler) {
+            EvccBridgeHandler bridgeHandler) {
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_PLAN, bridgeHandler.getThing().getUID(), planID);
         return DiscoveryResultBuilder.create(uid).withLabel(label).withBridge(bridgeHandler.getThing().getUID())
                 .withProperty(PROPERTY_ID, planID).withProperty(PROPERTY_VEHICLE_ID, vehicleID)
