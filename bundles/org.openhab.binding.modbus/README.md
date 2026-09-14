@@ -1009,7 +1009,7 @@ It is also possible to use `REFRESH` command to ask the binding to update more f
 import org.eclipse.xtext.xbase.lib.Procedures
 import org.openhab.core.types.RefreshType
 
-val Procedures$Procedure0 refreshData = [ |
+val Procedures$Procedure0 refreshData = [
     // Refresh SetTemperature. In fact, all data things in the same poller are refreshed
     SetTemperature.sendCommand(RefreshType.REFRESH)
     return null

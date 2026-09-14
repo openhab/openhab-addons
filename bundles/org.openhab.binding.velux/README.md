@@ -359,7 +359,7 @@ then
         if (windowState == 0) {
             logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
             var int interval = 1
-            createTimer(now.plusMinutes(interval)) [ |
+            createTimer(now.plusMinutes(interval)) [
                     logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
                     sendCommand(V_WINDOW, 100)
                     V_WINDOW.postUpdate(100)
