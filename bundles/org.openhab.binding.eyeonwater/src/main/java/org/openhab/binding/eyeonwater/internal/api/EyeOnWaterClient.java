@@ -53,6 +53,8 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class EyeOnWaterClient {
 
+    private static final String USER_AGENT_VALUE = "openHAB-EyeOnWater-Addon/5.3.0";
+
     private final Logger logger = LoggerFactory.getLogger(EyeOnWaterClient.class);
 
     private final String hostname;
@@ -91,7 +93,7 @@ public class EyeOnWaterClient {
 
         Request request = httpClient.newRequest(loginUrl).method(POST).timeout(15, TimeUnit.SECONDS)
                 .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
-                .header(USER_AGENT, "openHAB-EyeOnWater-Addon/5.3.0").followRedirects(false)
+                .header(USER_AGENT, USER_AGENT_VALUE).followRedirects(false)
                 .content(new StringContentProvider("application/x-www-form-urlencoded", formDataString,
                         StandardCharsets.UTF_8));
 
@@ -138,7 +140,7 @@ public class EyeOnWaterClient {
     private ContentResponse sendRequest(String url, HttpMethod method, @Nullable String contentType,
             @Nullable String contentPayload) throws IOException, InterruptedException {
         Request request = httpClient.newRequest(url).method(method).timeout(15, TimeUnit.SECONDS).header(USER_AGENT,
-                "openHAB-EyeOnWater-Addon/5.3.0");
+                USER_AGENT_VALUE);
 
         if (contentPayload != null) {
             String type = contentType != null ? contentType : "application/json";
