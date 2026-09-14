@@ -18,6 +18,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -139,13 +140,16 @@ public class PacketListener {
                     // having a receive() call without loop causes packets to get queued over time,
                     // if more than one meter present because we consume one packet per second
                     socket.receive(msgPacket);
+                    int receivedLength = msgPacket.getLength();
                     EnergyMeter meter = new EnergyMeter();
-                    meter.parse(bytes);
+                    meter.parse(Arrays.copyOfRange(bytes, 0, receivedLength));
 
                     for (PayloadHandler handler : handlers) {
                         handler.handle(meter);
                     }
-                } while (msgPacket.getLength() == bytes.length);
+                    // Reset packet length for next receive
+                    msgPacket.setLength(bytes.length);
+                } while (socket.getReceiveBufferSize() > 0);
             } catch (IOException e) {
                 logger.debug("Unexpected payload received for group {}", group, e);
             }

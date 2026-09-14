@@ -73,6 +73,7 @@
 		<properties>
 			<property name="vendor">Vendor</property>
 			<property name="serialNumber">Serial Number</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>

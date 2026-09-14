@@ -35,6 +35,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +129,12 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
         logger.debug("Update SMAEnergyMeter {} data '{}'", serialNumber, getThing().getUID());
 
         CHANNEL_TO_OBIS.forEach((channelId, obisId) -> {
-            updateState(channelId, energyMeter.getState(obisId));
+            @Nullable
+            State state = energyMeter.getState(obisId);
+            if (state == null) {
+                return;
+            }
+            updateState(channelId, state);
         });
     }
 

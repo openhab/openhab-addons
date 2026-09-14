@@ -366,9 +366,10 @@ class EnergyMeterTest {
 
         // POSITIVE_ACTIVE_POWER should be updated
         assertQuantityTypeValue("600", Units.WATT, meter.getState(ObisId.POSITIVE_ACTIVE_POWER));
-        // POSITIVE_ACTIVE_ENERGY is no longer in the telegram, so it returns default zero
-        assertQuantityTypeZero(Units.KILOWATT_HOUR, meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY));
-        assertQuantityTypeZero(Units.WATT, meter.getState(ObisId.NEGATIVE_ACTIVE_POWER));
+        // POSITIVE_ACTIVE_ENERGY should NOT be reset, it should keep the old value
+        assertQuantityTypeValue("2", Units.KILOWATT_HOUR, meter.getState(ObisId.POSITIVE_ACTIVE_ENERGY));
+        // NEGATIVE_ACTIVE_POWER should also keep old value
+        assertQuantityTypeValue("0", Units.WATT, meter.getState(ObisId.NEGATIVE_ACTIVE_POWER));
     }
 
     private static int writeUint32(byte[] bytes, int offset, int value) {

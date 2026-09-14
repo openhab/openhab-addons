@@ -88,36 +88,6 @@ public class EnergyMeter {
                 }
 
                 hasData = true;
-                offset += valueLength;
-            }
-
-            if (!hasData) {
-                throw new IOException("Empty SMA telegram with no OBIS data");
-            }
-
-            values.clear();
-            states.clear();
-
-            offset = HEADER_LENGTH;
-            while (offset + Integer.BYTES <= bytes.length) {
-                int obis = readInt32(bytes, offset);
-                offset += Integer.BYTES;
-
-                int valueLength = switch (obis & 0x0000FF00) {
-                    case 0x00000400 -> Integer.BYTES;
-                    case 0x00000800 -> Long.BYTES;
-                    default -> 0;
-                };
-                if (obis == ObisId.VERSION.getCode()) {
-                    valueLength = VERSION_LENGTH;
-                }
-                if (valueLength == 0) {
-                    break;
-                }
-                if (offset + valueLength > bytes.length) {
-                    break;
-                }
-
                 ObisId obisId = ObisId.fromCode(obis);
                 if (obisId == ObisId.VERSION) {
                     states.put(obisId, decodeVersion(bytes, offset));
@@ -127,6 +97,10 @@ public class EnergyMeter {
                     states.put(obisId, getQuantityType(obisId));
                 }
                 offset += valueLength;
+            }
+
+            if (!hasData) {
+                throw new IOException("Empty SMA telegram with no OBIS data");
             }
         } catch (Exception e) {
             throw new IOException(e);
