@@ -102,7 +102,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     private @Nullable CustomerDto customer;
     private @Nullable LGHorizonDiscoveryService discoveryService;
 
-    private @Nullable EntitlementsDto entitlements;
     private Map<String, String> languageByProfileId = Map.of();
     private Map<String, Map<String, ChannelDto>> channelsByLanguage = Map.of();
 
@@ -449,14 +448,13 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
 
         this.languageByProfileId = profiles.stream().filter(p -> p.profileId != null)
-                .collect(Collectors.<CustomerDto.ProfileDto, String, String> toMap(p -> p.profileId,
+                .collect(Collectors.<CustomerDto.ProfileDto, String, String>toMap(p -> p.profileId,
                         p -> p.options != null && p.options.lang != null ? p.options.lang : DEFAULT_LANGUAGE));
 
         EntitlementsDto entitlementsDto = auth.get(auth.getServiceConfig().getServiceUrl(PURCHASE_SERVICE_URL_FIELD),
                 ENTITLEMENTS_PATH.formatted(householdId), EntitlementsDto.class);
         logger.trace("Received: {} entitlements: {}", LGHorizonContentAnonymizer.anonymizeTopic(householdId),
                 LGHorizonContentAnonymizer.anonymizeMessage(GSON.toJson(entitlementsDto)));
-        this.entitlements = entitlementsDto;
 
         List<String> entitlementIds = entitlementsDto.getEntitlementIds();
         Map<String, Map<String, ChannelDto>> channelsByLanguage = new HashMap<>();
