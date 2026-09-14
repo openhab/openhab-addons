@@ -56,8 +56,7 @@ public class EyeOnWaterUnitConverter {
         if (rawUnit == null || rawUnit.isBlank()) {
             throw new IllegalArgumentException("Unit of measurement is missing");
         }
-
-        return switch (rawUnit.toUpperCase()) {
+         return switch (rawUnit.toUpperCase(java.util.Locale.ROOT)) {
             case "GAL" -> new NormalizedReading(value, "gal");
             case "10 GAL" -> new NormalizedReading(value * 10, "gal");
             case "100 GAL" -> new NormalizedReading(value * 100, "gal");
