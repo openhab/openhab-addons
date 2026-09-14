@@ -165,6 +165,22 @@ class EnergyMeterTest {
     }
 
     @Test
+    void distinguishesBetweenDecimalAndLegacyHexadecimalFormats() {
+        // Eight-digit decimal should be parsed as decimal, not hex
+        assertEquals("12345678", SerialNumber.normalize("12345678"));
+        assertTrue(SerialNumber.matches("12345678", "12345678"));
+
+        // Legacy hex without prefix (contains hex letters) should be parsed as hex
+        assertEquals("305839312", SerialNumber.normalize("123ABCD0"));
+        assertTrue(SerialNumber.matches("123ABCD0", "305839312"));
+
+        // Legacy hex with shorter digits (less than 8) should be parsed as hex if it contains hex letters
+        String shortLegacyHexDecimal = Integer.toUnsignedString(Integer.parseUnsignedInt("123abcd", 16));
+        assertEquals(shortLegacyHexDecimal, SerialNumber.normalize("123abcd"));
+        assertTrue(SerialNumber.matches("123abcd", shortLegacyHexDecimal));
+    }
+
+    @Test
     void parsesTruncatedTelegramUntilLastCompleteObisRecord() throws IOException {
         byte[] payload = hexToBytes("""
                 53 4d 41 00 00 04 02 a0 00 00 00 01 02 44 00 10 60 69 01 0e 71 42 cf 5f f5 64 5a ce
