@@ -39,22 +39,22 @@ public class SMAEnergyMeterBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENERGY_METER);
 
     // List of all Channel IDs
-    public static final String CHANNEL_POWER_IN = "powerIn";
-    public static final String CHANNEL_POWER_OUT = "powerOut";
-    public static final String CHANNEL_ENERGY_IN = "energyIn";
-    public static final String CHANNEL_ENERGY_OUT = "energyOut";
-    public static final String CHANNEL_POWER_IN_L1 = "powerInL1";
-    public static final String CHANNEL_POWER_OUT_L1 = "powerOutL1";
-    public static final String CHANNEL_ENERGY_IN_L1 = "energyInL1";
-    public static final String CHANNEL_ENERGY_OUT_L1 = "energyOutL1";
-    public static final String CHANNEL_POWER_IN_L2 = "powerInL2";
-    public static final String CHANNEL_POWER_OUT_L2 = "powerOutL2";
-    public static final String CHANNEL_ENERGY_IN_L2 = "energyInL2";
-    public static final String CHANNEL_ENERGY_OUT_L2 = "energyOutL2";
-    public static final String CHANNEL_POWER_IN_L3 = "powerInL3";
-    public static final String CHANNEL_POWER_OUT_L3 = "powerOutL3";
-    public static final String CHANNEL_ENERGY_IN_L3 = "energyInL3";
-    public static final String CHANNEL_ENERGY_OUT_L3 = "energyOutL3";
+    public static final String CHANNEL_ACTIVE_POWER_IN = "activePowerIn";
+    public static final String CHANNEL_ACTIVE_POWER_OUT = "activePowerOut";
+    public static final String CHANNEL_ACTIVE_ENERGY_IN = "activeEnergyIn";
+    public static final String CHANNEL_ACTIVE_ENERGY_OUT = "activeEnergyOut";
+    public static final String CHANNEL_ACTIVE_POWER_IN_L1 = "activePowerInL1";
+    public static final String CHANNEL_ACTIVE_POWER_OUT_L1 = "activePowerOutL1";
+    public static final String CHANNEL_ACTIVE_ENERGY_IN_L1 = "activeEnergyInL1";
+    public static final String CHANNEL_ACTIVE_ENERGY_OUT_L1 = "activeEnergyOutL1";
+    public static final String CHANNEL_ACTIVE_POWER_IN_L2 = "activePowerInL2";
+    public static final String CHANNEL_ACTIVE_POWER_OUT_L2 = "activePowerOutL2";
+    public static final String CHANNEL_ACTIVE_ENERGY_IN_L2 = "activeEnergyInL2";
+    public static final String CHANNEL_ACTIVE_ENERGY_OUT_L2 = "activeEnergyOutL2";
+    public static final String CHANNEL_ACTIVE_POWER_IN_L3 = "activePowerInL3";
+    public static final String CHANNEL_ACTIVE_POWER_OUT_L3 = "activePowerOutL3";
+    public static final String CHANNEL_ACTIVE_ENERGY_IN_L3 = "activeEnergyInL3";
+    public static final String CHANNEL_ACTIVE_ENERGY_OUT_L3 = "activeEnergyOutL3";
     public static final String CHANNEL_REACTIVE_POWER_IN = "reactivePowerIn";
     public static final String CHANNEL_REACTIVE_POWER_OUT = "reactivePowerOut";
     public static final String CHANNEL_REACTIVE_ENERGY_IN = "reactiveEnergyIn";
@@ -100,30 +100,25 @@ public class SMAEnergyMeterBindingConstants {
     public static final String CHANNEL_FREQUENCY = "frequency";
     public static final String CHANNEL_VERSION = "version";
 
-    public static final String CHANNEL_POWER_IN_LEGACY = CHANNEL_POWER_IN;
-    public static final String CHANNEL_POWER_OUT_LEGACY = CHANNEL_POWER_OUT;
-    public static final String CHANNEL_ENERGY_IN_LEGACY = CHANNEL_ENERGY_IN;
-    public static final String CHANNEL_ENERGY_OUT_LEGACY = CHANNEL_ENERGY_OUT;
-
     public static final Map<String, ObisId> CHANNEL_TO_OBIS = new HashMap<>();
 
     static {
-        CHANNEL_TO_OBIS.put(CHANNEL_POWER_IN, ObisId.POSITIVE_ACTIVE_POWER);
-        CHANNEL_TO_OBIS.put(CHANNEL_POWER_OUT, ObisId.NEGATIVE_ACTIVE_POWER);
-        CHANNEL_TO_OBIS.put(CHANNEL_ENERGY_IN, ObisId.POSITIVE_ACTIVE_ENERGY);
-        CHANNEL_TO_OBIS.put(CHANNEL_ENERGY_OUT, ObisId.NEGATIVE_ACTIVE_ENERGY);
-        CHANNEL_TO_OBIS.put(CHANNEL_POWER_IN_L1, ObisId.POSITIVE_ACTIVE_POWER_L1);
-        CHANNEL_TO_OBIS.put(CHANNEL_POWER_OUT_L1, ObisId.NEGATIVE_ACTIVE_POWER_L1);
-        CHANNEL_TO_OBIS.put(CHANNEL_ENERGY_IN_L1, ObisId.POSITIVE_ACTIVE_ENERGY_L1);
-        CHANNEL_TO_OBIS.put(CHANNEL_ENERGY_OUT_L1, ObisId.NEGATIVE_ACTIVE_ENERGY_L1);
-        CHANNEL_TO_OBIS.put(CHANNEL_POWER_IN_L2, ObisId.POSITIVE_ACTIVE_POWER_L2);
-        CHANNEL_TO_OBIS.put(CHANNEL_POWER_OUT_L2, ObisId.NEGATIVE_ACTIVE_POWER_L2);
-        CHANNEL_TO_OBIS.put(CHANNEL_ENERGY_IN_L2, ObisId.POSITIVE_ACTIVE_ENERGY_L2);
-        CHANNEL_TO_OBIS.put(CHANNEL_ENERGY_OUT_L2, ObisId.NEGATIVE_ACTIVE_ENERGY_L2);
-        CHANNEL_TO_OBIS.put(CHANNEL_POWER_IN_L3, ObisId.POSITIVE_ACTIVE_POWER_L3);
-        CHANNEL_TO_OBIS.put(CHANNEL_POWER_OUT_L3, ObisId.NEGATIVE_ACTIVE_POWER_L3);
-        CHANNEL_TO_OBIS.put(CHANNEL_ENERGY_IN_L3, ObisId.POSITIVE_ACTIVE_ENERGY_L3);
-        CHANNEL_TO_OBIS.put(CHANNEL_ENERGY_OUT_L3, ObisId.NEGATIVE_ACTIVE_ENERGY_L3);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_POWER_IN, ObisId.POSITIVE_ACTIVE_POWER);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_POWER_OUT, ObisId.NEGATIVE_ACTIVE_POWER);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_ENERGY_IN, ObisId.POSITIVE_ACTIVE_ENERGY);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_ENERGY_OUT, ObisId.NEGATIVE_ACTIVE_ENERGY);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_POWER_IN_L1, ObisId.POSITIVE_ACTIVE_POWER_L1);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_POWER_OUT_L1, ObisId.NEGATIVE_ACTIVE_POWER_L1);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_ENERGY_IN_L1, ObisId.POSITIVE_ACTIVE_ENERGY_L1);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_ENERGY_OUT_L1, ObisId.NEGATIVE_ACTIVE_ENERGY_L1);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_POWER_IN_L2, ObisId.POSITIVE_ACTIVE_POWER_L2);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_POWER_OUT_L2, ObisId.NEGATIVE_ACTIVE_POWER_L2);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_ENERGY_IN_L2, ObisId.POSITIVE_ACTIVE_ENERGY_L2);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_ENERGY_OUT_L2, ObisId.NEGATIVE_ACTIVE_ENERGY_L2);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_POWER_IN_L3, ObisId.POSITIVE_ACTIVE_POWER_L3);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_POWER_OUT_L3, ObisId.NEGATIVE_ACTIVE_POWER_L3);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_ENERGY_IN_L3, ObisId.POSITIVE_ACTIVE_ENERGY_L3);
+        CHANNEL_TO_OBIS.put(CHANNEL_ACTIVE_ENERGY_OUT_L3, ObisId.NEGATIVE_ACTIVE_ENERGY_L3);
         CHANNEL_TO_OBIS.put(CHANNEL_REACTIVE_POWER_IN, ObisId.POSITIVE_REACTIVE_POWER);
         CHANNEL_TO_OBIS.put(CHANNEL_REACTIVE_POWER_OUT, ObisId.NEGATIVE_REACTIVE_POWER);
         CHANNEL_TO_OBIS.put(CHANNEL_REACTIVE_ENERGY_IN, ObisId.POSITIVE_REACTIVE_ENERGY);
