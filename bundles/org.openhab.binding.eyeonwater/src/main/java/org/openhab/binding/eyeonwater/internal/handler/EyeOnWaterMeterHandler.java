@@ -72,14 +72,12 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
             return;
         }
 
-        @Nullable
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/offline.bridge-undefined");
             return;
         }
 
-        @Nullable
         ThingHandler bridgeHandler = bridge.getHandler();
         if (bridgeHandler instanceof EyeOnWaterBridgeHandler) {
             updateStatus(ThingStatus.UNKNOWN);
@@ -94,10 +92,8 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing EyeOnWater Meter Handler: {}", getThing().getUID());
 
-        @Nullable
         Bridge bridge = getBridge();
         if (bridge != null) {
-            @Nullable
             ThingHandler bridgeHandler = bridge.getHandler();
             if (bridgeHandler instanceof EyeOnWaterBridgeHandler) {
                 ((EyeOnWaterBridgeHandler) bridgeHandler).unregisterMeterHandler(this);
@@ -111,10 +107,8 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             logger.debug("Refresh requested for channel: {}", channelUID);
-            @Nullable
             Bridge bridge = getBridge();
             if (bridge != null) {
-                @Nullable
                 ThingHandler bridgeHandler = bridge.getHandler();
                 if (bridgeHandler instanceof EyeOnWaterBridgeHandler) {
                     ((EyeOnWaterBridgeHandler) bridgeHandler).registerMeterHandler(this);
@@ -139,7 +133,6 @@ public class EyeOnWaterMeterHandler extends BaseThingHandler {
      * Called by the bridge handler to update this meter's states.
      */
     public void updateState(EyeOnWaterMeterData data) {
-        @Nullable
         String rawUnit = data.getReadingUnit();
         try {
             NormalizedReading normalized = EyeOnWaterUnitConverter.normalize(data.getReadingValue(), rawUnit);
