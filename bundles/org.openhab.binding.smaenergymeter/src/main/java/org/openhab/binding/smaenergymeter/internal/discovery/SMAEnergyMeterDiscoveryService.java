@@ -105,7 +105,7 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
     @Override
     public void handle(EnergyMeter energyMeter) throws IOException {
         String decimalIdentifier = energyMeter.getSerialNumber();
-        String hexIdentifier = Integer.toHexString(Integer.parseInt(decimalIdentifier));
+        String hexIdentifier = Integer.toHexString(Integer.parseUnsignedInt(decimalIdentifier));
         logger.debug("Adding a new SMA Energy Meter with S/N '{}' (0x{}) to inbox", decimalIdentifier, hexIdentifier);
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_VENDOR, "SMA");
