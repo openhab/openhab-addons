@@ -18,17 +18,22 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.tuya.internal.local.TuyaDevice.*;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.tuya.internal.local.CommandType;
 import org.openhab.binding.tuya.internal.local.MessageWrapper;
 import org.openhab.binding.tuya.internal.local.ProtocolVersion;
+import org.openhab.binding.tuya.internal.local.dto.RequestRefusal;
+import org.openhab.binding.tuya.internal.util.CryptoUtil;
 import org.openhab.core.util.HexUtils;
 
 import com.google.gson.Gson;
@@ -46,6 +51,8 @@ import io.netty.util.Attribute;
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class TuyaDecoderTest {
+
+    private static final byte[] KEY = "5c8c3ccc1f0fbdbb".getBytes(StandardCharsets.UTF_8);
 
     private final Gson gson = new Gson();
     private @Mock @NonNullByDefault({}) ChannelHandlerContext ctxMock;
@@ -83,5 +90,44 @@ public class TuyaDecoderTest {
         assertThat(out, hasSize(1));
         MessageWrapper<?> result = (MessageWrapper<?>) out.get(0);
         assertThat(result.content, is(expectedResult));
+    }
+
+    @Test
+    public void refusalIsPassedOn33() throws Exception {
+        when(ctxMock.channel()).thenReturn(channelMock);
+        when(channelMock.hasAttr(DEVICE_ID_ATTR)).thenReturn(true);
+        when(channelMock.attr(DEVICE_ID_ATTR)).thenReturn(deviceIdAttrMock);
+        when(deviceIdAttrMock.get()).thenReturn("");
+        when(channelMock.hasAttr(PROTOCOL_ATTR)).thenReturn(true);
+        when(channelMock.attr(PROTOCOL_ATTR)).thenReturn(protocolAttrMock);
+        when(protocolAttrMock.get()).thenReturn(ProtocolVersion.V3_3);
+        when(channelMock.hasAttr(SESSION_KEY_ATTR)).thenReturn(true);
+        when(channelMock.attr(SESSION_KEY_ATTR)).thenReturn(sessionKeyAttrMock);
+        when(sessionKeyAttrMock.get()).thenReturn(KEY);
+
+        List<Object> out = new ArrayList<>();
+        TuyaDecoder decoder = new TuyaDecoder(gson);
+        decoder.decode(ctxMock, Unpooled.copiedBuffer(deviceFrame33(CommandType.DP_QUERY, "json obj data unvalid")),
+                out);
+
+        assertThat(out, hasSize(1));
+        MessageWrapper<?> result = (MessageWrapper<?>) out.get(0);
+        assertThat(result.commandType, is(CommandType.DP_QUERY));
+        assertThat(result.content, is(new RequestRefusal("json obj data unvalid")));
+    }
+
+    private byte[] deviceFrame33(CommandType commandType, String text) {
+        byte[] encrypted = Objects
+                .requireNonNull(CryptoUtil.encryptAesEcb(text.getBytes(StandardCharsets.UTF_8), KEY, true));
+
+        // prefix, sequence, command and length, then the return code a device puts in front of the payload, and
+        // the checksum and suffix at the end
+        ByteBuffer frame = ByteBuffer.allocate(16 + 4 + encrypted.length + 8);
+        frame.putInt(0x000055AA).putInt(1).putInt(commandType.getCode()).putInt(4 + encrypted.length + 8);
+        frame.putInt(0);
+        frame.put(encrypted);
+        frame.putInt(CryptoUtil.calculateChecksum(frame.array(), 0, frame.position()));
+        frame.putInt(0x0000AA55);
+        return frame.array();
     }
 }

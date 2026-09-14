@@ -72,6 +72,12 @@ public class TuyaBindingConstants {
     // it, and start trying to reconnect.
     public static final int TCP_CONNECTION_MESSAGE_RESPONSE = 200; // Milliseconds
 
+    // How long to wait before querying the status again after a device refused DP_QUERY. Devices that are not
+    // ready yet refuse DP_QUERY although they handle it, others never handle it. The interval doubles with every
+    // refusal up to TCP_CONNECTION_QUERY_RETRY_MAX and starts over once the device reports its status.
+    public static final int TCP_CONNECTION_QUERY_RETRY_INITIAL = 1000; // Milliseconds
+    public static final int TCP_CONNECTION_QUERY_RETRY_MAX = 60000; // Milliseconds
+
     // How long to wait for a TCP session to connect before closing it and starting again. We do
     // not rely on TCP's own retry strategy because that varies between implementations so we
     // cannot know when the retry interval has become so great that it exceeds the amount of

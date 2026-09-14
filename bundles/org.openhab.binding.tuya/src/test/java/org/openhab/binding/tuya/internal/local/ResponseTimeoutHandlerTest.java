@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.tuya.internal.local.dto.RequestRefusal;
 
 import io.netty.channel.embedded.EmbeddedChannel;
 
@@ -92,5 +93,17 @@ public class ResponseTimeoutHandlerTest {
 
         assertTrue(channel.isOpen());
         channel.finishAndReleaseAll();
+    }
+
+    @Test
+    public void refusedStatusQueryStillClosesTheConnection() {
+        EmbeddedChannel channel = channel();
+
+        channel.writeOutbound(STATUS_QUERY);
+        // A battery device woken too early refuses DP_QUERY and ignores the CONTROL; only a new connection recovers it
+        channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY, new RequestRefusal("json obj data unvalid")));
+        letResponseTimeoutPass(channel);
+
+        assertFalse(channel.isOpen());
     }
 }
