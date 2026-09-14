@@ -63,7 +63,7 @@ public class EyeOnWaterClient {
     private boolean authenticated = false;
 
     public EyeOnWaterClient(String hostname, String username, String password, HttpClient httpClient) {
-        this.hostname = hostname.isBlank() ? "eyeonwater.com" : hostname.trim();
+        this.hostname = hostname;
         this.username = username;
         this.password = password;
         this.httpClient = httpClient;

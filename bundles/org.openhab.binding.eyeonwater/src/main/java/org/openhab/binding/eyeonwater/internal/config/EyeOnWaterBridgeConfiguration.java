@@ -26,4 +26,9 @@ public class EyeOnWaterBridgeConfiguration {
     public String hostname = "eyeonwater.com";
     public int refreshInterval = 15;
     public boolean preferNewSearch = true;
+
+    public String getNormalizedHostname() {
+        String host = hostname;
+        return host == null || host.isBlank() ? "eyeonwater.com" : host.trim();
+    }
 }
