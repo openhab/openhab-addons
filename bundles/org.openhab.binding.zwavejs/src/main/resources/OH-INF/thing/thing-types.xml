@@ -47,6 +47,10 @@
 		<label>Z-Wave Node</label>
 		<description>A Z-Wave node provided by Z-Wave JS.</description>
 
+		<channel-groups>
+			<channel-group id="statistics" typeId="statistics"/>
+		</channel-groups>
+
 		<representation-property>id</representation-property>
 
 		<config-description>
@@ -57,5 +61,86 @@
 		</config-description>
 
 	</thing-type>
+
+	<channel-group-type id="statistics">
+		<label>Statistics</label>
+		<description>Communication statistics reported by Z-Wave JS.</description>
+		<channels>
+			<channel id="last-seen" typeId="statistics-last-seen"/>
+			<channel id="last-awake" typeId="statistics-last-awake"/>
+			<channel id="commands-tx" typeId="statistics-commands-tx"/>
+			<channel id="commands-rx" typeId="statistics-commands-rx"/>
+			<channel id="commands-dropped-tx" typeId="statistics-commands-dropped-tx"/>
+			<channel id="commands-dropped-rx" typeId="statistics-commands-dropped-rx"/>
+			<channel id="timeout-response" typeId="statistics-timeout-response"/>
+			<channel id="rtt" typeId="statistics-rtt"/>
+			<channel id="rssi" typeId="statistics-rssi"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="statistics-last-seen" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>The last time a message was received from the node.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statistics-last-awake" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Awake</label>
+		<description>The last time the node was awake.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statistics-commands-tx" advanced="true">
+		<item-type>Number</item-type>
+		<label>Commands Transmitted</label>
+		<description>The number of commands sent to the node.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="statistics-commands-rx" advanced="true">
+		<item-type>Number</item-type>
+		<label>Commands Received</label>
+		<description>The number of commands received from the node.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="statistics-commands-dropped-tx" advanced="true">
+		<item-type>Number</item-type>
+		<label>Commands Dropped During Transmission</label>
+		<description>The number of commands to the node that were dropped.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="statistics-commands-dropped-rx" advanced="true">
+		<item-type>Number</item-type>
+		<label>Commands Dropped During Reception</label>
+		<description>The number of commands from the node that were dropped.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="statistics-timeout-response" advanced="true">
+		<item-type>Number</item-type>
+		<label>Response Timeouts</label>
+		<description>The number of commands for which no response was received.</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="statistics-rtt" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Round-Trip Time</label>
+		<description>The average round-trip time for commands sent to the node.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="statistics-rssi" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>RSSI</label>
+		<description>The received signal strength of the last message from the node.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
 
 </thing:thing-descriptions>

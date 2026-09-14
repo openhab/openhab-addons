@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 import javax.measure.quantity.Power;
@@ -26,6 +27,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.zwavejs.internal.DataUtil;
+import org.openhab.binding.zwavejs.internal.api.dto.Event;
+import org.openhab.binding.zwavejs.internal.api.dto.Statistics;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeGetValueCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
@@ -34,6 +37,7 @@ import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
 import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -42,6 +46,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -84,7 +89,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(12)).stateUpdated(any(), any());
+            verify(callback, times(20)).stateUpdated(any(), any());
         } finally {
             handler.dispose();
         }
@@ -101,7 +106,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(74)).stateUpdated(any(), any());
+            verify(callback, times(82)).stateUpdated(any(), any());
         } finally {
             handler.dispose();
         }
@@ -226,6 +231,71 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testStatisticsUpdatePublishesChannelStatesWithoutUpdatingThing() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        Statistics statistics = new Statistics();
+        statistics.commandsTX = 11;
+        statistics.commandsRX = 12;
+        statistics.commandsDroppedTX = 13;
+        statistics.commandsDroppedRX = 14;
+        statistics.timeoutResponse = 15;
+        Instant lastSeen = Instant.parse("2026-09-14T12:34:56Z");
+        statistics.lastSeen = lastSeen;
+        statistics.rtt = 16.5;
+        statistics.rssi = -87;
+
+        clearInvocations(callback);
+        handler.onStatisticsUpdated(statistics);
+
+        try {
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_COMMANDS_TX)),
+                    eq(new DecimalType(11)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_COMMANDS_RX)),
+                    eq(new DecimalType(12)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_COMMANDS_DROPPED_TX)),
+                    eq(new DecimalType(13)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_COMMANDS_DROPPED_RX)),
+                    eq(new DecimalType(14)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_TIMEOUT_RESPONSE)),
+                    eq(new DecimalType(15)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_LAST_SEEN)),
+                    eq(new DateTimeType(lastSeen)));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_RTT)),
+                    eq(new QuantityType<>(16.5, MetricPrefix.MILLI(Units.SECOND))));
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_RSSI)),
+                    eq(new QuantityType<>(-87, Units.DECIBEL_MILLIWATTS)));
+            verify(callback, never()).thingUpdated(any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testNodeAwakeUpdatesLastAwakeChannel() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        clearInvocations(callback);
+        handler.onNodeAwake(new Event());
+
+        try {
+            verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_LAST_AWAKE)),
+                    argThat(DateTimeType.class::isInstance));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    private static ChannelUID statisticsChannelUID(Thing thing, String channelId) {
+        return new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATISTICS, channelId);
+    }
+
+    @Test
     public void testNode25SwitchEventUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(25);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -279,7 +349,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(4)).stateUpdated(any(), any());
+            verify(callback, times(12)).stateUpdated(any(), any());
             verify(callback).stateUpdated(eq(channelid), eq(new PercentType(98)));
         } finally {
             handler.dispose();
@@ -298,8 +368,8 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            // 18 = 15 direct updates + 2 handled color updates + 1 handled color temperature update
-            verify(callback, times(18)).stateUpdated(any(), any());
+            // 26 = 15 direct updates + 2 handled color updates + 1 handled color temperature update + 8 statistics
+            verify(callback, times(26)).stateUpdated(any(), any());
             verify(callback).stateUpdated(eq(channelid), eq(new HSBType("0,0,100")));
         } finally {
             handler.dispose();
@@ -405,7 +475,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(10)).stateUpdated(any(), any());
+            verify(callback, times(16)).stateUpdated(any(), any());
         } finally {
             handler.dispose();
         }
@@ -443,7 +513,7 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-            verify(callback, times(15)).stateUpdated(any(), any());
+            verify(callback, times(23)).stateUpdated(any(), any());
         } finally {
             handler.dispose();
         }

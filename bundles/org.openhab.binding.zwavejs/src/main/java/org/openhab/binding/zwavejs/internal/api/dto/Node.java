@@ -15,6 +15,8 @@ package org.openhab.binding.zwavejs.internal.api.dto;
 import java.time.Instant;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Leo Siepel - Initial contribution
  */
@@ -56,4 +58,5 @@ public class Node {
     public int zwavePlusRoleType;
     public int highestSecurityClass;
     public Instant lastSeen;
+    public @Nullable Instant lastAwake;
 }
