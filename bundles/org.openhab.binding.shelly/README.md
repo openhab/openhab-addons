@@ -1177,10 +1177,6 @@ totalEnergy might reset on restart depending on device type and firmware version
 |         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention     |
 | meter   | currentPower    | Number             | yes       |          | Current power consumption in Watts                                                       |
 
-Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
-`true`:  Brightness will be set and device output is powered = light turns on with the new brightness
-`false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
-
 ### Shelly Duo RGBW Color Bulb (thing-type: shellycolorbulb)
 
 | Group   | Channel      | Type         | read-only | Advanced | Description                                                             |
@@ -1202,10 +1198,6 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 | meter   | currentPower | Number       | yes       |          | Current power consumption in Watts                                      |
 
 Channels in group `color` or `white` apply depending on the selected mode - they are not active at the same time.
-
-Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
-`true`:  Brightness will be set and device output is powered = light turns on with the new brightness
-`false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
 
 ### Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 

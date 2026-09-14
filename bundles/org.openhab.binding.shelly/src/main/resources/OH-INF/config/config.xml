@@ -169,12 +169,6 @@
 			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="brightnessAutoOn" type="boolean" required="false">
-			<label>Brightness Auto-ON</label>
-			<description>ON: Light is switched on when a brightness value greater than 0 is set; OFF: Brightness is set, but the
-				device is not switched on</description>
-			<default>true</default>
-		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
 			<label>Output Events</label>
 			<description>Activates the Output Action URLS</description>
@@ -210,12 +204,6 @@
 			<label>Password</label>
 			<description>Password for API access</description>
 			<context>password</context>
-		</parameter>
-		<parameter name="brightnessAutoOn" type="boolean" required="false">
-			<label>Brightness Auto-ON</label>
-			<description>ON: Light is switched on when a brightness value greater than 0 is set; OFF: Brightness is set, but the
-				device is not switched on</description>
-			<default>true</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Activate CoIoT</label>
