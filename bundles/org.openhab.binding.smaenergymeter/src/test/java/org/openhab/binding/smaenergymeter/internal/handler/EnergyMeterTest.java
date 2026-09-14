@@ -106,21 +106,20 @@ class EnergyMeterTest {
         assertQuantityTypeValue("1420.4354", Units.KILOWATT_HOUR, meter.getState(ObisId.NEGATIVE_ACTIVE_ENERGY_L3));
         assertQuantityTypeValue("0", Units.VAR, meter.getState(ObisId.POSITIVE_REACTIVE_POWER));
         assertQuantityTypeValue("950.7", Units.VAR, meter.getState(ObisId.NEGATIVE_REACTIVE_POWER));
-        assertQuantityTypeValue("0.1896", Units.KILOVAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY));
-        assertQuantityTypeValue("8976.2803", Units.KILOVAR_HOUR, meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY));
+        assertQuantityTypeValue("0.1896", Units.VAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY));
+        assertQuantityTypeValue("8976.2803", Units.VAR_HOUR, meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY));
         assertQuantityTypeValue("0", Units.VAR, meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L1));
         assertQuantityTypeValue("426.3", Units.VAR, meter.getState(ObisId.NEGATIVE_REACTIVE_POWER_L1));
-        assertQuantityTypeValue("1.0652", Units.KILOVAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L1));
-        assertQuantityTypeValue("3514.6469", Units.KILOVAR_HOUR, meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L1));
+        assertQuantityTypeValue("1.0652", Units.VAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L1));
+        assertQuantityTypeValue("3514.6469", Units.VAR_HOUR, meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L1));
         assertQuantityTypeValue("0", Units.VAR, meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L2));
         assertQuantityTypeValue("169.7", Units.VAR, meter.getState(ObisId.NEGATIVE_REACTIVE_POWER_L2));
-        assertQuantityTypeValue("4.5347", Units.KILOVAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L2));
-        assertQuantityTypeValue("2367.2497997222", Units.KILOVAR_HOUR,
-                meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L2));
+        assertQuantityTypeValue("4.5347", Units.VAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L2));
+        assertQuantityTypeValue("2367.2497997222", Units.VAR_HOUR, meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L2));
         assertQuantityTypeValue("0", Units.VAR, meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L3));
         assertQuantityTypeValue("354.6", Units.VAR, meter.getState(ObisId.NEGATIVE_REACTIVE_POWER_L3));
-        assertQuantityTypeValue("1.7285", Units.KILOVAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L3));
-        assertQuantityTypeValue("3101.5224", Units.KILOVAR_HOUR, meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L3));
+        assertQuantityTypeValue("1.7285", Units.VAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L3));
+        assertQuantityTypeValue("3101.5224", Units.VAR_HOUR, meter.getState(ObisId.NEGATIVE_REACTIVE_ENERGY_L3));
         assertQuantityTypeValue("0", Units.VOLT_AMPERE, meter.getState(ObisId.POSITIVE_APPARENT_POWER));
         assertQuantityTypeValue("953.2", Units.VOLT_AMPERE, meter.getState(ObisId.NEGATIVE_APPARENT_POWER));
         assertQuantityTypeValue("10003.9587", Units.VOLT_AMPERE_HOUR, meter.getState(ObisId.POSITIVE_APPARENT_ENERGY));
@@ -206,7 +205,7 @@ class EnergyMeterTest {
         assertQuantityTypeZero(Units.VOLT_AMPERE, meter.getState(ObisId.NEGATIVE_APPARENT_POWER));
         assertQuantityTypeZero(Units.WATT, meter.getState(ObisId.NEGATIVE_ACTIVE_POWER_L1));
         assertQuantityTypeZero(Units.VAR, meter.getState(ObisId.POSITIVE_REACTIVE_POWER_L1));
-        assertQuantityTypeZero(Units.KILOVAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L1));
+        assertQuantityTypeZero(Units.VAR_HOUR, meter.getState(ObisId.POSITIVE_REACTIVE_ENERGY_L1));
         assertQuantityTypeZero(Units.AMPERE, meter.getState(ObisId.CURRENT_L1));
         assertEquals(StringType.EMPTY, meter.getState(ObisId.VERSION));
     }
