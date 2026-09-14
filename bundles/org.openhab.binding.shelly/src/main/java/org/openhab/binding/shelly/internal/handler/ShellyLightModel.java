@@ -414,7 +414,7 @@ public class ShellyLightModel extends LightModel {
      * Convert Kelvin to Mirek or vice-versa.
      */
     private static double reciprocal(double value) {
-        return (Double.isNaN(value) || value == 0.0) ? 0 : 1000000.0 / value;
+        return value == 0.0 ? 0 : 1000000.0 / value;
     }
 
     /**
