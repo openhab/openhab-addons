@@ -420,8 +420,8 @@ public class Shelly1CoIoTProtocol {
         if (lightModels == null) {
             return null;
         }
-        int channelGroupSuffix = getIdFromBlk(sen);
-        if (channelGroupSuffix <= 0) {
+        int channelGroupSuffix = getIdFromBlk(sen) - 1; // convert to 0-based index for light model
+        if (channelGroupSuffix < 0) {
             return null;
         }
         return lightModels.getByChannelGroupSuffix(channelGroupSuffix);

@@ -144,7 +144,7 @@ public class Shelly1CoIoTVersion2Test {
         Shelly1CoIoTVersion2 v2 = newLightProtocol(profile, blkMap, new HashMap<>(), handler);
         ShellyLightModel lightModel = ShellyLightModel.create(handler, 1, profile, STEP);
         LightModels lightModels = mock(LightModelAccessor.LightModels.class);
-        when(lightModels.getByChannelGroupSuffix(1)).thenReturn(lightModel);
+        when(lightModels.getByChannelGroupSuffix(0)).thenReturn(lightModel);
         Map<String, State> updates = new HashMap<>();
 
         CoIotSensor red = lightSensor("5105", 10);
@@ -159,7 +159,7 @@ public class Shelly1CoIoTVersion2Test {
         assertThat(v2.handleStatusUpdate(List.of(blue), lightDesc("5107", "blue", "1"), 0, blue, updates, lightModels),
                 is(true));
 
-        verify(lightModels, times(3)).getByChannelGroupSuffix(1);
+        verify(lightModels, times(3)).getByChannelGroupSuffix(0);
         assertThat(lightModel.getColor(R), is(10));
         assertThat(lightModel.getColor(G), is(20));
         assertThat(lightModel.getColor(B), is(30));
@@ -176,7 +176,7 @@ public class Shelly1CoIoTVersion2Test {
         Shelly1CoIoTVersion2 v2 = newLightProtocol(profile, blkMap, new HashMap<>(), handler);
         ShellyLightModel lightModel = ShellyLightModel.create(handler, 1, profile, STEP);
         LightModels lightModels = mock(LightModelAccessor.LightModels.class);
-        when(lightModels.getByChannelGroupSuffix(1)).thenReturn(lightModel);
+        when(lightModels.getByChannelGroupSuffix(0)).thenReturn(lightModel);
         Map<String, State> updates = new HashMap<>();
 
         CoIotSensor gain = lightSensor("5102", 40);
@@ -184,7 +184,7 @@ public class Shelly1CoIoTVersion2Test {
         assertThat(v2.handleStatusUpdate(List.of(gain), lightDesc("5102", "gain", "1"), 0, gain, updates, lightModels),
                 is(true));
 
-        verify(lightModels).getByChannelGroupSuffix(1);
+        verify(lightModels).getByChannelGroupSuffix(0);
         assertThat(lightModel.getGainState(), is(new PercentType(40)));
         assertThat(lightModel.getMode(), is(ShellyLightModel.Mode.COLOR));
         assertThat(updates.isEmpty(), is(true));
@@ -199,7 +199,7 @@ public class Shelly1CoIoTVersion2Test {
         Shelly1CoIoTVersion2 v2 = newLightProtocol(profile, blkMap, new HashMap<>(), handler);
         ShellyLightModel lightModel = ShellyLightModel.create(handler, 1, profile, STEP);
         LightModels lightModels = mock(LightModelAccessor.LightModels.class);
-        when(lightModels.getByChannelGroupSuffix(1)).thenReturn(lightModel);
+        when(lightModels.getByChannelGroupSuffix(0)).thenReturn(lightModel);
         Map<String, State> updates = new HashMap<>();
 
         CoIotSensor effect = lightSensor("5104", 3);
@@ -207,7 +207,7 @@ public class Shelly1CoIoTVersion2Test {
         assertThat(v2.handleStatusUpdate(List.of(effect), lightDesc("5104", "effect", "1"), 0, effect, updates,
                 lightModels), is(true));
 
-        verify(lightModels).getByChannelGroupSuffix(1);
+        verify(lightModels).getByChannelGroupSuffix(0);
         assertThat(lightModel.getEffectState(), is(new DecimalType(3)));
         assertThat(updates.isEmpty(), is(true));
     }
@@ -221,7 +221,7 @@ public class Shelly1CoIoTVersion2Test {
         Shelly1CoIoTVersion2 v2 = newLightProtocol(profile, blkMap, new HashMap<>(), handler);
         ShellyLightModel lightModel = ShellyLightModel.create(handler, 1, profile, STEP);
         LightModels lightModels = mock(LightModelAccessor.LightModels.class);
-        when(lightModels.getByChannelGroupSuffix(1)).thenReturn(lightModel);
+        when(lightModels.getByChannelGroupSuffix(0)).thenReturn(lightModel);
         Map<String, State> updates = new HashMap<>();
 
         CoIotSensor colorTemp = lightSensor("5103", 4200);
@@ -229,7 +229,7 @@ public class Shelly1CoIoTVersion2Test {
         assertThat(v2.handleStatusUpdate(List.of(colorTemp), lightDesc("5103", "colorTemp", "1"), 0, colorTemp, updates,
                 lightModels), is(true));
 
-        verify(lightModels).getByChannelGroupSuffix(1);
+        verify(lightModels).getByChannelGroupSuffix(0);
         Assertions.assertInstanceOf(QuantityType.class, lightModel.getColorTemperatureAbsoluteState());
         QuantityType<?> colorTemperature = (QuantityType<?>) lightModel.getColorTemperatureAbsoluteState();
         QuantityType<?> kelvin = colorTemperature.toUnit(Units.KELVIN);
