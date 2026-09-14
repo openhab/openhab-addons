@@ -13,6 +13,8 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
+import static org.openhab.binding.shelly.internal.ShellyDevices.SHELLYDT_PLUSDIMMER0110VG3;
+import static org.openhab.binding.shelly.internal.ShellyDevices.SHELLYDT_PLUSDIMMER0110VG4;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
@@ -375,6 +377,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             // metered component.
             List<ShellySettingsRgbwLight> sl = profile.settings.lights;
             fromDeviceConfig = sl != null && !sl.isEmpty() ? sl.size() : -1;
+        } else if (SHELLYDT_PLUSDIMMER0110VG3.equals(profile.device.type)
+                || SHELLYDT_PLUSDIMMER0110VG4.equals(profile.device.type)) {
+            // Gen3/Gen4 PM variants (S3DM-0010WW / S4DM-0010WW) of shellyplus10v embed power metering in
+            // light:0 with no separate pm1:0 component, so it can't be detected from dc.pm10 above.
+            fromDeviceConfig = 1;
         } else {
             fromDeviceConfig = -1; // not detectable from config → relay count fallback
         }

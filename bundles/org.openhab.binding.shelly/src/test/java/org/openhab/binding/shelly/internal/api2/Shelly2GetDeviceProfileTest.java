@@ -215,8 +215,12 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     private ShellySettingsDevice deviceInfo() {
+        return deviceInfo("SNSW-001P16EU");
+    }
+
+    private ShellySettingsDevice deviceInfo(String type) {
         ShellySettingsDevice dev = new ShellySettingsDevice();
-        dev.type = "SNSW-001P16EU";
+        dev.type = type;
         dev.hostname = "shellyplus1pm-aabbcc";
         dev.fw = "1.2.3";
         dev.gen = 2;
@@ -361,6 +365,27 @@ public class Shelly2GetDeviceProfileTest {
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRODIMMER1PM, deviceInfo());
         assertThat(profile.numMeters, is(1));
         assertThat(Objects.requireNonNull(profile.status.emeters).size(), is(1));
+    }
+
+    @ParameterizedTest(name = "{0} → numMeters=1")
+    @ValueSource(strings = { SHELLYDT_PLUSDIMMER0110VG3, SHELLYDT_PLUSDIMMER0110VG4 })
+    void discoveryPlusDimmer10vPmVariantNumMetersFromDeviceType(String deviceType) throws ShellyApiException {
+        // Gen3/Gen4 PM variants (S3DM-0010WW / S4DM-0010WW) meter light:0 with no pm1:0 component;
+        // shellyplus10v carries no capability-map override since it's shared with the non-PM Gen2 SKU
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER10V, deviceInfo(deviceType));
+        assertThat("deviceType=" + deviceType, profile.numMeters, is(1));
+    }
+
+    @ParameterizedTest(name = "{0} → numMeters=0")
+    @ValueSource(strings = { SHELLYDT_PLUSDIMMER10V, SHELLYDT_PLUSDIMMER10V_2 })
+    void discoveryPlusDimmer10vNonPmGen2VariantNumMetersZero(String deviceType) throws ShellyApiException {
+        // Gen2 Plus 0-10V has no power metering at all — must not regress to the PM-variant branch
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLight0(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER10V, deviceInfo(deviceType));
+        assertThat("deviceType=" + deviceType, profile.numMeters, is(0));
     }
 
     @ParameterizedTest(name = "{0} → numMeters={1}")
