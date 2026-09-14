@@ -12,15 +12,13 @@
  */
 package org.openhab.binding.millheat.internal.dto;
 
-/**
- * This DTO class wraps the set room temp response
- *
- * @author Arne Seime - Initial contribution
- */
-public class SetHolidayParameterResponse extends AbstractResponse {
-    public String success;
+import org.eclipse.jdt.annotation.Nullable;
 
-    public boolean isSuccess() {
-        return "true".contentEquals(success);
-    }
+/**
+ * Body of {@code POST /rooms/&#123;roomId&#125;/temperature}. Fields left null are not changed.
+ *
+ * @author Petter L. H. Eide - Initial contribution
+ */
+public record RoomTemperatureRequest(@Nullable Double roomComfortTemperature, @Nullable Double roomSleepTemperature,
+        @Nullable Double roomAwayTemperature) {
 }

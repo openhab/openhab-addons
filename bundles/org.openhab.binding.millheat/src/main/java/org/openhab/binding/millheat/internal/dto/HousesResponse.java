@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.millheat.internal.dto;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This DTO class wraps the select device by home response
- * 
- * @author Arne Seime - Initial contribution
+ * Response of {@code GET /houses}. Houses shared with the account are reported separately from
+ * those the account owns, but both are usable.
+ *
+ * @author Petter L. H. Eide - Initial contribution
  */
-public class SelectDeviceByRoomResponse extends AbstractResponse {
-    @SerializedName("deviceInfo")
-    public DeviceDTO[] devices = new DeviceDTO[0];
+public record HousesResponse(@Nullable List<HouseDTO> ownHouses, @Nullable List<HouseDTO> sharedHouses) {
 }
