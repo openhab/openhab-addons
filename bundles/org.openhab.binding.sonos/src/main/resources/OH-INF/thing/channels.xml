@@ -39,6 +39,12 @@
 		<state min="-10" max="10" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
+	<channel-type id="buttonlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Button Lock</label>
+		<description>Lock or unlock the buttons on the Sonos device</description>
+	</channel-type>
+
 	<channel-type id="clearqueue" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Clear Queue</label>

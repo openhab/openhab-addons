@@ -124,6 +124,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String ACTION_GET_ZONE_INFO = "GetZoneInfo";
     private static final String ACTION_GET_LED_STATE = "GetLEDState";
     private static final String ACTION_SET_LED_STATE = "SetLEDState";
+    private static final String ACTION_GET_BUTTON_LOCK_STATE = "GetButtonLockState";
+    private static final String ACTION_SET_BUTTON_LOCK_STATE = "SetButtonLockState";
 
     private static final String ACTION_GET_POSITION_INFO = "GetPositionInfo";
     private static final String ACTION_SET_AV_TRANSPORT_URI = "SetAVTransportURI";
@@ -283,6 +285,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 if (isLinked(LED)) {
                     updateLed();
                 }
+                if (isLinked(BUTTONLOCK)) {
+                    updateButtonLock();
+                }
                 // Action GetRemainingSleepTimerDuration is failing for a group slave member (error code 500)
                 if (isLinked(SLEEPTIMER) && isCoordinator()) {
                     updateSleepTimerDuration();
@@ -301,6 +306,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             switch (channelUID.getId()) {
                 case LED:
                     setLed(command);
+                    break;
+                case BUTTONLOCK:
+                    setButtonLock(command);
                     break;
                 case MUTE:
                     setMute(command);
@@ -535,6 +543,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     break;
                 case "CurrentLEDState":
                     updateChannel(LED);
+                    break;
+                case "CurrentButtonLockState":
+                    updateChannel(BUTTONLOCK);
                     break;
                 case "ZoneName":
                     updateState(ZONENAME, new StringType(value));
@@ -805,6 +816,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 break;
             case LED:
                 value = getLed();
+                if (value != null) {
+                    newState = OnOffType.from(value);
+                }
+                break;
+            case BUTTONLOCK:
+                value = getButtonLock();
                 if (value != null) {
                     newState = OnOffType.from(value);
                 }
@@ -1163,6 +1180,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     protected void updateLed() {
         executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_LED_STATE, null);
+    }
+
+    private void updateButtonLock() {
+        executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_BUTTON_LOCK_STATE, null);
     }
 
     protected void updateTime() {
@@ -3009,6 +3030,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
+    private void setButtonLock(Command command) {
+        if (command instanceof OnOffType) {
+            String value = command.equals(OnOffType.ON) ? "On" : "Off";
+            executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_SET_BUTTON_LOCK_STATE,
+                    Map.of("DesiredButtonLockState", value));
+            executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_BUTTON_LOCK_STATE, null);
+        }
+    }
+
     public void removeMember(Command command) {
         if (command instanceof StringType) {
             try {
@@ -3284,6 +3314,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getLed() {
         return stateMap.get("CurrentLEDState");
+    }
+
+    private @Nullable String getButtonLock() {
+        return stateMap.get("CurrentButtonLockState");
     }
 
     public @Nullable String getCurrentZoneName() {
