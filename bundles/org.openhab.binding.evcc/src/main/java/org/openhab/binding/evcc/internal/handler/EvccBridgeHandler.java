@@ -12,27 +12,17 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.evcc.internal.EvccBridgeConfiguration;
-import org.openhab.binding.evcc.internal.discovery.EvccDiscoveryService;
+import org.openhab.binding.evcc.internal.api.EvccRequestQueue;
+import org.openhab.binding.evcc.internal.api.EvccWebSocketClient;
+import org.openhab.binding.evcc.internal.discovery.EvccThingDiscoveryService;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -47,12 +37,11 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccBridgeHandler} is responsible for creating the bridge and thing
+ * The {@link EvccBridgeHandler} is responsible for creating the bridge and dispatch ws messages to the thing
  * handlers.
  *
  * @author Marcel Goerentz - Initial contribution
@@ -61,58 +50,69 @@ import com.google.gson.JsonObject;
 public class EvccBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccBridgeHandler.class);
-    private final Gson gson = new Gson();
-    private final Queue<QueuedRequest> requestQueue = new ConcurrentLinkedQueue<>();
-    private @Nullable ScheduledFuture<?> queueWorker;
-    private final AtomicBoolean isPulling = new AtomicBoolean(false);
 
-    private final HttpClient httpClient;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("evcc-bridge-handler");
+
+    private final Map<String, EvccThingLifecycleAware> listeners = new ConcurrentHashMap<>();
+    private final Map<String, EvccThingLifecycleAware> pendingHandlers = new ConcurrentHashMap<>();
+    private final Map<String, String> propertyByRoot = new ConcurrentHashMap<>();
+
+    final EvccRequestQueue requestQueue;
+
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
-    private final CopyOnWriteArrayList<EvccThingLifecycleAware> listeners = new CopyOnWriteArrayList<>();
-    private @Nullable ScheduledFuture<?> pollJob;
-    private volatile JsonObject lastState = new JsonObject();
+
+    private final CachedJsonState cachedState = new CachedJsonState();
+    private volatile boolean initialStateReceived = false;
+
+    private @Nullable EvccWebSocketClient wsClient;
+
     private String endpoint = "";
 
     public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, TranslationProvider i18nProvider,
             LocaleProvider localeProvider) {
         super(bridge);
-        httpClient = httpClientFactory.getCommonHttpClient();
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
+
+        requestQueue = new EvccRequestQueue(httpClientFactory.getCommonHttpClient());
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(EvccDiscoveryService.class);
+        return Set.of(EvccThingDiscoveryService.class);
     }
 
     @Override
     public void initialize() {
-        EvccBridgeConfiguration config = getConfigAs(EvccBridgeConfiguration.class);
-        endpoint = config.scheme + "://" + config.host + ":" + config.port + "/api/state";
+        EvccBridgeConfiguration cfg = getConfigAs(EvccBridgeConfiguration.class);
 
-        startPolling(config.pollInterval);
-        startQueueWorker();
+        endpoint = cfg.scheme + "://" + cfg.host + ":" + cfg.port + "/api";
+        String wsUrl = endpoint.replace("http", "ws").replace("/api", "/ws");
 
-        fetchEvccState().ifPresent(state -> {
-            this.lastState = state;
-            updateStatus(ThingStatus.ONLINE);
-        });
+        EvccWebSocketClient client = new EvccWebSocketClient(wsUrl, scheduler, this::onFullState, this::onPartialUpdate,
+                this::onConnected, this::onDisconnected);
+
+        client.start();
+        wsClient = client;
+        requestQueue.start();
     }
 
     @Override
     public void dispose() {
-        Optional.ofNullable(pollJob).ifPresent(job -> job.cancel(true));
-        pollJob = null;
-        Optional.ofNullable(queueWorker).ifPresent(job -> job.cancel(true));
-        queueWorker = null;
+        Optional.ofNullable(wsClient).ifPresent(EvccWebSocketClient::stop);
         listeners.clear();
-        requestQueue.clear();
+        pendingHandlers.clear();
+        requestQueue.stop();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // no commands
     }
 
     public String getBaseURL() {
-        return endpoint.substring(0, endpoint.lastIndexOf("/"));
+        return endpoint;
     }
 
     public TranslationProvider getI18nProvider() {
@@ -123,132 +123,139 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         return localeProvider;
     }
 
-    private void startPolling(int refreshInterval) {
-        if (refreshInterval <= 0) {
-            refreshInterval = 30;
-        }
-        pollJob = scheduler.scheduleWithFixedDelay(() -> fetchEvccState().ifPresent(state -> {
-            if (!state.isEmpty() && state.has("siteTitle")) {
-                notifyListeners(state);
-                this.lastState = state;
-            }
-        }), refreshInterval, refreshInterval, TimeUnit.SECONDS);
+    // --------------------------------------------------------------------
+    // WebSocket Callbacks
+    // --------------------------------------------------------------------
+
+    private void onConnected() {
+        updateStatus(ThingStatus.ONLINE);
+        logger.info("EVCC WebSocket connected");
     }
 
-    private void startQueueWorker() {
-        queueWorker = scheduler.scheduleWithFixedDelay(() -> {
+    private void onDisconnected() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "WebSocket disconnected");
+        logger.info("EVCC WebSocket disconnected");
+    }
+
+    private void onFullState(JsonObject state) {
+        logger.debug("Received full state from WebSocket");
+        cachedState.updateFull(state);
+        if (!initialStateReceived) {
+            initialStateReceived = true;
+            logger.info("Initial state received, activating all pending handlers");
+        }
+        processPendingHandlers();
+        JsonObject stateCopy = cachedState.getCopy();
+        for (EvccThingLifecycleAware listener : new ArrayList<>(listeners.values())) {
             try {
-                processQueue();
+                listener.initializeThingFromLatestState(stateCopy);
             } catch (Exception e) {
-                logger.warn("Error processing evcc request queue", e);
-            }
-        }, 50, 50, TimeUnit.MILLISECONDS);
-    }
-
-    private void processQueue() {
-        if (isPulling.get() || requestQueue.isEmpty()
-                || !ThingStatus.ONLINE.equals(getThing().getStatusInfo().getStatus())) {
-            return; // Pause während Polling
-        }
-        QueuedRequest queued = requestQueue.poll();
-        if (queued == null) {
-            return;
-        }
-        try {
-            ContentResponse response = queued.request().send();
-            try {
-                queued.onSuccess().accept(response);
-            } catch (Exception callbackError) {
-                logger.warn("Error in onSuccess callback: ", callbackError);
-            }
-        } catch (Exception e) {
-            try {
-                queued.onError().accept(e);
-            } catch (Exception callbackError) {
-                logger.warn("Error in onError callback: ", callbackError);
+                logListenerError(listener, e);
             }
         }
     }
 
-    public void enqueueRequest(String url, HttpMethod method, JsonElement payload, Consumer<ContentResponse> onSuccess,
-            Consumer<Exception> onError) {
-        if (url.isBlank()) {
-            onError.accept(new IllegalArgumentException("URL must not be empty"));
-            return;
-        }
-        try {
-            Request request = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(method)
-                    .header(HttpHeader.ACCEPT, "application/json");
-
-            if (!payload.isJsonNull()) {
-                request.content(new StringContentProvider(payload.toString())).header(HttpHeader.CONTENT_TYPE,
-                        "application/json");
-            }
-
-            requestQueue.add(new QueuedRequest(request, onSuccess, onError));
-        } catch (Exception e) {
-            logger.warn("evcc bridge couldn't call the API", e);
-            onError.accept(e);
-        }
+    private void onPartialUpdate(String key, JsonElement value) {
+        logger.trace("Received partial update: {}", key);
+        cachedState.updatePartial(key, value);
+        processPendingHandlers();
+        dispatchUpdate(key, value);
     }
 
-    public Optional<JsonObject> fetchEvccState() {
-        isPulling.set(true);
-        try {
-            ContentResponse response = httpClient.newRequest(endpoint).timeout(5, TimeUnit.SECONDS)
-                    .header(HttpHeader.ACCEPT, "application/json").send();
-
-            if (response.getStatus() == 200) {
-                @Nullable
-                JsonObject returnValue = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                if (returnValue != null && !(returnValue.isEmpty() || returnValue.isJsonNull())) {
-                    updateStatus(ThingStatus.ONLINE);
-                    JsonObject result = returnValue.has("result") ? returnValue.getAsJsonObject("result") : returnValue;
-                    return Optional.of(result);
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        Integer.toString(response.getStatus()));
-            }
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } finally {
-            isPulling.set(false);
-        }
-        return Optional.empty();
-    }
-
-    private void notifyListeners(JsonObject state) {
-        for (EvccThingLifecycleAware listener : listeners) {
-            try {
-                listener.prepareApiResponseForChannelStateUpdate(state);
-            } catch (Exception e) {
-                if (listener instanceof BaseThingHandler handler) {
-                    logger.warn("Listener {} couldn't parse evcc state", handler.getThing().getUID(), e);
-                } else {
-                    logger.debug("Listener {} is not instance of BaseThingHandler", listener, e);
-                }
-            }
-        }
-    }
-
-    public JsonObject getCachedEvccState() {
-        return lastState.deepCopy();
-    }
+    // --------------------------------------------------------------------
+    // Listener Registration
+    // --------------------------------------------------------------------
 
     public void register(EvccThingLifecycleAware handler) {
-        listeners.addIfAbsent(handler);
-        if (!lastState.isEmpty()) {
-            handler.prepareApiResponseForChannelStateUpdate(lastState);
+        String handlerKey = handler.getType() + "$" + handler.getIdentifier();
+        if (initialStateReceived) {
+            logger.debug("Initial state received, activating handler immediately: {}", handlerKey);
+            activateHandler(handlerKey, handler);
+        } else {
+            logger.debug("Initial state not yet received, queuing handler for later activation: {}", handlerKey);
+            pendingHandlers.put(handlerKey, handler);
+        }
+    }
+
+    private void activateHandler(String handlerKey, EvccThingLifecycleAware handler) {
+        listeners.put(handlerKey, handler);
+        for (String root : handler.getRootTypes()) {
+            propertyByRoot.put(root, handler.getType());
+        }
+        try {
+            logger.debug("Initializing handler from latest state: {}", handlerKey);
+            handler.initializeThingFromLatestState(cachedState.getCopy());
+            logger.debug("Successfully activated handler: {}", handlerKey);
+        } catch (Exception e) {
+            logListenerError(handler, e);
+        }
+    }
+
+    private void processPendingHandlers() {
+        if (pendingHandlers.isEmpty()) {
+            return;
+        }
+        logger.debug("Processing {} pending handler(s)", pendingHandlers.size());
+        List<String> keysToRemove = new ArrayList<>();
+        for (Map.Entry<String, EvccThingLifecycleAware> entry : pendingHandlers.entrySet()) {
+            try {
+                activateHandler(entry.getKey(), entry.getValue());
+                keysToRemove.add(entry.getKey());
+            } catch (Exception e) {
+                logger.debug("Failed to activate pending handler {}, will retry on next update", entry.getKey(), e);
+            }
+        }
+        keysToRemove.forEach(key -> {
+            pendingHandlers.remove(key);
+            logger.debug("Removed handler from pending queue: {}", key);
+        });
+        if (!pendingHandlers.isEmpty()) {
+            logger.debug("Still {} handler(s) pending after processing", pendingHandlers.size());
         }
     }
 
     public void unregister(EvccThingLifecycleAware handler) {
-        listeners.remove(handler);
+        listeners.remove(handler.getType() + "$" + handler.getIdentifier());
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        ; // No commands to handle!
+    // --------------------------------------------------------------------
+    // Dispatching
+    // --------------------------------------------------------------------
+
+    private void dispatchUpdate(String key, JsonElement value) {
+        String[] p = key.split("\\.", 3);
+        String root = p.length > 1 ? p[0] : "site";
+        String id = p.length > 1 ? p[1] : "";
+        String sub = p.length == 3 ? p[2] : p[0];
+
+        for (EvccThingLifecycleAware l : new ArrayList<>(listeners.values())) {
+            if (matchesType(l.getType(), root) && matchesIdentifier(l.getIdentifier(), id)) {
+                l.handleUpdate(sub, value);
+            }
+        }
+    }
+
+    private boolean matchesType(String type, String root) {
+        return type.equals(propertyByRoot.getOrDefault(root, ""));
+    }
+
+    private boolean matchesIdentifier(Object listenerId, String identifier) {
+        if (listenerId instanceof Integer idInt) {
+            return identifier.matches("\\d+") && idInt == Integer.parseInt(identifier);
+        }
+        if (listenerId instanceof String idStr) {
+            return idStr.equals(identifier);
+        }
+        return false;
+    }
+
+    private void logListenerError(EvccThingLifecycleAware listener, Exception e) {
+        if (listener instanceof BaseThingHandler handler) {
+            logger.warn("Listener {} failed to process EVCC update", handler.getThing().getUID(), e);
+        }
+    }
+
+    public JsonObject getCachedEvccState() {
+        return cachedState.getCopy();
     }
 }

@@ -14,12 +14,13 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
 import com.google.gson.JsonObject;
@@ -44,21 +45,33 @@ public class EvccPvHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-
-            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
-            commonInitialize(state);
+            endpoint = handler.getBaseURL();
+            handler.register(this);
         });
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
-        updateStatesFromApiResponse(state);
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_PV);
+    }
+
+    @Override
+    public Integer getIdentifier() {
+        return (Integer) index;
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("PV handler initializing from state");
+        state = getStateFromCachedState(state);
+        if (state.isEmpty()) {
+            logger.debug("No PV state found for index {}", index);
+            return;
+        }
+        createChannelsAndSetStatesFromApiResponse(state);
+        logger.debug("PV handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

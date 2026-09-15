@@ -14,6 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,7 +25,6 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,13 +52,12 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             handler.register(this);
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-            commonInitialize(new JsonObject());
         });
+    }
+
+    @Override
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_STATISTICS);
     }
 
     @Override
@@ -66,13 +66,18 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public String getIdentifier() {
+        return "";
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Statistics handler initializing from state");
         state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
-        if (!isInitialized || state.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        if (state.isEmpty()) {
+            logger.debug("No statistics state available");
             return;
         }
-        updateStatus(ThingStatus.ONLINE);
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
             logger.debug("Extracting statistics for {}", statisticsKey);
@@ -90,5 +95,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
                 }
             }
         }
+        logger.debug("Statistics handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
     }
 }

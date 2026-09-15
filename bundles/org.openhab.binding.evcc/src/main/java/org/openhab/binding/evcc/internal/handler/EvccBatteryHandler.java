@@ -14,12 +14,13 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
 import com.google.gson.JsonArray;
@@ -46,34 +47,52 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-
-            JsonObject state = getStateFromCachedState(stateOpt);
-            commonInitialize(state);
+            endpoint = handler.getBaseURL();
+            handler.register(this);
         });
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.has(JSON_KEY_BATTERY) ? getStateFromCachedState(state) : new JsonObject();
-        updateStatesFromApiResponse(state);
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_BATTERY);
+    }
+
+    @Override
+    public Integer getIdentifier() {
+        return (Integer) index;
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Battery handler initializing from state");
+        state = getBatteryState(state);
+        if (state.isEmpty()) {
+            logger.debug("No battery state found for index {}", index);
+            return;
+        }
+        createChannelsAndSetStatesFromApiResponse(state);
+        logger.debug("Battery handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        JsonElement battElement = state.get(JSON_KEY_BATTERY);
-        if (battElement.isJsonNull()) {
+        return getBatteryState(state);
+    }
+
+    private JsonObject getBatteryState(JsonObject state) {
+        return state.has(JSON_KEY_BATTERY) ? extractBatteryState(state.get(JSON_KEY_BATTERY)) : new JsonObject();
+    }
+
+    private JsonObject extractBatteryState(JsonElement battery) {
+        if (battery.isJsonNull()) {
             return new JsonObject();
         }
-        JsonArray battArray = battElement.isJsonArray()
-                // for up to version 0.300.0
-                ? (JsonArray) battElement
-                // for version 0.300.0+
-                : ((JsonObject) battElement).getAsJsonArray(JSON_KEY_DEVICES);
-        return battArray.get(index).getAsJsonObject();
+        JsonArray devices = battery.isJsonArray() ? battery.getAsJsonArray()
+                : battery.getAsJsonObject().getAsJsonArray(JSON_KEY_DEVICES);
+        return devices != null && index < devices.size() && devices.get(index).isJsonObject()
+                ? devices.get(index).getAsJsonObject()
+                : new JsonObject();
     }
 }

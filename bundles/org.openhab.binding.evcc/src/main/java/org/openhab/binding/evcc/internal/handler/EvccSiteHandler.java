@@ -14,6 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +25,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -73,11 +74,29 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_GRID, "site");
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "";
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Site handler initializing from state");
+        // Set the smart cost type
+        if (state.has(JSON_KEY_SMART_COST_TYPE) && !state.get(JSON_KEY_SMART_COST_TYPE).isJsonNull()) {
+            smartCostType = state.get(JSON_KEY_SMART_COST_TYPE).getAsString();
+        }
+
         if (state.has(JSON_KEY_GRID_CONFIGURED)) {
             modifyJSON(state);
         }
-        updateStatesFromApiResponse(state);
+        createChannelsAndSetStatesFromApiResponse(state);
+        logger.debug("Site handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -85,21 +104,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL();
-            JsonObject state = handler.getCachedEvccState().deepCopy();
-            if (state.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-
-            // Set the smart cost type
-            if (state.has(JSON_KEY_SMART_COST_TYPE) && !state.get(JSON_KEY_SMART_COST_TYPE).isJsonNull()) {
-                smartCostType = state.get(JSON_KEY_SMART_COST_TYPE).getAsString();
-            }
-
-            if (state.has(JSON_KEY_GRID_CONFIGURED)) {
-                modifyJSON(state);
-            }
-            commonInitialize(state);
+            handler.register(this);
         });
     }
 
