@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="loqed"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>LOQED Account</label>
+		<description>Connects to the LOQED Integrations API and discovers the account's locks.</description>
+		<config-description>
+			<parameter name="apiToken" type="text" required="true">
+				<context>password</context>
+				<label>Personal Access Token</label>
+				<description>Personal access token created on the LOQED integrations website.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="30">
+				<label>Refresh Interval</label>
+				<description>Interval in seconds at which lock data is refreshed.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="local-bridge">
+		<label>LOQED Local Bridge</label>
+		<description>Connects directly to a LOQED Bridge on the local network and receives signed webhook updates.</description>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>IP address, hostname, or base URL of the LOQED Bridge.</description>
+			</parameter>
+			<parameter name="bridgeKey" type="text" required="true">
+				<context>password</context>
+				<label>Authentication Key</label>
+				<description>Base64 authentication key used to manage and verify bridge webhooks.</description>
+			</parameter>
+			<parameter name="callbackBaseUrl" type="text">
+				<label>openHAB Callback Base URL</label>
+				<description>Optional override for the automatically detected openHAB URL, for example http://192.168.1.10:8080.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+				<label>Status Refresh Interval</label>
+				<description>Fallback status refresh interval. Normal state updates are delivered by webhook.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="lock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+			<bridge-type-ref id="local-bridge"/>
+		</supported-bridge-type-refs>
+		<label>LOQED Smart Lock</label>
+		<description>A LOQED Touch or LOQED Pure smart lock.</description>
+		<channels>
+			<channel id="lock" typeId="lock"/>
+			<channel id="bolt-state" typeId="bolt-state"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="battery-type" typeId="battery-type"/>
+			<channel id="party-mode" typeId="party-mode"/>
+			<channel id="guest-access" typeId="guest-access"/>
+			<channel id="twist-assist" typeId="twist-assist"/>
+			<channel id="touch-to-connect" typeId="touch-to-connect"/>
+		</channels>
+		<properties>
+			<property name="model"/>
+		</properties>
+		<representation-property>lockId</representation-property>
+		<config-description>
+			<parameter name="lockId" type="text" required="true">
+				<label>Lock ID</label>
+				<description>Unique lock identifier assigned by LOQED.</description>
+			</parameter>
+			<parameter name="keySecret" type="text">
+				<context>password</context>
+				<label>API Key Secret</label>
+				<description>Base64 key secret used to sign local commands. Required with a local bridge.</description>
+			</parameter>
+			<parameter name="localKeyId" type="integer" min="0" max="250">
+				<label>Local API Key ID</label>
+				<description>Numeric ID belonging to the local API key. Required with a local bridge.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<description>Locks the door with ON and unlocks it to day lock with OFF.</description>
+		<category>Door</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="bolt-state">
+		<item-type>String</item-type>
+		<label>Bolt State</label>
+		<description>Current bolt state. Send OPEN, DAY_LOCK, or NIGHT_LOCK to operate the lock.</description>
+		<category>Door</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="DAY_LOCK">Day Lock</option>
+				<option value="NIGHT_LOCK">Night Lock</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="DAY_LOCK">Day Lock</option>
+				<option value="NIGHT_LOCK">Night Lock</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="battery-type">
+		<item-type>String</item-type>
+		<label>Battery Type</label>
+		<description>Configured battery chemistry.</description>
+		<category>Battery</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="party-mode">
+		<item-type>Switch</item-type>
+		<label>Open House Mode</label>
+		<description>Indicates whether Open House (party) mode is enabled.</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="guest-access">
+		<item-type>Switch</item-type>
+		<label>Guest Access</label>
+		<description>Indicates whether guest access mode is enabled.</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="twist-assist">
+		<item-type>Switch</item-type>
+		<label>Twist Assist</label>
+		<description>Indicates whether twist assist is enabled.</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="touch-to-connect">
+		<item-type>Switch</item-type>
+		<label>Touch to Connect</label>
+		<description>Indicates whether the 500 m geofence restriction for Touch to Open is removed.</description>
+		<category>Door</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
