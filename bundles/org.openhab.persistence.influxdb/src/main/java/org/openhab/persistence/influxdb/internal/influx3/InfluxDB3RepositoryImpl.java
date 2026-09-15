@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -129,27 +130,31 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
             return false;
         }
 
-        String lineProtocolBody = influxPoints.stream().map(this::convertPointToLineProtocol)
-                .filter(Optional::isPresent).map(Optional::get).reduce((a, b) -> a + "\n" + b).orElse("");
+        String lineProtocolBody = influxPoints.stream().map(this::convertPointToLineProtocol).flatMap(Optional::stream)
+                .collect(Collectors.joining("\n"));
         if (lineProtocolBody.isEmpty()) {
             return true;
         }
 
-        HttpUrl url = HttpUrl.get(configuration.getUrl()).newBuilder().addPathSegments("api/v3/write_lp")
-                .addQueryParameter("db", configuration.getDatabaseName()).addQueryParameter("precision", "ms").build();
-        Request request = new Request.Builder().url(url).header("Authorization", "Bearer " + configuration.getToken())
-                .post(RequestBody.create(lineProtocolBody.getBytes(StandardCharsets.UTF_8), LINE_PROTOCOL_MEDIA_TYPE))
-                .build();
+        try {
+            HttpUrl url = HttpUrl.get(configuration.getUrl()).newBuilder().addPathSegments("api/v3/write_lp")
+                    .addQueryParameter("db", configuration.getDatabaseName()).addQueryParameter("precision", "ms")
+                    .addQueryParameter("accept_partial", "false").build();
+            Request request = new Request.Builder().url(url)
+                    .header("Authorization", "Bearer " + configuration.getToken()).post(RequestBody
+                            .create(lineProtocolBody.getBytes(StandardCharsets.UTF_8), LINE_PROTOCOL_MEDIA_TYPE))
+                    .build();
 
-        try (Response response = currentClient.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                ResponseBody body = response.body();
-                logger.debug("Writing to database failed, HTTP status {}: {}", response.code(),
-                        body != null ? body.string() : "");
-                return false;
+            try (Response response = currentClient.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    ResponseBody body = response.body();
+                    logger.debug("Writing to database failed, HTTP status {}: {}", response.code(),
+                            body != null ? body.string() : "");
+                    return false;
+                }
+                return true;
             }
-            return true;
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             logger.debug("Writing to database failed", e);
             return false;
         }
@@ -169,7 +174,13 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
      * instead would make the same field alternate between integer and float across writes, which InfluxDB 3's
      * strict per-field schema rejects as a schema conflict.
      */
-    private Optional<String> convertPointToLineProtocol(InfluxPoint point) {
+    Optional<String> convertPointToLineProtocol(InfluxPoint point) {
+        if (containsNewline(point.getMeasurementName()) || point.getTags().entrySet().stream()
+                .anyMatch(tag -> containsNewline(tag.getKey()) || containsNewline(tag.getValue()))) {
+            logger.warn("Measurement name or a tag contains a newline, discarding this datapoint: {}", point);
+            return Optional.empty();
+        }
+
         Optional<String> formattedValue = formatFieldValue(point.getValue());
         if (formattedValue.isEmpty()) {
             logger.warn("Could not convert {}, discarding this datapoint", point);
@@ -187,6 +198,9 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
 
     private Optional<String> formatFieldValue(@Nullable Object value) {
         if (value instanceof String string) {
+            if (containsNewline(string)) {
+                return Optional.empty();
+            }
             return Optional.of('"' + string.replace("\\", "\\\\").replace("\"", "\\\"") + '"');
         } else if (value instanceof BigDecimal bigDecimal) {
             return Optional.of(bigDecimal.toPlainString());
@@ -199,6 +213,10 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
         } else {
             return Optional.empty();
         }
+    }
+
+    private boolean containsNewline(String value) {
+        return value.indexOf('\n') >= 0 || value.indexOf('\r') >= 0;
     }
 
     private String escapeMeasurement(String value) {
@@ -221,21 +239,24 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
         String influxQlQuery = queryCreator.createQuery(filter, retentionPolicy, alias);
         logger.trace("Query {}", influxQlQuery);
 
-        HttpUrl url = HttpUrl.get(configuration.getUrl()).newBuilder().addPathSegments("api/v3/query_influxql")
-                .addQueryParameter("db", configuration.getDatabaseName()).addQueryParameter("q", influxQlQuery)
-                .addQueryParameter("format", "json").build();
-        Request request = new Request.Builder().url(url).header("Authorization", "Bearer " + configuration.getToken())
-                .get().build();
+        try {
+            HttpUrl url = HttpUrl.get(configuration.getUrl()).newBuilder().addPathSegments("api/v3/query_influxql")
+                    .addQueryParameter("db", configuration.getDatabaseName()).addQueryParameter("q", influxQlQuery)
+                    .addQueryParameter("format", "json").build();
+            Request request = new Request.Builder().url(url)
+                    .header("Authorization", "Bearer " + configuration.getToken()).get().build();
 
-        try (Response response = currentClient.newCall(request).execute()) {
-            ResponseBody responseBody = response.body();
-            String bodyString = responseBody != null ? responseBody.string() : "";
-            if (!response.isSuccessful()) {
-                logger.warn("Failed to execute query '{}': HTTP status {}: {}", filter, response.code(), bodyString);
-                return List.of();
+            try (Response response = currentClient.newCall(request).execute()) {
+                ResponseBody responseBody = response.body();
+                String bodyString = responseBody != null ? responseBody.string() : "";
+                if (!response.isSuccessful()) {
+                    logger.warn("Failed to execute query '{}': HTTP status {}: {}", filter, response.code(),
+                            bodyString);
+                    return List.of();
+                }
+                return parseQueryResult(bodyString, itemName);
             }
-            return parseQueryResult(bodyString, itemName);
-        } catch (IOException | JsonParseException e) {
+        } catch (IOException | JsonParseException | IllegalArgumentException e) {
             logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
             return List.of();
         }
