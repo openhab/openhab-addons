@@ -62,7 +62,7 @@
 
 	</thing-type>
 
-	<channel-group-type id="statistics">
+	<channel-group-type id="statistics" advanced="true">
 		<label>Statistics</label>
 		<description>Communication statistics reported by Z-Wave JS.</description>
 		<channels>
