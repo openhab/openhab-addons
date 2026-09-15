@@ -74,9 +74,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
 
     private final ReentrantLock lightModelsLock = new ReentrantLock();
 
-    private volatile boolean lightChannelsCreatedThisPass = false;
-    private volatile boolean forceLightChannelRefresh = false;
-
     /**
      * Enum to indicate what was updated by a channel command.
      */
@@ -137,10 +134,6 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             logger.trace("{}: updateDeviceStatus() called with {}", thingName, new Gson().toJson(status));
         }
 
-        boolean force = forceLightChannelRefresh;
-        forceLightChannelRefresh = false;
-        lightChannelsCreatedThisPass = false;
-
         boolean updated = false;
         LightModels models = acquire();
         try {
@@ -156,18 +149,14 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
                     lightModels.put(channelGroupSuffix, model);
                 }
                 updateLightModelFromStatus(model, light);
-                lightChannelsCreatedThisPass |= createLightChannels(light, apiLightIndex);
+                createLightChannels(light, apiLightIndex);
                 notifyColorTempStateDescriptionChanged(model);
                 updated |= updateChannelsFromLightStatusDTO(light, apiLightIndex, model.getChannelGroupSuffix());
             }
         } finally {
-            updated |= models.release(force);
-        }
-
-        if (lightChannelsCreatedThisPass) {
-            logger.debug("{}: updateDeviceStatus() channels created by refresh, scheduling second refresh", thingName);
-            forceLightChannelRefresh = true;
-            requestUpdates(1, false);
+            logger.debug("{}: releasing light models forced:{} after updateDeviceStatus()", thingName,
+                    !areChannelsCreated());
+            updated |= models.release(!areChannelsCreated());
         }
 
         return updated;

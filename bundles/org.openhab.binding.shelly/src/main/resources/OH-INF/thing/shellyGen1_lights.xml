@@ -318,6 +318,13 @@
 		<label>Brightness</label>
 	</channel-type>
 
+
+	<!-- whiteGain was wrongly used in prior versions; so this just keeps a basis for migration -->
+	<channel-type id="whiteGain">
+		<item-type>Dimmer</item-type>
+		<label>Legacy</label>
+	</channel-type>
+
 	<channel-type id="colorMain">
 		<item-type>Color</item-type>
 		<label>Color</label>
