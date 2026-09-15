@@ -135,8 +135,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         }
 
         boolean updated = false;
-        LightModels models = acquire();
-        try {
+        try (LightModels models = acquire()) {
+            models.setForceChannelUpdates(true);
             for (int apiLightIndex = 0; apiLightIndex < status.lights.size(); apiLightIndex++) {
                 ShellyStatusLightChannel light = status.lights.get(apiLightIndex);
                 int channelGroupSuffix = ShellyChannelDefinitions.deviceHasMainLight(thing, profile) //
@@ -151,12 +151,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
                 updateLightModelFromStatus(model, light);
                 createLightChannels(light, apiLightIndex);
                 notifyColorTempStateDescriptionChanged(model);
-                updated |= updateChannelsFromLightStatusDTO(light, apiLightIndex, model.getChannelGroupSuffix());
+                updateChannelsFromLightStatusDTO(light, apiLightIndex, model.getChannelGroupSuffix());
+                updated = true;
             }
-        } finally {
-            logger.debug("{}: releasing light models forced:{} after updateDeviceStatus()", thingName,
-                    !areChannelsCreated());
-            updated |= models.release(!areChannelsCreated());
         }
 
         return updated;
@@ -468,29 +465,29 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
      * PHASE 3: Updates the channels from the final light model state (read after write)
      *
      * @param model the light model to update
-     * @param forceUpdate if true, will push model state to all channels even if not dirty
+     * @param forceChannelUpdates if true, will push model state to all channels even if not dirty
      * @return true if any channel was updated, false otherwise
      */
-    public boolean updateChannelsFromLightModel(ShellyLightModel model, boolean forceUpdate) {
+    public boolean updateChannelsFromLightModel(ShellyLightModel model, boolean forceChannelUpdates) {
         logger.trace("{}: updateDirtyChannelsForLightModel({})", thingName, model);
         boolean updated = false;
         String group;
         int groupSuffix = model.getChannelGroupSuffix();
 
         // ON-OFF:
-        if ((model.supportsOnOffChannel()) && (forceUpdate || model.isOnOffDirty())) {
+        if ((model.supportsOnOffChannel()) && (forceChannelUpdates || model.isOnOffDirty())) {
             group = CHANNEL_GROUP_LIGHT_CONTROL;
             updated |= updateChannel(group, CHANNEL_LIGHT_POWER, model.getOnOffState());
         }
 
         // MODE:
-        if (forceUpdate || model.isModeDirty()) {
+        if (forceChannelUpdates || model.isModeDirty()) {
             group = CHANNEL_GROUP_LIGHT_CONTROL;
             updated |= updateChannel(group, CHANNEL_LIGHT_COLOR_MODE, model.getModeState());
         }
 
         // COLOR:
-        if (model.supportsColorChannel() && (forceUpdate || model.isColorDirty())) {
+        if (model.supportsColorChannel() && (forceChannelUpdates || model.isColorDirty())) {
             group = CHANNEL_GROUP_COLOR_CONTROL;
             updated |= updateChannel(group, CHANNEL_COLOR_RED, model.getColorState(R));
             updated |= updateChannel(group, CHANNEL_COLOR_GREEN, model.getColorState(G));
@@ -504,25 +501,25 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         }
 
         // GAIN:
-        if (model.supportsGainChannel() && (forceUpdate || model.isGainDirty())) {
+        if (model.supportsGainChannel() && (forceChannelUpdates || model.isGainDirty())) {
             group = CHANNEL_GROUP_COLOR_CONTROL;
             updated |= updateChannel(group, CHANNEL_COLOR_GAIN, model.getGainState());
         }
 
         // EFFECT:
-        if (model.supportsEffectChannel() && (forceUpdate || model.isEffectDirty())) {
+        if (model.supportsEffectChannel() && (forceChannelUpdates || model.isEffectDirty())) {
             group = CHANNEL_GROUP_COLOR_CONTROL;
             updated |= updateChannel(group, CHANNEL_COLOR_EFFECT, model.getEffectState());
         }
 
         // BRIGHTNESS:
-        if (model.supportsBrightnessChannel() && (forceUpdate || model.isBrightnessDirty())) {
+        if (model.supportsBrightnessChannel() && (forceChannelUpdates || model.isBrightnessDirty())) {
             group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
         }
 
         // COLOR TEMP:
-        if (model.supportsColorTempChannel() && (forceUpdate || model.isColorTempDirty())) {
+        if (model.supportsColorTempChannel() && (forceChannelUpdates || model.isColorTempDirty())) {
             group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP_PCT, model.getColorTemperaturePercentState());
             updated |= updateChannel(group, CHANNEL_COLOR_TEMP, model.getColorTemperatureAbsoluteState());
@@ -546,6 +543,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
      * ensures that they can only be accessed by one thread at a time.
      */
     private final class LightModelsImpl implements LightModels {
+        boolean forceChannelUpdates = false;
 
         @Override
         public @Nullable ShellyLightModel getByApiLightIndex(int apiLightIndex) {
@@ -563,14 +561,17 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         }
 
         @Override
-        public boolean release(boolean force) {
+        public void setForceChannelUpdates(boolean forceChannelUpdates) {
+            this.forceChannelUpdates = forceChannelUpdates;
+        }
+
+        @Override
+        public void close() {
             try {
-                boolean result = false;
                 for (ShellyLightModel model : lightModels.values()) {
-                    result |= model.release(force);
+                    model.release(forceChannelUpdates);
                 }
                 logger.debug("{}: all light models released", thingName);
-                return result;
             } finally {
                 lightModelsLock.unlock();
             }
@@ -663,5 +664,11 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         if (channel != null) {
             stateDescriptionProvider.notifyStateDescriptionUpdated(channel);
         }
+    }
+
+    @Override
+    public void dispose() {
+        lightModels.clear();
+        super.dispose();
     }
 }

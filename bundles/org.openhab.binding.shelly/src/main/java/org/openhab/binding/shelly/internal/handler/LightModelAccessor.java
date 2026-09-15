@@ -53,17 +53,16 @@ public interface LightModelAccessor {
         ShellyLightModel getByChannelGroupSuffix(int channelGroupSuffix);
 
         /**
-         * Releases the lock and pushes dirty model state to channels.
-         *
-         * Equivalent to {@link #close()} but returns whether anything was updated.
-         * 
-         * @param forceUpdate if true, will push all model state to channels even if not dirty
+         * Determines whether channel updates shall be forced to be sent even if their
+         * value has not changed.
          */
-        boolean release(boolean forceUpdate);
+        void setForceChannelUpdates(boolean forceChannelUpdates);
 
+        /**
+         * AutoCloseable try-with-resources must release the lock and, if forceChannelUpdates is false
+         * must push dirty model state to channels, or if it is true must push the state of all channels.
+         */
         @Override
-        default void close() {
-            release(false);
-        }
+        void close();
     }
 }
