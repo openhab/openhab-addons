@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.core.thing.CommonTriggerEvents;
 
 import com.google.gson.annotations.SerializedName;
@@ -837,6 +839,12 @@ public class Shelly1ApiJsonDTO {
         public Boolean calibrated;
         public ArrayList<ShellyThermnostat> thermostats;
 
+        // Shelly Wall Display
+        public @Nullable Boolean relayInThermostat;
+        public @Nullable Boolean sensorInThermostat;
+        public @Nullable Shelly2DeviceStatusMedia media;
+        public @Nullable Shelly2DeviceStatusThermostat thermostat;
+
         public ShellySettingsUpdate update = new ShellySettingsUpdate();
         @SerializedName("ram_total")
         public Long ramTotal;
@@ -1189,6 +1197,7 @@ public class Shelly1ApiJsonDTO {
         public ShellySensorLux lux;
         public ShellySensorAccel accel;
         public ShellySensorBat bat;
+        public ShellySensorBat bat1; // 2nd power source, e.g. devicepower:1
         @SerializedName("sensor")
         public ShellySensorState sensor;
         public Boolean smoke; // SHelly Smoke
