@@ -394,23 +394,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // New Shelly devices might use a different endpoint for the CoAP listener
             tmpPrf.coiotEndpoint = tmpPrf.device.coiot;
         }
-        if (tmpPrf.settings.sleepMode != null && !tmpPrf.isTRV) {
-            // Sensor, usually 12h, H&T in USB mode 10min
-            tmpPrf.updatePeriod = "m".equalsIgnoreCase(getString(tmpPrf.settings.sleepMode.unit))
-                    ? tmpPrf.settings.sleepMode.period * 60 // minutes
-                    : tmpPrf.settings.sleepMode.period * 3600; // hours
-            if (tmpPrf.isSmoke) {
-                tmpPrf.updatePeriod += 1800; // for smoke sensor give 30min extra
-            } else {
-                tmpPrf.updatePeriod += 60; // give 1min extra
-            }
-        } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
-            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
-            tmpPrf.updatePeriod = 2 * //
-                    Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
-        } else {
-            tmpPrf.updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
-        }
+        tmpPrf.updateWatchdogPeriod();
 
         tmpPrf.status = api.getStatus(); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
@@ -653,6 +637,22 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
             skipUpdate++;
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
+                if (!refreshSettings && (scheduledUpdates == 0) && !profile.alwaysOn && profile.isInitialized()) {
+                    // Sleep device: skip the periodic active poll, it's a guaranteed miss while the device is
+                    // asleep. Its own wakeup push (WS NotifyStatus/NotifyFullStatus, or Gen1 CoIoT) already
+                    // restores ONLINE and resets the watchdog independently of this poll loop.
+                    // The poll is the only caller of handleApiException(), which is where a non-sleep device's
+                    // watchdog expiry is detected - so the missed-wakeup check has to run here too, otherwise a
+                    // device with a flat battery / out of range / removed would stay ONLINE with stale values.
+                    if (isWatchdogExpired()) {
+                        logger.debug("{}: Device missed its wakeup window, going offline", thingName);
+                        setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
+                                "offline.status-error-watchdog");
+                    } else {
+                        logger.trace("{}: Sleep device, skip periodic poll, waiting for next wakeup", thingName);
+                    }
+                    return;
+                }
                 ThingStatus thingStatus = getThing().getStatus();
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
                         || (getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING)) {
@@ -718,6 +718,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
         updateMarkerSet = false;
+        if (stopping) {
+            return;
+        }
         super.updateStatus(status, statusDetail, description);
     }
 
@@ -866,7 +869,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         api.close(); // Gen2: disconnect WS/close http sessions
         watchdog = 0;
-        profile.initialized = false; // force full re-init (incl. asyncApiRequest) on next reconnect
+        if (profile.alwaysOn) {
+            // Force full re-init (incl. asyncApiRequest re-arm) on next reconnect. Battery/sleeping devices have
+            // no persistent connection to reconnect, so resetting this here only made initializeThing() treat
+            // every watchdog-expiry as an uninitialized thing and flip it to CONFIGURATION_PENDING until the
+            // device's next scheduled wakeup cleared it again.
+            profile.initialized = false;
+        }
         channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
     }
 
