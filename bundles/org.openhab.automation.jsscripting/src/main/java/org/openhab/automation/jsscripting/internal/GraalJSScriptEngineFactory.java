@@ -102,13 +102,14 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
             Engine engine;
             try {
                 engine = engineBuilder.build();
+                logger.info("Debugger support is enabled for JavaScript Scripting on port {}.",
+                        configuration.getDebuggerPort());
             } catch (RuntimeException e) {
                 logger.error(
                         "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
                         e);
                 engine = createEngineBuilder().build();
             }
-            logger.info("Debugger support is enabled for JavaScript Scripting.");
             this.engine = engine;
         } else {
             this.engine = createEngineBuilder().build();
