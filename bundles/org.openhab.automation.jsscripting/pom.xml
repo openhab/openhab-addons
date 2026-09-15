@@ -73,7 +73,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- bundle openhab-js -->
+
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
@@ -152,20 +152,6 @@
         <configuration>
           <pmdFilter>${project.basedir}/suppressions.properties</pmdFilter>
         </configuration>
-      </plugin>
-      <!-- disable per-bundle Karaf feature verification -->
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karaf.version}</version>
-        <executions>
-          <execution>
-            <id>karaf-feature-verification</id>
-            <!-- disabled for the per-bundle build due to requiring jdk.internal.misc -->
-            <!-- it will be verified in features/openhab-addons/pom.xml where a custom Karaf config is used -->
-            <phase>none</phase>
-          </execution>
-        </executions>
       </plugin>
       <!-- workaround for failing clean of checked out git repo breaking the Windows build, #19250 -->
       <plugin>
