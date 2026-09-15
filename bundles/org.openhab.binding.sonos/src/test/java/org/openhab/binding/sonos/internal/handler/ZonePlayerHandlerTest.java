@@ -14,12 +14,14 @@ package org.openhab.binding.sonos.internal.handler;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.sonos.internal.SonosBindingConstants.ZONEPLAYER_THING_TYPE_UID;
 
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,6 +56,7 @@ public class ZonePlayerHandlerTest {
     private @Mock @NonNullByDefault({}) SonosStateDescriptionOptionProvider stateDescriptionProvider;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
 
+    private final AtomicBoolean registered = new AtomicBoolean(true);
     private @Nullable ZonePlayerHandler handler;
 
     @AfterEach
@@ -72,19 +75,35 @@ public class ZonePlayerHandlerTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     public void zonePlayerOfUnknownModelKeepsItsThingType() {
         initializeZonePlayerReporting("/descriptor-unknown.xml");
 
         verify(callback, never()).migrateThingType(any(), any(), any());
     }
 
+    @Test
+    @SuppressWarnings("null")
+    public void zonePlayerRegisteredAfterInitializeSwitchesOnTheNextPoll() {
+        registered.set(false);
+        when(upnpIOService.isRegistered(any(UpnpIOParticipant.class))).thenAnswer(invocation -> registered.get());
+        Thing thing = initializeZonePlayerReporting("/descriptor-play5.xml");
+        verify(callback, never()).migrateThingType(any(), any(), any());
+
+        registered.set(true);
+
+        verify(callback, timeout(5000)).migrateThingType(thing, new ThingTypeUID("sonos", "PLAY5"),
+                thing.getConfiguration());
+    }
+
     private Thing initializeZonePlayerReporting(String descriptor) {
         URL descriptorUrl = getClass().getResource(descriptor);
         when(upnpIOService.getDescriptorURL(any(UpnpIOParticipant.class))).thenAnswer(
-                invocation -> UDN.equals(invocation.<UpnpIOParticipant> getArgument(0).getUDN()) ? descriptorUrl
+                invocation -> registered.get() && UDN.equals(invocation.<UpnpIOParticipant> getArgument(0).getUDN())
+                        ? descriptorUrl
                         : null);
         Thing thing = ThingBuilder.create(ZONEPLAYER_THING_TYPE_UID, "test")
-                .withConfiguration(new Configuration(Map.of("udn", UDN))).build();
+                .withConfiguration(new Configuration(Map.of("udn", UDN, "refresh", 1))).build();
         ZonePlayerHandler handler = new ZonePlayerHandler(thingRegistry, thing, upnpIOService, null,
                 stateDescriptionProvider);
         handler.setCallback(callback);

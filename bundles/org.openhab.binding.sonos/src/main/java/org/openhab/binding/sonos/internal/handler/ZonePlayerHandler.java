@@ -186,6 +186,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private @Nullable ScheduledFuture<?> pollingJob;
+    private boolean modelLookedUp;
     private @Nullable SonosZonePlayerState savedState;
 
     private Map<String, Boolean> subscriptionState = new HashMap<>();
@@ -233,8 +234,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
         configuration = getConfigAs(ZonePlayerConfiguration.class);
 
-        if (migrateThingType()) {
+        modelLookedUp = false;
+        ThingTypeUID modelThingTypeUID = lookUpModelThingType();
+        if (modelThingTypeUID != null) {
             // we change the type, so we might need a different handler -> let's finish
+            changeThingType(modelThingTypeUID, getConfig());
             return;
         }
 
@@ -265,6 +269,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                             "@text/offline.upnp-device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
+                    }
+                    return;
+                }
+
+                ThingTypeUID modelThingTypeUID = lookUpModelThingType();
+                if (modelThingTypeUID != null) {
+                    // dispose() may have run while the descriptor was fetched
+                    if (pollingJob != null) {
+                        changeThingType(modelThingTypeUID, getConfig());
                     }
                     return;
                 }
@@ -3321,16 +3334,16 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    private boolean migrateThingType() {
-        if (getThing().getThingTypeUID().equals(ZONEPLAYER_THING_TYPE_UID)) {
-            String modelName = getModelNameFromDescriptor();
-            ThingTypeUID modelThingTypeUID = modelName == null ? null : findSupportedThingType(modelName);
-            if (modelThingTypeUID != null) {
-                changeThingType(modelThingTypeUID, getConfig());
-                return true;
-            }
+    private @Nullable ThingTypeUID lookUpModelThingType() {
+        if (modelLookedUp || !getThing().getThingTypeUID().equals(ZONEPLAYER_THING_TYPE_UID)) {
+            return null;
         }
-        return false;
+        String modelName = getModelNameFromDescriptor();
+        if (modelName == null) {
+            return null;
+        }
+        modelLookedUp = true;
+        return findSupportedThingType(modelName);
     }
 
     private @Nullable ThingTypeUID findSupportedThingType(String modelName) {
