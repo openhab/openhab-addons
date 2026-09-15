@@ -48,7 +48,7 @@
 		<description>A Z-Wave node provided by Z-Wave JS.</description>
 
 		<channel-groups>
-			<channel-group id="statistics" typeId="statistics"/>
+			<channel-group id="statistics" typeId="statistics" advanced="true"/>
 		</channel-groups>
 
 		<representation-property>id</representation-property>
@@ -62,7 +62,7 @@
 
 	</thing-type>
 
-	<channel-group-type id="statistics" advanced="true">
+	<channel-group-type id="statistics">
 		<label>Statistics</label>
 		<description>Communication statistics reported by Z-Wave JS.</description>
 		<channels>
