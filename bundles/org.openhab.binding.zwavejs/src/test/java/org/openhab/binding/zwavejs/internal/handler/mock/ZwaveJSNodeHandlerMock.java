@@ -19,6 +19,7 @@ import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -119,6 +120,15 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
         }).when(executorService).execute(any(Runnable.class));
+
+        doAnswer((InvocationOnMock invocation) -> {
+            ((Runnable) invocation.getArguments()[0]).run();
+            return mock(ScheduledFuture.class);
+        }).when(executorService).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+    }
+
+    public void setExecutorService(ScheduledExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public boolean isLinked(ChannelUID channelUID) {
