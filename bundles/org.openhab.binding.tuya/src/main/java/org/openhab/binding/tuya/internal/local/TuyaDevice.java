@@ -304,9 +304,11 @@ public class TuyaDevice implements ChannelFutureListener {
      * reply the {@link ResponseTimeoutHandler} waits for, and the status is queried again later. The interval doubles
      * with every refusal.
      *
-     * A device that reports a status, its own or that of one of its sub-devices, is answering queries and is left
-     * alone for the rest of the connection. Gateways in particular refuse to report themselves while they serve their
-     * sub-devices, and querying them over and over only costs connections.
+     * A device that reports data points, its own or those of one of its sub-devices, is answering queries and is
+     * left alone for the rest of the connection. Gateways in particular refuse to report themselves while they serve
+     * their sub-devices, and querying them over and over only costs connections. A status without data points does
+     * not count: a device that refuses DP_QUERY answers the CONTROL query with an empty status and still has nothing
+     * to report.
      */
     static class DpQueryRefusalHandler extends ChannelDuplexHandler {
         private final List<MessageWrapper<?>> statusQuery;
@@ -334,12 +336,12 @@ public class TuyaDevice implements ChannelFutureListener {
         @Override
         public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
             if (ctx != null) {
-                if (msg instanceof MessageWrapper<?> m
-                        && (m.commandType == DP_QUERY || m.commandType == DP_QUERY_NEW)) {
-                    if (m.content instanceof TcpStatusPayload) {
+                if (msg instanceof MessageWrapper<?> m) {
+                    if (m.content instanceof TcpStatusPayload payload && reportsDataPoints(payload)) {
                         statusReported = true;
                         cancelRetry();
-                    } else if (m.content instanceof RequestRefusal && !statusReported) {
+                    } else if (m.content instanceof RequestRefusal && !statusReported
+                            && (m.commandType == DP_QUERY || m.commandType == DP_QUERY_NEW)) {
                         Channel channel = ctx.channel();
                         channel.writeAndFlush(probe);
                         if (retry == null) {
@@ -354,6 +356,11 @@ public class TuyaDevice implements ChannelFutureListener {
 
                 super.channelRead(ctx, msg);
             }
+        }
+
+        private static boolean reportsDataPoints(TcpStatusPayload payload) {
+            // Protocol 3.4 and 3.5 wrap the data points of a status in "data"
+            return !(payload.protocol == 4 ? payload.data.dps : payload.dps).isEmpty();
         }
 
         private void cancelRetry() {

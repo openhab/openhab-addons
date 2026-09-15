@@ -54,6 +54,13 @@ public class DpQueryRefusalHandlerTest {
         return new TuyaDevice.DpQueryRefusalHandler(List.of(DP_QUERY, STATUS_QUERY), PROBE);
     }
 
+    private static TcpStatusPayload status(String subDeviceId) {
+        TcpStatusPayload payload = new TcpStatusPayload();
+        payload.cid = subDeviceId;
+        payload.dps = Map.of(1, Boolean.TRUE);
+        return payload;
+    }
+
     private static MessageWrapper<?> refusal(CommandType commandType) {
         return new MessageWrapper<>(commandType, new RequestRefusal("json obj data unvalid"));
     }
@@ -116,7 +123,7 @@ public class DpQueryRefusalHandlerTest {
     public void refusedStatusQueryIsRetriedWithDoublingInterval() {
         EmbeddedChannel channel = channel(refusalHandler());
 
-        for (long interval : new long[] { 1000, 2000, 4000, 8000, 16000, 32000, 60000, 60000 }) {
+        for (long interval : new long[] { 2000, 4000, 8000, 16000, 32000, 60000, 60000 }) {
             channel.writeInbound(refusal(CommandType.DP_QUERY));
             assertHeartbeatSent(channel);
 
@@ -135,13 +142,13 @@ public class DpQueryRefusalHandlerTest {
         channel.writeInbound(refusal(CommandType.DP_QUERY));
         assertHeartbeatSent(channel);
 
-        channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY, new TcpStatusPayload()));
-        pass(channel, 1000);
+        channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY, status("")));
+        pass(channel, 2000);
         assertNull(channel.readOutbound());
 
         // The device answers queries, so a later refusal is its answer for data points it does not report
         channel.writeInbound(refusal(CommandType.DP_QUERY));
-        pass(channel, 1000);
+        pass(channel, 2000);
         assertNull(channel.readOutbound());
         channel.finishAndReleaseAll();
     }
@@ -149,16 +156,42 @@ public class DpQueryRefusalHandlerTest {
     @Test
     public void reportedSubDeviceStatusStopsRetries() {
         EmbeddedChannel channel = channel(refusalHandler());
-        TcpStatusPayload subDeviceStatus = new TcpStatusPayload();
-        subDeviceStatus.cid = "e0f6bf69791fc50c";
 
         channel.writeInbound(refusal(CommandType.DP_QUERY));
         assertHeartbeatSent(channel);
         // A gateway serving its sub-devices is answering queries even if it never reports itself
-        channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY_NEW, subDeviceStatus));
-        pass(channel, 1000);
+        channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY_NEW, status("e0f6bf69791fc50c")));
+        pass(channel, 2000);
 
         assertNull(channel.readOutbound());
+        channel.finishAndReleaseAll();
+    }
+
+    @Test
+    public void statusMessageStopsRetries() {
+        EmbeddedChannel channel = channel(refusalHandler());
+
+        channel.writeInbound(refusal(CommandType.DP_QUERY));
+        assertHeartbeatSent(channel);
+        // A device reports on its own initiative with STATUS rather than in reply to a query
+        channel.writeInbound(new MessageWrapper<>(CommandType.STATUS, status("")));
+        pass(channel, 2000);
+
+        assertNull(channel.readOutbound());
+        channel.finishAndReleaseAll();
+    }
+
+    @Test
+    public void emptyStatusDoesNotStopRetries() {
+        EmbeddedChannel channel = channel(refusalHandler());
+
+        channel.writeInbound(refusal(CommandType.DP_QUERY));
+        assertHeartbeatSent(channel);
+        // An infrared controller acknowledges the CONTROL query with a status that reports nothing at all
+        channel.writeInbound(new MessageWrapper<>(CommandType.STATUS, new TcpStatusPayload()));
+        pass(channel, 2000);
+
+        assertStatusQuerySent(channel);
         channel.finishAndReleaseAll();
     }
 
@@ -167,7 +200,7 @@ public class DpQueryRefusalHandlerTest {
         EmbeddedChannel channel = channel(refusalHandler());
 
         channel.writeInbound(refusal(CommandType.CONTROL));
-        pass(channel, 1000);
+        pass(channel, 2000);
 
         assertNull(channel.readOutbound());
         channel.finishAndReleaseAll();
