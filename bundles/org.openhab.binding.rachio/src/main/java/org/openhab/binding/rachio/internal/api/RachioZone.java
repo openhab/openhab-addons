@@ -1,0 +1,231 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.rachio.internal.api;
+
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
+import org.openhab.binding.rachio.internal.handler.RachioZoneHandler;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ThingUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * {@link RachioZone} stores zone state and Thing linkage for one Rachio irrigation zone.
+ *
+ * @author Markus Michels - Initial contribution
+ */
+@NonNullByDefault
+public class RachioZone extends RachioCloudZone {
+    private final Logger logger = LoggerFactory.getLogger(RachioZone.class);
+    private volatile @Nullable ThingUID devUID;
+    private volatile @Nullable ThingUID zoneUID;
+    private volatile @Nullable RachioZoneHandler thingHandler;
+    private final String uniqueId;
+
+    private volatile int startRunTime = 0;
+    private volatile String lastEvent = "";
+    private volatile @Nullable DateTimeType lastEventTime;
+    private volatile double moistureLevel = Double.NaN;
+    private volatile double moisturePercent = Double.NaN;
+    private String imageDownloadUrl = "";
+
+    /**
+     * Create a zone from the state returned by the Rachio Cloud API.
+     *
+     * @param zone cloud zone state
+     * @param uniqueId unique controller identifier used by the image servlet
+     */
+    public RachioZone(RachioCloudZone zone, String uniqueId) {
+        id = safeString(zone.id);
+        if (id.isBlank()) {
+            throw new IllegalArgumentException("Rachio zone ID is missing");
+        }
+        zoneNumber = zone.zoneNumber;
+        name = safeString(zone.name);
+        enabled = zone.enabled;
+        availableWater = zone.availableWater;
+        rootZoneDepth = zone.rootZoneDepth;
+        managementAllowedDepletion = zone.managementAllowedDepletion;
+        efficiency = zone.efficiency;
+        yardAreaSquareFeet = zone.yardAreaSquareFeet;
+        imageUrl = safeString(zone.imageUrl);
+        lastWateredDate = zone.lastWateredDate;
+        scheduleDataModified = zone.scheduleDataModified;
+        fixedRuntime = zone.fixedRuntime;
+        saturatedDepthOfWater = zone.saturatedDepthOfWater;
+        depthOfWater = zone.depthOfWater;
+        maxRuntime = zone.maxRuntime;
+        runtimeNoMultiplier = zone.runtimeNoMultiplier;
+        runtime = zone.runtime;
+        imageDownloadUrl = imageUrl;
+        if (imageUrl.startsWith(SERVLET_IMAGE_URL_BASE)) {
+            // Rachio omits both the extension and the media type for these image URLs, so route them through the local
+            // servlet while retaining the original URL for direct channel downloads.
+            String uri = imageUrl.substring(imageUrl.lastIndexOf("/"));
+            if (!uri.isEmpty()) {
+                imageUrl = SERVLET_IMAGE_PATH + uri;
+                logger.trace("Zone image URL rewritten to local image servlet path for zone '{}'", name);
+            }
+        }
+
+        this.uniqueId = uniqueId;
+        logger.trace("Zone '{}' (number={}, id={}, enable={}) initialized.", name, zoneNumber, id, enabled);
+    }
+
+    private static String safeString(@Nullable String value) {
+        return value != null ? value : "";
+    }
+
+    public void setThingHandler(RachioZoneHandler zoneHandler) {
+        thingHandler = zoneHandler;
+    }
+
+    public @Nullable RachioZoneHandler getThingHandler() {
+        return thingHandler;
+    }
+
+    public synchronized boolean compare(@Nullable RachioZone czone) {
+        if (czone == null || !name.equals(czone.name) || zoneNumber != czone.zoneNumber || enabled != czone.enabled
+                || availableWater != czone.availableWater || efficiency != czone.efficiency
+                || lastWateredDate < czone.lastWateredDate || depthOfWater != czone.depthOfWater
+                || saturatedDepthOfWater != czone.saturatedDepthOfWater
+                || managementAllowedDepletion != czone.managementAllowedDepletion
+                || rootZoneDepth != czone.rootZoneDepth || yardAreaSquareFeet != czone.yardAreaSquareFeet
+                || scheduleDataModified != czone.scheduleDataModified || fixedRuntime != czone.fixedRuntime
+                || maxRuntime != czone.maxRuntime || runtimeNoMultiplier != czone.runtimeNoMultiplier
+                || runtime != czone.runtime || !imageUrl.equals(czone.imageUrl)
+                || !imageDownloadUrl.equals(czone.imageDownloadUrl)) {
+            return false;
+        }
+        return true;
+    }
+
+    public synchronized void update(RachioZone updatedZone) {
+        if (!id.equalsIgnoreCase(updatedZone.id)) {
+            return;
+        }
+        name = updatedZone.name;
+        zoneNumber = updatedZone.zoneNumber;
+        enabled = updatedZone.enabled;
+        availableWater = updatedZone.availableWater;
+        efficiency = updatedZone.efficiency;
+        saturatedDepthOfWater = updatedZone.saturatedDepthOfWater;
+        managementAllowedDepletion = updatedZone.managementAllowedDepletion;
+        rootZoneDepth = updatedZone.rootZoneDepth;
+        yardAreaSquareFeet = updatedZone.yardAreaSquareFeet;
+        depthOfWater = updatedZone.depthOfWater;
+        fixedRuntime = updatedZone.fixedRuntime;
+        maxRuntime = updatedZone.maxRuntime;
+        runtimeNoMultiplier = updatedZone.runtimeNoMultiplier;
+        scheduleDataModified = updatedZone.scheduleDataModified;
+        runtime = updatedZone.runtime;
+        // A webhook can be newer than the cloud snapshot that triggered this refresh.
+        lastWateredDate = Math.max(lastWateredDate, updatedZone.lastWateredDate);
+        imageUrl = updatedZone.imageUrl;
+        imageDownloadUrl = updatedZone.imageDownloadUrl;
+    }
+
+    public synchronized void recordLastWateredDate(long wateredDate) {
+        lastWateredDate = Math.max(lastWateredDate, wateredDate);
+    }
+
+    public void setUID(@Nullable ThingUID deviceUID, @Nullable ThingUID zoneUID) {
+        this.devUID = deviceUID;
+        this.zoneUID = zoneUID;
+    }
+
+    public @Nullable ThingUID getUID() {
+        return zoneUID;
+    }
+
+    public @Nullable ThingUID getDevUID() {
+        return devUID;
+    }
+
+    public String getThingID() {
+        // build thing name like rachio_zone_1_74C63B174B7B_7
+        return uniqueId + "-" + zoneNumber;
+    }
+
+    public Map<String, String> fillProperties() {
+        Map<String, String> properties = new HashMap<>();
+        properties.put(PROPERTY_NAME, name);
+        properties.put(PROPERTY_ZONE_ID, id);
+        return properties;
+    }
+
+    synchronized RachioDiscoverySnapshot.ZoneSnapshot discoverySnapshot() {
+        return new RachioDiscoverySnapshot.ZoneSnapshot(id, name, getThingID(), zoneNumber, enabled, fillProperties());
+    }
+
+    public String getImageDownloadUrl() {
+        return imageDownloadUrl.isBlank() ? imageUrl : imageDownloadUrl;
+    }
+
+    public OnOffType getEnabled() {
+        return enabled ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    public synchronized void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setStartRunTime(int runtime) {
+        startRunTime = runtime;
+    }
+
+    public int getStartRunTime() {
+        return startRunTime;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public synchronized void setEvent(String event, DateTimeType ts) {
+        lastEvent = event;
+        lastEventTime = ts;
+    }
+
+    public String getEvent() {
+        return lastEvent;
+    }
+
+    public @Nullable DateTimeType getEventTime() {
+        return lastEventTime;
+    }
+
+    public void setMoistureLevel(double moistureLevel) {
+        this.moistureLevel = moistureLevel;
+    }
+
+    public double getMoistureLevel() {
+        return moistureLevel;
+    }
+
+    public void setMoisturePercent(double moisturePercent) {
+        this.moisturePercent = moisturePercent;
+    }
+
+    public double getMoisturePercent() {
+        return moisturePercent;
+    }
+}
