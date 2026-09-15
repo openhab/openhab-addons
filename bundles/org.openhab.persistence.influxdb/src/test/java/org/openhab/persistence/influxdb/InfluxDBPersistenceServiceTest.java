@@ -74,6 +74,19 @@ public class InfluxDBPersistenceServiceTest {
             DATABASE_PARAM, "openhab", //
             RETENTION_POLICY_PARAM, "default");
 
+    private static final Map<String, Object> VALID_V3_CONFIGURATION = Map.of( //
+            URL_PARAM, "http://localhost:8181", //
+            VERSION_PARAM, InfluxDBVersion.V3.name(), //
+            TOKEN_PARAM, "sampletoken", //
+            DATABASE_PARAM, "openhab", //
+            RETENTION_POLICY_PARAM, "default");
+
+    private static final Map<String, Object> INVALID_V3_CONFIGURATION = Map.of( //
+            URL_PARAM, "http://localhost:8181", //
+            VERSION_PARAM, InfluxDBVersion.V3.name(), //
+            DATABASE_PARAM, "openhab", //
+            RETENTION_POLICY_PARAM, "default");
+
     private @Mock @NonNullByDefault({}) InfluxDBRepository influxDBRepositoryMock;
 
     private final InfluxDBMetadataService influxDBMetadataService = new InfluxDBMetadataService(
@@ -92,6 +105,12 @@ public class InfluxDBPersistenceServiceTest {
     }
 
     @Test
+    public void activateWithValidV3ConfigShouldConnectRepository() {
+        getService(VALID_V3_CONFIGURATION);
+        verify(influxDBRepositoryMock).connect();
+    }
+
+    @Test
     public void activateWithInvalidV1ConfigShouldFail() {
         assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V1_CONFIGURATION));
     }
@@ -99,6 +118,11 @@ public class InfluxDBPersistenceServiceTest {
     @Test
     public void activateWithInvalidV2ShouldFail() {
         assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V2_CONFIGURATION));
+    }
+
+    @Test
+    public void activateWithInvalidV3ShouldFail() {
+        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V3_CONFIGURATION));
     }
 
     @Test
