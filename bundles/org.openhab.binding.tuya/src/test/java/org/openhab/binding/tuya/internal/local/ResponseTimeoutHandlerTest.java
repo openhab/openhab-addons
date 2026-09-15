@@ -13,6 +13,8 @@
 package org.openhab.binding.tuya.internal.local;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_MESSAGE_RESPONSE;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_PROBE_RESPONSE;
@@ -49,6 +51,20 @@ public class ResponseTimeoutHandlerTest {
         channel.runScheduledPendingTasks();
     }
 
+    private void letProbeTimeoutPass(EmbeddedChannel channel) {
+        channel.advanceTimeBy(TCP_CONNECTION_PROBE_RESPONSE + 1, TimeUnit.MILLISECONDS);
+        channel.runScheduledPendingTasks();
+    }
+
+    private void assertProbeSent(EmbeddedChannel channel) {
+        // the messages the test wrote itself are still queued, the probe is the one sent last
+        Object last = null;
+        for (Object sent = channel.readOutbound(); sent != null; sent = channel.readOutbound()) {
+            last = sent;
+        }
+        assertSame(PROBE, last);
+    }
+
     @Test
     public void acknowledgedCommandKeepsTheConnection() {
         EmbeddedChannel channel = channel();
@@ -68,6 +84,10 @@ public class ResponseTimeoutHandlerTest {
 
         channel.writeOutbound(new MessageWrapper<>(CommandType.CONTROL_NEW, Map.of("dps", Map.of(1, true))));
         letResponseTimeoutPass(channel);
+        // the device is asked whether it is still there before the connection is given up on
+        assertTrue(channel.isOpen());
+        assertProbeSent(channel);
+        letProbeTimeoutPass(channel);
 
         assertFalse(channel.isOpen());
     }
@@ -81,6 +101,10 @@ public class ResponseTimeoutHandlerTest {
         // status, and only a new connection recovers it
         channel.writeInbound(new MessageWrapper<>(CommandType.CONTROL, ""));
         letResponseTimeoutPass(channel);
+        // the device is asked whether it is still there before the connection is given up on
+        assertTrue(channel.isOpen());
+        assertProbeSent(channel);
+        letProbeTimeoutPass(channel);
 
         assertFalse(channel.isOpen());
     }
@@ -105,6 +129,10 @@ public class ResponseTimeoutHandlerTest {
         // A battery device woken too early refuses DP_QUERY and ignores the CONTROL; only a new connection recovers it
         channel.writeInbound(new MessageWrapper<>(CommandType.DP_QUERY, new RequestRefusal("json obj data unvalid")));
         letResponseTimeoutPass(channel);
+        // the device is asked whether it is still there before the connection is given up on
+        assertTrue(channel.isOpen());
+        assertProbeSent(channel);
+        letProbeTimeoutPass(channel);
 
         assertFalse(channel.isOpen());
     }
@@ -119,8 +147,7 @@ public class ResponseTimeoutHandlerTest {
         // A gateway relaying the traffic of its sub-devices may take longer than the usual response timeout
         assertTrue(channel.isOpen());
 
-        channel.advanceTimeBy(TCP_CONNECTION_PROBE_RESPONSE - TCP_CONNECTION_MESSAGE_RESPONSE, TimeUnit.MILLISECONDS);
-        channel.runScheduledPendingTasks();
+        letProbeTimeoutPass(channel);
 
         assertFalse(channel.isOpen());
     }
@@ -136,5 +163,34 @@ public class ResponseTimeoutHandlerTest {
 
         assertTrue(channel.isOpen());
         channel.finishAndReleaseAll();
+    }
+
+    @Test
+    public void connectionCheckedAfterTheTimeoutKeepsTheConnection() {
+        EmbeddedChannel channel = channel();
+
+        channel.writeOutbound(new MessageWrapper<>(CommandType.CONTROL_NEW, Map.of("dps", Map.of(1, true))));
+        letResponseTimeoutPass(channel);
+        assertProbeSent(channel);
+
+        // The device was only slow to answer, so the connection is kept
+        channel.writeInbound(new MessageWrapper<>(CommandType.HEART_BEAT, ""));
+        letProbeTimeoutPass(channel);
+
+        assertTrue(channel.isOpen());
+        channel.finishAndReleaseAll();
+    }
+
+    @Test
+    public void connectionIsCheckedOnlyOnce() {
+        EmbeddedChannel channel = channel();
+
+        channel.writeOutbound(STATUS_QUERY);
+        letResponseTimeoutPass(channel);
+        assertProbeSent(channel);
+        letProbeTimeoutPass(channel);
+
+        assertFalse(channel.isOpen());
+        assertNull(channel.readOutbound());
     }
 }
