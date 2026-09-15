@@ -74,7 +74,8 @@ Every node has an advanced `statistics` channel group with the following read-on
 | `rssi`                | Number:Power | Signal strength of the last received message     |
 
 Optional statistics remain undefined until they are supplied by Z-Wave JS.
-`last-awake` requires a Z-Wave JS version that exposes the persisted value, but is also updated when the binding receives a node wake-up event.
+`last-awake` is updated when the binding receives a node wake-up event.
+The current Z-Wave JS Server WebSocket schema does not expose the persisted last-awake value, so this channel is not restored when the binding starts.
 
 ### Notification-Virtual Channel
 

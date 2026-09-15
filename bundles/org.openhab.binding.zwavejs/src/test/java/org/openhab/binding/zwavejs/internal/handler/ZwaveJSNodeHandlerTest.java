@@ -25,6 +25,8 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.zwavejs.internal.DataUtil;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
@@ -49,11 +51,15 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 
@@ -62,6 +68,10 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ZwaveJSNodeHandlerTest {
+    private static final List<String> STATISTICS_CHANNEL_IDS = List.of(CHANNEL_STATISTICS_LAST_SEEN,
+            CHANNEL_STATISTICS_LAST_AWAKE, CHANNEL_STATISTICS_COMMANDS_TX, CHANNEL_STATISTICS_COMMANDS_RX,
+            CHANNEL_STATISTICS_COMMANDS_DROPPED_TX, CHANNEL_STATISTICS_COMMANDS_DROPPED_RX,
+            CHANNEL_STATISTICS_TIMEOUT_RESPONSE, CHANNEL_STATISTICS_RTT, CHANNEL_STATISTICS_RSSI);
 
     @Test
     public void testInvalidConfiguration() {
@@ -90,6 +100,34 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).statusUpdated(argThat(arg -> arg.getUID().equals(thing.getUID())),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
             verify(callback, times(20)).stateUpdated(any(), any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testExistingThingGetsStatisticsChannels() {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_STATISTICS);
+        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, CHANNEL_GROUP_STATISTICS);
+        List<ChannelBuilder> channelBuilders = STATISTICS_CHANNEL_IDS.stream()
+                .map(channelId -> ChannelBuilder.create(statisticsChannelUID(thing, channelId))).toList();
+        when(callback.createChannelBuilders(groupUID, groupTypeUID)).thenReturn(channelBuilders);
+
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        try {
+            List<Channel> statisticsChannels = handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS);
+            assertEquals(STATISTICS_CHANNEL_IDS.size(), statisticsChannels.size());
+            assertTrue(statisticsChannels.stream().map(channel -> channel.getUID().getIdWithoutGroup())
+                    .allMatch(STATISTICS_CHANNEL_IDS::contains));
+
+            handler.initialize();
+
+            assertEquals(STATISTICS_CHANNEL_IDS.size(),
+                    handler.getThing().getChannelsOfGroup(CHANNEL_GROUP_STATISTICS).size());
         } finally {
             handler.dispose();
         }
@@ -268,6 +306,26 @@ public class ZwaveJSNodeHandlerTest {
             verify(callback).stateUpdated(eq(statisticsChannelUID(thing, CHANNEL_STATISTICS_RSSI)),
                     eq(new QuantityType<>(-87, Units.DECIBEL_MILLIWATTS)));
             verify(callback, never()).thingUpdated(any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 125, 126, 127 })
+    public void testStatisticsRssiErrorUpdatesChannelToUndefined(int rssi) {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(7);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+        Statistics statistics = new Statistics();
+        statistics.rssi = rssi;
+
+        clearInvocations(callback);
+        handler.onStatisticsUpdated(statistics);
+
+        try {
+            verify(callback).stateUpdated(statisticsChannelUID(thing, CHANNEL_STATISTICS_RSSI), UnDefType.UNDEF);
         } finally {
             handler.dispose();
         }

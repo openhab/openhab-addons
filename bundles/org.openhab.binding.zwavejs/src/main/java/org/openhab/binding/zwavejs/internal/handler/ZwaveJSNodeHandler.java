@@ -70,13 +70,17 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -94,6 +98,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeListener {
+
+    private static final int MIN_RSSI_ERROR_VALUE = 125;
 
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSNodeHandler.class);
     private final ZwaveJSTypeGenerator typeGenerator;
@@ -757,8 +763,8 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
         Integer rssi = statistics.rssi;
         if (rssi != null) {
-            updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_RSSI),
-                    new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS));
+            updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_RSSI), rssi >= MIN_RSSI_ERROR_VALUE ? UnDefType.UNDEF
+                    : new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS));
         }
     }
 
@@ -836,6 +842,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         Map<String, Channel> existingChannelEntries = thing.getChannels().stream()
                 .collect(Collectors.toMap(channel -> channel.getUID().getId(), channel -> channel));
 
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            addMissingStatisticsChannels(builder, existingChannelEntries, callback);
+        }
+
         // remove channels that are no longer part of the thing
         for (Map.Entry<String, Channel> existingEntry : existingChannelEntries.entrySet()) {
             if (!CHANNEL_GROUP_STATISTICS.equals(existingEntry.getValue().getUID().getGroupId())
@@ -862,6 +873,18 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         return builder;
+    }
+
+    private void addMissingStatisticsChannels(ThingBuilder builder, Map<String, Channel> existingChannelEntries,
+            ThingHandlerCallback callback) {
+        ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_STATISTICS);
+        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, CHANNEL_GROUP_STATISTICS);
+        for (ChannelBuilder channelBuilder : callback.createChannelBuilders(groupUID, groupTypeUID)) {
+            Channel channel = channelBuilder.build();
+            if (!existingChannelEntries.containsKey(channel.getUID().getId())) {
+                builder.withChannel(channel);
+            }
+        }
     }
 
     private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {
@@ -930,10 +953,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         if ((statistics == null || statistics.lastSeen == null) && node.lastSeen != null) {
             updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_LAST_SEEN), new DateTimeType(node.lastSeen));
-        }
-        Instant lastAwake = node.lastAwake;
-        if (lastAwake != null) {
-            updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_LAST_AWAKE), new DateTimeType(lastAwake));
         }
     }
 
