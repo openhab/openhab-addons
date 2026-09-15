@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -101,8 +103,9 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     protected List<String> supportedTypes = new ArrayList<String>();
     protected List<Integer> supportedApiVersions = Arrays.asList(API_V1);
-    private boolean deviceConfigurationOk = false;
     private String apiURL = "";
+    protected final AtomicLong lifecycleGeneration = new AtomicLong();
+    private volatile long validatedGeneration = -1;
 
     /**
      * Constructor
@@ -118,7 +121,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        deviceConfigurationOk = false;
+        long generation = lifecycleGeneration.incrementAndGet();
         config = getConfigAs(HomeWizardConfiguration.class);
 
         if (config.isUsingApiVersion2()) {
@@ -146,8 +149,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
         if (configure()) {
             updateStatus(ThingStatus.UNKNOWN);
-            dataPollingJob = executorService.scheduleWithFixedDelay(this::retrieveData, 0, config.refreshDelay,
-                    TimeUnit.SECONDS);
+            dataPollingJob = executorService.scheduleWithFixedDelay(() -> retrieveData(generation), 0,
+                    config.refreshDelay, TimeUnit.SECONDS);
             firmwarePollingJob = executorService.scheduleWithFixedDelay(this::retrieveFirmwareVersion, 1, 1,
                     TimeUnit.DAYS);
         }
@@ -227,12 +230,20 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     /**
      * The data polling loop
      */
-    protected void retrieveData() {
-        if (!deviceConfigurationOk) {
-            deviceConfigurationOk = checkDeviceConfiguration();
-            if (!deviceConfigurationOk) {
-                return;
+    protected void retrieveData(long generation) {
+        if (generation != lifecycleGeneration.get()) {
+            return;
+        }
+        if (validatedGeneration != generation) {
+            var properties = checkDeviceConfiguration();
+            if (generation != lifecycleGeneration.get()) {
+                return; // response belongs to an older initialization
             }
+            if (properties == null) {
+                return; // the configuration is not valid, so we cannot continue
+            }
+            updateProperties(properties);
+            validatedGeneration = generation;
         }
 
         try {
@@ -247,7 +258,15 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private boolean checkDeviceConfiguration() {
+    /**
+     * Checks if the device information can be retrieved and if the device is supported. If so, it updates the thing
+     * properties with the device information.
+     *
+     * @return a map of thing properties if the device is supported, or null if the device is not supported or
+     *         if there was an error retrieving the device information.
+     */
+    @Nullable
+    private Map<String, String> checkDeviceConfiguration() {
         String deviceInformation = "";
 
         try {
@@ -256,7 +275,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get device information", ex);
-            return false;
+            return null;
         }
 
         HomeWizardDeviceInformationPayload payload = null;
@@ -269,18 +288,18 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         if (payload == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-no-data");
-            return false;
+            return null;
         } else {
             if ("".equals(payload.getProductType())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error-no-data");
-                return false;
+                return null;
             }
 
             if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "@text/offline.comm-error-device-not-compatible");
-                return false;
+                return null;
             }
 
             var properties = editProperties();
@@ -288,9 +307,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             properties.put(PRODUCT_TYPE, payload.getProductType());
             properties.put(FIRMWARE_VERSION, payload.getFirmwareVersion());
             properties.put(API_VERSION, payload.getApiVersion());
-            updateProperties(properties);
 
-            return true;
+            return properties;
         }
     }
 
@@ -328,6 +346,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
+        lifecycleGeneration.incrementAndGet();
         var dataJob = dataPollingJob;
         if (dataJob != null) {
             dataJob.cancel(true);
