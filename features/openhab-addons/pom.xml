@@ -70,6 +70,8 @@
             <id>karaf-feature-verification</id>
             <configuration>
               <features>
+                <feature>openhab-automation-jsscripting</feature>
+                <feature>openhab-automation-pythonscripting</feature>
                 <feature>openhab-binding-bluetooth</feature>
                 <feature>openhab-binding-homeassistant</feature>
                 <feature>openhab-binding-modbus</feature>

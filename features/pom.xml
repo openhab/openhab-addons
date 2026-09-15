@@ -101,6 +101,7 @@
                 <framework>
                   <feature>framework</feature>
                 </framework>
+                <configuration>file:${project.build.directory}/config.properties</configuration>
                 <features>
                   <feature>openhab-*</feature>
                 </features>
@@ -113,6 +114,60 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-karaf-framework</id>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.karaf.features</groupId>
+                  <artifactId>framework</artifactId>
+                  <version>${karaf.version}</version>
+                  <type>kar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                  <destFileName>framework.kar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>prepare-karaf-config</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <target>
+                <unzip dest="${project.build.directory}" src="${project.build.directory}/framework.kar">
+                  <patternset>
+                    <include name="resources/etc/*.properties"/>
+                  </patternset>
+                  <mapper type="flatten"/>
+                </unzip>
+                <replace file="${project.build.directory}/config.properties" token="sun.misc" value="sun.misc, jdk.internal.misc"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 </project>
