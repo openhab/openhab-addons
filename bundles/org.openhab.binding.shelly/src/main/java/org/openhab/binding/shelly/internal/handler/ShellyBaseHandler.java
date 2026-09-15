@@ -640,6 +640,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * Update device status and channels
      */
     protected void refreshStatus() {
+        if (stopping) {
+            // cancel(true) only interrupts the job, a cycle which is already running has to bail out itself
+            return;
+        }
         try {
             if (vibrationFilter > 0) {
                 vibrationFilter--;
@@ -660,6 +664,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
                 profile.updateFromStatus(status);
+                if (stopping) {
+                    // dispose() may have run while the blocking calls above were in flight
+                    return;
+                }
                 if (restarted) {
                     logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
                     stats.restarts.incrementAndGet();
@@ -687,6 +695,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 ShellyChannelMigration.migrateChannels(this);
             }
         } catch (ShellyApiException e) {
+            if (stopping) {
+                // dispose() may have run while the blocking calls above were in flight
+                return;
+            }
             // http call failed: go offline except for battery devices, which might be in
             // sleep mode. Once the next update is successful the device goes back online
             handleApiException(e);
@@ -1795,6 +1807,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         logger.debug("{}: Stopping Thing", thingName);
         stopping = true;
         stop();
+        api.dispose(); // detach async callbacks, they would otherwise still reach this disposed handler
         super.dispose();
     }
 
