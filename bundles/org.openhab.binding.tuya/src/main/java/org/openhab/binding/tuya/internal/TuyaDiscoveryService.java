@@ -16,6 +16,7 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DEVI
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_LOCAL_KEY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PRODUCT_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_SUB_DEVICE_ID;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.DEVICE_THING_TYPES;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.PROPERTY_CATEGORY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_DEVICE;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_GATEWAY;
@@ -38,7 +39,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tuya.internal.cloud.TuyaOpenAPI;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceListInfo;
-import org.openhab.binding.tuya.internal.cloud.dto.DeviceSchema;
 import org.openhab.binding.tuya.internal.cloud.dto.SubDeviceInfo;
 import org.openhab.binding.tuya.internal.handler.ProjectHandler;
 import org.openhab.binding.tuya.internal.local.UdpDiscoverySender;
@@ -68,8 +68,7 @@ import com.google.gson.Gson;
 @Component(scope = ServiceScope.PROTOTYPE, service = TuyaDiscoveryService.class)
 @NonNullByDefault
 public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<ProjectHandler> {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_TUYA_DEVICE,
-            THING_TYPE_TUYA_GATEWAY, THING_TYPE_TUYA_SUB_DEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = DEVICE_THING_TYPES;
     private static final int SEARCH_TIME = 5;
     private static final int GATEWAY_PROBE_ATTEMPTS = 2;
     private static final int GATEWAY_PROBE_RETRY_DELAY = 10; // Seconds
@@ -398,28 +397,8 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             return;
         }
 
-        api.getDeviceSchema(deviceId).thenAccept(schema -> {
-            List<SchemaDp> schemaDps = new ArrayList<>();
-            schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.FALSE));
-            schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.TRUE));
-            TuyaSchemaDB.put(productId, schemaDps);
-        });
-    }
-
-    private void addUniqueSchemaDp(DeviceSchema.Description description, List<SchemaDp> schemaDps, Boolean readOnly) {
-        if (description.dp_id == 0 || schemaDps.stream().anyMatch(schemaDp -> schemaDp.id == description.dp_id)) {
-            // dp is missing or already present, skip it
-            return;
-        }
-        // some devices report the same function code for different dps
-        // we add an index only if this is the case
-        String originalCode = description.code;
-        int index = 1;
-        while (schemaDps.stream().anyMatch(schemaDp -> schemaDp.code.equals(description.code))) {
-            description.code = originalCode + "_" + index;
-        }
-
-        schemaDps.add(SchemaDp.fromRemoteSchema(gson, description, readOnly));
+        api.getDeviceSchema(deviceId)
+                .thenAccept(schema -> TuyaSchemaDB.put(productId, SchemaDp.fromRemoteSchema(gson, schema)));
     }
 
     @Override

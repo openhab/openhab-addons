@@ -13,6 +13,7 @@
 package org.openhab.binding.tuya.internal;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -35,6 +36,10 @@ public class TuyaBindingConstants {
     public static final ThingTypeUID THING_TYPE_TUYA_GATEWAY = new ThingTypeUID(BINDING_ID, "tuyaGateway");
     public static final ThingTypeUID THING_TYPE_TUYA_SUB_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaSubDevice");
 
+    // Thing types whose channels are generated from a device schema
+    public static final Set<ThingTypeUID> DEVICE_THING_TYPES = Set.of(THING_TYPE_TUYA_DEVICE, THING_TYPE_TUYA_GATEWAY,
+            THING_TYPE_TUYA_SUB_DEVICE);
+
     public static final String PROPERTY_CATEGORY = "category";
 
     public static final String CONFIG_LOCAL_KEY = "localKey";
@@ -48,6 +53,7 @@ public class TuyaBindingConstants {
     public static final String CONFIG_PROTOCOL = "protocol";
     public static final String CONFIG_RANGE = "range";
     public static final String CONFIG_SUB_DEVICE_ID = "subDeviceId";
+    public static final String CONFIG_RELOAD_SCHEMA = "reloadSchema";
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");
