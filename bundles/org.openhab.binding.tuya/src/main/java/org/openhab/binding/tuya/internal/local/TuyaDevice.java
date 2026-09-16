@@ -15,6 +15,9 @@ package org.openhab.binding.tuya.internal.local;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_HEARTBEAT_INTERVAL;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_MAX_LIFETIME;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_MESSAGE_RESPONSE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_PROBE_RESPONSE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_QUERY_RETRY_INITIAL;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECTION_QUERY_RETRY_MAX;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECT_INITIAL_DELAY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECT_INITIAL_INTERVAL;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.TCP_CONNECT_RETRY_INTERVAL;
@@ -31,7 +34,6 @@ import static org.openhab.binding.tuya.internal.local.CommandType.STATUS;
 import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_4;
 import static org.openhab.binding.tuya.internal.local.ProtocolVersion.V3_5;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -39,6 +41,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tuya.internal.local.dto.RequestRefusal;
+import org.openhab.binding.tuya.internal.local.dto.TcpStatusPayload;
 import org.openhab.binding.tuya.internal.local.handlers.TuyaDecoder;
 import org.openhab.binding.tuya.internal.local.handlers.TuyaEncoder;
 import org.openhab.binding.tuya.internal.local.handlers.TuyaMessageHandler;
@@ -98,6 +102,9 @@ public class TuyaDevice implements ChannelFutureListener {
     private final MessageWrapper<?> msgRequestAllControl;
     private final MessageWrapper<?> msgRequestAllDpQuery;
     private static final MessageWrapper<?> msgRefreshAll = new MessageWrapper<>(DP_REFRESH, Map.of("dpId", List.of()));
+    // A heartbeat of its own, so that the response timeout can tell the probe sent after a refusal from the
+    // heartbeats that keep an idle connection alive
+    private static final MessageWrapper<?> msgProbe = new MessageWrapper<>(HEART_BEAT, Map.of());
 
     private boolean firstRefusal = true;
 
@@ -168,10 +175,29 @@ public class TuyaDevice implements ChannelFutureListener {
         }
     }
 
-    private class ResponseTimeoutHandler extends ChannelDuplexHandler {
+    static class ResponseTimeoutHandler extends ChannelDuplexHandler {
+        private final Logger logger = LoggerFactory.getLogger(TuyaDevice.class);
+        private final String deviceId;
+        private final String address;
+        private final MessageWrapper<?> statusQuery;
+        private final MessageWrapper<?> probe;
         private @Nullable Future<?> responseTimeout = null;
+        private boolean awaitingCommandAck = false;
         private @Nullable ChannelHandlerContext context = null;
         private TimeoutTask timeoutTask = new TimeoutTask();
+
+        /**
+         * @param statusQuery the CONTROL message sent when connecting to ask the device for its status
+         * @param probe the heartbeat sent to check a device that refused a request is alive, which is given more
+         *            time to be answered
+         */
+        ResponseTimeoutHandler(String deviceId, String address, MessageWrapper<?> statusQuery,
+                MessageWrapper<?> probe) {
+            this.deviceId = deviceId;
+            this.address = address;
+            this.statusQuery = statusQuery;
+            this.probe = probe;
+        }
 
         @Override
         public void handlerAdded(@Nullable ChannelHandlerContext ctx) throws Exception {
@@ -217,8 +243,15 @@ public class TuyaDevice implements ChannelFutureListener {
                         future.cancel(false);
                     }
 
+                    // The acknowledgement is all a device sends in reply to a command that changes nothing it
+                    // reports, such as an infrared code. The status query still needs a real response, see
+                    // channelRead.
+                    awaitingCommandAck = (m.commandType == CONTROL || m.commandType == CONTROL_NEW)
+                            && !statusQuery.equals(m);
+
                     responseTimeout = ctx.executor().schedule(timeoutTask, //
-                            TCP_CONNECTION_MESSAGE_RESPONSE, TimeUnit.MILLISECONDS);
+                            probe.equals(m) ? TCP_CONNECTION_PROBE_RESPONSE : TCP_CONNECTION_MESSAGE_RESPONSE, //
+                            TimeUnit.MILLISECONDS);
                 }
             }
         }
@@ -232,13 +265,17 @@ public class TuyaDevice implements ChannelFutureListener {
                     // ignored because there is normally some other response (DP_QUERY or STATUS)
                     // as well. If there isn't either the device or API is not active. (Sometimes
                     // devices seem to accept TCP connections before the API is fully initialized.)
-                    if (m.commandType != CONTROL_NEW && m.commandType != CONTROL //
-                    ) {
+                    // A command is different: its acknowledgement is the only reply a device owes, see write.
+                    // A refusal is no response either: a device that is not ready yet refuses DP_QUERY as well, see
+                    // DpQueryRefusalHandler.
+                    if (!(m.content instanceof RequestRefusal)
+                            && ((m.commandType != CONTROL_NEW && m.commandType != CONTROL) || awaitingCommandAck)) {
                         var future = responseTimeout;
                         if (future != null) {
                             future.cancel(false);
                             responseTimeout = null;
                         }
+                        awaitingCommandAck = false;
                     }
                 }
 
@@ -254,6 +291,83 @@ public class TuyaDevice implements ChannelFutureListener {
                     logger.debug("{}/{}: Connection seems to be dead.", deviceId, address);
                     ctx.close();
                 }
+            }
+        }
+    }
+
+    /**
+     * Handles a device that refuses DP_QUERY with plain text instead of reporting its status.
+     *
+     * Some devices never handle DP_QUERY, others refuse it for a while after connecting although they do handle it,
+     * and the refusal does not tell them apart. Asking with a CONTROL that sets the data points to null instead is no
+     * option: devices that handle DP_QUERY take the nulls as values. So a refusal is answered with a heartbeat, whose
+     * reply the {@link ResponseTimeoutHandler} waits for, and the status is queried again later. The interval doubles
+     * with every refusal.
+     *
+     * A device that reports data points, its own or those of one of its sub-devices, is answering queries and is
+     * left alone for the rest of the connection. Gateways in particular refuse to report themselves while they serve
+     * their sub-devices, and querying them over and over only costs connections. A status without data points does
+     * not count: a device that refuses DP_QUERY answers the CONTROL query with an empty status and still has nothing
+     * to report.
+     */
+    static class DpQueryRefusalHandler extends ChannelDuplexHandler {
+        private final List<MessageWrapper<?>> statusQuery;
+        private final MessageWrapper<?> probe;
+        private long retryDelay = TCP_CONNECTION_QUERY_RETRY_INITIAL;
+        private boolean statusReported = false;
+        private @Nullable Future<?> retry = null;
+
+        /**
+         * @param statusQuery the messages sent to ask the device for its status
+         * @param probe the heartbeat sent to check the device is alive
+         */
+        DpQueryRefusalHandler(List<MessageWrapper<?>> statusQuery, MessageWrapper<?> probe) {
+            this.statusQuery = statusQuery;
+            this.probe = probe;
+        }
+
+        @Override
+        public void handlerRemoved(@Nullable ChannelHandlerContext ctx) throws Exception {
+            cancelRetry();
+
+            super.handlerRemoved(ctx);
+        }
+
+        @Override
+        public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
+            if (ctx != null) {
+                if (msg instanceof MessageWrapper<?> m) {
+                    if (m.content instanceof TcpStatusPayload payload && reportsDataPoints(payload)) {
+                        statusReported = true;
+                        cancelRetry();
+                    } else if (m.content instanceof RequestRefusal && !statusReported
+                            && (m.commandType == DP_QUERY || m.commandType == DP_QUERY_NEW)) {
+                        Channel channel = ctx.channel();
+                        channel.writeAndFlush(probe);
+                        if (retry == null) {
+                            retry = ctx.executor().schedule(() -> {
+                                retry = null;
+                                statusQuery.forEach(channel::writeAndFlush);
+                            }, retryDelay, TimeUnit.MILLISECONDS);
+                            retryDelay = Math.min(retryDelay * 2, TCP_CONNECTION_QUERY_RETRY_MAX);
+                        }
+                    }
+                }
+
+                super.channelRead(ctx, msg);
+            }
+        }
+
+        private static boolean reportsDataPoints(TcpStatusPayload payload) {
+            // Protocol 3.4 and 3.5 wrap the data points of a status in "data"
+            return !(payload.protocol == 4 ? payload.data.dps : payload.dps).isEmpty();
+        }
+
+        private void cancelRetry() {
+            Future<?> future = retry;
+            if (future != null) {
+                future.cancel(false);
+                retry = null;
             }
         }
     }
@@ -296,9 +410,8 @@ public class TuyaDevice implements ChannelFutureListener {
         CommandType commandType = DP_QUERY;
         msgRequestAllDpQuery = new MessageWrapper<>(commandType, Map.of("dps", allDpIds));
 
-        Map<Integer, @Nullable Object> allDpIdsMap = new HashMap<>();
-        allDpIds.forEach(dp -> allDpIdsMap.put(dp, null));
-        msgRequestAllControl = new MessageWrapper<>(CONTROL, Map.of("dps", allDpIdsMap));
+        // Without data points: devices that handle DP_QUERY take data points set to null as values
+        msgRequestAllControl = new MessageWrapper<>(CONTROL, Map.of("dps", Map.of()));
 
         bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.TCP_NODELAY, true).option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
@@ -310,7 +423,10 @@ public class TuyaDevice implements ChannelFutureListener {
                 pipeline.addLast("messageEncoder", new TuyaEncoder(gson));
                 pipeline.addLast("messageDecoder", new TuyaDecoder(gson));
                 pipeline.addLast("heartbeatSender", new HeartbeatSender());
-                pipeline.addLast("responseTimeoutHandler", new ResponseTimeoutHandler());
+                pipeline.addLast("responseTimeoutHandler",
+                        new ResponseTimeoutHandler(deviceId, address, msgRequestAllControl, msgProbe));
+                pipeline.addLast("dpQueryRefusalHandler",
+                        new DpQueryRefusalHandler(List.of(msgRequestAllDpQuery, msgRequestAllControl), msgProbe));
                 pipeline.addLast("maxLifetimeHandler", new MaxLifetimeHandler());
                 pipeline.addLast("deviceHandler", new TuyaMessageHandler(deviceStatusListener));
                 pipeline.addLast("userEventHandler", new UserEventHandler());
