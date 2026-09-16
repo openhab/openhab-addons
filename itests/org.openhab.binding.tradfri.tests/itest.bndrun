@@ -23,6 +23,7 @@ Fragment-Host: org.openhab.binding.tradfri
 	si-units;version='[2.2.3,2.2.4)',\
 	si-quantity;version='[2.2.3,2.2.4)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
+	bcprov;version='[1.86.0,1.86.1)',\
 	org.eclipse.californium.core;version='[4.0.0,4.0.1)',\
 	org.eclipse.californium.element-connector;version='[4.0.0,4.0.1)',\
 	org.eclipse.californium.scandium;version='[4.0.0,4.0.1)',\
@@ -84,5 +85,4 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.openhab.core.semantics;version='[5.3.0,5.3.1)',\
 	jul.to.slf4j;version='[2.0.17,2.0.18)',\
 	ch.qos.logback.classic;version='[1.5.38,1.5.39)',\
-	ch.qos.logback.core;version='[1.5.38,1.5.39)',\
-	bcprov;version='[1.86.0,1.86.1)'
+	ch.qos.logback.core;version='[1.5.38,1.5.39)'
