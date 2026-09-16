@@ -3,6 +3,7 @@ children:
   - ["doc/ShellyManager", "Shelly Manager"]
   - ["doc/AdvancedUsers", "Advanced Users"]
   - ["doc/UseCaseSmartRoller", "Smartify Roller Shutters with openHAB and Shelly"]
+  - ["doc/UseCaseWS90WeatherStation", "WS90 Weather Station: Setup and Rain Automation with openHAB"]
 ---
 
 # Shelly Binding
@@ -2405,6 +2406,8 @@ The `rainStatus` channel latches ON for a while after it has actually stopped ra
 
 The WS90 reports additional metrics (hourly/24h rainfall totals, all-time high/low records) that are not exposed as channels.
 These are cumulative statistics tracked by the sensor itself rather than live measurements, and are better handled with openHAB's own persistence/rules (e.g. via `rrd4j` or `influxdb` on `precipitation`/`temperature`) than duplicated as binding channels.
+
+See [WS90 Weather Station: Setup and Rain Automation with openHAB](doc/UseCaseWS90WeatherStation.md) for a tutorial covering setup, this firmware behavior, and example rules for reliable rain detection and deriving 1h/24h rainfall totals via openHAB persistence.
 
 A debounced "is it raining" switch (holding ON for a while after `rainStatus` turns OFF) can be built with a small rule instead of a binding feature:
 
